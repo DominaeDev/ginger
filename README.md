@@ -1,6 +1,6 @@
 # Ginger
 
-Ginger is a creation/editing tool for character cards for use with LLM chat frontends.
+Ginger is a tool for creating character cards for use with LLM chat frontends.
 
 ## Create
 * Create characters using intelligent building blocks called "recipes"
