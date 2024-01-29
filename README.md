@@ -34,3 +34,6 @@ Ginger is a creation/editing tool for character cards for use with LLM chat fron
 * Text generation web UI (Oobabooga)
 * Agnai.chat
 * Pygmalion
+
+## Screenshots
+![Ginger screenshot](./images/screenshot.png)
