@@ -1,18 +1,19 @@
 # Ginger
 
-Ginger is a tool for creating character cards for use with LLM chat frontends.
+Ginger is an application for creating and editing character cards for use with LLM inference models and AI chat frontends.
+The goal of this project is to provide easy-to-use tools for beginners and experienced character authors alike,
+while being fully compatible with existing platforms and formats.
 
 ## Create
-* Create characters using intelligent building blocks called "recipes"
-* Wide variety of base recipes for creating different kinds of cards and characters
-* Automatic name placeholders (never type `{{char}}` or `{{user}}` again)
+* Easy character creation using parameterized building blocks, called "recipes"
+* Automatic name placeholders
 * Store and reuse common text as "snippets" that adapt to the character to which they are added
 * Integrated text editor with syntax highlighting
-* Supports multi-character cards
+* Support for multi-character cards
 
 ## Edit
 * Edit existing character cards, in any of the popular formats
-* Turn off certain aspects of a character without erasing them
+* Disable aspects of a character without having to erase them
 * Character-wide find and replace
 * Ginger cards are supported almost everywhere (see below)
 
