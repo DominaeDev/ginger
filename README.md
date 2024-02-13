@@ -38,4 +38,5 @@ while being fully compatible with existing platforms and formats.
 
 ## Screenshots
 ![Ginger screenshot #1](./images/screenshot.png)
+
 ![Ginger screenshot #2](./images/screenshot2.png)
