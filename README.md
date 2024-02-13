@@ -37,4 +37,5 @@ while being fully compatible with existing platforms and formats.
 * Pygmalion
 
 ## Screenshots
-![Ginger screenshot](./images/screenshot.png)
+![Ginger screenshot #1](./images/screenshot.png)
+![Ginger screenshot #2](./images/screenshot2.png)
