@@ -34,7 +34,7 @@ while being fully compatible with existing platforms and formats.
 * Faraday
 * Text generation web UI (Oobabooga)
 * Agnai.chat
-* Pygmalion
+* Pygmalion (CAI)
 
 ## Screenshots
 ![Ginger screenshot #1](./images/screenshot.png)
