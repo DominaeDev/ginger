@@ -26,12 +26,10 @@ Click here to download the latest version (v1.0.0)
 * Spell checking.
 * Comments.
 
-### Edit
+### Edit / Remix
 * Open and edit character cards and lorebooks in a wide range of formats.
 * Change the chat format (quotes around dialogue or not?)
 * Search and Replace across all fields and properties.
-
-### Remix
 * Copy, paste, mix and match parts from different character cards.
 * Replace all pronouns (gender swapping).
 * Seamlessly blend written text with Ginger recipes and snippets.
