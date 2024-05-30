@@ -204,7 +204,7 @@
 			label3.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			label3.Size = new System.Drawing.Size(215, 23);
 			label3.TabIndex = 5;
-			label3.Text = "Replace with (user)";
+			label3.Text = "Replace with";
 			// 
 			// label4
 			// 
@@ -217,7 +217,7 @@
 			label4.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			label4.Size = new System.Drawing.Size(215, 23);
 			label4.TabIndex = 4;
-			label4.Text = "Pronouns (user)";
+			label4.Text = "Pronouns";
 			// 
 			// cbUser
 			// 
@@ -248,13 +248,12 @@
 			this.comboBox_UserTarget.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.comboBox_UserTarget.FormattingEnabled = true;
 			this.comboBox_UserTarget.Items.AddRange(new object[] {
-            "Masculine",
-            "Feminine",
-            "Neutral",
-            "Mixed",
-            "Masculine (Variable)",
-            "Feminine (Variable)",
-            "Neutral (Variable)"});
+			"Masculine",
+			"Feminine",
+			"Neutral",
+			"Mixed",
+			"Variable",
+			"Variable (User)"});
 			this.comboBox_UserTarget.Location = new System.Drawing.Point(281, 27);
 			this.comboBox_UserTarget.Margin = new System.Windows.Forms.Padding(0);
 			this.comboBox_UserTarget.MaxLength = 128;
@@ -275,7 +274,8 @@
             "Feminine",
             "Neutral",
             "Mixed",
-            "Variable"});
+            "Variable",
+			"Variable (User)"});
 			this.comboBox_UserGender.Location = new System.Drawing.Point(26, 27);
 			this.comboBox_UserGender.Margin = new System.Windows.Forms.Padding(0);
 			this.comboBox_UserGender.MaxLength = 128;
@@ -291,13 +291,12 @@
 			this.comboBox_CharacterTarget.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.comboBox_CharacterTarget.FormattingEnabled = true;
 			this.comboBox_CharacterTarget.Items.AddRange(new object[] {
-            "Masculine",
-            "Feminine",
-            "Neutral",
-            "Mixed",
-            "Masculine (Variable)",
-            "Feminine (Variable)",
-            "Neutral (Variable)"});
+			"Masculine",
+			"Feminine",
+			"Neutral",
+			"Mixed",
+			"Variable",
+			"Variable (User)"});
 			this.comboBox_CharacterTarget.Location = new System.Drawing.Point(281, 23);
 			this.comboBox_CharacterTarget.Margin = new System.Windows.Forms.Padding(0);
 			this.comboBox_CharacterTarget.MaxLength = 128;
@@ -317,7 +316,8 @@
             "Feminine",
             "Neutral",
             "Mixed",
-            "Variable"});
+            "Variable",
+			"Variable (User)"});
 			this.comboBox_CharacterGender.Location = new System.Drawing.Point(26, 23);
 			this.comboBox_CharacterGender.Margin = new System.Windows.Forms.Padding(0);
 			this.comboBox_CharacterGender.MaxLength = 128;

@@ -56,13 +56,6 @@ namespace Ginger
 		{
 			int replacements = 0;
 
-			if (userTo == Pronouns.VariableMasculine)
-				userTo = Pronouns.VariableUserMasculine;
-			else if (userTo == Pronouns.VariableFeminine)
-				userTo = Pronouns.VariableUserFeminine;
-			else if (userTo == Pronouns.VariableNeutral)
-				userTo = Pronouns.VariableUserNeutral;
-
 			string[] fromCharacterPronouns = PronounTable[EnumHelper.ToInt(characterFrom)];
 			bool[] fromCharacterMask = MaskTable[EnumHelper.ToInt(characterFrom)];
 			string[] targetCharacterPronouns = PronounTable[EnumHelper.ToInt(characterTo)];
@@ -140,13 +133,6 @@ namespace Ginger
 				return 0;
 
 			int replacements = 0;
-
-			if (userTo == Pronouns.VariableMasculine)
-				userTo = Pronouns.VariableUserMasculine;
-			else if (userTo == Pronouns.VariableFeminine)
-				userTo = Pronouns.VariableUserFeminine;
-			else if (userTo == Pronouns.VariableNeutral)
-				userTo = Pronouns.VariableUserNeutral;
 
 			string[] fromCharacterPronouns = PronounTable[EnumHelper.ToInt(characterFrom)];
 			bool[] fromCharacterMask = MaskTable[EnumHelper.ToInt(characterFrom)];

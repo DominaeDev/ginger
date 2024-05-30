@@ -295,6 +295,8 @@ namespace Ginger
 					WriteSection(outputFile, "Settings", false);
 					if (Settings.FontFace != null)
 						Write(outputFile, "Font", Settings.FontSerialize);
+					if (Settings.EnableFormLevelBuffering == false)
+						Write(outputFile, "FormBuffering", Settings.EnableFormLevelBuffering);
 					Write(outputFile, "AutoConvertNames", Settings.AutoConvertNames);
 					Write(outputFile, "UserPlaceholder", Settings.UserPlaceholder);
 					Write(outputFile, "ShowNSFW", Settings.ShowNSFW);
@@ -307,7 +309,6 @@ namespace Ginger
 					Write(outputFile, "Dictionary", Settings.Dictionary);
 					Write(outputFile, "Locale", Settings.Locale);
 					Write(outputFile, "ShowRecipeCategory", Settings.ShowRecipeCategory);
-					Write(outputFile, "FormBuffering", Settings.EnableFormLevelBuffering);
 
 					// User
 					WriteSection(outputFile, "User");

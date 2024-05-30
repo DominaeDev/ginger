@@ -22,6 +22,7 @@ namespace Ginger
 			GenderSwap.Pronouns.Neutral,
 			GenderSwap.Pronouns.Mixed,
 			GenderSwap.Pronouns.VariableNeutral,
+			GenderSwap.Pronouns.VariableUserNeutral,
 		};
 
 		private GenderSwap.Pronouns[] CharacterToList = new GenderSwap.Pronouns[]
@@ -30,9 +31,8 @@ namespace Ginger
 			GenderSwap.Pronouns.Feminine,
 			GenderSwap.Pronouns.Neutral,
 			GenderSwap.Pronouns.Mixed,
-			GenderSwap.Pronouns.VariableMasculine,
-			GenderSwap.Pronouns.VariableFeminine,
 			GenderSwap.Pronouns.VariableNeutral,
+			GenderSwap.Pronouns.VariableUserNeutral,
 		};
 
 		private GenderSwap.Pronouns[] UserFromList = new GenderSwap.Pronouns[]
@@ -41,6 +41,7 @@ namespace Ginger
 			GenderSwap.Pronouns.Feminine,
 			GenderSwap.Pronouns.Neutral,
 			GenderSwap.Pronouns.Mixed,
+			GenderSwap.Pronouns.VariableNeutral,
 			GenderSwap.Pronouns.VariableUserNeutral,
 		};
 
@@ -50,8 +51,7 @@ namespace Ginger
 			GenderSwap.Pronouns.Feminine,
 			GenderSwap.Pronouns.Neutral,
 			GenderSwap.Pronouns.Mixed,
-			GenderSwap.Pronouns.VariableUserMasculine,
-			GenderSwap.Pronouns.VariableUserFeminine,
+			GenderSwap.Pronouns.VariableNeutral,
 			GenderSwap.Pronouns.VariableUserNeutral,
 		};
 
@@ -187,11 +187,9 @@ namespace Ginger
 			bool bOk = SwapCharacter || SwapUser;
 
 			if (SwapCharacter)
-				bOk &= CharacterFrom != CharacterTo 
-					|| CharacterFrom == GenderSwap.Pronouns.VariableNeutral; // Permit Variable -> Variable
+				bOk &= CharacterFrom != CharacterTo;
 			if (SwapUser)
-				bOk &= UserFrom != UserTo
-					|| UserFrom == GenderSwap.Pronouns.VariableUserNeutral; // Permit Variable -> Variable
+				bOk &= UserFrom != UserTo;
 			if (SwapCharacter && SwapUser)
 			{
 				bOk &= CharacterFrom != UserFrom;
