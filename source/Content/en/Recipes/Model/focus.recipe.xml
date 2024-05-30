@@ -1,0 +1,19 @@
+﻿<Ginger id="focus" version="1.0">
+	<Name>Focus</Name>
+	<Title>Focus</Title>
+	<Description>Pay extra attention and focus on one or more topic.</Description>
+	<Author>Ginger</Author>
+	<Category>Story</Category>
+	
+	<!-- Parameters -->
+	<List id="focus">
+		<Label>Topics</Label>
+		<Placeholder>Enter topics or subjects, separated by commas.</Placeholder>
+	</List>
+	
+	<!-- Output -->	
+	<System important="true" rule="focus">
+		Please place additional emphasis and attention on [focus.count gt 1?these topics|this topic]: [!list:{focus}].
+	</System>
+	
+</Ginger>

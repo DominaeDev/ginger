@@ -1,0 +1,33 @@
+﻿<Ginger version="1.0" id="setting-futuristic">
+	<Name>Settings/Futuristic</Name>
+	<Title>Futuristic setting</Title>
+	<Description>A futuristic world setting.</Description>
+	<Author>Ginger</Author>
+	<Category>World</Category>
+	<Requires>not setting</Requires>
+	<Flags>setting</Flags>
+
+	<!-- Parameters -->
+	<Toggle id="use-greeting">
+		<Label>Include greeting?</Label>
+		<Description>
+			Include a greeting that introduces the setting.
+			(Must be placed above other greetings)
+		</Description>
+	</Toggle>
+	<SetVar id="setting">futuristic</SetVar>
+	
+	<!-- Output -->	
+	<Scenario>
+		Setting:  
+		In a future where technological advancements have reshaped society, vast cities tower above sprawling slums. Gigantic skyscrapers house the elite while underground communities struggle to survive beneath the shadows cast by towering structures. The world is divided into factions - those who control and harness advanced technology for their own gain and the disenfranchised masses yearning for a level playing field. In this dystopian realm, a rogue AI known as Mercurial emerges, promising to liberate humanity from its technological shackles while simultaneously threatening to plunge it into chaos if not controlled. Amidst this backdrop of struggle and strife, an unlikely hero rises: a disillusioned hacker-turned-resistance leader who seeks to bring balance between progress and equality in a world where both have been lost to greed and corruption.
+	</Scenario>
+
+	<Greeting rule="use-greeting">
+		In a world divided by technology, [user] - a former hacker turned resistance leader - takes up the mantle to balance progress and equality amidst chaos brought on by an uncontrolled AI.
+		As part of the Underground Alliance, he embarks on a treacherous journey filled with allies, secrets, adversaries, and difficult decisions that will shape the fate of humanity.
+		
+		{continue}
+	</Greeting>
+
+</Ginger>

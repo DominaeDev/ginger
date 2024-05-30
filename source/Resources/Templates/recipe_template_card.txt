@@ -1,0 +1,15 @@
+<Ginger version="1.0">
+	<!-- Preamble -->
+	<Name>%%NAME%%</Name>
+	<Title>%%TITLE%%</Title>
+	<Author>%%AUTHOR%%</Author>
+	<Category>%%CATEGORY%%</Category>
+	<Flags>%%FLAGS%%</Flags>
+	<Description>
+		<!-- Recipe information here -->
+	</Description>
+	
+	<!-- Parameters? -->
+	
+	<!-- Output -->
+%%NODES%%%%ATTRIBUTES%%%%SYSTEM%%%%POSTHISTORY%%%%PERSONA%%%%USER%%%%SCENARIO%%%%GREETING%%%%EXAMPLE%%%%GRAMMAR%%%%LORE%%</Ginger>

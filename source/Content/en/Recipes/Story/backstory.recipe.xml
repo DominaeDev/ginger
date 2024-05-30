@@ -1,0 +1,29 @@
+﻿<Ginger id="backstory" version="1.0">
+	<!-- Preamble -->
+	<Name>Plot/Premise</Name>
+	<Title>Premise</Title>
+	<Description>
+		Describe the story up until this point.
+		(For best results, write in the past tense.)
+	</Description>
+	<Author>Ginger</Author>
+	<Category>Story</Category>
+	<Flags>backstory-block</Flags>
+	<Multiple>Yes</Multiple>
+	
+	<!-- Parameters -->
+	<Text id="text" style="flex">
+		<Label>Premise / Story so far...</Label>
+		<Description>Describe past events that has lead up to this point.</Description>
+	</Text>
+	
+	<!-- Output -->
+	<Node path="scenario/backstory" mode="exclude">
+		[p]Premise:  
+		{inner} 
+	</Node>
+	<Node path="scenario/backstory/summary">{text}</Node>
+	
+	<Scenario rule="not backstory-block">{backstory}</Scenario>
+	
+</Ginger>

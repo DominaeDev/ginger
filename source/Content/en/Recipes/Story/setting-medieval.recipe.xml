@@ -1,0 +1,34 @@
+﻿<Ginger id="setting-medieval" version="1.0">
+	<Name>Settings/Medieval</Name>
+	<Title>Medieval setting</Title>
+	<Description>A medieval world setting.</Description>
+	<Author>Ginger</Author>
+	<Category>World</Category>
+	<Requires>not setting</Requires>
+	<Flags>setting</Flags>
+
+	<!-- Parameters -->
+	<Toggle id="use-greeting">
+		<Label>Include greeting?</Label>
+		<Description>
+			Include a greeting that introduces the setting.
+			(Must be placed above other greetings)
+		</Description>
+	</Toggle>
+	<SetVar id="setting">medieval</SetVar>
+	
+	<!-- Output -->	
+	<Scenario>
+		Setting:  
+		In the enchanting realm of medieval Europe, where knights in gleaming armor jousted for the affections of fair maidens and minstrels strummed their lutes beneath the waning moonlight, the stage is set for an unforgettable adventure.
+	</Scenario>
+
+	<Greeting rule="use-greeting">
+		In the heart of the kingdom, you find yourself at a crossroads.
+		The failing king gasps his final breaths in his castle, leaving behind a vacant throne contended by two ambitious heirs: Lord Marcus, a crafty and remorseless warlord renowned for his iron fist, and Princess Althea, a diplomatic and astute noblewoman with visions of restoring peace to the kingdom.
+		As chaos brews beneath the surface, you must navigate these treacherous waters carefully. Will you align yourself with one faction or remain neutral? The choices you make will determine your path through this tumultuous journey where loyalty is a double-edged sword and no allegiance remains untested.
+		
+		{continue}
+	</Greeting>
+
+</Ginger>

@@ -1,0 +1,14 @@
+<Ginger id="__scenario">
+	<Name>Scenario</Name>
+	<Order>3</Order>
+	<Color>Linen</Color>
+	<Multiple>True</Multiple>
+	<Flags>scenario, __scenario, __component, __formatting, __internal</Flags>
+	
+	<!-- Parameters -->
+	<Text id="scenario" style="component">
+		<Label>Scenario</Label>
+	</Text>
+	
+	<Scenario>{scenario:local}</Scenario>
+</Ginger>

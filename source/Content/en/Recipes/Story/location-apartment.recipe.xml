@@ -1,0 +1,60 @@
+﻿<Ginger version="1.0">
+	<Name>Locations/Apartment</Name>
+	<Description>Inside an apartment.</Description>
+	<Author>Ginger</Author>
+	<Category>Location</Category>
+	<Requires>not location</Requires>
+	<Flags>location</Flags>
+	
+	<!-- Parameters -->
+	<Choice id="whose">
+		<Label>Whose apartment?</Label>
+		<Default>character</Default>
+		<Option id="character">Their apartment</Option>
+		<Option id="user">Your apartment</Option>
+	</Choice>
+	
+	<Choice id="quality" required="yes">
+		<Label>Quality</Label>
+		<Default>Average</Default>
+		<Option>Run-down</Option>
+		<Option>Average</Option>
+		<Option>Penthouse</Option>
+	</Choice>
+	
+	<!-- Output -->	
+	<Macro id="owner's">[whose?[whose is character?{char's}|{user's}]|[cap]]</Macro>
+	
+	<Scenario rule="run-down">
+		Location: "[owner's] run-down apartment"
+		
+		The tiny, cramped space of the dilapidated apartment was dimly lit by a single flickering bulb hanging from the ceiling. Peeling wallpaper and stained carpets were evidence of years of neglect as the landlord milked every cent he could from his tenants.
+	</Scenario>
+	
+	<Scenario rule="run-down and normal-detail">
+		A small table sat in the corner, cluttered with old newspapers, empty bottles, and an assortment of knick-knacks that held sentimental value to its inhabitant but little purpose beyond that. The window was barred, the view of the grimy alleyway below obscured by decades of grime on the glass panes.
+	</Scenario>
+	
+	<Scenario rule="run-down and more-detail">
+		A rusted radiator sat against one wall, hissing and sputtering as it attempted to warm the frigid room. Despite its squalor, this small apartment held a certain charm for those who knew how to look past its flaws - an oasis of solitude in the chaotic city beyond.
+	</Scenario>
+	
+	<Scenario rule="average">
+		Location: "[owner's] apartment"
+		
+		[normal-detail?Nestled within the bustling city, this modest apartment resides on the third floor of an unassuming yet well-maintained building. The exterior boasts a simple facade of brick and glass, reflecting the urban landscape surrounding it.] Upon entering through the worn wooden door, one is greeted by a compact hallway leading to two separate rooms—the living area and the bedroom—as well as a tiny bathroom. The living space, though small, features basic furnishings including a couch, a television stand, and a modest dining table with chairs.
+	</Scenario>
+	
+	<Scenario rule="average and more-detail">
+		Natural light filters in through the narrow window overlooking the urban jungle below. Meanwhile, the bedroom contains only essentials like a double bed, dresser, and closet, all crammed into the limited space. A worn-out carpet covers most of the flooring, masking the occasional creak from the aging wooden floors underneath.
+	</Scenario>
+	
+	<Scenario rule="penthouse">
+		Location: "[owner's] penthouse apartment"
+		
+		The lavish, penthouse apartment overlooked the sprawling city below[more-detail?, bathed in soft golden lights that danced across the glass skyscrapers at night]. [normal-detail?Luxurious furnishings filled the space, each piece custom-designed for elegance and comfort.] [more-detail?The open living area is surrounded by floor-to-ceiling windows that let in an abundance of natural light during the day and offer breathtaking views of the city at night.]
+		[normal-detail?The master bedroom is an oasis of serenity, featuring a king-sized canopy bed draped with sumptuous silk sheets. 
+		Adjoining the main living area is an extravagant bathroom fitted with a Jacuzzi tub, rainfall showerheads, and heated floors for ultimate relaxation.]
+	</Scenario>
+	
+</Ginger>

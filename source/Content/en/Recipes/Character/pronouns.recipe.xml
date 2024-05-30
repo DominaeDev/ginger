@@ -1,0 +1,39 @@
+<Ginger id="pronouns" version="1.0">
+	<Name>Identity/Pronouns</Name>
+	<Description>Override the pronouns used for the character.</Description>
+	<Author>Ginger</Author>
+	<Category>Character</Category>
+	<Flags>pronouns</Flags>
+	<Requires>not pronouns</Requires>
+	
+	<!-- Parameters -->
+	<Choice id="pronouns" required="yes">
+		<Label>Pronouns</Label>
+		<Option id="set-masculine">He / Him</Option>
+		<Option id="set-feminine">She / Her</Option>
+		<Option id="set-neutral">They / Them</Option>
+		<Option id="set-objective">It / It</Option>
+	</Choice>
+			
+	<!-- Clear gender tags -->
+	<Erase>pronoun-masculine</Erase>
+	<Erase>pronoun-feminine</Erase>
+	<Erase>pronoun-neutral</Erase>
+	<Erase>pronoun-objective</Erase>
+	
+	<!-- Set pronoun override flags -->
+	<SetFlag>custom-pronoun</SetFlag>
+	<SetFlag rule="set-masculine">pronoun-masculine</SetFlag>
+	<SetFlag rule="set-feminine">pronoun-feminine</SetFlag>
+	<SetFlag rule="set-neutral">pronoun-neutral</SetFlag>
+	<SetFlag rule="set-objective">pronoun-objective</SetFlag>
+	
+	<!-- Output -->
+		
+	<!-- Add pronouns to character block -->
+	<Node path="persona/attributes/pronouns" order="20" rule="normal-detail and set-masculine and not male">Pronouns: He/Him</Node>
+	<Node path="persona/attributes/pronouns" order="20" rule="normal-detail and set-feminine and not female">Pronouns: She/Her</Node>
+	<Node path="persona/attributes/pronouns" order="20" rule="normal-detail and set-neutral">Pronouns: They/Them</Node>
+	<Node path="persona/attributes/pronouns" order="20" rule="normal-detail and set-objective">Pronouns: It/It</Node>
+	
+</Ginger>

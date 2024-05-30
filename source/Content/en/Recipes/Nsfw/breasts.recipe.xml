@@ -1,0 +1,129 @@
+<Ginger version="1.0">
+	<Name>Anatomy/Breasts</Name>
+	<Title>Breasts</Title>
+	<Description>Describe the character's breasts.</Description>
+	<Author>Ginger</Author>
+	<Category>Body</Category>
+	<Requires>not breasts</Requires>
+	<Flags>breasts, nsfw</Flags>
+	<Order>150</Order>
+	
+	<!-- Parameters -->
+	<Choice id="cup-size" shared="yes">
+		<Label>Cup size</Label>
+		<Option id="flat">None / Flat</Option>
+		<Option id="very-small">Very small</Option>
+		<Option id="small">Small</Option>
+		<Option id="average">Average</Option>
+		<Option id="large">Large</Option>
+		<Option id="very-large">Very large</Option>
+		<Option id="extreme">Extremely large</Option>
+		<Option id="aa">AA-cup</Option>
+		<Option id="a">A-cup</Option>
+		<Option id="b">B-cup</Option>
+		<Option id="c">C-cup</Option>
+		<Option id="d">D-cup</Option>
+		<Option id="dd">DD/E-cup</Option>
+		<Option id="f">F-cup</Option>
+		<Option id="g">G-cup</Option>
+		<Option id="h">H-cup</Option>
+		<Option id="i">I-cup</Option>
+		<Option id="j">J-cup</Option>
+		<Option id="k">K-cup</Option>
+	</Choice>
+	
+	<Choice id="nipples">
+		<Option>Small</Option>
+		<Option>Average</Option>
+		<Option>Large</Option>
+		<Option>Inverted</Option>
+	</Choice>
+	
+	<Toggle id="pierced"/>
+	
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
+	
+	<!-- Output -->	
+	<String id="adjective">
+		<String rule="cup-size:index eq 1">tiny; subdued</String> <!-- Very small -->
+		<String rule="cup-size:index eq 2">small; cute</String> <!-- Small -->
+		<String rule="cup-size:index eq 3">modest; perky</String> <!-- Average -->
+		<String rule="cup-size:index eq 4">large; full</String> <!-- Large -->
+		<String rule="cup-size:index eq 5">massive; heavy</String> <!-- Very large -->
+		<String rule="cup-size:index eq 6">absolutely enormous; gravity defying</String> <!-- Extreme -->
+		<String rule="cup-size:index eq 7">very small; petite</String> <!-- AA -->
+		<String rule="cup-size:index eq 8">tiny; cute</String> <!-- A -->
+		<String rule="cup-size:index in 9~10">small; perky</String>  <!-- B-C -->
+		<String rule="cup-size:index in 11~13">large; heavy</String>  <!-- D-F -->
+		<String rule="cup-size:index in 14~16">sizeable; large; heavy</String> <!-- G-I -->
+		<String rule="cup-size:index ge 17">impressively enormous</String> <!-- J-K -->
+	</String>
+
+	<String id="curve">
+		<String rule="cup-size:index in 1~2 or cup-size:index in 7~10">delicate</String> <!-- Small -->
+		<String rule="cup-size:index in 3~4 or cup-size:index in 11~13">gentle</String> <!-- Average -->
+		<String rule="cup-size:index in 5~6 or cup-size:index ge 14">voluptuos</String> <!-- Large-->
+	</String>
+	
+	<String id="nipples">
+		<String rule="nipples:index is 0">delicate</String> <!-- Small -->
+		<String rule="nipples:index is 1">gentle</String> <!-- Average -->
+		<String rule="nipples:index is 2">voluptuos</String> <!-- Large-->
+	</String>
+
+	<Rule id="is-flat">cup-size:index eq 0</Rule>
+	<Rule id="has-breasts">not is-flat</Rule>
+	<Rule id="has-cup-size">cup-size:index ge 7</Rule>
+
+	<Attribute rule="has-cup">
+		<Name>Breasts</Name>
+		<Value>{cup-size.upper}-cup</Value>
+	</Attribute>
+			
+	<Attribute rule="has-breasts and not has-cup">
+		<Name>Breasts</Name>
+		<Value>{cup-size:value}</Value>
+	</Attribute>
+
+	<Attribute rule="is-flat">
+		<Name>Breasts</Name>
+		<Value>None</Value>
+	</Attribute>
+		
+	<Node path="appearance/breasts" rule="is-flat and not male">
+		[They] [don't] have visible breasts. [Their] chest is completely flat and smooth.
+	</Node>
+	
+	<Node path="appearance/breasts" rule="has-breasts and cup-size">
+		[Their] breasts are [!list:[@adjective]][has-cup-size?, and would fit comfortably in [a] [cup-size.upper]-cup bra]].
+	</Node>
+		
+	<Node path="appearance/breasts" rule="nipples:index is 0"> <!-- Small -->
+		[has-breasts?[Their] breasts are adorned by tiny|[Their] nipples are flat and almost imperceptible,] delicate, barely protruding buds.
+	</Node>
+
+	<Node path="appearance/breasts" rule="nipples:index is 1"> <!-- Average -->
+		[Their] nipples are delicate and pert. When aroused, they harden into achingly sensitive peaks, demanding attention and adoration.
+	</Node>
+	
+	<Node path="appearance/breasts" rule="nipples:index is 2"> <!-- Large -->
+		[Their] large, pebbled nipples jut out proudly, demanding attention and adoration. 
+		[normal-detail?When aroused, they swell and erect, hardening to the size of large, juicy berries, begging for a hungry mouth or skilled tongue.]
+		[more-detail?The weight of their fullness drags down the sensitive, supple flesh they crown, inviting caresses that stroke and tease.]
+	</Node>
+
+	<Node path="appearance/breasts" rule="nipples:index is 3"> <!-- Inverted -->
+		[Their] delicate, inverted nipples retract into the areola when [they're] not aroused, offering only hints of their presence. 
+		[normal-detail?But upon arousal, they swell and erect, protruding slightly, beckoning touch with their soft, sensual tips.]
+	</Node>
+	
+	<Node path="appearance/breasts" rule="pierced">
+		A shiny silver piercing adorns the crown of each of [their] nipples, drawing the eye and inviting gentle tugs and teasing flicks. 
+		[normal-detail?With the slightest touch, the jewelry moves, sending waves of sensation through the responsive nerve bundles it grazes and eliciting soft moans of pleasure.]
+	</Node>
+	
+	<Node path="appearance/breasts">{more}</Node>
+		
+</Ginger>

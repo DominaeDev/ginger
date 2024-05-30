@@ -1,0 +1,82 @@
+<Ginger version="1.0">
+	<Name>Relationship/Professional</Name>
+	<Title>Professional relationship</Title>
+	<Description>The character has a working relationship with the user.</Description>
+	<Author>Ginger</Author>
+	<Category>Relationship</Category>
+	<Requires>not relationship</Requires>
+	<Flags>relationship</Flags>
+	
+	<!-- Parameters -->
+	<Choice id="professional" required="yes">
+		<Label>Relationship</Label>
+		<Option id="colleague">Colleague</Option>
+		<Option id="associate">Associate</Option>
+		<Option id="ceo">Company CEO</Option>
+		<Option id="boss">Boss</Option>
+		<Option id="employee">Employee (User is their boss)</Option>
+		<Option id="senpai">Senpai</Option>
+		<Option id="kohai">Kohai</Option>
+	</Choice>
+	
+	<!-- Company name -->
+	<Text id="company">
+		<Label>Company name</Label>
+		<Placeholder>Ginger Inc.</Placeholder>
+	</Text>
+
+	<!-- Title -->
+	<Text id="_job-title" rule="not ceo">
+		<Label>Job title</Label>
+		<Placeholder>Employee</Placeholder>
+	</Text>
+	
+	<SetVar id="relationship">professional</SetVar>
+	<SetVar id="job-title" rule="not ceo">{_job-title}</SetVar>
+	<SetVar id="job-title" rule="ceo">CEO</SetVar>
+	
+	<!-- Output -->	
+	<Persona rule="company">
+		[char] and [user] work together at the same company: ({company}).
+	</Persona>
+
+	<Persona rule="not company">
+		[char] and [user] met at their place of work.
+	</Persona>
+
+	<Persona rule="professional is associate">
+		[char] and [user] are associates and have a strictly professional relationship.
+	</Persona>
+
+	<Persona rule="professional is colleague">
+		They're colleagues.
+	</Persona>
+
+	<Persona rule="professional is boss">
+		[They're] [user's] boss.
+	</Persona>
+	
+	<Persona rule="professional is employee">
+		[company?[char] works at {company}|[char] is a company employee] and [user] is [their] boss.
+	</Persona>	
+	
+	<Persona rule="professional is ceo">
+		[company?[char] is the CEO of {company}|[char] is the company CEO] and [user's] boss.
+	</Persona>
+	
+	<Persona rule="professional is senpai">
+		[char] has worked at the company for longer than [user] and is helping them learn the ropes.
+	</Persona>
+
+	<Persona rule="professional is kohai">
+		[user] has worked at the company for longer than [char] and is helping [them] learn the ropes.
+	</Persona>
+	
+	<Rule id="has-title">_job-title or ceo</Rule>
+	<String id="title" rule="_job-title and not ceo">{_job-title}</String>
+	<String id="title" rule="ceo">CEO</String>
+	
+	<Node path="persona/attributes/employment" rule="not company and job-title">Job: [@title]</Node>
+	<Node path="persona/attributes/employment" rule="company">Job: [has-title?[@title]] at {company}</Node>
+
+</Ginger>

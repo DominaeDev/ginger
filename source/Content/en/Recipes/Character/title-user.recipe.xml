@@ -1,0 +1,35 @@
+﻿<Ginger id="title-user" version="1.0">
+	<Name>User/Title</Name>
+	<Title>Title for user</Title>
+	<Description>Specify a title for the user.</Description>
+	<Author>Ginger</Author>
+	<Category>User</Category>
+	<Requires>not title-user</Requires>
+	<Flags>title-user</Flags>
+	
+	<!-- Parameters -->
+	<Choice id="title" required="yes">
+		<Label>Title</Label>
+		<Option>Mister</Option>
+		<Option>Miss</Option>
+		<Option>Mrs.</Option>
+		<Option>Sir</Option>
+		<Option>Lady</Option>
+		<Option>Madam</Option>
+		<Option>Ma'am</Option>
+		<Option>Monsieur</Option>
+		<Option>Mademoiselle</Option>
+	</Choice>
+	
+	<!-- Output -->
+	<Macro id="with-title">{title:value.capital} {user}</Macro>
+	
+	<Persona rule="title">
+		[char] insists on addressing {user} as '[with-title]'.
+	</Persona>
+	
+	<Example rule="title">
+		{char}: [with-title]?
+	</Example>
+
+</Ginger>

@@ -1,0 +1,29 @@
+<Ginger version="1.0">
+	<Name>Quirks/Fears</Name>
+	<Description>Describe the character's fears and phobias.</Description>
+	<Author>Ginger</Author>
+	<Category>Emotion</Category>
+		
+	<!-- Parameters -->
+	<List id="fears">
+		<Label>Fears</Label>
+		<Placeholder>Enter character's fears, separated by commas</Placeholder>
+	</List>
+	
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
+	
+	<!-- Output -->	
+	<Attribute style="list" rule="less-detail">
+		<Name>Fears</Name>
+		<Value>fears</Value>
+	</Attribute>
+
+	<Attribute rule="fears and normal-detail">
+		<Name>Fears</Name>
+		<Value>[char] is absolutely terrified of {fears.list}.</Value>
+	</Attribute>
+
+	<Node path="description/fears" rule="more">{more}.</Node>
+</Ginger>

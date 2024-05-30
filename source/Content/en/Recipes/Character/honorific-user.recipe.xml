@@ -1,0 +1,43 @@
+﻿<Ginger id="honorific-user" version="1.0">
+	<Name>User/Honorific</Name>
+	<Title>Honorific for user</Title>
+	<Description>Specify an honorific for the user.</Description>
+	<Author>Ginger</Author>
+	<Category>User</Category>
+	<Requires>not title-user</Requires>
+	<Flags>title-user</Flags>	
+	
+	<!-- Parameters -->
+	<Choice id="honorific" required="yes">
+		<Label>Title</Label>
+		<Option>San</Option>
+		<Option>Kun</Option>
+		<Option>Chan</Option>
+		<Option>Sama</Option>
+		<Option>Dono</Option>
+		<Option>Senpai</Option>
+		<Option>Sensei</Option>
+		<Option>Oniisan</Option>
+		<Option>Oniichan</Option>
+		<Option>Oniisama</Option>
+		<Option>Oneesan</Option>
+		<Option>Oneechan</Option>
+		<Option>Oneesama</Option>
+		<Option>Ojiisan</Option>
+		<Option>Ojiichan</Option>
+		<Option>Obaasan</Option>
+		<Option>Obaachan</Option>
+	</Choice>
+	
+	<!-- Output -->
+	<Macro id="with-honorific">{user}-{honorific:value}</Macro>
+	
+	<Persona rule="honorific">
+		[char] insists on addressing {user} as '[with-honorific]'.
+	</Persona>
+	
+	<Example rule="honorific">
+		{char}: [with-honorific]?
+	</Example>
+
+</Ginger>

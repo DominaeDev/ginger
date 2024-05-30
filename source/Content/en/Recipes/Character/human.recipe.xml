@@ -1,0 +1,18 @@
+<Ginger id="human" version="1.0">
+	<Name>Archetype/Human</Name>
+	<Description>
+		Base recipe for a human character.
+		This recipe does barely anything on its own, since being human is a strong assumption.
+	</Description>
+	<Author>Ginger</Author>
+	<Category>Archetype</Category>
+	<Requires>not core</Requires>
+	<Flags>core, biped, human</Flags>
+	<Order>0</Order>
+	
+	<!-- Complementary recipes -->
+	<Include>basic-info</Include>
+	<Include>appearance</Include>
+	<Include>personality</Include>
+				
+</Ginger>

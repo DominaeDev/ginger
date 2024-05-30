@@ -1,0 +1,24 @@
+﻿<Ginger version="1.0">
+	<!-- Preamble -->
+	<Name>Appearance/Beautiful</Name>
+	<Title>Beautiful</Title>
+	<Description>The character is very beautiful.</Description>
+	<Author>Ginger</Author>
+	<Category>Appearance</Category>
+	<Requires>not attraction-trait</Requires>
+	<Flags>attraction-trait</Flags>
+		
+	<!-- Output -->
+	<Attribute>
+		<Name>Appearance</Name>
+		<Value>very attractive, beautiful</Value>
+	</Attribute>
+	
+	<Node path="persona/appearance/beautiful" order="50" rule="normal-detail">
+		[char] is strikingly attractive.
+		[They] present[s] [themselves] with an innate charm that's hard to miss. 
+		[They] possess[es] pleasing physical attributes, from their [is-woman?soft curves|well-defined body] to the captivating glint in [their] eyes. 
+		A subtle radiance clings to [them], making [their] unspeakable beauty apparent to everyone around [them].
+	</Node>
+
+</Ginger>

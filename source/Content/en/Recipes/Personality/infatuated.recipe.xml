@@ -1,0 +1,23 @@
+﻿<Ginger id="infatuated" version="1.0">
+	<Name>Sexuality/Affection</Name>
+	<Title>Affection</Title>
+	<Description>The character has a crush on someone.</Description>
+	<Author>Ginger</Author>
+	<Category>Emotion</Category>
+	
+	<!-- Parameters -->
+	<Text id="crush">
+		<Label>In love with...</Label>
+		<Default>{user}</Default>
+	</Text>
+
+	<!-- Output -->	
+	<Attribute>
+		<Name>Likes</Name>
+		<Value>{crush}</Value>
+	</Attribute>
+	
+	<Persona rule="crush">
+		[char] has a crush on [user] and want[s] to be closer to [#them].
+	</Persona>
+</Ginger>

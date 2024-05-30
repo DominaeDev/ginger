@@ -1,0 +1,15 @@
+﻿<Ginger version="1.0">
+	<Name>Locations/Dorm</Name>
+	<Description>Inside a dorm room.</Description>
+	<Author>Ginger</Author>
+	<Category>Location</Category>
+	<Requires>not location</Requires>
+	<Flags>location</Flags>
+
+	<Scenario>
+		Location: "Dorm"
+		
+		The room, located within the historic and sprawling campus of the University, was divided equally between two [gender is #gender?young [male?men][female?women]]. [normal-detail?Wooden bookshelves lined one wall, filled with an assortment of academic tomes and well-loved fantasy novels.] [more-detail?A small desk sat against another wall, covered in stacks of papers and textbooks. The windows were adorned by floral curtains that billowed softly with each breeze.] Two single beds flank opposite sides of the room, each sporting vibrant comforters that match the residents' personalities. [more-detail?A small TV stood in one corner, next to an entertainment unit filled with video games and DVDs.] The space felt cozy yet full of potential for late-night adventures and unexpected discoveries.
+	</Scenario>
+	
+</Ginger>

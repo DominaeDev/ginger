@@ -1,0 +1,102 @@
+<Ginger id="user-info" version="1.0">
+	<Name>User/User information</Name>
+	<Title>User information</Title>
+	<Description>Basic information about the user.</Description>
+	<Author>Ginger</Author>
+	<Category>User</Category>
+	<Order>0</Order>
+	
+	<!-- Parameters -->
+	<Choice id="user-gender" style="custom" shared="yes">
+		<Label>Gender</Label>
+		<Description>Assign a gender to the user. (Supplemental only)</Description>
+		<Option>Male</Option>
+		<Option>Female</Option>
+	</Choice>
+	<Number id="user-age" min="0">
+		<Label>Age</Label>
+		<Suffix>years</Suffix>
+	</Number>
+	<Text id="user-occupation">
+		<Label>Occupation</Label>
+	</Text>
+	<Text id="user-nationality">
+		<Label>Nationality</Label>
+	</Text>
+	<Choice id="user-sexuality" style="custom" rule="allow-nsfw">
+		<Label>Sexual orientation</Label>
+		<Placeholder>Enter sexual orientation</Placeholder>
+		<Option>Heterosexual</Option>
+		<Option>Bisexual</Option>
+		<Option>Homosexual</Option>
+		<Option>Pansexual</Option>
+		<Option>Asexual</Option>
+	</Choice>
+	
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
+	
+	<!-- Output -->
+	<Rule id="user-male">user-gender is male or (not user-gender and #male)</Rule>
+	<Rule id="user-female">user-gender is female or (not user-gender and #female)</Rule>
+	
+	<String id="user-age-group">
+		<String rule="user-age le 13">
+			<String rule="user-male">boy</String>
+			<String rule="user-female">girl</String>
+			<String>child</String>
+		</String>
+		<String rule="user-age in 14~18">
+			<String rule="user-male">teenage boy</String>
+			<String rule="user-female">teenage girl</String>
+			<String>teenager</String>
+		</String>
+		<String rule="user-age in 19~34">
+			<String rule="user-male">man</String>
+			<String rule="user-female">woman</String>
+			<String>{gender}</String>
+		</String>
+		<String rule="user-age in 35~49">
+			<String rule="user-male">adult man</String>
+			<String rule="user-female">adult woman</String>
+			<String>adult {gender}</String>
+		</String>
+		<String rule="user-age ge 50">
+			<String rule="user-male">older [@man]</String>
+			<String rule="user-female">older [@woman]</String>
+			<String>older {gender}</String>
+		</String>
+	</String>
+		
+	<String id="attraction" rule="normal-detail and (user-male or user-female) and not user-sexuality:custom">(attracted to [@attracted-to])</String>
+	<String id="attracted-to">
+		<String rule="user-male and user-sexuality is heterosexual">women</String>
+		<String rule="user-male and user-sexuality is homosexual">other men</String>
+		<String rule="user-female and user-sexuality is heterosexual">men</String>
+		<String rule="user-female and user-sexuality is homosexual">other women</String>
+		<String rule="user-sexuality is bisexual">both men and women</String>
+		<String rule="user-sexuality is pansexual">all genders</String>
+		<String rule="user-sexuality is asexual">neither men nor women</String>
+	</String>
+	
+	<!-- Age -->
+	<Node path="user/attributes/age" order="20" rule="user-age">Age: {user-age}</Node>
+	
+	<!-- Nationality -->
+	<Node path="user/attributes/nationality" order="50" rule="user-nationality">Nationality: {user-nationality}</Node>
+	
+	<!-- Occupation -->
+	<Node path="user/attributes/occupation" order="50" rule="user-occupation">Occupation: {user-occupation}</Node>
+	
+	<!-- Sexuality -->
+	<Node path="user/description/sexuality" order="10" rule="user-sexuality is heterosexual and normal-detail">[user] is straight [@attraction].</Node>
+	<Node path="user/description/sexuality" order="10" rule="user-sexuality is bisexual and not normal-detail">[user] is bisexual [@attraction].</Node>
+	<Node path="user/description/sexuality" order="10" rule="user-sexuality is homosexual and normal-detail">[user] is [female?a lesbian|homosexual] [@attraction].</Node>
+	<Node path="user/description/sexuality" order="10" rule="user-sexuality is pansexual and normal-detail">[user] is pansexual [@attraction].</Node>
+	<Node path="user/description/sexuality" order="10" rule="user-sexuality is asexual and normal-detail">[user] is asexual [@attraction].</Node>
+
+	<!-- Background -->
+	<Node path="user/description/background" rule="more">{more}.</Node>
+
+</Ginger>

@@ -1,0 +1,35 @@
+﻿<Ginger version="1.0">
+	<Name>Locations/Cruise ship</Name>
+	<Description>A scenario onboard a luxury cruise ship.</Description>
+	<Author>Ginger</Author>
+	<Category>Location</Category>
+	<Requires>not location</Requires>
+	<Flags>location</Flags>
+	
+	<!-- Parameters --> 
+	<Text id="ship" required="yes">
+		<Label>Ship name</Label>
+		<Default>Carnival Sunshine</Default>
+		<Placeholder>Carnival Sunshine</Placeholder>
+	</Text>
+	
+	<!-- Output -->	
+	<Scenario>
+		[user] is traveling aboard [ship?the cruise ship {ship}|a cruise ship]. There, [#they] encounter[#s] [char], who is also traveling by [themselves].
+	</Scenario>
+
+	<Greeting detached="yes">
+		*You found yourself holding the winning ticket in a local charity raffle, granting you a complimentary trip on a luxurious cruise ship. With your bags packed and excitement building up, you boarded the vessel. The ship's grandeur was evident as you stepped onto the deck, greeted by the friendly crew and fellow passengers.*
+		
+		[normal-detail?*Settling into your cozy cabin, you couldn't help but admire the thoughtfully designed interior and the breathtaking view from your private balcony. After unpacking and getting acclimated, you decided to explore the ship further. As you wandered through its vast corridors and lounges, you couldn't help but marvel at the impressive amenities: a grand dining hall for dining, a large swimming pool out on the sun deck, and a wide range of entertainment venues.*]
+
+		*While exploring, you feel someone slightly tapping your shoulder. You turn around to see [char], unsure if [they] should continue or not. Then [they] [does].*
+		"Um, excuse me... could I trouble you for help with my baggage?" *[they] gesture[s] behind [them] toward[s] three large bags* "The crewmate that was helping me had to attend to an emergency and I'd really rather just get this over with instead of standing around."
+	</Greeting>
+	
+	<Lore>
+		<Name>ship, {ship}</Name>
+		<Value>The luxious cruise ship [ship?{ship}] has vast corridors and lounges, with impressive amenities: a grand dining hall, an inviting swimming pool out on the sun deck, and a vibrant entertainment venues.</Value>
+	</Lore>
+	
+</Ginger>

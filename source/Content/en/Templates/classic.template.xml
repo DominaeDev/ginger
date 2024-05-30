@@ -1,0 +1,18 @@
+<GingerTemplate>
+	<Name>Classic</Name>
+	
+	<Recipe name="__persona">
+		<Parameter id="persona"></Parameter>
+	</Recipe>
+	<Recipe name="__user-persona" collapsed="false">
+		<Parameter id="user-persona"></Parameter>
+	</Recipe>
+	<Recipe name="__scenario" collapsed="false">
+		<Parameter id="scenario"></Parameter>
+	</Recipe>
+	<Recipe name="__greeting" collapsed="false">
+		<Parameter id="greeting"></Parameter>
+	</Recipe>
+	<Recipe name="__example" collapsed="false"/>
+	
+</GingerTemplate>

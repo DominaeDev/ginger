@@ -1,0 +1,15 @@
+<Ginger id="__system">
+	<Name>Model instructions</Name>
+	<Order>0</Order>
+	<Color>#bfd0db</Color>
+	<Multiple>True</Multiple>
+	<Requires>not __actor</Requires>
+	<Flags>system-prompt, model, __system, __component, __formatting, __internal</Flags>
+	
+	<!-- Parameters -->
+	<Text id="system" style="component">
+		<Label>Instructions</Label>
+	</Text>
+	
+	<System>{system:local}</System>
+</Ginger>

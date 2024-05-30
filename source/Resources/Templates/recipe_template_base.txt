@@ -1,0 +1,21 @@
+<Ginger version="1.0">
+	<!-- Preamble -->
+	<Name>%%NAME%%</Name>
+	<Title>%%TITLE%%</Title>
+	<Author>%%AUTHOR%%</Author>
+	<Category>%%CATEGORY%%</Category>
+	<Requires>not base</Requires>
+	<Flags>base</Flags>
+	<Description>
+		<!-- Recipe information here -->
+	</Description>
+	
+	<!-- Parameters? -->
+	
+	<!-- Output -->
+
+	<System> 
+		<!-- Model instructions here -->
+	</System>
+	
+</Ginger>

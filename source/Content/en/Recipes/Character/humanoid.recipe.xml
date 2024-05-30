@@ -1,0 +1,163 @@
+<Ginger id="humanoid" version="1.0">
+	<Name>Archetype/Humanoid</Name>
+	<Description>Base recipe for a humanoid character.</Description>
+	<Author>Ginger</Author>
+	<Category>Archetype</Category>
+	<Requires>not core</Requires>
+	<Flags>core, biped</Flags>
+	<Order>0</Order>
+	
+	<!-- Complementary recipes -->
+	<Include>basic-info</Include>
+	<Include>Appearance</Include>
+	<Include>Personality</Include>
+	
+	<!-- Parameters -->
+	<Choice id="_race" style="custom">
+		<Label>Species/Race</Label>
+		<Placeholder>Elf, Orc, Goblin, etc.</Placeholder>
+		<Option>Alien</Option>
+		<Option>Angel</Option>
+		<Option id="beastfolk">Beastman</Option>
+		<Option>Cyclop</Option>
+		<Option>Demihuman</Option>
+		<Option>Demon</Option>
+		<Option>Devil</Option>
+		<Option>Druid</Option>
+		<Option>Dryad</Option>
+		<Option>Dwarf</Option>
+		<Option>Elemental</Option>
+		<Option>Elf</Option>
+		<Option>Fairy</Option>
+		<Option>Gnome</Option>
+		<Option>Goblin</Option>
+		<Option>Halfling</Option>
+		<Option>Harpy</Option>
+		<Option>Imp</Option>
+		<Option>Lich</Option>
+		<Option id="lizardfolk">Lizardman</Option>
+		<Option id="merfolk">Merman / Mermaid</Option>
+		<Option>Minotaur</Option>
+		<Option>Naga</Option>
+		<Option>Nymph</Option>
+		<Option>Orc</Option>
+		<Option>Satyr</Option>
+		<Option>Troll</Option>
+		<Option>Undead</Option>
+		<Option>Zombie</Option>
+	</Choice>
+	
+	<SetVar id="race">[@race]</SetVar>
+
+	<!-- Skin tone -->
+	<Choice id="skin-tone" style="custom" rule="not skin-tone" shared="yes">
+		<Label>Skin tone</Label>
+		<Placeholder>e.g. Blue, Green, ...</Placeholder>
+		<Option id="skin-albino">Albino</Option>
+		<Option id="skin-bright">Porcelain</Option>
+		<Option id="skin-fair">Fair</Option>
+		<Option id="skin-tan">Tan</Option>
+		<Option id="skin-olive">Olive</Option>
+		<Option id="skin-brown">Brown</Option>
+		<Option id="skin-dark">Dark</Option>
+		<Option id="skin-black">Black</Option>
+		<Option id="skin-gray">Gray</Option>
+		<Option id="skin-white">White</Option>
+		<Option>Green</Option>
+		<Option>Yellow</Option>
+		<Option>Orange</Option>
+		<Option id="skin-red">Red</Option>
+		<Option>Pink</Option>
+		<Option>Purple</Option>
+		<Option>Blue</Option>
+		<Option>Teal</Option>
+		<Option id="skin-bronze">Bronze</Option>
+		<Option id="skin-silver">Silver</Option>
+		<Option id="skin-gold">Gold</Option>			
+		<Option id="skin-metallic">Metallic</Option>
+	</Choice>
+
+	<Choice id="features" style="multiple">
+		<Label>Features</Label>
+		<Option id="ears">Pointy ears</Option>
+		<Option>Tail</Option>
+		<Option>Wings</Option>
+		<Option>Horn</Option>
+		<Option>Horns</Option>
+		<Option>Fangs</Option>
+		<Option>Claws</Option>
+		<Option>Hooves</Option>
+	</Choice>
+	
+	<!-- Description -->
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>			
+	</Text>
+	
+	<!-- Output -->
+	
+	<!-- Race -->
+	<String id="race">
+		<String rule="beastfolk">[is-woman?Beastwoman|Beastman]</String>
+		<String rule="merfolk">[is-woman?Mermaid|Merman]</String>
+		<String rule="lizardfolk">[is-woman?Lizardwoman|Lizardman]</String>
+	</String>
+	
+	<Attribute>
+		<Name>Race</Name>
+		<Value>[@race]</Value>
+	</Attribute>
+	
+	<Node path="persona/description/race" rule="_race">[Char] is [a] {gender} {@race.lower}.</Node>
+
+	<!-- Skin tone -->
+	<String id="skin-tone">
+		<String rule="skin-albino" priority="1">is albino white</String>
+		<String rule="skin-bright" priority="1">is pale as porcelain </String>
+		<String rule="skin-fair" priority="1">is fair</String>
+		<String rule="skin-tan" priority="1">is tanned</String>
+		<String rule="skin-brown" priority="1">is brown</String>
+		<String rule="skin-olive" priority="1">is olive</String>
+		<String rule="skin-bronze" priority="1">has the luster of bronze</String>
+		<String rule="skin-silver" priority="1">has the luster of silver</String>
+		<String rule="skin-gold" priority="1">has the luster of gold</String>	
+		<String rule="skin-dark" priority="1">is dark</String>	
+		<String rule="skin-black" priority="1">is pure black</String>	
+		<String rule="skin-gray" priority="1">is gray like ash</String>	
+		<String rule="skin-white" priority="1">is bright white</String>	
+		<String rule="skin-red" priority="1">is deep red</String>	
+		<String rule="skin-metallic" priority="1">is shiny and metallic</String>	
+		<String rule="skin-tone">is a shade of {skin-tone:value.lower}</String>
+	</String>
+	<Node path="appearance/body" order="0" rule="skin-tone">[Their] skin [@skin-tone].</Node>
+	
+	<!-- Features -->
+	<Node path="appearance/features" rule="wings">
+		Protuding from [their] back is a pair of large wings.
+	</Node>
+	<Node path="appearance/features" rule="tail">
+		The [thick-fur?large, fluffy|prominent] tail that curls down to [their] knees only emphasizes [their] inhumanity.
+	</Node>
+	<Node path="appearance/features" rule="ears and not (rodent or avian or reptile)">
+		[Their] [animal.lower] ears stand pert and alert [primary-color and secondary-color?, with a [thick-fur?fluffy] {secondary-color.lower} interior and [thick-fur?fluffy] {primary-color.lower} exterior.]
+	</Node>
+	<Node path="appearance/features" rule="ears and rodent">
+		[Their] [animal.lower] ears are big, round, and pink.
+	</Node>
+	<Node path="appearance/features" rule="claws and not fangs">
+		[They] [has] an impressive set of claws on [their] hands.
+	</Node>
+	<Node path="appearance/features" rule="fangs and not claws">
+		[Their] sharp teeth and fangs grant[s] [them] an imposing snarl, should [they] choose[s] to bare them.
+	</Node>
+	<Node path="appearance/features" rule="hooves">
+		[They] stand firmly on a set of hooves.
+	</Node>	
+	<Node path="appearance/features" rule="horn or horns">
+		The top of [their] head is adorned by [horns?prominent horns|a prominent horn].
+	</Node>
+	
+	<!-- More -->
+	<Node path="appearance/body" order="0" rule="more">{more}.</Node>
+			
+</Ginger>

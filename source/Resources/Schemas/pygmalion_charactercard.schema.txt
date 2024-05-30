@@ -1,0 +1,97 @@
+{
+	"type": "object",
+	"properties": {
+		"char_name": {
+			"required": true,
+			"type": "string"
+		},
+		"char_persona": {
+			"required": true,
+			"type": "string"
+		},
+		"world_scenario": {
+			"required": true,
+			"type": "string"
+		},
+		"char_greeting": {
+			"required": true,
+			"type": "string"
+		},
+		"example_dialogue": {
+			"required": true,
+			"type": "string"
+		},
+		"metadata": {
+			"required": false,
+			"type": [
+				"object",
+				"null"
+			],
+			"properties": {
+				"version": {
+					"required": false,
+					"type": "integer"
+				},
+				"created": {
+					"required": false,
+					"type": "integer"
+				},
+				"modified": {
+					"required": false,
+					"type": "integer"
+				},
+				"source": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"tool": {
+					"required": false,
+					"type": [
+						"object",
+						"null"
+					],
+					"properties": {
+						"name": {
+							"required": false,
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"version": {
+							"required": false,
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"url": {
+							"required": false,
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					}
+				},
+				"creator": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"comment": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				}
+			}
+		}
+	}
+}

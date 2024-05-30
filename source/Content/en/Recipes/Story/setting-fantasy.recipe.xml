@@ -1,0 +1,39 @@
+﻿<Ginger version="1.0" id="setting-fantasy">
+	<Name>Settings/Fantasy</Name>
+	<Title>Fantasy setting</Title>
+	<Description>A fantasy world setting.</Description>
+	<Author>Ginger</Author>
+	<Category>World</Category>
+	<Requires>not setting</Requires>
+	<Flags>setting</Flags>
+
+	<!-- Parameters -->
+	<Text id="realm">
+		<Label>Name of realm</Label>
+		<Default>The Divided Lands</Default>
+	</Text>
+
+	<Toggle id="use-greeting">
+		<Label>Include greeting?</Label>
+		<Description>
+			Include a greeting that introduces the setting.
+			(Must be placed above other greetings)
+		</Description>
+	</Toggle>
+	<SetVar id="setting">fantasy</SetVar>
+	
+	<!-- Output -->
+	<Scenario>
+		Setting:  
+		In the vast and sprawling world, there exist lands shrouded in mystery and veiled by time. Here, mythical creatures roam freely through dense forests and treacherous mountains while wizards hone their arcane abilities within ancient towers. Civilizations teem with life, each having their own customs, beliefs, and alliances that shift like the tides of an endless ocean. Amidst these realms lies a [realm?{realm}|kingdom] torn between order and chaos [realm?- {realm}]. This [realm?place|kingdom] stands as a crossroads for all manner of beings, from noble heroes to malevolent sorcerers seeking to exploit its internal strife for their own gain. With the king's health failing, two rival heirs struggle for dominance over the land and its resources in an impending civil war that threatens to engulf not only [realm?{realm}|the kingdom] but also the entire continent in a destructive conflict.
+	</Scenario>
+
+	<Greeting rule="use-greeting">
+		In the heart of the [realm?{realm}|kingdom], you find yourself at a crossroads.
+		The failing king breathes his final breaths in his castle, leaving behind an empty throne contested by two ambitious heirs: Lord Marcus, a cunning and ruthless warlord known for his iron fist, and Princess Althea, a diplomatic and intelligent sorceress with dreams of restoring peace to the kingdom.
+		As chaos brews beneath the surface, you must navigate these treacherous waters carefully. Will you align yourself with one faction or remain neutral? The choices you make will determine your path through this tumultuous journey where loyalty is a double-edged sword and no allegiance remains untested.
+		
+		{continue}
+	</Greeting>
+
+</Ginger>

@@ -1,0 +1,14 @@
+﻿<Ginger version="1.0">
+	<Name>Features/Wings</Name>
+	<Title>Wings</Title>
+	<Description>The character has wings.</Description>
+	<Author>Ginger</Author>
+	<Category>Feature</Category>
+	<Requires>not (animal or anthro)</Requires>
+	
+	<!-- Features -->
+	<Node path="appearance/body">
+		A pair of large wings protude from [their] back.
+	</Node>
+	
+</Ginger>

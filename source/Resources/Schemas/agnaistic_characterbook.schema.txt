@@ -1,0 +1,142 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "required": true,
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "description": {
+      "required": false,
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "userId": {
+      "required": false,
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "scanDepth": {
+      "required": false,
+      "type": "integer"
+    },
+    "tokenBudget": {
+      "required": false,
+      "type": "integer"
+    },
+    "recursiveScanning": {
+      "required": false,
+      "type": "boolean"
+    },
+    "entries": {
+      "required": true,
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "name": {
+            "required": true,
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "entry": {
+            "required": true,
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "keywords": {
+            "required": true,
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "priority": {
+            "required": false,
+            "type": "integer"
+          },
+          "weight": {
+            "required": false,
+            "type": "integer"
+          },
+          "enabled": {
+            "required": false,
+            "type": "boolean"
+          },
+          "id": {
+            "required": false,
+            "type": "integer"
+          },
+          "comment": {
+            "required": false,
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "selective": {
+            "required": false,
+            "type": "boolean"
+          },
+          "secondaryKeys": {
+            "required": false,
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "constant": {
+            "required": false,
+            "type": "boolean"
+          },
+          "position": {
+            "required": false,
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "kind": {
+      "required": true,
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "is_creation": {
+      "required": false,
+      "type": "boolean"
+    }
+  }
+}

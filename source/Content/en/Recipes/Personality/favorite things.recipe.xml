@@ -1,0 +1,18 @@
+﻿<Ginger version="1.0">
+	<Name>Quirks/Favorite things</Name>
+	<Description>Describe some of the character's favorite things.</Description>
+	<Author>Ginger</Author>
+	<Category>Mind</Category>
+	
+	<!-- Parameters -->
+	<List id="things">
+		<Label>Favorite things</Label>
+		<Placeholder>Enter their favorite things or activities, separated by commas</Placeholder>
+	</List>
+	
+	<!-- Output -->	
+	<Attribute style="list">
+		<Name>Favorite things</Name>
+		<Value>{things}</Value>
+	</Attribute>
+</Ginger>

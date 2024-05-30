@@ -1,0 +1,18 @@
+<Ginger id="__example">
+	<Name>Example chat</Name>
+	<Color>FloralWhite</Color>
+	<Order>5</Order>
+	<Multiple>True</Multiple>
+	<Flags>example-dialogue, __example, __component, __formatting, __internal</Flags>
+
+	<!-- Parameters -->
+	<Text id="example" style="chat" mandatory="true">
+		<Label>Dialogue</Label>
+		<Default>
+		[user]: "Hi, my name is [user]."
+		[char]: "I'm [char]. Nice to meet you [user]!" *[they] reach[es] out to shake [#their] hand.*
+		</Default>
+	</Text>
+
+	<Example>{example:local}</Example>
+</Ginger>

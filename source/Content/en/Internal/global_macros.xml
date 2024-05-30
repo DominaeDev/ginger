@@ -1,0 +1,92 @@
+<!-- 
+	This file contains global macros and rules, available to all recipes.
+	
+	** CAUTION **
+	Modifying this file may have unwanted consequences and is not recommended.
+-->
+
+<Ginger>
+	<!-- Attribute labels template -->
+	<Wrapper id="attrib">_:[sp]</Wrapper>
+
+	<!-- Gendered descriptors -->
+	<Macro id="person, man, woman, girl, boy">[@person]</Macro>
+	<Macro id="#person, #man, #woman, #girl, #boy">[@#person]</Macro>
+		
+	<String id="person">
+		<String rule="animal or creature" priority="2">
+			<String rule="species">
+				<String rule="is-man">male {species}</String>
+				<String rule="is-woman">female {species}</String>
+				<String>{species}</String>
+			</String>
+			<String rule="not species">animal</String>
+		</String>
+		<String rule="age and age le 12" priority="2">
+			<String rule="is-man">little boy</String>
+			<String rule="is-woman">little girl</String>
+		</String>
+		<String rule="age and age le 18" priority="1">
+			<String rule="is-man">boy</String>
+			<String rule="is-woman">girl</String>
+		</String>
+		<String rule="is-man">man</String>
+		<String rule="is-woman">woman</String>
+		<String>individual</String>
+	</String>
+	<String id="#person">
+		<String rule="#male">man</String>
+		<String rule="#female">woman</String>
+		<String>individual</String>
+	</String>
+	
+	<!-- Grammar -->
+	<Rule id="custom-pronoun">pronoun-masculine or pronoun-feminine or pronoun-neutral or pronoun-objective</Rule>
+	<Rule id="use-masculine-pronoun">
+		<Or>
+			<And>
+				<Not>custom-pronoun</Not>
+				<Or>
+					<Rule>male or sex is male or gender is male</Rule>
+					<Rule>trans-male or sex is trans-male or gender is trans-male</Rule>
+				</Or>
+			</And>
+			<Rule>pronoun-masculine</Rule>
+		</Or>
+	</Rule>
+	<Rule id="use-feminine-pronoun">
+		<Or>
+			<And>
+				<Not>custom-pronoun</Not>
+				<Or>
+					<Rule>female or sex is female or gender is female</Rule>
+					<Rule>trans-female or sex is trans-female or gender is trans-female</Rule>
+					<Rule>is-futanari or sex is futanari or gender is futanari</Rule>
+				</Or>
+			</And>
+			<Rule>pronoun-feminine</Rule>
+		</Or>
+	</Rule>
+	<Rule id="use-neutral-pronoun">
+		<Or>
+			<And>
+				<Not>custom-pronoun</Not>
+				<Or>
+					<Rule>not gender</Rule>
+					<Rule>non-binary or sex is non-binary or gender is non-binary</Rule>
+					<Rule>nonbinary or sex is nonbinary or gender is nonbinary</Rule>
+				</Or>
+			</And>
+			<Rule>pronoun-neutral</Rule>
+		</Or>
+	</Rule>
+	<Rule id="use-objective-pronoun">pronoun-objective</Rule>
+	
+	<Rule id="is-masculine">is-man or use-masculine-pronoun</Rule>
+	<Rule id="is-feminine">is-woman or is-futanari or use-feminine-pronoun</Rule>
+	<Rule id="is-man">male or man or trans-male</Rule>
+	<Rule id="is-woman">female or woman or trans-female or futanari</Rule>
+	<Rule id="is-futanari">futanari</Rule>
+	<Rule id="is-adult">age ge 18</Rule>
+
+</Ginger>

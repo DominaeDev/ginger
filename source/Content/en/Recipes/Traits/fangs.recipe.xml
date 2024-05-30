@@ -1,0 +1,13 @@
+﻿<Ginger version="1.0">
+	<Name>Features/Fangs</Name>
+	<Title>Fangs</Title>
+	<Description>The character has fangs.</Description>
+	<Author>Ginger</Author>
+	<Category>Feature</Category>
+	<Requires>not (animal or anthro)</Requires>
+	
+	<Node path="appearance/body">
+		[Their] sharp teeth and large fangs grant [them] an imposing snarl, should [they] choose to bare them.
+	</Node>
+	
+</Ginger>

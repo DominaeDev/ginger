@@ -1,0 +1,14 @@
+﻿<Ginger version="1.0">
+	<Name>Features/Horns</Name>
+	<Title>Horns</Title>
+	<Description>The character has horns.</Description>
+	<Author>Ginger</Author>
+	<Category>Feature</Category>
+	<Requires>not (animal or anthro)</Requires>
+	
+	<!-- Features -->
+	<Node path="appearance/body">
+		The top of [their] head is adorned by two prominent horns.
+	</Node>
+	
+</Ginger>

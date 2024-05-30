@@ -1,0 +1,86 @@
+<Ginger id="basic-info" version="1.0">
+	<Name>Basic information</Name>
+	<Title>Basic information</Title>
+	<Description>Basic information about the character.</Description>
+	<Author>Ginger</Author>
+	<Category>Character</Category>
+	<Flags>basic-info</Flags>
+	
+	<!-- Parameters -->
+	<Text id="full-name" raw="yes" shared="yes">
+		<Label>Full name</Label>
+		<Description>The character's full name. (Supplemental)</Description>
+	</Text>
+	<Number id="age" min="0" shared="yes">
+		<Label>Age</Label>
+		<Description>The character's age in years.</Description>
+		<Suffix>years</Suffix>
+	</Number>
+	<Text id="occupation" shared="yes">
+		<Label>Occupation</Label>
+	</Text>
+	<Text id="nationality" shared="yes">
+		<Label>Nationality</Label>
+	</Text>
+	<Text id="background" style="flex">
+		<Label>Background</Label>
+	</Text>
+	
+	<!-- Output -->
+	<String id="boy">[trans?trans] boy</String>
+	<String id="girl">[trans?trans] girl</String>
+	<String id="woman">[trans?trans] woman</String>
+	<String id="man">[trans?trans] man</String>
+	
+	<String id="age-group">
+		<String rule="age le 13">
+			<String rule="is-man">[@boy]</String>
+			<String rule="is-woman">[@girl]</String>
+			<String>child</String>
+		</String>
+		<String rule="age in 14~18">
+			<String rule="is-man">teenage [@boy]</String>
+			<String rule="is-woman">teenage [@girl]</String>
+			<String>teenager</String>
+		</String>
+		<String rule="age in 19~34">
+			<String rule="is-man">[@man]</String>
+			<String rule="is-woman">[@woman]</String>
+			<String>{gender}</String>
+		</String>
+		<String rule="age in 35~49">
+			<String rule="is-man">adult [@man]</String>
+			<String rule="is-woman">adult [@woman]</String>
+			<String>adult {gender}</String>
+		</String>
+		<String rule="age ge 50">
+			<String rule="is-man">older [@man]</String>
+			<String rule="is-woman">older [@woman]</String>
+			<String>older {gender}</String>
+		</String>
+	</String>
+	
+	<!-- Age -->
+	<Attribute>
+		<Name>Age</Name>
+		<Value>{age}</Value>
+	</Attribute>
+	
+	<Node path="description/age" rule="age and more-detail and not immortal" order="0">[char] is [a] {age.numeral} year old {race.lower} [@age-group].</Node>
+
+	<!-- Nationality -->
+	<Attribute>
+		<Name>Nationality</Name>
+		<Value>{nationality}</Value>
+	</Attribute>
+	
+	<!-- Occupation -->
+	<Attribute>
+		<Name>Occupation</Name>
+		<Value>{occupation}</Value>
+	</Attribute>
+
+	<!-- Background -->
+	<Node path="description/background" rule="background">{background}.</Node>
+
+</Ginger>

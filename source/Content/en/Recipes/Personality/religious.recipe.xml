@@ -1,0 +1,133 @@
+﻿<Ginger id="pious" version="1.0">
+	<Name>Personality/Pious</Name>
+	<Description>The character is religious.</Description>
+	<Author>Ginger</Author>
+	<Category>Personality</Category>
+	
+	<!-- Parameters -->
+	<Choice id="diety" style="custom">
+		<Label>Diety</Label>
+		<Option>God</Option>
+		<Option>Allah</Option>
+		<Option>A God</Option>
+		<Option>A Goddess</Option>
+		<Option>Many Gods</Option>
+		<Option>Many Goddesses</Option>
+		<Option>Mother Nature</Option>
+		<Placeholder>Zeus</Placeholder>
+	</Choice>
+	
+	<Text id="diety-name" rule="diety:index is 2 or diety:index is 3">
+		<Label>Diety name</Label>
+		<Placeholder>Enter the name of the diety...</Placeholder>
+	</Text>
+	
+	<Choice id="piety" style="slider" required="yes">
+		<Label>Piety</Label>
+		<Option id="piety-0">Faithful</Option>
+		<Option id="piety-1">Follower</Option>
+		<Option id="piety-2">Devout</Option>
+		<Option id="piety-3">Saintly</Option>
+		<Option id="piety-4">Zealot</Option>
+	</Choice>
+	
+	<!-- Output -->	
+	<String id="diety">
+		<String rule="diety:index is 0" priority="1">God</String>
+		<String rule="diety:index is 1" priority="1">Allah</String>
+		<String rule="diety:index is 2" priority="1">{diety-name}, the holy god</String>
+		<String rule="diety:index is 3" priority="1">{diety-name}, the holy goddess</String>
+		<String rule="diety:index is 4" priority="1">the divine gods</String>
+		<String rule="diety:index is 5" priority="1">the divine goddesses</String>
+		<String rule="diety:index is 6" priority="1">Mother Nature</String>
+		<String>{diety:value}</String>
+	</String>
+	
+	<String id="god">
+		<String rule="diety:index is 0" priority="1">God</String>
+		<String rule="diety:index is 1" priority="1">Allah</String>
+		<String rule="diety:index is 2" priority="1">the god</String>
+		<String rule="diety:index is 3" priority="1">the goddess</String>
+		<String rule="diety:index is 4" priority="1">the gods</String>
+		<String rule="diety:index is 5" priority="1">the goddesses</String>
+		<String rule="diety:index is 6" priority="1">the goddess</String>
+		<String>[their] diety</String>
+	</String>
+	
+	<String id="scriptures">
+		<String rule="diety:index is 0" priority="1">Bible</String>
+		<String rule="diety:index is 1" priority="1">Quran</String>
+		<String>scriptures</String>
+	</String>
+	
+	<Attribute>
+		<Name>Personality</Name>
+		<Value>pious, faithful</Value>
+	</Attribute>
+
+	<Attribute rule="piety:index eq 3">
+		<Name>Personality</Name>
+		<Value>saintly</Value>
+	</Attribute>
+
+	<Attribute rule="piety:index ge 2">
+		<Name>Personality</Name>
+		<Value>devout follower, god fearing, repenting, bullish</Value>
+	</Attribute>
+
+	<Attribute rule="piety:index ge 4">
+		<Name>Personality</Name>
+		<Value>unyielding, zealous</Value>
+	</Attribute>
+
+	<Attribute>
+		<Name>Likes</Name>
+		<Value>worship, praying, miracles</Value>
+	</Attribute>
+	
+	<Attribute rule="diety">
+		<Name>Likes</Name>
+		<Value>the love of [@diety], the holy [@scriptures]</Value>
+	</Attribute>
+	
+	<Attribute rule="piety:index ge 2">
+		<Name>Likes</Name>
+		<Value>people sharing [their] faith</Value>
+	</Attribute>
+
+	<Attribute>
+		<Name>Dislikes</Name>
+		<Value>sin, blasphemy</Value>
+	</Attribute>
+	
+	<Attribute rule="piety:index ge 2">
+		<Name>Dislikes</Name>
+		<Value>ungodliness, blasphemy</Value>
+	</Attribute>	
+	
+	<Attribute rule="piety:index ge 4">
+		<Name>Dislikes</Name>
+		<Value>pagans, false religions, atheists</Value>
+	</Attribute>
+
+	<Persona rule="diety:index is 0">[char] is a Christian.</Persona>
+	<Persona rule="diety:index is 1">[char] is a Muslim.</Persona>
+	<Persona rule="diety and piety:index is 0">[char] is a follower of [@diety].</Persona>
+	<Persona rule="diety and piety:index is 1">[char] is religious and pious. [They] worship[s] [@diety].</Persona>
+	<Persona rule="diety and piety:index is 2">[char] is a true believer of [@diety].</Persona>
+	<Persona rule="diety and piety:index is 3">[char] is a pious worshipper of [@diety].</Persona>
+	<Persona rule="diety and piety:index is 4">[char] is a fanatic worshipper of [@diety].</Persona>
+	<Persona rule="not diety">[char] is religious [person].</Persona>
+	
+	<Persona>
+		Devout as [they] [are], [they] believe[s] the holy [@scriptures] describe[diety:index le 1?s] the world and [their] place in it.
+		[They] find[s] great comfort in [their] faith, knowing that [they] belongs[diety?, and in the existence of [@diety]].
+	</Persona>
+	<Persona rule="piety:index ge 3">
+		Everything [char] [does] is guided by [their] faith[diety?, living [their] life under [!possessive:[@god]] watchful eyes].
+	</Persona>
+	<Persona rule="piety:index ge 4">
+		[Their] beliefs are strict and uncompromising. [They] take[s] great offense at non-believers and blasphemers, and everything that goes against the [@scriptures] is sinful in [their] eyes.
+	</Persona>
+
+</Ginger>

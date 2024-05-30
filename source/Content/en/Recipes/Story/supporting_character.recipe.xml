@@ -1,0 +1,54 @@
+<Ginger id="supporting-character" version="1.0">
+	<Name>Cast/Add supporting character</Name>
+	<Title>Supporting character</Title>
+	<Author>Ginger</Author>
+	<Category>Cast</Category>
+	<Multiple>Yes</Multiple>
+	<Order>0</Order>
+	
+	<Description>
+		Describe a supporting character.
+		They can be added to either the persona or as a lore entry.
+	</Description>
+	
+	<!-- Parameters -->
+	<Text id="support-name" required="yes">
+		<Label>Name</Label>
+	</Text>
+	<Choice id="support-gender" style="custom">
+		<Label>Gender</Label>
+		<Option>Male</Option>
+		<Option>Female</Option>
+	</Choice>
+	<Text id="support-description" style="flex">
+		<Label>Description</Label>
+	</Text>
+	<Choice id="type" style="radio" required="yes">
+		<Label>Location</Label>
+		<Option>Persona</Option>
+		<Option>Scenario</Option>
+		<Option>Lore</Option>
+	</Choice>
+	
+	<!-- Output -->	
+	<Rule id="has-value">support-name and support-description</Rule>
+	
+	<Persona rule="type is persona and has-value">
+		[p]"{support-name}" [support-gender?({support-gender:value})]:  
+		[support-description?{support-description}.]
+	</Persona>
+	
+	<Scenario rule="type is scenario and has-value">
+		[p]"{support-name}" [support-gender?({support-gender:value})]:  
+		[support-description?{support-description}.]
+	</Scenario>
+	
+	<Lore rule="type is lore and has-value">
+		<Name>{support-name}</Name>
+		<Value>
+			"{support-name}" [support-gender?({support-gender:value})]:  
+			[support-description?{support-description}.]
+		</Value>
+	</Lore>
+
+</Ginger>

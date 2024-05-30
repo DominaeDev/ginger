@@ -1,0 +1,11 @@
+<Ginger id="__lorebook">
+	<Name>New lorebook</Name>
+	<Title>Lorebook</Title>
+	<Color>#f2e6f2</Color>
+	<Order>0</Order>
+	<Multiple>True</Multiple>
+	<Flags>lorebook, __lorebook, __component, __internal, __lorebook, __nobake, __hidden</Flags>
+	<!-- Parameters -->
+	<__Lorebook id="book" mandatory="false"/>
+
+</Ginger>

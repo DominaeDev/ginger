@@ -1,0 +1,23 @@
+﻿<Ginger version="1.0">
+	<!-- Preamble -->
+	<Name>Appearance/Sexy</Name>
+	<Title>Sexy</Title>
+	<Author>Ginger</Author>
+	<Category>Appearance</Category>
+	<Description>The character oozes sex appeal.</Description>
+	<Requires>not attraction-trait</Requires>
+	<Flags>attraction-trait</Flags>
+		
+	<!-- Output -->
+	<Attribute>
+		<Name>Appearance</Name>
+		<Value>gorgeous, attractive, sexy body, irresistibly alluring</Value>
+	</Attribute>
+	
+	<Node path="persona/appearance/sexy" order="50" rule="normal-detail">
+		[char] is very attractive and has a sexy appearance that captivates and entices, leaving an lasting impression on all those who encounter [them].
+		With a well-built physique and striking facial features, [their] raw beauty is undeniable, drawing hungry eyes and hearts alike towards [them].
+		[They] often fill those around [them] with unbridled thoughts of want and desire.
+	</Node>
+
+</Ginger>

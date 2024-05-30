@@ -1,0 +1,270 @@
+﻿<Ginger id="animal" version="1.0">
+	<Name>Archetype/Animal</Name>
+	<Title>Animal</Title>
+	<Description>Base recipe for an animal character.</Description>
+	<Author>Ginger</Author>
+	<Category>Archetype</Category>
+	<Requires>not core</Requires>
+	<Flags>core, animal, fur, non-humanoid</Flags>
+
+	<!-- Complementary recipes -->
+	<Include>basic-info</Include>
+	<Include>Appearance</Include>
+	<Include>Personality</Include>
+
+	<!-- Parameters -->
+	<Choice id="animal" style="custom">
+		<Label>Species</Label>
+		<Option id="alligator">Alligator</Option>		<!-- Reptile -->
+		<Option id="antelope">Antelope</Option>			<!-- Bovine -->
+		<Option id="ape">Ape</Option>					<!-- Primate -->
+		<Option id="bat">Bat</Option>					<!-- Rodent -->
+		<Option id="bear">Bear</Option>
+		<Option id="beaver">Beaver</Option>				<!-- Rodent -->
+		<Option id="bird">Bird</Option>					<!-- Avian -->
+		<Option id="boar">Boar</Option>
+		<Option id="bull">Bull</Option>					<!-- Bovine -->
+		<Option id="cat">Cat</Option>					<!-- Feline -->
+		<Option id="chameleon">Chameleon</Option>		<!-- Reptile -->
+		<Option id="cheetah">Cheetah</Option>			<!-- Feline -->
+		<Option id="cow">Cow</Option>					<!-- Bovine -->
+		<Option id="coyote">Coyote</Option>				<!-- Canine -->
+		<Option id="crocodile">Crocodile</Option>		<!-- Reptile -->
+		<Option id="crow">Crow</Option>					<!-- Avian -->
+		<Option id="dog">Dog</Option>					<!-- Canine -->
+		<Option id="dolphin">Dolphin</Option>			<!-- Aquatic -->
+		<Option id="donkey">Donkey</Option>				<!-- Equine -->
+		<Option id="dragon">Dragon</Option>				<!-- Reptile -->
+		<Option id="eagle">Eagle</Option>				<!-- Avian -->
+		<Option id="ferret">Ferret</Option>				<!-- Rodent -->
+		<Option id="fox">Fox</Option>					<!-- Canine -->
+		<Option id="frog">Frog</Option>					<!-- Reptile -->
+		<Option id="gecko">Gecko</Option>				<!-- Reptile -->
+		<Option id="goat">Goat</Option>					<!-- Bovine -->
+		<Option id="gorilla">Gorilla</Option>			<!-- Primate -->
+		<Option id="gryphon">Gryphon</Option>			<!-- Avian -->
+		<Option id="hedgehog">Hedgehog</Option>
+		<Option id="horse">Horse</Option>				<!-- Equine -->
+		<Option id="hyena">Hyena</Option>				<!-- Canine -->
+		<Option id="jackal">Jackal</Option>				<!-- Canine -->
+		<Option id="jaguar">Jaguar</Option>				<!-- Feline -->
+		<Option id="kangaroo">Kangaroo</Option>
+		<Option id="lemur">Lemur</Option>				<!-- Primate -->
+		<Option id="leopard">Leopard</Option>			<!-- Feline -->
+		<Option id="lion">Lion</Option>					<!-- Feline -->
+		<Option id="lizard">Lizard</Option>				<!-- Reptile -->
+		<Option id="lynx">Lynx</Option>					<!-- Feline -->
+		<Option id="mink">Mink</Option>					<!-- Rodent -->
+		<Option id="monkey">Monkey</Option>				<!-- Primate -->
+		<Option id="mouse">Mouse</Option>				<!-- Rodent -->
+		<Option id="orca">Orca</Option>					<!-- Aquatic -->
+		<Option id="otter">Otter</Option>				<!-- Rodent -->
+		<Option id="owl">Owl</Option>					<!-- Avian -->
+		<Option id="panda">Panda</Option>
+		<Option id="panther">Panther</Option>			<!-- Feline -->
+		<Option id="penguin">Penguin</Option>
+		<Option id="polar bear">Polar bear</Option>
+		<Option id="rabbit">Rabbit</Option>				<!-- Rodent -->
+		<Option id="raccoon">Raccoon</Option>
+		<Option id="rat">Rat</Option>					<!-- Rodent -->
+		<Option id="raven">Raven</Option>				<!-- Avian -->
+		<Option id="rhino">Rhino</Option>
+		<Option id="shark">Shark</Option>				<!-- Aquatic -->
+		<Option id="sheep">Sheep</Option>
+		<Option id="skunk">Skunk</Option>
+		<Option id="snake">Snake</Option>				<!-- Reptile -->
+		<Option id="snow-leopard">Snow Leopard</Option>	<!-- Feline -->
+		<Option id="tiger">Tiger</Option>				<!-- Feline -->
+		<Option id="weasel">Weasel</Option>				<!-- Rodent -->
+		<Option id="wolf">Wolf</Option>					<!-- Canine -->
+		<Option id="zebra">Zebra</Option>				<!-- Equine -->
+	</Choice>
+
+	<Text id="breed">
+		<Label>Sub-species / Breed</Label>
+	</Text>
+
+	<Choice id="primary-color" style="custom">
+		<Label>Primary color</Label>
+		<Option>Black</Option>
+		<Option>Blue</Option>
+		<Option>Brown</Option>
+		<Option>Golden</Option>
+		<Option>Gray</Option>
+		<Option>Green</Option>
+		<Option>Orange</Option>
+		<Option>Pink</Option>
+		<Option>Purple</Option>
+		<Option>Red</Option>
+		<Option>Tan</Option>
+		<Option>Teal</Option>
+		<Option>White</Option>
+		<Option>Yellow</Option>
+	</Choice>
+
+	<Choice id="secondary-color" style="custom">
+		<Label>Secondary color</Label>
+		<Option>Black</Option>
+		<Option>Blue</Option>
+		<Option>Brown</Option>
+		<Option>Golden</Option>
+		<Option>Gray</Option>
+		<Option>Green</Option>
+		<Option>Orange</Option>
+		<Option>Pink</Option>
+		<Option>Purple</Option>
+		<Option>Red</Option>
+		<Option>Tan</Option>
+		<Option>Teal</Option>
+		<Option>White</Option>
+		<Option>Yellow</Option>
+	</Choice>
+
+	<Choice id="skin-type" style="radio" required="yes">
+		<Label>Skin</Label>
+		<Default>Skin</Default>
+		<Option>Skin</Option>
+		<Option>Coat</Option>
+		<Option id="short-fur">Short fur</Option>
+		<Option id="thick-fur">Thick fur</Option>
+		<Option>Scales</Option>
+		<Option>Feathers</Option>
+	</Choice>
+
+	<Choice id="pattern" style="radio">
+		<Label>Pattern</Label>
+		<Option>Stripes</Option>
+		<Option>Spots</Option>
+		<Option>Patterned</Option>
+		<Option>Mottled</Option>
+	</Choice>
+
+	<Choice id="features" style="multiple" shared="yes">
+		<Label>Features</Label>
+		<Option>Fangs</Option>
+		<Option>Horns</Option>
+		<Option>Tail</Option>
+		<Option>Wings</Option>
+	</Choice>
+	
+	<Choice id="traits" style="multiple">
+		<Label>Traits</Label>
+		<Default>can-talk, tame</Default>
+		<Option>Tame</Option>
+		<Option>Can talk</Option>
+	</Choice>
+
+	<Choice id="feet" style="radio">
+		<Label>Feet</Label>
+		<Option>Paws</Option>
+		<Option>Hooves</Option>
+	</Choice>
+
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
+
+	<SetVar id="species" rule="animal">[animal:value]</SetVar>
+	<SetVar id="race" rule="animal">[animal:value]</SetVar>
+	<SetVar id="breed" rule="breed">{breed}</SetVar>
+	
+	<!-- Output -->
+	<Rule id="is-aquatic">dolphin or orca or shark</Rule>
+	<Rule id="is-avian">bird or crow or eagle or gryphon or owl or raven</Rule>
+	<Rule id="is-bovine">antelope or bull or cow or goat</Rule>
+	<Rule id="is-canine">coyote or dog or hyena or jackal or wolf</Rule>
+	<Rule id="is-equine">donkey or horse or zebra</Rule>
+	<Rule id="is-feline">cat or cheetah or jaguar or leopard or lion or lynx or panther or snow-leopard or tiger</Rule>
+	<Rule id="is-primate">ape or gorilla or lemur or monkey</Rule>
+	<Rule id="is-reptile">alligator or chameleon or crocodile or dragon or frog or gecko or lizard or snake</Rule>
+	<Rule id="is-rodent">bat or beaver or ferret or mink or mouse or otter or rabbit or rat</Rule>
+	<Rule id="is-feral">not tame</Rule>
+	<Rule id="is-quadruped">not (is-aquatic or is-primate or is-avian or snake or bat)</Rule>
+	<Rule id="has-pattern">pattern</Rule>
+
+	<Macro id="accent">[secondary-color? with shades of {secondary-color:value.lower}]</Macro>
+
+	<String id="family">
+		<String rule="is-aquatic">Aquatic</String>
+		<String rule="is-avian">Avian</String>
+		<String rule="is-bovine">Bovine</String>
+		<String rule="is-canine">Canine</String>
+		<String rule="is-equine">Equine</String>
+		<String rule="is-feline">Feline</String>
+		<String rule="is-primate">Primate</String>
+		<String rule="is-reptile">Reptilian</String>
+		<String rule="is-rodent">Rodent</String>
+	</String>
+
+	<String id="pattern">
+		<String rule="stripes">distinct {secondary-color:value.lower} stripes</String>
+		<String rule="spots">{secondary-color:value.lower} spots</String>
+		<String rule="mottled">[a] [secondary-color?{secondary-color:value.lower}] mottled pattern</String>
+		<String rule="patterned">[a] [secondary-color?{secondary-color:value.lower}] pattern</String>
+	</String>
+
+	<!-- System prompt -->
+	<Node path="system/guidelines/animal" rule="normal-detail">Focus on [their] [@family.lower], and [animal? {animal:value.lower}-like] behavior and traits when describing [char].</Node>
+	<Node path="system/exceptions/paws" rule="normal-detail and paws">[char] has paws for hands.</Node>
+	<Node path="system/exceptions/hooves" rule="normal-detail and hooves">[char] has hooves instead of feet.</Node>
+	<Node path="system/exceptions/mute" rule="not can-talk">
+		[char], being [a] [animal?{animal.lower}|animal], cannot speak English or any human language.
+		Instead, [they] use[s] body language, eye movement, and [animal?{animal.lower}|animal] noises to communicate.
+	</Node>
+	
+	<Attribute order="20" rule="animal">
+		<Name>Species</Name>
+		<Value>[animal:value] [breed?({breed})]</Value>
+	</Attribute>
+
+	<Node path="description/animal" order="0" rule="animal">
+		[char] is a [tame?tame|feral] {breed.lower} [animal:value.lower], [a] [is-quadruped?four-legged] animal with predominantly [{@family.lower}|animalistic] traits and behavior.
+	</Node>
+
+	<Node path="description/animal" rule="can-talk">
+		Despite being [a] [animal?{animal.lower}|animal], [char] is capable of speech [animal?, albeit with a distinct [animal:value.lower] vocabulary, perspective, and mannerisms].
+	</Node>
+
+	<!-- Skin / Fur -->
+	<Node path="appearance/body" order="0" rule="skin and primary-color">
+		[Their] skin [is] {primary-color.lower} [has-pattern?with {@pattern}|{accent}].
+	</Node>
+	<Node path="appearance/body" order="0" rule="coat">
+		[Their] body is covered in a soft [primary-color?, {primary-color.lower}] coat with a subtle sheen [has-pattern?and {@pattern}|{accent}].
+	</Node>
+	<Node path="appearance/body" order="0" rule="short-fur">
+		[Their] body is covered in shiny [primary-color?, {primary-color.lower}] fur [has-pattern?with {@pattern}|{accent}], soft to the touch.
+	</Node>
+	<Node path="appearance/body" order="0" rule="thick-fur">
+		[Their] body is covered in thick, fluffy [primary-color?, {primary-color.lower}] fur [has-pattern?with {@pattern}|{accent}] that feels plush to the touch.
+	</Node>
+	<Node path="appearance/body" order="0" rule="scales">
+		 [Their] body is covered in sleek [primary-color?{primary-color.lower}] scales [has-pattern? with {@pattern}|{accent}].
+	</Node>
+	<Node path="appearance/body" order="0" rule="feathers">
+		 [Their] body is covered in soft [primary-color?{primary-color.lower}] feathers [has-pattern? with {@pattern}|[secondary-color? with {secondary-color:value.lower} tips]].
+	</Node>
+
+	<!-- Features -->
+	<Node path="appearance/body" order="100" rule="horns">
+		The top of [their] head is adorned by two prominent horns.
+	</Node>
+	<Node path="appearance/body" order="100" rule="tail">
+		[Their] [thick-fur?large, bushy] tail emphasizes [their] [{animal:value.lower}|animal]-like appearance.
+	</Node>
+	<Node path="appearance/body" order="100" rule="wings">
+		A set of large wings protude from [their] back, allowing [them] to take flight if necessary.
+	</Node>
+	
+	<!-- Feet -->
+	<Node path="appearance/body" order="100" rule="paws">
+		[Their] large, fuzzy paws hide an array of sharp claws.
+	</Node>
+	<Node path="appearance/body" order="100" rule="hooves">
+		[They] stand firmly on hoofed feet.
+	</Node>
+
+	<!-- More -->
+	<Node path="appearance/body" order="0" rule="more">{more}.</Node>
+
+</Ginger>

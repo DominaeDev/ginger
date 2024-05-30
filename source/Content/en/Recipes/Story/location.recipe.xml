@@ -1,0 +1,42 @@
+﻿<Ginger id="location" version="1.0">
+	<!-- Preamble -->
+	<Name>Locations/Add location</Name>
+	<Title>Location</Title>
+	<Description>Describe a location or place for the story.</Description>
+	<Author>Ginger</Author>
+	<Category>Location</Category>
+	<Multiple>Yes</Multiple>
+	<Order>0</Order>
+	
+	
+	<!-- Parameters -->
+	<Text id="location-name" required="yes">
+		<Label>Name</Label>
+		<Description>Name of the location (or names, separated by comma)</Description>
+	</Text>
+	<Text id="summary" style="single">
+		<Label>Summary</Label>
+		<Description>Short description of the location.</Description>
+	</Text>
+	<Text id="info" style="flex">
+		<Label>Details</Label>
+		<Description>Detailed description of the location. Will be stored in the lorebook.</Description>
+	</Text>
+	
+	<!-- Output -->	
+	<Node path="scenario/world/locations" style="line" mode="exclude">
+		[p][[Locations:  
+		{inner}  
+		]]
+	</Node>
+
+	<Node path="scenario/world/locations/entry" rule="location-name">
+		{location-name}[summary?: "{summary}."]
+	</Node>
+	
+	<Lore>
+		<Name>{location-name}</Name>
+		<Value>{info}</Value>
+	</Lore>
+
+</Ginger>

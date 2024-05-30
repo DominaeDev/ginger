@@ -1,0 +1,29 @@
+{
+	"type": "object",
+	"properties": {
+		"name": {
+			"required": true,
+			"type": "string"
+		},
+		"description": {
+			"required": true,
+			"type": "string"
+		},
+		"personality": {
+			"required": true,
+			"type": "string"
+		},
+		"scenario": {
+			"required": true,
+			"type": "string"
+		},
+		"first_mes": {
+			"required": true,
+			"type": "string"
+		},
+		"mes_example": {
+			"required": true,
+			"type": "string"
+		}
+	}
+}

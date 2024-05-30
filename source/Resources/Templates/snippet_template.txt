@@ -1,0 +1,5 @@
+<Ginger format="1">
+	<Name>%%NAME%%</Name>
+	<Author>%%AUTHOR%%</Author>
+
+%%SYSTEM%%%%POSTHISTORY%%%%PERSONA%%%%USER%%%%SCENARIO%%%%GREETING%%%%EXAMPLE%%%%GRAMMAR%%</Ginger>

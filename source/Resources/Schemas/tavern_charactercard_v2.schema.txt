@@ -1,0 +1,284 @@
+{
+	"type": "object",
+	"properties": {
+		"data": {
+			"required": true,
+			"type": "object",
+			"properties": {
+				"name": {
+					"required": false,
+					"type": "string"
+				},
+				"description": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"personality": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"scenario": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"first_mes": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"mes_example": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"system_prompt": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"creator_notes": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"post_history_instructions": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"alternate_greetings": {
+					"required": false,
+					"type": [
+						"array",
+						"string",
+						"null"
+					],
+					"items": {
+						"type": [
+							"string",
+							"null"
+						]
+					}
+				},
+				"character_book": {
+					"required": false,
+					"type": [
+						"object",
+						"null"
+					],
+					"properties": {
+						"name": {
+							"required": false,
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"description": {
+							"required": false,
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"scan_depth": {
+							"required": false,
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"token_budget": {
+							"required": false,
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"recursive_scanning": {
+							"required": false,
+							"type": "boolean"
+						},
+						"entries": {
+							"required": true,
+							"type": "array",
+							"items": {
+								"type": [
+									"object",
+									"null"
+								],
+								"properties": {
+									"id": {
+										"required": false,
+										"type": [
+											"integer",
+											"string"
+										]
+									},
+									"keys": {
+										"required": true,
+										"type": [
+											"array",
+											"null"
+										],
+										"items": {
+											"type": [
+												"string",
+												"null"
+											]
+										}
+									},
+									"secondary_keys": {
+										"required": false,
+										"type": [
+											"array",
+											"null"
+										],
+										"items": {
+											"type": [
+												"string",
+												"null"
+											]
+										}
+									},
+									"comment": {
+										"required": false,
+										"type": [
+											"string",
+											"null"
+										]
+									},
+									"content": {
+										"required": true,
+										"type": "string"
+									},
+									"constant": {
+										"required": false,
+										"type": "boolean"
+									},
+									"selective": {
+										"required": false,
+										"type": "boolean"
+									},
+									"insertion_order": {
+										"required": false,
+										"type": [
+											"integer",
+											"string"
+										]
+									},
+									"enabled": {
+										"required": false,
+										"type": "boolean"
+									},
+									"position": {
+										"required": false,
+										"type": [
+											"string",
+											"null"
+										]
+									},
+									"case_sensitive": {
+										"required": false,
+										"type": "boolean"
+									},
+									"name": {
+										"required": false,
+										"type": [
+											"string",
+											"null"
+										]
+									},
+									"priority": {
+										"required": false,
+										"type": [
+											"integer",
+											"string"
+										]
+									},
+									"extensions": {
+										"required": false,
+										"type": [
+											"object",
+											"null"
+										],
+										"properties": {}
+									}
+								}
+							}
+						},
+						"extensions": {
+							"required": false,
+							"type": [
+								"object",
+								"null"
+							],
+							"properties": {}
+						}
+					}
+				},
+				"tags": {
+					"required": false,
+					"type": [
+						"array",
+						"null"
+					],
+					"items": {
+						"type": [
+							"string",
+							"null"
+						]
+					}
+				},
+				"creator": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"character_version": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"extensions": {
+					"required": false,
+					"type": [
+						"object",
+						"null"
+					]
+				}
+			}
+		},
+		"spec": {
+			"required": true,
+			"type": "string"
+		},
+		"spec_version": {
+			"required": true,
+			"type": "string"
+		}
+	}
+}

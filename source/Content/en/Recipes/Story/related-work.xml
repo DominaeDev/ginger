@@ -1,0 +1,28 @@
+﻿<Ginger id="related-work" version="1.0">
+	<!-- Preamble -->
+	<Name>Plot/Based on a fictional story</Name>
+	<Title>Based on a fictional story</Title>
+	<Description>Refer to a work of fiction such as a book, movie, or video game, etc.</Description>
+	<Author>Ginger</Author>
+	<Category>Story</Category>
+	
+	<!-- Parameters -->
+	<Text id="work-title" raw="true" required="true">
+		<Label>Name of work</Label>
+		<Description>Enter the name of a book, movie, video game, or similar.</Description>
+	</Text>
+	
+	<Choice id="medium" style="custom">
+		<Label>Medium</Label>
+		<Option>Novel</Option>
+		<Option>TV series</Option>
+		<Option>Movie</Option>
+		<Option>Video game</Option>
+		<Option>Franchise</Option>
+	</Choice>
+	
+	<!-- Output -->
+	<System rule="work-title">
+		This transcript is based on the plot of "{work-title}" [medium?({medium:value})].
+	</System>
+</Ginger>

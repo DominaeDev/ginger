@@ -1,0 +1,18 @@
+﻿<Ginger version="1.0">
+	<Name>Features/Paws</Name>
+	<Title>Paws</Title>
+	<Description>The character has claws.</Description>
+	<Author>Ginger</Author>
+	<Category>Feature</Category>
+	<Requires>not (animal or anthro)</Requires>
+	
+	<!-- Parameters -->
+	<Toggle id="claws" label="Claws" default="yes"/>
+	
+	<!-- Output -->	
+	<Node path="system/exceptions/paws">[char] has paws for hands.</Node>
+	
+	<Node path="appearance/body">
+		[They] [has] large, fuzzy paws [claws?that hide an array of razor-sharp claws].
+	</Node>	
+</Ginger>

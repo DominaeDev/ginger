@@ -1,0 +1,56 @@
+﻿<Ginger version="1.0">
+	<Name>Genre</Name>
+	<Title>Genre</Title>
+	<Description>Specify one or more genres for the story.</Description>
+	<Author>Ginger</Author>
+	<Category>Story</Category>
+	
+	<!-- Parameters -->
+	<Choice id="genre" style="multiple">
+		<Label>Genre</Label>
+		<Option>Action</Option>
+		<Option>Adventure</Option>
+		<Option>Anime</Option>
+		<Option>Comedy</Option>
+		<Option>Contemporary</Option>
+		<Option>Cosmic horror</Option>
+		<Option>Crime drama</Option>
+		<Option>Dark fantasy</Option>
+		<Option>Drama</Option>
+		<Option>Erotica</Option>
+		<Option>Fairytale</Option>
+		<Option>Fantasy</Option>
+		<Option>Folklore</Option>
+		<Option>Gothic</Option>
+		<Option>Historical</Option>
+		<Option>Horror</Option>
+		<Option>Light novel</Option>
+		<Option>Mystery</Option>
+		<Option>Noir</Option>
+		<Option>Non-fiction</Option>
+		<Option>Psychological</Option>
+		<Option>Romance</Option>
+		<Option>Satire</Option>
+		<Option>Science fiction</Option>
+		<Option>Slice-of-life</Option>
+		<Option>Sports</Option>
+		<Option>Supernatural</Option>
+		<Option>Surreal</Option>
+		<Option>Suspense</Option>
+		<Option>Thriller</Option>
+		<Option>Tragedy</Option>
+		<Option>Wholesome</Option>
+		<Option>Young adult</Option>
+	</Choice>
+	<List id="more">
+		<Label>Custom</Label>
+	</List>
+	<SetFlag rule="erotica">nsfw</SetFlag>
+	
+	<!-- Output -->	
+	<Node path="system/genre" style="comma" order="600">Genre: {inner}.</Node>
+	<Node path="system/genre/value" rule="genre or more">{genre:value.lower}</Node>
+	<Node path="system/genre/value" rule="erotica">smut</Node>
+	<Node path="system/genre/value" rule="more">{more.lower}</Node>
+	
+</Ginger>

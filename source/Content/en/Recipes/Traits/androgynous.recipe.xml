@@ -1,0 +1,26 @@
+<Ginger version="1.0">
+	<Name>Appearance/Androgynous</Name>
+	<Flags>androgynous</Flags>
+	<Description>The character has an androgynous appearance.</Description>
+	<Author>Ginger</Author>
+	<Category>Appearance</Category>
+	
+	<Node path="persona/attributes/appearance/androgynous">Androgynous</Node>
+	
+	<Persona>
+		[char] is androgynous in both [their] physical appearance and in [their] voice and mannerisms.
+	</Persona>
+	
+	<Persona rule="male">
+		[char] is exceptionally beautiful and effeminate. [They] could easily be mistaken for a girl, and attracts members from both sexes.
+	</Persona>
+	
+	<Persona rule="female">
+		[char] is handsome and emasculate. [They] could easily be mistaken for a man, and attracts members from both sexes.
+	</Persona>
+	
+	<Persona rule="not (male or female)">
+		[They] are often misgendered due to the ambiguity of their appearance, and attracts members from both sexes.
+	</Persona>
+
+</Ginger>

@@ -1,0 +1,57 @@
+<Ginger id="personality" version="1.0">
+	<Name>Personality</Name>
+	<Title>Personality</Title>
+	<Author>Ginger</Author>
+	<Category>Personality</Category>
+	<Flags>personality</Flags>
+	<Order>0</Order>
+
+	<Description>Describe the character's personality.</Description>
+	
+	<!-- Parameters -->
+	<List id="personality-traits" shared="yes">
+		<Label>Personality traits</Label>
+		<Description>
+			Use adjectives to describe the character's personality.
+			e.g. Extrovert, Cheerful, Spontaneous, etc.
+		</Description>
+	</List>
+
+	<List id="hobbies" shared="yes">
+		<Label>Hobbies</Label>
+	</List>
+	<List id="likes" shared="yes">
+		<Label>Likes</Label>
+	</List>
+	<List id="dislikes" shared="yes">
+		<Label>Dislikes</Label>
+	</List>
+	
+	<Text id="more" optional="yes" style="flex">
+		<Label>Additional details</Label>
+		<Description>
+			Write a short description of the character's personality.
+			e.g. She is a virtuous, young woman seeking adventure...
+		</Description>
+	</Text>
+
+	<!-- Output -->	
+
+	<!-- Personality -->
+	<Node path="persona/attributes/personality/traits">{personality-traits}</Node>
+	
+	<Node path="description/personality" rule="more">{more}.</Node>
+
+	<!-- Hobbies -->
+	<Attribute>
+		<Name>Hobbies</Name>
+		<Value>{hobbies}</Value>
+	</Attribute>
+
+	<!-- Likes -->
+	<Node path="persona/attributes/likes/traits">{likes}</Node>
+	
+	<!-- Dislikes-->
+	<Node path="persona/attributes/dislikes/traits">{dislikes}</Node>
+
+</Ginger>

@@ -1,0 +1,354 @@
+{
+	"type": "object",
+	"properties": {
+		"name": {
+			"required": true,
+			"type": "string"
+		},
+		"description": {
+			"required": false,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"culture": {
+			"required": false,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"tags": {
+			"required": false,
+			"type": [
+				"array",
+				"null"
+			],
+			"items": {
+				"type": [
+					"string",
+					"null"
+				]
+			}
+		},
+		"scenario": {
+			"required": false,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"appearance": {
+			"required": false,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"visualType": {
+			"required": false,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"sprite": {
+			"required": false,
+			"type": [
+				"object",
+				"null"
+			],
+			"properties": {}
+		},
+		"greeting": {
+			"required": false,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"sampleChat": {
+			"required": false,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"voiceDisabled": {
+			"required": false,
+			"type": "boolean"
+		},
+		"voice": {
+			"required": false,
+			"type": [
+				"object",
+				"null"
+			],
+			"properties": {
+				"service": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"voiceId": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				}
+			}
+		},
+		"systemPrompt": {
+			"required": false,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"postHistoryInstructions": {
+			"required": false,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"alternativeGreetings": {
+			"required": false,
+			"type": [
+				"array",
+				"null"
+			],
+			"items": {
+				"type": [
+					"string",
+					"null"
+				]
+			}
+		},
+		"characterBook": {
+			"required": false,
+			"type": [
+				"object",
+				"null"
+			],
+			"properties": {
+				"_id": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"name": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"description": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"userId": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"scanDepth": {
+					"required": false,
+					"type": "integer"
+				},
+				"tokenBudget": {
+					"required": false,
+					"type": "integer"
+				},
+				"recursiveScanning": {
+					"required": false,
+					"type": "boolean"
+				},
+				"entries": {
+					"required": true,
+					"type": [
+						"array",
+						"null"
+					],
+					"items": {
+						"type": [
+							"object",
+							"null"
+						],
+						"properties": {
+							"name": {
+								"required": false,
+								"type": "string"
+							},
+							"entry": {
+								"required": false,
+								"type": "string"
+							},
+							"keywords": {
+								"required": false,
+								"type": "array",
+								"items": {
+									"type": [
+										"string",
+										"null"
+									]
+								}
+							},
+							"priority": {
+								"required": false,
+								"type": "integer"
+							},
+							"weight": {
+								"required": false,
+								"type": "integer"
+							},
+							"enabled": {
+								"required": false,
+								"type": "boolean"
+							},
+							"id": {
+								"required": false,
+								"type": "integer"
+							},
+							"comment": {
+								"required": false,
+								"type": [
+									"string",
+									"null"
+								]
+							},
+							"selective": {
+								"required": false,
+								"type": "boolean"
+							},
+							"secondaryKeys": {
+								"required": false,
+								"type": [
+									"array",
+									"null"
+								],
+								"items": {
+									"type": [
+										"string",
+										"null"
+									]
+								}
+							},
+							"constant": {
+								"required": false,
+								"type": "boolean"
+							},
+							"position": {
+								"required": false,
+								"type": [
+									"string",
+									"null"
+								]
+							}
+						}
+					}
+				},
+				"kind": {
+					"required": true,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"is_creation": {
+					"required": false,
+					"type": "boolean"
+				}
+			}
+		},
+		"creator": {
+			"required": false,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"characterVersion": {
+			"required": false,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"persona": {
+			"required": false,
+			"type": [
+				"object",
+				"null"
+			],
+			"properties": {
+				"kind": {
+					"required": true,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"attributes": {
+					"required": false,
+					"type": [
+						"object",
+						"null"
+					],
+					"additionalProperties": {
+						"type": [
+							"array",
+							"null"
+						],
+						"items": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					}
+				}
+			}
+		},
+		"createdAt": {
+			"required": false,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"updatedAt": {
+			"required": false,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"kind": {
+			"required": true,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"avatar": {
+			"required": false,
+			"type": [
+				"string",
+				"null"
+			]
+		}
+	}
+}

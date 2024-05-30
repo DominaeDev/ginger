@@ -1,0 +1,56 @@
+<Ginger version="1.0">
+	<Name>Sexuality/Sexuality</Name>
+	<Description>Describe the sexual preferences of this character.</Description>
+	<Author>Ginger</Author>
+	<Category>Sexual</Category>
+	
+	<!-- Parameters -->
+	<Choice id="sexuality" style="custom" required="yes" shared="yes">
+		<Label>Sexual orientation</Label>
+		<Placeholder>Enter sexual orientation</Placeholder>
+		<Option>Heterosexual</Option>
+		<Option>Bisexual</Option>
+		<Option>Homosexual</Option>
+		<Option>Pansexual</Option>
+		<Option>Asexual</Option>
+	</Choice>
+	
+	<List id="fetishes">
+		<Label>Turn-ons</Label>
+	</List>
+
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+		<Default></Default>
+	</Text>
+	
+	<!-- Output -->	
+	<Attribute order="50">
+		<Name>Sexuality</Name>
+		<Value>{sexuality.capital}</Value>
+	</Attribute>
+	
+	<String id="attraction" rule="more-detail and (male or female) and not sexuality:custom">(attracted to [@attracted-to])</String>
+	<String id="attracted-to">
+		<String rule="male and heterosexual">women</String>
+		<String rule="male and homosexual">other men</String>
+		<String rule="female and heterosexual">men</String>
+		<String rule="female and homosexual">other women</String>
+		<String rule="bisexual">both men and women</String>
+		<String rule="pansexual">all genders</String>
+		<String rule="asexual">neither men nor women</String>
+	</String>
+	
+	<Node path="description/sexuality" order="10" rule="heterosexual and normal-detail">[char] is straight [@attraction].</Node>
+	<Node path="description/sexuality" order="10" rule="bisexual and not normal-detail">[char] is bisexual [@attraction].</Node>
+	<Node path="description/sexuality" order="10" rule="homosexual and normal-detail">[char] is [female?a lesbian|homosexual] [@attraction].</Node>
+	<Node path="description/sexuality" order="10" rule="pansexual and normal-detail">[char] is pansexual [@attraction].</Node>
+	<Node path="description/sexuality" order="10" rule="asexual and normal-detail">[char] is asexual [@attraction].</Node>
+	<Node path="description/sexuality" order="10" rule="more">{more}.</Node>
+
+	<Attribute style="list">
+		<Name>Fetishes</Name>
+		<Value>{fetishes}</Value>
+	</Attribute>
+
+</Ginger>

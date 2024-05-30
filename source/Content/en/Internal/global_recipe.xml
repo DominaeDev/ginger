@@ -1,0 +1,97 @@
+<!--
+	This file contains a global recipe which is implicitly included during text generation.
+	It sets up common nodes for other recipes to use.
+
+	** CAUTION **
+	Modifying this file may have unwanted consequences and is not recommended.
+-->
+
+<Ginger id="__global">
+
+	<!-- System prompt guidelines -->
+	<Node path="system/guidelines" style="default" order="-200">
+		GUIDELINES:  
+		{inner}
+	</Node>
+
+	<!-- Exceptions block -->
+	<Node path="system/exceptions" style="default" order="-100">
+		EXCEPTIONS:  
+		{inner}  
+	</Node>
+		
+	<!-- Important block -->
+	<Node path="system/important"  style="default" order="-0" rule="not (__bake or __snippet or __tavern)">
+		IMPORTANT:  
+		{inner}
+	</Node>
+	<Node path="system/important/output" style="default"/>
+	
+	<!-- Attribute root node -->
+	<Node path="persona/attributes" style="line" order="200" rule="not multi-character"/>
+	<Node path="persona/attributes" style="line" order="200" rule="multi-character">
+		[["{char}":  
+		{inner}  
+		]]
+	</Node>
+	
+	<!-- Setup common attribute styles and ordering -->
+	<Node path="persona/attributes/age" style="number" order="20">[!attrib:Age]{inner}</Node>
+	<Node path="persona/attributes/nationality" style="attribute" order="100">[!attrib:Nationality]{inner}</Node>
+	<Node path="persona/attributes/occupation" style="attribute" order="100">[!attrib:Occupation]{inner}</Node>
+	<Node path="persona/attributes/personality" style="list" order="200">[!attrib:Personality traits]{inner}</Node>
+	<Node path="persona/attributes/likes" style="list" order="200">[!attrib:Likes]{inner}</Node>
+	<Node path="persona/attributes/dislikes" style="list" order="200">[!attrib:Dislikes]{inner}</Node>
+	<Node path="persona/attributes/hobbies" style="list" order="200">[!attrib:Hobbies]{inner}</Node>
+	<Node path="persona/attributes/appearance" style="list" order="400">[!attrib:Appearance]{inner}</Node>
+
+	<!-- Appearance block -->
+	<Node path="persona/appearance" style="text" order="600" rule="not multi-character"/>
+	<Node path="persona/appearance" style="text" order="600" rule="multi-character">
+		[char's] appearance:  
+		{inner}
+	</Node>
+
+	<!-- Description block -->
+	<Node path="persona/description" style="text" order="700" rule="not multi-character"/>
+	<Node path="persona/description" style="text" order="700" rule="multi-character">
+		[char's] description:  
+		{inner}
+	</Node>
+	
+	<!-- User persona block -->
+	<Node path="user/attributes" style="line" order="200">
+		[["{user}":  
+		{inner}  
+		]]
+	</Node>
+
+	<!-- Story block -->
+	<Node path="scenario/story" order="200">
+		STORY:  
+		{inner}  
+	</Node>
+
+	<!-- World block -->
+	<Node path="scenario/world" style="line" order="400"/>
+		
+	<!-- Attribute: Name -->
+	<Attribute rule="more-detail and not (__single or full-name)" order="0" mode="sibling">
+		<Name>Name</Name>
+		<Value>{char}</Value>
+	</Attribute>
+	
+	<Attribute rule="normal-detail and full-name and not __single" order="0" mode="sibling">
+		<Name>Full name</Name>
+		<Value>{full-name}</Value>
+	</Attribute>
+
+	<!-- Attribute: Gender -->
+	<Attribute rule="(normal-detail or custom-gender) and not __single" order="1" mode="sibling">
+		<Name>Gender</Name>
+		<Value>{gender.capital}</Value>
+	</Attribute>
+		
+	<Name>__global</Name>
+	<Flags>__nobake, __internal, __hidden</Flags>
+</Ginger>

@@ -1,0 +1,54 @@
+﻿<Ginger version="1.0">
+	<Name>Anatomy/Butt</Name>
+	<Title>Butt</Title>
+	<Description>Describe the character's hips and butt.</Description>
+	<Author>Ginger</Author>
+	<Category>Body</Category>
+	<Requires>not butt</Requires>
+	<Flags>nsfw, butt, hips</Flags>
+	<Order>150</Order>
+	
+	<!-- Parameters -->
+	<Choice id="hip-size">
+		<Label>Hip size</Label>
+		<Option>narrow</Option>
+		<Option>slim</Option>
+		<Option>average</Option>
+		<Option>shapely</Option>
+		<Option>childbearing</Option>
+		<Option>wide</Option>
+	</Choice>
+	<Choice id="butt-size">
+		<Label>Butt size</Label>
+		<Option>flat</Option>
+		<Option>tiny</Option>
+		<Option>small</Option>
+		<Option>average</Option>
+		<Option>big</Option>
+		<Option>huge</Option>
+	</Choice>
+	
+	<!-- Output -->	
+	<String id="hips">
+		<String rule="hip-size is narrow">a narrow waist</String>
+		<String rule="hip-size is slim">slim waist</String>
+		<String rule="hip-size is average">nice hips</String>
+		<String rule="hip-size is shapely">shapely hips</String>
+		<String rule="hip-size is childbearing">childbearing hips</String>
+		<String rule="hip-size is wide">wide hips</String>
+	</String>
+	
+	<String id="butt">
+		<String rule="butt-size is flat">a flat butt</String>
+		<String rule="butt-size is tiny">a tiny, little butt</String>
+		<String rule="butt-size is small">a small butt</String>
+		<String rule="butt-size is average">a decent ass</String>
+		<String rule="butt-size is big">a large ass</String>
+		<String rule="butt-size is huge">a huge ass</String>
+	</String>
+	
+	<Node path="appearance/bottom/butt" rule="butt-size or hip-size">
+		[They've] got [!list:[hip-size?[@hips];][butt-size?[@butt]]].
+	</Node>
+	
+</Ginger>

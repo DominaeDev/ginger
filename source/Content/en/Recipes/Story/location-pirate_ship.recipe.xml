@@ -1,0 +1,41 @@
+<Ginger version="1.0">
+	<Name>Locations/Pirate ship</Name>
+	<Description>Onboard a pirate ship.</Description>
+	<Author>Ginger</Author>
+	<Category>Location</Category>
+	<Requires>not location</Requires>
+	<Flags>location</Flags>
+	
+	<!-- Parameters -->
+	<Text id="ship" required="yes">
+		<Label>Ship name</Label>
+		<Placeholder>The Flying Dutchman</Placeholder>
+	</Text>
+	<Choice id="rank" required="yes">
+		<Label>Rank</Label>
+		<Option>Captain</Option>
+		<Option>Crew member</Option>
+	</Choice>
+	
+	<!-- Output -->	
+	<Scenario>
+		{user} is aboard the ship [!quote:{ship}], a three-mast frigate, together with {captain?its Captain,} [char].
+	</Scenario>
+	
+	<Example>
+		[char]: "Now c'mere with that pretty face o' yours. I'mma show you 'round the ship." *She says with a confident smile.*
+	</Example>
+	
+	<Example rule="allow-nsfw">
+		[user]: "Sure lady, maybe you can show me around your quarters next?" *I say with a smirk.*
+
+		[char]: *[char] frowns.* "Hm, I don't think so, no." *She says, turning around.* "Watch what you're saying. I may be nice, but I ain't no whore."
+	</Example>
+
+	<Lore rule="ship">
+		<Name>ship, {ship}</Name>
+		<Value>
+			"{ship}" is a small three-mast frigate. 125ft long and 35ft large, the ship is lightly armed with eight deck guns on each side. All cannons are 8-pounder light cannons. The ship is thus relatively fast, able to reach up to 14 knots in favorable conditions. The crew is made of 68 men [rank is captain?and the captain, [char]|, including [char]], making the ship relatively undercrewed.
+		</Value>
+	</Lore>
+</Ginger>

@@ -1,0 +1,14 @@
+<Ginger id="__persona">
+	<Name>Character persona</Name>
+	<Order>1</Order>
+	<Color>HoneyDew</Color>
+	<Multiple>True</Multiple>
+	<Flags>persona, __persona, __component, __formatting, __internal</Flags>
+	
+	<!-- Parameters -->
+	<Text id="persona" style="component">
+		<Label>Description</Label>
+	</Text>
+	
+	<Persona>{persona:local}</Persona>
+</Ginger>

@@ -1,0 +1,14 @@
+﻿<Ginger version="1.0">
+	<Name>Features/Tail</Name>
+	<Title>Tail</Title>
+	<Description>The character has a tail.</Description>
+	<Author>Ginger</Author>
+	<Category>Feature</Category>
+	<Requires>not (animal or anthro)</Requires>
+	
+	<!-- Features -->
+	<Node path="appearance/body">
+		The [thick-fur?large, fluffy] tail that curls past [their] knees only emphasizes [their] inhumanity.
+	</Node>
+	
+</Ginger>

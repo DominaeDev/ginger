@@ -1,0 +1,72 @@
+﻿<Ginger version="1.0">
+	<!-- Preamble -->
+	<Name>Gender/Transgender</Name>
+	<Title>Transgender</Title>
+	<Description>Makes the character transgender.</Description>
+	<Author>Ginger</Author>
+	<Category>Character</Category>
+	<Flags>trans, transgender, override-gender, pronouns</Flags>
+	
+	<!-- Parameters -->
+	<Choice id="trans-gender" required="yes" rule="not (male or female or custom-gender)">
+		<Label>Sex</Label>
+		<Option>Male</Option>
+		<Option>Female</Option>
+	</Choice>
+	
+	<Choice id="trans-pronouns" required="yes" rule="not custom-pronoun">
+		<Label>Pronouns</Label>
+		<Option id="pronouns-he">He / Him</Option>
+		<Option id="pronouns-she">She / Her</Option>
+		<Option id="pronouns-them">They / Them</Option>
+		<Default>[female?pronouns-she|[male?pronouns-he|pronouns-they]]</Default>
+	</Choice>
+	
+	<!-- Set gender -->
+	<Erase>gender</Erase>
+	<Erase rule="trans-gender">male, female</Erase>
+	<SetFlag rule="trans-gender is male">male</SetFlag>
+	<SetFlag rule="trans-gender is female">female</SetFlag>
+	<SetVar id="gender">Transgender</SetVar>
+	
+	<!-- Set pronouns -->
+	<SetFlag rule="trans-pronouns">custom-pronoun</SetFlag>
+	<Erase rule="trans-pronouns">pronoun-masculine, pronoun-feminine, pronoun-neutral, pronoun-objective</Erase>
+	<SetFlag rule="pronouns-he">pronoun-masculine</SetFlag>
+	<SetFlag rule="pronouns-she">pronoun-feminine</SetFlag>
+	<SetFlag rule="pronouns-them">pronoun-neutral</SetFlag>
+	
+	<!-- Set flags -->
+	<SetFlag rule="trans-male">trans-male</SetFlag>
+	<SetFlag rule="trans-female">trans-female</SetFlag>
+	
+	<!-- Output -->
+	<Rule id="trans-male">trans-gender is male or (not sex and male)</Rule>
+	<Rule id="trans-female">trans-gender is female or (not sex and female)</Rule>
+	
+	<String id="descriptor">
+		<String rule="age and age le 18" priority="1">
+			<String rule="is-man">boy</String>
+			<String rule="is-woman">girl</String>
+		</String>
+		<String rule="is-man">man</String>
+		<String rule="is-woman">woman</String>
+	</String>	
+	
+	<!-- Override gender -->
+	<Attribute mode="replace" order="10">
+		<Name>Gender</Name>
+		<Value>Transgender [@descriptor]</Value>
+	</Attribute>
+	
+	<Persona rule="trans-female">
+		[char] grew up as a boy, and thus has typical male interests,
+		combined with more recent fascination for all things feminine, and typical female interests like beauty, fashion, and relationships.
+	</Persona>
+
+	<Persona rule="trans-male">
+		[char] grew up as a girl, and thus has typical female interests,
+		combined with more recent fascination for all things masculine, and typical male interests like sports, video games, and physical training.
+	</Persona>
+	
+</Ginger>

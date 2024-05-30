@@ -1,0 +1,78 @@
+﻿<Ginger id="__attribute" version="1.0">
+	<Name>Other/Add attribute</Name>
+	<Title>Attribute</Title>
+	<Description>Add a custom character attribute</Description>
+	<Order>3</Order>
+	<Color>#fefefe</Color>
+	<Multiple>Yes</Multiple>
+	<Flags>__component, __internal</Flags>
+
+	<Text id="name">
+		<Label>Name</Label>
+		<Description>Attribute name. (E.g., Personality, Appearance, Likes, Dislikes, ...)</Description>
+	</Text>
+	<Text id="text-value" rule="type:local is text">
+		<Label>Value</Label>
+	</Text>
+	<Text id="long-value" style="flex" rule="type:local is long">
+		<Label>Value</Label>
+	</Text>
+	<List id="list-value" rule="type:local is list">
+		<Label>Value</Label>
+	</List>
+	<Number id="number-value" rule="type:local is number">
+		<Label>Value</Label>
+	</Number>
+	<Number id="length-value" style="length" rule="type:local is length">
+		<Label>Value</Label>
+	</Number>
+	<Number id="weight-value" style="weight" rule="type:local is weight">
+		<Label>Value</Label>
+	</Number>
+	<Number id="volume-value" style="volume" rule="type:local is volume">
+		<Label>Value</Label>
+	</Number>
+	<Choice id="type" required="true" immediate="true">
+		<Label>Type</Label>
+		<Option>Text</Option>
+		<Option id="long">Text (multi-line)</Option>
+		<Option>List</Option>
+		<Option>Number</Option>
+		<Option>Length</Option>
+		<Option>Weight</Option>
+		<Option>Volume</Option>
+	</Choice>
+
+	<Attribute style="default" rule="type:local is text">
+		<Name>{name:local}</Name>
+		<Value>{text-value}</Value>
+	</Attribute>
+	<Attribute style="quote" rule="type:local is long">
+		<Name>{name:local}</Name>
+		<Value>{long-value}</Value>
+	</Attribute>
+	<Attribute style="plus-group" rule="type:local is list">
+		<Name>{name:local}</Name>
+		<Value>{list-value}</Value>
+	</Attribute>
+	<Attribute rule="type:local is number">
+		<Name>{name:local}</Name>
+		<Value>{number-value}</Value>
+	</Attribute>
+	<Attribute style="default" rule="type:local is length and less-detail">
+		<Name>{name:local}</Name>
+		<Value>{length-value}</Value>
+	</Attribute>
+	<Attribute style="default" rule="type:local is length and normal-detail">
+		<Name>{name:local}</Name>
+		<Value>{length-value.ftin} ({length-value.cm})</Value>
+	</Attribute>
+	<Attribute style="default" rule="type:local is weight">
+		<Name>{name:local}</Name>
+		<Value>{weight-value}</Value>
+	</Attribute>
+	<Attribute style="default" rule="type:local is volume">
+		<Name>{name:local}</Name>
+		<Value>{volume-value}</Value>
+	</Attribute>
+</Ginger>

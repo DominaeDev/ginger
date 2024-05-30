@@ -1,0 +1,96 @@
+<Ginger version="1.0" id="family-member">
+	<Name>Relationship/Familial</Name>
+	<Title>Familial relationship</Title>
+	<Description>A familial relationship to the user.</Description>
+	<Author>Ginger</Author>
+	<Category>Relationship</Category>
+	<Requires>not relationship</Requires>
+	<Flags>relationship</Flags>
+	
+	<!-- Parameters -->
+	<Choice id="family-member" required="yes">
+		<Label>Family member</Label>
+		<Option id="parent">Parent</Option>
+		<Option id="child">Child</Option>
+		<Option id="sibling">Sibling</Option>
+		<Option id="half-sibling">Half-sibling</Option>
+		<Option id="cousin">Cousin</Option>
+		<Option id="second-cousin">Second cousin</Option>
+		<Option id="uncle">Aunt / Uncle</Option>
+		<Option id="grandparent">Grandparent</Option>
+		<Option id="grandchild">Grandchild</Option>
+	</Choice>
+	
+	<Choice id="sibling-age" rule="family-member is sibling">
+		<Label>Sibling age</Label>
+		<Option id="older">Older sibling</Option>
+		<Option id="younger">Younger sibling</Option>
+		<Option id="twin">Twin</Option>
+	</Choice>
+	
+	<Toggle id="identical-twin" rule="twin" label="Identical twin" default="yes"/>
+	
+	<Toggle id="biological" rule="(parent or child or sibling) and not twin" label="Biological" default="true"/>
+	
+	<!-- Output -->	
+	<String id="parent">
+		<String rule="is-woman">[biological?biological|step] mother</String>
+		<String rule="is-man">[biological?biological|step] father</String>
+		<String>[biological?biological|step] parent</String>
+	</String>
+
+	<String id="sibling">
+		<String rule="not biological and is-woman and younger" priority="2">younger step-sister</String>
+		<String rule="not biological and is-woman and older" priority="2">older step-sister</String>
+		<String rule="not biological and is-man and younger" priority="2">younger step-brother</String>
+		<String rule="not biological and is-man and older" priority="2">older step-brother</String>
+		<String rule="is-woman and younger" priority="1">little sister</String>
+		<String rule="is-woman and older" priority="1">older sister</String>
+		<String rule="is-woman and not sibling-age" priority="1">sister</String>
+		<String rule="is-man and younger" priority="1">little brother</String>
+		<String rule="is-man and older" priority="1">older brother</String>
+		<String rule="is-man and not-sibling-age" priority="1">brother</String>
+		<String rule="is-woman and twin" priority="1">twin sister</String>
+		<String rule="is-man and twin" priority="1">twin brother</String>
+		<String rule="twin">twin</String>
+		<String rule="younger">younger sibling</String>
+		<String rule="older">older sibling</String>
+		<String>sibling</String>
+	</String>
+
+	<String id="half-sibling">
+		<String rule="is-woman">half-sister</String>
+		<String rule="is-man">half-brother</String>
+		<String>half-sibling</String>
+	</String>
+
+	<String id="child">
+		<String rule="is-woman">[not biological?step-]daughter</String>
+		<String rule="is-man">[not biological?step-]son</String>
+		<String>[not biological?step-]child</String>
+	</String>
+
+	<String id="grandparent">
+		<String rule="is-woman">grandmother</String>
+		<String rule="is-man">grandfather</String>
+		<String>grandparent</String>
+	</String>
+
+	<String id="grandchild">
+		<String rule="is-woman">granddaughter</String>
+		<String rule="is-man">grandson</String>
+		<String>grandchild</String>
+	</String>
+
+	<Persona rule="parent">[char] is [user's] [@parent].</Persona>
+	<Persona rule="child">[char] is [user]'s [@child].</Persona>
+	<Persona rule="half-sibling">[char] is [user]'s [@half-sibling].</Persona>
+	<Persona rule="sibling">[char] is [user]'s [@sibling].</Persona>
+	<Persona rule="cousin">[char] is [user]'s cousin.</Persona>
+	<Persona rule="second-cousin">[char] is [user]'s second-cousin.</Persona>
+	<Persona rule="grandparent">[char] is [user]'s [@grandparent].</Persona>
+	<Persona rule="grandchild">[char] is [user]'s [@grandchild].</Persona>
+	<Persona rule="not family-member">[char] is a close relative to [user].</Persona>
+	<Persona rule="twin">[char] and [user] are [identical-twin?identical|fraternal] twins.</Persona>
+
+</Ginger>

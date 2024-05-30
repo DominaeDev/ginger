@@ -1,0 +1,20 @@
+﻿<Ginger id="synopsis" version="1.0">
+	<!-- Preamble -->
+	<Name>Plot/Synopsis</Name>
+	<Title>Plot synopsis</Title>
+	<Description>Describe the outline for the story</Description>
+	<Author>Ginger</Author>
+	<Category>Story</Category>
+	<Flags>plot</Flags>
+	<Multiple>Yes</Multiple>
+	<Order>0</Order>
+	
+	<!-- Parameters -->
+	<Text id="text" style="flex">
+		<Label>Synopsis</Label>
+	</Text>
+		
+	<!-- Output -->
+	<Node path="scenario/story/summary" style="text" mode="exclude"/>
+	<Node path="scenario/story/summary/text">{text}</Node>
+</Ginger>

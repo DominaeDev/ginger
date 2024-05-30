@@ -1,0 +1,57 @@
+﻿<Ginger id="immediate-family" version="1.0">
+	<Name>Cast/Family</Name>
+	<Description>Describe the character's immediate family.</Description>
+	<Author>Ginger</Author>
+	<Category>Cast</Category>
+	
+	<!-- Parameters -->
+	<Text id="father">
+		<Label>Father</Label>
+		<Placeholder>Name of father</Placeholder>
+	</Text>
+	<Text id="mother">
+		<Label>Mother</Label>
+		<Placeholder>Name of mother</Placeholder>
+	</Text>
+	<List id="brothers">
+		<Label>Brothers</Label>
+		<Placeholder>Names of brothers, separated by commas</Placeholder>
+	</List>
+	<List id="sisters">
+		<Label>Sisters</Label>
+		<Placeholder>Names of sisters, separated by commas</Placeholder>
+	</List>
+	<Choice id="alive" style="multiple">
+		<Label>Living?</Label>
+		<Default>father-alive, mother-alive</Default>
+		<Option id="father-alive">Father</Option>
+		<Option id="mother-alive">Mother</Option>
+	</Choice>
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
+	
+	<!-- Output -->	
+	<String id="father">[not father-alive?late ]father</String>
+	<String id="mother">[not mother-alive?late ]mother</String>
+
+	<String id="siblings" rule="brothers or sisters">
+		<String rule="not sisters">[char] has [!numeral:{brothers:count}] brother[brothers:count gt 1?s]: {brothers.list}.</String>
+		<String rule="not brothers">[char] has [!numeral:{sisters:count}] sister[brothers:count gt 1?s]: {sisters.list}.</String>
+		<String>[char] has [!numeral:[!count:{brothers};{sisters}]] siblings: [!list:{brothers};{sisters}].</String>
+	</String>
+	
+	<Node path="persona/attributes/family" style="semicolon">Family: {inner}</Node>
+	<Node path="persona/attributes/family/father" rule="father">{father} ([@father])</Node>
+	<Node path="persona/attributes/family/mother" rule="mother">{mother} ([@mother])</Node>
+	<Node path="persona/attributes/family/brothers" rule="brothers:count eq 1">{brothers} (brother)</Node>
+	<Node path="persona/attributes/family/brothers" rule="brothers:count gt 1">{brothers.list} (brothers)</Node>
+	<Node path="persona/attributes/family/sisters" rule="sisters:count eq 1">{sisters} (sister)</Node>
+	<Node path="persona/attributes/family/sisters" rule="sisters:count gt 1">{sisters.list} (sisters)</Node>
+
+	<Node path="scenario/world/family" rule="brothers or sisters or more">
+		[char's] family:  
+		[@siblings]
+		[more?{more}.]</Node>
+	
+</Ginger>

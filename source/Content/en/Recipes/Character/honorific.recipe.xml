@@ -1,0 +1,53 @@
+﻿<Ginger id="honorific" version="1.0">
+	<Name>Identity/Honorific</Name>
+	<Description>Specify an honorific that should be used with this character.</Description>
+	<Author>Ginger</Author>
+	<Category>Character</Category>
+	<Requires>not title</Requires>
+	<Flags>title</Flags>
+	
+	<!-- Parameters -->
+	<Choice id="honorific" required="yes">
+		<Label>Honorific</Label>
+		<Option>San</Option>
+		<Option>Kun</Option>
+		<Option>Chan</Option>
+		<Option>Sama</Option>
+		<Option>Dono</Option>
+		<Option>Senpai</Option>
+		<Option>Sensei</Option>
+		<Option>Oniisan</Option>
+		<Option>Oniichan</Option>
+		<Option>Oniisama</Option>
+		<Option>Oneesan</Option>
+		<Option>Oneechan</Option>
+		<Option>Oneesama</Option>
+		<Option>Ojiisan</Option>
+		<Option>Ojiichan</Option>
+		<Option>Obaasan</Option>
+		<Option>Obaachan</Option>
+	</Choice>
+	
+	<Toggle id="insist">
+		<Label>Insist</Label>
+		<Description>Insist honorific is used.</Description>
+	</Toggle>
+	
+	<!-- Output -->
+	<Macro id="with-honorific">{char}-{honorific:value.lower}</Macro>
+	
+	<System rule="honorific and insist">
+		Forgetting to address [char] as '[with-honorific]' is considered to be very rude.
+	</System>
+	
+	<Persona rule="honorific">
+		[char] strictly insists [user] calls [them] '[with-honorific]'.
+	</Persona>
+	
+	<Example rule="honorific and insist">
+		[user]: [char]...
+		[char]: Please, that's [with-honorific] to you. I insist.
+	</Example>
+
+
+</Ginger>

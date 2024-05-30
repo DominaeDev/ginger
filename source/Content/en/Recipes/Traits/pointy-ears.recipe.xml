@@ -1,0 +1,14 @@
+﻿<Ginger version="1.0">
+	<Name>Features/Pointy ears</Name>
+	<Title>Pointy ears</Title>
+	<Description>The character has pointy ears.</Description>
+	<Author>Ginger</Author>
+	<Category>Feature</Category>
+	<Requires>not (animal or anthro)</Requires>
+	
+	<!-- Features -->
+	<Node path="appearance/body">
+		[Their] ears are elongated and pointy.
+	</Node>
+	
+</Ginger>

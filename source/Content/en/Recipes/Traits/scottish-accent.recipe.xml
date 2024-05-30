@@ -1,0 +1,31 @@
+﻿<Ginger version="1.0">
+	<Name>Speech/Scottish accent</Name>
+	<Description>The character speaks with a Scottish accent.</Description>
+	<Author>Ginger</Author>
+	<Category>Speech</Category>
+	<Flags>accent, example-dialogue</Flags>
+	<Requires>not accent</Requires>
+	<Order>50</Order>
+	
+	<Macro id="eg">[!abbr:e.g.]</Macro>
+
+	<System imporant="true">
+		[p]
+		[[[char] is Scottish and speaks with an extremely thick Scottish accent, often using old slang and being extremely difficult to understand. 
+		This accent is defined by the following:
+		[!numlist:
+		Replacing yes with aye, and no with nay.
+		Replacing to with ta ([eg], ta tink it's only been a year);
+		Replacing your with yer ([eg], yer can ne'ver be too sure);
+		Replacing you with ye ([eg], ye kin come in if yer like) or compounded as 'cha ([eg], nice ta meet'cha);
+		Replacing my with me ([eg], ye nearly scared me pants off.);
+		Replacing can't with cannae, won't with winnae, haven't with huvnae.;
+		Instead of um, uh, erm, ehm, er, etc., [they] says eh.]]]
+	</System>
+	
+	<Example>
+		[char]: "Come wi' me."
+		[char]: "Yer wi' me fo' the rest o' the deh."
+		[char]: "Whot's the ma'er? Cat caught yer tongue?"
+	</Example>
+</Ginger>

@@ -1,0 +1,195 @@
+<Ginger>
+	<!-- Macros -->
+	<Macro id="characters, bots">[names.list]</Macro>
+	<Macro id="everyone">[!list:[user];[char];[actors]]</Macro>
+	<Wrapper id="abbr">[noparse]_[parse][nocap]</Wrapper>
+	<Wrapper id="raw">[noparse]_[parse]</Wrapper>
+	<Wrapper id="property-label">_:[sp]</Wrapper>
+
+	<!-- Chat style -->
+	<Rule id="is-faraday">__faraday or __backyard</Rule>
+	<Wrapper id="dialogue, dialog">[@dialogue-symbol-open]_[@dialogue-symbol-close]</Wrapper>
+	<Wrapper id="action, narrate, narration">[@action-symbol-open]_[@action-symbol-close]</Wrapper>
+	<Wrapper id="chat">[is-faraday?#][char]: [!dialogue:_]</Wrapper>
+	<Wrapper id="#chat">[is-faraday?#][user]: [!dialogue:_]</Wrapper>
+
+	<String id="dialogue-symbol-open">
+		<String rule="__style-quotes" priority="1">&quot;</String>
+		<String rule="__style-quotes-decorative">&#8220;</String>
+		<String rule="__style-quotes-cjk">&#12300;</String>
+	</String>
+	<String id="dialogue-symbol-close">
+		<String rule="__style-quotes" priority="1">&quot;</String>
+		<String rule="__style-quotes-decorative">&#8221;</String>
+		<String rule="__style-quotes-cjk">&#12301;</String>
+	</String>
+	<String id="action-symbol-open">
+		<String rule="__style-action-asterisks" priority="1">*</String>
+		<String rule="__style-action-brackets">(</String>
+		<String rule="__style-action-bold">**</String>
+	</String>
+	<String id="action-symbol-close">
+		<String rule="__style-action-asterisks" priority="1">*</String>
+		<String rule="__style-action-brackets">)</String>
+		<String rule="__style-action-bold">**</String>
+	</String>
+
+	<!-- Internal rules -->
+	<Rule id="use-they">use-neutral-pronoun</Rule>
+	<Rule id="use-it">use-objective-pronoun</Rule>
+	<Rule id="use-masculine-pronoun-user">#gender is male</Rule>
+	<Rule id="use-feminine-pronoun-user">#gender is female</Rule>
+	<Rule id="use-neutral-pronoun-user">not (use-masculine-pronoun-user or use-feminine-pronoun-user)</Rule>
+	<Rule id="use-they-user">use-neutral-pronoun-user</Rule>
+
+	<Rule id="normal-detail">detail ge 0</Rule>
+	<Rule id="#male">#gender is male</Rule>
+	<Rule id="#female">#gender is female</Rule>
+
+	<!-- Internal macros-->
+	<Macro id="char, character, bot">&lt;##CHAR##&gt;</Macro>
+	<Macro id="user">&lt;##USER##&gt;</Macro>
+	<Macro id="original">[__faraday or __backyard or __tavern?&lt;##ORIGINAL##&gt;]</Macro>
+	<Macro id="char's, character's, bot's">&lt;##CHAR##&gt;'s</Macro>
+	<Macro id="user's">&lt;##USER##&gt;'s</Macro>
+	<Macro id="inner">&lt;##INNER##&gt;</Macro>
+	<Macro id="continue">&lt;##CONTINUE##&gt;</Macro>
+	
+	<Macro id="is, are">[__snippet?{{is}}|[use-they?are|is]]</Macro>
+	<Macro id="isn't, aren't">[__snippet?{{isn't}}|[use-they?aren't|isn't]]</Macro>
+	<Macro id="was, were">[__snippet?{{was}}|[use-they?were|was]]</Macro>
+	<Macro id="wasn't, weren't">[__snippet?{{wasn't}}|[use-they?weren't|wasn't]]</Macro>
+	<Macro id="has, have">[__snippet?{{has}}|[use-they?have|has]]</Macro>
+	<Macro id="hasn't, haven't">[__snippet?{{hasn't}}|[use-they?haven't|hasn't]]</Macro>
+	<Macro id="does, do">[__snippet?{{does}}|[use-they?do|does]]</Macro>
+	<Macro id="doesn't, don't">[__snippet?{{doesn't}}|[use-they?don't|doesn't]]</Macro>
+	<Macro id="does not, do not">[__snippet?{{does not}}|[use-they?do|does] not]</Macro>
+	<Macro id="#is, #are">[__snippet?{{#is}}|[use-they-user?are|is]]</Macro>
+	<Macro id="#isn't, #aren't">[__snippet?{{#isn't}}|[use-they-user?aren't|isn't]]</Macro>
+	<Macro id="#was, #were">[__snippet?{{#was}}|[use-they-user?were|was]]</Macro>
+	<Macro id="#wasn't, #weren't">[__snippet?{{#wasn't}}|[use-they-user?weren't|wasn't]]</Macro>
+	<Macro id="#has, #have">[__snippet?{{#has}}|[use-they-user?have|has]]</Macro>
+	<Macro id="#hasn't, #haven't">[__snippet?{{#hasn't}}|[use-they-user?haven't|hasn't]]</Macro>
+	<Macro id="#does, #do">[__snippet?{{#does}}|[use-they-user?do|does]]</Macro>
+	<Macro id="#doesn't, #don't">[__snippet?{{#doesn't}}|[use-they-user?don't|doesn't]]</Macro>
+	<Macro id="#does not, #do not">[__snippet?{{#does not}}|[use-they-user?do|does] not]</Macro>
+
+	<Macro id="s">[not use-they?s]</Macro>								<!-- [she] need[s] -->
+	<Macro id="es">[not use-they?es]</Macro>							<!-- [she] possess[es] -->
+	<Macro id="y, ies">[use-they?y|ies]</Macro>							<!-- [she] tr[ies]-->
+	<Macro id="#s">[not use-they-user?s]</Macro>						<!-- [she] need[s] -->
+	<Macro id="#es">[not use-they-user?es]</Macro>						<!-- [she] possess[es] -->
+	<Macro id="#y, #ies">[use-they-user?y|ies]</Macro>					<!-- [she] tr[ies]-->
+	
+	<Macro id="'s, 've, 'has, 'have">[use-they?'ve|'s]</Macro> 			<!-- has/have -->
+	<Macro id="'d, 'had">[use-custom-pronoun and not use-they? had|'d]</Macro> <!-- [they]['d] done nothing wrong -->
+	<Macro id="'re,'are,'is">[use-they?'re|'s]</Macro> 					<!-- [they]['re] pretty -->
+
+	<!-- Pronoun macros -->
+	<Macro id="they, she, he">[@Pronouns/Char/They]</Macro>
+	<Macro id="them, him">[@Pronouns/Char/Them]</Macro>
+	<Macro id="their, his, her">[@Pronouns/Char/Their]</Macro>
+	<Macro id="theirs, hers">[@Pronouns/Char/Theirs]</Macro>
+	<Macro id="themselves, himself, herself">[@Pronouns/Char/Themselves]</Macro>
+	<Macro id="they've">[they]['ve]</Macro>		<!-- they have, she has -->
+	<Macro id="they'd, she'd, he'd">[they]'d</Macro>						<!-- they had -->
+	<Macro id="they're, she's, he's">[use-they?[they]'re|[they]'s]</Macro>				<!-- they are, she is -->
+	<Macro id="they'll, she'll, he'll">[they]'ll</Macro>									<!-- they will -->
+
+	<!-- Pronoun macros (user) -->
+	<Macro id="#they, #she, #he, user-they, user-she, user-he">[@Pronouns/User/They]</Macro>
+	<Macro id="#them, #him, user-them, user-him">[@Pronouns/User/Them]</Macro>
+	<Macro id="#their, #his, #her, user-their, user-his, user-her">[@Pronouns/User/Their]</Macro>
+	<Macro id="#theirs, #hers, user-theirs, user-hers">[@Pronouns/User/Theirs]</Macro>
+	<Macro id="#themselves, #himself, #herself, user-themselves, user-himself, user-herself">[@Pronouns/User/Themselves]</Macro>
+	<Macro id="#they've, user-they've">[@Pronouns/User/They][use-they-user?'ve|'s]</Macro>
+	<Macro id="#they'd, #he'd, #she'd, user-they'd, user-she'd, user-he'd">[@Pronouns/User/They]'d</Macro>						<!-- they had -->
+	<Macro id="#they're, #he's, #she's, user-they're, user-she's, user-he's">[@Pronouns/User/They][use-they-user?'re|'s]</Macro>				<!-- they are, she is -->
+	<Macro id="#they'll, #he'll, #she'll, user-they'll, user-she'll, user-he'll">[@Pronouns/User/They]'ll</Macro>
+
+	<!-- Standard pronouns -->
+	<String id="Pronouns">
+		<String id="Char">
+			<String rule="__snippet" priority="3"> <!-- Snippet: escape -->
+				<String id="they">{{they}}</String>
+				<String id="them">{{them}}</String>
+				<String id="their">{{their}}</String>
+				<String id="theirs">{{theirs}}</String>
+				<String id="themselves">{{themselves}}</String>
+			</String>		
+			<String rule="use-they" priority="2"> <!-- Plural / Neutral -->
+				<String id="they">they</String>
+				<String id="them">them</String>
+				<String id="their">their</String>
+				<String id="theirs">theirs</String>
+				<String id="themselves">themselves</String>
+			</String>
+			<String rule="use-masculine-pronoun" priority="1"> <!-- Male -->
+				<String id="they">he</String>
+				<String id="them">him</String>
+				<String id="their">his</String>
+				<String id="theirs">his</String>
+				<String id="themselves">himself</String>
+			</String>
+			<String rule="use-feminine-pronoun" priority="1"> <!-- Female -->
+				<String id="they">she</String>
+				<String id="them">her</String>
+				<String id="their">her</String>
+				<String id="theirs">hers</String>
+				<String id="themselves">herself</String>
+			</String>
+			<String rule="use-it" priority="1"> <!-- It -->
+				<String id="they">it</String>
+				<String id="them">it</String>
+				<String id="their">its</String>
+				<String id="theirs">its</String>
+				<String id="themselves">itself</String>
+			</String>
+			<String rule="*"> <!-- Fallback -->
+				<String id="they">they</String>
+				<String id="them">them</String>
+				<String id="their">their</String>
+				<String id="theirs">theirs</String>
+				<String id="themselves">themselves</String>
+			</String>
+		</String>
+		
+		<String id="User">
+			<String rule="__snippet" priority="3"> <!-- Snippet: escape -->
+				<String id="they">{{#they}}</String>
+				<String id="them">{{#them}}</String>
+				<String id="their">{{#their}}</String>
+				<String id="theirs">{{#theirs}}</String>
+				<String id="themselves">{{#themselves}}</String>
+			</String>			
+			<String rule="#gender is male" priority="1"> <!-- Male -->
+				<String id="they">he</String>
+				<String id="them">him</String>
+				<String id="their">his</String>
+				<String id="theirs">his</String>
+				<String id="themselves">himself</String>
+			</String>
+			<String rule="#gender is female" priority="1"> <!-- Female -->
+				<String id="they">she</String>
+				<String id="them">her</String>
+				<String id="their">her</String>
+				<String id="theirs">hers</String>
+				<String id="themselves">herself</String>
+			</String>
+			<String rule="#gender is any" priority="1"> <!-- Male/Female -->
+				<String id="they">he/she</String>
+				<String id="them">him/her</String>
+				<String id="their">his/her</String>
+				<String id="theirs">his/hers</String>
+				<String id="themselves">himself/herself</String>
+			</String>			
+			<String>  <!-- Undefined -->
+				<String id="they">they</String>
+				<String id="them">them</String>
+				<String id="their">their</String>
+				<String id="theirs">theirs</String>
+				<String id="themselves">themselves</String>
+			</String>
+		</String>
+	</String>	
+</Ginger>

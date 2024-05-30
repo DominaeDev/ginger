@@ -1,0 +1,18 @@
+<Ginger id="__post-history">
+	<Name>Other/Model instructions (Important)</Name>
+	<Description>
+		Equivalent to the "Jailbreak"/"Post history instructions" field in SillyTavern.
+		(Used for compatibility.)
+	</Description>
+	<Color>#bfd0db</Color>
+	<Order>0</Order>
+	<Multiple>True</Multiple>
+	<Requires>not __actor</Requires>
+	<Flags>system-prompt, model, __post-history, __component, __formatting, __internal</Flags>
+	
+	<Text id="system" style="component">
+		<Label>Instructions</Label>
+	</Text>
+	
+	<System important="true">{system:local}</System>
+</Ginger>

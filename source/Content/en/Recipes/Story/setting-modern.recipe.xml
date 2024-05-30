@@ -1,0 +1,33 @@
+﻿<Ginger version="1.0" id="setting-modern">
+	<Name>Settings/Modern</Name>
+	<Title>Modern setting</Title>
+	<Description>A modern world setting.</Description>
+	<Author>Ginger</Author>
+	<Category>World</Category>
+	<Requires>not setting</Requires>
+	<Flags>setting</Flags>
+
+	<!-- Parameters -->
+	<Toggle id="use-greeting">
+		<Label>Include greeting?</Label>
+		<Description>
+			Include a greeting that introduces the setting.
+			(Must be placed above other greetings)
+		</Description>
+	</Toggle>
+	<SetVar id="setting">modern</SetVar>
+	
+	<!-- Output -->	
+	<Scenario>
+		Setting:  
+		In our own world today, amidst the hustle and bustle of city life or the serenity of rural landscapes, people from all walks of life go about their daily lives. Whether it's navigating complex relationships in tight-knit communities or pursuing personal ambitions within the competitive arena of urban jungles, we encounter a diverse array of characters with unique stories to tell. From the everyday struggles and triumphs experienced by ordinary folk to the hidden worlds of underground societies that thrive just beneath the surface, our world is filled with endless possibilities for exploration, adventure, and self-discovery.
+	</Scenario>
+
+	<Greeting rule="use-greeting">
+		As you step into this vibrant tapestry of existence, your path remains unwritten; an open slate to be etched by the choices you make. Whether you choose to become embroiled in the tumultuous web of human relations or seek solace amidst nature's embrace, every decision will shape your destiny and the world around you.
+		Be prepared for encounters with intriguing individuals, each harboring their own secrets and desires. Dive into the depths of the urban jungle or venture through forgotten realms; in this ever-evolving narrative, opportunities are limitless as they await you to write your story.
+		
+		{continue}
+	</Greeting>
+
+</Ginger>

@@ -1,0 +1,35 @@
+﻿<Ginger version="1.0" id="setting-dystopian">
+	<Name>Settings/Dystopian</Name>
+	<Title>Dystopian setting</Title>
+	<Description>A dystopian world setting.</Description>
+	<Author>Ginger</Author>
+	<Category>World</Category>
+	<Requires>not setting</Requires>
+	<Flags>setting</Flags>
+
+	<!-- Parameters -->
+	<Toggle id="use-greeting">
+		<Label>Include greeting?</Label>
+		<Description>
+			Include a greeting that introduces the setting.
+			(Must be placed above other greetings)
+		</Description>
+	</Toggle>
+	<SetVar id="setting">dystopian</SetVar>
+
+	<!-- Output -->	
+	<Scenario>
+		[p]Setting:  
+		In the grim future that awaits humanity, oppressive governments rule with an iron fist over decaying urban landscapes filled with desperation and fear. The few remaining pockets of resistance struggle to survive amidst the omnipresent surveillance state that seeks to crush their spirit and quell any sign of dissent. This world is a dark mirror reflecting back the worst of human nature, where power-hungry elites exploit the masses for their own ends while those with nothing left to lose take up arms against the system that has failed them. Amidst this chaos and despair, a legend emerges - an enigmatic figure known only as [user] who strikes fear into the hearts of oppressors but inspires hope in the downtrodden. Their mission: to bring down the corrupt regime and forge a new path towards equality and freedom where none has existed before.
+	</Scenario>
+
+	<Greeting rule="use-greeting">
+		In this harrowing future, you awaken as [user] - an enigmatic figure of legend born from the desperation and resilience of humanity's last remaining free spirits.
+		Your mission is clear: to dismantle a corrupt regime that has enslaved the masses for far too long, bringing justice and hope to those who have endured unimaginable suffering under their iron rule. With your identity shrouded in mystery, you must navigate this treacherous world carefully, using cunning, stealth, and force when necessary to strike at the heart of tyranny.
+		Your journey will be fraught with danger, but the fate of humanity rests on your shoulders - and they are waiting for a savior. Will you rise to the challenge?
+		[p]
+		{continue}
+	</Greeting>
+
+
+</Ginger>

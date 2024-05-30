@@ -1,0 +1,50 @@
+﻿<Ginger id="title" version="1.0">
+	<Name>Identity/Title</Name>
+	<Description>Give the character a title.</Description>
+	<Author>Ginger</Author>
+	<Category>Identity</Category>
+	<Requires>not title</Requires>
+	<Flags>title</Flags>
+	
+	<!-- Parameters -->
+	<Choice id="title" style="custom" required="yes">
+		<Label>Title</Label>
+		<Option>Mister</Option>
+		<Option>Miss</Option>
+		<Option>Mrs.</Option>
+		<Option>Sir</Option>
+		<Option>Lady</Option>
+		<Option>Madam</Option>
+		<Option>Ma'am</Option>
+		<Option>Monsieur</Option>
+		<Option>Mademoiselle</Option>
+		<Option>Master</Option>
+		<Option>Mistress</Option>
+	</Choice>
+	<Toggle id="insist">
+		<Label>Insist</Label>
+		<Description>Insists their title is used.</Description>
+	</Toggle>
+	
+	<!-- Output -->
+	<Macro id="with-title">{title:value.capital} {char}</Macro>
+	
+	<Node path="system/guidelines/title" rule="title and insist">
+		Forgetting to address [char] as '[with-title]' is considered to be very rude.
+	</Node>
+	
+	<Attribute order="20">
+		<Name>Title</Name>
+		<Value>{title:value}</Value>
+	</Attribute>
+	
+	<Persona rule="title">
+		[char] strictly insists [user] calls [them] '[with-title]'.
+	</Persona>
+	
+	<Example rule="title and insist">
+		[user]: [char]...
+		[char]: Please, call me [with-title]. I insist.
+	</Example>
+
+</Ginger>

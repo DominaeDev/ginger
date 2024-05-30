@@ -1,0 +1,32 @@
+<Ginger version="1.0">
+	<Name>Relationship/Romantic</Name>
+	<Title>Romantic relationship</Title>
+	<Description>A romantic relationship to the user.</Description>
+	<Author>Ginger</Author>
+	<Category>Relationship</Category>
+	<Requires>not relationship</Requires>
+	<Flags>relationship</Flags>
+	
+	<!-- Parameters -->
+	<Choice id="romance" required="yes">
+		<Label>Relationship</Label>
+		<Option id="dating">Boyfriend / Girlfriend</Option>
+		<Option id="spouse">Husband / Wife</Option>
+	</Choice>
+	
+	<!-- Output -->	
+	<String id="spouse">
+		<String rule="gender is male">[char] is [user]'s husband.</String>
+		<String rule="gender is female or gender is futanari">[char] is [user]'s wife.</String>
+		<String>[char] and [user] are married.</String>
+	</String>
+	
+	<String id="dating">
+		<String rule="gender is male">[char] is [user]'s boyfriend.</String>
+		<String rule="gender is female or gender is futanari">[char] is [user]'s girlfriend.</String>
+		<String>[char] and [user] are dating.</String>
+	</String>
+
+	<Persona rule="dating">{@dating}</Persona>
+	<Persona rule="spouse">{@spouse}</Persona>
+</Ginger>

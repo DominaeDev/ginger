@@ -1,0 +1,19 @@
+<!-- 
+	This file contains aliases to commonly used node styles.
+	
+	See documentation for details.
+-->
+
+<Ginger>
+	<!-- Attribute value style-->
+	<Style id="attribute">default</Style>
+	
+	<!-- Text value style -->
+	<Style id="text">default</Style>
+	
+	<!-- Number value style -->
+	<Style id="number">default</Style>
+	
+	<!-- List style -->
+	<Style id="list">comma-stop</Style>
+</Ginger>

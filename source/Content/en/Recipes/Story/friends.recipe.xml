@@ -1,0 +1,25 @@
+﻿<Ginger version="1.0">
+	<Name>Cast/Friends</Name>
+	<Title>Friends</Title>
+	<Description>Describe the character's closest friends.</Description>
+	<Author>Ginger</Author>
+	<Category>Cast</Category>
+	
+	<!-- Parameters -->
+	<List id="friends">
+		<Label>Friends</Label>
+		<Placeholder>Names of friends, separated by commas</Placeholder>
+	</List>
+	
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+		<Description>Additional information about their friends.</Description>
+	</Text>
+	
+	<!-- Output -->	
+	<Node path="scenario/world/friends" style="line">
+		[char's] friends: [friends?{friends.list}.]  
+		{more}  
+	</Node>
+		
+</Ginger>

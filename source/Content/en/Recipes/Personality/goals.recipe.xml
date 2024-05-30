@@ -1,0 +1,35 @@
+<Ginger id="goals" version="1.0">
+	<Name>Quirks/Goals &amp; priorities</Name>
+	<Title>Goals &amp; priorities</Title>
+	<Description>Describe the character's goals.</Description>
+	<Author>Ginger</Author>
+	<Category>Mind</Category>
+	
+	<!-- Parameters -->
+	<List id="goals">
+		<Label>Goals</Label>
+		<Placeholder>Enter one or more goals, separated by commas</Placeholder>
+	</List>
+	
+	<List id="priorities">
+		<Label>Priorities</Label>
+		<Placeholder>Enter one or more priorities, separated by commas</Placeholder>
+	</List>
+	
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
+	
+	<!-- Output -->	
+	<Attribute style="list">
+		<Name>[goals.count gt 1?Goals|Goal]</Name>
+		<Value>{goals}</Value>
+	</Attribute>
+	
+	<Attribute style="list">
+		<Name>Priorities</Name>
+		<Value>{priorities}</Value>
+	</Attribute>
+	
+	<Node path="description/goals" rule="more">{more}.</Node>
+</Ginger>

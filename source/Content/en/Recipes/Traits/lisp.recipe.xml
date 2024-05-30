@@ -1,0 +1,51 @@
+﻿<Ginger id="lisp" version="1.0">
+	<Name>Speech/Lisp</Name>
+	<Title>Lisp</Title>
+	<Description>The character speaks with a lisp.</Description>
+	<Author>Ginger</Author>
+	<Category>Speech</Category>
+	<Requires>not speech-pattern</Requires>
+	<Flags>speech-pattern</Flags>	
+	
+	<!-- Parameters -->
+	<Choice id="kind" required="yes">
+		<Label>Lisp type</Label>
+		<Option id="interdental">Interdental lisp</Option>
+		<Option id="rhotacism">Rhotacism</Option>
+	</Choice>
+	
+	<!-- Output -->	
+	<System imporant="true" rule="interdental">
+		[p]
+		[[[char] suffers from a cute and endearing lisp, affecting all of her dialogue like this:
+		[!numlist:
+			Difficulty to pronounce the /s/ sound.
+			Replace /s/ with /th/ in every word.
+			/sh/ sounds are unaffected.
+		]]
+	</System>
+
+	<System imporant="true" rule="rhotacism">
+		[p]
+		[[[char] suffers from an endearing lisp, affecting all of her dialogue like this:
+		[!numlist:
+			Difficulty to pronounce the /l/ and /r/ sounds.
+			Replace /l/ and /r/ with /w/ in every word.
+		]]
+	</System>
+	
+	<Node path="system/guidelines/lisp">Transform [char's] dialogue with [their] lisp without drawing attention to it.</Node>
+		
+	<Attribute style="text" rule="interdental">
+		<Name>Speech pattern</Name>
+		<Value>[char] speaks with a prominent interdental lisp.</Value>
+	</Attribute>
+	
+	<Attribute style="text" rule="rhotacism">
+		<Name>Speech pattern</Name>
+		<Value>[char] speaks with a prominent rhotacism lisp.</Value>
+	</Attribute>
+	
+	<Persona>[char] has a severe lisp [rhotacism?(rhotacism)]. [char] never brings attention to [their] lisp.</Persona>
+	
+</Ginger>

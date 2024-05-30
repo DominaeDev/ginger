@@ -1,0 +1,621 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="arrow_up" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\arrow_up.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="characteristic" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\characteristic.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="arrow_down" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\arrow_down.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="model" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\model.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="lore" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\lore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="folder" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\folder.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="checker" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\checker.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cross" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\cross.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="collapsed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\collapsed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="lore_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\lore_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="delete_strike" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\delete_strike.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="snippet_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\snippet_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="snippet" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\snippet.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="delete" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\delete.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="snippet_template" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Templates\snippet_template.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="component" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\component.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="delete_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\delete_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="persona" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\persona.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="write" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\write.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="recipe_template_empty" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Templates\recipe_template_empty.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="recipe_template_sample_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Templates\recipe_template_sample_1.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="recipe_template_sample_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Templates\recipe_template_sample_2.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="recipe_template_sample_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Templates\recipe_template_sample_3.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="lore_down" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\lore_down.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="lore_up" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\lore_up.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cap_bake_no_result" xml:space="preserve">
+    <value>No result</value>
+  </data>
+  <data name="cap_confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="cap_error" xml:space="preserve">
+    <value>Something went wrong</value>
+  </data>
+  <data name="cap_find" xml:space="preserve">
+    <value>Find</value>
+  </data>
+  <data name="cap_open_character_card" xml:space="preserve">
+    <value>Open character card</value>
+  </data>
+  <data name="cap_overwrite_lorebook" xml:space="preserve">
+    <value>Overwrite lorebook</value>
+  </data>
+  <data name="cap_overwrite_recipe" xml:space="preserve">
+    <value>Overwrite existing recipe</value>
+  </data>
+  <data name="cap_overwrite_snippet" xml:space="preserve">
+    <value>Overwrite existing snippet</value>
+  </data>
+  <data name="cap_pasted" xml:space="preserve">
+    <value>Paste recipe</value>
+  </data>
+  <data name="cap_replace" xml:space="preserve">
+    <value>Replace</value>
+  </data>
+  <data name="cap_swap_pronouns" xml:space="preserve">
+    <value>Replace pronouns</value>
+  </data>
+  <data name="error_bake_no_result" xml:space="preserve">
+    <value>Baking yielded no result.</value>
+  </data>
+  <data name="error_empty_lore" xml:space="preserve">
+    <value>There is no lore to export.</value>
+  </data>
+  <data name="error_empty_snippet" xml:space="preserve">
+    <value>Snippets cannot be empty.</value>
+  </data>
+  <data name="error_launch_text_editor" xml:space="preserve">
+    <value>Failed to launch text editor</value>
+  </data>
+  <data name="error_load_image" xml:space="preserve">
+    <value>Failed to load image.</value>
+  </data>
+  <data name="error_max_characters" xml:space="preserve">
+    <value>Max number of characters reached.</value>
+  </data>
+  <data name="error_open_character_card" xml:space="preserve">
+    <value>Unrecognized character card format.</value>
+  </data>
+  <data name="error_read_json" xml:space="preserve">
+    <value>Failed to read from json file.</value>
+  </data>
+  <data name="error_save_character_card" xml:space="preserve">
+    <value>Failed to save character card</value>
+  </data>
+  <data name="error_save_notes" xml:space="preserve">
+    <value>Failed to save notes.</value>
+  </data>
+  <data name="error_save_snippet" xml:space="preserve">
+    <value>Failed to save snippet.</value>
+  </data>
+  <data name="error_unrecognized_character_format" xml:space="preserve">
+    <value>Unrecognized character format.</value>
+  </data>
+  <data name="error_unrecognized_lorebook_format" xml:space="preserve">
+    <value>Unrecognized lorebook format.</value>
+  </data>
+  <data name="error_write_json" xml:space="preserve">
+    <value>Failed to write to json file.</value>
+  </data>
+  <data name="error_file_not_found" xml:space="preserve">
+    <value>File not found.</value>
+  </data>
+  <data name="msg_no_match" xml:space="preserve">
+    <value>No matches found.</value>
+  </data>
+  <data name="msg_open_image_card" xml:space="preserve">
+    <value>This image file contains character data.
+Would you like to open it as a character card instead?</value>
+  </data>
+  <data name="msg_overwrite_lorebook" xml:space="preserve">
+    <value>A lorebook with the same name already exists.
+Would you like to overwrite it?</value>
+  </data>
+  <data name="msg_overwrite_recipe" xml:space="preserve">
+    <value>A recipe with the same name already exists.
+Would you like to overwrite it?</value>
+  </data>
+  <data name="msg_overwrite_snippet" xml:space="preserve">
+    <value>A snippet with the same name already exists.
+Would you like to overwrite it?</value>
+  </data>
+  <data name="error_pasted" xml:space="preserve">
+    <value>{0} recipe(s) could not be added.</value>
+  </data>
+  <data name="msg_replace_plural" xml:space="preserve">
+    <value>{0} occurrences replaced.</value>
+  </data>
+  <data name="msg_replace_single" xml:space="preserve">
+    <value>{0} occurence replaced.</value>
+  </data>
+  <data name="msg_save_changes" xml:space="preserve">
+    <value>Save changes?</value>
+  </data>
+  <data name="personality" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\personality.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="appicon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\appicon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\appicon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="msg_confirm_nsfw" xml:space="preserve">
+    <value>This will allow "not safe for work" content, which can include mature themes and potentially offensive material. Continue?</value>
+  </data>
+  <data name="story" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\story.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="component_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\component_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tooltip_character_gender" xml:space="preserve">
+    <value>The gender of the character.
+This setting affects generated text only.</value>
+  </data>
+  <data name="tooltip_character_name" xml:space="preserve">
+    <value>The name of this character card.
+Commonly, this is the same as the character's name.</value>
+  </data>
+  <data name="tooltip_spoken_name" xml:space="preserve">
+    <value>The spoken name of the character (what they they go by).
+Same as card name if omitted.</value>
+  </data>
+  <data name="tooltip_text_style" xml:space="preserve">
+    <value>Adjusts the format of the character's responses.
+(This setting only applies to greetings and example chat.)</value>
+  </data>
+  <data name="tooltip_tokens" xml:space="preserve">
+    <value>The total context size that the character occupies (measured in Llama2 tokens).</value>
+  </data>
+  <data name="tooltip_user_gender" xml:space="preserve">
+    <value>The gender or desired point of view of the user.
+This setting affects generated text only.</value>
+  </data>
+  <data name="tooltip_user_name" xml:space="preserve">
+    <value>A name to use in place of {user}.
+(Is not stored in the character card.)</value>
+  </data>
+  <data name="cap_reload_recipes" xml:space="preserve">
+    <value>Renew recipes</value>
+  </data>
+  <data name="error_help" xml:space="preserve">
+    <value>Failed to open help documentation.</value>
+  </data>
+  <data name="msg_reload_recipes" xml:space="preserve">
+    <value>Would you like to renew the recipes in the character cards?</value>
+  </data>
+  <data name="recipe_template_card" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Templates\recipe_template_card.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="expanded" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\expanded.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cap_load_with_error" xml:space="preserve">
+    <value>Loaded with errors</value>
+  </data>
+  <data name="msg_dismiss_changes" xml:space="preserve">
+    <value>Dismiss changes?</value>
+  </data>
+  <data name="tavern_worldbook_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\tavern_worldbook.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="agnaistic_characterbook_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\agnaistic_characterbook.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="tavern_characterbook_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\tavern_characterbook.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="recipe_template_personality" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Templates\recipe_template_personality.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="tooltip_tokens_permanent" xml:space="preserve">
+    <value>The minimum context size that the character can occupy (measured in Llama2 tokens).</value>
+  </data>
+  <data name="tooltip_character_pronouns" xml:space="preserve">
+    <value>Specify the pronouns to use for this character.
+(This setting affects generated text only.)</value>
+  </data>
+  <data name="msg_incremental_file_exists" xml:space="preserve">
+    <value>{0} already exists.
+Do you want to replace it?</value>
+  </data>
+  <data name="tooltip_detail_level" xml:space="preserve">
+    <value>Informs recipes and affects level of detail in generated text.
+Higher detail increases token count.</value>
+  </data>
+  <data name="agnaistic_charactercard_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\agnaistic_charactercard.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="faraday_charactercard_v3_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\faraday_charactercard_v3.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="tavern_charactercard_v1_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\tavern_charactercard_v1.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="tavern_charactercard_v2_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\tavern_charactercard_v2.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="pygmalion_charactercard_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\pygmalion_charactercard.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="error_no_data" xml:space="preserve">
+    <value>File contains no character data.</value>
+  </data>
+  <data name="cap_load_error" xml:space="preserve">
+    <value>Failed to open file</value>
+  </data>
+  <data name="error_already_open" xml:space="preserve">
+    <value>{0} is already open in another process.</value>
+  </data>
+  <data name="cap_save_error" xml:space="preserve">
+    <value>Failed to save file</value>
+  </data>
+  <data name="cap_export_error" xml:space="preserve">
+    <value>Couldn't export file</value>
+  </data>
+  <data name="cap_import_error" xml:space="preserve">
+    <value>Import failed</value>
+  </data>
+  <data name="cap_save_snippet_error" xml:space="preserve">
+    <value>Couldn't save snippet</value>
+  </data>
+  <data name="error_load_dictionary" xml:space="preserve">
+    <value>Failed to load dictionary.</value>
+  </data>
+  <data name="msg_load_with_error" xml:space="preserve">
+    <value>The card loaded successfully, but with {0} error(s).
+Some data may be missing.</value>
+  </data>
+  <data name="example_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Components\example_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="faraday_charactercard_v4_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\faraday_charactercard_v4.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="greeting_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Components\greeting_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="lorebook_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Components\lorebook_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="persona_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Components\persona_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="scenario_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Components\scenario_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="system_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Components\system_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="user_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Components\user_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="cap_exit_app" xml:space="preserve">
+    <value>Exit Ginger</value>
+  </data>
+  <data name="cap_import_character" xml:space="preserve">
+    <value>Import character</value>
+  </data>
+  <data name="cap_new_file" xml:space="preserve">
+    <value>New character card</value>
+  </data>
+  <data name="internal_global_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\internal_global_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="cap_export_character" xml:space="preserve">
+    <value>Export character</value>
+  </data>
+  <data name="cap_export_lorebook" xml:space="preserve">
+    <value>Export lorebook</value>
+  </data>
+  <data name="cap_import_external_recipe" xml:space="preserve">
+    <value>Import external recipe</value>
+  </data>
+  <data name="cap_import_lorebook" xml:space="preserve">
+    <value>Import lorebook</value>
+  </data>
+  <data name="cap_open_image" xml:space="preserve">
+    <value>Open image</value>
+  </data>
+  <data name="cap_save_snippet" xml:space="preserve">
+    <value>Save snippet</value>
+  </data>
+  <data name="tooltip_no_includes" xml:space="preserve">
+    <value>(Hold Shift to not include any complementary recipes.)</value>
+  </data>
+  <data name="cap_add_recipe" xml:space="preserve">
+    <value>Add recipe(s)...</value>
+  </data>
+  <data name="error_no_lorebook" xml:space="preserve">
+    <value>File contains no lorebook data.</value>
+  </data>
+  <data name="error_read_data" xml:space="preserve">
+    <value>Failed to read data.</value>
+  </data>
+  <data name="error_save_lorebook" xml:space="preserve">
+    <value>Failed to save lorebook.</value>
+  </data>
+  <data name="msg_include_recipe" xml:space="preserve">
+    <value>Would you also like to add {0} complementary recipe?</value>
+  </data>
+  <data name="msg_include_recipes" xml:space="preserve">
+    <value>Would you also like to add {0} complementary recipes?</value>
+  </data>
+  <data name="error_fallback" xml:space="preserve">
+    <value>This file contains unsupported or corrupted data. The text was successfully recovered, but Ginger was unable to recover the recipes.</value>
+  </data>
+  <data name="tooltip_move_down" xml:space="preserve">
+    <value>Move down</value>
+  </data>
+  <data name="tooltip_move_up" xml:space="preserve">
+    <value>Move up</value>
+  </data>
+  <data name="tooltip_open_write" xml:space="preserve">
+    <value>Open text editor</value>
+  </data>
+  <data name="tooltip_remove_lore" xml:space="preserve">
+    <value>Remove entry</value>
+  </data>
+  <data name="attribute_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Other\attribute_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="grammar_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Other\grammar_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="post_history_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Other\post_history_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="recipe_template_base" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Templates\recipe_template_base.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="msg_drop_image" xml:space="preserve">
+    <value>No portrait image</value>
+  </data>
+  <data name="tooltip_cant_add" xml:space="preserve">
+    <value>This recipe cannot be added.</value>
+  </data>
+  <data name="tooltip_clear_mru" xml:space="preserve">
+    <value>Clear the list of recently used files.</value>
+  </data>
+  <data name="tooltip_create_recipe" xml:space="preserve">
+    <value>Create a new recipe and add it to your recipe book</value>
+  </data>
+  <data name="tooltip_create_snippet" xml:space="preserve">
+    <value>Create a new snippet</value>
+  </data>
+  <data name="tooltip_merge_lorebooks" xml:space="preserve">
+    <value>Merge all lorebooks into one</value>
+  </data>
+  <data name="tooltip_option_nsfw" xml:space="preserve">
+    <value>Enable "Not Safe For Work" content</value>
+  </data>
+  <data name="tooltip_option_use_placeholders" xml:space="preserve">
+    <value>Automatically convert name placeholders</value>
+  </data>
+  <data name="tooltip_recipe_bake" xml:space="preserve">
+    <value>Bake this recipe to editable text.</value>
+  </data>
+  <data name="tooltip_recipe_create_recipe" xml:space="preserve">
+    <value>Create a new recipe from this recipe.</value>
+  </data>
+  <data name="tooltip_recipe_create_snippet" xml:space="preserve">
+    <value>Create a snippet from this recipe.</value>
+  </data>
+  <data name="tooltip_recipe_formatting" xml:space="preserve">
+    <value>Toggles whether the text is formatted.</value>
+  </data>
+  <data name="tooltip_recipe_load_local" xml:space="preserve">
+    <value>Load a local copy of this recipe.</value>
+  </data>
+  <data name="tooltip_recipe_save_local" xml:space="preserve">
+    <value>Save a local copy of this recipe.</value>
+  </data>
+  <data name="tooltip_reload_recipes" xml:space="preserve">
+    <value>Reload all recipes from disk</value>
+  </data>
+  <data name="tooltip_save_incremental" xml:space="preserve">
+    <value>Save an incremental copy of this card</value>
+  </data>
+  <data name="default_portrait" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\default_portrait.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="internal_macros" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\internal_macros.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="personality_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Other\personality_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="tooltip_creator" xml:space="preserve">
+    <value>The name of the creator of this card.</value>
+  </data>
+  <data name="tooltip_creator_notes" xml:space="preserve">
+    <value>A comment from the creator.</value>
+  </data>
+  <data name="tooltip_no_portrait_image" xml:space="preserve">
+    <value>Click or drag a file to change portrait image.</value>
+  </data>
+  <data name="tooltip_tags" xml:space="preserve">
+    <value>A list of descriptive tags for this card.</value>
+  </data>
+  <data name="tooltip_version" xml:space="preserve">
+    <value>A version number or version name for this card.</value>
+  </data>
+  <data name="tooltip_portrait_image" xml:space="preserve">
+    <value>Right-click to change portrait.</value>
+  </data>
+  <data name="arrow_right" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\arrow_right.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+</root>

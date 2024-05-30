@@ -1,0 +1,116 @@
+﻿using System;
+using System.Globalization;
+using System.Xml;
+
+namespace Ginger
+{
+	public class NumberParameter : BaseParameter<decimal>
+	{
+		public enum Mode
+		{
+			Unknown = -1,
+			Integer = 0,
+			Decimal,
+
+			// Measurement
+			Length,
+			Weight,
+			Volume,
+		}
+
+		public Mode mode = Mode.Decimal;
+		public decimal minValue = decimal.MaxValue;
+		public decimal maxValue = decimal.MinValue;
+		public string suffix = null;
+
+		public NumberParameter() : base()
+		{
+		}
+
+		public NumberParameter(Recipe recipe) : base(recipe)
+		{
+			mode = Mode.Integer;
+		}
+
+		public override bool LoadFromXml(XmlNode xmlNode)
+		{
+			defaultValue = xmlNode.GetAttributeDecimal("default", default(decimal));
+			defaultValue = xmlNode.GetValueElementDecimal("Default", defaultValue);
+			value = defaultValue;
+
+			suffix = xmlNode.GetValueElement("Suffix", null);
+
+			minValue = xmlNode.GetAttributeDecimal("min", decimal.MinValue);
+			maxValue = xmlNode.GetAttributeDecimal("max", decimal.MaxValue);
+
+			if (xmlNode.HasAttribute("style"))
+			{
+				string style = xmlNode.GetAttribute("style");
+				switch (style)
+				{
+				case "decimal":
+				case "float":
+				case "real":
+					mode = Mode.Decimal;
+					break;
+				default:
+					mode = Mode.Integer;
+					break;
+				}
+			}
+
+			return base.LoadFromXml(xmlNode);
+		}
+
+		public override void SaveToXml(XmlNode xmlNode)
+		{
+			var node = xmlNode.AddElement("Number");
+			base.SaveToXml(node);
+
+			if (minValue != decimal.MinValue)
+				node.AddAttribute("min", minValue);
+			if (maxValue != decimal.MaxValue)
+				node.AddAttribute("max", maxValue);
+			if (mode == Mode.Decimal)
+				node.AddAttribute("style", "real");
+			if (string.IsNullOrEmpty(suffix) == false)
+				node.AddValueElement("Suffix", suffix);
+
+			if (defaultValue != default(decimal))
+				node.AddValueElement("Default", defaultValue);
+		}
+
+		public override void OnApplyToContext(Context context, Context localContext, ContextString.EvaluationConfig evalConfig)
+		{
+			if (value != default(decimal))
+			{
+				string sValue = Convert.ToSingle(value).ToString(CultureInfo.InvariantCulture);
+				context.SetValue(id, sValue);
+				localContext.SetValue(string.Concat(id.ToString(), ":local"), sValue);
+				localContext.AddTag(string.Concat(id.ToString(), ":local"));
+			}
+		}
+
+		public override object Clone()
+		{
+			var clone = CreateClone<NumberParameter>();
+			clone.mode = this.mode;
+			clone.minValue = this.minValue;
+			clone.maxValue = this.maxValue;
+			clone.suffix = this.suffix;
+			return clone;
+		}
+
+		public override int GetHashCode()
+		{
+			int hash = base.GetHashCode();
+			hash ^= "Number".GetHashCode();
+			hash ^= Utility.MakeHashCode(
+				minValue,
+				maxValue,
+				mode,
+				suffix);
+			return hash;
+		}
+	}
+}

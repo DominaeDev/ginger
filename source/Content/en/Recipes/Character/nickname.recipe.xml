@@ -1,0 +1,27 @@
+<Ginger version="1.0">
+	<Name>Identity/Nickname</Name>
+	<Title>Nickname</Title>
+	<Description>Give the character a nickname.</Description>
+	<Author>Ginger</Author>
+	<Category>Character</Category>
+	
+	<!-- Parameters -->
+	<Text id="nickname" raw="true" shared="yes">
+		<Label>Nickname</Label>
+		<Placeholder>Enter a nickname...</Placeholder>
+	</Text>
+	<Toggle id="alias"/>
+	
+	<!-- Output -->
+	<Attribute rule="nickname" order="0" style="space" mode="replace">
+		<Name>Name</Name>
+		<Value>{char} [alias?([!abbr:aka] "{nickname}")}]</Value>
+	</Attribute>
+	
+	<Attribute order="0" rule="nickname and not alias">
+		<Name>Nickname</Name>
+		<Value>"{nickname}"</Value>
+	</Attribute>
+	
+	<Persona rule="more-detail and nickname">[char] also goes by [their] [alias?alias|nickname] "{nickname}".</Persona>
+</Ginger>

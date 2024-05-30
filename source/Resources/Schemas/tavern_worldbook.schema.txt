@@ -1,0 +1,147 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "required": false,
+      "type": "string"
+    },
+    "description": {
+      "required": false,
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "scan_depth": {
+      "required": false,
+      "type": "integer"
+    },
+    "token_budget": {
+      "required": false,
+      "type": "integer"
+    },
+    "recursive_scanning": {
+      "required": false,
+      "type": "boolean"
+    },
+    "entries": {
+      "required": true,
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "uid": {
+            "required": false,
+            "type": "integer"
+          },
+          "key": {
+            "required": true,
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "keysecondary": {
+            "required": false,
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "comment": {
+            "required": false,
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "content": {
+            "required": true,
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "constant": {
+            "required": false,
+            "type": "boolean"
+          },
+          "selective": {
+            "required": false,
+            "type": "boolean"
+          },
+          "selectiveLogic": {
+            "required": false,
+            "type": "integer"
+          },
+          "addMemo": {
+            "required": false,
+            "type": "boolean"
+          },
+          "order": {
+            "required": false,
+            "type": "integer"
+          },
+          "position": {
+            "required": false,
+            "type": "integer"
+          },
+          "disable": {
+            "required": false,
+            "type": "boolean"
+          },
+          "enableRecursion": {
+            "required": false,
+            "type": "boolean"
+          },
+          "probability": {
+            "required": false,
+            "type": "integer"
+          },
+          "useProbability": {
+            "required": false,
+            "type": "boolean"
+          },
+          "depth": {
+            "required": false,
+            "type": "integer"
+          },
+          "group": {
+            "required": false,
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "displayIndex": {
+            "required": false,
+            "type": "integer"
+          },
+          "extensions": {
+            "required": false,
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {}
+          }
+        }
+      }
+    }
+  }
+}

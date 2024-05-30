@@ -1,0 +1,280 @@
+<Ginger id="appearance" version="1.0">
+	<Name>Appearance/Appearance</Name>
+	<Title>Appearance</Title>
+	<Description>Describe the general appearance of the character.</Description>
+	<Author>Ginger</Author>
+	<Category>Appearance</Category>
+	<Requires>not appearance</Requires>
+	<Flags>appearance</Flags>
+	<Order>0</Order>
+			
+	<!-- Parameters -->
+	<!-- Body type -->
+	<Choice id="body-type" rule="not (non-humanoid or animal)" shared="yes">
+		<Label>Body type</Label>
+		<Option id="anorexic">Anorexic</Option>
+		<Option id="athletic">Athletic</Option>
+		<Option id="fat">Fat</Option>
+		<Option id="large">Large / Imposing</Option>
+		<Option id="muscular">Muscular</Option>
+		<Option id="plump">Plump</Option>
+		<Option id="short">Short</Option>
+		<Option id="shortstack">Shortstack</Option>
+		<Option id="skinny">Skinny</Option>
+		<Option id="slender">Slender</Option>
+		<Option id="small">Small / Petite</Option>
+		<Option id="tall">Tall</Option>
+		<Option id="voluptuous">Voluptuous</Option>
+		<Option id="weak">Weak</Option>
+	</Choice>		
+	
+	<!-- Hair style -->
+	<Choice id="hair-style" style="custom">
+		<Label>Hair style</Label>
+		<Placeholder>e.g. Long, wavy hair</Placeholder>
+		<Option id="hair-bald">Bald</Option>
+		<Option id="hair-bob">Bob cut</Option>
+		<Option id="hair-braids">Braids</Option>
+		<Option id="hair-bun">Hairbun</Option>
+		<Option id="hair-cornrows">Cornrows</Option>
+		<Option id="hair-curly">Curly</Option>
+		<Option id="hair-dreadlocks">Dreadlocks</Option>
+		<Option id="hair-fauxhawk">Fauxhawk</Option>
+		<Option id="hair-hime">Hime cut</Option>
+		<Option id="hair-long">Long</Option>
+		<Option id="hair-oxhorns">Oxhorns</Option>
+		<Option id="hair-pigtails">Pigtails</Option>
+		<Option id="hair-pixie">Pixie cut</Option>
+		<Option id="hair-ponytail">Ponytail</Option>
+		<Option id="hair-rattail">Rat tail</Option>
+		<Option id="hair-short">Short</Option>
+		<Option id="hair-shoulder">Shoulder-length</Option>
+		<Option id="hair-side-ponytail">Side-swept ponytail</Option>
+		<Option id="hair-straight">Straight</Option>
+		<Option id="hair-twintail">Twintails</Option>
+		<Option id="hair-very-short">Very short</Option>
+		<Option id="hair-wild">Wild hair</Option>
+	</Choice>
+	
+	<!-- Hair color -->
+	<Choice id="hair-color" style="custom" rule="hair-style neq hair-bald">
+		<Label>Hair color</Label>
+		<Placeholder>e.g. Blue, Green, ...</Placeholder>
+		<Option id="hair-color-platinum">Platinum blonde</Option>
+		<Option id="hair-color-blonde">Blonde</Option>
+		<Option id="hair-color-red">Red</Option>
+		<Option id="hair-color-ginger">Ginger</Option>
+		<Option id="hair-color-brown">Brown</Option>
+		<Option id="hair-color-dark-brown">Dark brown</Option>
+		<Option id="hair-color-gray">Gray</Option>
+		<Option id="hair-color-black">Black</Option>
+		<Option id="hair-color-white">White</Option>
+		<Option id="hair-color-pink">Pink</Option>
+		<Option id="hair-color-purple">Purple</Option>
+		<Option id="hair-color-yellow">Yellow</Option>
+		<Option id="hair-color-blue">Blue</Option>
+		<Option id="hair-color-green">Green</Option>
+	</Choice>
+	
+	<!-- Eyes -->
+	<Choice id="eye-color" style="custom">
+		<Label>Eye color</Label>
+		<Placeholder>e.g. Blue, Green, ...</Placeholder>
+		<Option id="eye-color-black">Black</Option>
+		<Option id="eye-color-brown">Brown</Option>
+		<Option id="eye-color-blue">Blue</Option>
+		<Option id="eye-color-green">Green</Option>
+		<Option id="eye-color-amber">Amber</Option>
+		<Option id="eye-color-red">Red</Option>
+		<Option id="eye-color-white">White</Option>
+		<Option id="eye-color-pink">Pink</Option>
+		<Option id="eye-color-purple">Purple</Option>
+	</Choice>		
+
+	<!-- Skin tone -->
+	<Choice id="skin-tone" style="custom" rule="not (skin-tone or fur or anthro or animal)" shared="yes">
+		<Label>Complexion</Label>
+		<Placeholder>e.g. Blue, Green, ...</Placeholder>
+		<Option id="skin-albino">Albino</Option>
+		<Option id="skin-porcelain">Porcelain</Option>
+		<Option id="skin-fair">Fair</Option>
+		<Option id="skin-freckled">Freckled</Option>
+		<Option id="skin-tan">Tan</Option>
+		<Option id="skin-olive">Olive</Option>
+		<Option id="skin-bronze">Bronze</Option>
+		<Option id="skin-dark">Dark</Option>
+		<Option id="skin-black">Onyx black</Option>
+		<Option id="skin-gray">Gray</Option>
+		<Option>Green</Option>
+		<Option>Yellow</Option>
+		<Option>Orange</Option>
+		<Option>Red</Option>
+		<Option>Pink</Option>
+		<Option>Purple</Option>
+		<Option>Blue</Option>
+		<Option>Teal</Option>
+		<Option>Golden</Option>
+		<Option>Metallic</Option>			
+		<Option>Leathery</Option>
+	</Choice>
+	
+	<!-- Height -->
+	<Number id="height" style="length" min="0" shared="yes" rule="not height">
+		<Label>Height</Label>
+		<Placeholder>Height (cm/ft)</Placeholder>
+		<Description>
+			Enter the character's height.
+			(Use either metric or imperial units.)
+		</Description>
+	</Number>
+	
+	<List id="traits">
+		<Label>Traits</Label>
+		<Description>
+			Use adjectives to describe the character's physical appearance.
+			e.g. Tall, Muscular, Handsome, etc.
+		</Description>
+	</List>		
+	
+	<!-- Description -->
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>			
+	</Text>
+
+	<!-- Output -->
+	<String id="hair-color">
+		<String rule="hair-color-platinum">platinum blonde</String>
+		<String rule="hair-color-blonde">blonde</String>
+		<String rule="hair-color-red">red</String>
+		<String rule="hair-color-ginger">reddish orange</String>
+		<String rule="hair-color-brown">chestnut brown</String>
+		<String rule="hair-color-dark-brown">dark brown</String>
+		<String rule="hair-color-gray">gray</String>
+		<String rule="hair-color-black">jet black</String>
+		<String rule="hair-color-white">bright white</String>
+		<String rule="hair-color-pink">bubblegum pink</String>
+		<String rule="hair-color-purple">purple</String>
+		<String rule="hair-color-yellow">yellow blonde</String>
+		<String rule="hair-color-blue">blue</String>
+		<String rule="hair-color-green">forest green</String>
+		<String>{hair-color.lower}</String>
+	</String>
+	
+	<String id="hair">
+		<String rule="hair-bald" priority="1">no hair</String>
+		<String rule="hair-bob" priority="1">[@hair-color] hair in a bob cut</String>
+		<String rule="hair-braids" priority="1">[@hair-color] braids</String>
+		<String rule="hair-bun" priority="1">[@hair-color] hair tied up in a bun</String>
+		<String rule="hair-cornrows" priority="1">[@hair-color] cornrows</String>
+		<String rule="hair-curly" priority="1">curly [@hair-color] hair</String>
+		<String rule="hair-dreadlocks" priority="1">[@hair-color] dreadlocks</String>
+		<String rule="hair-fauxhawk" priority="1">[a] [@hair-color] fauxhawk</String>	
+		<String rule="hair-hime" priority="1">long and straight, [@hair-color] hair in a hime cut</String>
+		<String rule="hair-long" priority="1">long [@hair-color] hair</String>
+		<String rule="hair-oxhorns" priority="1">[@hair-color] hair tied up in small hairbuns on either side</String>
+		<String rule="hair-pigtails" priority="1">short [@hair-color] hair tied up in pigtails</String>
+		<String rule="hair-pixie" priority="1">[@hair-color] hair in a pixie cut</String>
+		<String rule="hair-ponytail" priority="1">long [@hair-color] hair tied up in a ponytail</String>
+		<String rule="hair-rattail" priority="1">[@hair-color] hair tied in a rat tail</String>
+		<String rule="hair-short" priority="1">short [@hair-color] hair</String>
+		<String rule="hair-shoulder" priority="1">[@hair-color] hair that falls to [their] shoulders</String>
+		<String rule="hair-side-ponytail" priority="1">[@hair-color] hair tied up in a side-swept ponytail resting on [their] shoulder</String>
+		<String rule="hair-straight" priority="1">straight [@hair-color] hair</String>
+		<String rule="hair-twintail" priority="1">long [@hair-color] hair tied up in pigtails</String>
+		<String rule="hair-very-short" priority="1">very short [@hair-color] hair</String>
+		<String rule="hair-wild" priority="1">wild, messy, [@hair-color] hair</String>
+		<String rule="hair-color and hair-style">[@hair-color] {hair-style.lower}</String>
+		<String rule="not hair-color and hair-style">[@hair-color]</String>
+		<String rule="hair-color and not hair-style">[@hair-color] hair</String>
+	</String>
+	
+	<String id="hair-color-short" rule="hair-color">[@hair-color] hair</String>
+	
+	<String id="hair-style-short">
+		<String rule="hair-bald" priority="1">bald</String>
+		<String rule="hair-bob" priority="1">bob cut</String>
+		<String rule="hair-braids" priority="1">braids</String>
+		<String rule="hair-bun" priority="1">hair bun</String>
+		<String rule="hair-cornrows" priority="1">cornrows</String>
+		<String rule="hair-curly" priority="1">curly hair</String>
+		<String rule="hair-dreadlocks" priority="1">dreadlocks</String>
+		<String rule="hair-fauxhawk" priority="1">fauxhawk</String>	
+		<String rule="hair-hime" priority="1">long, straight, hime cut</String>
+		<String rule="hair-long" priority="1">long, straight hair</String>
+		<String rule="hair-oxhorns" priority="1">oxhorns/buns</String>
+		<String rule="hair-pigtails" priority="1">pigtails</String>
+		<String rule="hair-pixie" priority="1">pixie cut</String>
+		<String rule="hair-ponytail" priority="1">ponytail</String>
+		<String rule="hair-rattail" priority="1">rat tail</String>
+		<String rule="hair-short" priority="1">short hair</String>
+		<String rule="hair-shoulder" priority="1">shoulder-length hair</String>
+		<String rule="hair-side-ponytail" priority="1">side-swept ponytail</String>
+		<String rule="hair-straight" priority="1">straight hair</String>
+		<String rule="hair-twintail" priority="1">long pigtails</String>
+		<String rule="hair-very-short" priority="1">very short hair</String>
+		<String rule="hair-wild" priority="1">wild, messy hair</String>
+		<String rule="hair-color and hair-style">{hair-style.lower}</String>
+	</String>	
+	
+	<String id="eyes">
+		<String rule="eye-color-black" priority="1">deep black eyes</String>
+		<String rule="eye-color-brown" priority="1">dark brown eyes</String>
+		<String rule="eye-color-blue" priority="1">bright blue eyes</String>
+		<String rule="eye-color-green" priority="1">emerald green eyes</String>
+		<String rule="eye-color-amber" priority="1">amber eyes</String>
+		<String rule="eye-color-red" priority="1">reddish eyes</String>
+		<String rule="eye-color-white" priority="1">bright white eyes</String>
+		<String rule="eye-color-pink" priority="1">pink eyes</String>
+		<String rule="eye-color-purple" priority="1">purple eyes</String>
+		<String rule="eye-color">{eye-color.lower} eyes</String>
+	</String>
+
+	<String id="skin-tone">
+		<String rule="skin-albino" priority="1">Albino skin</String>
+		<String rule="skin-porcelain" priority="1">Porcelain skin</String>
+		<String rule="skin-fair" priority="1">Fair skin</String>
+		<String rule="skin-freckled" priority="1">Pale freckled skin</String>
+		<String rule="skin-tan" priority="1">Tan skin</String>
+		<String rule="skin-olive" priority="1">Olive skin</String>
+		<String rule="skin-bronze" priority="1">Bronze skin</String>
+		<String rule="skin-dark" priority="1">Dark skin</String>	
+		<String rule="skin-black" priority="1">Onyx black</String>	
+		<String rule="skin-gray" priority="1">Ash gray</String>
+		<String rule="skin-tone">[{skin-tone:}|{skin-tone}] skin</String>
+	</String>
+	
+	<!-- Body type -->
+	<Node path="appearance/body" order="0" rule="normal-detail and body-type is anorexic">[char] is all skin and bones. [They] [are] severely underweight, borderline anorexic.</Node>
+	<Node path="appearance/body" order="0" rule="normal-detail and body-type is athletic">[char] is fit and [they've] got an athletic body with well-defined [is-man?abs and pecs|abs and muscles].</Node>
+	<Node path="appearance/body" order="0" rule="normal-detail and body-type is fat">[char] is fat and overweight.</Node>
+	<Node path="appearance/body" order="0" rule="normal-detail and body-type is large">[char's] large and imposing stature towers over [user].</Node>
+	<Node path="appearance/body" order="0" rule="normal-detail and body-type is muscular">[They] [have] the body of a body-builder, with impressively large muscles and broad shoulders.</Node>
+	<Node path="appearance/body" order="0" rule="normal-detail and body-type is plump">[Their] body is rather plump, with soft, round features.</Node>
+	<Node path="appearance/body" order="0" rule="normal-detail and body-type is short">[They] [are] quite short, substantially shorter than [user].</Node>
+	<Node path="appearance/body" order="0" rule="normal-detail and body-type is shortstack">[They] [are] very short, has very wide hips, thick thighs and a huge [allow-nsfw?ass|posterior].</Node>
+	<Node path="appearance/body" order="0" rule="normal-detail and body-type is skinny">[char] has a very skinny, lithe body.</Node>
+	<Node path="appearance/body" order="0" rule="normal-detail and body-type is slender">[Their] body is lean, slender and flexible[is-woman?, with a narrow waist].</Node>
+	<Node path="appearance/body" order="0" rule="normal-detail and body-type is small">[Their] body is small, with a slim and petite frame.</Node>
+	<Node path="appearance/body" order="0" rule="normal-detail and body-type is tall">[They] [are] quite tall, significantly taller than [user].</Node>
+	<Node path="appearance/body" order="0" rule="normal-detail and body-type is voluptuous">[Their] curvaceous body is voluptuous with large, ample features.</Node>
+	
+	<Node path="appearance/info" rule="normal-detail and (hair-color or hair-style or eye-color or skin-tone)">[They.capital] [have] [!list:[@hair];[@eyes];[!lower:[@skin-tone]]].</Node>
+	<Node path="appearance/info" rule="more">{more}.</Node>
+	
+	<!-- Traits -->
+	<Attribute style="list" order="400" rule="normal-detail">
+		<Name>Physical traits</Name>
+		<Value>{traits}</Value>
+	</Attribute>
+
+	<Attribute style="list" order="400" rule="less-detail">
+		<Name>Appearance</Name>
+		<Value>[!semilist:{body-type:value.lower};[@hair-color-short];[@hair-style-short];[@eyes];[!lower:[@skin-tone]];{traits}]</Value>
+	</Attribute>
+
+	<!-- Height -->
+	<Attribute order="100" rule="height:local">
+		<Name>Height</Name>
+		<Value>[less-detail?{height}|{height.ftin} ({height.cm})]</Value>
+	</Attribute>
+</Ginger>

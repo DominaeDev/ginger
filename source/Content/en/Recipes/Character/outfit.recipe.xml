@@ -1,0 +1,44 @@
+﻿<Ginger id="outfit" version="1.0">
+	<Name>Appearance/Outfit // Clothes</Name>
+	<Description>Describe what the character is wearing.</Description>
+	<Author>Ginger</Author>
+	<Category>Appearance</Category>
+	<Order>0</Order>
+	
+	<!-- Parameters --> 
+	<Text id="top">
+		<Label>Top</Label>
+		<Placeholder>A white t-shirt</Placeholder>
+	</Text>
+	<Text id="bottom">
+		<Label>Bottom</Label>
+		<Placeholder>Blue jeans</Placeholder>
+	</Text>
+	<Text id="accessories">
+		<Label>Accessories</Label>
+		<Placeholder>A hat</Placeholder>
+	</Text>
+	<Text id="underwear" rule="allow-nsfw">
+		<Label>Underwear</Label>
+		<Placeholder>White briefs</Placeholder>
+	</Text>
+	<Toggle id="glasses"/>
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
+	
+	<!-- Output -->
+	<Attribute style="list" order="450" rule="less-detail and (top or bottom or accessories or glasses)">
+		<Name>Outfit</Name>
+		<Value>{top.lower}; {bottom.lower}; {accessories.lower}; {glasses?glasses};</Value>
+	</Attribute>
+	
+	<Node path="appearance/outfit" order="600" rule="normal-detail and (top or bottom or accessories or glasses)">On most days, [char] wears [!list:{top.lower}; {bottom.lower}; {accessories.lower}; {glasses?glasses}].</Node>
+	<Node path="appearance/outfit" rule="more" order="600">{more}.</Node>
+	
+	<Lore rule="underwear">
+		<Name>underwear, undress, strip, panties</Name>
+		<Value>{char}'s underwear: {underwear}</Value>
+	</Lore>
+	
+</Ginger>

@@ -1,0 +1,11 @@
+.vs/
+bin/
+obj/
+app.config
+packages/
+Content/en/Recipes/User/
+Content/en/Recipes/Unused/
+Content/en/Snippets/*
+!Content/en/Snippets/Samples
+Dictionaries/*.user.dic
+Settings.ini

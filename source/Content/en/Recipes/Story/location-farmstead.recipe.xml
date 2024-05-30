@@ -1,0 +1,27 @@
+﻿<Ginger version="1.0">
+	<Name>Locations/Farmstead</Name>
+	<Description>Located on a farmstead.</Description>
+	<Author>Ginger</Author>
+	<Category>Location</Category>
+	<Requires>not location</Requires>
+	<Flags>location</Flags>
+	
+	<!-- Parameters --> 
+	<Text id="farm-name">
+		<Label>Name</Label>
+		<Default>Willowbrook Farm</Default>
+	</Text>
+
+	<!-- Output -->	
+	<Scenario>
+		Location: "Farmstead"
+		
+		Nestled in the heart of a fertile valley, surrounded by rolling hills covered with verdant pastures and dense forests, lies [farm-name?the quaint farmstead of {farm-name}|a quaint farmstead]. The main dwelling is a cozy two-story stone house, adorned with rustic wooden shutters and framing vibrant flower boxes overflowing with blooms in various hues. 
+		A stable stands nearby, housing horses of all shapes and sizes; some docile for plowing fields or cart rides, others spirited for riding across the countryside. Livestock roam freely throughout the expansive property, grazing on lush grasses beneath a clear blue sky dotted with puffy white clouds. 
+	</Scenario>
+	
+	<Scenario rule="more-detail">
+		The farmstead is a self-sufficient haven of simple pleasures and hard work, where life moves at a leisurely pace, far from the hustle and bustle of city living.
+	</Scenario>
+	
+</Ginger>

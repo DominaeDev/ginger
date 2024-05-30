@@ -1,0 +1,51 @@
+<Ginger version="1.0">
+	<!-- Preamble -->
+	<Name>%%NAME%%</Name>
+	<Title>%%TITLE%%</Title>
+	<Author>%%AUTHOR%%</Author>
+	<Category>%%CATEGORY%%</Category>
+	<Description>
+		Sample recipe with lore book entries.
+	</Description>
+	
+	<!-- Parameters -->
+
+	<Choice id="lore-kind" mandatory="true">
+		<Label>Lore kind</Label>
+		<Option id="fruits">Fruits</Option>
+		<Option id="vegetables">Vegetables</Option>
+	</Choice>
+	
+	<!-- Output -->
+
+	<Lore rule="fruits">
+		<Name>Apple</Name>
+		<Value>An apple is a sweet, edible fruit produced by an apple tree (Malus domestica). It is one of the most widely cultivated tree fruits.</Value>
+	</Lore>
+	
+	<Lore rule="fruits">
+		<Name>Orange</Name>
+		<Value>An orange is a small round citrus fruit with a juicy pulp and a sweet to tangy taste. It's commonly eaten as a snack or used in various recipes around the world.</Value>
+	</Lore>	
+	
+	<Lore rule="fruits">
+		<Name>Strawberry</Name>
+		<Value>Strawberries are a popular, heart-shaped red berry that is sweet and juicy. They grow on plants in cooler climates and can be eaten fresh or used to make jams, desserts, and other dishes.</Value>
+	</Lore>
+
+	<Lore rule="vegetables">
+		<Name>Asparagus</Name>
+		<Value>Asparagus is a green or purple spring vegetable that's often served as a side dish. It has a mildly sweet and nutty flavor, with tender yet firm texture when cooked properly.</Value>
+	</Lore>
+	
+	<Lore rule="vegetables">
+		<Name>Cucumber</Name>
+		<Value>A cucumber is an edible plant that belongs to the gourd family. It is typically green in color and has a mildly sweet taste when eaten raw or cooked.</Value>
+	</Lore>	
+	
+	<Lore rule="vegetables">
+		<Name>Cabbage</Name>
+		<Value>Cabbage is a leafy green or purple vegetable that's commonly used in various dishes. It has a crisp texture and can be eaten raw or cooked, providing vitamins and minerals to your diet.</Value>
+	</Lore>	
+	
+</Ginger>

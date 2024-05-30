@@ -1,0 +1,19 @@
+<Ginger id="__personality">
+	<Name>Other/Personality summary</Name>
+	<Title>Personality summary</Title>
+	<Description>
+		This is equivalent to the "Personality summary" field in SillyTavern.
+		(Used for compatibility)
+	</Description>
+	<Order>1</Order>
+	<Multiple>True</Multiple>
+	<Flags>persona, __personality, __component, __internal</Flags>
+	
+	<Text id="personality" style="component">
+		<Label>Personality</Label>
+	</Text>
+	
+	<Node path="persona/output/personality" style="space" order="1000" mode="exclude" rule="not __tavern">[br][char]'s personality: {inner}</Node>
+	<Node path="persona/output/personality" style="space" order="1000" mode="exclude" rule="__tavern"/>
+	<Node path="persona/output/personality/value">{personality:local}</Node>
+</Ginger>

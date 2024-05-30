@@ -1,0 +1,25 @@
+<Ginger version="1.0">
+	<Name>Anatomy/Height</Name>
+	<Title>Height</Title>
+	<Description>Describes the character's height.</Description>
+	<Author>Ginger</Author>
+	<Category>Appearance</Category>
+	<Requires>not height</Requires>
+	<Order>10</Order>
+	
+	<!-- Parameters -->
+	<Number id="height" style="length" min="0" shared="yes" rule="not height">
+		<Label>Height</Label>
+		<Placeholder>Height (cm/ft)</Placeholder>
+		<Description>
+			Enter the character's height.
+			(Use either metric or imperial units.)
+		</Description>
+	</Number>
+	
+	<Attribute order="100" rule="height:local">
+		<Name>Height</Name>
+		<Value>[less-detail?{height}|{height.ftin} ({height.cm})]</Value>
+	</Attribute>
+	
+</Ginger>

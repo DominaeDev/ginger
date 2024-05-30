@@ -1,0 +1,322 @@
+{
+	"type": "object",
+	"properties": {
+		"character": {
+			"required": true,
+			"type": "object",
+			"properties": {
+				"Chat": {
+					"required": false,
+					"type": [
+						"array",
+						"null"
+					],
+					"items": {
+						"type": [
+							"object",
+							"null"
+						],
+						"properties": {
+							"name": {
+								"required": false,
+								"type": [
+									"string",
+									"null"
+								]
+							},
+							"modelConfigId": {
+								"required": false,
+								"type": [
+									"string",
+									"null"
+								]
+							},
+							"authorNote": {
+								"required": false,
+								"type": [
+									"string",
+									"null"
+								]
+							},
+							"ChatItems": {
+								"required": false,
+								"type": [
+									"array",
+									"null"
+								],
+								"items": {
+									"type": [
+										"object",
+										"null"
+									],
+									"properties": {
+										"input": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"output": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"RegenSwipes": {
+											"required": false,
+											"type": [
+												"array",
+												"null"
+											],
+											"items": {
+												"type": [
+													"object",
+													"null"
+												],
+												"properties": {
+													"text": {
+														"required": false,
+														"type": [
+															"string",
+															"null"
+														]
+													},
+													"id": {
+														"required": false,
+														"type": [
+															"string",
+															"null"
+														]
+													},
+													"createdAt": {
+														"required": false,
+														"type": [
+															"string",
+															"null"
+														]
+													},
+													"updatedAt": {
+														"required": false,
+														"type": [
+															"string",
+															"null"
+														]
+													},
+													"activeTimestamp": {
+														"required": false,
+														"type": [
+															"string",
+															"null"
+														]
+													}
+												}
+											}
+										},
+										"id": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"createdAt": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"updatedAt": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										}
+									}
+								}
+							},
+							"id": {
+								"required": false,
+								"type": [
+									"string",
+									"null"
+								]
+							},
+							"createdAt": {
+								"required": false,
+								"type": [
+									"string",
+									"null"
+								]
+							},
+							"updatedAt": {
+								"required": false,
+								"type": [
+									"string",
+									"null"
+								]
+							}
+						}
+					}
+				},
+				"model": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"repeatLastN": {
+					"required": false,
+					"type": "integer"
+				},
+				"repeatPenalty": {
+					"required": false,
+					"type": "number"
+				},
+				"temperature": {
+					"required": false,
+					"type": "number"
+				},
+				"topK": {
+					"required": false,
+					"type": "integer"
+				},
+				"minP": {
+					"required": false,
+					"type": "number"
+				},
+				"minPEnabled": {
+					"required": false,
+					"type": "boolean"
+				},
+				"topP": {
+					"required": false,
+					"type": "number"
+				},
+				"promptTemplate": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"loreItems": {
+					"required": false,
+					"type": [
+						"array",
+						"null"
+					],
+					"items": {
+						"type": [
+							"object",
+							"null"
+						],
+						"properties": {
+							"id": {
+								"required": false,
+								"type": [
+									"string",
+									"null"
+								]
+							},
+							"key": {
+								"required": false,
+								"type": [
+									"string",
+									"null"
+								]
+							},
+							"value": {
+								"required": false,
+								"type": [
+									"string",
+									"null"
+								]
+							}
+						}
+					}
+				},
+				"id": {
+					"required": true,
+					"type": "string"
+				},
+				"aiDisplayName": {
+					"required": true,
+					"type": "string"
+				},
+				"aiName": {
+					"required": true,
+					"type": "string"
+				},
+				"aiPersona": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"scenario": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"basePrompt": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"customDialogue": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"firstMessage": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"createdAt": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"updatedAt": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"grammar": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"isNSFW": {
+					"required": false,
+					"type": "boolean"
+				}
+			}
+		},
+		"version": {
+			"required": true,
+			"type": "integer"
+		}
+	}
+}

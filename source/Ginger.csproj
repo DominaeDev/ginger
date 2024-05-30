@@ -1,0 +1,782 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{37B147E0-ECCC-47F5-857A-C8A2491AC70C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Ginger</RootNamespace>
+    <AssemblyName>Ginger</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>false</Deterministic>
+    <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <NoWarn>168, 169, 618</NoWarn>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <NoWarn>168, 169, 618</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\Icons\appicon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;BUILD_X64</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <NoWarn>168, 169, 618</NoWarn>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>BUILD_X64</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <NoWarn>168, 169, 618</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;BUILD_X86</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <NoWarn>168, 169, 618</NoWarn>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>BUILD_X86</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <NoWarn>168, 169, 618</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NHunspell, Version=1.2.5554.16953, Culture=neutral, PublicKeyToken=1ac793ea843b4366, processorArchitecture=MSIL">
+      <HintPath>packages\NHunspell.1.2.5554.16953\lib\net\NHunspell.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="src\Application\Constants.cs" />
+    <Compile Include="src\Application\DefaultPortrait.cs" />
+    <Compile Include="src\Application\Dictionaries.cs" />
+    <Compile Include="src\Application\FileMutex.cs" />
+    <Compile Include="src\Application\Locales.cs" />
+    <Compile Include="src\Application\MRUList.cs" />
+    <Compile Include="src\Application\PostInstall.cs" />
+    <Compile Include="src\Interface\Controls\AsyncSyntaxHighlighter.cs" />
+    <Compile Include="src\Interface\Controls\CollectionTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\ComboBoxEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\FlatRichTextBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\FlatRichTextBox.Designer.cs">
+      <DependentUpon>FlatRichTextBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Controls\ISearchable.cs" />
+    <Compile Include="src\Interface\Controls\OutputPreview.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\RecipeList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\RecipeList.Designer.cs">
+      <DependentUpon>RecipeList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Controls\RichTextBoxEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\TrackBarEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\UserNotes.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\UserNotes.Designer.cs">
+      <DependentUpon>UserNotes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\FindDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\FindDialog.Designer.cs">
+      <DependentUpon>FindDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\FindReplaceDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\FindReplaceDialog.Designer.cs">
+      <DependentUpon>FindReplaceDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\GenderSwapDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\GenderSwapDialog.Designer.cs">
+      <DependentUpon>GenderSwapDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\CreateRecipeDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\CreateRecipeDialog.Designer.cs">
+      <DependentUpon>CreateRecipeDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Controls\SnippetPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\SnippetPanel.Designer.cs">
+      <DependentUpon>SnippetPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\PasteTextDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\PasteTextDialog.Designer.cs">
+      <DependentUpon>PasteTextDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\WriteDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\WriteDialog.Designer.cs">
+      <DependentUpon>WriteDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\LorebookEntryPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\LorebookEntryPanel.Designer.cs">
+      <DependentUpon>LorebookEntryPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\MeasurementParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\MeasurementParameterPanel.Designer.cs">
+      <DependentUpon>MeasurementParameterPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\MultiChoiceParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\MultiChoiceParameterPanel.Designer.cs">
+      <DependentUpon>MultiChoiceParameterPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\ChoiceSliderParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\ChoiceSliderParameterPanel.Designer.cs">
+      <DependentUpon>ChoiceSliderParameterPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\SliderParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\SliderParameterPanel.Designer.cs">
+      <DependentUpon>SliderParameterPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\RadioParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\RadioParameterPanel.Designer.cs">
+      <DependentUpon>RadioParameterPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\HintParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\HintParameterPanel.Designer.cs">
+      <DependentUpon>HintParameterPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Controls\ISyntaxHighlighted.cs" />
+    <Compile Include="src\Interface\Parameters\LorebookParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\LorebookParameterPanel.Designer.cs">
+      <DependentUpon>LorebookParameterPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\ChatParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\ChatParameterPanel.Designer.cs">
+      <DependentUpon>ChatParameterPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\TextParameterPanelBase.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\NumberParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\NumberParameterPanel.Designer.cs">
+      <DependentUpon>NumberParameterPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\Dummies.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\CodeParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\CodeParameterPanel.Designer.cs">
+      <DependentUpon>CodeParameterPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\ParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\RecipePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\RecipePanel.Designer.cs">
+      <DependentUpon>RecipePanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Model\CardData.cs" />
+    <Compile Include="src\Model\Formats\FaradayCardV4.cs" />
+    <Compile Include="src\Model\Formats\FaradayCardV3.cs" />
+    <Compile Include="src\Model\Generation\BlockBuilder.cs" />
+    <Compile Include="src\Model\Formats\FaradayCardV2.cs" />
+    <Compile Include="src\Model\Formats\JsonExtensionData.cs" />
+    <Compile Include="src\Model\Formats\TavernCardV1.cs" />
+    <Compile Include="src\Model\Generation\BlockStyles.cs" />
+    <Compile Include="src\Model\Generation\RecipeMaker.cs" />
+    <Compile Include="src\Model\Generation\TextStyleConverter.cs" />
+    <Compile Include="src\Model\GlobalState.cs" />
+    <Compile Include="src\Model\GlobalUndo.cs" />
+    <Compile Include="src\Model\Parameters\MultiChoiceParameter.cs" />
+    <Compile Include="src\Model\Parameters\MeasurementParameter.cs" />
+    <Compile Include="src\Model\Parameters\RangeParameter.cs" />
+    <Compile Include="src\Model\Recipe\LoreClipboard.cs" />
+    <Compile Include="src\Model\Recipe\RecipeClipboard.cs" />
+    <Compile Include="src\Utility\Extensions\ControlExtensions.cs" />
+    <Compile Include="src\Utility\Extensions\DateTimeExtensions.cs" />
+    <Compile Include="src\Utility\Extensions\RichTextBoxExtensions.cs" />
+    <Compile Include="src\Utility\FindReplace.cs" />
+    <Compile Include="src\Utility\GenderSwap.cs" />
+    <Compile Include="src\Utility\Measurement.cs" />
+    <Compile Include="src\Utility\Random\RandomNoise.cs" />
+    <Compile Include="src\Utility\ReplaceWord.cs" />
+    <Compile Include="src\Utility\SpellChecking\ISpellChecked.cs" />
+    <Compile Include="src\Utility\SpellChecking\SpellChecker.cs" />
+    <Compile Include="src\Utility\SpellChecking\TextSpan.cs" />
+    <Compile Include="src\Utility\ThirdParty\CSVReader\CSVReader.cs" />
+    <Compile Include="src\Utility\ThirdParty\Cuid\Cuid.cs" />
+    <Compile Include="src\Utility\ThirdParty\CustomTabControl\CustomTabControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Utility\ThirdParty\CustomTabControl\NativeMethods.cs" />
+    <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyle.cs" />
+    <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProvider.cs" />
+    <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleChromeProvider.cs" />
+    <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleDarkProvider.cs" />
+    <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleDefaultProvider.cs" />
+    <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleNoneProvider.cs" />
+    <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleRoundedProvider.cs" />
+    <Compile Include="src\Utility\Undo\UndoStack.cs" />
+    <Compile Include="src\Utility\Undo\TextUndoStack.cs" />
+    <Compile Include="src\Interface\Controls\TextBoxEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\MultiTextParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\MultiTextParameterPanel.Designer.cs">
+      <DependentUpon>MultiTextParameterPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\ChoiceParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\ChoiceParameterPanel.Designer.cs">
+      <DependentUpon>ChoiceParameterPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\ListParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\ListParameterPanel.Designer.cs">
+      <DependentUpon>ListParameterPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\ToggleParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\ToggleParameterPanel.Designer.cs">
+      <DependentUpon>ToggleParameterPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\CreateSnippetDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\CreateSnippetDialog.Designer.cs">
+      <DependentUpon>CreateSnippetDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Forms\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\TextParameterPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\TextParameterPanel.Designer.cs">
+      <DependentUpon>TextParameterPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Forms\MainFunctions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Application\AppSettings.cs" />
+    <Compile Include="src\Model\CharacterData.cs" />
+    <Compile Include="src\Model\Formats\PygmalionCard.cs" />
+    <Compile Include="src\Model\Formats\AgnaisticCard.cs" />
+    <Compile Include="src\Model\Formats\FaradayCardV1.cs" />
+    <Compile Include="src\Model\Formats\GingerExtensionData.cs" />
+    <Compile Include="src\Model\Generation\Generator.cs" />
+    <Compile Include="src\Model\Formats\GingerCardV1.cs" />
+    <Compile Include="src\Model\Formats\FileUtil.cs" />
+    <Compile Include="src\Model\Generation\GingerString.cs" />
+    <Compile Include="src\Model\Lorebook\Lorebook.cs" />
+    <Compile Include="src\Model\Lorebook\Lorebooks.cs" />
+    <Compile Include="src\Model\Parameters\EraseParameter.cs" />
+    <Compile Include="src\Model\Parameters\LorebookParameter.cs" />
+    <Compile Include="src\Model\Parameters\Parameter.cs" />
+    <Compile Include="src\Model\Parameters\BooleanParameter.cs" />
+    <Compile Include="src\Model\Parameters\ListParameter.cs" />
+    <Compile Include="src\Model\Parameters\HintParameter.cs" />
+    <Compile Include="src\Model\Parameters\NumberParameter.cs" />
+    <Compile Include="src\Model\Parameters\ChoiceParameter.cs" />
+    <Compile Include="src\Model\Parameters\SetFlagParameter.cs" />
+    <Compile Include="src\Model\Parameters\SetVarParameter.cs" />
+    <Compile Include="src\Model\Parameters\TextParameter.cs" />
+    <Compile Include="src\Model\Recipe\RecipePreset.cs" />
+    <Compile Include="src\Model\Recipe\Recipe.cs" />
+    <Compile Include="src\Model\Recipe\RecipeBook.cs" />
+    <Compile Include="src\Model\Formats\TavernCardV2.cs" />
+    <Compile Include="src\Interface\Controls\PortraitPreview.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\PortraitPreview.Designer.cs">
+      <DependentUpon>PortraitPreview.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Application\Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Utility\LaunchTextEditor.cs" />
+    <Compile Include="src\Utility\ThirdParty\Tokenizer\LlamaTokenizer.cs" />
+    <Compile Include="src\Utility\ThirdParty\Tokenizer\LlamaTokens.cs" />
+    <Compile Include="src\Utility\ThirdParty\Tokenizer\PriorityQueue.cs" />
+    <Compile Include="src\Utility\ThirdParty\Tokenizer\Tests.cs" />
+    <Compile Include="src\Utility\ThirdParty\WinFormsSyntaxHighlighter\CaseInsensitivePatternDefinition.cs" />
+    <Compile Include="src\Utility\ThirdParty\WinFormsSyntaxHighlighter\ColorUtils.cs" />
+    <Compile Include="src\Utility\ThirdParty\WinFormsSyntaxHighlighter\Expression.cs" />
+    <Compile Include="src\Utility\ThirdParty\WinFormsSyntaxHighlighter\ExpressionType.cs" />
+    <Compile Include="src\Utility\ThirdParty\WinFormsSyntaxHighlighter\PatternDefinition.cs" />
+    <Compile Include="src\Utility\ThirdParty\WinFormsSyntaxHighlighter\PatternStyleMap.cs" />
+    <Compile Include="src\Utility\ThirdParty\WinFormsSyntaxHighlighter\StringExtensions.cs" />
+    <Compile Include="src\Utility\ThirdParty\WinFormsSyntaxHighlighter\StyleGroupPair.cs" />
+    <Compile Include="src\Utility\ThirdParty\WinFormsSyntaxHighlighter\SyntaxHighlighter.cs" />
+    <Compile Include="src\Utility\ThirdParty\WinFormsSyntaxHighlighter\SyntaxStyle.cs" />
+    <Compile Include="src\Utility\ThirdParty\WinFormsSyntaxHighlighter\TextBoxBaseExtensions.cs" />
+    <Compile Include="src\Utility\TokenizerQueue.cs" />
+    <Compile Include="src\Interface\Controls\SidePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\SidePanel.Designer.cs">
+      <DependentUpon>SidePanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Utility\ThirdParty\AvsAn\AvsAn.cs" />
+    <Compile Include="src\Utility\ThirdParty\AvsAn\Internals\BuiltInDictionary.cs" />
+    <Compile Include="src\Utility\ThirdParty\AvsAn\Internals\Node.cs" />
+    <Compile Include="src\Utility\ThirdParty\AvsAn\Internals\NodeDeserializer.cs" />
+    <Compile Include="src\Utility\ThirdParty\AvsAn\Internals\Ratio.cs" />
+    <Compile Include="src\Utility\ThirdParty\AvsAn\Internals\WordQuery.cs" />
+    <Compile Include="src\Utility\Condition\Conditional.cs" />
+    <Compile Include="src\Utility\Condition\CustomRule.cs" />
+    <Compile Include="src\Utility\Condition\RuleBank.cs" />
+    <Compile Include="src\Utility\Condition\ValueComparison.cs" />
+    <Compile Include="src\Utility\ContextString\Context.cs" />
+    <Compile Include="src\Utility\ContextString\ContextExtensions.cs" />
+    <Compile Include="src\Utility\ContextString\ContextString.cs" />
+    <Compile Include="src\Utility\ContextString\ContextStringInternals.cs" />
+    <Compile Include="src\Utility\ContextString\IContextual.cs" />
+    <Compile Include="src\Utility\ContextString\MacroBank.cs" />
+    <Compile Include="src\Utility\ContextString\StringBank.cs" />
+    <Compile Include="src\Utility\ContextString\StringHandle.cs" />
+    <Compile Include="src\Utility\ContextString\StringID.cs" />
+    <Compile Include="src\Utility\EnumAttributeHelper.cs" />
+    <Compile Include="src\Utility\EnumHelper.cs" />
+    <Compile Include="src\Utility\ThirdParty\ExifData.cs" />
+    <Compile Include="src\Utility\Extensions\DictionaryExtensions.cs" />
+    <Compile Include="src\Utility\Extensions\EnumExtensions.cs" />
+    <Compile Include="src\Utility\Extensions\LinqExtensions.cs" />
+    <Compile Include="src\Utility\Extensions\StringBuilderExtensions.cs" />
+    <Compile Include="src\Utility\Extensions\StringExtensions.cs" />
+    <Compile Include="src\Utility\Extensions\XmlExtensions.cs" />
+    <Compile Include="src\Utility\IniFileParser\IniConfigAttribute.cs" />
+    <Compile Include="src\Utility\IniFileParser\IniConfigLoader.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\Exceptions\ParsingException.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\FileIniParser.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\Helpers\Assert.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\Model\Configuration\ConcatenateDuplicatedKeysIniParserConfiguration.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\Model\Configuration\IniParserConfiguration.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\Model\Formatting\DefaultIniDataFormatter.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\Model\Formatting\IIniDataFormatter.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\Model\IniData.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\Model\IniDataCaseInsensitive.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\Model\KeyData.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\Model\KeyDataCollection.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\Model\SectionData.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\Model\SectionDataCollection.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\Parser\ConcatenateDuplicatedKeysIniDataParser.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\Parser\IniDataParser.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\StreamIniDataParser.cs" />
+    <Compile Include="src\Utility\ThirdParty\IniFileParser\StringIniParser.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\ByteStreamReader.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\ChunkAttribute.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\ChunkCollection.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\bKGDChunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\cHRMChunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\gAMAChunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\hISTChunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\IDATChunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\IENDChunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\IHDRChunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\pHYsChunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\PLTEChunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\sBITChunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\sRGBChunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\tEXtChunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\tIMEChunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\tRNSChunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\zTXtChunk.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\CompressionLevel.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\Checksums\Adler32.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\Checksums\CRC32.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\Checksums\IChecksum.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\Checksums\StrangeCRC.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\Deflater.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\DeflaterConstants.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\DeflaterEngine.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\DeflaterHuffman.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\DeflaterPending.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\Inflater.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\InflaterDynHeader.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\InflaterHuffmanTree.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\PendingBuffer.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\Streams\DeflaterOutputStream.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\Streams\InflaterInputStream.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\Streams\OutputWindow.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\Streams\StreamManipulator.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Compression\ZipException.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\CRC32.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\PNGBitmap.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\PNGImage.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Utils.cs" />
+    <Compile Include="src\Utility\Random\IRandom.cs" />
+    <Compile Include="src\Utility\Random\RandomDefault.cs" />
+    <Compile Include="src\Utility\Random\RandomUtils.cs" />
+    <Compile Include="src\Utility\Random\Squirrel3.cs" />
+    <Compile Include="src\Utility\Range.cs" />
+    <Compile Include="src\Utility\ContextString\Text.cs" />
+    <Compile Include="src\Utility\Utility.cs" />
+    <Compile Include="src\Utility\VersionNumber.cs" />
+    <EmbeddedResource Include="src\Interface\Controls\FlatRichTextBox.resx">
+      <DependentUpon>FlatRichTextBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Controls\RecipeList.resx">
+      <DependentUpon>RecipeList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Controls\RichTextBoxEx.resx">
+      <DependentUpon>RichTextBoxEx.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Controls\TextBoxEx.resx">
+      <DependentUpon>TextBoxEx.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Controls\UserNotes.resx">
+      <DependentUpon>UserNotes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\FindDialog.resx">
+      <DependentUpon>FindDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\FindReplaceDialog.resx">
+      <DependentUpon>FindReplaceDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\GenderSwapDialog.resx">
+      <DependentUpon>GenderSwapDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\CreateRecipeDialog.resx">
+      <DependentUpon>CreateRecipeDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Controls\SnippetPanel.resx">
+      <DependentUpon>SnippetPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\PasteTextDialog.resx">
+      <DependentUpon>PasteTextDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\WriteDialog.resx">
+      <DependentUpon>WriteDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\LorebookEntryPanel.resx">
+      <DependentUpon>LorebookEntryPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\MeasurementParameterPanel.resx">
+      <DependentUpon>MeasurementParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\MultiChoiceParameterPanel.resx">
+      <DependentUpon>MultiChoiceParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\ChoiceSliderParameterPanel.resx">
+      <DependentUpon>ChoiceSliderParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\ParameterPanel.resx">
+      <DependentUpon>ParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\SliderParameterPanel.resx">
+      <DependentUpon>SliderParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\RadioParameterPanel.resx">
+      <DependentUpon>RadioParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\HintParameterPanel.resx">
+      <DependentUpon>HintParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\LorebookParameterPanel.resx">
+      <DependentUpon>LorebookParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\ChatParameterPanel.resx">
+      <DependentUpon>ChatParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\NumberParameterPanel.resx">
+      <DependentUpon>NumberParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\CodeParameterPanel.resx">
+      <DependentUpon>CodeParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Controls\RecipePanel.resx">
+      <DependentUpon>RecipePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\MultiTextParameterPanel.resx">
+      <DependentUpon>MultiTextParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\ChoiceParameterPanel.resx">
+      <DependentUpon>ChoiceParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\ListParameterPanel.resx">
+      <DependentUpon>ListParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\ToggleParameterPanel.resx">
+      <DependentUpon>ToggleParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\CreateSnippetDialog.resx">
+      <DependentUpon>CreateSnippetDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Controls\PortraitPreview.resx">
+      <DependentUpon>PortraitPreview.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Parameters\TextParameterPanel.resx">
+      <DependentUpon>TextParameterPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Controls\SidePanel.resx">
+      <DependentUpon>SidePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\default_portrait.bin" />
+    <None Include="Resources\Templates\snippet_template.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\arrow_right.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\arrow_down.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\arrow_up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\cross.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\lore.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\model.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\persona.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\scenario.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\snippet.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\component.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\checker.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\faraday_charactercard_v4.schema.txt" />
+    <None Include="Resources\Schemas\pygmalion_charactercard.schema.txt" />
+    <None Include="Resources\Schemas\tavern_charactercard_v2.schema.txt" />
+    <None Include="Resources\Schemas\tavern_charactercard_v1.schema.txt" />
+    <None Include="Resources\Schemas\faraday_charactercard_v3.schema.txt" />
+    <None Include="Resources\Schemas\agnaistic_charactercard.schema.txt" />
+    <None Include="Resources\Templates\recipe_template_personality.txt" />
+    <None Include="Resources\Schemas\tavern_characterbook.schema.txt" />
+    <None Include="Resources\Schemas\agnaistic_characterbook.schema.txt" />
+    <None Include="Resources\Schemas\tavern_worldbook.schema.txt" />
+    <None Include="Resources\Templates\recipe_template_card.txt" />
+    <None Include="Resources\Templates\recipe_template_sample_3.txt" />
+    <None Include="Resources\Templates\recipe_template_sample_2.txt" />
+    <None Include="Resources\Templates\recipe_template_sample_1.txt" />
+    <None Include="Resources\Templates\recipe_template_empty.txt" />
+    <None Include="Resources\Icons\delete_strike.png" />
+    <None Include="Resources\Icons\delete_small.png" />
+    <None Include="Resources\Icons\write.png" />
+    <None Include="Resources\Icons\lore_down.png" />
+    <None Include="Resources\Icons\lore_up.png" />
+    <None Include="Resources\Icons\concept.png" />
+    <None Include="Resources\Icons\personality.png" />
+    <None Include="Resources\Icons\appicon.ico" />
+    <None Include="Resources\Icons\appicon.png" />
+    <None Include="Resources\Icons\story.png" />
+    <None Include="Resources\Icons\component_small.png" />
+    <None Include="Resources\Icons\expanded.png" />
+    <None Include="Resources\Recipes\Components\example_recipe.txt" />
+    <None Include="Resources\Recipes\Components\greeting_recipe.txt" />
+    <None Include="Resources\Recipes\Components\lorebook_recipe.txt" />
+    <None Include="Resources\Recipes\Components\persona_recipe.txt" />
+    <None Include="Resources\Recipes\Components\scenario_recipe.txt" />
+    <None Include="Resources\Recipes\Components\system_recipe.txt" />
+    <None Include="Resources\Recipes\Components\user_recipe.txt" />
+    <None Include="Resources\Recipes\internal_global_recipe.txt" />
+    <None Include="Resources\Icons\snippet_small.png" />
+    <None Include="Resources\Icons\lore_small.png" />
+    <None Include="Resources\Icons\folder.png" />
+    <None Include="Resources\Icons\characteristic.png" />
+    <None Include="Resources\Icons\delete.png" />
+    <None Include="Resources\Icons\arrow_none.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Recipes\Other\attribute_recipe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Recipes\Other\grammar_recipe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Recipes\Other\post_history_recipe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Templates\recipe_template_base.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Recipes\internal_macros.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Recipes\Other\personality_recipe.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetPath)" "$(ProjectDir)Build\" /Y /Q</PostBuildEvent>
+  </PropertyGroup>
+</Project>

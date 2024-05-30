@@ -1,0 +1,26 @@
+﻿<Ginger id="story" version="1.0">
+	<!-- Preamble -->
+	<Name>World // setting</Name>
+	<Title>World / Setting</Title>
+	<Author>Ginger</Author>
+	<Description>Describe the world and setting.</Description>
+	<Category>Story</Category>
+	<Flags>setting</Flags>
+	<Multiple>Yes</Multiple>
+	
+	<!-- Parameters -->
+	<Text id="text" style="flex">
+		<Label>Setting</Label>
+	</Text>
+	
+	<!-- Output -->
+	<Node path="scenario/world/description" order="100" style="line" mode="exclude">
+		WORLD / SETTING:  
+		{inner}  
+	</Node>
+
+	<!-- Output -->	
+	<Node path="scenario/world/description/summary" style="text" mode="exclude"/>
+	<Node path="scenario/world/description/summary/text">{text}</Node>
+
+</Ginger>

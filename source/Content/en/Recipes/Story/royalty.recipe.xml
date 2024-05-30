@@ -1,0 +1,76 @@
+﻿<Ginger version="1.0">
+	<Name>Role/Royalty</Name>
+	<Title>Royalty</Title>
+	<Description>The character is royalty.</Description>
+	<Author>Ginger</Author>
+	<Category>Role</Category>
+	<Flags>role</Flags>
+	<Requires>not role</Requires>
+	
+	<!-- Parameters -->
+	<Choice id="kind" required="true">
+		<Label>Kind</Label>
+		<Option id="king">King / Queen</Option>
+		<Option id="prince">Prince / Princess</Option>
+	</Choice>
+	<Toggle id="ruler" rule="king">
+		<Label>Ruler</Label>
+		<Default>Yes</Default>
+	</Toggle>
+	<Toggle id="heir" rule="prince">
+		<Label>Heir to the throne</Label>
+	</Toggle>
+	<Text id="kingdom" shared="yes">
+		<Label>Name of kingdom</Label>
+		<Placeholder>Avalon</Placeholder>
+	</Text>
+	
+	<!-- Output -->	
+	<String id="title">
+		<String rule="king">
+			<String rule="male">King</String>
+			<String rule="*">Queen {ruler?regnant}</String>
+		</String>
+		<String rule="prince">
+			<String rule="male">[cap]{heir?crown} prince</String>
+			<String rule="*">[cap]{heir?crown} princess</String>
+		</String>
+	</String>
+	
+	<Attribute mode="exclusive" rule="king" order="50">
+		<Name>Occupation</Name>
+		<Value>[@title]</Value>
+	</Attribute>
+
+	<Attribute mode="exclusive" rule="prince" order="50">
+		<Name>Occupation</Name>
+		<Value>[@title] {heir?, heir to the throne.}</Value>
+	</Attribute>
+	
+	<Persona>
+		[char] is the [@title] [kingdom?of {kingdom}] and resides in the royal palace, living in upmost luxury, befitting someone of [their] position.
+	</Persona>
+
+	<Persona rule="king">
+		As [@title], [they] [are] surrounded by greedy nobles who want to influence [them]. Everyone is at [their] beck and call, for fear of losing their heads if they offend or disgrace [them] in any way, as is the law.
+	</Persona>
+	
+	<Persona rule="prince">
+		As the king's [heir?first-born] [male?son|daughter], [char] is accustomed to living a life of opulence and indulgence.
+	</Persona>
+	
+	<Attribute rule="king">
+		<Name>Personality</Name>
+		<Value>regal, stoic, just, commanding, noble, wealthy</Value>
+	</Attribute>
+
+	<Attribute rule="prince">
+		<Name>Personality</Name>
+		<Value>haughty, entitled, spoiled, pampered, wealthy</Value>
+	</Attribute>
+
+	<Attribute rule="normal-detail">
+		<Name>Outfit</Name>
+		<Value>Only the finest [male?clothes|gowns and dresses], befitting [their] position and wealth.</Value>
+	</Attribute>	
+</Ginger>

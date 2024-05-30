@@ -1,0 +1,349 @@
+﻿using System;
+using System.Text;
+using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Schema;
+using Ginger.Properties;
+using Newtonsoft.Json.Linq;
+
+namespace Ginger
+{
+	public class FaradayCardV4
+	{
+		private static JsonSchema _schema;
+
+		static FaradayCardV4()
+		{
+			_schema = JsonSchema.Parse(Resources.faraday_charactercard_v4_schema);
+		}
+
+		public FaradayCardV4()
+		{
+			data = new Data();
+		}
+
+#pragma warning disable 0414
+#pragma warning disable 0169
+		[JsonProperty("character", Required = Required.Always)]
+		public Data data;
+
+		public static readonly string[] OriginalModelInstructionsByFormat = new string[8]
+{
+			// None
+			"Text transcript of a never-ending conversation between {user} and {character}. In the transcript, gestures and other non-verbal actions are written between asterisks (for example, *waves hello* or *moves closer*).",
+			// Asterisks
+			"Text transcript of a never-ending conversation between {user} and {character}. In the transcript, gestures and other non-verbal actions are written between asterisks (for example, *waves hello* or *moves closer*).",
+			// Quotes
+			"Text transcript of a never-ending conversation between {user} and {character}.",
+			// Quotes + Asterisks
+			"Text transcript of a never-ending conversation between {user} and {character}. In the transcript, gestures and other non-verbal actions are written between asterisks (for example, *waves hello* or *moves closer*).",
+			// Decorative quotes
+			"Text transcript of a never-ending conversation between {user} and {character}.",
+			// Bold
+			"Text transcript of a never-ending conversation between {user} and {character}. In the transcript, gestures and other non-verbal actions are written between asterisks (for example, **waves hello** or **moves closer**).",
+			// Parentheses
+			"Text transcript of a never-ending conversation between {user} and {character}. In the transcript, gestures and other non-verbal actions are written between parentheses, for example (waves hello) or (moves closer).",
+			// Japanese
+			"Text transcript of a never-ending conversation between {user} and {character}.",
+		};
+
+		public class Data
+		{
+			public Data()
+			{
+				id = GenerateUniqueID();
+
+				creationDate = updateDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+				chat = new FaradayCardV1.Chat[0];
+			}
+
+			[JsonProperty("id", Required = Required.Always)]
+			public string id { get; set; }
+
+			[JsonProperty("aiDisplayName", Required = Required.Always)]
+			public string displayName { get; set; }
+
+			[JsonProperty("aiName", Required = Required.Always)]
+			public string name { get; set; }
+
+			[JsonProperty("aiPersona")]
+			public string persona { get; set; }
+
+			[JsonProperty("scenario")]
+			public string scenario { get; set; }
+
+			[JsonProperty("basePrompt")]
+			public string system { get; set; }
+
+			[JsonProperty("customDialogue")]
+			public string example { get; set; }
+
+			[JsonProperty("firstMessage")]
+			public string greeting { get; set; }
+
+			[JsonProperty("createdAt")]
+			public string creationDate { get; set; }
+
+			[JsonProperty("updatedAt")]
+			public string updateDate { get; set; }
+
+			[JsonProperty("Chat")]
+			private FaradayCardV1.Chat[] chat = new FaradayCardV1.Chat[0];
+
+			[JsonProperty("grammar")]
+			public string grammar { get; set; }
+
+			[JsonProperty("isNSFW")]
+			public bool isNSFW { get; set; }
+
+			[JsonProperty("model")]
+			private string model = "";
+
+			[JsonProperty("repeatLastN")]
+			public int repeatLastN = 256;
+
+			[JsonProperty("repeatPenalty")]
+			public decimal repeatPenalty = 1.05m;
+
+			[JsonProperty("temperature")]
+			public decimal temperature = 1.2m;
+
+			[JsonProperty("topK")]
+			public int topK = 30;
+
+			[JsonProperty("minP")]
+			public decimal minP = 0.1m;
+
+			[JsonProperty("minPEnabled")]
+			public bool minPEnabled = true;
+
+			[JsonProperty("topP")]
+			public decimal topP = 0.9m;
+
+			[JsonProperty("promptTemplate")]
+			public string promptTemplate = null; // (null | "general" | "ChatML" | "Llama3")
+
+			[JsonProperty("canDeleteCustomDialogue")]
+			public bool pruneExampleChat = true; // New in v4
+
+			[JsonProperty("loreItems")]
+			public FaradayCardV1.LoreBookEntry[] loreItems = new FaradayCardV1.LoreBookEntry[0];
+		}
+
+		[JsonProperty("version", Required = Required.Always)]
+		public int version = 4;
+
+		public static FaradayCardV4 FromOutput(Generator.Output output)
+		{
+			FaradayCardV4 card = new FaradayCardV4();
+			card.data.displayName = Utility.FirstNonEmpty(Current.Card.name, Current.MainCharacter.spokenName, Constants.DefaultName);
+			card.data.name = Current.Name;
+			card.data.system = output.system.ToFaraday();
+			card.data.persona = output.persona.ToFaraday();
+			card.data.scenario = output.scenario.ToFaraday();
+			card.data.greeting = output.greeting.ToFaradayGreeting();
+			card.data.example = output.example.ToFaradayChat();
+			card.data.grammar = output.grammar.ToString();
+			card.data.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+
+			// Append user persona
+			string userPersona = output.userPersona.ToFaraday();
+			if (string.IsNullOrEmpty(userPersona) == false)
+				card.data.scenario = string.Concat(card.data.scenario, "\n\n", userPersona).Trim();
+
+			// Join system prompt + post_history (jic. post_history should be empty)
+			string system_post = output.system_post_history.ToFaraday();
+			if (string.IsNullOrEmpty(system_post) == false)
+				card.data.system = string.Join("\n", card.data.system, system_post).TrimStart();
+
+			// Insert default system prompt if empty
+			if (string.IsNullOrWhiteSpace(card.data.system))
+				card.data.system = OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)];
+			else
+			{
+				// Replace 
+				int pos_original = card.data.system.IndexOf("{original}", 0, StringComparison.OrdinalIgnoreCase);
+				if (pos_original != -1)
+				{
+					var sbSystem = new StringBuilder(card.data.system);
+					sbSystem.Remove(pos_original, 10);
+					sbSystem.Insert(pos_original, OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)]);
+					sbSystem.Replace("{original}", ""); // Remove any remaining
+					card.data.system = sbSystem.ToString();
+				}
+			}
+
+
+
+			if (output.hasLore)
+			{
+				card.data.loreItems = output.lorebook.entries
+					.Select(e => new FaradayCardV1.LoreBookEntry() {
+						key = e.key,
+						value = GingerString.FromString(e.value).ToFaraday(),
+					}).ToArray();
+			}
+			else
+				card.data.loreItems = new FaradayCardV1.LoreBookEntry[0];
+
+			card.data.isNSFW = Current.IsNSFW;
+			card.data.repeatLastN = AppSettings.Faraday.RepeatPenaltyTokens;
+			card.data.repeatPenalty = AppSettings.Faraday.RepeatPenalty;
+			card.data.temperature = AppSettings.Faraday.Temperature;
+			card.data.topK = AppSettings.Faraday.TopK;
+			card.data.topP = AppSettings.Faraday.TopP;
+			card.data.minPEnabled = AppSettings.Faraday.MinPEnabled;
+			card.data.minP = AppSettings.Faraday.MinP;
+			switch (AppSettings.Faraday.PromptTemplate)
+			{
+			case 1: card.data.promptTemplate = "general"; break;
+			case 2: card.data.promptTemplate = "ChatML"; break;
+			case 3: card.data.promptTemplate = "Llama3"; break;
+			default: card.data.promptTemplate = null; break;
+			}
+			card.data.pruneExampleChat = AppSettings.Faraday.PruneExampleChat;
+
+			return card;
+		}
+
+		public static FaradayCardV4 FromJson(string json)
+		{
+			try
+			{
+				JObject jObject = JObject.Parse(json);
+				if (jObject.IsValid(_schema))
+				{
+					var card = JsonConvert.DeserializeObject<FaradayCardV4>(json);
+					if (card.version >= 4)
+						return card;
+				}
+			}
+			catch
+			{ }
+
+			// Version 3
+			try
+			{
+				JObject jObject = JObject.Parse(json);
+				if (jObject.IsValid(_schema))
+				{
+					var card = JsonConvert.DeserializeObject<FaradayCardV3>(json);
+					if (card.version >= 3)
+						return FromV3(card);
+				}
+			}
+			catch
+			{ }
+
+			// Version 2
+			try
+			{
+				JObject jObject = JObject.Parse(json);
+				if (jObject.IsValid(_schema))
+				{
+					var card = JsonConvert.DeserializeObject<FaradayCardV2>(json);
+					if (card.version == 2)
+						return FromV2(card);
+				}
+			}
+			catch
+			{}
+
+			// Version 1
+			try
+			{
+				JObject jObject = JObject.Parse(json);
+				if (jObject.IsValid(_schema))
+				{
+					var card = JsonConvert.DeserializeObject<FaradayCardV1>(json);
+					if (card.version == 1)
+						return FromV1(card);
+				}
+			}
+			catch
+			{ }
+
+			return null;
+		}
+
+		public string ToJson()
+		{
+			try
+			{
+				string json = JsonConvert.SerializeObject(this, new JsonSerializerSettings() {
+					StringEscapeHandling = StringEscapeHandling.EscapeNonAscii,
+				});
+				return json;
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
+		public static string GenerateUniqueID()
+		{
+			return Cuid.NewCuid();
+		}
+
+		public static FaradayCardV4 FromV1(FaradayCardV1 cardV1)
+		{
+			var card = new FaradayCardV4();
+			card.data.creationDate = cardV1.data.creationDate;
+			card.data.updateDate = cardV1.data.updateDate;
+			card.data.displayName = cardV1.data.displayName;
+			card.data.example = cardV1.data.example;
+			card.data.grammar = cardV1.data.grammar;
+			card.data.greeting = cardV1.data.greeting;
+			card.data.id = cardV1.data.id;
+			card.data.isNSFW = cardV1.data.isNSFW;
+			card.data.name = cardV1.data.name;
+			card.data.persona = cardV1.data.persona;
+			card.data.scenario = cardV1.data.scenario;
+			card.data.system = cardV1.data.system;
+			card.data.loreItems = cardV1.data.loreItems;
+			return card;
+		}
+
+		public static FaradayCardV4 FromV2(FaradayCardV2 cardV2)
+		{
+			var card = new FaradayCardV4();
+			card.data.creationDate = cardV2.data.creationDate;
+			card.data.updateDate = cardV2.data.updateDate;
+			card.data.displayName = cardV2.data.displayName;
+			card.data.example = cardV2.data.example;
+			card.data.grammar = cardV2.data.grammar;
+			card.data.greeting = cardV2.data.greeting;
+			card.data.id = cardV2.data.id;
+			card.data.isNSFW = cardV2.data.isNSFW;
+			card.data.name = cardV2.data.name;
+			card.data.persona = cardV2.data.persona;
+			card.data.scenario = cardV2.data.scenario;
+			card.data.system = cardV2.data.system;
+			card.data.loreItems = cardV2.data.loreItems;
+			return card;
+		}
+
+		public static FaradayCardV4 FromV3(FaradayCardV3 cardV3)
+		{
+			var card = new FaradayCardV4();
+			card.data.creationDate = cardV3.data.creationDate;
+			card.data.updateDate = cardV3.data.updateDate;
+			card.data.displayName = cardV3.data.displayName;
+			card.data.example = cardV3.data.example;
+			card.data.grammar = cardV3.data.grammar;
+			card.data.greeting = cardV3.data.greeting;
+			card.data.id = cardV3.data.id;
+			card.data.isNSFW = cardV3.data.isNSFW;
+			card.data.name = cardV3.data.name;
+			card.data.persona = cardV3.data.persona;
+			card.data.scenario = cardV3.data.scenario;
+			card.data.system = cardV3.data.system;
+			card.data.loreItems = cardV3.data.loreItems;
+			card.data.promptTemplate = cardV3.data.promptTemplate;
+			return card;
+		}
+
+	}
+
+}

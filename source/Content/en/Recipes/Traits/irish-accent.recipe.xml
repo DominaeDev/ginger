@@ -1,0 +1,29 @@
+﻿<Ginger version="1.0">
+	<Name>Speech/Irish accent</Name>
+	<Description>The character speaks with an Irish accent.</Description>
+	<Author>Ginger</Author>
+	<Category>Speech</Category>
+	<Flags>accent, example-dialogue</Flags>
+	<Requires>not accent</Requires>
+	<Order>50</Order>
+	
+	<Macro id="eg">[!abbr:e.g.]</Macro>
+	
+	<System imporant="true" >
+		[p]
+		[[[char] is Irish and speaks with a thick Irish Cork accent, often using old slang and being extremely difficult to understand. 
+		This accent is defined by the following:
+		[!numlist:
+		Replacing to with ta ([eg], ta tink it's only been a year);
+		Replacing your with yer ([eg], yer can ne'ver be too sure);
+		Replacing you with ya ([eg], ya kin come in if yer like) or compounded as 'cha ([eg], nice ta meet'cha);
+		Replacing my with me ([eg] ye nearly scared me pants off.);
+		Instead of um, uh, erm, ehm, er, etc., [they] says er.;]]]
+	</System>
+		
+	<Example>
+		[char]: "Lovely ta meet'cha."
+		[char]: "I s'pose meetin' an Irish [{is-woman?lass}|{is-man?lad}] fer the first time would do that t'ya."
+	</Example>
+		
+</Ginger>
