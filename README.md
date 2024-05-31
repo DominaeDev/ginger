@@ -1,7 +1,7 @@
 # Ginger
 
-Ginger is a stand-alone application for creating and editing character cards for use with AI chat frontends and services.
-The goal of this project is to provide easy to use tools for both new and experienced bot makers, while being compatible with the most popular platforms and formats.
+Ginger is a stand-alone character creator and editor for character cards (.PNG) for use with AI chat frontends and services.
+The goal of this project is to provide an easy to use tool for both new and experienced bot makers, while being compatible with the most popular platforms and formats.
 
 ## Download
 
@@ -10,39 +10,36 @@ Click here to download the latest version (v1.0.0)
 ## Features
 
 ### Create
-* Create characters and bots quickly using intelligent building blocks called "recipes".
+* Create AI characters quickly using intelligent building blocks called "recipes".
+* Multi-format character cards, supported practically everywhere.
 * Over 100 recipes available out of the box.
-* Create multi-format character cards, supported everywhere.
-* Get started quickly using templates.
-* Support for multi-character cards.
+* Support for multiple characters in one cards.
 * Integrated notes.
   
 ### Write
-* Automatic handling of names and name placeholders. (Never type `{character}` or `{{char}}` again.)
-* Color highlighting for dialogue, names, macros, mistakes, etc.
+* Automatic handling of name placeholders.
 * Integrated personalized text editor.
-* Save your frequently used descriptions as reusable "snippets".
-* Non-permanent deactivation of recipes and descriptive text. (No need to commit to large changes.)
-* Spell checking.
+* Store your frequently used text as reusable "snippets".
+* Find and Replace across all fields.
+* Spell checker.
 * Comments.
 
 ### Edit / Remix
-* Open and edit character cards and lorebooks in a wide range of formats.
-* Change the chat format (quotes around dialogue or not?)
-* Search and Replace across all fields and properties.
+* Broad support for existing character card and lorebook formats.
+* Quickly switch to your preferred chat format.
 * Copy, paste, mix and match parts from different character cards.
 * Replace all pronouns (gender swapping).
-* Seamlessly blend written text with Ginger recipes and snippets.
-* Add, remove, and merge lorebooks.
+* Seamlessly mix written text with recipes and snippets.
+* Import, export, and merge lorebooks.
 
 ### Other features
-* Create and share your own recipes.
+* Create and share your very own recipes.
 * Adjustable level of detail.
-* Convert between various file formats.
+* Convert between different file formats.
+* Token count and budget.
 * Incremental saves.
-* Token budget calculator.
 
-## Compatibility
+## Compatible with...
 * SillyTavern
 * Backyard AI (formerly Faraday)
 * Agnai.chat
