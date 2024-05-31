@@ -13,7 +13,7 @@ Click here to download the latest version (v1.0.0)
 * Create AI characters quickly using intelligent building blocks called "recipes".
 * Multi-format character cards, supported practically everywhere.
 * Over 100 recipes available out of the box.
-* Support for multiple characters in one cards.
+* Support for multiple characters in one card.
 * Integrated notes.
   
 ### Write
