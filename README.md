@@ -53,7 +53,7 @@ The goal of this project is to provide an easy to use tool for both new and expe
 #### Main interface
 ![Ginger screenshot #1](./images/screenshot.png "Ginger screenshot #1")
 
-#### Previewing the generated prompt
+#### Previewing the generated output (Ginger format)
 ![Ginger screenshot #2](./images/screenshot2.png "Ginger screenshot #2")
 
 #### Editing an existing character card
