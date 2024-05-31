@@ -1266,7 +1266,7 @@ namespace Ginger
 			RefreshParameterVisibility();
 			RefreshLayout();
 
-			Undo.Push(Undo.Kind.RecipeList, "Sort recipes", "sort");
+			Undo.Push(Undo.Kind.RecipeOrder, "Sort recipes", "sort");
 		}
 
 		public void RefreshScrollbar()

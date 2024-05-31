@@ -252,8 +252,8 @@
 			"Feminine",
 			"Neutral",
 			"Mixed",
-			"Variable",
-			"Variable (User)"});
+			"Variables",
+			"Variables (User)"});
 			this.comboBox_UserTarget.Location = new System.Drawing.Point(281, 27);
 			this.comboBox_UserTarget.Margin = new System.Windows.Forms.Padding(0);
 			this.comboBox_UserTarget.MaxLength = 128;
@@ -274,8 +274,8 @@
             "Feminine",
             "Neutral",
             "Mixed",
-            "Variable",
-			"Variable (User)"});
+            "Variables",
+			"Variables (User)"});
 			this.comboBox_UserGender.Location = new System.Drawing.Point(26, 27);
 			this.comboBox_UserGender.Margin = new System.Windows.Forms.Padding(0);
 			this.comboBox_UserGender.MaxLength = 128;
@@ -295,8 +295,8 @@
 			"Feminine",
 			"Neutral",
 			"Mixed",
-			"Variable",
-			"Variable (User)"});
+			"Variables",
+			"Variables (User)"});
 			this.comboBox_CharacterTarget.Location = new System.Drawing.Point(281, 23);
 			this.comboBox_CharacterTarget.Margin = new System.Windows.Forms.Padding(0);
 			this.comboBox_CharacterTarget.MaxLength = 128;
@@ -316,8 +316,8 @@
             "Feminine",
             "Neutral",
             "Mixed",
-            "Variable",
-			"Variable (User)"});
+            "Variables",
+			"Variables (User)"});
 			this.comboBox_CharacterGender.Location = new System.Drawing.Point(26, 23);
 			this.comboBox_CharacterGender.Margin = new System.Windows.Forms.Padding(0);
 			this.comboBox_CharacterGender.MaxLength = 128;

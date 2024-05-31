@@ -532,6 +532,9 @@ namespace Ginger
 			if (context.HasTag("__snippet"))
 				return text; // Don't evaluate if we're generating a snippet
 
+			if (text.Contains('{') == false)
+				return text; // No possible replacement
+
 			var evalConfig = new ContextString.EvaluationConfig() {
 				macroSuppliers = new IMacroSupplier[] { Current.Strings },
 				referenceSuppliers = new IStringReferenceSupplier[] { Current.Strings },

@@ -8,10 +8,10 @@ namespace Ginger
 {
 	public static class PostInstall
 	{
-		// This is called by the Ginger installer (via command-line argument) at the end of the setup process.
-		// It sets important read/write permissions on the Ginger folder and subfolders for all local users.
-		// Otherwise, if the user installs Ginger to their C:\Program files folder, Ginger won't be able
-		// to save it settings or create new recipes.
+		// This gets called by the Ginger installer (via a command-line argument) as a post-install step.
+		// It grants read/write permissions to local users in the Ginger installation folder and subfolders.
+		// If the user installs Ginger to their C:\Program Files folder (the default), Ginger wouldn't
+		// have the permissions to save its own settings or create new recipes otherwise.
 
 		[SecurityPermission(SecurityAction.Demand)]
 		public static int Execute()
