@@ -11,22 +11,23 @@ The goal of this project is to provide an easy to use tool for both new and expe
 
 ### Create characters using recipes
 * Create AI characters quickly using intelligent building blocks called "recipes".
-* Multi-format character cards, supported practically everywhere.
-* Over 100 recipes available out of the box.
+* Ginger character cards are supported practically everywhere.
 * Support for multiple characters in one card.
-* Integrated notes.
+* Bake recipes into editable text.
+* Over 100 recipes included.
   
-### Write characters (without recipes)
+### Write characters (with or without recipes)
 * Automatic handling of names and placeholders.
 * Personalized text editor.
 * Store your frequently used text as reusable "snippets".
-* Find and Replace across all fields.
+* Find and Replace across all text and fields.
+* Integrated notes.
 * Spell checker.
 * Comments.
 
 ### Edit & Remix characters
 * Broad support for existing character card and lorebook formats.
-* Quickly change to your preferred chat format (quoted dialogue, etc.)
+* Reformat example chat and greetings (quoted/unquoted dialogue, etc.)
 * Seamlessly blend written text with recipes and snippets.
 * Gender swapping through automated pronoun replacement.
 * Import, export, and merge lorebooks.
@@ -43,12 +44,17 @@ The goal of this project is to provide an easy to use tool for both new and expe
 * Backyard AI (formerly Faraday)
 * Agnai.chat
 * JanitorAI
+* Chub.ai
 * Text generation web UI
 * Pygmalion (CAI)
 
 # Screenshots
+
+#### Main interface
 ![Ginger screenshot #1](./images/screenshot.png "Ginger screenshot #1")
 
+#### Previewing the generated prompt
 ![Ginger screenshot #2](./images/screenshot2.png "Ginger screenshot #2")
 
+#### Editing an existing character card
 ![Ginger screenshot #3](./images/screenshot3.png "Ginger screenshot #3")
