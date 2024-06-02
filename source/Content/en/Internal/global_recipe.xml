@@ -21,7 +21,7 @@
 	</Node>
 		
 	<!-- Important block -->
-	<Node path="system/important"  style="default" order="-0" rule="not (__bake or __snippet or __tavern)">
+	<Node path="system/important" style="default" order="-0" rule="not (__bake or __snippet or __tavern)">
 		IMPORTANT:  
 		{inner}
 	</Node>

@@ -58,6 +58,7 @@
 			this.enableHighlightingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
 			this.highlightNamesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.highlightNumbersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.highlightPronounsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.spellCheckingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.enableSpellCheckingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -65,7 +66,7 @@
 			this.fontDialog = new System.Windows.Forms.FontDialog();
 			this.labelTokens = new System.Windows.Forms.Label();
 			this.textBox = new Ginger.RichTextBoxEx();
-			this.highlightNumbersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.darkModeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			buttonLayout = new System.Windows.Forms.FlowLayoutPanel();
 			buttonLayout.SuspendLayout();
 			this.menuStrip.SuspendLayout();
@@ -270,6 +271,7 @@
 			this.formatToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.wordWrapMenuItem,
             this.autoBreakMenuItem,
+            this.darkModeMenuItem,
             this.changeFontMenuItem});
 			this.formatToolStripMenuItem.Name = "formatToolStripMenuItem";
 			this.formatToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
@@ -281,7 +283,7 @@
 			this.wordWrapMenuItem.CheckOnClick = true;
 			this.wordWrapMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.wordWrapMenuItem.Name = "wordWrapMenuItem";
-			this.wordWrapMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.wordWrapMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.wordWrapMenuItem.Text = "Word wrap";
 			this.wordWrapMenuItem.CheckStateChanged += new System.EventHandler(this.WordWrapMenuItem_CheckedChanged);
 			// 
@@ -291,14 +293,14 @@
 			this.autoBreakMenuItem.CheckOnClick = true;
 			this.autoBreakMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.autoBreakMenuItem.Name = "autoBreakMenuItem";
-			this.autoBreakMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.autoBreakMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.autoBreakMenuItem.Text = "Limit line width";
 			this.autoBreakMenuItem.CheckStateChanged += new System.EventHandler(this.AutoBreakLinesMenuItem_CheckStateChanged);
 			// 
 			// changeFontMenuItem
 			// 
 			this.changeFontMenuItem.Name = "changeFontMenuItem";
-			this.changeFontMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.changeFontMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.changeFontMenuItem.Text = "Font...";
 			this.changeFontMenuItem.Click += new System.EventHandler(this.ChangeFontMenuItem_Click);
 			// 
@@ -320,35 +322,43 @@
             this.highlightNumbersMenuItem,
             this.highlightPronounsMenuItem});
 			this.highlightingToolStripMenuItem.Name = "highlightingToolStripMenuItem";
-			this.highlightingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.highlightingToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
 			this.highlightingToolStripMenuItem.Text = "Highlighting";
 			// 
 			// enableHighlightingMenuItem
 			// 
 			this.enableHighlightingMenuItem.CheckOnClick = true;
 			this.enableHighlightingMenuItem.Name = "enableHighlightingMenuItem";
-			this.enableHighlightingMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.enableHighlightingMenuItem.Size = new System.Drawing.Size(125, 22);
 			this.enableHighlightingMenuItem.Text = "Enabled";
 			this.enableHighlightingMenuItem.CheckedChanged += new System.EventHandler(this.enableHighlightingMenuItem_CheckedChanged);
 			// 
 			// toolStripMenuItem5
 			// 
 			this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-			this.toolStripMenuItem5.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem5.Size = new System.Drawing.Size(122, 6);
 			// 
 			// highlightNamesMenuItem
 			// 
 			this.highlightNamesMenuItem.CheckOnClick = true;
 			this.highlightNamesMenuItem.Name = "highlightNamesMenuItem";
-			this.highlightNamesMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.highlightNamesMenuItem.Size = new System.Drawing.Size(125, 22);
 			this.highlightNamesMenuItem.Text = "Names";
 			this.highlightNamesMenuItem.CheckedChanged += new System.EventHandler(this.highlightNamesMenuItem_CheckedChanged);
+			// 
+			// highlightNumbersMenuItem
+			// 
+			this.highlightNumbersMenuItem.CheckOnClick = true;
+			this.highlightNumbersMenuItem.Name = "highlightNumbersMenuItem";
+			this.highlightNumbersMenuItem.Size = new System.Drawing.Size(125, 22);
+			this.highlightNumbersMenuItem.Text = "Numbers";
+			this.highlightNumbersMenuItem.CheckedChanged += new System.EventHandler(this.highlightNumbersMenuItem_CheckedChanged);
 			// 
 			// highlightPronounsMenuItem
 			// 
 			this.highlightPronounsMenuItem.CheckOnClick = true;
 			this.highlightPronounsMenuItem.Name = "highlightPronounsMenuItem";
-			this.highlightPronounsMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.highlightPronounsMenuItem.Size = new System.Drawing.Size(125, 22);
 			this.highlightPronounsMenuItem.Text = "Pronouns";
 			this.highlightPronounsMenuItem.CheckedChanged += new System.EventHandler(this.highlightPronounsMenuItem_CheckedChanged);
 			// 
@@ -358,7 +368,7 @@
             this.enableSpellCheckingMenuItem,
             this.toolStripMenuItem4});
 			this.spellCheckingMenuItem.Name = "spellCheckingMenuItem";
-			this.spellCheckingMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.spellCheckingMenuItem.Size = new System.Drawing.Size(150, 22);
 			this.spellCheckingMenuItem.Text = "Spell checking";
 			// 
 			// enableSpellCheckingMenuItem
@@ -408,13 +418,14 @@
 			this.textBox.TabIndex = 0;
 			this.textBox.Text = "";
 			// 
-			// highlightNumbersMenuItem
+			// darkModeMenuItem
 			// 
-			this.highlightNumbersMenuItem.CheckOnClick = true;
-			this.highlightNumbersMenuItem.Name = "highlightNumbersMenuItem";
-			this.highlightNumbersMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.highlightNumbersMenuItem.Text = "Numbers";
-			this.highlightNumbersMenuItem.CheckedChanged += new System.EventHandler(this.highlightNumbersMenuItem_CheckedChanged);
+			this.darkModeMenuItem.CheckOnClick = true;
+			this.darkModeMenuItem.Name = "darkModeMenuItem";
+			this.darkModeMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.darkModeMenuItem.Text = "&Dark mode";
+			this.darkModeMenuItem.ToolTipText = "Invert colors";
+			this.darkModeMenuItem.CheckStateChanged += new System.EventHandler(this.darkModeMenuItem_CheckStateChanged);
 			// 
 			// WriteDialog
 			// 
@@ -483,5 +494,6 @@
 		private System.Windows.Forms.ToolStripMenuItem highlightNamesMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem highlightPronounsMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem highlightNumbersMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem darkModeMenuItem;
 	}
 }

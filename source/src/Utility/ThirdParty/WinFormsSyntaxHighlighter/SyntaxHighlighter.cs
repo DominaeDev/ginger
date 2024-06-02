@@ -12,12 +12,10 @@
 using Ginger;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 
 namespace WinFormsSyntaxHighlighter
 {
@@ -80,6 +78,7 @@ namespace WinFormsSyntaxHighlighter
 		public static readonly char ErrorEnd = '\uFFF1';
 
 		private TextSpans _textSpans; // Spell checking
+		public bool darkMode { get; set; }
 
 		public SyntaxHighlighter(RichTextBoxEx richTextBox)
 		{
@@ -136,6 +135,7 @@ namespace WinFormsSyntaxHighlighter
 		{
 			_patternStyles.Clear();
 			_styleGroupPairs = null;
+			darkMode = false;
 		}
 
 		protected SyntaxStyle GetDefaultStyle()
@@ -145,12 +145,7 @@ namespace WinFormsSyntaxHighlighter
 
 		protected SyntaxStyle GetErrorStyle()
 		{
-			return new SyntaxStyle(System.Drawing.Color.FromArgb(192, 0, 0), false, false);
-		}
-
-		protected SyntaxStyle GetNameStyle()
-		{
-			return new SyntaxStyle(System.Drawing.Color.FromArgb(192, 0, 0), false, false);
+			return new SyntaxStyle(!darkMode ? Constants.Colors.Light.Error : Constants.Colors.Dark.Error, false, false);
 		}
 
 		private PatternStyleMap FindPatternStyle(string name)

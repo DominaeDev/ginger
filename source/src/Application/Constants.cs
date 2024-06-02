@@ -154,6 +154,39 @@ namespace Ginger
 			public static readonly int SplitMenuAfter = 28;
 			public static readonly int RecipesPerSplit = 20;
 		}
+
+		public static class Colors
+		{
+			public static class Light
+			{
+				public static readonly Color Foreground	= ColorTranslator.FromHtml("#202020");
+				public static readonly Color Background	= ColorTranslator.FromHtml("#FFFFFF");
+				public static readonly Color Dialogue	= ColorTranslator.FromHtml("#C06000");
+				public static readonly Color Narration	= ColorTranslator.FromHtml("#406080");
+				public static readonly Color Number		= ColorTranslator.FromHtml("#800080");
+				public static readonly Color Name		= ColorTranslator.FromHtml("#0000C0");
+				public static readonly Color Command	= ColorTranslator.FromHtml("#800000");
+				public static readonly Color Pronoun	= ColorTranslator.FromHtml("#C000C0");
+				public static readonly Color Comment	= ColorTranslator.FromHtml("#969696");
+				public static readonly Color Code		= ColorTranslator.FromHtml("#606060");
+				public static readonly Color Error		= ColorTranslator.FromHtml("#C00000");
+			}
+
+			public static class Dark
+			{
+				public static readonly Color Foreground	= ColorTranslator.FromHtml("#DEDEDE");
+				public static readonly Color Background	= ColorTranslator.FromHtml("#222222");
+				public static readonly Color Dialogue	= ColorTranslator.FromHtml("#F0A400");
+				public static readonly Color Narration	= ColorTranslator.FromHtml("#93ACC4");
+				public static readonly Color Number		= ColorTranslator.FromHtml("#BE7BE3");
+				public static readonly Color Name		= ColorTranslator.FromHtml("#4FB0FF");
+				public static readonly Color Command	= ColorTranslator.FromHtml("#C06000");
+				public static readonly Color Pronoun	= ColorTranslator.FromHtml("#D000D0");
+				public static readonly Color Comment	= ColorTranslator.FromHtml("#636363");
+				public static readonly Color Code		= ColorTranslator.FromHtml("#969696");
+				public static readonly Color Error		= ColorTranslator.FromHtml("#D12640");
+			}
+		}
 	}
 
 	public static class ShortcutKeys

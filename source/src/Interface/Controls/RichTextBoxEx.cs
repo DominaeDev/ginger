@@ -143,6 +143,7 @@ namespace Ginger
 			Numbers			= 1 << 6,
 			CodeBlock		= 1 << 7,
 			SpellChecking	= 1 << 8,
+			DarkMode		= 1 << 9,
 
 			Default = Standard | Names | Dialogue | Actions | Commands | Numbers | CodeBlock | SpellChecking,
 			Limited = Standard | Names | Commands | Numbers | SpellChecking,
@@ -738,61 +739,73 @@ namespace Ginger
 				return; // No change
 			_syntaxFlags = flags;
 
+			// Colors
+			bool bLight = _syntaxFlags.Contains(SyntaxFlags.DarkMode) == false;
+			Color colorDialogue = bLight ? Constants.Colors.Light.Dialogue : Constants.Colors.Dark.Dialogue;
+			Color colorNarration = bLight ? Constants.Colors.Light.Narration : Constants.Colors.Dark.Narration;
+			Color colorNumber = bLight ? Constants.Colors.Light.Number : Constants.Colors.Dark.Number;
+			Color colorName = bLight ? Constants.Colors.Light.Name : Constants.Colors.Dark.Name;
+			Color colorCommand = bLight ? Constants.Colors.Light.Command : Constants.Colors.Dark.Command;
+			Color colorPronoun = bLight ? Constants.Colors.Light.Pronoun : Constants.Colors.Dark.Pronoun;
+			Color colorComment = bLight ? Constants.Colors.Light.Comment : Constants.Colors.Dark.Comment;
+			Color colorCode = bLight ? Constants.Colors.Light.Code : Constants.Colors.Dark.Code;
+			Color colorError = bLight ? Constants.Colors.Light.Error : Constants.Colors.Dark.Error;
+
 			syntaxHighlighter.ClearPatterns();
 			if (_syntaxFlags.Contains(SyntaxFlags.Standard))
 			{
 				// Comment /*...*/
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"\/\*[\s\S]*?\*\/"), new SyntaxStyle(ColorTranslator.FromHtml("#969696"), false, true), -1);
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"<!--[\s\S]*?-->"), new SyntaxStyle(ColorTranslator.FromHtml("#969696"), false, true), -1);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\/\*[\s\S]*?\*\/"), new SyntaxStyle(colorComment, false, true), -1);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"<!--[\s\S]*?-->"), new SyntaxStyle(colorComment, false, true), -1);
 
 				// Markdown image ![]()
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"!\[(.*)\]\((.+)\)"), new SyntaxStyle(ColorTranslator.FromHtml("#C00000"), false, false), -1);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"!\[(.*)\]\((.+)\)"), new SyntaxStyle(colorError, false, false), -1);
 			}
 
 			// Code `...`
 			if (_syntaxFlags.Contains(SyntaxFlags.CodeBlock))
-				syntaxHighlighter.AddPattern(new PatternDefinition("`[^`]*`"), SyntaxStyle.Monospaced(ColorTranslator.FromHtml("#606060")), -1);
+				syntaxHighlighter.AddPattern(new PatternDefinition("`[^`]*`"), SyntaxStyle.Monospaced(colorCode), -1);
 
 			// Feet/Inches
 			if (_syntaxFlags.Contains(SyntaxFlags.Numbers)) 
-				syntaxHighlighter.AddPattern(new PatternDefinition("\\d+(\"|\'|st|nd|th)"), new SyntaxStyle(Color.Purple), -1);
+				syntaxHighlighter.AddPattern(new PatternDefinition("\\d+(\"|\'|st|nd|th)"), new SyntaxStyle(colorNumber), -1);
 
 			// Dialogue "..."
 			if (_syntaxFlags.Contains(SyntaxFlags.Dialogue))
 			{
-				syntaxHighlighter.AddPattern(new PatternDefinition("\"[^\"]*\""), new SyntaxStyle(ColorTranslator.FromHtml("#c06000")), 0);
-				syntaxHighlighter.AddPattern(new PatternDefinition("\u201C[^\"]*\u201D"), new SyntaxStyle(ColorTranslator.FromHtml("#c06000")), 0);
+				syntaxHighlighter.AddPattern(new PatternDefinition("\"[^\"]*\""), new SyntaxStyle(colorDialogue), 0);
+				syntaxHighlighter.AddPattern(new PatternDefinition("\u201C[^\"]*\u201D"), new SyntaxStyle(colorDialogue), 0);
 			}
 
 			// Narration *...*
 			if (_syntaxFlags.Contains(SyntaxFlags.Actions))
-				syntaxHighlighter.AddPattern(new PatternDefinition("\\*+[^\\*]*\\*+"), new SyntaxStyle(ColorTranslator.FromHtml("#406080"), false, false), 0);
+				syntaxHighlighter.AddPattern(new PatternDefinition("\\*+[^\\*]*\\*+"), new SyntaxStyle(colorNarration, false, false), 0);
 
 			// Commands {char}, {user}, {they}, etc.
 			if (_syntaxFlags.Contains(SyntaxFlags.Commands))
 			{
 				// Invalid patterns
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\{(?i)\b(char|user|original)\b\}\}"), SyntaxStyle.Underlined(Color.FromArgb(192, 0, 0)), 2);
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{(?i)\bcharacter\b\}"), SyntaxStyle.Underlined(Color.FromArgb(192, 0, 0)), 2);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\{(?i)\b(char|user|original)\b\}\}"), SyntaxStyle.Underlined(colorError), 2);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{(?i)\bcharacter\b\}"), SyntaxStyle.Underlined(colorError), 2);
 
 				// character
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{(?i)\b(char|user|card|name|original|gender|they'll|they're|they've|they'd|they|them|theirs|their|themselves|he'll|he's|he's|he'd|he|him|his|his|himself|she'll|she's|she's|she'd|she|her|hers|her|herself|is|are|isn't|aren't|has|have|hasn't|haven't|was|were|wasn't|weren't|does|do|doesn't|don't|s|y|ies|es)\b\}"),
-					new SyntaxStyle(Color.Maroon), 1);
+					new SyntaxStyle(colorCommand), 1);
 
 				// user
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\#(?i)\b(gender|name|they'll|they're|they've|they'd|they|them|theirs|their|themselves|he'll|he's|he's|he'd|he|him|his|his|himself|she'll|she's|she's|she'd|she|her|hers|her|herself|is|are|isn't|aren't|has|have|hasn't|haven't|was|were|wasn't|weren't|does|do|doesn't|don't|s|y|ies|es)\b\}"),
-					new SyntaxStyle(Color.Maroon), 1);
+					new SyntaxStyle(colorCommand), 1);
 			}
 
 			// Pronouns
 			if (_syntaxFlags.Contains(SyntaxFlags.Pronouns))
 			{
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"(?i)\b(he/she|him/her|his/hers|his/her|himself/herself|he's|he'll|he'd|he|him|his|himself|she'll|she's|she'd|she|her|hers|herself|they'll|they're|they've|they'd|they|them|theirs|their|themselves)\b"), new SyntaxStyle(Color.FromArgb(192, 0, 192)), 1);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"(?i)\b(he/she|him/her|his/hers|his/her|himself/herself|he's|he'll|he'd|he|him|his|himself|she'll|she's|she'd|she|her|hers|herself|they'll|they're|they've|they'd|they|them|theirs|their|themselves)\b"), new SyntaxStyle(colorPronoun), 1);
 			}
 
 			// Digits
 			if (_syntaxFlags.Contains(SyntaxFlags.Numbers))
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"[-+#]?\b\d+(?:[.,]\d)?\b"), new SyntaxStyle(Color.Purple), -1);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"[-+#]?\b\d+(?:[.,]\d)?\b"), new SyntaxStyle(colorNumber), -1);
 
 			// Names
 			if (Current.Characters != null && AppSettings.Settings.AutoConvertNames && _syntaxFlags.Contains(SyntaxFlags.Names))
@@ -801,8 +814,11 @@ namespace Ginger
 				names[0] = Current.Card.userPlaceholder;
 				for (int i = 0; i < Current.Characters.Count; ++i)
 					names[i + 1] = Current.Characters[i].namePlaceholder;
-				syntaxHighlighter.SetCharacterNames(names, new SyntaxStyle(Color.FromArgb(0, 0, 192)), 1);
+				syntaxHighlighter.SetCharacterNames(names, new SyntaxStyle(colorName), 1);
 			}
+
+			if (!bLight)
+				syntaxHighlighter.darkMode = true;
 		}
 
 		public void InvalidateSyntaxHighlighting()
@@ -829,11 +845,14 @@ namespace Ginger
 			// Update names
 			if (Current.Characters != null && AppSettings.Settings.AutoConvertNames && _syntaxFlags.Contains(SyntaxFlags.Names))
 			{
+				bool bLight = _syntaxFlags.Contains(SyntaxFlags.DarkMode) == false;
+				Color colorName = bLight ? Constants.Colors.Light.Name : Constants.Colors.Dark.Name;
+
 				string[] names = new string[Current.Characters.Count + 1];
 				names[0] = Current.Card.userPlaceholder;
 				for (int i = 0; i < Current.Characters.Count; ++i)
 					names[i + 1] = Current.Characters[i].namePlaceholder;
-				syntaxHighlighter.SetCharacterNames(names, new SyntaxStyle(Color.FromArgb(0, 0, 192)), 1);
+				syntaxHighlighter.SetCharacterNames(names, new SyntaxStyle(colorName), 1);
 			}
 
 			Rehighlight(immediate);

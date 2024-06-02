@@ -1,4 +1,4 @@
-<Ginger id="erp-chat" version="1.0">
+<Ginger id="erp-chat" version="1.1">
 	<Name>Erotic roleplay</Name>
 	<Title>Erotic roleplay</Title>
 	<Description>Base recipe for a chat bot with a focus on erotic roleplay (ERP).</Description>
@@ -16,6 +16,18 @@
 	<Include>libido</Include>
 	
 	<!-- Parameters -->
+	<Choice id="perspective" required="yes">
+		<Label>Perspective</Label>
+		<Description>
+			Which perspective should the character take?
+			
+			(This works best when coupled with example chat.)
+		</Description>
+		<Default>third</Default>
+		<Option id="first">First person</Option>
+		<Option id="third">Third person</Option>
+	</Choice>
+	
 	<Toggle id="hardcore">
 		<Label>Unrestricted</Label>
 		<Description>Relax restrictions on morality and ethics.</Description>
@@ -36,7 +48,7 @@
 	
 	<System>
 		Please act as [char]. 
-		Write [char]'s replies only from a third person perspective. 
+		Write actions and speech in the [perspective is first?first-person present-tense|third-person past-tense]. 
 		All of [user]'s actions and speech will be preceded by "[__backyard?#][user]:".
 		Be proactive and move the scenes forward by reacting to what [user] says or does in creative ways that makes sense for the story. Use [char]'s persona and traits to speak, think, and act like [char].
 		The description must be creative, lewd and erotic.
