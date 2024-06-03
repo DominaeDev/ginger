@@ -954,7 +954,7 @@ namespace Ginger
 
 			string str = sb.ToString();
 
-			int pos = str.IndexOf(word, 0, StringComparison.OrdinalIgnoreCase);
+			int pos = str.IndexOf(word, 0, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 			while (pos != -1)
 			{
 				char? left = null;
@@ -970,10 +970,10 @@ namespace Ginger
 						start = pos,
 						length = word.Length,
 					});
-					pos = str.IndexOf(word, pos + word.Length, StringComparison.OrdinalIgnoreCase);
+					pos = str.IndexOf(word, pos + word.Length, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 					continue;
 				}
-				pos = str.IndexOf(word, pos + 1, StringComparison.OrdinalIgnoreCase);
+				pos = str.IndexOf(word, pos + 1, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 			}
 
 			for (int i = replacements.Count - 1; i >= 0; --i)
