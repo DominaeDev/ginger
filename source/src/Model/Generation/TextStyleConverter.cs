@@ -119,6 +119,22 @@ namespace Ginger
 				}
 				return default(Span);
 			}
+
+			public bool CheckSpan(int startPos, int endPos)
+			{
+				foreach (var span in spans)
+				{
+					if (startPos > span.startPos && startPos < span.endPos)
+						return false;
+					if (endPos > span.startPos && endPos < span.endPos)
+						return false;
+					if (span.startPos > startPos && span.startPos < endPos)
+						return false;
+					if (span.endPos > startPos && span.endPos < endPos)
+						return false;
+				}
+				return true;
+			}
 		}
 
 		public static string Convert(string value, CardData.TextStyle textStyle)
@@ -218,12 +234,14 @@ namespace Ginger
 				// Identify code blocks
 				MarkSpan('`', Spans.Mode.None, paragraph, spans);
 
+				// Identify non-verbal actions
+				MarkSpan('*', Spans.Mode.NonVerbal, paragraph, spans);
+
 				// Identify dialogue
 				MarkSpan('"', Spans.Mode.Dialogue, paragraph, spans);
 				MarkSpan('\u300C', '\u300D', Spans.Mode.Dialogue, paragraph, spans);
-
-				// Identify non-verbal actions
-				MarkSpan('*', Spans.Mode.NonVerbal, paragraph, spans);
+				
+				// Identify non-verbal actions in parentheses
 				MarkSpan('(', ')', Spans.Mode.NonVerbal, paragraph, spans);
 
 				if (canFill)
@@ -369,7 +387,8 @@ namespace Ginger
 				int pos_end = text.IndexOf(symbol, pos_next + symbol.Length);
 				if (pos_end != -1)
 				{
-					spans.Add(mode, pos_next, pos_end - pos_next + symbol.Length);
+					if (spans.CheckSpan(pos_next, pos_end)) // Not overlapping
+						spans.Add(mode, pos_next, pos_end - pos_next + symbol.Length);
 					pos_next = text.IndexOf(symbol, pos_end + symbol.Length);
 				}
 				else
@@ -393,7 +412,8 @@ namespace Ginger
 				int pos_end = text.IndexOf(chEnd, pos_next + 1);
 				if (pos_end != -1)
 				{
-					spans.Add(mode, pos_next, pos_end - pos_next + 1);
+					if (spans.CheckSpan(pos_next, pos_end)) // Not overlapping
+						spans.Add(mode, pos_next, pos_end - pos_next + 1);
 					pos_next = text.IndexOf(chBegin, pos_end + 1);
 				}
 				else
