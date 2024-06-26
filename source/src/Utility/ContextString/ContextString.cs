@@ -445,7 +445,7 @@ namespace Ginger
 			// Resolve latent functions <%%lower|...%%>
 			ResolvePostFunctions(sb, internalContext);
 
-			// Articles post function <%%a_or_an%%>
+			// Articles post function
 			ResolvePostProcedures(sb);
 		}
 
@@ -1215,6 +1215,9 @@ namespace Ginger
 					Unparagraph(sb, beginScope, "");
 					pos = sb.IndexOf(Open, 0);
 					continue;
+				case "the":
+					ConditionalThe(sb, beginScope);
+					continue;
 				}
 
 				pos = sb.IndexOf(Open, pos);
@@ -1227,14 +1230,36 @@ namespace Ginger
 			int len = ("<%%a_or_an%%>").Length;
 			int idxArticle = beginScope;
 
-			string succeedingWord = sb.ToString()
+			string subsequentWord = sb.ToString()
 				.Substring(idxArticle + len)
 				.TrimStart();
 
-			if (string.IsNullOrEmpty(succeedingWord) == false)
-				sb.ReplaceFromTo(idxArticle, idxArticle + len - 1, Text.AOrAn(succeedingWord));
+			if (string.IsNullOrEmpty(subsequentWord) == false)
+				sb.ReplaceFromTo(idxArticle, idxArticle + len - 1, Text.AOrAn(subsequentWord));
 			else
 				sb.ReplaceFromTo(idxArticle, idxArticle + len - 1, "");
+		}
+
+
+		private static void ConditionalThe(StringBuilder sb, int beginScope)
+		{
+			int len = ("<%%the%%>").Length;
+			int idxThe = beginScope;
+
+			string subsequentWord = sb.ToString()
+				.Substring(idxThe + len)
+				.TrimStart()
+				.ToLowerInvariant();
+
+			if (string.IsNullOrEmpty(subsequentWord) == false && subsequentWord.Length >= 3)
+			{
+				if (subsequentWord.BeginsWith("the") && subsequentWord.Length > 3 && char.IsWhiteSpace(subsequentWord[3]))
+					sb.ReplaceFromTo(idxThe, idxThe + len - 1, "");
+				else
+					sb.ReplaceFromTo(idxThe, idxThe + len - 1, "the");
+			}
+			else
+				sb.ReplaceFromTo(idxThe, idxThe + len - 1, "the");
 		}
 
 		private static void Unparagraph(StringBuilder sb, int pos, string replace = " ")

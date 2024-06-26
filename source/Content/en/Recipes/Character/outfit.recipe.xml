@@ -4,6 +4,7 @@
 	<Author>Ginger</Author>
 	<Category>Appearance</Category>
 	<Order>0</Order>
+	<Flags>outfit</Flags>
 	
 	<!-- Parameters --> 
 	<Text id="top">

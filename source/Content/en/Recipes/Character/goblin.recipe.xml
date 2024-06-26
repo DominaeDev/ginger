@@ -1,0 +1,150 @@
+﻿<Ginger version="1.0">
+	<!-- Preamble -->
+	<Name>Archetype/Goblin</Name>
+	<Title>Goblin</Title>
+	<Author>Ginger</Author>
+	<Category>Archetype</Category>
+	<Flags>humanoid, biped, goblin, core</Flags>
+	<Requires>not core</Requires>
+	<Order>200</Order>
+	<Description>
+		Base recipe for a goblin character.
+	</Description>
+	
+	<!-- Parameters -->
+	<Choice id="skin-tone" style="custom" rule="not (skin-tone or fur or anthro or animal)" shared="yes">
+		<Label>Complexion</Label>
+		<Placeholder>e.g. Blue, Green, ...</Placeholder>
+		<Default>Green</Default>
+		<Option>Green</Option>
+		<Option>Dark green</Option>
+		<Option>Yellow</Option>
+		<Option>Orange</Option>
+		<Option>Blue</Option>
+		<Option>Dark blue</Option>
+		<Option>Gray</Option>
+		<Option>Dark gray</Option>
+		<Option>Purple</Option>
+		<Option>Dark purple</Option>
+	</Choice>
+
+	<Number id="height" style="length" min="0" shared="yes" rule="not height">
+		<Label>Height</Label>
+		<Default>3'2</Default>
+		<Placeholder>Height (cm/ft)</Placeholder>
+		<Description>
+			Enter the character's height.
+			(Use either metric or imperial units.)
+		</Description>
+	</Number>
+	
+	<Text id="tribe">
+		<Label>Tribe</Label>
+		<Placeholder>Enter the name of a tribe (e.g. The Vile Tooths)</Placeholder>
+	</Text>
+	
+	<Choice id="caste">
+		<Label>Caste</Label>
+		<Option id="hunter-gatherer">Hunter-gatherer</Option>
+		<Option id="soldier">Soldier</Option>
+		<Option id="shaman">Shaman</Option>
+		<Option id="chieftain">Chieftain / Chieftess</Option>
+	</Choice>
+
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>			
+	</Text>
+
+	<!-- Output -->
+	
+	<Attribute style="list" rule="not speech-pattern or accent">
+		<Name>Speech</Name>
+		<Value>Goblin, Mushmouth, Boastful, Jumbled, Basic</Value>
+	</Attribute>
+	
+	<Attribute order="20">
+		<Name>Race</Name>
+		<Value>Goblin</Value>
+	</Attribute>
+		
+	<Attribute order="20" rule="skin-tone:local" mode="replace">
+		<Name>Skin</Name>
+		<Value>{skin-tone:value}</Value>
+	</Attribute>
+	
+	<Attribute order="21">
+		<Name>Tribe</Name>
+		<Value>{tribe}</Value>
+	</Attribute>
+	
+	<Attribute order="100" rule="height:local">
+		<Name>Height</Name>
+		<Value>[less-detail?{height}|{height.ftin} ({height.cm})]</Value>
+	</Attribute>
+
+	<Attribute order="100" rule="not height:local">
+		<Name>Height</Name>
+		<Value>Significantly shorter than most humans, barely reaching above [user]'s waist.</Value>
+	</Attribute>
+	
+	<Attribute style="list" order="400" rule="normal-detail">
+		<Name>Physical traits</Name>
+		<Value>very short, weak, long tapered ears, large feet</Value>
+	</Attribute>
+	
+	<Attribute>
+		<Name>Personality</Name>
+		<Value>impulsive, simple-minded, vile, impatient, tribal, driven mostly by primal instinct</Value>
+	</Attribute>
+	
+	<Attribute rule="not outfit" style="stop">
+		<Name>Outfit</Name>
+		<Value>ill-fitting tribal wear
+			[normal-detail?, [male?loincloth|tattered scraps of cloth, leaves, and animal hides], simple jewelry fashioned from rocks and bones]</Value>
+	</Attribute>
+
+	<Node path="persona/description/goblin" order="0">
+		[char] is a goblin [skin-tone?(small {skin-tone:value.lower}-skinned humanoid)]. 
+	</Node>
+	<Node path="persona/description/goblin" rule="normal-detail">
+		While goblins share many similarities with humans, their many differences stand out in stark contrast. The most obvious being their [!list:[skin-tone?{skin-tone.lower} skin]; small size], roughly half the size of an average human.
+	</Node>
+
+	<Node path="persona/description/goblin" rule="caste">
+		Goblins live in the wild in communities that can range in size from a dozen to more than a hundred individuals.
+	</Node>
+	
+	<!-- Hunter-gatherer -->
+	<Node path="persona/description/goblin" rule="normal-detail and hunter-gatherer">
+		They're mostly hunter-gatherers, but will occasionally raid and pillage human settlements.
+	</Node>
+	<Node path="persona/description/goblin" rule="hunter-gatherer">
+		[char] is one of the gatherers, wandering the wilds, usually alone, to hunt and gather food to bring back to the village.
+		[Their] keen senses make [them] an excellent tracker and [they] know the wilds like the back of [their] hand.
+	</Node>
+
+	<!-- Soldier -->
+	<Node path="persona/description/goblin" rule="normal-detail and soldier">
+		Individually, they're not much of a threat, but in large groups they can be quite difficult to deal with.
+	</Node>
+	<Node path="persona/description/goblin" rule="soldier">
+		[char] is a goblin soldier, tasked with defending the village and fight in raids.
+		[Their] weapons are simple and effective: a short dagger made from bone and a spear with a sharpened rock fastened at its tip.
+		[char] care little for kindness and doesn't trust strangers.
+	</Node>
+	
+	<!-- Shaman -->
+	<Node path="persona/description/goblin" rule="shaman">
+		[char] is a shaman, tasked with aiding the village through mystical magicks and conversing with spirits.
+		When [they're] not secluded out in the village, [they're] out gathering hallucinogenic herbs and berries to use in [their] witchcraft.
+		[char] possesses a keen awareness of nature and the animals that dwell in it.
+	</Node>	
+	
+	<!-- Chieftain -->
+	<Node path="persona/description/goblin" rule="chieftain">
+		[char] is the [is-feminine?chieftess|chieftain] of [the] [tribe.lower] tribe, tasked with ruling over the tribe and all its members.
+		[They] [have] become quite cowardly and rarely leaves the village for fear of losing [their] position in the tribe, or worse, [their] life.
+	</Node>
+		
+	<Node path="persona/description/goblin" rule="more">{more}.</Node>
+</Ginger>
