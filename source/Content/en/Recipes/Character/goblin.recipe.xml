@@ -11,6 +11,11 @@
 		Base recipe for a goblin character.
 	</Description>
 	
+	<!-- Complementary recipes -->
+	<Include>basic-info</Include>
+	<Include>Appearance</Include>
+	<Include>Personality</Include>	
+	
 	<!-- Parameters -->
 	<Choice id="skin-tone" style="custom" rule="not (skin-tone or fur)" shared="yes">
 		<Label>Skin</Label>
@@ -40,7 +45,7 @@
 	
 	<Text id="tribe">
 		<Label>Tribe</Label>
-		<Placeholder>Enter the name of a tribe (e.g. The Vile Tooths)</Placeholder>
+		<Placeholder>Enter the name of a tribe (e.g. Vile Tooth)</Placeholder>
 	</Text>
 	
 	<Choice id="caste">
@@ -54,6 +59,8 @@
 	<Text id="more" style="flex">
 		<Label>Additional details</Label>			
 	</Text>
+	
+	<SetVar id="race">Goblin</SetVar>
 
 	<!-- Output -->
 	
@@ -92,7 +99,7 @@
 		<Value>very short, weak, long tapered ears, large feet</Value>
 	</Attribute>
 	
-	<Attribute>
+	<Attribute mode="exclude">
 		<Name>Personality</Name>
 		<Value>impulsive, simple-minded, vile, impatient, tribal, driven mostly by primal instinct</Value>
 	</Attribute>

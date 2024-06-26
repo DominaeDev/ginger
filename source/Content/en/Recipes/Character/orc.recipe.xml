@@ -11,6 +11,11 @@
 		Base recipe for an orc character.
 	</Description>
 	
+	<!-- Complementary recipes -->
+	<Include>basic-info</Include>
+	<Include>Appearance</Include>
+	<Include>Personality</Include>	
+	
 	<!-- Parameters -->
 	<Choice id="skin-tone" style="custom" rule="not (skin-tone or fur)" shared="yes">
 		<Label>Skin</Label>
@@ -40,12 +45,14 @@
 	
 	<Text id="tribe">
 		<Label>Tribe</Label>
-		<Placeholder>Enter the name of a tribe (e.g. The Vile Tooths)</Placeholder>
+		<Placeholder>Enter the name of a tribe (e.g. Vile Tooth)</Placeholder>
 	</Text>
 	
 	<Text id="more" style="flex">
 		<Label>Additional details</Label>			
 	</Text>
+	
+	<SetVar id="race">Orc</SetVar>
 
 	<!-- Output -->
 	
@@ -84,7 +91,7 @@
 		<Value>very tall, muscular, pointy ears, protuding tusks</Value>
 	</Attribute>
 	
-	<Attribute>
+	<Attribute mode="exclude">
 		<Name>Personality</Name>
 		<Value>warrior mind, simple-minded, brutish, tribal, driven mostly by primal instinct, solves problems with [their] brawn instead of [their] brain.</Value>
 	</Attribute>

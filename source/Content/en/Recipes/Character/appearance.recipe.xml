@@ -258,7 +258,7 @@
 	<Node path="appearance/body" order="0" rule="normal-detail and body-type is tall">[They] [are] quite tall, significantly taller than [user].</Node>
 	<Node path="appearance/body" order="0" rule="normal-detail and body-type is voluptuous">[Their] curvaceous body is voluptuous with large, ample features.</Node>
 	
-	<Node path="appearance/info" rule="normal-detail and (hair-color or hair-style or eye-color or skin-tone)">[They.capital] [have] [!list:[@hair];[@eyes];[!lower:[@skin-tone]]].</Node>
+	<Node path="appearance/info" rule="normal-detail and skin-tone:local and (hair-color or hair-style or eye-color or skin-tone)">[They.capital] [have] [!list:[@hair];[@eyes];[!lower:[@skin-tone]]].</Node>
 	<Node path="appearance/info" rule="more">{more}.</Node>
 	
 	<!-- Traits -->
