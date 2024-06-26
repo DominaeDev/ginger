@@ -1,4 +1,4 @@
-﻿<Ginger version="1.0">
+﻿<Ginger id="goblin-core" version="1.0">
 	<!-- Preamble -->
 	<Name>Archetype/Goblin</Name>
 	<Title>Goblin</Title>
@@ -12,8 +12,8 @@
 	</Description>
 	
 	<!-- Parameters -->
-	<Choice id="skin-tone" style="custom" rule="not (skin-tone or fur or anthro or animal)" shared="yes">
-		<Label>Complexion</Label>
+	<Choice id="skin-tone" style="custom" rule="not (skin-tone or fur)" shared="yes">
+		<Label>Skin</Label>
 		<Placeholder>e.g. Blue, Green, ...</Placeholder>
 		<Default>Green</Default>
 		<Option>Green</Option>
