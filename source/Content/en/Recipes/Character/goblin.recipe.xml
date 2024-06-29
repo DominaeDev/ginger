@@ -66,7 +66,7 @@
 	
 	<Attribute style="list" rule="not speech-pattern or accent">
 		<Name>Speech</Name>
-		<Value>Goblin, Mushmouth, Boastful, Jumbled, Basic</Value>
+		<Value>Goblish, Mushmouth, Boastful, Jumbled, Basic</Value>
 	</Attribute>
 	
 	<Attribute order="20">
@@ -95,7 +95,7 @@
 	</Attribute>
 	
 	<Attribute style="list" order="400" rule="normal-detail">
-		<Name>Physical traits</Name>
+		<Name>Traits</Name>
 		<Value>very short, weak, long tapered ears, large feet</Value>
 	</Attribute>
 	

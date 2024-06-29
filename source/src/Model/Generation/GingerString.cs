@@ -56,6 +56,7 @@ namespace Ginger
 			sb.Replace(UserMarker, "{{user}}", true);
 			sb.Replace(OriginalMarker, "{{original}}", true);
 			sb.Replace(NameMarker, Current.Name, true);
+			sb.Replace(ContinueMarker, "", true);
 			sb.ConvertLinebreaks(Linebreak.LF);
 			sb.TrimTrailingSpaces();
 			return sb.ToString();
@@ -153,6 +154,7 @@ namespace Ginger
 			sb.Replace(UserMarker, "{user}", true);
 			sb.Replace(OriginalMarker, "{original}", true);
 			sb.Replace(NameMarker, Current.Name, true);
+			sb.Replace(ContinueMarker, "", true);
 
 			sb.ConvertLinebreaks(Linebreak.LF);
 			sb.Trim();
@@ -266,6 +268,7 @@ namespace Ginger
 			Utility.ReplaceWholeWord(sb, UserMarker, "__UUUU__", true);
 			Utility.ReplaceWholeWord(sb, OriginalMarker, "__OOOO__", true);
 			Utility.ReplaceWholeWord(sb, NameMarker, "__NNNN__", true);
+			Utility.ReplaceWholeWord(sb, ContinueMarker, "", true);
 
 			if (AppSettings.Settings.AutoConvertNames)
 			{
@@ -302,6 +305,7 @@ namespace Ginger
 			sb.Replace(InternalUserMarker, UserMarker);
 			sb.Replace(InternalOriginalMarker, OriginalMarker);
 			sb.Replace(InternalNameMarker, NameMarker);
+			sb.Replace(InternalContinueMarker, ContinueMarker);
 
 			string[] characterNames = Current.Characters.Select(c => c.namePlaceholder ?? "").ToArray();
 			for (int i = 0; i < characterNames.Length; ++i)
@@ -355,6 +359,7 @@ namespace Ginger
 			sb.Replace(InternalUserMarker, UserMarker);
 			sb.Replace(InternalOriginalMarker, OriginalMarker);
 			sb.Replace(InternalNameMarker, NameMarker);
+			sb.Replace(InternalContinueMarker, ContinueMarker);
 
 			for (int i = 0; i < characterNames.Length; ++i)
 				sb.Replace(MakeInternalCharacterMarker(i), characterNames[i]);
@@ -413,6 +418,7 @@ namespace Ginger
 				sb.Replace(CharacterMarker, Current.Name, true);
 				sb.Replace(UserMarker, Current.Card.userPlaceholder, true);
 				sb.Replace(OriginalMarker, "", true);
+				sb.Replace(ContinueMarker, "", true);
 				sb.Replace(NameMarker, Current.Name, true);
 				break;
 			}

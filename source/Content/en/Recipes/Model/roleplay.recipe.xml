@@ -66,10 +66,18 @@
 		- [user] is new to roleplay, so other participants should help them out by advancing the plot, adding creativity, and suggesting things for [user] to do.  
 	</System>
 	
+	<Node path="system/important" style="bullet-list" order="-0" rule="not (__bake or __snippet or __tavern)">
+		Important:  
+		{inner}
+	</Node>
 	<Node path="system/important/roleplay">
-		- It's important for the immersion of the roleplay that participants always stay in character!  
-		- To encourage creativity, each participant will receive 100 points for responses that are in character, vividly descriptive, and push the action forward.  
-		- Participants shall emphasize their character's unique personality, culture, and appearance.  
+		It's important for the immersion of the roleplay that participants always stay in character!
+	</Node>
+	<Node path="system/important/roleplay">
+		To encourage creativity, each participant will receive 100 points for responses that are in character, vividly descriptive, and push the action forward.
+	</Node>
+	<Node path="system/important/roleplay">
+		Participants shall emphasize their character's unique personality, culture, and appearance.
 	</Node>
 		
 	<Node path="system/exceptions/explicit" rule="hardcore">

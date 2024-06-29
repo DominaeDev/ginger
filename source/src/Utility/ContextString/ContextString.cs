@@ -375,6 +375,26 @@ namespace Ginger
 					string condition = sbInput.ToString(beginBracket + 1, question - beginBracket - 1).Trim();
 					string options = sbInput.ToString(question + 1, endBracket - (question + 1));
 
+					// Preceding word condition?
+					if (condition.EndsWith(".."))
+					{
+						condition = condition.Substring(0, condition.Length - 2);
+						string replacement = string.Format("<%%?..{0}|{1}%%>", condition, options); // Late evaluation
+						sbInput.ReplaceFromTo(beginBracket, endBracket, replacement);
+						pos = beginBracket + replacement.Length;
+						continue;
+					}
+					// Subsequent word condition?
+					if (condition.BeginsWith(".."))
+					{
+						condition = condition.Substring(2);
+						string replacement = string.Format("<%%..?{0}|{1}%%>", condition, options); // Late evaluation
+						sbInput.ReplaceFromTo(beginBracket, endBracket, replacement);
+						pos = beginBracket + replacement.Length;
+						continue;
+					}
+
+					// Expression
 					Context ruleContext = Context.Copy(internalContext.context, true);
 					
 					ICondition rule = Rule.Parse(condition);
@@ -473,7 +493,7 @@ namespace Ginger
 			return new ContextString(text).Evaluate(context, randomizer);
 		}
 
-		private string RandomWord(string words, IRandom randomizer)
+		private static string RandomWord(string words, IRandom randomizer)
 		{
 			List<string> lsWords = ScopedSplit(words, '/');
 			if (lsWords.Count == 0)
@@ -502,7 +522,7 @@ namespace Ginger
 			return string.Empty;
 		}
 
-		private List<string> ScopedSplit(string s, char delimiter)
+		private static List<string> ScopedSplit(string s, char delimiter)
 		{
 			List<string> words = new List<string>();
 
@@ -522,7 +542,7 @@ namespace Ginger
 			return words;
 		}
 
-		private string ConditionalWord(string s, bool condition)
+		private static string ConditionalWord(string s, bool condition)
 		{
 			List<string> words = ScopedSplit(s, '|');
 			if (words.Count == 0)
@@ -1176,7 +1196,13 @@ namespace Ginger
 				var sbValue = new StringBuilder(sb.ToString(pipe + 1, endScope - pipe - 1));
 				ResolvePostFunctions(sbValue, internalContext);
 				string value = sbValue.ToString();
-				ApplyFunction(ref value, function, internalContext);
+
+				if (function.Length > 3 && function.BeginsWith("?.."))
+					IfPrecedingWord(sb, beginScope, function.Substring(3), value, ref value);
+				else if (function.Length > 3 && function.BeginsWith("..?"))
+					IfSubsequentWord(sb, endScope + 3, function.Substring(3), value, ref value);
+				else
+					ApplyFunction(ref value, function, internalContext);
 				sb.ReplaceFromTo(beginScope, endScope + 2, value);
 
 				pos = sb.IndexOf(Open, pos + 1);
@@ -1241,10 +1267,10 @@ namespace Ginger
 		}
 
 
-		private static void ConditionalThe(StringBuilder sb, int beginScope)
+		private static void ConditionalThe(StringBuilder sb, int pos)
 		{
 			int len = ("<%%the%%>").Length;
-			int idxThe = beginScope;
+			int idxThe = pos;
 
 			string subsequentWord = sb.ToString()
 				.Substring(idxThe + len)
@@ -1260,6 +1286,62 @@ namespace Ginger
 			}
 			else
 				sb.ReplaceFromTo(idxThe, idxThe + len - 1, "the");
+		}
+
+		private static void IfPrecedingWord(StringBuilder sb, int posBegin, string word, string options, ref string value)
+		{
+			string prevWord = sb.ToString()
+				.Substring(0, posBegin)
+				.TrimEnd()
+				.ToLowerInvariant();
+
+			if (prevWord.Length == 0)
+			{
+				value = ConditionalWord(options, false);
+				return;
+			}
+
+			word = word.Trim().ToLowerInvariant();
+			if (prevWord.EndsWith(word) == false)
+			{
+				value = ConditionalWord(options, false);
+				return;
+			}
+			if (prevWord.Length > word.Length) // Word must end
+			{
+				char ch = prevWord[prevWord.Length - (word.Length + 1)];
+				value = ConditionalWord(options, char.IsWhiteSpace(ch) || char.IsPunctuation(ch));
+				return;
+			}
+			value = ConditionalWord(options, true);
+		}
+
+		private static void IfSubsequentWord(StringBuilder sb, int posEnd, string word, string options, ref string value)
+		{
+			string nextWord = sb.ToString()
+				.Substring(posEnd)
+				.TrimStart()
+				.ToLowerInvariant();
+
+			if (nextWord.Length == 0)
+			{
+				value = ConditionalWord(options, false);
+				return;
+			}
+
+			word = word.Trim().ToLowerInvariant();
+			if (nextWord.BeginsWith(word) == false)
+			{
+				value = ConditionalWord(options, false);
+				return;
+			}
+			if (nextWord.Length > word.Length) // Word must end
+			{
+				char ch = nextWord[word.Length];
+				value = ConditionalWord(options, char.IsWhiteSpace(ch) || char.IsPunctuation(ch));
+				return;
+			}
+			value = ConditionalWord(options, true);
 		}
 
 		private static void Unparagraph(StringBuilder sb, int pos, string replace = " ")

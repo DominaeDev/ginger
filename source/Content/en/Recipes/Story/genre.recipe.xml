@@ -48,7 +48,7 @@
 	<SetFlag rule="erotica">nsfw</SetFlag>
 	
 	<!-- Output -->	
-	<Node path="system/genre" style="comma" order="600">Genre: {inner}.</Node>
+	<Node path="system/genre" style="list" order="600">Genre: {inner}.</Node>
 	<Node path="system/genre/value" rule="genre or more">{genre:value.lower}</Node>
 	<Node path="system/genre/value" rule="erotica">smut</Node>
 	<Node path="system/genre/value" rule="more">{more.lower}</Node>

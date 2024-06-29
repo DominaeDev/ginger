@@ -566,7 +566,7 @@ namespace Ginger
 			foreach (var kvp in _entries)
 			{
 				BlockID key = kvp.Key;
-				var siblings = kvp.Value.Where(e => e.mode == Block.Mode.Sibling);
+				var siblings = kvp.Value.Where(e => e.mode == Block.Mode.Sibling).ToList();
 				if (siblings.IsEmpty())
 					continue;
 				
@@ -574,12 +574,12 @@ namespace Ginger
 				if (count < kvp.Value.Count)
 					continue;
 
-				// Must have at least one sibling which itself doesn't require a sibling
-				if (_entries.ContainsAny(k => k.Key.IsSiblingOf(key) && k.Value.ContainsAny(e => e.mode != Block.Mode.Sibling)) )
+				// Must have at least one sibling that doesn't also need a sibling
+				if (_entries.ContainsAny(k => (k.Key == key || k.Key.IsSiblingOf(key)) && k.Value.ContainsAny(e => e.mode != Block.Mode.Sibling)) )
 					continue;
 
 				// Remove (including children)
-				foreach (var x in _entries.Keys.Where(k => k.IsSiblingOf(key) || k.IsChildOf(key)))
+				foreach (var x in _entries.Keys.Where(k => k == key || k.IsSiblingOf(key) || k.IsChildOf(key)))
 					removeKeys.Add(x);
 			}
 			foreach (var key in removeKeys)
@@ -838,7 +838,7 @@ namespace Ginger
 								}
 								innerBlock = sb.ToString();
 							}
-							else if (style == Block.Style.Bullet && innerEntries.Count > 1)
+							else if (style == Block.Style.Bullet/* && innerEntries.Count > 1*/ || (style == Block.Style.Number && innerEntries.Count == 1))
 							{
 								StringBuilder sb = new StringBuilder();
 								for (int n = 0; n < innerEntries.Count; ++n)
@@ -930,7 +930,7 @@ namespace Ginger
 
 		private static bool IsVerticalList(Block.Style style)
 		{
-			return style >= Block.Style.Number && style < Block.Style.Bullet;
+			return style >= Block.Style.Number && style <= Block.Style.Bullet;
 		}
 
 		public string GetFinishedBlock(BlockID blockID)

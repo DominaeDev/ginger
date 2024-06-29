@@ -9,7 +9,7 @@
 	<Style id="attribute">default</Style>
 	
 	<!-- Text value style -->
-	<Style id="text">default</Style>
+	<Style id="text">quote</Style>
 	
 	<!-- Number value style -->
 	<Style id="number">default</Style>

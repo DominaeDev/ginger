@@ -9,23 +9,25 @@
 <Ginger id="__global">
 
 	<!-- System prompt guidelines -->
-	<Node path="system/guidelines" style="default" order="-200">
+	<Node path="system/guidelines" style="default" mode="exclude" order="-200">
 		GUIDELINES:  
 		{inner}
 	</Node>
 
 	<!-- Exceptions block -->
-	<Node path="system/exceptions" style="default" order="-100">
+	<Node path="system/exceptions" style="default" mode="exclude" order="-100">
 		EXCEPTIONS:  
 		{inner}  
 	</Node>
 		
 	<!-- Important block -->
-	<Node path="system/important" style="default" order="-0" rule="not (__bake or __snippet or __tavern)">
+	<Node path="system/important" style="default" mode="exclude" order="-0" rule="not (__bake or __snippet or __tavern)">
 		IMPORTANT:  
 		{inner}
 	</Node>
-	<Node path="system/important/output" style="default"/>
+	<Node path="system/important" style="line" mode="exclude" order="-0" rule="__tavern"/>
+	
+	<Node path="system/important/output" mode="exclude" style="default"/>
 	
 	<!-- Attribute root node -->
 	<Node path="persona/attributes" style="line" order="200" rule="not multi-character"/>
@@ -71,6 +73,12 @@
 		STORY:  
 		{inner}  
 	</Node>
+	
+	<!-- Story block -->
+	<Node path="scenario/hint" order="800" style="bullet-list">
+		Story hints:  
+		{inner}  
+	</Node>	
 
 	<!-- World block -->
 	<Node path="scenario/world" style="line" order="400"/>

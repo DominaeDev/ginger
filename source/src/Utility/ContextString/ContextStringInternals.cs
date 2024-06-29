@@ -14,7 +14,7 @@ namespace Ginger
 			{ "a", (Internal_Context ctx) =>				{ return "<%%a_or_an%%>"; } },
 
 			// Conditional "the"
-			{ "the", (Internal_Context ctx) =>				{ return "<%%the%%>"; } },
+//			{ "the", (Internal_Context ctx) =>				{ return "<%%the%%>"; } },
 
 			// Whitespace
 			{ "br", (Internal_Context ctx) =>				{ return Text.Break; } },			// Explicit linebreak

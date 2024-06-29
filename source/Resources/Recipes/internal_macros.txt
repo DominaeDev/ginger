@@ -5,6 +5,7 @@
 	<Wrapper id="abbr">[noparse]_[parse][nocap]</Wrapper>
 	<Wrapper id="raw">[noparse]_[parse]</Wrapper>
 	<Wrapper id="property-label">_:[sp]</Wrapper>
+	<Macro id="the">[..the?|the]</Macro>
 
 	<!-- Chat style -->
 	<Rule id="is-faraday">__faraday or __backyard</Rule>
