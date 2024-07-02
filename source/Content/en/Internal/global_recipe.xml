@@ -41,7 +41,7 @@
 	<Node path="persona/attributes/age" style="number" order="20">[!attrib:Age]{inner}</Node>
 	<Node path="persona/attributes/nationality" style="attribute" order="100">[!attrib:Nationality]{inner}</Node>
 	<Node path="persona/attributes/occupation" style="attribute" order="100">[!attrib:Occupation]{inner}</Node>
-	<Node path="persona/attributes/personality" style="list" order="200">[!attrib:Personality traits]{inner}</Node>
+	<Node path="persona/attributes/personality" style="list" order="200">[!attrib:Personality]{inner}</Node>
 	<Node path="persona/attributes/likes" style="list" order="200">[!attrib:Likes]{inner}</Node>
 	<Node path="persona/attributes/dislikes" style="list" order="200">[!attrib:Dislikes]{inner}</Node>
 	<Node path="persona/attributes/hobbies" style="list" order="200">[!attrib:Hobbies]{inner}</Node>

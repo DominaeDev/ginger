@@ -34,6 +34,7 @@ namespace Ginger
 
 			StandardOutputFormatting	= Default | Linebreaks | NoInternal, // System, Persona, Scenario, User
 			LimitedOutputFormatting		= Default | NoInternal, // Example, Greeting, Grammar
+			LimitedBlockFormatting		= Whitespace | Punctuation | NoInternal, // Example, Greeting, Grammar
 			LoreFormatting				= Default | Linebreaks,
 			OutputFormatting			= Whitespace | Linebreaks | Punctuation,
 			ExampleFormatting			= Minimal,
@@ -513,30 +514,7 @@ namespace Ginger
 				}
 			}
 
-			// Ensure there's a blankspace after each punctuation
-			for (int i = 0; i < sbOutput.Length - 1;)
-			{
-				if (SkipNoParse(sbOutput, ref i))
-					continue;
-
-				char ch = sbOutput[i];
-				if (ch == '!' && i > 0 && sbOutput[i - 1] == '<') // Ignore <!
-				{
-					i += 1;
-					continue;
-				}
-
-				char nextCh = sbOutput[i + 1];
-				if (IsPunctuation(ch) && (char.IsLetter(nextCh) || nextCh == '{' || nextCh == '[' || nextCh == '<' || nextCh == '('))
-				{
-					sbOutput.Insert(i + 1, ' ');
-					i += 2;
-					continue;
-				}
-				++i;
-			}
-
-			// Ensure there's no blankspace preceding punctuation or line break
+			// Remove whitespace preceding punctuation or line break
 			for (int i = 0; i < sbOutput.Length;)
 			{
 				if (SkipNoParse(sbOutput, ref i))
@@ -551,6 +529,35 @@ namespace Ginger
 						--pos;
 					}
 					i = pos;
+				}
+				++i;
+			}
+
+			// Ensure there's a blankspace after each punctuation
+			for (int i = 0; i < sbOutput.Length - 1;)
+			{
+				if (SkipNoParse(sbOutput, ref i))
+					continue;
+
+				char ch = sbOutput[i];
+				if (ch == '!' && i > 0 && sbOutput[i - 1] == '<') // Ignore <!
+				{
+					i += 1;
+					continue;
+				}
+
+				char nextCh = sbOutput[i + 1];
+				if (ch == ',' && char.IsWhiteSpace(nextCh) == false)
+				{
+					sbOutput.Insert(i + 1, ' ');
+					i += 2;
+					continue;
+				}
+				else if (IsPunctuation(ch) && (char.IsLetter(nextCh) || nextCh == '{' || nextCh == '[' || nextCh == '<' || nextCh == '('))
+				{
+					sbOutput.Insert(i + 1, ' ');
+					i += 2;
+					continue;
 				}
 				++i;
 			}

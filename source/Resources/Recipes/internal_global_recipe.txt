@@ -1,10 +1,10 @@
 <Ginger id="__internal">
 	<!-- Root nodes -->
-	<Node path="system" style="paragraph" mode="exclude"/>
-	<Node path="persona" style="paragraph" mode="exclude"/>
-	<Node path="scenario" style="paragraph" mode="exclude"/>
-	<Node path="user" style="paragraph" mode="exclude"/>
-	<Node path="example" style="paragraph" mode="exclude"/>
+	<Node path="system" style="paragraph" mode="exclude" format="default"/>
+	<Node path="persona" style="paragraph" mode="exclude" format="default"/>
+	<Node path="scenario" style="paragraph" mode="exclude" format="default"/>
+	<Node path="user" style="paragraph" mode="exclude" format="default"/>
+	<Node path="example" style="paragraph" mode="exclude" format="default"/>
 	
 	<!-- Standard output -->
 	<Node path="system/output" style="paragraph" order="500" mode="exclude"/>

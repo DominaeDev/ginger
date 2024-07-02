@@ -200,8 +200,9 @@ namespace Ginger
 		public enum Formatting
 		{
 			Undefined,
-			Enabled,
-			Disabled,
+			Default,
+			Limited,
+			None,
 		}
 		public Formatting formatting = Formatting.Undefined;
 		protected string _styleName;
@@ -261,8 +262,8 @@ namespace Ginger
 			else
 				order = DefaultOrder;
 
-			if (xmlNode.HasAttribute("raw"))
-				formatting = xmlNode.GetAttributeBool("raw") ? Formatting.Disabled : Formatting.Enabled;
+			if (xmlNode.HasAttribute("format"))
+				formatting = EnumHelper.FromString(xmlNode.GetAttribute("format"), Formatting.Undefined);
 			else
 				formatting = Formatting.Undefined;
 
@@ -280,7 +281,7 @@ namespace Ginger
 			if (mode != Mode.Default)
 				xmlNode.AddAttribute("mode", EnumHelper.ToString(mode).ToLowerInvariant());
 			if (formatting != Formatting.Undefined)
-				xmlNode.AddAttribute("raw", formatting == Formatting.Disabled);
+				xmlNode.AddAttribute("format", EnumHelper.ToString(formatting).ToLowerInvariant());
 			if (condition != null)
 				xmlNode.AddAttribute("rule", condition.ToString());
 			xmlNode.AddTextValue(value);
@@ -321,8 +322,8 @@ namespace Ginger
 			_styleName = xmlNode.GetAttribute("style", "attribute");
 			style = BlockStyles.FromString(_styleName);
 
-			if (xmlNode.HasAttribute("raw"))
-				formatting = xmlNode.GetAttributeBool("raw") ? Formatting.Disabled : Formatting.Enabled;
+			if (xmlNode.HasAttribute("format"))
+				formatting = EnumHelper.FromString(xmlNode.GetAttribute("format"), Formatting.Undefined);
 			else
 				formatting = Formatting.Undefined;
 			return true;
@@ -337,7 +338,7 @@ namespace Ginger
 			if (mode != Mode.Default)
 				xmlNode.AddAttribute("mode", EnumHelper.ToString(mode).ToLowerInvariant());
 			if (formatting != Formatting.Undefined)
-				xmlNode.AddAttribute("raw", formatting == Formatting.Disabled);
+				xmlNode.AddAttribute("format", EnumHelper.ToString(formatting).ToLowerInvariant());
 			if (condition != null)
 				xmlNode.AddAttribute("rule", condition.ToString());
 
@@ -684,6 +685,11 @@ namespace Ginger
 					int pos_inner = blockText.IndexOf(InnerBlock, System.StringComparison.OrdinalIgnoreCase);
 
 					var formatting = list[i].formatting;
+					var innerFormatting = formatting;
+					if (innerFormatting == Block.Formatting.Undefined && BlockStyles.IsVerticalList(style))
+						innerFormatting = Block.Formatting.Default;
+					else if (innerFormatting == Block.Formatting.Undefined && BlockStyles.IsHorizontalList(style))
+						innerFormatting = Block.Formatting.Limited; // No capitalization in horizintal lists
 					if (formatting == Block.Formatting.Undefined)
 						formatting = defaultFormatting;
 
@@ -694,7 +700,7 @@ namespace Ginger
 
 						for (int j = 0; j < innerKeys.Count; ++j)
 						{
-							string innerText = BuildBlock(innerKeys[j], innerBlocks, style, formatting).Trim();
+							string innerText = BuildBlock(innerKeys[j], innerBlocks, style, innerFormatting).Trim();
 							if (string.IsNullOrWhiteSpace(innerText) == false)
 								innerEntries.Add(innerText);
 						}
@@ -709,7 +715,7 @@ namespace Ginger
 							for (; j < orphanKeys.Count;)
 							{
 								var orphanBlocks = new HashSet<BlockID>();
-								string innerText = BuildBlock(orphanKeys[j], orphanBlocks, style, formatting).Trim();
+								string innerText = BuildBlock(orphanKeys[j], orphanBlocks, style, innerFormatting).Trim();
 								if (string.IsNullOrWhiteSpace(innerText) == false)
 									innerEntries.Add(innerText);
 
@@ -734,7 +740,7 @@ namespace Ginger
 						else
 						{
 							// Split inner entries
-							if (IsHorizontalList(style) || IsVerticalList(style))
+							if (BlockStyles.IsHorizontalList(style) || BlockStyles.IsVerticalList(style))
 							{
 								innerEntries = innerEntries
 									.SelectMany(s => Utility.ListFromDelimitedString(s, new string[] { Text.Delimiter, ";" }))
@@ -895,7 +901,7 @@ namespace Ginger
 					}
 					else
 					{
-						if (IsHorizontalList(style))
+						if (BlockStyles.IsHorizontalList(style))
 						{
 							blockText = blockText
 								.Replace(",", Text.Delimiter)
@@ -904,10 +910,14 @@ namespace Ginger
 						builtBlocks.Add(blockID);
 					}
 
-					if (formatting == Block.Formatting.Disabled)
+					if (formatting == Block.Formatting.None)
 						blockText = Text.DontProcess(blockText);
-					else if (style < Block.Style.Comma) // Format (if not a list)
+					else if (formatting == Block.Formatting.Limited)
+						blockText = Text.DontProcess(Text.Process(blockText, Text.EvalOption.LimitedBlockFormatting));
+					else if (formatting == Block.Formatting.Default)
 						blockText = Text.Process(blockText, Text.EvalOption.Capitalization | Text.EvalOption.NoInternal);
+//					else if (style < Block.Style.Comma) // Format (if not a list)
+//						blockText = Text.Process(blockText, Text.EvalOption.Capitalization | Text.EvalOption.NoInternal);
 
 					blockTexts.Add(blockText.Trim());
 				}
@@ -921,16 +931,6 @@ namespace Ginger
 
 			builtBlocks.Add(blockID);
 			return string.Empty;
-		}
-
-		private static bool IsHorizontalList(Block.Style style)
-		{
-			return style >= Block.Style.Comma && style < Block.Style.Line;
-		}
-
-		private static bool IsVerticalList(Block.Style style)
-		{
-			return style >= Block.Style.Number && style <= Block.Style.Bullet;
 		}
 
 		public string GetFinishedBlock(BlockID blockID)

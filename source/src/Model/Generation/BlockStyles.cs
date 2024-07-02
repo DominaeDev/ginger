@@ -97,5 +97,15 @@ namespace Ginger
 				return EnumHelper.ToString(mode).ToLowerInvariant();
 			}
 		}
+
+		public static bool IsHorizontalList(Block.Style style)
+		{
+			return style >= Block.Style.Comma && style < Block.Style.Line;
+		}
+
+		public static bool IsVerticalList(Block.Style style)
+		{
+			return style >= Block.Style.Number && style <= Block.Style.Bullet;
+		}
 	}
 }
