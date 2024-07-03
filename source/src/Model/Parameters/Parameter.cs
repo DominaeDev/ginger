@@ -16,10 +16,11 @@ namespace Ginger
 		bool isLocal { get; }
 		bool isGlobal { get; }
 		bool isImmediate { get; }
+		bool isConditional { get; }
 
 		bool IsActive(Context context);
 
-		void ApplyToContext(Context globalContext, Context localContext, ContextString.EvaluationConfig evalConfig);
+		void Apply(ParameterState parameterState);
 		Type GetParameterType();
 		object GetValue();
 		void ResetToDefault();
@@ -132,8 +133,9 @@ namespace Ginger
 		public virtual bool isLocal { get { return true; } }
 		public bool isGlobal { get; set; }
 		public bool isImmediate { get; set; }
+		public bool isConditional { get { return condition != null; } }
 		public ICondition condition { get; protected set; }
-		public abstract void OnApplyToContext(Context context, Context localContext, ContextString.EvaluationConfig evalConfig);
+		public abstract void OnApply(ParameterState state, ParameterScope scope);
 		public Recipe recipe { get; protected set; }
 
 		public T defaultValue;
@@ -151,15 +153,15 @@ namespace Ginger
 			this.recipe = recipe;
 		}
 
-		public void ApplyToContext(Context globalContext, Context localContext, ContextString.EvaluationConfig evalConfig)
+		public void Apply(ParameterState parameterState)
 		{
-			if (!isEnabled || !IsActive(localContext))
+			if (!isEnabled || !IsActive(parameterState))
 				return;
 
-			if (isLocal)
-				OnApplyToContext(localContext, localContext, evalConfig);
-			if (isGlobal)
-				OnApplyToContext(globalContext, localContext, evalConfig);
+			if (isLocal) // Set local parameters
+				OnApply(parameterState, ParameterScope.Local);
+			if (isGlobal) // Set global parameters
+				OnApply(parameterState, ParameterScope.Global);
 		}
 
 		public virtual bool LoadFromXml(XmlNode xmlNode)
@@ -240,6 +242,20 @@ namespace Ginger
 		public virtual void ResetToDefault()
 		{
 			value = defaultValue;
+		}
+
+		private bool IsActive(ParameterState parameterState)
+		{
+			if (condition == null)
+				return true;
+
+			var localContext = Context.Copy(parameterState.evalContext);
+			parameterState.localParameters.ApplyToContext(localContext);
+
+			return condition.Evaluate(localContext, new EvaluationCookie() {
+				randomizer = parameterState.evalConfig.randomizer,
+				ruleSuppliers = parameterState.evalConfig.ruleSuppliers,
+			});
 		}
 
 		public bool IsActive(Context context)
@@ -400,9 +416,122 @@ namespace Ginger
 
 			return null;
 		}
+	}
 
+	public class ParameterCollection
+	{
+		private Dictionary<StringHandle, ContextualValue> _values = new Dictionary<StringHandle, ContextualValue>();
+		private HashSet<StringHandle> _flags = new HashSet<StringHandle>();
 
+		public void SetValue(StringHandle id, ContextualValue value)
+		{
+			if (_values.ContainsKey(id))
+				_values[id] = value;
+			else
+				_values.Add(id, value);
+		}
 
+		public void SetFlag(StringHandle flag)
+		{
+			_flags.Add(flag);
+		}
+
+		public void SetFlags(IEnumerable<StringHandle> flags)
+		{
+			_flags.UnionWith(flags);
+		}
+
+		public void ApplyToContext(Context context)
+		{
+			context.AddTags(_flags);
+			foreach (var kvp in _values)
+				context.SetValue(kvp.Key, kvp.Value.ToString());
+		}
+
+		public void CopyFromContext(Context context)
+		{
+			SetFlags(context.tags);
+			foreach (var value in context.values)
+				SetValue(value.Key, value.Value);
+		}
+
+		public void Erase(StringHandle flag)
+		{
+			_values.Remove(flag);
+			_flags.Remove(flag);
+		}
+	}
+
+	public enum ParameterScope
+	{
+		Global,
+		Local
+	}
+
+	public class ParameterState
+	{
+		public ParameterCollection globalParameters = new ParameterCollection();
+		public ParameterCollection localParameters = new ParameterCollection();
+
+		public Context evalContext;
+		public ContextString.EvaluationConfig evalConfig;
+
+		private ParameterCollection GetCollection(ParameterScope scope)
+		{
+			return scope == ParameterScope.Global ? globalParameters : localParameters;
+		}
+
+		public void SetFlag(StringHandle flag, ParameterScope scope)
+		{
+			GetCollection(scope).SetFlag(flag);
+			if (scope == ParameterScope.Global)
+				evalContext.AddTag(flag);
+			else
+				localParameters.SetFlag(string.Concat(flag.ToString(), ":local"));
+		}
+
+		public void SetFlags(IEnumerable<StringHandle> flags, ParameterScope scope)
+		{
+			GetCollection(scope).SetFlags(flags);
+			if (scope == ParameterScope.Global)
+				evalContext.AddTags(flags);
+			else
+			{
+				foreach (var flag in flags)
+					localParameters.SetFlag(string.Concat(flag.ToString(), ":local"));
+			}
+		}
+
+		public void SetValue(StringHandle id, string value, ParameterScope scope)
+		{
+			GetCollection(scope).SetValue(id, value);
+			if (scope == ParameterScope.Global)
+				evalContext.SetValue(id, value);
+			else
+			{
+				localParameters.SetFlag(string.Concat(id.ToString(), ":local"));
+				localParameters.SetValue(string.Concat(id.ToString(), ":local"), value);
+			}
+		}
+
+		public void SetValue(StringHandle id, float value, ParameterScope scope)
+		{
+			GetCollection(scope).SetValue(id, value);
+			if (scope == ParameterScope.Global)
+				evalContext.SetValue(id, value);
+			else if (id.ToString().IndexOf(':') == -1)
+			{
+				localParameters.SetFlag(string.Concat(id.ToString(), ":local"));
+				localParameters.SetValue(string.Concat(id.ToString(), ":local"), value);
+			}
+		}
+
+		public void Erase(StringHandle flag)
+		{
+			globalParameters.Erase(flag);
+			evalContext.SetValue(flag, null);
+			evalContext.RemoveTag(flag);
+		}
 	}
 
 }

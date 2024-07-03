@@ -806,7 +806,7 @@
 			label_Lore.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			label_Lore.Size = new System.Drawing.Size(200, 21);
 			label_Lore.TabIndex = 6;
-			label_Lore.Text = "Lore entries:";
+			label_Lore.Text = "Lorebook entries:";
 			// 
 			// label_Image
 			// 

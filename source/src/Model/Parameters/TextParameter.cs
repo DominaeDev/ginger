@@ -66,7 +66,7 @@ namespace Ginger
 				node.AddAttribute("raw", true);
 		}
 
-		public override void OnApplyToContext(Context context, Context localContext, ContextString.EvaluationConfig evalConfig)
+		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
 			if (string.IsNullOrEmpty(value) == false)
 			{
@@ -79,12 +79,10 @@ namespace Ginger
 						sValue = Text.DontProcess(value.Trim());
 				}
 				else
-					sValue = GingerString.FromParameter(GingerString.EvaluateParameter(value.Trim(), localContext)).ToString();
-				
-				context.SetValue(id, sValue);
-				context.SetValue(string.Concat(id.ToString(), ":raw"), Text.DontProcess(value.Trim()));
-				localContext.SetValue(string.Concat(id.ToString(), ":local"), sValue);
-				localContext.AddTag(string.Concat(id.ToString(), ":local"));
+					sValue = GingerString.FromParameter(GingerString.EvaluateParameter(value.Trim(), state.evalContext, state.evalConfig)).ToString();
+
+				state.SetValue(id, sValue, scope);
+				state.SetValue(string.Concat(id.ToString(), ":raw"), Text.DontProcess(value.Trim()), scope);
 			}
 		}
 

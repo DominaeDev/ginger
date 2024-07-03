@@ -45,13 +45,12 @@ namespace Ginger
 				node.AddAttribute("rule", condition.ToString());
 		}
 
-		public override void OnApplyToContext(Context context, Context localContext, ContextString.EvaluationConfig evalConfig)
+		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
-			foreach (var flag in flags)
+			if (scope == ParameterScope.Global) // Global only
 			{
-				context.SetValue(flag, null);
-				context.RemoveTag(flag);
-				context.AddTag(string.Concat("__erase-", flag)); // Mark flag to be erased from global context
+				foreach (var flag in flags)
+					state.Erase(flag);
 			}
 		}
 

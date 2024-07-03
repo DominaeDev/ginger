@@ -27,7 +27,7 @@ namespace Ginger
 			base.SaveToXml(node);
 		}
 
-		public override void OnApplyToContext(Context context, Context localContext, ContextString.EvaluationConfig evalConfig) { }
+		public override void OnApply(ParameterState state, ParameterScope scope) { }
 
 		public override object Clone()
 		{

@@ -386,8 +386,7 @@ namespace Ginger
 				if (panel.recipe.isEnabled == false)
 					continue;
 
-				Context localContext = Current.Character.GetContextForRecipe(panel.recipe);
-				bChanged |= panel.RefreshParameterVisibility(localContext);
+				bChanged |= panel.RefreshParameterVisibility();
 			}
 			if (bChanged)
 				Invalidate(false);

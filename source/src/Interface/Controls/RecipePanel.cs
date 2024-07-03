@@ -522,33 +522,72 @@ namespace Ginger
 				_parameterPanels[i].RefreshValue();
 		}
 
-		public bool RefreshParameterVisibility(Context context)
+		public bool RefreshParameterVisibility()
 		{
+			if (recipe.parameters.IsEmpty())
+				return false;
+
 			bool bChanged = false;
 
-			Context localContext = Context.Copy(context);
+			var recipes = Current.Character.recipes.ToArray();
+			int recipeIdx = Array.IndexOf(recipes, this.recipe);
+			if (recipeIdx == -1)
+				return false;
 
-			foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
+			Context evalContext = Current.Character.GetContext(CharacterData.ContextType.None);
+			ParameterState[] parameterStates = new ParameterState[recipes.Length];
+
+			// Resolve prior recipes
+			for (int i = 0; i < recipes.Length; ++i)
 			{
-				var parameterPanel = _parameterPanels.Find(p => p.GetParameter() == parameter);
-				
-				if (parameterPanel != null)
-				{
-					bool wasVisible = parameterPanel.Active;
-					parameterPanel.Active = parameter.IsActive(localContext);
-					bChanged |= wasVisible != parameterPanel.Active;
-				}
+				if (i == recipeIdx)
+					break;
 
-				// Apply parameter to context
-				var evalConfig = new ContextString.EvaluationConfig() {
+				var recipe = recipes[i];
+				if (recipe.isEnabled == false)
+					continue; // Skip
+
+				var state = new ParameterState();
+				parameterStates[i] = state;
+
+				state.evalContext = evalContext;
+				state.evalConfig = new ContextString.EvaluationConfig() {
 					macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
 					referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
 					ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
 				};
-				parameter.ApplyToContext(localContext, localContext, evalConfig);
+				foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
+					parameter.Apply(state);
+				state.SetFlags(recipe.flags, ParameterScope.Global);
+			}
 
-				// Remove erased flags from context
-				Context.FlushErasedVars(localContext.tags, localContext);
+			// Resolve parameters
+			var parameterState = new ParameterState();
+			parameterState.evalContext = evalContext;
+			parameterState.evalConfig = new ContextString.EvaluationConfig() {
+				macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
+				referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
+				ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
+			};
+			foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
+			{
+				if (parameter.isConditional == false)
+					continue;
+
+				var parameterPanel = _parameterPanels.Find(p => p.GetParameter() == parameter);
+
+				if (parameterPanel != null)
+				{
+					var localContext = Context.Copy(parameterState.evalContext);
+					parameterState.localParameters.ApplyToContext(localContext);
+
+					bool wasVisible = parameterPanel.Active;
+					parameterPanel.Active = parameter.IsActive(localContext);
+					bChanged |= wasVisible != parameterPanel.Active;
+				}
+								
+				// Apply parameter to context
+				parameter.Apply(parameterState);
 			}
 
 			if (bChanged)

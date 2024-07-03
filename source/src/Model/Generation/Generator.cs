@@ -359,7 +359,6 @@ namespace Ginger
 		{
 			BlockBuilder blockBuilder = new BlockBuilder();
 			List<Lorebook> loreEntries = new List<Lorebook>();
-			List<Context> localContexts = new List<Context>();
 
 			var randomizer = new RandomNoise(Current.seed);
 			int numChannels = EnumHelper.ToInt(Recipe.Component.Count);
@@ -378,60 +377,16 @@ namespace Ginger
 			bool bMain = (characterIndex == 0 && Current.Characters.Count == 1) || options.Contains(Option.Single);
 
 			// Prepare contexts
-			List<Context> sharedVarContexts = new List<Context>();
-			for (int i = 0; i < recipes.Count; ++i)
-			{
-				var recipe = recipes[i];
-				Context localContext = Context.Copy(globalContext);
-				Context sharedVarContext = Context.CreateEmpty();
-				localContexts.Add(localContext);
-				sharedVarContexts.Add(sharedVarContext);
-
-				if (recipe.isEnabled == false)
-					continue;
-
-				var evalConfig = new ContextString.EvaluationConfig() {
-					macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
-					referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
-					ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
-				};
-				globalContext.AddTags(recipe.flags);
-				sharedVarContext.AddTags(recipe.flags);
-				foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
-				{ 
-					parameter.ApplyToContext(sharedVarContext, localContext, evalConfig);
-					globalContext.MergeWith(sharedVarContext);
-
-					// Remove erased flags from global context
-					if (sharedVarContext.tags.IsEmpty() == false)
-					{
-						Context[] flushContexts = new Context[sharedVarContexts.Count + 2];
-						flushContexts[0] = globalContext;
-						flushContexts[1] = localContext;
-						Array.Copy(sharedVarContexts.ToArray(), 0, flushContexts, 2, sharedVarContexts.Count);
-						Context.FlushErasedVars(sharedVarContext.tags, flushContexts);
-					}
-				}
-			}
-
-			// Apply shared vars to all local contexts
-			for (int i = 0; i < recipes.Count; ++i)
-			{
-				for (int j = 0; j < recipes.Count; ++j)
-				{
-					if (i != j)
-						localContexts[i].MergeWith(sharedVarContexts[j]);
-				}
-			}
+			Context[] recipeContexts = GetRecipeContexts(recipes.ToArray(), globalContext);
 
 			// Evaluate lorebooks, blocks, and attributes
 			for (int i = 0; i < recipes.Count; ++i)
 			{
 				var recipe = recipes[i];
 				if (recipe.isEnabled == false)
-					continue;
+					continue; // Skip
 
-				var localContext = localContexts[i];
+				var localContext = recipeContexts[i];
 
 				// Lorebooks
 				foreach (var parameter in recipe.parameters.OfType<LorebookParameter>())
@@ -518,7 +473,7 @@ namespace Ginger
 				if (recipe.isEnabled == false)
 					continue;
 
-				var localContext = localContexts[iRecipe];
+				var localContext = recipeContexts[iRecipe];
 
 				foreach (var template in recipe.templates)
 				{
@@ -827,6 +782,51 @@ namespace Ginger
 				nodes = nodes,
 				attributes = attributes,
 			};
+		}
+
+		public static Context[] GetRecipeContexts(Recipe[] recipes, Context context)
+		{
+			if (recipes == null || recipes.Length == 0)
+				return new Context[0];
+
+			Context evalContext = Context.Copy(context);
+			ParameterState[] parameterStates = new ParameterState[recipes.Length];
+			Context[] localContexts = new Context[recipes.Length];
+
+			// Resolve parameters
+			for (int i = 0; i < recipes.Length; ++i)
+			{
+				var recipe = recipes[i];
+				if (recipe.isEnabled == false)
+					continue; // Skip
+
+				var state = new ParameterState();
+				parameterStates[i] = state;
+
+				state.evalContext = evalContext;
+				state.evalConfig = new ContextString.EvaluationConfig() {
+					macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
+					referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
+					ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
+				};
+				foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
+					parameter.Apply(state);
+				state.SetFlags(recipe.flags, ParameterScope.Global);
+			}
+
+			// Create contexts
+			for (int i = 0; i < recipes.Length; ++i)
+			{
+				if (recipes[i].isEnabled == false)
+					continue; // Skip
+
+				var localContext = Context.Copy(evalContext);
+				if (parameterStates[i] != null)
+					parameterStates[i].localParameters.ApplyToContext(localContext);
+				localContexts[i] = localContext;
+			}
+
+			return localContexts;
 		}
 	}
 

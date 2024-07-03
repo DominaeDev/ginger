@@ -81,24 +81,22 @@ namespace Ginger
 			}
 		}
 
-		public override void OnApplyToContext(Context context, Context localContext, ContextString.EvaluationConfig evalConfig)
+		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
 			if (value != null && value.Count > 0)
 			{
-				var collection = new HashSet<string>(value
+				var list = new HashSet<string>(value
 					.Select(t => GingerString.FromParameter(t).ToString()));
 
-				string sCollection = Utility.ListToDelimitedString(collection, Text.Delimiter);
-				context.SetValue(id, sCollection);
-				context.SetValue(id + ":value", Utility.ListToDelimitedString(collection.Select(itemID => {
+				string sList = Utility.ListToDelimitedString(list, Text.Delimiter);
+				state.SetValue(id, sList, scope);
+				state.SetValue(id + ":value", Utility.ListToDelimitedString(list.Select(itemID => {
 					int index = items.FindIndex(ii => ii.id == itemID);
 					if (index != -1)
 						return items[index].label;
 					return itemID;
-				}), Text.Delimiter));
-				context.AddTags(collection.Select(s => new StringHandle(s)));
-				localContext.SetValue(string.Concat(id.ToString(), ":local"), sCollection);
-				localContext.AddTag(string.Concat(id.ToString(), ":local"));
+				}), Text.Delimiter), scope);
+				state.SetFlags(list.Select(s => new StringHandle(s)), scope);
 			}
 		}
 

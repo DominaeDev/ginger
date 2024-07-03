@@ -98,20 +98,17 @@ namespace Ginger
 
 		}
 
-		public override void OnApplyToContext(Context context, Context localContext, ContextString.EvaluationConfig evalConfig)
+		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
 			switch (mode)
 			{
 			default:
-				context.SetValue(id, Convert.ToSingle(value).ToString(CultureInfo.InvariantCulture));
-				localContext.SetValue(string.Concat(id.ToString(), ":local"), Convert.ToSingle(value).ToString(CultureInfo.InvariantCulture));
+				state.SetValue(id, Convert.ToSingle(value).ToString(CultureInfo.InvariantCulture), scope);
 				break;
 			case Mode.Percent:
-				context.SetValue(id, Convert.ToSingle(value * 0.01m).ToString(CultureInfo.InvariantCulture));
-				localContext.SetValue(string.Concat(id.ToString(), ":local"), Convert.ToSingle(value * 0.01m).ToString(CultureInfo.InvariantCulture));
+				state.SetValue(id, Convert.ToSingle(value * 0.01m).ToString(CultureInfo.InvariantCulture), scope);
 				break;
 			}
-			localContext.AddTag(string.Concat(id.ToString(), ":local"));
 		}
 
 		public override object Clone()

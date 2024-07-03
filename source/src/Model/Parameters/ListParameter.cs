@@ -33,18 +33,14 @@ namespace Ginger
 				node.AddValueElement("Default", Utility.ListToCommaSeparatedString(defaultValue));
 		}
 
-		public override void OnApplyToContext(Context context, Context localContext, ContextString.EvaluationConfig evalConfig)
+		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
 			if (value != null && value.Count > 0)
 			{
-				var collection = new HashSet<string>(value.Select(t => GingerString.FromParameter(t).ToString()));
-
-//				context.AddTags(collection.Select(s => new StringHandle(s)));
-				string sCollection = Utility.ListToDelimitedString(collection, Text.Delimiter);
-				context.SetValue(id, sCollection);
-				context.SetValue(id + ":count", collection.Count);
-				localContext.SetValue(string.Concat(id.ToString(), ":local"), sCollection);
-				localContext.AddTag(string.Concat(id.ToString(), ":local"));
+				var items = new HashSet<string>(value.Select(t => GingerString.FromParameter(t).ToString()));
+				string sItems = Utility.ListToDelimitedString(items, Text.Delimiter);
+				state.SetValue(id, sItems, scope);
+				state.SetValue(id + ":count", items.Count, scope);
 			}
 		}
 

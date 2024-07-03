@@ -80,14 +80,12 @@ namespace Ginger
 				node.AddValueElement("Default", defaultValue);
 		}
 
-		public override void OnApplyToContext(Context context, Context localContext, ContextString.EvaluationConfig evalConfig)
+		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
 			if (value != default(decimal))
 			{
 				string sValue = Convert.ToSingle(value).ToString(CultureInfo.InvariantCulture);
-				context.SetValue(id, sValue);
-				localContext.SetValue(string.Concat(id.ToString(), ":local"), sValue);
-				localContext.AddTag(string.Concat(id.ToString(), ":local"));
+				state.SetValue(id, sValue, scope);
 			}
 		}
 

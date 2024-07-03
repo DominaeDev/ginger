@@ -532,6 +532,17 @@ namespace Ginger
 
 		public static string EvaluateParameter(string text, Context context)
 		{
+			var evalConfig = new ContextString.EvaluationConfig() {
+				macroSuppliers = new IMacroSupplier[] { Current.Strings },
+				referenceSuppliers = new IStringReferenceSupplier[] { Current.Strings },
+				ruleSuppliers = new IRuleSupplier[] { Current.Strings },
+			};
+
+			return EvaluateParameter(text, context, evalConfig);
+		}
+
+		public static string EvaluateParameter(string text, Context context, ContextString.EvaluationConfig evalConfig)
+		{
 			if (text == null)
 				return null;
 
@@ -540,12 +551,6 @@ namespace Ginger
 
 			if (text.Contains('{') == false)
 				return text; // No possible replacement
-
-			var evalConfig = new ContextString.EvaluationConfig() {
-				macroSuppliers = new IMacroSupplier[] { Current.Strings },
-				referenceSuppliers = new IStringReferenceSupplier[] { Current.Strings },
-				ruleSuppliers = new IRuleSupplier[] { Current.Strings },
-			};
 
 			// Find possible replacements
 			string findText = text.ToLowerInvariant();

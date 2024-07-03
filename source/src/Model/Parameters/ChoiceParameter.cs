@@ -123,27 +123,25 @@ namespace Ginger
 			}
 		}
 
-		public override void OnApplyToContext(Context context, Context localContext, ContextString.EvaluationConfig evalConfig)
+		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
 			if (string.IsNullOrEmpty(value) == false)
 			{
-				context.SetValue(id, value);
-				context.AddTag(value);
-				localContext.SetValue(string.Concat(id.ToString(), ":local"), value);
-				localContext.AddTag(string.Concat(id.ToString(), ":local"));
+				state.SetValue(id, value, scope);
+				state.SetFlag(value, scope);
 			}
 
-			context.SetValue(id + ":index", selectedIndex);
+			state.SetValue(id + ":index", selectedIndex, scope);
 			if (selectedIndex == -2) // Custom
 			{
-				context.AddTag(id + ":custom");
-				context.SetValue(id + ":id", "custom");
-				context.SetValue(id + ":value", value);
+				state.SetFlag(id + ":custom", scope);
+				state.SetValue(id + ":id", "custom", scope);
+				state.SetValue(id + ":value", value, scope);
 			}
 			else if (selectedIndex >= 0 && selectedIndex < items.Count)
 			{
-				context.SetValue(id + ":id", items[selectedIndex].id.ToString());
-				context.SetValue(id + ":value", items[selectedIndex].label);
+				state.SetValue(id + ":id", items[selectedIndex].id.ToString(), scope);
+				state.SetValue(id + ":value", items[selectedIndex].label, scope);
 			}
 		}
 

@@ -303,23 +303,5 @@ namespace Ginger
 					values.TryAdd(kvp.Key, kvp.Value);
 			}
 		}
-
-		public static void FlushErasedVars(HashSet<StringHandle> tags, params Context[] contexts)
-		{
-			if (tags == null)
-				return;
-
-			var eraseFlags = tags.Where(t => t.BeginsWith("__erase-")).ToArray(); // Copy
-			foreach (var eraseFlag in eraseFlags)
-			{
-				string flag = eraseFlag.ToString().Substring(8);
-				for (int i = 0; i < contexts.Length; ++i)
-				{
-					contexts[i].RemoveTag(eraseFlag);
-					contexts[i].SetValue(flag, null);
-					contexts[i].RemoveTag(flag);
-				}
-			}
-		}
 	}
 }

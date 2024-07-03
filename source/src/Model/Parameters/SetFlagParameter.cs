@@ -47,9 +47,10 @@ namespace Ginger
 				node.AddAttribute("rule", condition.ToString());
 		}
 
-		public override void OnApplyToContext(Context context, Context localContext, ContextString.EvaluationConfig evalConfig)
+		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
-			context.AddTags(flags);
+			if (scope == ParameterScope.Global) // Global only
+				state.SetFlags(flags, ParameterScope.Global);
 		}
 
 		public override object Clone()

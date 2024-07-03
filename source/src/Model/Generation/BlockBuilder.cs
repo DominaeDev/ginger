@@ -219,7 +219,7 @@ namespace Ginger
 			Default = Append,
 		}
 		public Mode mode = Mode.Default;
-		public int order = 100;
+		public int order = DefaultOrder;
 		public bool isConditionalOnMode	{ get { return mode == Mode.Sibling || mode == Mode.Parent; } }
 
 		protected static readonly int DefaultOrder = 500;

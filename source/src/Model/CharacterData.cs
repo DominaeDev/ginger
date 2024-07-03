@@ -153,28 +153,31 @@ namespace Ginger
 
 			if (type == ContextType.Full)
 			{
-				foreach (var recipe in recipes)
+				ParameterState[] parameterStates = new ParameterState[recipes.Count];
+				Context[] localContexts = new Context[recipes.Count];
+
+				Context evalContext = Context.Copy(context);
+				for (int i = 0; i < recipes.Count; ++i)
 				{
+					var recipe = recipes[i];
 					if (recipe.isEnabled == false && includeInactive == false)
-						continue;
+						continue; // Skip
 
-					Context localContext = Context.Copy(context);
-					context.AddTags(recipe.flags);
+					var state = new ParameterState();
+					parameterStates[i] = state;
 
-					var evalConfig = new ContextString.EvaluationConfig() {
+					state.evalContext = evalContext;
+					state.evalConfig = new ContextString.EvaluationConfig() {
 						macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
 						referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
 						ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
 					};
-
 					foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
-					{
-						parameter.ApplyToContext(context, localContext, evalConfig);
-						
-						// Remove erased flags from global context
-						Context.FlushErasedVars(context.tags, context, localContext);
-					}
+						parameter.Apply(state);
+					state.SetFlags(recipe.flags, ParameterScope.Global);
 				}
+
+				return evalContext;
 			}
 			else if (type == ContextType.WithFlags)
 			{
@@ -196,60 +199,8 @@ namespace Ginger
 			if (index == -1)
 				return GetContext(ContextType.None);
 
-			var globalContext = GetContext(ContextType.None);
-			var localContexts = new List<Context>();
-
 			// Prepare contexts
-			List<Context> sharedVarContexts = new List<Context>();
-			for (int i = 0; i < recipes.Count; ++i)
-			{
-				var recipe = recipes[i];
-
-				Context localContext = Context.Copy(globalContext);
-				Context sharedVarContext = Context.CreateEmpty();
-				localContexts.Add(localContext);
-				sharedVarContexts.Add(sharedVarContext);
-
-				if (recipe == targetRecipe)
-					continue; // Skip self
-				if (recipe.isEnabled == false)
-					continue;
-
-				var evalConfig = new ContextString.EvaluationConfig() {
-					macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
-					referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
-					ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
-				};
-
-				globalContext.AddTags(recipe.flags);
-				sharedVarContext.AddTags(recipe.flags);
-				foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
-				{
-					parameter.ApplyToContext(sharedVarContext, localContext, evalConfig);
-					globalContext.MergeWith(sharedVarContext);
-
-					// Remove erased flags from global context
-					if (sharedVarContext.tags.IsEmpty() == false)
-					{
-						Context[] flushContexts = new Context[sharedVarContexts.Count + 2];
-						flushContexts[0] = globalContext;
-						flushContexts[1] = localContext;
-						Array.Copy(sharedVarContexts.ToArray(), 0, flushContexts, 2, sharedVarContexts.Count);
-						Context.FlushErasedVars(sharedVarContext.tags, flushContexts);
-					}
-				}
-			}
-
-			// Apply shared vars to all local contexts
-			for (int i = 0; i < recipes.Count; ++i)
-			{
-				for (int j = 0; j < recipes.Count; ++j)
-				{
-					if (i != j)
-						localContexts[i].MergeWith(sharedVarContexts[j]);
-				}
-			}
-
+			var localContexts = Generator.GetRecipeContexts(recipes.ToArray(), GetContext(ContextType.None));
 			return localContexts[index];
 		}
 

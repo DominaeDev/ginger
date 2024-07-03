@@ -43,14 +43,14 @@ namespace Ginger
 				node.AddAttribute("rule", condition.ToString());
 		}
 
-		public override void OnApplyToContext(Context context, Context localContext, ContextString.EvaluationConfig evalConfig)
+		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
-			if (string.IsNullOrEmpty(value) == false)
+			if (string.IsNullOrEmpty(value) == false && scope == ParameterScope.Global) // Global only
 			{
 				if (value.IndexOfAny(new char[] { '{', '}', '[', ']' }) != -1)
-					context.SetValue(id, Text.Eval(value, localContext, evalConfig));
+					state.SetValue(id, Text.Eval(value, state.evalContext, state.evalConfig), ParameterScope.Global);
 				else
-					context.SetValue(id, value);
+					state.SetValue(id, value, ParameterScope.Global);
 			}
 		}
 

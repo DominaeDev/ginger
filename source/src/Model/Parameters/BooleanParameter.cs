@@ -30,13 +30,10 @@ namespace Ginger
 				node.AddValueElement("Default", true);
 		}
 
-		public override void OnApplyToContext(Context context, Context localContext, ContextString.EvaluationConfig evalConfig)
+		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
 			if (value)
-			{
-				context.AddTag(id);
-				localContext.AddTag(string.Concat(id.ToString(), ":local"));
-			}
+				state.SetFlag(id, scope);
 		}
 
 		public override object Clone()

@@ -50,16 +50,11 @@ namespace Ginger
 				node.AddValueElement("Default", defaultValue);
 		}
 
-		public override void OnApplyToContext(Context context, Context localContext, ContextString.EvaluationConfig evalConfig)
+		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
 			if (value != default(string))
-			{
-				context.SetValue(id, value);
-				localContext.SetValue(string.Concat(id.ToString(), ":local"), value);
-				localContext.AddTag(string.Concat(id.ToString(), ":local"));
-			}
-
-			context.SetValue(string.Concat(id, ":value"), Convert.ToSingle(this.magnitude));
+				state.SetValue(id, value, scope);
+			state.SetValue(string.Concat(id, ":value"), Convert.ToSingle(this.magnitude), scope);
 		}
 
 		public override object Clone()
