@@ -752,10 +752,7 @@ namespace Ginger
 			{
 				// Evaluate default value
 				if (string.IsNullOrEmpty(parameter.defaultValue) == false && parameter.defaultValue.IndexOfAny(brackets, 0) != -1 )
-				{
-					parameter.defaultValue = GingerString.FromString(Text.Eval(parameter.defaultValue, evalContext, evalConfig, Text.EvalOption.Minimal))
-						.ToBaked();
-				}
+					parameter.defaultValue = Text.Eval(parameter.defaultValue, evalContext, evalConfig, Text.EvalOption.Minimal);
 
 				parameter.ResetToDefault();
 			}
