@@ -4,6 +4,7 @@
 	<Author>Ginger</Author>
 	<Category>Character</Category>
 	<Flags>futanari, nsfw, override-gender, pronouns</Flags>
+	<Requires>not override-gender</Requires>
 	
 	<!-- Clear gender tags -->
 	<Erase>male, female, non-binary, pronoun-masculine, pronoun-feminine, pronoun-neutral</Erase>

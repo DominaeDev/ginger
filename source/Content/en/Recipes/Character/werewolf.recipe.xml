@@ -2,9 +2,12 @@
 	<!-- Preamble -->
 	<Name>Archetype/Werewolf</Name>
 	<Title>Werewolf</Title>
+	<Description>
+		Base recipe for a werewolf character.
+		(Note: Appearance recipes will describe their human form.)
+	</Description>
 	<Author>Ginger</Author>
 	<Category>Archetype</Category>
-	<Description>Base recipe for a werewolf character.</Description>
 	<Requires>not core</Requires>
 	<Flags>core, werewolf, fur</Flags>
 	<Order>200</Order>

@@ -8,7 +8,7 @@
 	<Order>10</Order>
 	
 	<!-- Parameters -->
-	<Number id="weight" style="weight" min="0" shared="yes">
+	<Number id="weight" style="weight" min="0" shared="yes" rule="not weight">
 		<Label>Weight</Label>
 		<Placeholder>Weight (kg/lb)</Placeholder>
 		<Description>
@@ -18,14 +18,16 @@
 	</Number>
 	
 	<!-- Output -->
-	<Attribute order="100" rule="weight and less-detail">
+	<Attribute order="100" rule="weight:local and less-detail">
 		<Name>Weight</Name>
 		<Value>{weight}</Value>
 	</Attribute>
 
-	<Attribute order="100" rule="weight and normal-detail">
+	<Attribute order="100" rule="weight:local and normal-detail">
 		<Name>Weight</Name>
 		<Value>{weight.lb.value} lbs ({weight.kg})</Value>
 	</Attribute>
+	
+	<Hint rule="weight and not weight:local">Weight is already defined.</Hint>
 	
 </Ginger>

@@ -30,9 +30,7 @@
 		<Value>Immortal ([Their] true age is a mystery)</Value>
 	</Attribute>
 	
-	<Attribute mode="exclusive" order="20">
-		<Name>Race</Name>
-		<Value>Vampire</Value>
-	</Attribute>
+	<Node path="persona/attributes/race" order="20" mode="exclude" style="space">[!attrib:Race][inner]</Node>
+	<Node path="persona/attributes/race/vampire" order="-0">Vampire</Node>
 	
 </Ginger>

@@ -43,6 +43,16 @@
 		</Description>
 	</Number>
 	
+	<Number id="weight" style="length" min="0" shared="yes" rule="not weight">
+		<Label>Height</Label>
+		<Default>3'2</Default>
+		<Placeholder>Height (cm/ft)</Placeholder>
+		<Description>
+			Enter the character's height.
+			(Use either metric or imperial units.)
+		</Description>
+	</Number>
+	
 	<Text id="tribe">
 		<Label>Tribe</Label>
 		<Placeholder>Enter the name of a tribe (e.g. Vile Tooth)</Placeholder>
@@ -66,7 +76,7 @@
 	
 	<Attribute style="list" rule="not speech-pattern or accent">
 		<Name>Speech</Name>
-		<Value>Goblish, Mushmouth, Boastful, Jumbled, Basic</Value>
+		<Value>goblish, mushmouth, boastful, jumbled, basic</Value>
 	</Attribute>
 	
 	<Attribute order="20">
@@ -89,7 +99,7 @@
 		<Value>[less-detail?{height}|{height.ftin} ({height.cm})]</Value>
 	</Attribute>
 
-	<Attribute order="100" rule="not height:local">
+	<Attribute order="100" rule="not (height or height:local)">
 		<Name>Height</Name>
 		<Value>Significantly shorter than most humans, barely reaching above [user]'s waist.</Value>
 	</Attribute>

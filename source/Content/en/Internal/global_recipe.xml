@@ -81,7 +81,7 @@
 	</Node>	
 
 	<!-- World block -->
-	<Node path="scenario/world" style="line" order="400"/>
+	<Node path="scenario/world" style="paragraph" order="400"/>
 		
 	<!-- Attribute: Name -->
 	<Attribute rule="more-detail and not (__single or full-name)" order="0" mode="sibling">

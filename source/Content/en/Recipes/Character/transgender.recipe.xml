@@ -6,6 +6,7 @@
 	<Author>Ginger</Author>
 	<Category>Character</Category>
 	<Flags>trans, transgender, override-gender, pronouns</Flags>
+	<Requires>not override-gender</Requires>
 	
 	<!-- Parameters -->
 	<Choice id="trans-gender" required="yes" rule="not (male or female or custom-gender)">

@@ -6,6 +6,7 @@
 	<Category>Appearance</Category>
 	<Requires>not height</Requires>
 	<Order>10</Order>
+	<Priority>0</Priority>
 	
 	<!-- Parameters -->
 	<Number id="height" style="length" min="0" shared="yes" rule="not height">
@@ -21,5 +22,7 @@
 		<Name>Height</Name>
 		<Value>[less-detail?{height}|{height.ftin} ({height.cm})]</Value>
 	</Attribute>
+	<Hint rule="height and not height:local">Height is already defined.</Hint>
+
 	
 </Ginger>
