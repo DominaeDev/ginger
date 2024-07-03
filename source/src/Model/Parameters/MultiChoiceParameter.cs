@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 
@@ -26,10 +25,10 @@ namespace Ginger
 
 		public override bool LoadFromXml(XmlNode xmlNode)
 		{
-			string sDefault = xmlNode.GetAttribute("default", default(string));
-			sDefault = xmlNode.GetValueElement("Default", sDefault);
-			defaultValue = new HashSet<string>(Utility.ListFromCommaSeparatedString(sDefault));
-			value = defaultValue;
+			if (base.LoadFromXml(xmlNode) == false)
+				return false;
+
+//			value = GetDefaultValue();
 
 			var itemNode = xmlNode.GetFirstElement("Option");
 			while (itemNode != null)
@@ -55,8 +54,6 @@ namespace Ginger
 
 				itemNode = itemNode.GetNextSibling();
 			}
-			if (base.LoadFromXml(xmlNode) == false)
-				return false;
 
 			value.IntersectWith(items.Select(i => i.id.ToString()));
 			return true;
@@ -68,10 +65,6 @@ namespace Ginger
 			base.SaveToXml(node);
 
 			node.AddAttribute("style", "multiple");
-
-			if (defaultValue.Count > 0)
-				node.AddValueElement("Default", Utility.ListToCommaSeparatedString(defaultValue));
-
 			foreach (var item in items)
 			{
 				var itemNode = node.AddElement("Option");
@@ -105,7 +98,6 @@ namespace Ginger
 			var clone = CreateClone<MultiChoiceParameter>();
 			clone.value = new HashSet<string>(this.value);
 			clone.items = new List<Item>(this.items);
-
 			return clone;
 		}
 
@@ -127,6 +119,11 @@ namespace Ginger
 		public override void Set(HashSet<string> value)
 		{
 			this.value = new HashSet<string>(value.Intersect(items.Select(i => i.id.ToString())));
+		}
+
+		public override HashSet<string> GetDefaultValue()
+		{
+			return new HashSet<string>(Utility.ListFromCommaSeparatedString(defaultValue));
 		}
 	}
 }

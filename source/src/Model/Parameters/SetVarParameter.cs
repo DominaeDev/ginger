@@ -59,11 +59,6 @@ namespace Ginger
 			return CreateClone<SetVarParameter>();
 		}
 
-		public override void ResetToDefault()
-		{
-			// Do nothing
-		}
-
 		public override int GetHashCode()
 		{
 			int hash = base.GetHashCode();
@@ -71,5 +66,9 @@ namespace Ginger
 			return hash;
 		}
 
+		public override string GetDefaultValue()
+		{
+			return defaultValue;
+		}
 	}
 }

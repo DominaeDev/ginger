@@ -33,9 +33,7 @@ namespace Ginger
 			if (base.LoadFromXml(xmlNode) == false)
 				return false;
 
-			defaultValue = xmlNode.GetAttributeDecimal("default", default(decimal));
-			defaultValue = xmlNode.GetValueElementDecimal("Default", defaultValue);
-			value = defaultValue;
+//			value = GetDefaultValue();
 			suffix = xmlNode.GetValueElement("Suffix", null);
 
 			decimal min = xmlNode.GetAttributeDecimal("min", decimal.MinValue);
@@ -67,7 +65,6 @@ namespace Ginger
 
 			minValue = Math.Min(min, max);
 			maxValue = Math.Max(min, max);
-
 			return true;
 		}
 
@@ -91,8 +88,6 @@ namespace Ginger
 				break;
 			}
 
-			if (defaultValue != default(decimal))
-				node.AddValueElement("Default", defaultValue);
 			if (string.IsNullOrEmpty(suffix) == false)
 				node.AddValueElement("Suffix", suffix);
 
@@ -131,6 +126,11 @@ namespace Ginger
 				mode,
 				suffix);
 			return hash;
+		}
+
+		public override decimal GetDefaultValue()
+		{
+			return Utility.StringToDecimal(defaultValue);
 		}
 	}
 }

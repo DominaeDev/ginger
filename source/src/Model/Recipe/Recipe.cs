@@ -739,8 +739,26 @@ namespace Ginger
 
 		public void ResetParameters()
 		{
+			Context evalContext = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly);
+			var evalConfig = new ContextString.EvaluationConfig() {
+				macroSuppliers = new IMacroSupplier[] { Current.Strings },
+				referenceSuppliers = new IStringReferenceSupplier[] { Current.Strings },
+				ruleSuppliers = new IRuleSupplier[] { Current.Strings },
+			};
+
+			char[] brackets = new char[] { '{', '[' };
+
 			foreach (var parameter in parameters)
+			{
+				// Evaluate default value
+				if (string.IsNullOrEmpty(parameter.defaultValue) == false && parameter.defaultValue.IndexOfAny(brackets, 0) != -1 )
+				{
+					parameter.defaultValue = GingerString.FromString(Text.Eval(parameter.defaultValue, evalContext, evalConfig, Text.EvalOption.Minimal))
+						.ToBaked();
+				}
+
 				parameter.ResetToDefault();
+			}
 		}
 
 		public override int GetHashCode()

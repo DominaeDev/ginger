@@ -12,8 +12,7 @@ namespace Ginger
 		{
 			isEnabled = true;
 			isOptional = true;
-			value = defaultValue = new Lorebook();
-			value.entries.Add(new Lorebook.Entry());
+			value = GetDefaultValue();
 		}
 
 		public override bool LoadFromXml(XmlNode xmlNode)
@@ -32,7 +31,7 @@ namespace Ginger
 		public override object Clone()
 		{
 			var clone = CreateClone<LorebookParameter>();
-			clone.value = clone.defaultValue = this.value.Clone();
+			clone.value = this.value.Clone();
 			return clone;
 		}
 
@@ -41,6 +40,13 @@ namespace Ginger
 			int hash = base.GetHashCode();
 			hash ^= "Lorebook".GetHashCode();
 			return hash;
+		}
+
+		public override Lorebook GetDefaultValue()
+		{
+			var emptyLorebook = new Lorebook();
+			emptyLorebook.entries.Add(new Lorebook.Entry());
+			return emptyLorebook;
 		}
 	}
 }

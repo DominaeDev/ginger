@@ -42,9 +42,9 @@ namespace Ginger
 
 		public enum ContextType
 		{
-			None,
-			WithFlags,
-			Full,
+			None,		// Card info
+			FlagsOnly,	// + Recipe flags
+			Full,		// + Parameters
 		}
 
 		public Context GetContext(ContextType type, bool includeInactive = false)
@@ -179,7 +179,7 @@ namespace Ginger
 
 				return evalContext;
 			}
-			else if (type == ContextType.WithFlags)
+			else if (type == ContextType.FlagsOnly)
 			{
 				foreach (var recipe in recipes)
 				{
@@ -230,7 +230,7 @@ namespace Ginger
 					{
 						if (includeRecipeTemplate.requires != null)
 						{
-							Context context = GetContext(ContextType.WithFlags);
+							Context context = GetContext(ContextType.FlagsOnly);
 
 							if (includeRecipeTemplate.requires.Evaluate(context,
 								new EvaluationCookie() { ruleSuppliers = Current.RuleSuppliers }) == false)
@@ -272,7 +272,7 @@ namespace Ginger
 						continue;
 					}
 
-					Context context = GetContext(ContextType.WithFlags);
+					Context context = GetContext(ContextType.FlagsOnly);
 
 					if (template.condition != null && template.condition.Evaluate(context, new EvaluationCookie() { ruleSuppliers = Current.RuleSuppliers }) == false)
 						continue;
@@ -337,7 +337,7 @@ namespace Ginger
 				var instance = AddRecipe(includedRecipe);
 				if (instance != null)
 				{
-					Context context = Current.Character.GetContext(ContextType.WithFlags);
+					Context context = Current.Character.GetContext(ContextType.FlagsOnly);
 					var evalConfig = new ContextString.EvaluationConfig() {
 						macroSuppliers = new IMacroSupplier[] { Current.Strings },
 						referenceSuppliers = new IStringReferenceSupplier[] { Current.Strings },

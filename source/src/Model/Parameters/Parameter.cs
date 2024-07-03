@@ -9,6 +9,7 @@ namespace Ginger
 	public interface IParameter : IXmlLoadable, IXmlSaveable, ICloneable
 	{
 		StringHandle id { get; }
+		string defaultValue { get; set; }
 		string label { get; }
 		string description { get; }
 		bool isOptional { get; }
@@ -138,8 +139,8 @@ namespace Ginger
 		public abstract void OnApply(ParameterState state, ParameterScope scope);
 		public Recipe recipe { get; protected set; }
 
-		public T defaultValue;
 		public T value;
+		public string defaultValue { get; set; }
 
 		public virtual void Set(T value)
 		{
@@ -186,6 +187,8 @@ namespace Ginger
 
 			description = xmlNode.GetValueElement("Description");
 			placeholder = xmlNode.GetValueElement("Placeholder", null).SingleLine();
+			defaultValue = xmlNode.GetAttribute("default", null);
+			defaultValue = xmlNode.GetValueElement("Default", defaultValue);
 			return true;
 		}
 
@@ -211,6 +214,8 @@ namespace Ginger
 				xmlNode.AddValueElement("Description", description);
 			if (string.IsNullOrEmpty(placeholder) == false)
 				xmlNode.AddValueElement("Placeholder", placeholder);
+			if (string.IsNullOrEmpty(defaultValue) == false)
+				xmlNode.AddValueElement("Default", defaultValue);
 		}
 
 		public abstract object Clone();
@@ -239,9 +244,9 @@ namespace Ginger
 			other.isEnabled = this.isEnabled;
 		}
 
-		public virtual void ResetToDefault()
+		public void ResetToDefault()    // Called on instantiation
 		{
-			value = defaultValue;
+			value = GetDefaultValue();
 		}
 
 		private bool IsActive(ParameterState parameterState)
@@ -278,6 +283,8 @@ namespace Ginger
 			return value;
 		}
 
+		public abstract T GetDefaultValue();
+
 		public override int GetHashCode()
 		{
 			int hash = 0x4882786F;
@@ -303,33 +310,33 @@ namespace Ginger
 				return false;
 
 			bool isEnabled = parameterNode.GetAttributeBool("enabled", true);
+			string defaultValue = parameterNode.GetTextValue(parameter.defaultValue);
 
 			if (parameter is BaseParameter<string>)
 			{
 				var textParameter = parameter as BaseParameter<string>;
-				string value = parameterNode.GetTextValue(textParameter.defaultValue);
-				textParameter.Set(bLoadFromClipboard ? Parameter.FromClipboard(value) : value);
+				textParameter.Set(bLoadFromClipboard ? Parameter.FromClipboard(defaultValue) : defaultValue);
 				textParameter.isEnabled = isEnabled;
 				return true;
 			}
 			else if (parameter is BaseParameter<bool>)
 			{
 				var boolParameter = parameter as BaseParameter<bool>;
-				boolParameter.Set(parameterNode.GetTextValueBool(boolParameter.defaultValue));
+				boolParameter.Set(Utility.StringToBool(defaultValue));
 				boolParameter.isEnabled = isEnabled;
 				return true;
 			}
 			else if (parameter is BaseParameter<decimal>)
 			{
 				var numberParameter = parameter as BaseParameter<decimal>;
-				numberParameter.Set(parameterNode.GetTextValueDecimal(numberParameter.defaultValue));
+				numberParameter.Set(Utility.StringToDecimal(defaultValue));
 				numberParameter.isEnabled = isEnabled;
 				return true;
 			}
 			else if (parameter is BaseParameter<HashSet<string>>)
 			{
 				var collectionParameter = parameter as BaseParameter<HashSet<string>>;
-				collectionParameter.Set(new HashSet<string>(Utility.ListFromCommaSeparatedString(parameterNode.GetTextValue())));
+				collectionParameter.Set(new HashSet<string>(Utility.ListFromCommaSeparatedString(defaultValue)));
 				collectionParameter.isEnabled = isEnabled;
 				return true;
 			}
@@ -366,20 +373,20 @@ namespace Ginger
 				else
 				{
 					var stringParameter = parameter as BaseParameter<string>;
-					if (!string.IsNullOrEmpty(stringParameter.value) && stringParameter.value != stringParameter.defaultValue)
+					if (!string.IsNullOrEmpty(stringParameter.value) && stringParameter.value != stringParameter.GetDefaultValue())
 						value = bSaveToClipboard ? Parameter.ToClipboard(stringParameter.value) : stringParameter.value;
 				}
 			}
 			else if (parameter is BaseParameter<bool>)
 			{
 				var boolParameter = parameter as BaseParameter<bool>;
-				if (boolParameter.value != boolParameter.defaultValue)
+				if (boolParameter.value != boolParameter.GetDefaultValue())
 					value = boolParameter.value ? "true" : "false";
 			}
 			else if (parameter is BaseParameter<decimal>)
 			{
 				var numberParameter = parameter as BaseParameter<decimal>;
-				if (numberParameter.value != default(decimal) && numberParameter.value != numberParameter.defaultValue)
+				if (numberParameter.value != default(decimal) && numberParameter.value != numberParameter.GetDefaultValue())
 					value = numberParameter.value.ToString(CultureInfo.InvariantCulture);
 			}
 			else if (parameter is BaseParameter<HashSet<string>>)

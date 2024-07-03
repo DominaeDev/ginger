@@ -41,10 +41,7 @@ namespace Ginger
 
 			style = xmlNode.GetAttributeEnum("style", Style.Default);
 
-			defaultValue = xmlNode.GetAttribute("default", default(string));
-			defaultValue = xmlNode.GetValueElement("Default", defaultValue);
-			if (defaultValue != default(string))
-				value = defaultValue;
+//			value = GetDefaultValue();
 
 			var itemNode = xmlNode.GetFirstElement("Option");
 			while (itemNode != null)
@@ -169,25 +166,9 @@ namespace Ginger
 			return hash;
 		}
 
-		public override void ResetToDefault() // Called on instantiation
+		public override string GetDefaultValue()
 		{
-			Context context = Current.Character.GetContext(CharacterData.ContextType.WithFlags);
-
-			// Evaluate default value
-			if (string.IsNullOrEmpty(defaultValue) == false)
-			{
-				value = GingerString.FromString(Text.Eval(defaultValue, context,
-					new ContextString.EvaluationConfig() {
-						macroSuppliers = new IMacroSupplier[] { Current.Strings },
-						referenceSuppliers = new IStringReferenceSupplier[] { Current.Strings },
-						ruleSuppliers = new IRuleSupplier[] { Current.Strings },
-					},
-					Text.EvalOption.Minimal)).ToBaked();
-
-				return;
-			}
-
-			base.ResetToDefault();
+			return defaultValue;
 		}
 	}
 }

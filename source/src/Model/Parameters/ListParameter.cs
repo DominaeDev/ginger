@@ -17,20 +17,17 @@ namespace Ginger
 
 		public override bool LoadFromXml(XmlNode xmlNode)
 		{
-			string sDefault = xmlNode.GetAttribute("default", default(string));
-			sDefault = xmlNode.GetValueElement("Default", sDefault);
-			defaultValue = new HashSet<string>(Utility.ListFromCommaSeparatedString(sDefault));
-			value = defaultValue;
-			return base.LoadFromXml(xmlNode);
+			if (base.LoadFromXml(xmlNode) == false)
+				return false;
+
+			//			value = GetDefaultValue();
+			return true;
 		}
 
 		public override void SaveToXml(XmlNode xmlNode)
 		{
 			var node = xmlNode.AddElement("List");
 			base.SaveToXml(node);
-
-			if (defaultValue.Count > 0)
-				node.AddValueElement("Default", Utility.ListToCommaSeparatedString(defaultValue));
 		}
 
 		public override void OnApply(ParameterState state, ParameterScope scope)
@@ -64,5 +61,9 @@ namespace Ginger
 			return hash;
 		}
 
+		public override HashSet<string> GetDefaultValue()
+		{
+			return new HashSet<string>(Utility.ListFromCommaSeparatedString(defaultValue));
+		}
 	}
 }

@@ -90,7 +90,7 @@ namespace Ginger
 
 		protected override void OnRefreshValue()
 		{
-			if (parameter.value == default(decimal) && parameter.isOptional && parameter.defaultValue == default(decimal))
+			if (parameter.value == default(decimal) && parameter.isOptional && parameter.GetDefaultValue() == default(decimal))
 				textBox.SetTextSilent(""); 
 			else
 				SetValueSilent(parameter.value);

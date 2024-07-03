@@ -785,7 +785,7 @@ namespace Ginger
 
 		private void ShowRecipeMenu(Recipe.Drawer drawer, Control control, Point point)
 		{
-			Context context = Current.Character.GetContext(CharacterData.ContextType.WithFlags, true);
+			Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, true);
 
 			ContextMenuStrip menu = new ContextMenuStrip();
 			PopulateRecipeMenu(drawer, menu.Items, context);

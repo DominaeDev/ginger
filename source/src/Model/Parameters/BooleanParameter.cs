@@ -15,19 +15,14 @@ namespace Ginger
 
 		public override bool LoadFromXml(XmlNode xmlNode)
 		{
-			defaultValue = xmlNode.GetAttributeBool("default", default(bool));
-			defaultValue = xmlNode.GetValueElementBool("Default", defaultValue);
-			value = defaultValue;
 			return base.LoadFromXml(xmlNode);
+//			value = GetDefaultValue();
 		}
 
 		public override void SaveToXml(XmlNode xmlNode)
 		{
 			var node = xmlNode.AddElement("Toggle");
 			base.SaveToXml(node);
-
-			if (defaultValue)
-				node.AddValueElement("Default", true);
 		}
 
 		public override void OnApply(ParameterState state, ParameterScope scope)
@@ -46,6 +41,11 @@ namespace Ginger
 			int hash = base.GetHashCode();
 			hash ^= "Toggle".GetHashCode();
 			return hash;
+		}
+
+		public override bool GetDefaultValue()
+		{
+			return Utility.StringToBool(defaultValue);
 		}
 	}
 }

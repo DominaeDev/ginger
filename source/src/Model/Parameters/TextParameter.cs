@@ -27,6 +27,9 @@ namespace Ginger
 
 		public override bool LoadFromXml(XmlNode xmlNode)
 		{
+			if (base.LoadFromXml(xmlNode) == false)
+				return false;
+
 			string style = xmlNode.GetAttribute("style", "").ToLowerInvariant();
 			switch (style)
 			{
@@ -44,12 +47,9 @@ namespace Ginger
 				break;
 			}
 
-			defaultValue = xmlNode.GetAttribute("default", default(string));
-			defaultValue = xmlNode.GetValueElement("Default", defaultValue);
-			value = defaultValue;
+//			value = GetDefaultValue();
 			isRaw = xmlNode.GetAttributeBool("raw", false);
-
-			return base.LoadFromXml(xmlNode);
+			return true;
 		}
 
 		public override void SaveToXml(XmlNode xmlNode)
@@ -94,27 +94,6 @@ namespace Ginger
 			return clone;
 		}
 
-		public override void ResetToDefault() // Called on instantiation
-		{
-			Context context = Current.Character.GetContext(CharacterData.ContextType.WithFlags);
-
-			// Evaluate default value
-			if (string.IsNullOrEmpty(defaultValue) == false)
-			{
-				value = GingerString.FromString(Text.Eval(defaultValue, context,
-					new ContextString.EvaluationConfig() {
-						macroSuppliers = new IMacroSupplier[] { Current.Strings },
-						referenceSuppliers = new IStringReferenceSupplier[] { Current.Strings },
-						ruleSuppliers = new IRuleSupplier[] { Current.Strings },
-					},
-					Text.EvalOption.Minimal)).ToBaked();
-				
-				return;
-			}
-
-			base.ResetToDefault();			
-		}
-
 		public override int GetHashCode()
 		{
 			int hash = base.GetHashCode();
@@ -124,6 +103,10 @@ namespace Ginger
 			return hash;
 		}
 
+		public override string GetDefaultValue()
+		{
+			return defaultValue;
+		}
 	}
 
 }

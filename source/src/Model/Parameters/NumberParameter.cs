@@ -34,12 +34,12 @@ namespace Ginger
 
 		public override bool LoadFromXml(XmlNode xmlNode)
 		{
-			defaultValue = xmlNode.GetAttributeDecimal("default", default(decimal));
-			defaultValue = xmlNode.GetValueElementDecimal("Default", defaultValue);
-			value = defaultValue;
+			if (base.LoadFromXml(xmlNode) == false)
+				return false;
+
+//			value = GetDefaultValue();
 
 			suffix = xmlNode.GetValueElement("Suffix", null);
-
 			minValue = xmlNode.GetAttributeDecimal("min", decimal.MinValue);
 			maxValue = xmlNode.GetAttributeDecimal("max", decimal.MaxValue);
 
@@ -59,7 +59,7 @@ namespace Ginger
 				}
 			}
 
-			return base.LoadFromXml(xmlNode);
+			return true;
 		}
 
 		public override void SaveToXml(XmlNode xmlNode)
@@ -75,9 +75,6 @@ namespace Ginger
 				node.AddAttribute("style", "real");
 			if (string.IsNullOrEmpty(suffix) == false)
 				node.AddValueElement("Suffix", suffix);
-
-			if (defaultValue != default(decimal))
-				node.AddValueElement("Default", defaultValue);
 		}
 
 		public override void OnApply(ParameterState state, ParameterScope scope)
@@ -109,6 +106,11 @@ namespace Ginger
 				mode,
 				suffix);
 			return hash;
+		}
+
+		public override decimal GetDefaultValue()
+		{
+			return Utility.StringToDecimal(defaultValue);
 		}
 	}
 }

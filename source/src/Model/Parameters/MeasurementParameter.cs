@@ -25,15 +25,16 @@ namespace Ginger
 
 		public override bool LoadFromXml(XmlNode xmlNode)
 		{
-			defaultValue = xmlNode.GetAttribute("default", default(string));
-			defaultValue = xmlNode.GetValueElement("Default", defaultValue).SingleLine();
-			value = defaultValue;
+			if (base.LoadFromXml(xmlNode) == false)
+				return false;
+
+//			value = GetDefaultValue();
 
 			maxValue = xmlNode.GetAttributeDecimal("max", decimal.MaxValue);
 			mode = xmlNode.GetAttributeEnum("style", NumberParameter.Mode.Length);
 
 			Measurement.Parse(value, mode, out this.magnitude, out this.unit, out this.unitSystem);
-			return base.LoadFromXml(xmlNode);
+			return true;
 		}
 
 		public override void SaveToXml(XmlNode xmlNode)
@@ -107,6 +108,11 @@ namespace Ginger
 				maxValue,
 				mode);
 			return hash;
+		}
+
+		public override string GetDefaultValue()
+		{
+			return defaultValue;
 		}
 	}
 }

@@ -60,15 +60,16 @@ namespace Ginger
 			return clone;
 		}
 
-		public override void ResetToDefault()
-		{
-		}
-
 		public override int GetHashCode()
 		{
 			int hash = base.GetHashCode();
 			hash ^= "SetFlag".GetHashCode();
 			return hash;
+		}
+
+		public override string GetDefaultValue()
+		{
+			return defaultValue;
 		}
 	}
 }

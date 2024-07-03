@@ -54,10 +54,6 @@ namespace Ginger
 			}
 		}
 
-		public override void ResetToDefault()
-		{
-		}
-
 		public override object Clone()
 		{
 			var clone = CreateClone<EraseParameter>();
@@ -70,6 +66,11 @@ namespace Ginger
 			int hash = base.GetHashCode();
 			hash ^= "Erase".GetHashCode();
 			return hash;
+		}
+
+		public override string GetDefaultValue()
+		{
+			return null;
 		}
 	}
 }

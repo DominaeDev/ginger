@@ -154,7 +154,7 @@ namespace Ginger
 							else
 								parameter = recipe.parameters.Find(p => p.id == parameterID);
 							if (parameter != null)
-								parameter.LoadValueFromXml(parameterNode);
+								parameter.LoadValueFromXml(parameterNode, false);
 
 							++parameterIndex;
 							parameterNode = parameterNode.GetNextSibling();

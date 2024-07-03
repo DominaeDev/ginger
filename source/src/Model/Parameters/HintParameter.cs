@@ -47,5 +47,10 @@ namespace Ginger
 			hash ^= "Hint".GetHashCode();
 			return hash;
 		}
+
+		public override string GetDefaultValue()
+		{
+			return defaultValue;
+		}
 	}
 }
