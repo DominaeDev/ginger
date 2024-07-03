@@ -92,6 +92,8 @@ namespace Ginger
 			NotifyValueChanged(string.Format("entry-{0}-{1}", _entryPanels.Count - 1, _entryPanels.Count));
 			Undo.Resume();
 			Undo.Push(Undo.Kind.Parameter, "Add lore entry");
+
+			NotifySizeChanged(); // Notify parent the size has changed
 		}
 
 		private void OnChangedEntry(object sender, LorebookEntryPanel.LorebookChangedEventArgs e)

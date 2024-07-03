@@ -102,7 +102,7 @@ namespace Ginger
 				textBox.Size = new Size(textBox.Size.Width, height);
 				this.Size = new Size(this.Size.Width, GetParameterHeight());
 				textBox.Invalidate(); // Repaint (to avoid border artifacts)
-				OnParameterResized(); // Notify parent the size has changed
+				NotifySizeChanged(); // Notify parent the size has changed
 			}
 		}
 

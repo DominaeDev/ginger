@@ -915,9 +915,7 @@ namespace Ginger
 					else if (formatting == Block.Formatting.Limited)
 						blockText = Text.DontProcess(Text.Process(blockText, Text.EvalOption.LimitedBlockFormatting));
 					else if (formatting == Block.Formatting.Default)
-						blockText = Text.Process(blockText, Text.EvalOption.Capitalization | Text.EvalOption.NoInternal);
-//					else if (style < Block.Style.Comma) // Format (if not a list)
-//						blockText = Text.Process(blockText, Text.EvalOption.Capitalization | Text.EvalOption.NoInternal);
+						blockText = Text.Process(blockText, Text.EvalOption.StandardBlockFormatting);
 
 					blockTexts.Add(blockText.Trim());
 				}

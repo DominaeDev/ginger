@@ -430,17 +430,6 @@ namespace Ginger
 			// Strings (and rules)
 			strings.LoadFromXml(xmlNode);
 
-			if (flags.IsEmpty() 
-				&& templates.IsEmpty() 
-				&& blocks.IsEmpty()
-				&& parameters.IsEmpty()
-				&& loreItems.IsEmpty()
-				&& includes.IsEmpty())
-			{
-				// Empty recipe
-				return false;
-			}
-
 			uid = GetHashCode();
 			return true;
 		}

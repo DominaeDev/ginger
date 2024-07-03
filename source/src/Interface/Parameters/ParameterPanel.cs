@@ -157,7 +157,7 @@ namespace Ginger
 			_bIgnoreEvents = false;
 		}
 
-		protected void OnParameterResized()
+		protected void NotifySizeChanged()
 		{
 			Invalidate();
 			ParameterResized?.Invoke(this, EventArgs.Empty);

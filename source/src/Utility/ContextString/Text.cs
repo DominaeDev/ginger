@@ -34,7 +34,8 @@ namespace Ginger
 
 			StandardOutputFormatting	= Default | Linebreaks | NoInternal, // System, Persona, Scenario, User
 			LimitedOutputFormatting		= Default | NoInternal, // Example, Greeting, Grammar
-			LimitedBlockFormatting		= Whitespace | Punctuation | NoInternal, // Example, Greeting, Grammar
+			StandardBlockFormatting		= Capitalization | Whitespace | Punctuation | NoInternal, // Nodes
+			LimitedBlockFormatting		= Whitespace | Punctuation | NoInternal, // Nodes
 			LoreFormatting				= Default | Linebreaks,
 			OutputFormatting			= Whitespace | Linebreaks | Punctuation,
 			ExampleFormatting			= Minimal,
@@ -292,6 +293,10 @@ namespace Ginger
 				IsWhiteSpace = (c) => (c == ' ' || c == '\t' || c == '\u00a0' || c == '\u3000' || c == '\r' || c == '\n');
 			else
 				IsWhiteSpace = (c) => (c == ' ' || c == '\t' || c == '\u00a0' || c == '\u3000');
+
+			// Protect eol whitespace
+			sbOutput.Replace("  \r\n", Text.Break);
+			sbOutput.Replace("  \n", Text.Break);
 
 			// Collapse whitespace
 			int pos_ws = 0;

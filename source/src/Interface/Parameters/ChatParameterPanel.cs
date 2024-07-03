@@ -106,7 +106,7 @@ namespace Ginger
 				textBox.Size = new Size(textBox.Size.Width, height);
 				bottomPanel.Location = new Point(0, textBox.Location.Y + height + 4);
 				textBox.Invalidate(); // Repaint (to avoid border artifacts)
-				OnParameterResized(); // Notify parent the size has changed
+				NotifySizeChanged(); // Notify parent the size has changed
 			}
 		}
 
