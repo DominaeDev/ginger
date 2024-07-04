@@ -22,7 +22,7 @@
 		
 	<!-- Important block -->
 	<Node path="system/important" style="default" mode="exclude" order="-0" rule="not (__bake or __snippet or __tavern)">
-		IMPORTANT:  
+		### IMPORTANT:  
 		{inner}
 	</Node>
 	<Node path="system/important" style="line" mode="exclude" order="-0" rule="__tavern"/>

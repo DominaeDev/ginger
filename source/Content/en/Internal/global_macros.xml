@@ -83,10 +83,10 @@
 	<Rule id="use-objective-pronoun">pronoun-objective</Rule>
 	
 	<Rule id="is-masculine">is-man or use-masculine-pronoun</Rule>
-	<Rule id="is-feminine">is-woman or is-futanari or use-feminine-pronoun</Rule>
+	<Rule id="is-feminine">is-woman or use-feminine-pronoun</Rule>
 	<Rule id="is-man">male or man or trans-male</Rule>
-	<Rule id="is-woman">female or woman or trans-female or futanari</Rule>
-	<Rule id="is-futanari">futanari</Rule>
-	<Rule id="is-adult">age ge 18</Rule>
+	<Rule id="is-woman">female or woman or trans-female or is-futanari</Rule>
+	<Rule id="is-futanari">futanari or futa or shemale</Rule>
+	<Rule id="is-adult">age and age ge 18</Rule>
 
 </Ginger>

@@ -219,7 +219,7 @@ namespace Ginger
 		public override string ToString()
 		{
 			if (_floatValue.HasValue)
-				return _floatValue.Value.ToString("G");
+				return _floatValue.Value.ToString("G", CultureInfo.InvariantCulture);
 			if (isNil)
 				return "";
 			return _stringValue;

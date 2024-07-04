@@ -1,6 +1,6 @@
-﻿<Ginger version="1.0">
-	<Name>Personality/Ingenious</Name>
-	<Title>Ingenious</Title>
+﻿<Ginger id="ingenious" version="1.0">
+	<Name>Personality/Genius</Name>
+	<Title>Genius</Title>
 	<Description>The character is incredibly intelligent.</Description>
 	<Author>Ginger</Author>
 	<Category>Personality</Category>

@@ -30,6 +30,7 @@ namespace Ginger
 				condition = Rule.Parse(xmlNode.GetAttribute("rule"));
 
 			value = xmlNode.GetTextValue().SingleLine();
+			defaultValue = value;
 			return true;
 		}
 
@@ -68,7 +69,7 @@ namespace Ginger
 
 		public override string GetDefaultValue()
 		{
-			return defaultValue;
+			return null;
 		}
 	}
 }

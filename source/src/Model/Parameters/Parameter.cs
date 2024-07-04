@@ -244,9 +244,11 @@ namespace Ginger
 			other.isEnabled = this.isEnabled;
 		}
 
-		public void ResetToDefault()    // Called on instantiation
+		public void ResetToDefault() // Called on instantiation
 		{
-			value = GetDefaultValue();
+			var defaultValue = GetDefaultValue();
+			if (defaultValue != null) // Parameters with no default behavior return null here
+				value = defaultValue;
 		}
 
 		private bool IsActive(ParameterState parameterState)
@@ -354,7 +356,7 @@ namespace Ginger
 		public static XmlNode SaveValueToXml(this IParameter parameter, XmlNode xmlNode, bool bSaveToClipboard = false)
 		{
 			string value = null;
-			if (parameter is SetFlagParameter || parameter is SetVarParameter || parameter is HintParameter)
+			if (parameter is SetFlagParameter || parameter is SetVarParameter || parameter is EraseParameter || parameter is HintParameter)
 				return null;
 
 			bool cdata = false;

@@ -42,17 +42,7 @@
 			(Use either metric or imperial units.)
 		</Description>
 	</Number>
-	
-	<Number id="weight" style="length" min="0" shared="yes" rule="not weight">
-		<Label>Height</Label>
-		<Default>3'2</Default>
-		<Placeholder>Height (cm/ft)</Placeholder>
-		<Description>
-			Enter the character's height.
-			(Use either metric or imperial units.)
-		</Description>
-	</Number>
-	
+
 	<Text id="tribe">
 		<Label>Tribe</Label>
 		<Placeholder>Enter the name of a tribe (e.g. Vile Tooth)</Placeholder>

@@ -67,7 +67,7 @@
 	</System>
 	
 	<Node path="system/important" style="bullet-list" order="-0" rule="not (__bake or __snippet or __tavern)">
-		Important:  
+		### Important:  
 		{inner}
 	</Node>
 	<Node path="system/important/roleplay">

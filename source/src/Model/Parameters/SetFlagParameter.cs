@@ -69,7 +69,7 @@ namespace Ginger
 
 		public override string GetDefaultValue()
 		{
-			return defaultValue;
+			return null;
 		}
 	}
 }

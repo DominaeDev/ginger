@@ -1,0 +1,21 @@
+﻿<Ginger version="1.0">
+	<!-- Preamble -->
+	<Name>Gender/Asexual</Name>
+	<Title>Asexual</Title>
+	<Author>Ginger</Author>
+	<Category>Character</Category>
+	<Description>The character has no defined gender.</Description>
+	<Flags>asexual, override-gender, custom-gender</Flags>
+	<Requires>not override-gender</Requires>
+	
+	<!-- Clear gender tags -->
+	<Erase>gender, male, female</Erase>
+	<Erase rule="not custom-pronoun">pronoun-masculine, pronoun-feminine, pronoun-neutral, pronoun-objetive</Erase>
+	<SetVar id="gender">None</SetVar>
+	
+	<!-- Append gender attribute -->
+	<Attribute order="1">
+		<Name>Gender</Name>
+		<Value>(Asexual)</Value>
+	</Attribute>
+</Ginger>

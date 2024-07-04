@@ -211,6 +211,7 @@ namespace Ginger
 		{
 			Append = 0,
 			Replace,	// Replace existing
+			Remove,		// Remove existing
 			Exclusive,	// Can only be replaced by another exclusive
 			Exclude,	// Will be replaced by another
 			Parent,		// Require parent
@@ -435,6 +436,12 @@ namespace Ginger
 				_entries.Add(blockID, new List<Entry>()); // Add
 			else if (mode == Block.Mode.Exclusive)
 				_entries[blockID].Clear(); // Replace
+			else if (mode == Block.Mode.Remove)
+			{
+				_entries = _entries.Where(e => !(e.Key == blockID || e.Key.IsChildOf(blockID))) // Remove (incl. children)
+					.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+				return false; // Don't add
+			}
 			else if (existingBlocks.Count > 0 && mode == Block.Mode.Exclude)
 			{
 				if (existingMode == Block.Mode.Exclude)
