@@ -319,6 +319,9 @@ namespace Ginger
 				condition = Rule.Parse(xmlNode.GetAttribute("rule"));
 
 			mode = xmlNode.GetAttributeEnum("mode", Mode.Default);
+			if (mode == Mode.Remove)
+				return false; // Not allowed for attributes
+
 			order = xmlNode.GetAttributeInt("order", DefaultOrder);
 			_styleName = xmlNode.GetAttribute("style", "attribute");
 			style = BlockStyles.FromString(_styleName);
