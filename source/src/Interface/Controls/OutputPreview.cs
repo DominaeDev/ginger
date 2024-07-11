@@ -172,7 +172,7 @@ namespace Ginger
 
 		private static string Header(string text)
 		{
-			string line = "------------------------------------------------------------"; // 60
+			string line = "--------------------------------------------------"; // 50
 			return string.Concat("---- ", text, " ", line.Substring(0, Math.Max(line.Length - text.Length, 0)));
 		}
 

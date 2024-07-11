@@ -413,7 +413,7 @@ namespace Ginger
 			while (child != null)
 			{
 				if (child.NodeType == XmlNodeType.Text)
-					return Unindent(CapLength(child.Value).TrimStart());
+					return Utility.Unindent(CapLength(child.Value).TrimStart());
 				else if (child.NodeType == XmlNodeType.CDATA)
 					return CapLength(child.Value);
 				child = child.NextSibling;
@@ -592,7 +592,7 @@ namespace Ginger
 			while (child != null)
 			{
 				if (child.NodeType == XmlNodeType.Text)
-					sbValue.Append(Unindent(CapLength(child.Value).TrimStart()));
+					sbValue.Append(Utility.Unindent(CapLength(child.Value).TrimStart()));
 				else if (child.NodeType == XmlNodeType.CDATA)
 					sbValue.Append(CapLength(child.Value));
 				child = child.NextSibling;
@@ -739,39 +739,6 @@ namespace Ginger
 			if (s == null || s.Length <= maxLength)
 				return s;
 			return s.Substring(0, (int)maxLength);
-		}
-
-
-		private static string Unindent(string s)
-		{
-			if (string.IsNullOrEmpty(s))
-				return s;
-
-			int posLn = s.IndexOf('\n');
-			if (posLn == -1)
-				return s.Trim();
-
-			StringBuilder sb = new StringBuilder(s);
-			int pos = 0;
-			for (; pos < sb.Length;)
-			{
-				if (sb[pos] == '\n')
-				{
-					++pos;
-					continue;
-				}
-				if (char.IsWhiteSpace(sb[pos]))
-				{
-					sb.Remove(pos, 1);
-					continue;
-				}
-				pos = sb.IndexOf('\n', pos);
-				if (pos == -1)
-					break;
-			}
-			sb.TrimStart();
-			sb.TrimEnd();
-			return sb.ToString();
 		}
 
 	}

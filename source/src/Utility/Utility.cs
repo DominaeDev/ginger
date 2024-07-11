@@ -1206,6 +1206,39 @@ namespace Ginger
 			{
 			}
 		}
+
+		public static string Unindent(string s)
+		{
+			if (string.IsNullOrEmpty(s))
+				return s;
+
+			int posLn = s.IndexOf('\n');
+			if (posLn == -1)
+				return s.Trim();
+
+			StringBuilder sb = new StringBuilder(s);
+			int pos = 0;
+			for (; pos < sb.Length;)
+			{
+				if (sb[pos] == '\n')
+				{
+					++pos;
+					continue;
+				}
+				if (char.IsWhiteSpace(sb[pos]))
+				{
+					sb.Remove(pos, 1);
+					continue;
+				}
+				pos = sb.IndexOf('\n', pos);
+				if (pos == -1)
+					break;
+			}
+			sb.TrimStart();
+			sb.TrimEnd();
+			return sb.ToString();
+		}
+
 	}
 
 }

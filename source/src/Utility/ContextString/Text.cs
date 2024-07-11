@@ -357,7 +357,7 @@ namespace Ginger
 			char tmp;
 			for (int i = 0; i < sbOutput.Length - 1; ++i)
 			{
-				if (CheckNoParse(sbOutput, ref i))
+				if (SkipNoParse(sbOutput, ref i))
 					continue;
 
 				if (sbOutput[i] == '"' && (sbOutput[i + 1] == '.' || sbOutput[i + 1] == ',' ))
@@ -552,7 +552,7 @@ namespace Ginger
 				}
 
 				char nextCh = sbOutput[i + 1];
-				if (ch == ',' && char.IsWhiteSpace(nextCh) == false)
+				if (ch == ',' && (char.IsWhiteSpace(nextCh) || char.IsPunctuation(nextCh)) == false)
 				{
 					sbOutput.Insert(i + 1, ' ');
 					i += 2;

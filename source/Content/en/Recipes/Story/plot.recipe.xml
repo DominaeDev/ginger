@@ -45,22 +45,22 @@
 	</Text>
 	
 	<!-- Output -->	
-	<Node path="plot" style="line" mode="exclude">
+	<Node path="scenario/plot" style="line" mode="exclude">
 		[p]Story synopsis: {{  
 		{inner}  
 		}}
 	</Node>
-	<Node path="plot/events" style="number-list" order="100"/>
-	<Node path="plot/events/event" rule="event-1">{event-1}</Node>
-	<Node path="plot/events/event" rule="event-2">{event-2}</Node>
-	<Node path="plot/events/event" rule="event-3">{event-3}</Node>
-	<Node path="plot/events/event" rule="event-4">{event-4}</Node>
-	<Node path="plot/events/event" rule="event-5">{event-5}</Node>
-	<Node path="plot/events/event" rule="event-6">{event-6}</Node>
-	<Node path="plot/events/event" rule="event-7">{event-7}</Node>
-	<Node path="plot/events/event" rule="event-8">{event-8}</Node>
-	<Node path="plot/events/event" rule="event-9">{event-9}</Node>
-	<Node path="plot/events/event" rule="event-10">{event-10}</Node>
+	<Node path="scenario/plot/events" style="number-list" order="100"/>
+	<Node path="scenario/plot/events/event" rule="event-1">{event-1}</Node>
+	<Node path="scenario/plot/events/event" rule="event-2">{event-2}</Node>
+	<Node path="scenario/plot/events/event" rule="event-3">{event-3}</Node>
+	<Node path="scenario/plot/events/event" rule="event-4">{event-4}</Node>
+	<Node path="scenario/plot/events/event" rule="event-5">{event-5}</Node>
+	<Node path="scenario/plot/events/event" rule="event-6">{event-6}</Node>
+	<Node path="scenario/plot/events/event" rule="event-7">{event-7}</Node>
+	<Node path="scenario/plot/events/event" rule="event-8">{event-8}</Node>
+	<Node path="scenario/plot/events/event" rule="event-9">{event-9}</Node>
+	<Node path="scenario/plot/events/event" rule="event-10">{event-10}</Node>
 	
 	<Scenario rule="not plot">{plot}[p]</Scenario>
 </Ginger>

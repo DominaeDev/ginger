@@ -505,8 +505,8 @@ namespace Ginger
 					continue;
 				case Component.System:		templateNode = xmlNode.AddElement("System"); break;
 				case Component.Persona:		templateNode = xmlNode.AddElement("Persona"); break;
-				case Component.Scenario:		templateNode = xmlNode.AddElement("Scenario"); break;
-				case Component.Greeting:		templateNode = xmlNode.AddElement("Greeting"); break;
+				case Component.Scenario:	templateNode = xmlNode.AddElement("Scenario"); break;
+				case Component.Greeting:	templateNode = xmlNode.AddElement("Greeting"); break;
 				case Component.Example:		templateNode = xmlNode.AddElement("Example"); break;
 				case Component.Grammar:		templateNode = xmlNode.AddElement("Grammar"); break;
 				case Component.UserPersona:	templateNode = xmlNode.AddElement("User"); break;
@@ -741,7 +741,7 @@ namespace Ginger
 			{
 				// Evaluate default value
 				if (string.IsNullOrEmpty(parameter.defaultValue) == false && parameter.defaultValue.IndexOfAny(brackets, 0) != -1 )
-					parameter.defaultValue = Text.Eval(parameter.defaultValue, evalContext, evalConfig, Text.EvalOption.Minimal);
+					parameter.defaultValue = GingerString.FromString(Text.Eval(parameter.defaultValue, evalContext, evalConfig, Text.EvalOption.Minimal)).ToParameter();
 
 				parameter.ResetToDefault();
 			}

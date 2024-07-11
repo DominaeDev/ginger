@@ -491,6 +491,12 @@ namespace Ginger
 						) == false)
 						continue;
 
+					if (template.channel == Recipe.Component.Grammar)
+					{
+						lsOutputsByChannel[(int)template.channel].Add(Utility.Unindent(template.text)); // As is
+						continue;
+					}
+
 					string text = Text.Eval(template.text, localContext,
 						new ContextString.EvaluationConfig() {
 							macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
