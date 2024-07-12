@@ -142,12 +142,14 @@ namespace Ginger
 			Pronouns		= 1 << 5,
 			Numbers			= 1 << 6,
 			CodeBlock		= 1 << 7,
-			SpellChecking	= 1 << 8,
-			DarkMode		= 1 << 9,
+			Wildcards		= 1 << 8,
+			SpellChecking	= 1 << 9,
+			DarkMode		= 1 << 10,
 
 			Default = Standard | Names | Dialogue | Actions | Commands | Numbers | CodeBlock | SpellChecking,
 			Limited = Standard | Names | Commands | Numbers | SpellChecking,
-			Code = Standard | Names | Commands | Numbers,
+			Code	= Standard | Names | Commands | Numbers,
+			LoreKey = Names | Commands | Numbers | Wildcards | SpellChecking,
 		}
 		public SyntaxFlags syntaxFlags
 		{
@@ -750,6 +752,7 @@ namespace Ginger
 			Color colorComment = bLight ? Constants.Colors.Light.Comment : Constants.Colors.Dark.Comment;
 			Color colorCode = bLight ? Constants.Colors.Light.Code : Constants.Colors.Dark.Code;
 			Color colorError = bLight ? Constants.Colors.Light.Error : Constants.Colors.Dark.Error;
+			Color colorWildcard = bLight ? Constants.Colors.Light.Wildcard : Constants.Colors.Dark.Wildcard;
 
 			syntaxHighlighter.ClearPatterns();
 			if (_syntaxFlags.Contains(SyntaxFlags.Standard))
@@ -780,6 +783,10 @@ namespace Ginger
 			// Narration *...*
 			if (_syntaxFlags.Contains(SyntaxFlags.Actions))
 				syntaxHighlighter.AddPattern(new PatternDefinition("\\*+[^\\*]*\\*+"), new SyntaxStyle(colorNarration, false, false), 0);
+			
+			// Wildcards ...*
+			if (_syntaxFlags.Contains(SyntaxFlags.Wildcards))
+				syntaxHighlighter.AddPattern(new PatternDefinition("[^\\*,]*\\*+[^\\*,]*"), new SyntaxStyle(colorWildcard, false, false), 0);
 
 			// Commands {char}, {user}, {they}, etc.
 			if (_syntaxFlags.Contains(SyntaxFlags.Commands))

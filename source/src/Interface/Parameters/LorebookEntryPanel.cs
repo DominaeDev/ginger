@@ -47,7 +47,7 @@ namespace Ginger
 			textBox_Keys.richTextBox.PreviewKeyDown += OnPreviewKeyDown;
 			textBox_Keys.richTextBox.KeyPress += RichTextBox_KeyPress;
 			textBox_Keys.richTextBox.ControlAltEnterPressed += RichTextBox_ControlAltEnterPressed;
-			textBox_Keys.richTextBox.syntaxFlags = RichTextBoxEx.SyntaxFlags.Default;
+			textBox_Keys.richTextBox.syntaxFlags = RichTextBoxEx.SyntaxFlags.LoreKey;
 
 			textBox_Text.richTextBox.ControlEnterPressed += TextBox_OnControlEnterPressed;
 			textBox_Text.richTextBox.GotFocus += RichTextBox_GotFocus;
