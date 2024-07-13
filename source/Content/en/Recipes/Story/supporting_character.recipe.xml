@@ -23,7 +23,7 @@
 	<Text id="support-description" style="flex">
 		<Label>Description</Label>
 	</Text>
-	<Choice id="type" style="radio" required="yes">
+	<Choice id="placement" style="radio" required="yes">
 		<Label>Location</Label>
 		<Option>Persona</Option>
 		<Option>Scenario</Option>
@@ -33,17 +33,17 @@
 	<!-- Output -->	
 	<Rule id="has-value">support-name and support-description</Rule>
 	
-	<Persona rule="type is persona and has-value">
+	<Persona rule="placement is persona and has-value">
 		[p]"{support-name}" [support-gender?({support-gender:value})]:  
 		[support-description?{support-description}.]
 	</Persona>
 	
-	<Scenario rule="type is scenario and has-value">
+	<Scenario rule="placement is scenario and has-value">
 		[p]"{support-name}" [support-gender?({support-gender:value})]:  
 		[support-description?{support-description}.]
 	</Scenario>
 	
-	<Lore rule="type is lore and has-value">
+	<Lore rule="placement is lore and has-value">
 		<Name>{support-name}</Name>
 		<Value>
 			"{support-name}" [support-gender?({support-gender:value})]:  

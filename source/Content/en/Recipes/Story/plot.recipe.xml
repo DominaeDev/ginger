@@ -46,7 +46,7 @@
 	
 	<!-- Output -->	
 	<Node path="scenario/plot" style="line" mode="exclude">
-		[p]Story synopsis: {{  
+		Story synopsis: {{  
 		{inner}  
 		}}
 	</Node>
