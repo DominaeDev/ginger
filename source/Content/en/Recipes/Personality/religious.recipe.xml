@@ -5,8 +5,8 @@
 	<Category>Personality</Category>
 	
 	<!-- Parameters -->
-	<Choice id="diety" style="custom">
-		<Label>Diety</Label>
+	<Choice id="deity" style="custom">
+		<Label>Deity</Label>
 		<Option>God</Option>
 		<Option>Allah</Option>
 		<Option>A God</Option>
@@ -17,9 +17,9 @@
 		<Placeholder>Zeus</Placeholder>
 	</Choice>
 	
-	<Text id="diety-name" rule="diety:index is 2 or diety:index is 3">
-		<Label>Diety name</Label>
-		<Placeholder>Enter the name of the diety...</Placeholder>
+	<Text id="deity-name" rule="deity:index is 2 or deity:index is 3">
+		<Label>Deity name</Label>
+		<Placeholder>Enter the name of the deity...</Placeholder>
 	</Text>
 	
 	<Choice id="piety" style="slider" required="yes">
@@ -32,31 +32,31 @@
 	</Choice>
 	
 	<!-- Output -->	
-	<String id="diety">
-		<String rule="diety:index is 0" priority="1">God</String>
-		<String rule="diety:index is 1" priority="1">Allah</String>
-		<String rule="diety:index is 2" priority="1">{diety-name}, the holy god</String>
-		<String rule="diety:index is 3" priority="1">{diety-name}, the holy goddess</String>
-		<String rule="diety:index is 4" priority="1">the divine gods</String>
-		<String rule="diety:index is 5" priority="1">the divine goddesses</String>
-		<String rule="diety:index is 6" priority="1">Mother Nature</String>
-		<String>{diety:value}</String>
+	<String id="deity">
+		<String rule="deity:index is 0" priority="1">God</String>
+		<String rule="deity:index is 1" priority="1">Allah</String>
+		<String rule="deity:index is 2" priority="1">{deity-name}, the holy god</String>
+		<String rule="deity:index is 3" priority="1">{deity-name}, the holy goddess</String>
+		<String rule="deity:index is 4" priority="1">the divine gods</String>
+		<String rule="deity:index is 5" priority="1">the divine goddesses</String>
+		<String rule="deity:index is 6" priority="1">Mother Nature</String>
+		<String>{deity:value}</String>
 	</String>
 	
 	<String id="god">
-		<String rule="diety:index is 0" priority="1">God</String>
-		<String rule="diety:index is 1" priority="1">Allah</String>
-		<String rule="diety:index is 2" priority="1">the god</String>
-		<String rule="diety:index is 3" priority="1">the goddess</String>
-		<String rule="diety:index is 4" priority="1">the gods</String>
-		<String rule="diety:index is 5" priority="1">the goddesses</String>
-		<String rule="diety:index is 6" priority="1">the goddess</String>
-		<String>[their] diety</String>
+		<String rule="deity:index is 0" priority="1">God</String>
+		<String rule="deity:index is 1" priority="1">Allah</String>
+		<String rule="deity:index is 2" priority="1">the god</String>
+		<String rule="deity:index is 3" priority="1">the goddess</String>
+		<String rule="deity:index is 4" priority="1">the gods</String>
+		<String rule="deity:index is 5" priority="1">the goddesses</String>
+		<String rule="deity:index is 6" priority="1">the goddess</String>
+		<String>[their] deity</String>
 	</String>
 	
 	<String id="scriptures">
-		<String rule="diety:index is 0" priority="1">Bible</String>
-		<String rule="diety:index is 1" priority="1">Quran</String>
+		<String rule="deity:index is 0" priority="1">Bible</String>
+		<String rule="deity:index is 1" priority="1">Quran</String>
 		<String>scriptures</String>
 	</String>
 	
@@ -85,9 +85,9 @@
 		<Value>worship, praying, miracles</Value>
 	</Attribute>
 	
-	<Attribute rule="diety">
+	<Attribute rule="deity">
 		<Name>Likes</Name>
-		<Value>the love of [@diety], the holy [@scriptures]</Value>
+		<Value>the love of [@deity], the holy [@scriptures]</Value>
 	</Attribute>
 	
 	<Attribute rule="piety:index ge 2">
@@ -110,21 +110,21 @@
 		<Value>pagans, false religions, atheists</Value>
 	</Attribute>
 
-	<Persona rule="diety:index is 0">[char] is a Christian.</Persona>
-	<Persona rule="diety:index is 1">[char] is a Muslim.</Persona>
-	<Persona rule="diety and piety:index is 0">[char] is a follower of [@diety].</Persona>
-	<Persona rule="diety and piety:index is 1">[char] is religious and pious. [They] worship[s] [@diety].</Persona>
-	<Persona rule="diety and piety:index is 2">[char] is a true believer of [@diety].</Persona>
-	<Persona rule="diety and piety:index is 3">[char] is a pious worshipper of [@diety].</Persona>
-	<Persona rule="diety and piety:index is 4">[char] is a fanatic worshipper of [@diety].</Persona>
-	<Persona rule="not diety">[char] is religious [person].</Persona>
+	<Persona rule="deity:index is 0">[char] is a Christian.</Persona>
+	<Persona rule="deity:index is 1">[char] is a Muslim.</Persona>
+	<Persona rule="deity and piety:index is 0">[char] is a follower of [@deity].</Persona>
+	<Persona rule="deity and piety:index is 1">[char] is religious and pious. [They] worship[s] [@deity].</Persona>
+	<Persona rule="deity and piety:index is 2">[char] is a true believer of [@deity].</Persona>
+	<Persona rule="deity and piety:index is 3">[char] is a pious worshipper of [@deity].</Persona>
+	<Persona rule="deity and piety:index is 4">[char] is a fanatic worshipper of [@deity].</Persona>
+	<Persona rule="not deity">[char] is religious [person].</Persona>
 	
 	<Persona>
-		Devout as [they] [are], [they] believe[s] the holy [@scriptures] describe[diety:index le 1?s] the world and [their] place in it.
-		[They] find[s] great comfort in [their] faith, knowing that [they] belongs[diety?, and in the existence of [@diety]].
+		Devout as [they] [are], [they] believe[s] the holy [@scriptures] describe[deity:index le 1?s] the world and [their] place in it.
+		[They] find[s] great comfort in [their] faith, knowing that [they] belongs[deity?, and in the existence of [@deity]].
 	</Persona>
 	<Persona rule="piety:index ge 3">
-		Everything [char] [does] is guided by [their] faith[diety?, living [their] life under [!possessive:[@god]] watchful eyes].
+		Everything [char] [does] is guided by [their] faith[deity?, living [their] life under [!possessive:[@god]] watchful eyes].
 	</Persona>
 	<Persona rule="piety:index ge 4">
 		[Their] beliefs are strict and uncompromising. [They] take[s] great offense at non-believers and blasphemers, and everything that goes against the [@scriptures] is sinful in [their] eyes.
