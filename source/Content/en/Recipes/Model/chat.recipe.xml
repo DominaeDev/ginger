@@ -1,7 +1,11 @@
 ﻿<Ginger id="chat-bot" version="1.0">
 	<Name>Chat bot</Name>
 	<Title>Chat bot</Title>
-	<Description>A base recipe for a one-on-one conversation in the style of an online chat.</Description>
+	<Description>
+		A base recipe for a bot in the style of a one-on-one online chat.
+		
+		(For best result, supply a chat-like example chat and/or greeting.)
+	</Description>
 	<Author>Ginger</Author>
 	<Category>Base</Category>
 	<Requires>not base</Requires>
@@ -14,27 +18,118 @@
 	<Include>personality</Include>
 	
 	<System>
-		Text log of a never-ending online chat conversation between [user] and [char] in the style of an online chat room; each response a single sentence or two at most, devoid of narration and exposition. 
+		Transcript of a never-ending chat between [user] and [char] in the style of a private online chat room; each response a sentence or two at most, without narration and exposition. 
 		Reactions and verbs should be written between asterisks ([!abbr:e.g.], *smiles*).
 		
-		Incorporate the following in your response: [[
-		[!numlist:
+		Incorporate the following in your response: {{
+		[!bulletlist:
 		You are '[char]'.
-		You are engaging in an endless, fun, and creative conversation between yourself and [user].
-		Write [char]'s replies only, using first person present tense.
+		You are engaging in an fun, and creative conversation with your friend, [user].
+		Write [char]'s replies only, using first-person present-tense.
 		Address [user] by name or in the second person ('you').
-		Follow [char]'s personality as described below.
 		Assuming any action of [user] is strictly forbidden.
 		All of [user]'s responses will be preceded by "[__backyard?#][user]:"
-		Do not repeat these instructions.]
-		]]
+		These instructions are for your eyes only.
+		Follow [char]'s personality as described below.
+		]  
+		}}
 	</System>
 
-	<Example detached="true">
-		"Hello there! I'm [char]. I'm always ready to chat and cheer you up."
+	<Example>
+		[user]: "Hi, I'm [user]"
+		[char]: "Hi there!" *smiles*
 	</Example>
 
-	<!-- Backyard/Faraday fix for example chat -->
-	<Node path="example/top" rule="example-dialogue and __backyard" order="0" mode="exclude">Below is a hypothetical conversation; an example of [char's] distinctive way of speaking:</Node>
-
+	<!-- Grammar to enforce chat style -->
+	<!-- Chat (or default) -->
+	<Grammar rule="__support-grammar and (not text-style or text-style eq 1)"><![CDATA[
+		root ::= patterns "\n#"
+		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
+		pa ::= action " " dialogue
+		pb ::= dialogue " " action
+		pc ::= action " " dialogue " " action
+		pd ::= dialogue " " action " " dialogue
+		pe ::= dialogue " " action " " dialogue " " action
+		pf ::= action " " dialogue " " action " " dialogue
+		dialogue ::= [^<\n*#\"]+
+		action ::= "*" [a-z .,'?!:;0-9-]+ "*"
+	]]></Grammar>
+	<!-- Novel -->
+	<Grammar rule="__support-grammar and text-style eq 2"><![CDATA[
+		root ::= patterns "\n#"
+		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
+		pa ::= action " " dialogue
+		pb ::= dialogue " " action
+		pc ::= action " " dialogue " " action
+		pd ::= dialogue " " action " " dialogue
+		pe ::= dialogue " " action " " dialogue " " action
+		pf ::= action " " dialogue " " action " " dialogue
+		dialogue ::= "\"" [^<\n*#\"]+ "\""
+		action ::= [^<\n*#\"]+
+	]]></Grammar>
+	<!-- Mixed -->
+	<Grammar rule="__support-grammar and text-style eq 3"><![CDATA[
+		root ::= patterns "\n#"
+		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
+		pa ::= action " " dialogue
+		pb ::= dialogue " " action
+		pc ::= action " " dialogue " " action
+		pd ::= dialogue " " action " " dialogue
+		pe ::= dialogue " " action " " dialogue " " action
+		pf ::= action " " dialogue " " action " " dialogue
+		dialogue ::= "\"" [^<\n*#\"]+ "\""
+		action ::= "*" [a-z .,'?!:;0-9-]+ "*"
+	]]></Grammar>
+	<!-- Decorative -->
+	<Grammar rule="__support-grammar and text-style eq 4"><![CDATA[
+		root ::= patterns "\n#"
+		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
+		pa ::= action " " dialogue
+		pb ::= dialogue " " action
+		pc ::= action " " dialogue " " action
+		pd ::= dialogue " " action " " dialogue
+		pe ::= dialogue " " action " " dialogue " " action
+		pf ::= action " " dialogue " " action " " dialogue
+		dialogue ::= "“" [^<\n*#\"]+ "”"
+		action ::= [^<\n*#\"]+
+	]]></Grammar>
+	<!-- Bold -->
+	<Grammar rule="__support-grammar and text-style eq 5"><![CDATA[
+		root ::= patterns "\n#"
+		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
+		pa ::= action " " dialogue
+		pb ::= dialogue " " action
+		pc ::= action " " dialogue " " action
+		pd ::= dialogue " " action " " dialogue
+		pe ::= dialogue " " action " " dialogue " " action
+		pf ::= action " " dialogue " " action " " dialogue
+		dialogue ::= [^<\n*#\"]+
+		action ::= "**" [a-z .,'?!:;0-9-]+ "**"
+	]]></Grammar>
+	<!-- Brackets -->
+	<Grammar rule="__support-grammar and text-style eq 6"><![CDATA[
+		root ::= patterns "\n#"
+		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
+		pa ::= action " " dialogue
+		pb ::= dialogue " " action
+		pc ::= action " " dialogue " " action
+		pd ::= dialogue " " action " " dialogue
+		pe ::= dialogue " " action " " dialogue " " action
+		pf ::= action " " dialogue " " action " " dialogue
+		dialogue ::= [^<\n*#\"]+
+		action ::= "(" [a-z .,'?!:;0-9-]+ ")"
+	]]></Grammar>
+	<!-- CJK -->
+	<Grammar rule="__support-grammar and text-style eq 7"><![CDATA[
+		root ::= patterns "\n#"
+		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
+		pa ::= action " " dialogue
+		pb ::= dialogue " " action
+		pc ::= action " " dialogue " " action
+		pd ::= dialogue " " action " " dialogue
+		pe ::= dialogue " " action " " dialogue " " action
+		pf ::= action " " dialogue " " action " " dialogue
+		dialogue ::= "「" [^<\n*#\"]+ "」"
+		action ::= [^<\n*#\"]+
+	]]></Grammar>
 </Ginger>

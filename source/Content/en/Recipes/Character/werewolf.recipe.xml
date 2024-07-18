@@ -120,7 +120,7 @@
 	<Node path="persona/attributes/traits-werewolf/traits" rule="normal-detail and is-anthro">tall, furry, strong, sharp fangs and claws, piercing eyes</Node>
 	<Node path="persona/attributes/traits-werewolf/traits" rule="normal-detail and is-feral">wolf anatomy, strong, [fur-color?{fur-color.lower} fur,] sharp fangs and claws, piercing eyes</Node>
 	
-	<Node path="persona/appearance" order="600" style="text" mode="replace" rule="can-transform">
+	<Node path="persona/appearance" order="700" style="text" mode="replace" rule="can-transform">
 		Appearance (Human):  
 		[inner]  
 	</Node>
@@ -129,7 +129,7 @@
 	</Node>
 	
 	<!-- Appearance (Wolf) -->
-	<Node path="persona/werewolf" order="601" style="text" rule="can-transform">
+	<Node path="persona/werewolf" order="701" style="text" rule="can-transform">
 		Appearance (Wolf):  
 		[inner]
 	</Node>

@@ -111,6 +111,13 @@ namespace Ginger
 				sbOutput.AppendLine(outputScenario);
 				sbOutput.AppendLine();
 			}
+			if (string.IsNullOrEmpty(outputExample) == false)
+			{
+				sbOutput.AppendLine(Header("EXAMPLE CHAT"));
+				sbOutput.AppendLine();
+				sbOutput.AppendLine(outputExample);
+				sbOutput.AppendLine();
+			}
 			if (string.IsNullOrEmpty(outputGreeting) == false)
 			{
 				sbOutput.AppendLine(Header("GREETING"));
@@ -131,14 +138,6 @@ namespace Ginger
 					sbOutput.AppendLine(greeting);
 					sbOutput.AppendLine();
 				}
-			}
-
-			if (string.IsNullOrEmpty(outputExample) == false)
-			{
-				sbOutput.AppendLine(Header("EXAMPLE CHAT"));
-				sbOutput.AppendLine();
-				sbOutput.AppendLine(outputExample);
-				sbOutput.AppendLine();
 			}
 			if (string.IsNullOrEmpty(outputGrammar) == false)
 			{

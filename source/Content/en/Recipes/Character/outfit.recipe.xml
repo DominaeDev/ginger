@@ -24,22 +24,65 @@
 		<Placeholder>White briefs</Placeholder>
 	</Text>
 	<Toggle id="glasses"/>
+	
 	<Text id="more" style="flex">
 		<Label>Additional details</Label>
 	</Text>
 	
+	<Choice id="placement" style="radio" required="yes">
+		<Label>Location</Label>
+		<Option>Persona</Option>
+		<Option>Lore</Option>
+	</Choice>
+	
+	<Rule id="has-outfit">top or bottom or accessories or glasses</Rule>
+	<Rule id="has-underwear">underwear</Rule>
+	
 	<!-- Output -->
-	<Attribute style="list" order="450" rule="less-detail and (top or bottom or accessories or glasses)">
+	<Attribute style="list" order="450" rule="less-detail and has-outfit">
 		<Name>Outfit</Name>
 		<Value>{top.lower}; {bottom.lower}; {accessories.lower}; {glasses?glasses};</Value>
 	</Attribute>
 	
-	<Node path="appearance/outfit" order="600" rule="normal-detail and (top or bottom or accessories or glasses)">On most days, [char] wears [!list:{top.lower}; {bottom.lower}; {accessories.lower}; {glasses?glasses}].</Node>
-	<Node path="appearance/outfit" rule="more" order="600">{more}.</Node>
+	<Node path="persona/appearance/outfit" order="600" rule="normal-detail and has-outfit and placement is persona">Today, [char] is wearing [!list:{top.lower}; {bottom.lower}; {accessories.lower}; {glasses?glasses}].</Node>
+	<Node path="persona/appearance/outfit" order="600" rule="more and placement is persona">{more}.</Node>
 	
-	<Lore rule="underwear">
-		<Name>underwear, undress, strip, panties</Name>
-		<Value>{char}'s underwear: {underwear}</Value>
-	</Lore>
+	<String id="outfit">
+		[if has-outfit]
+			Outfit: {{
+			[char] is wearing [!list:{top.lower}; {bottom.lower}; {accessories.lower}; {glasses?glasses}].
+			[more?{more}, as well.]
+			}}  
+		[if has-underwear]
+			Underwear: {{ {underwear}. }}
+		[endif]
+	</String>
+	
+	<String id="lore-key">
+		[!commalist:
+		[__support-lore-wildcards?clothe*|clothes];
+		outfit, looks, appearance, wear, wearing, wears, put on, dress, dressed, 
+		[__support-lore-wildcards?look * [char]; look *[char]; looked * [char]; looked *[char]|look at [char]; looked at [char]]; 
+		[if has-underwear]
+			underwear; unmentionables; panties;
+			[__support-lore-wildcards?undergar*|undergarments];
+		[endif]
+		
+		[if allow-nsfw or nsfw]
+			[__support-lore-wildcards?undress*|undress; undressed];
+			[__support-lore-wildcards?strip*|strip;stripped]; 
+			[__support-lore-wildcards?remove*;|remove;removed];
+			take off;
+			took off;
+			[endif]
+		]
+	</String>
+	
+	<Lore rule="placement is lore and has-outfit">
+		<Name>[@lore-key]</Name>
+		<Value>[@outfit]</Value>
+	</Lore>	
+	
+	        <Name>underwear, unmentionables, undress*, strip*, panties</Name>
 	
 </Ginger>

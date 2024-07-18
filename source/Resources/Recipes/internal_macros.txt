@@ -46,6 +46,10 @@
 	<Rule id="normal-detail">detail ge 0</Rule>
 	<Rule id="#male">#gender is male</Rule>
 	<Rule id="#female">#gender is female</Rule>
+	
+	<!-- Support flags -->
+	<Rule id="__support-grammar">__backyard</Rule>
+	<Rule id="__support-lore-wildcards">__backyard</Rule>
 
 	<!-- Internal macros-->
 	<Macro id="char, character, bot">&lt;##CHAR##&gt;</Macro>

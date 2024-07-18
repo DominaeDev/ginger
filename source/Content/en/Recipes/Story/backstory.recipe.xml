@@ -16,11 +16,18 @@
 		<Description>Describe past events that has lead up to this point.</Description>
 	</Text>
 	
+	<Rule id="in-example">__backyard</Rule>
+	
 	<!-- Output -->
-	<Node path="scenario/premise" style="text" mode="exclude">
+	<Node path="scenario/premise" style="text" mode="exclude" rule="not not in-example">
 		[p]Premise:  
 		{inner} 
 	</Node>
-	<Node path="scenario/premise/summary" rule="text">{text}.</Node>
-		
+	<Node path="scenario/premise/summary" rule="text and not in-example">{text}.</Node>
+
+	<Node path="example/premise" order="-0" style="text" rule="in-example">
+		[_backyard?#][user]: [inner]
+	</Node>
+	<Node path="example/premise/summary" rule="text and in-example">{text}.</Node>
+
 </Ginger>

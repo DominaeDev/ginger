@@ -31,7 +31,7 @@
 	<String id="companion">
 		<String rule="partner">romantic partner</String>
 		<String rule="friend">friend</String>
-		<String rule="erotic">sexual companion</String>
+		<String rule="erotic">sexual partner</String>
 	</String>
 	
 	<System>
