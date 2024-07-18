@@ -1,10 +1,9 @@
 ﻿<Ginger id="backstory" version="1.1">
 	<!-- Preamble -->
 	<Name>Plot/Premise</Name>
-	<Title>Premise</Title>
+	<Title>Premise / Starting point</Title>
 	<Description>
-		Describe the story up until this point.
-		(For best results, write in the past tense.)
+		Describes a premise, or starting-off point for the story.
 	</Description>
 	<Author>Ginger</Author>
 	<Category>Story</Category>
@@ -12,22 +11,32 @@
 	
 	<!-- Parameters -->
 	<Text id="text" style="flex">
-		<Label>Premise / Story so far...</Label>
-		<Description>Describe past events that has lead up to this point.</Description>
+		<Label>Premise</Label>
+		<Description>Describe a starting off point for the story.</Description>
 	</Text>
 	
-	<Rule id="in-example">__backyard</Rule>
-	
+	<Toggle id="as-example">
+		<Default>yes</Default>
+		<Label>As example chat</Label>
+		<Description>
+			Places the premise in the example chat field.
+			This allows it to leave the context after the story has begun.
+		</Description>
+	</Toggle>
+		
 	<!-- Output -->
-	<Node path="scenario/premise" style="text" mode="exclude" rule="not not in-example">
+	
+	<!-- As scenario -->
+	<Node path="scenario/premise" style="text" mode="exclude" rule="not as-example">
 		[p]Premise:  
 		{inner} 
 	</Node>
-	<Node path="scenario/premise/summary" rule="text and not in-example">{text}.</Node>
+	<Node path="scenario/premise/summary" rule="text and not as-example">{text}.</Node>
 
-	<Node path="example/premise" order="-0" style="text" rule="in-example">
+	<!-- As example chat -->
+	<Node path="example/premise" order="-0" style="text" rule="as-example">
 		[_backyard?#][user]: [inner]
 	</Node>
-	<Node path="example/premise/summary" rule="text and in-example">{text}.</Node>
+	<Node path="example/premise/summary" rule="text and as-example">{text}.</Node>
 
 </Ginger>
