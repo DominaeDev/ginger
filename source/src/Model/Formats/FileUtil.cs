@@ -22,7 +22,11 @@ namespace Ginger
 			FallbackError,
 		}
 
-		public static Error ReadJsonFromPng(string filename, out string faradayJson, out string tavernJson, out string gingerXml)
+		public static Error ReadJsonFromPng(string filename, 
+			out string faradayJson,
+			out string tavernJsonV2,
+			out string tavernJsonV3,
+			out string gingerXml)
 		{
 			bool hasData = false;
 			try
@@ -93,31 +97,44 @@ namespace Ginger
 				
 				try
 				{
-					// Read Tavern json (PNG chunk)
+					// Read Tavern v2 json (PNG chunk)
 					if (metaData.ContainsKey("chara"))
 					{
 						hasData = true;
 						string charaBase64 = metaData["chara"];
 						byte[] byteArray = Convert.FromBase64String(charaBase64);
-						tavernJson = new string(Encoding.UTF8.GetChars(byteArray));
+						tavernJsonV2 = new string(Encoding.UTF8.GetChars(byteArray));
 					}
 					else
-						tavernJson = null;
+						tavernJsonV2 = null;
+
+					// Read Tavern v3 json (PNG chunk)
+					if (metaData.ContainsKey("ccv3"))
+					{
+						hasData = true;
+						string charaBase64 = metaData["ccv3"];
+						byte[] byteArray = Convert.FromBase64String(charaBase64);
+						tavernJsonV3 = new string(Encoding.UTF8.GetChars(byteArray));
+					}
+					else
+						tavernJsonV3 = null;
 				}
 				catch
 				{
-					tavernJson = null;
+					tavernJsonV2 = null;
+					tavernJsonV3 = null;
 				}
 			}
 			catch
 			{
-				tavernJson = null;
+				tavernJsonV2 = null;
+				tavernJsonV3 = null;
 				gingerXml = null;
 			}
 
 			if (!hasData)
 				return Error.NoDataFound;
-			if (string.IsNullOrEmpty(gingerXml) && string.IsNullOrEmpty(tavernJson) && string.IsNullOrEmpty(faradayJson))
+			if (string.IsNullOrEmpty(gingerXml) && string.IsNullOrEmpty(tavernJsonV2) && string.IsNullOrEmpty(tavernJsonV3) && string.IsNullOrEmpty(faradayJson))
 				return Error.InvalidData;
 			return Error.NoError;
 		}
@@ -125,7 +142,8 @@ namespace Ginger
 		public struct ImportResult
 		{
 			public GingerCardV1 gingerData;
-			public TavernCardV2 tavernData;
+			public TavernCardV2 tavernDataV2;
+			public TavernCardV3 tavernDataV3;
 			public FaradayCardV4 faradayData;   // Version 4
 			public int jsonErrors;
 		}
@@ -133,7 +151,8 @@ namespace Ginger
 		public static Error Import(string filename, out ImportResult result)
 		{
 			string faradayJson;
-			string tavernJson;
+			string tavernV2Json;
+			string tavernV3Json;
 			string gingerXml;
 
 			if (File.Exists(filename) == false)
@@ -142,7 +161,7 @@ namespace Ginger
 				return Error.FileNotFound;
 			}
 
-			var readError = ReadJsonFromPng(filename, out faradayJson, out tavernJson, out gingerXml);
+			var readError = ReadJsonFromPng(filename, out faradayJson, out tavernV2Json, out tavernV3Json, out gingerXml);
 			if (readError != Error.NoError)
 			{
 				result = new ImportResult();
@@ -152,12 +171,14 @@ namespace Ginger
 			result = new ImportResult();
 			if (faradayJson != null)
 				result.faradayData = FaradayCardV4.FromJson(faradayJson);
-			if (tavernJson != null)
-				result.tavernData = TavernCardV2.FromJson(tavernJson, out result.jsonErrors);
+			if (tavernV2Json != null)
+				result.tavernDataV2 = TavernCardV2.FromJson(tavernV2Json, out result.jsonErrors);
+			if (tavernV3Json != null)
+				result.tavernDataV3 = TavernCardV3.FromJson(tavernV3Json, out result.jsonErrors);
 			if (gingerXml != null)
 				result.gingerData = GingerCardV1.FromXml(gingerXml);
 			
-			if (result.faradayData == null && result.tavernData == null && result.gingerData == null)
+			if (result.faradayData == null && result.tavernDataV2 == null && result.tavernDataV3 == null && result.gingerData == null)
 			{
 				// No valid data
 				result = new ImportResult();
@@ -184,9 +205,11 @@ namespace Ginger
 		{
 			Undefined = 0,
 			Ginger = 1 << 0,
-			SillyTavern = 1 << 1,
-			Faraday = 1 << 2,
-
+			Faraday = 1 << 1,
+			SillyTavernV2 = 1 << 2,
+			SillyTavernV3 = 1 << 3,
+			
+			SillyTavern = SillyTavernV2 | SillyTavernV3,
 			All = Ginger | SillyTavern | Faraday,
 		}
 
@@ -218,8 +241,8 @@ namespace Ginger
 
 				List<MetaData> metaData = new List<MetaData>();
 
-				// Tavern json
-				if (formats.Contains(Format.SillyTavern))
+				// Tavern json (v2)
+				if (formats.Contains(Format.SillyTavernV2))
 				{
 					var tavernData = TavernCardV2_Export.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavern));
 					tavernData.data.extensions.ginger = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
@@ -227,6 +250,20 @@ namespace Ginger
 					var tavernBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(tavernJson));
 					metaData.Add(new MetaData() {
 						key = "chara",
+						value = tavernBase64,
+						compressed = false,
+					});
+				}
+
+				// Tavern json (v3)
+				if (formats.Contains(Format.SillyTavernV3))
+				{
+					var tavernData = TavernCardV3.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavern));
+					tavernData.data.extensions.ginger = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
+					var tavernJson = tavernData.ToJson();
+					var tavernBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(tavernJson));
+					metaData.Add(new MetaData() {
+						key = "ccv3",
 						value = tavernBase64,
 						compressed = false,
 					});
@@ -920,18 +957,22 @@ namespace Ginger
 				return Error.UnrecognizedFormat;
 			}
 
-			if (importResult.gingerData != null && formats.Contains(FileUtil.Format.Ginger))
+			if (importResult.gingerData != null && formats.Contains(Format.Ginger))
 			{
 				Current.ReadGingerCard(importResult.gingerData, image);
 			}
-			else if (importResult.faradayData != null && formats.Contains(FileUtil.Format.Faraday))
+			else if (importResult.faradayData != null && formats.Contains(Format.Faraday))
 			{
 				Current.ReadFaradayCard(importResult.faradayData, image);
 			}
-			else if (importResult.tavernData != null && formats.Contains(FileUtil.Format.SillyTavern))
+			else if (importResult.tavernDataV3 != null && formats.Contains(Format.SillyTavernV3))
 			{
-				Current.ReadTavernCard(importResult.tavernData, image);
+				Current.ReadTavernCard(importResult.tavernDataV3, image);
 			}
+			else if (importResult.tavernDataV2 != null && formats.Contains(Format.SillyTavernV2))
+			{
+				Current.ReadTavernCard(importResult.tavernDataV2, image);
+			}	
 			else
 			{
 				return Error.UnrecognizedFormat;

@@ -336,6 +336,13 @@ namespace Ginger
 			return lorebook;
 		}
 
+		public static Lorebook FromTavernBook(TavernCardV3.CharacterBook book)
+		{
+			var lorebook = new Lorebook();
+			lorebook.ReadTavernBook(book);
+			return lorebook;
+		}
+
 		private void ReadTavernBook(TavernCardV2.CharacterBook book)
 		{
 			this.name = book.name;

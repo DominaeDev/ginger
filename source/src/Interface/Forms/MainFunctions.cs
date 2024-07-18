@@ -292,7 +292,7 @@ namespace Ginger
 		{
 			// Open file...
 			importFileDialog.Title = Resources.cap_import_character;
-			importFileDialog.Filter = "Character Json|*.json|SillyTavern card|*.png|Backyard AI card|*.png";
+			importFileDialog.Filter = "JSON file|*.json|Character card|*.png";
 			importFileDialog.FilterIndex = AppSettings.User.LastImportCharacterFilter;
 			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			var result = importFileDialog.ShowDialog();
@@ -312,11 +312,8 @@ namespace Ginger
 			case 1: // Json
 				error = FileUtil.ImportCharacterJson(importFileDialog.FileName, out jsonErrors);
 				break;
-			case 2: // Tavern png
-				error = FileUtil.ImportCharacterFromPNG(importFileDialog.FileName, out jsonErrors, FileUtil.Format.SillyTavern);
-				break;
-			case 3: // Faraday png
-				error = FileUtil.ImportCharacterFromPNG(importFileDialog.FileName, out jsonErrors, FileUtil.Format.Faraday);
+			case 2: // PNG file
+				error = FileUtil.ImportCharacterFromPNG(importFileDialog.FileName, out jsonErrors, FileUtil.Format.SillyTavern | FileUtil.Format.Faraday);
 				break;
 			default:
 				return false;
@@ -377,11 +374,17 @@ namespace Ginger
 
 				if (error == FileUtil.Error.NoError)
 				{
-					if (importResult.tavernData != null // SillyTavern
-						&& importResult.tavernData.data.character_book != null)
+					if (importResult.tavernDataV3 != null // SillyTavern v3
+						&& importResult.tavernDataV3.data.character_book != null)
 					{
-						lorebook = Lorebook.FromTavernBook(importResult.tavernData.data.character_book);
-						lorebook.name = string.Concat(importResult.tavernData.data.name, " lorebook");
+						lorebook = Lorebook.FromTavernBook(importResult.tavernDataV3.data.character_book);
+						lorebook.name = string.Concat(importResult.tavernDataV3.data.name, " lorebook");
+					}
+					else if (importResult.tavernDataV2 != null // SillyTavern v2
+						&& importResult.tavernDataV2.data.character_book != null)
+					{
+						lorebook = Lorebook.FromTavernBook(importResult.tavernDataV2.data.character_book);
+						lorebook.name = string.Concat(importResult.tavernDataV2.data.name, " lorebook");
 					}
 					else if (importResult.faradayData != null // Faraday
 						&& importResult.faradayData.data.loreItems != null)
@@ -524,7 +527,7 @@ namespace Ginger
 
 			// Save as...
 			exportFileDialog.Title = Resources.cap_export_character;
-			exportFileDialog.Filter = "SillyTavern JSON (v2)|*.json|SillyTavern JSON (v3)|*.json|Agnaistic character json|*.json|PygmalionAI character json|*.json|SillyTavern card|*.png|Backyard AI card|*.png";
+			exportFileDialog.Filter = "Character V2 JSON|*.json|Character V3 JSON|*.json|Agnai character json|*.json|PygmalionAI character json|*.json|SillyTavern card|*.png|Backyard AI card|*.png";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			exportFileDialog.FilterIndex = AppSettings.User.LastExportCharacterFilter;
@@ -586,7 +589,7 @@ namespace Ginger
 					return;
 				}
 
-				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.SillyTavern))
+				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.SillyTavernV2 | FileUtil.Format.SillyTavernV3))
 					return; // Success
 			}
 			else if (exportFileDialog.FilterIndex == 6) // Faraday PNG
@@ -628,7 +631,7 @@ namespace Ginger
 			}
 
 			exportFileDialog.Title = Resources.cap_export_lorebook;
-			exportFileDialog.Filter = "SillyTavern JSON (v2)|*.json|SillyTavern JSON (v3)|*.json|Agnaistic lorebook|*.json|Comma separated values|*.csv";
+			exportFileDialog.Filter = "SillyTavern world book|*.json|Lorebook JSON (v3)|*.json|Agnai lorebook|*.json|Comma separated values|*.csv";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			if (saveLocal)
 				exportFileDialog.InitialDirectory = Utility.ContentPath("Lorebooks");
