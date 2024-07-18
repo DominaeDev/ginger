@@ -293,7 +293,7 @@ namespace Ginger
 			}
 		}
 
-		public static bool ExportTavernLorebook(Lorebook lorebook, string filename)
+		public static bool ExportTavernV2Lorebook(Lorebook lorebook, string filename)
 		{
 			var tavernBook = new TavernWorldBook();
 			if (string.IsNullOrWhiteSpace(lorebook.name) == false)
@@ -360,6 +360,85 @@ namespace Ginger
 			try
 			{
 				string json = Newtonsoft.Json.JsonConvert.SerializeObject(tavernBook);
+				if (json != null && FileUtil.ExportTextFile(filename, json))
+					return true; // Success
+			}
+			catch
+			{
+			}
+			return false;
+		}
+
+		public static bool ExportTavernV3Lorebook(Lorebook lorebook, string filename)
+		{
+			var lorebookV3 = new TavernLorebookV3() {
+				spec = "lorebook_v3",
+				data = new TavernCardV3.CharacterBook(),
+			};
+			var data = lorebookV3.data;
+
+			if (string.IsNullOrWhiteSpace(lorebook.name) == false)
+				data.name = lorebook.name.Trim();
+			else if (string.IsNullOrWhiteSpace(Current.Card.name) == false)
+				data.name = Current.Card.name;
+			else if (string.IsNullOrWhiteSpace(Current.Character.spokenName) == false)
+				data.name = Current.Character.spokenName;
+			else
+				data.name = Path.GetFileNameWithoutExtension(filename);
+			data.description = lorebook.description;
+
+			if (lorebook.unused != null)
+			{
+				data.recursive_scanning = lorebook.unused.recursive_scanning;
+				data.scan_depth = lorebook.unused.scan_depth;
+				data.token_budget = lorebook.unused.token_budget;
+				if (lorebook.unused.extensions != null)
+					data.extensions = lorebook.unused.extensions.WithGingerVersion();
+				else
+					data.extensions = new SmallGingerJsonExtensionData();
+			}
+			else
+				data.extensions = new SmallGingerJsonExtensionData();
+
+			int index = 0;
+			var entries = new List<TavernCardV3.CharacterBook.Entry>();
+			foreach (var loreEntry in lorebook.entries)
+			{
+				if (loreEntry.keys == null || loreEntry.keys.Length == 0)
+					continue;
+
+				int entryId = index + 1;
+				var copy = new TavernCardV3.CharacterBook.Entry() {
+					id = entryId,
+					keys = loreEntry.keys,
+					name = loreEntry.key,
+					content = GingerString.FromString(loreEntry.value).ToTavern(),
+					use_regex = false,
+				};
+
+				if (loreEntry.unused != null)
+				{
+					copy.name = loreEntry.unused.name;
+					copy.comment = loreEntry.unused.comment;
+					copy.constant = loreEntry.unused.constant;
+					copy.enabled = loreEntry.unused.enabled;
+					copy.insertion_order = loreEntry.unused.insertion_order;
+					copy.position = loreEntry.unused.placement;
+					copy.secondary_keys = loreEntry.unused.secondary_keys;
+					copy.priority = loreEntry.unused.priority;
+					copy.selective = loreEntry.unused.selective;
+					copy.case_sensitive = loreEntry.unused.case_sensitive;
+					copy.extensions = loreEntry.unused.extensions ?? new JsonExtensionData();
+				}
+
+				entries.Add(copy);
+				index++;
+			}
+			data.entries = entries.ToArray();
+
+			try
+			{
+				string json = Newtonsoft.Json.JsonConvert.SerializeObject(lorebookV3);
 				if (json != null && FileUtil.ExportTextFile(filename, json))
 					return true; // Success
 			}

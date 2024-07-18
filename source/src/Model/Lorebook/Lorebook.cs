@@ -105,6 +105,7 @@ namespace Ginger
 				public bool case_sensitive = false;
 				public bool selective = false;
 				public bool constant = false;
+				public bool use_regex = false;
 				public string placement = "before_char"; // position: 'before_char' | 'after_char'
 
 				// Tavern world book
@@ -138,6 +139,7 @@ namespace Ginger
 					selective = xmlNode.GetAttributeBool("selective", selective);
 					selectiveLogic = xmlNode.GetAttributeInt("selective-logic", selectiveLogic);
 					useProbability = xmlNode.GetAttributeBool("use-probability", useProbability);
+					use_regex = xmlNode.GetAttributeBool("use-regex", use_regex);
 					string secondaryKeys = xmlNode.GetAttribute("secondary-keys", null);
 					if (secondaryKeys != null)
 						secondary_keys = Utility.ListFromCommaSeparatedString(secondaryKeys).ToArray();
@@ -182,6 +184,8 @@ namespace Ginger
 						xmlNode.AddAttribute("selective-logic", selectiveLogic);
 					if (!useProbability)
 						xmlNode.AddAttribute("use-probability", false);
+					if (use_regex)
+						xmlNode.AddAttribute("use-regex", true);
 				}
 			}
 
@@ -235,6 +239,16 @@ namespace Ginger
 			if (characterBook != null)
 			{
 				ReadTavernBook(characterBook);
+				if (string.IsNullOrEmpty(name))
+					name = Path.GetFileNameWithoutExtension(filename);
+				return entries.Count > 0;
+			}
+
+			// Try to read Tavern format (v3)
+			TavernLorebookV3 lorebookV3 = TavernLorebookV3.FromJson(json);
+			if (lorebookV3 != null)
+			{
+				ReadTavernBook(lorebookV3.data);
 				if (string.IsNullOrEmpty(name))
 					name = Path.GetFileNameWithoutExtension(filename);
 				return entries.Count > 0;
@@ -364,6 +378,54 @@ namespace Ginger
 						placement = entry.position,
 						secondary_keys = entry.secondary_keys,
 						selective = entry.selective,
+						extensions = entry.extensions,
+					}
+				});
+			}
+		}
+
+		private void ReadTavernBook(TavernCardV3.CharacterBook book)
+		{
+			this.name = book.name;
+			this.description = book.description;
+			this.entries = new List<Entry>(book.entries.Length);
+			this.unused = new UnusedProperties() {
+				recursive_scanning = book.recursive_scanning,
+				scan_depth = book.scan_depth,
+				token_budget = book.token_budget,
+				extensions = book.extensions,
+			};
+
+			foreach (var entry in book.entries)
+			{
+				if (string.IsNullOrEmpty(entry.content))
+					continue;
+
+				var keys = entry.keys.Where(s => string.IsNullOrWhiteSpace(s) == false).ToArray();
+				if (keys == null || keys.Length == 0)
+				{
+					// No keys? Use name if present. (This would be a mistake by the card's creator, so we're being nice here.)
+					if (string.IsNullOrWhiteSpace(entry.name) == false)
+						keys = new string[] { entry.name };
+					else
+						continue;
+				}
+
+				this.entries.Add(new Entry() {
+					keys = keys,
+					value = GingerString.FromTavern(entry.content).ToString(),
+					unused = new Entry.UnusedProperties() {
+						name = entry.name,
+						comment = entry.comment,
+						constant = entry.constant,
+						enabled = entry.enabled,
+						priority = entry.priority,
+						case_sensitive = entry.case_sensitive,
+						insertion_order = entry.insertion_order,
+						placement = entry.position,
+						secondary_keys = entry.secondary_keys,
+						selective = entry.selective,
+						use_regex = entry.use_regex,
 						extensions = entry.extensions,
 					}
 				});

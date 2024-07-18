@@ -1,13 +1,15 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Ginger
 {
-	public class JsonExtensionData
+	public class JsonExtensionData : ICloneable
 	{
 		[JsonExtensionData]
-		private IDictionary<string, JToken> _additionalData;
+		private Dictionary<string, JToken> _additionalData;
 
 		public virtual GingerJsonExtensionData WithGinger() // Character
 		{
@@ -20,6 +22,14 @@ namespace Ginger
 		{
 			return new SmallGingerJsonExtensionData() {
 				_additionalData = _additionalData != null ? new Dictionary<string, JToken>(this._additionalData) : null,
+			};
+		}
+
+		public object Clone()
+		{
+			return new JsonExtensionData() {
+				_additionalData = _additionalData
+					.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.DeepClone())
 			};
 		}
 	}

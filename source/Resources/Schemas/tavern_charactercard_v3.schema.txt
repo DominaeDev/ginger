@@ -1,0 +1,568 @@
+{
+	"type": "object",
+	"properties": {
+		"data": {
+			"required": true,
+			"type": "object",
+			"properties": {
+				"name": {
+					"required": true,
+					"type": "string"
+				},
+				"description": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"personality": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"scenario": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"first_mes": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"mes_example": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"system_prompt": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"creator_notes": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"post_history_instructions": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"alternate_greetings": {
+					"required": false,
+					"type": [
+						"array",
+						"null"
+					],
+					"items": {
+						"type": [
+							"string",
+							"null"
+						]
+					}
+				},
+				"character_book": {
+					"required": false,
+					"type": [
+						"object",
+						"null"
+					],
+					"properties": {
+						"name": {
+							"required": false,
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"description": {
+							"required": false,
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"scan_depth": {
+							"required": false,
+							"type": "integer"
+						},
+						"token_budget": {
+							"required": false,
+							"type": "integer"
+						},
+						"recursive_scanning": {
+							"required": false,
+							"type": "boolean"
+						},
+						"entries": {
+							"required": true,
+							"type": "array",
+							"items": {
+								"type": [
+									"object",
+									"null"
+								],
+								"properties": {
+									"id": {
+										"required": false,
+										"type": "integer"
+									},
+									"keys": {
+										"required": true,
+										"type": [
+											"array",
+											"null"
+										],
+										"items": {
+											"type": [
+												"string",
+												"null"
+											]
+										}
+									},
+									"secondary_keys": {
+										"required": false,
+										"type": [
+											"array",
+											"null"
+										],
+										"items": {
+											"type": [
+												"string",
+												"null"
+											]
+										}
+									},
+									"comment": {
+										"required": false,
+										"type": [
+											"string",
+											"null"
+										]
+									},
+									"content": {
+										"required": true,
+										"type": "string"
+									},
+									"constant": {
+										"required": false,
+										"type": "boolean"
+									},
+									"selective": {
+										"required": false,
+										"type": "boolean"
+									},
+									"insertion_order": {
+										"required": false,
+										"type": "integer"
+									},
+									"enabled": {
+										"required": false,
+										"type": "boolean"
+									},
+									"position": {
+										"required": false,
+										"type": [
+											"string",
+											"null"
+										]
+									},
+									"case_sensitive": {
+										"required": false,
+										"type": "boolean"
+									},
+									"name": {
+										"required": false,
+										"type": [
+											"string",
+											"null"
+										]
+									},
+									"priority": {
+										"required": false,
+										"type": "integer"
+									},
+									"extensions": {
+										"required": false,
+										"type": [
+											"object",
+											"null"
+										],
+										"properties": {}
+									},
+									"use_regex": {
+										"required": false,
+										"type": "boolean"
+									}
+								}
+							}
+						},
+						"extensions": {
+							"required": false,
+							"type": [
+								"object",
+								"null"
+							],
+							"properties": {}
+						}
+					}
+				},
+				"tags": {
+					"required": false,
+					"type": [
+						"array",
+						"null"
+					],
+					"items": {
+						"type": [
+							"string",
+							"null"
+						]
+					}
+				},
+				"creator": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"character_version": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"extensions": {
+					"required": false,
+					"type": [
+						"object",
+						"null"
+					],
+					"properties": {
+						"ginger": {
+							"required": false,
+							"type": [
+								"object",
+								"null"
+							],
+							"properties": {
+								"version": {
+									"required": false,
+									"type": "integer"
+								},
+								"data": {
+									"required": false,
+									"type": [
+										"object",
+										"null"
+									],
+									"properties": {
+										"card_name": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"character_name": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"character_gender": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"character_pronouns": {
+											"required": false,
+											"type": [
+												"array",
+												"null"
+											],
+											"items": {
+												"type": [
+													"string",
+													"null"
+												]
+											}
+										},
+										"character_version": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"tags": {
+											"required": false,
+											"type": [
+												"array",
+												"null"
+											],
+											"items": {
+												"type": [
+													"string",
+													"null"
+												]
+											}
+										},
+										"user_gender": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"user_pronouns": {
+											"required": false,
+											"type": [
+												"array",
+												"null"
+											],
+											"items": {
+												"type": [
+													"string",
+													"null"
+												]
+											}
+										},
+										"author": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"comment": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"creation_date": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"update_date": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"text_style": {
+											"required": false,
+											"type": "integer"
+										},
+										"detail_level": {
+											"required": false,
+											"type": "integer"
+										}
+									}
+								},
+								"output": {
+									"required": false,
+									"type": [
+										"object",
+										"null"
+									],
+									"properties": {
+										"system_prompt": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"persona": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"user_persona": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"scenario": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"greetings": {
+											"required": false,
+											"type": [
+												"array",
+												"null"
+											],
+											"items": {
+												"type": [
+													"string",
+													"null"
+												]
+											}
+										},
+										"example": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"grammar": {
+											"required": false,
+											"type": [
+												"string",
+												"null"
+											]
+										},
+										"tokens": {
+											"required": false,
+											"type": [
+												"array",
+												"null"
+											],
+											"items": {
+												"type": "integer"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"nickname": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"creators_notes_multilingual": {
+					"required": false,
+					"type": [
+						"object",
+						"null"
+					],
+					"additionalProperties": {
+						"type": [
+							"string",
+							"null"
+						]
+					}
+				},
+				"source": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"group_only_greetings": {
+					"required": false,
+					"type": [
+						"array",
+						"null"
+					],
+					"items": {
+						"type": [
+							"string",
+							"null"
+						]
+					}
+				},
+				"creation_date": {
+					"required": false,
+					"type": [
+						"integer",
+						"null"
+					]
+				},
+				"modification_date": {
+					"required": false,
+					"type": [
+						"integer",
+						"null"
+					]
+				},
+				"assets": {
+					"required": false,
+					"type": [
+						"array",
+						"null"
+					],
+					"items": {
+						"type": [
+							"object",
+							"null"
+						],
+						"properties": {
+							"name": {
+								"required": false,
+								"type": "string"
+							},
+							"type": {
+								"required": false,
+								"type": "string"
+							},
+							"uri": {
+								"required": false,
+								"type": "string"
+							},
+							"ext": {
+								"required": false,
+								"type": [
+									"string",
+									"null"
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		"spec": {
+			"required": true,
+			"type": "string"
+		},
+		"spec_version": {
+			"required": true,
+			"type": "string"
+		}
+	}
+}

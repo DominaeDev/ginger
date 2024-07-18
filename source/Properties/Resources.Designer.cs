@@ -958,15 +958,14 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__internal&quot;&gt;
         ///	&lt;!-- Root nodes --&gt;
-        ///	&lt;Node path=&quot;system&quot; style=&quot;paragraph&quot; mode=&quot;exclude&quot;/&gt;
-        ///	&lt;Node path=&quot;persona&quot; style=&quot;paragraph&quot; mode=&quot;exclude&quot;/&gt;
-        ///	&lt;Node path=&quot;scenario&quot; style=&quot;paragraph&quot; mode=&quot;exclude&quot;/&gt;
-        ///	&lt;Node path=&quot;user&quot; style=&quot;paragraph&quot; mode=&quot;exclude&quot;/&gt;
-        ///	&lt;Node path=&quot;example&quot; style=&quot;paragraph&quot; mode=&quot;exclude&quot;/&gt;
+        ///	&lt;Node path=&quot;system&quot; style=&quot;paragraph&quot; mode=&quot;exclude&quot; format=&quot;default&quot;/&gt;
+        ///	&lt;Node path=&quot;persona&quot; style=&quot;paragraph&quot; mode=&quot;exclude&quot; format=&quot;default&quot;/&gt;
+        ///	&lt;Node path=&quot;scenario&quot; style=&quot;paragraph&quot; mode=&quot;exclude&quot; format=&quot;default&quot;/&gt;
+        ///	&lt;Node path=&quot;user&quot; style=&quot;paragraph&quot; mode=&quot;exclude&quot; format=&quot;default&quot;/&gt;
+        ///	&lt;Node path=&quot;example&quot; style=&quot;paragraph&quot; mode=&quot;exclude&quot; format=&quot;default&quot;/&gt;
         ///	
         ///	&lt;!-- Standard output --&gt;
-        ///	&lt;Node path=&quot;system/output&quot; style=&quot;paragraph&quot; order=&quot;500&quot; mode=&quot;exclude&quot;/&gt;
-        ///	&lt;Node path=&quot;persona/output&quot; style=&quot;line&quot; order=&quot;500&quot; mode=&quot;exclude&quot;/&gt;        /// [rest of string was truncated]&quot;;.
+        ///	&lt;Node path=&quot;system/output&quot; style=&quot;paragraph&quot; order=&quot;500&quot; mode [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string internal_global_recipe {
             get {
@@ -982,11 +981,12 @@ namespace Ginger.Properties {
         ///	&lt;Wrapper id=&quot;abbr&quot;&gt;[noparse]_[parse][nocap]&lt;/Wrapper&gt;
         ///	&lt;Wrapper id=&quot;raw&quot;&gt;[noparse]_[parse]&lt;/Wrapper&gt;
         ///	&lt;Wrapper id=&quot;property-label&quot;&gt;_:[sp]&lt;/Wrapper&gt;
+        ///	&lt;Macro id=&quot;the&quot;&gt;[..the?|the]&lt;/Macro&gt;
         ///
         ///	&lt;!-- Chat style --&gt;
         ///	&lt;Rule id=&quot;is-faraday&quot;&gt;__faraday or __backyard&lt;/Rule&gt;
         ///	&lt;Wrapper id=&quot;dialogue, dialog&quot;&gt;[@dialogue-symbol-open]_[@dialogue-symbol-close]&lt;/Wrapper&gt;
-        ///	&lt;Wrapper id=&quot;action, narrate, narration&quot;&gt;[@act [rest of string was truncated]&quot;;.
+        ///	&lt;Wrappe [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string internal_macros {
             get {
@@ -1664,6 +1664,45 @@ namespace Ginger.Properties {
         ///   Looks up a localized string similar to {
         ///	&quot;type&quot;: &quot;object&quot;,
         ///	&quot;properties&quot;: {
+        ///		&quot;spec&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;string&quot;
+        ///		},
+        ///		&quot;data&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;object&quot;,
+        ///			&quot;properties&quot;: {
+        ///				&quot;name&quot;: {
+        ///					&quot;required&quot;: false,
+        ///					&quot;type&quot;: [
+        ///						&quot;string&quot;,
+        ///						&quot;null&quot;
+        ///					]
+        ///				},
+        ///				&quot;description&quot;: {
+        ///					&quot;required&quot;: false,
+        ///					&quot;type&quot;: [
+        ///						&quot;string&quot;,
+        ///						&quot;null&quot;
+        ///					]
+        ///				},
+        ///				&quot;scan_depth&quot;: {
+        ///					&quot;required&quot;: false,
+        ///					&quot;type&quot;: &quot;integer&quot;
+        ///				},
+        ///				&quot;token_budget&quot;: {
+        ///					&quot;required&quot;: f [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string tavern_characterbook_v3_schema {
+            get {
+                return ResourceManager.GetString("tavern_characterbook_v3_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
         ///		&quot;name&quot;: {
         ///			&quot;required&quot;: true,
         ///			&quot;type&quot;: &quot;string&quot;
@@ -1735,6 +1774,46 @@ namespace Ginger.Properties {
         internal static string tavern_charactercard_v2_schema {
             get {
                 return ResourceManager.GetString("tavern_charactercard_v2_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;data&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;object&quot;,
+        ///			&quot;properties&quot;: {
+        ///				&quot;name&quot;: {
+        ///					&quot;required&quot;: true,
+        ///					&quot;type&quot;: &quot;string&quot;
+        ///				},
+        ///				&quot;description&quot;: {
+        ///					&quot;required&quot;: false,
+        ///					&quot;type&quot;: [
+        ///						&quot;string&quot;,
+        ///						&quot;null&quot;
+        ///					]
+        ///				},
+        ///				&quot;personality&quot;: {
+        ///					&quot;required&quot;: false,
+        ///					&quot;type&quot;: [
+        ///						&quot;string&quot;,
+        ///						&quot;null&quot;
+        ///					]
+        ///				},
+        ///				&quot;scenario&quot;: {
+        ///					&quot;required&quot;: false,
+        ///					&quot;type&quot;: [
+        ///						&quot;string&quot;,
+        ///						&quot;null&quot;
+        ///					]
+        ///				} [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string tavern_charactercard_v3_schema {
+            get {
+                return ResourceManager.GetString("tavern_charactercard_v3_schema", resourceCulture);
             }
         }
         
