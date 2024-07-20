@@ -688,6 +688,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to open a file of that type..
+        /// </summary>
+        internal static string error_open_wrong_file_type {
+            get {
+                return ResourceManager.GetString("error_open_wrong_file_type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} recipe(s) could not be added..
         /// </summary>
         internal static string error_pasted {
@@ -809,6 +818,80 @@ namespace Ginger.Properties {
             get {
                 object obj = ResourceManager.GetObject("expanded", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;character&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;object&quot;,
+        ///			&quot;properties&quot;: {
+        ///				&quot;Chat&quot;: {
+        ///					&quot;required&quot;: false,
+        ///					&quot;type&quot;: [
+        ///						&quot;array&quot;,
+        ///						&quot;null&quot;
+        ///					],
+        ///					&quot;items&quot;: {
+        ///						&quot;type&quot;: [
+        ///							&quot;object&quot;,
+        ///							&quot;null&quot;
+        ///						],
+        ///						&quot;properties&quot;: {
+        ///							&quot;name&quot;: {
+        ///								&quot;required&quot;: false,
+        ///								&quot;type&quot;: [
+        ///									&quot;string&quot;,
+        ///									&quot;null&quot;
+        ///								]
+        ///							},
+        ///							&quot;modelConfigId&quot;: {
+        ///								&quot;required&quot;: false,
+        ///								&quot;type&quot;: [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string faraday_charactercard_v1_schema {
+            get {
+                return ResourceManager.GetString("faraday_charactercard_v1_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;character&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;object&quot;,
+        ///			&quot;properties&quot;: {
+        ///				&quot;Chat&quot;: {
+        ///					&quot;required&quot;: false,
+        ///					&quot;type&quot;: [
+        ///						&quot;array&quot;,
+        ///						&quot;null&quot;
+        ///					],
+        ///					&quot;items&quot;: {
+        ///						&quot;type&quot;: [
+        ///							&quot;object&quot;,
+        ///							&quot;null&quot;
+        ///						],
+        ///						&quot;properties&quot;: {
+        ///							&quot;name&quot;: {
+        ///								&quot;required&quot;: false,
+        ///								&quot;type&quot;: [
+        ///									&quot;string&quot;,
+        ///									&quot;null&quot;
+        ///								]
+        ///							},
+        ///							&quot;modelConfigId&quot;: {
+        ///								&quot;required&quot;: false,
+        ///								&quot;type&quot;: [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string faraday_charactercard_v2_schema {
+            get {
+                return ResourceManager.GetString("faraday_charactercard_v2_schema", resourceCulture);
             }
         }
         
@@ -1654,9 +1737,9 @@ namespace Ginger.Properties {
         ///      &quot;type&quot;: &quot;boolean&quot;
         /// [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string tavern_characterbook_schema {
+        internal static string tavern_characterbook_v2_schema {
             get {
-                return ResourceManager.GetString("tavern_characterbook_schema", resourceCulture);
+                return ResourceManager.GetString("tavern_characterbook_v2_schema", resourceCulture);
             }
         }
         

@@ -292,7 +292,7 @@ namespace Ginger
 		{
 			// Open file...
 			importFileDialog.Title = Resources.cap_import_character;
-			importFileDialog.Filter = "JSON file|*.json|Character card|*.png";
+			importFileDialog.Filter = "JSON file|*.json|Character card|*.png;*.charx";
 			importFileDialog.FilterIndex = AppSettings.User.LastImportCharacterFilter;
 			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			var result = importFileDialog.ShowDialog();
@@ -507,7 +507,7 @@ namespace Ginger
 			return true;
 		}
 
-		private void ExportCharacterJson()
+		private void ExportCharacter()
 		{
 			ConfirmName(); 
 			
@@ -519,15 +519,17 @@ namespace Ginger
 
 			if (string.IsNullOrEmpty(filename) == false)
 			{
-				if (AppSettings.User.LastExportCharacterFilter == 4 || AppSettings.User.LastExportCharacterFilter == 5) // png
+				if (AppSettings.User.LastExportCharacterFilter == 5 || AppSettings.User.LastExportCharacterFilter == 6) // png
 					filename = string.Concat(filename, ".png");
+				else if (AppSettings.User.LastExportCharacterFilter == 7) // charx
+					filename = string.Concat(filename, ".charx");
 				else // json
 					filename = string.Concat(filename, ".json");
 			}
 
 			// Save as...
 			exportFileDialog.Title = Resources.cap_export_character;
-			exportFileDialog.Filter = "Character V2 JSON|*.json|Character V3 JSON|*.json|Agnai character json|*.json|PygmalionAI character json|*.json|SillyTavern card|*.png|Backyard AI card|*.png";
+			exportFileDialog.Filter = "Character V2 JSON|*.json|Character V3 JSON|*.json|Agnai character json|*.json|PygmalionAI character json|*.json|SillyTavern card|*.png|Backyard AI card|*.png|CharX file|*.charx";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			exportFileDialog.FilterIndex = AppSettings.User.LastExportCharacterFilter;
@@ -607,7 +609,7 @@ namespace Ginger
 			MessageBox.Show(Resources.error_write_json, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
-		private void ExportLorebookJson(Generator.Output output, bool saveLocal)
+		private void ExportLorebook(Generator.Output output, bool saveLocal)
 		{
 			var lorebook = output.lorebook;
 			if (output.hasLore == false)
@@ -624,7 +626,7 @@ namespace Ginger
 
 			if (string.IsNullOrEmpty(filename) == false)
 			{
-				if (AppSettings.User.LastExportLorebookFilter == 3) // csv
+				if (AppSettings.User.LastExportLorebookFilter == 4) // csv
 					filename = string.Concat(filename, ".csv");
 				else // json
 					filename = string.Concat(filename, ".json");
@@ -955,7 +957,7 @@ namespace Ginger
 
 			var recipe = panel.recipe;
 			var output = Generator.Generate(recipe, Generator.Option.Export);
-			ExportLorebookJson(output, true);
+			ExportLorebook(output, true);
 			Lorebooks.LoadLorebooks();
 		}
 
@@ -963,6 +965,12 @@ namespace Ginger
 		{
 			if (string.IsNullOrEmpty(filename))
 				return SaveAs();
+ 
+			if (filename != null && Path.GetExtension(filename).ToLowerInvariant() == ".charx") //!!
+			{
+				MessageBox.Show("Not supported yet", "Cannot save CharX");
+				return false;
+			}
 
 			// Ensure text parameters get an opportunity to save
 			var focused = GetFocusedControl();

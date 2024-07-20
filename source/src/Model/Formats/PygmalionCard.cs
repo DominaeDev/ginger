@@ -8,11 +8,11 @@ namespace Ginger
 {
 	public class PygmalionCard
 	{
-		private static JsonSchema _schema;
+		private static JsonSchema _pygmalionCardSchema;
 
 		static PygmalionCard()
 		{
-			_schema = JsonSchema.Parse(Resources.pygmalion_charactercard_schema);
+			_pygmalionCardSchema = JsonSchema.Parse(Resources.pygmalion_charactercard_schema);
 		}
 
 		[JsonProperty("char_name", Required = Required.Always)]
@@ -79,7 +79,7 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_schema))
+				if (jObject.IsValid(_pygmalionCardSchema))
 				{
 					var card = JsonConvert.DeserializeObject<PygmalionCard>(json);
 					return card;
@@ -129,6 +129,19 @@ namespace Ginger
 			catch
 			{
 				return null;
+			}
+		}
+
+		public static bool Validate(string jsonData)
+		{
+			try
+			{
+				JObject jObject = JObject.Parse(jsonData);
+				return jObject.IsValid(_pygmalionCardSchema);
+			}
+			catch
+			{
+				return false;
 			}
 		}
 	}

@@ -1,10 +1,20 @@
 ﻿using System;
+using Ginger.Properties;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 
 namespace Ginger
 {
 	public class FaradayCardV2
 	{
+		private static JsonSchema _faradayCardV2Schema;
+
+		static FaradayCardV2()
+		{
+			_faradayCardV2Schema = JsonSchema.Parse(Resources.faraday_charactercard_v2_schema);
+		}
+
 		public FaradayCardV2()
 		{
 			data = new Data();
@@ -117,6 +127,19 @@ namespace Ginger
 			cardV2.data.system = cardV1.data.system;
 			cardV2.data.loreItems = cardV1.data.loreItems;
 			return cardV2;
+		}
+
+		public static bool Validate(string jsonData)
+		{
+			try
+			{
+				JObject jObject = JObject.Parse(jsonData);
+				return jObject.IsValid(_faradayCardV2Schema);
+			}
+			catch
+			{
+				return false;
+			}
 		}
 	}
 

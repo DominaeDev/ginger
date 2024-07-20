@@ -235,86 +235,6 @@ namespace Ginger
 			return true;
 		}
 
-		public enum LoadResult
-		{
-			Success,
-			FileError,
-			NoData,
-			Fallback,
-		}
-
-		public static LoadResult LoadCharacterFile(string filename, out int errors)
-		{
-			if (string.IsNullOrEmpty(filename))
-			{
-				errors = 0;
-				return LoadResult.FileError;
-			}
-
-			// Clear the state
-			// (In case a default value invokes {card} or {name}.)
-			var prevCurrentCard = Card;
-			var prevCurrentCharacters = Characters;
-			var prevSelectedCharacter = SelectedCharacter;
-			Card = new CardData();
-			Character = new CharacterData();
-			SelectedCharacter = 0;
-
-			// Load image first
-			Image image;
-			try
-			{
-				byte[] bytes = File.ReadAllBytes(filename);
-				using (var stream = new MemoryStream(bytes))
-				{
-					image = Image.FromStream(stream);
-				}
-			}
-			catch
-			{
-				Card = prevCurrentCard;
-				Characters = prevCurrentCharacters;
-				SelectedCharacter = prevSelectedCharacter;
-				errors = 0;
-				return LoadResult.FileError;
-			}
-
-			// Load character data
-			FileUtil.ImportResult importResult;
-			FileUtil.Error importError = FileUtil.Import(filename, out importResult);
-			bool bFallback = false;
-			if (importError == FileUtil.Error.FallbackError)
-			{
-				bFallback = true;
-				importError = FileUtil.Error.NoError;
-			}
-
-			if (importError != FileUtil.Error.NoError)
-			{
-				Card = prevCurrentCard;
-				Characters = prevCurrentCharacters;
-				SelectedCharacter = prevSelectedCharacter;
-				errors = 0;
-				if (importError == FileUtil.Error.NoDataFound)
-					return LoadResult.NoData;
-				return LoadResult.FileError;
-			}
-			errors = importResult.jsonErrors;
-
-			if (importResult.gingerData != null)
-			{
-				errors += importResult.gingerData.missingRecipes;
-				ReadGingerCard(importResult.gingerData, image);
-			}
-			else if (importResult.faradayData != null)
-				ReadFaradayCard(importResult.faradayData, image);
-			else if (importResult.tavernDataV3 != null) // PNG v3
-				ReadTavernCard(importResult.tavernDataV3, image);
-			else if (importResult.tavernDataV2 != null) // PNG v2
-				ReadTavernCard(importResult.tavernDataV2, image);
-			return bFallback ? LoadResult.Fallback : LoadResult.Success;
-		}
-
 		public static void ReadGingerCard(GingerCardV1 card, Image portrait)
 		{
 			if (card == null)
@@ -463,7 +383,7 @@ namespace Ginger
 				versionString = card.data.character_version,
 				portraitImage = ImageRef.FromImage(portrait),
 				extensionData = card.data.extensions,
-				creationDate = DateTime.UtcNow,
+				creationDate = DateTimeExtensions.FromUnixTime(card.data.creationDate ?? 0L),
 			};
 			Character = new CharacterData() {
 				spokenName = null,
@@ -575,7 +495,7 @@ namespace Ginger
 				userGender = null,
 				creator = card.metaData.creator,
 				comment = card.metaData.comment.ConvertLinebreaks(Linebreak.Default),
-				creationDate = card.metaData != null ? DateTimeExtensions.FromUnixTimeMilliseconds(card.metaData.creationDate) : DateTime.UtcNow,
+				creationDate = card.metaData != null ? DateTimeExtensions.FromUnixTime(card.metaData.creationDate) : DateTime.UtcNow,
 			};
 
 			Character = new CharacterData() {

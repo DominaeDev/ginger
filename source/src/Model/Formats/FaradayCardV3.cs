@@ -10,11 +10,11 @@ namespace Ginger
 {
 	public class FaradayCardV3
 	{
-		private static JsonSchema _schema;
+		private static JsonSchema _faradayCardV3Schema;
 
 		static FaradayCardV3()
 		{
-			_schema = JsonSchema.Parse(Resources.faraday_charactercard_v3_schema);
+			_faradayCardV3Schema = JsonSchema.Parse(Resources.faraday_charactercard_v3_schema);
 		}
 
 		public FaradayCardV3()
@@ -206,7 +206,7 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_schema))
+				if (jObject.IsValid(_faradayCardV3Schema))
 				{
 					var card = JsonConvert.DeserializeObject<FaradayCardV3>(json);
 					if (card.version >= 3)
@@ -220,7 +220,7 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_schema))
+				if (jObject.IsValid(_faradayCardV3Schema))
 				{
 					var card = JsonConvert.DeserializeObject<FaradayCardV2>(json);
 					if (card.version == 2)
@@ -234,7 +234,7 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_schema))
+				if (jObject.IsValid(_faradayCardV3Schema))
 				{
 					var card = JsonConvert.DeserializeObject<FaradayCardV1>(json);
 					if (card.version == 1)
@@ -306,6 +306,18 @@ namespace Ginger
 			return cardV3;
 		}
 
+		public static bool Validate(string jsonData)
+		{
+			try
+			{
+				JObject jObject = JObject.Parse(jsonData);
+				return jObject.IsValid(_faradayCardV3Schema);
+			}
+			catch
+			{
+				return false;
+			}
+		}
 	}
 
 }

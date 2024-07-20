@@ -306,6 +306,7 @@
     <Compile Include="src\Model\Formats\FaradayCardV4.cs" />
     <Compile Include="src\Model\Formats\FaradayCardV3.cs" />
     <Compile Include="src\Model\Formats\TavernCardV3.cs" />
+    <Compile Include="src\Model\Formats\ZipUtil.cs" />
     <Compile Include="src\Model\Generation\BlockBuilder.cs" />
     <Compile Include="src\Model\Formats\FaradayCardV2.cs" />
     <Compile Include="src\Model\Formats\JsonExtensionData.cs" />
@@ -781,6 +782,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Schemas\tavern_charactercard_v3.schema.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\faraday_charactercard_v1.schema.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\faraday_charactercard_v2.schema.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\tavern_characterbook_v2.schema.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

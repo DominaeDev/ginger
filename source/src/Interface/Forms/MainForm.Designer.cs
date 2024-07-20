@@ -655,7 +655,7 @@ namespace Ginger {
 			this.openMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
 			this.openMenuItem.Size = new System.Drawing.Size(259, 22);
 			this.openMenuItem.Text = "&Open...";
-			this.openMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
+			this.openMenuItem.Click += new System.EventHandler(this.OpenFileMenuItem_Click);
 			// 
 			// openRecentMenuItem
 			// 

@@ -5,6 +5,7 @@ using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Schema;
 using Ginger.Properties;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace Ginger
 {
@@ -14,9 +15,9 @@ namespace Ginger
 
 		static TavernCardV3()
 		{
-//			JsonSchemaGenerator generator = new JsonSchemaGenerator();
-//			JsonSchema schema = generator.Generate(typeof(TavernLorebookV3_Export));
-//			string jsonSchema = schema.ToString();
+		//	JsonSchemaGenerator generator = new JsonSchemaGenerator();
+		//	JsonSchema schema = generator.Generate(typeof(TavernCardV3));
+		//	string jsonSchema = schema.ToString();
 
 			_tavernCharacterCardSchemaV3 = JsonSchema.Parse(Resources.tavern_charactercard_v3_schema);
 		}
@@ -30,8 +31,8 @@ namespace Ginger
 		public Data data;
 		[JsonProperty("spec", Required = Required.Always)]
 		string spec = null; // "chara_card_v3"
-		[JsonProperty("spec_version", Required = Required.Always)]
 #pragma warning disable 0414 // Remove unread private members
+		[JsonProperty("spec_version", Required = Required.Always)]
 		string spec_version = null;
 #pragma warning restore 0414 // Remove unread private members
 
@@ -89,14 +90,14 @@ namespace Ginger
 			[JsonProperty("creator_notes_multilingual")]
 			public Dictionary<string, string> creator_notes_multilingual = new Dictionary<string, string>();
 			[JsonProperty("source")]
-			public string source = "";
+			public string[] source = new string[0];
 			[JsonProperty("group_only_greetings")]
 			public string[] alternate_greetings_for_groups = new string[0];
 
 			[JsonProperty("creation_date")]
-			public int? creationDate = null;
+			public long? creationDate = null;
 			[JsonProperty("modification_date")]
-			public int? updateDate = null;
+			public long? updateDate = null;
 
 			public class Asset
 			{
@@ -266,10 +267,13 @@ namespace Ginger
 			card.spec = "chara_card_v3";
 			card.spec_version = "3.0";
 			card.data.name = Current.Name;
+			card.data.nickname = Current.Name;
 			card.data.creator = Current.Card.creator;
 			card.data.creator_notes = Current.Card.comment.ConvertLinebreaks(Linebreak.LF);
 			card.data.character_version = Current.Card.versionString;
 			card.data.tags = Current.Card.tags.ToArray();
+			card.data.creationDate = (int)(Current.Card.creationDate ?? DateTime.UtcNow).ToUnixTimeSeconds();
+			card.data.updateDate = (int)DateTime.UtcNow.ToUnixTimeSeconds();
 
 			if (Current.Card.extensionData != null)
 				card.data.extensions = Current.Card.extensionData.WithGinger();
@@ -328,6 +332,10 @@ namespace Ginger
 				for (int i = 0; i < card.data.character_book.entries.Length; ++i)
 					card.data.character_book.entries[i].id = i + 1;
 			}
+			else
+			{
+				card.data.character_book = null;
+			}
 
 			return card;
 		}
@@ -350,7 +358,6 @@ namespace Ginger
 				},
 			};
 
-			// Version 3
 			try
 			{
 				JObject jObject = JObject.Parse(json);
@@ -387,13 +394,30 @@ namespace Ginger
 
 		private static bool Validate(TavernCardV3 card)
 		{
-			if (card.data == null)
+			if (card == null || card.data == null)
 				return false;
 			if (string.IsNullOrEmpty(card.data.name))
 				return false;
 			return card.spec == "chara_card_v3";
 		}
 
+		public static bool Validate(string jsonData)
+		{
+			try
+			{
+				JObject jObject = JObject.Parse(jsonData);
+				if (jObject.IsValid(_tavernCharacterCardSchemaV3))
+				{
+					var card = JsonConvert.DeserializeObject<TavernCardV3>(jsonData);
+					return Validate(card);
+				}
+				return false;
+			}
+			catch
+			{
+				return false;
+			}
+		}
 	}
 
 	public class TavernLorebookV3
@@ -448,6 +472,19 @@ namespace Ginger
 			if (lorebook.data == null)
 				return false;
 			return lorebook.spec == "lorebook_v3";
+		}
+
+		public static bool Validate(string jsonData)
+		{
+			try
+			{
+				JObject jObject = JObject.Parse(jsonData);
+				return jObject.IsValid(_tavernLorebookSchemaV3);
+			}
+			catch
+			{
+				return false;
+			}
 		}
 	}
 

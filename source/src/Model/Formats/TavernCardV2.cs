@@ -11,15 +11,15 @@ namespace Ginger
 {
 	public class TavernCardV2
 	{
-		private static JsonSchema _tavernCharacterCardSchemaV1;
-		private static JsonSchema _tavernCharacterCardSchemaV2;
-		private static JsonSchema _tavernCharacterBookSchema;
+		private static JsonSchema _tavernCharacterCardV1Schema;
+		private static JsonSchema _tavernCharacterCardV2Schema;
+		private static JsonSchema _tavernCharacterBookV2Schema;
 
 		static TavernCardV2()
 		{
-			_tavernCharacterCardSchemaV1 = JsonSchema.Parse(Resources.tavern_charactercard_v1_schema);
-			_tavernCharacterCardSchemaV2 = JsonSchema.Parse(Resources.tavern_charactercard_v2_schema);
-			_tavernCharacterBookSchema = JsonSchema.Parse(Resources.tavern_characterbook_schema);
+			_tavernCharacterCardV1Schema = JsonSchema.Parse(Resources.tavern_charactercard_v1_schema);
+			_tavernCharacterCardV2Schema = JsonSchema.Parse(Resources.tavern_charactercard_v2_schema);
+			_tavernCharacterBookV2Schema = JsonSchema.Parse(Resources.tavern_characterbook_v2_schema);
 		}
 
 		public TavernCardV2()
@@ -31,8 +31,10 @@ namespace Ginger
 		public Data data;
 		[JsonProperty("spec", Required = Required.Always)]
 		string spec = null; // "chara_card_v2"
+#pragma warning disable 0414 // Remove unread private members
 		[JsonProperty("spec_version", Required = Required.Always)]
 		string spec_version = null; //"2.0";
+#pragma warning restore 0414 // Remove unread private members
 
 		public class Data
 		{
@@ -155,13 +157,26 @@ namespace Ginger
 				try
 				{
 					JObject jObject = JObject.Parse(json);
-					if (jObject.IsValid(_tavernCharacterBookSchema))
+					if (jObject.IsValid(_tavernCharacterBookV2Schema))
 						return JsonConvert.DeserializeObject<CharacterBook>(json);
 				}
 				catch
 				{
 				}
 				return null;
+			}
+
+			public static bool Validate(string jsonData)
+			{
+				try
+				{
+					JObject jObject = JObject.Parse(jsonData);
+					return jObject.IsValid(_tavernCharacterBookV2Schema);
+				}
+				catch
+				{
+					return false;
+				}
 			}
 		}
 
@@ -271,7 +286,7 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_tavernCharacterCardSchemaV2))
+				if (jObject.IsValid(_tavernCharacterCardV2Schema))
 				{
 					var card = JsonConvert.DeserializeObject<TavernCardV2>(json, settings);
 					errors = lsErrors.Count;
@@ -287,7 +302,7 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_tavernCharacterCardSchemaV1))
+				if (jObject.IsValid(_tavernCharacterCardV1Schema))
 				{
 					var cardV1 = JsonConvert.DeserializeObject<TavernCardV1>(json, settings);
 					errors = lsErrors.Count;
@@ -323,20 +338,45 @@ namespace Ginger
 
 		private static bool Validate(TavernCardV2 card)
 		{
-			if (card.data == null)
+			if (card == null || card.data == null)
 				return false;
 			if (string.IsNullOrEmpty(card.data.name))
 				return false;
 			return card.spec == "chara_card_v2";
 		}
 
-		private static bool Validate(TavernCardV1 cardV1)
+		private static bool Validate(TavernCardV1 card)
 		{
-			if (string.IsNullOrEmpty(cardV1.name))
+			if (card == null)
 				return false;
-			if (string.IsNullOrEmpty(cardV1.description) && string.IsNullOrEmpty(cardV1.personality))
+			if (string.IsNullOrEmpty(card.name))
+				return false;
+			if (string.IsNullOrEmpty(card.description) && string.IsNullOrEmpty(card.personality))
 				return false;
 			return true;
+		}
+
+		public static bool Validate(string jsonData)
+		{
+			try
+			{
+				JObject jObject = JObject.Parse(jsonData);
+				if (jObject.IsValid(_tavernCharacterCardV2Schema))
+				{
+					var card = JsonConvert.DeserializeObject<TavernCardV2>(jsonData);
+					return Validate(card);
+				}
+				if (jObject.IsValid(_tavernCharacterCardV1Schema))
+				{
+					var card = JsonConvert.DeserializeObject<TavernCardV1>(jsonData);
+					return Validate(card);
+				}
+				return false;
+			}
+			catch
+			{
+				return false;
+			}
 		}
 	}
 
@@ -443,6 +483,19 @@ namespace Ginger
 			{
 			}
 			return null;
+		}
+
+		public static bool Validate(string jsonData)
+		{
+			try
+			{
+				JObject jObject = JObject.Parse(jsonData);
+				return jObject.IsValid(_tavernWorldBookSchema);
+			}
+			catch
+			{
+				return false;
+			}
 		}
 	}
 

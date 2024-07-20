@@ -257,214 +257,7 @@
 						"object",
 						"null"
 					],
-					"properties": {
-						"ginger": {
-							"required": false,
-							"type": [
-								"object",
-								"null"
-							],
-							"properties": {
-								"version": {
-									"required": false,
-									"type": "integer"
-								},
-								"data": {
-									"required": false,
-									"type": [
-										"object",
-										"null"
-									],
-									"properties": {
-										"card_name": {
-											"required": false,
-											"type": [
-												"string",
-												"null"
-											]
-										},
-										"character_name": {
-											"required": false,
-											"type": [
-												"string",
-												"null"
-											]
-										},
-										"character_gender": {
-											"required": false,
-											"type": [
-												"string",
-												"null"
-											]
-										},
-										"character_pronouns": {
-											"required": false,
-											"type": [
-												"array",
-												"null"
-											],
-											"items": {
-												"type": [
-													"string",
-													"null"
-												]
-											}
-										},
-										"character_version": {
-											"required": false,
-											"type": [
-												"string",
-												"null"
-											]
-										},
-										"tags": {
-											"required": false,
-											"type": [
-												"array",
-												"null"
-											],
-											"items": {
-												"type": [
-													"string",
-													"null"
-												]
-											}
-										},
-										"user_gender": {
-											"required": false,
-											"type": [
-												"string",
-												"null"
-											]
-										},
-										"user_pronouns": {
-											"required": false,
-											"type": [
-												"array",
-												"null"
-											],
-											"items": {
-												"type": [
-													"string",
-													"null"
-												]
-											}
-										},
-										"author": {
-											"required": false,
-											"type": [
-												"string",
-												"null"
-											]
-										},
-										"comment": {
-											"required": false,
-											"type": [
-												"string",
-												"null"
-											]
-										},
-										"creation_date": {
-											"required": false,
-											"type": [
-												"string",
-												"null"
-											]
-										},
-										"update_date": {
-											"required": false,
-											"type": [
-												"string",
-												"null"
-											]
-										},
-										"text_style": {
-											"required": false,
-											"type": "integer"
-										},
-										"detail_level": {
-											"required": false,
-											"type": "integer"
-										}
-									}
-								},
-								"output": {
-									"required": false,
-									"type": [
-										"object",
-										"null"
-									],
-									"properties": {
-										"system_prompt": {
-											"required": false,
-											"type": [
-												"string",
-												"null"
-											]
-										},
-										"persona": {
-											"required": false,
-											"type": [
-												"string",
-												"null"
-											]
-										},
-										"user_persona": {
-											"required": false,
-											"type": [
-												"string",
-												"null"
-											]
-										},
-										"scenario": {
-											"required": false,
-											"type": [
-												"string",
-												"null"
-											]
-										},
-										"greetings": {
-											"required": false,
-											"type": [
-												"array",
-												"null"
-											],
-											"items": {
-												"type": [
-													"string",
-													"null"
-												]
-											}
-										},
-										"example": {
-											"required": false,
-											"type": [
-												"string",
-												"null"
-											]
-										},
-										"grammar": {
-											"required": false,
-											"type": [
-												"string",
-												"null"
-											]
-										},
-										"tokens": {
-											"required": false,
-											"type": [
-												"array",
-												"null"
-											],
-											"items": {
-												"type": "integer"
-											}
-										}
-									}
-								}
-							}
-						}
-					}
+					"properties": {}
 				},
 				"nickname": {
 					"required": false,
@@ -473,7 +266,7 @@
 						"null"
 					]
 				},
-				"creators_notes_multilingual": {
+				"creator_notes_multilingual": {
 					"required": false,
 					"type": [
 						"object",
@@ -489,9 +282,15 @@
 				"source": {
 					"required": false,
 					"type": [
-						"string",
+						"array",
 						"null"
-					]
+					],
+					"items": {
+						"type": [
+							"string",
+							"null"
+						]
+					}
 				},
 				"group_only_greetings": {
 					"required": false,
