@@ -63,7 +63,7 @@ namespace Ginger
 		{
 			CardData clone = (CardData)this.MemberwiseClone();
 			clone.tags = new HashSet<string>(this.tags);
-			clone.assets = new AssetCollection(this.assets);
+			clone.assets = (AssetCollection)this.assets.Clone();
 			return clone;
 		}
 	}

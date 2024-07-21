@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Ginger
 {
-	public class AssetCollection : List<AssetFile>
+	public class AssetCollection : List<AssetFile>, ICloneable
 	{
 		public AssetCollection() : base() {}
 		public AssetCollection(AssetCollection other) : base(other) {}
@@ -70,9 +71,117 @@ namespace Ginger
 				return true;
 			}
 		}
+
+		public void Validate()
+		{
+			var validated = this
+				.GroupBy(a => a.assetType)
+				.Select(g => {
+					var assetType = g.Key;
+					var assetsOfType = g.ToList();
+
+					if (assetType == AssetFile.AssetType.Other || assetType == AssetFile.AssetType.Undefined)
+						return new {
+							type = assetType,
+							assets = assetsOfType,
+						};
+
+					// Ensure there is at least one "main" asset per type
+					string mainName = assetType == AssetFile.AssetType.Expression ? "neutral" : "main";
+
+					if (assetsOfType.Count == 1)
+					{
+						assetsOfType[0].name = mainName;
+						return new {
+							type = assetType,
+							assets = assetsOfType,
+						};
+					}
+
+					int nMain = this.Count(a => string.Compare(a.name, mainName, StringComparison.OrdinalIgnoreCase) == 0);
+					if (nMain == 0)
+						assetsOfType[0].name = mainName;
+
+					return new {
+						type = assetType,
+						assets = assetsOfType,
+					};
+				})
+			.SelectMany(x => {
+				// Ensure unique names within each asset group
+				var assetsOfType = x.assets;
+
+				var used_names = new Dictionary<string, int>();
+				for (int i = 0; i < assetsOfType.Count; ++i)
+				{
+					string name = assetsOfType[i].name.ToLowerInvariant();
+					if (name == "")
+						assetsOfType[i].name = name = "untitled"; // Name cannot be empty
+
+					if (used_names.ContainsKey(name) == false)
+					{
+						used_names.Add(name, 1);
+						continue;
+					}
+
+					int count;
+					string testName = name;
+					while (used_names.TryGetValue(testName, out count))
+					{
+						testName = string.Format("{0}_{1:00}", name, count + 1);
+						++used_names[name];
+					}
+					assetsOfType[i].name = testName;
+				}
+				return assetsOfType;
+			})
+			.Select(asset => {
+				// Set uri
+				if (asset.isDefaultAsset)
+					asset.uri = AssetFile.DefaultURI;
+				else
+					asset.uri = string.Concat(asset.protocol, asset.GetPath(), EscapeName(asset.name), ".", asset.ext).ToLowerInvariant();
+
+				// Fix ext
+				if (asset.ext != null)
+					asset.ext = asset.ext.ToLowerInvariant();
+				else
+					asset.ext = "unknown";
+				return asset;
+			})
+			.ToArray();
+			
+			Clear();
+			AddRange(validated);
+		}
+
+		public static string EscapeName(string name)
+		{
+			var sb = new StringBuilder(name.Length);
+			var illegal_chars = new char[] { '%', ':', '\\', '/', '?', '"', '*', '<', '>', '|' };
+			for (int i = 0; i < name.Length; ++i)
+			{
+				char ch = name[i];
+				if ((ch & 0xFF) != ch)
+					sb.AppendFormat("%u{0:X4}", (int)ch);
+				else if ((ch >= 0x00 && ch <= 0x1f) || (ch >= 0x7f && ch <= 0x9f) || ch >= 0xA0 || illegal_chars.Contains(ch))
+					sb.AppendFormat("%{0:X2}", (int)(ch & 0xff));
+				else
+					sb.Append(ch);
+			}
+			return sb.ToString();
+		}
+
+		public object Clone()
+		{
+			var list = new List<AssetFile>(this.Count);
+			for (int i = 0; i < this.Count; ++i)
+				list.Add((AssetFile)this[i].Clone());
+			return new AssetCollection(list);			
+		}
 	}
 
-	public class AssetFile
+	public class AssetFile : ICloneable
 	{
 		public string name;
 		public string ext;
@@ -290,7 +399,12 @@ namespace Ginger
 				return "other";
 			}
 		}
+
+		public object Clone()
+	{
+		return this.MemberwiseClone();
 	}
+}
 
 	public struct AssetData
 	{

@@ -137,6 +137,11 @@ namespace Ginger
 			public static bool PruneExampleChat = true;
 		}
 
+		public static class CCV3
+		{
+			public static bool EnablePNGV3 = true;
+		}
+
 		public static bool LoadFromIni(string filePath)
 		{
 			// Load
@@ -256,6 +261,12 @@ namespace Ginger
 				ReadBool(ref Faraday.PruneExampleChat, faradaySection, "PruneExampleChat");
 			}
 
+			var ccv3Section = iniData.Sections["CCV3"];
+			if (ccv3Section != null)
+			{
+				ReadBool(ref CCV3.EnablePNGV3, ccv3Section, "EnablePNGV3");
+			}
+
 			var mruSection = iniData.Sections["MRU"];
 			if (mruSection != null)
 			{
@@ -358,6 +369,10 @@ namespace Ginger
 					Write(outputFile, "PromptTemplate", Faraday.PromptTemplate);
 					Write(outputFile, "PruneExampleChat", Faraday.PruneExampleChat);
 					
+					// CCV3
+					WriteSection(outputFile, "CCV3");
+					Write(outputFile, "EnablePNGV3", CCV3.EnablePNGV3);
+
 					// MRU list
 					WriteSection(outputFile, "MRU");
 					int mruIndex = 0;

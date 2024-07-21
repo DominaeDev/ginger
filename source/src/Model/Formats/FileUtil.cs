@@ -110,7 +110,7 @@ namespace Ginger
 						tavernJsonV2 = null;
 
 					// Read Tavern v3 json (PNG chunk)
-					if (metaData.ContainsKey("ccv3"))
+					if (metaData.ContainsKey("ccv3") && AppSettings.CCV3.EnablePNGV3)
 					{
 						hasData = true;
 						string charaBase64 = metaData["ccv3"];
@@ -268,7 +268,7 @@ namespace Ginger
 				}
 
 				// Tavern json (v3)
-				if (formats.Contains(Format.SillyTavernV3))
+				if (formats.Contains(Format.SillyTavernV3) && AppSettings.CCV3.EnablePNGV3)
 				{
 					var tavernData = TavernCardV3.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavern));
 					tavernData.data.extensions.ginger = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
@@ -833,7 +833,7 @@ namespace Ginger
 							hasGingerData |= string.Compare(textChunk.Keyword, "ginger", true) == 0;
 							if (string.Compare(textChunk.Keyword, "chara", true) == 0 && string.IsNullOrEmpty(jsonData))
 								jsonData = textChunk.Text;
-							if (string.Compare(textChunk.Keyword, "ccv3", true) == 0)
+							if (string.Compare(textChunk.Keyword, "ccv3", true) == 0 && AppSettings.CCV3.EnablePNGV3)
 								jsonData = textChunk.Text;
 						}
 						else if (chunk is zTXtChunk) // Compressed

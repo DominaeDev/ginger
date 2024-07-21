@@ -153,53 +153,16 @@ namespace Ginger
 			}
 		}
 
-		private static Error ExtractFileFromArchive(string filename, string entryName, out byte[] data)
-		{
-			try
-			{
-				entryName = entryName.Replace('\\', '/');
-
-				using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
-				{
-					using (var archive = new ZipArchive(fs, ZipArchiveMode.Read))
-					{
-						foreach (var entry in archive.Entries)
-						{
-							string thisEntryName = entry.FullName.Replace('\\', '/');
-							if (thisEntryName == entryName) // Exact match
-							{
-								long dataSize = entry.Length;
-								if (dataSize > 0)
-								{
-									var dataStream = entry.Open();
-									data = new byte[dataSize];
-									dataStream.Read(data, 0, (int)dataSize);
-									return Error.NoError;
-								}
-							}
-						}
-					}
-				}
-
-				data = null;
-				return Error.NoDataFound;
-			}
-			catch
-			{
-				data = null;
-				return Error.FileReadError;
-			}
-		}
-
 		public static bool ExportToCharX(string filename)
 		{
 			var card = TavernCardV3.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavern));
 			card.data.extensions.ginger = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
 
-			AssetCollection assets = new AssetCollection(Current.Card.assets);
+			AssetCollection assets = (AssetCollection)Current.Card.assets.Clone();
 
 			// Add current portrait image
 			Image image = Current.Card.portraitImage;
+			bool bWriteNullImage = true;
 			if (image != null)
 			{
 				// Write image to buffer
@@ -225,7 +188,7 @@ namespace Ginger
 							}
 						}
 
-						// Add main icon entry
+						// Add main icon asset
 						assets.Insert(0, new AssetFile() {
 							assetType = AssetFile.AssetType.Icon,
 							fileType = AssetFile.FileType.Image,
@@ -236,23 +199,18 @@ namespace Ginger
 								Data = stream.ToArray(),
 							},
 						});
+						bWriteNullImage = false;
 					}
 				}
 				catch
 				{
-					// Add default icon entry
-					assets.Insert(0, new AssetFile() {
-						assetType = AssetFile.AssetType.Icon,
-						uri = AssetFile.DefaultURI,
-						name = "main",
-						ext = "unknown",
-					});
 				}
 
 			}
-			else
+			
+			if (bWriteNullImage)
 			{
-				// Add default entry
+				// Add default icon asset
 				assets.Insert(0, new AssetFile() {
 					assetType = AssetFile.AssetType.Icon,
 					uri = AssetFile.DefaultURI,
@@ -262,80 +220,9 @@ namespace Ginger
 			}
 
 			// Validate names and uris
-			var correctedAssets = assets
-				.GroupBy(a => a.assetType)
-				.Select(g => {
-					var assetType = g.Key;
-					var assetsOfType = g.ToList();
+			assets.Validate();
 
-					if (assetType == AssetFile.AssetType.Other || assetType == AssetFile.AssetType.Undefined)
-						return new {
-							type = assetType,
-							assets = assetsOfType,
-						};
-
-					// Ensure there is at least one "main" asset per type
-					string mainName = assetType == AssetFile.AssetType.Expression ? "neutral" : "main";
-
-					if (assetsOfType.Count == 1)
-					{
-						assetsOfType[0].name = mainName;
-						return new {
-							type = assetType,
-							assets = assetsOfType,
-						};
-					}
-
-					int nMain = assets.Count(a => string.Compare(a.name, mainName, StringComparison.OrdinalIgnoreCase) == 0);
-					if (nMain == 0)
-						assetsOfType[0].name = mainName;
-					return new {
-						type = assetType,
-						assets = assetsOfType,
-					};
-				})
-			.SelectMany(x => {
-				// Ensure unique names within each asset group
-				var assetType = x.type;
-				var assetsOfType = x.assets;
-
-				var used_names = new Dictionary<string, int>();
-				for (int i = 0; i < assetsOfType.Count; ++i)
-				{
-					string name = assetsOfType[i].name.ToLowerInvariant();
-					if (used_names.ContainsKey(name) == false)
-					{
-						used_names.Add(name, 1);
-						continue;
-					}
-
-					int count;
-					string testName = name;
-					while (used_names.TryGetValue(testName, out count))
-					{
-						testName = string.Format("{0}_{1:00}", name, count + 1);
-						++used_names[name];
-					}
-					assetsOfType[i].name = testName;
-				}
-				return assetsOfType;
-			})
-			.Select(asset => {
-				// Fix uri
-				if (asset.isDefaultAsset)
-					asset.uri = AssetFile.DefaultURI;
-				else
-					asset.uri = string.Concat(asset.protocol, asset.GetPath(), asset.name, ".", asset.ext).ToLowerInvariant();
-
-				// Fix ext
-				if (asset.ext != null)
-					asset.ext = asset.ext.ToLowerInvariant();
-				else
-					asset.ext = "unknown";
-				return asset;
-			});
-
-			card.data.assets = correctedAssets
+			card.data.assets = assets
 				.Select(a => new TavernCardV3.Data.Asset() 
 				{
 					type = a.GetTypeName(),
@@ -346,6 +233,8 @@ namespace Ginger
 				.ToArray();
 
 			var json = card.ToJson();
+			if (json == null)
+				return false; // Error
 
 			try
 			{
@@ -374,7 +263,12 @@ namespace Ginger
 						if (asset.data.Length == 0)
 							continue; // No file data
 
-						string entryName = string.Concat(asset.GetPath(), asset.name, ".", asset.ext);
+						// Get archive path
+						int idxProtocol = asset.uri.IndexOf("://");
+						if (idxProtocol == -1)
+							continue;
+						string entryName = asset.uri.Substring(idxProtocol + 3);
+
 						var fileEntry = zip.CreateEntry(string.Format(entryName, CompressionLevel.NoCompression));
 						using (Stream writer = fileEntry.Open())
 						{
@@ -396,8 +290,8 @@ namespace Ginger
 			}
 			catch
 			{
+				return false;
 			}
-			return false;
 		}
 	}
 }
