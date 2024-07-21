@@ -976,18 +976,27 @@ namespace Ginger
 				{
 				}
 			}
-			else if (ext == ".charx" && importResult.tavernDataV3 != null)
-			{
-				// Extract image from charx archive
-				image = LoadPortaitImageFromArchive(filename, importResult.tavernDataV3);
-			}
 
 			if (importResult.gingerData != null && formats.Contains(Format.Ginger))
 				Current.ReadGingerCard(importResult.gingerData, image);
 			else if (importResult.faradayData != null && formats.Contains(Format.Faraday))
 				Current.ReadFaradayCard(importResult.faradayData, image);
 			else if (importResult.tavernDataV3 != null && formats.Contains(Format.SillyTavernV3))
+			{
 				Current.ReadTavernCard(importResult.tavernDataV3, image);
+
+				if (ext == ".charx")
+				{
+					// Extract assets from charx archive
+					ExtractAssetsFromArchive(filename, importResult.tavernDataV3, out Current.Card.assets);
+
+					// Load portrait image
+					Current.Card.portraitImage = ImageRef.FromImage(Current.Card.assets.GetPortraitImage());
+					
+					// Remove portrait image (it will be re-added on save/export)
+					Current.Card.assets.RemovePortraitImage();
+				}
+			}
 			else if (importResult.tavernDataV2 != null && formats.Contains(Format.SillyTavernV2))
 				Current.ReadTavernCard(importResult.tavernDataV2, image);
 			else

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -21,6 +23,9 @@ namespace Ginger
 					{
 						foreach (var entry in archive.Entries)
 						{
+							if (entry.Name == "")
+								continue; // Skip folder entries
+
 							string entryName = entry.FullName.ToLowerInvariant();
 
 							if (entryName == "ginger.xml")
@@ -57,6 +62,93 @@ namespace Ginger
 			}
 			catch
 			{
+				return Error.FileReadError;
+			}
+		}
+
+		private static Error ExtractAssetsFromArchive(string filename, TavernCardV3 tavernV3Card, out AssetCollection assets)
+		{
+			var assetList = tavernV3Card.data.assets;
+			if (assetList == null || assetList.Length == 0)
+			{
+				assets = new AssetCollection(); // Empty
+				return Error.NoDataFound;
+			}
+
+			try
+			{
+				assets = new AssetCollection();
+				foreach (var assetInfo in assetList)
+				{
+					var assetType = AssetFile.AssetTypeFromString(assetInfo.type);
+					var fileType = AssetFile.FileTypeFromExt(assetInfo.ext);
+					string uri = assetInfo.uri.Trim();
+
+					// Default asset
+					if (string.Compare(uri, AssetFile.DefaultURI, StringComparison.OrdinalIgnoreCase) == 0)
+					{
+						assets.Add(new AssetFile() {
+							name = assetInfo.name,
+							assetType = assetType,
+							ext = assetInfo.ext,
+							fileType = fileType,
+							uri = AssetFile.DefaultURI,
+						});
+						continue;
+					}
+
+					int idxProtocol = uri.IndexOf("://");
+					if (idxProtocol == -1)
+						continue; // Invalid uri
+
+					string protocol = uri.Substring(0, idxProtocol + 3).ToLowerInvariant();
+					string path = uri.Substring(idxProtocol + 3);
+					if (protocol == "embedded://")
+						protocol = "embeded://"; // A quirk in the v3 spec
+				
+					assets.Add(new AssetFile() {
+						name = assetInfo.name,
+						assetType = assetType,
+						ext = assetInfo.ext,
+						fileType = fileType,
+						uri = string.Concat(protocol, path),
+					});
+				}
+
+				using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+				{
+					using (var archive = new ZipArchive(fs, ZipArchiveMode.Read))
+					{
+						foreach (var entry in archive.Entries)
+						{
+							if (string.IsNullOrEmpty(entry.Name))
+								continue; // Skip folder entries
+
+							string entryName = entry.FullName.Replace('\\', '/');
+							int idxAsset = assets.FindIndex(a => a.uri == string.Concat("embeded://", entryName));
+							if (idxAsset == -1)
+								continue; // Unreferenced asset
+
+							long dataSize = entry.Length;
+							if (dataSize > 0)
+							{
+								var buffer = new byte[dataSize];
+								var dataStream = entry.Open();
+								dataStream.Read(buffer, 0, (int)dataSize);
+								assets[idxAsset].data = new AssetData() {
+									Data = buffer,
+								};
+							}
+						}
+					}
+				}
+				if (assets.Count == 0)
+					return Error.NoDataFound;
+				return Error.NoError;
+			}
+			catch
+			{
+				assets = null;
 				return Error.FileReadError;
 			}
 		}
@@ -99,45 +191,213 @@ namespace Ginger
 			}
 		}
 
-		private static Image LoadPortaitImageFromArchive(string filename, TavernCardV3 cardData)
+		public static bool ExportToCharX(string filename)
 		{
-			if (cardData == null || cardData.data == null || cardData.data.assets == null || cardData.data.assets.Length == 0)
-				return null;
+			var card = TavernCardV3.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavern));
+			card.data.extensions.ginger = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
 
-			var iconAsset = cardData.data.assets.FirstOrDefault(a => a.type == "icon");
-			if (iconAsset == null)
-				return null;
+			AssetCollection assets = new AssetCollection(Current.Card.assets);
 
-			string uri = iconAsset.uri.Trim();
+			// Add current portrait image
+			Image image = Current.Card.portraitImage;
+			if (image != null)
+			{
+				// Write image to buffer
+				try
+				{
+					using (var stream = new MemoryStream())
+					{
+						if (image.RawFormat.Equals(ImageFormat.Png))
+						{
+							image.Save(stream, ImageFormat.Png);
+						}
+						else // Convert to png
+						{
+							using (Image bmpNewImage = new Bitmap(image.Width, image.Height))
+							{
+								Graphics gfxNewImage = Graphics.FromImage(bmpNewImage);
+								gfxNewImage.DrawImage(image, new Rectangle(0, 0, bmpNewImage.Width, bmpNewImage.Height),
+													  0, 0,
+													  image.Width, image.Height,
+													  GraphicsUnit.Pixel);
+								gfxNewImage.Dispose();
+								bmpNewImage.Save(stream, ImageFormat.Png);
+							}
+						}
 
-			if (string.IsNullOrEmpty(uri) || string.Compare("uri", "ccdefault:", StringComparison.OrdinalIgnoreCase) == 0)
-				return null;
+						// Add main icon entry
+						assets.Insert(0, new AssetFile() {
+							assetType = AssetFile.AssetType.Icon,
+							fileType = AssetFile.FileType.Image,
+							uri = "embeded://assets/icon/images/main.png",
+							name = "main",
+							ext = "png",
+							data = new AssetData() {
+								Data = stream.ToArray(),
+							},
+						});
+					}
+				}
+				catch
+				{
+					// Add default icon entry
+					assets.Insert(0, new AssetFile() {
+						assetType = AssetFile.AssetType.Icon,
+						uri = AssetFile.DefaultURI,
+						name = "main",
+						ext = "unknown",
+					});
+				}
 
-			int idxProtocol = uri.IndexOf("://");
-			if (idxProtocol == -1)
-				return null;
+			}
+			else
+			{
+				// Add default entry
+				assets.Insert(0, new AssetFile() {
+					assetType = AssetFile.AssetType.Icon,
+					uri = AssetFile.DefaultURI,
+					name = "main",
+					ext = "unknown",
+				});
+			}
 
-			string protocol = uri.Substring(0, idxProtocol).ToLowerInvariant();
-			string path = uri.Substring(idxProtocol + 3);
-			if (protocol != "embeded" && protocol != "embedded")
-				return null; // Only embedded assets are supported
+			// Validate names and uris
+			var correctedAssets = assets
+				.GroupBy(a => a.assetType)
+				.Select(g => {
+					var assetType = g.Key;
+					var assetsOfType = g.ToList();
 
-			byte[] data;
-			var error = ExtractFileFromArchive(filename, path, out data);
-			if (error != Error.NoError)
-				return null; // Invalid path
+					if (assetType == AssetFile.AssetType.Other || assetType == AssetFile.AssetType.Undefined)
+						return new {
+							type = assetType,
+							assets = assetsOfType,
+						};
+
+					// Ensure there is at least one "main" asset per type
+					string mainName = assetType == AssetFile.AssetType.Expression ? "neutral" : "main";
+
+					if (assetsOfType.Count == 1)
+					{
+						assetsOfType[0].name = mainName;
+						return new {
+							type = assetType,
+							assets = assetsOfType,
+						};
+					}
+
+					int nMain = assets.Count(a => string.Compare(a.name, mainName, StringComparison.OrdinalIgnoreCase) == 0);
+					if (nMain == 0)
+						assetsOfType[0].name = mainName;
+					return new {
+						type = assetType,
+						assets = assetsOfType,
+					};
+				})
+			.SelectMany(x => {
+				// Ensure unique names within each asset group
+				var assetType = x.type;
+				var assetsOfType = x.assets;
+
+				var used_names = new Dictionary<string, int>();
+				for (int i = 0; i < assetsOfType.Count; ++i)
+				{
+					string name = assetsOfType[i].name.ToLowerInvariant();
+					if (used_names.ContainsKey(name) == false)
+					{
+						used_names.Add(name, 1);
+						continue;
+					}
+
+					int count;
+					string testName = name;
+					while (used_names.TryGetValue(testName, out count))
+					{
+						testName = string.Format("{0}_{1:00}", name, count + 1);
+						++used_names[name];
+					}
+					assetsOfType[i].name = testName;
+				}
+				return assetsOfType;
+			})
+			.Select(asset => {
+				// Fix uri
+				if (asset.isDefaultAsset)
+					asset.uri = AssetFile.DefaultURI;
+				else
+					asset.uri = string.Concat(asset.protocol, asset.GetPath(), asset.name, ".", asset.ext).ToLowerInvariant();
+
+				// Fix ext
+				if (asset.ext != null)
+					asset.ext = asset.ext.ToLowerInvariant();
+				else
+					asset.ext = "unknown";
+				return asset;
+			});
+
+			card.data.assets = correctedAssets
+				.Select(a => new TavernCardV3.Data.Asset() 
+				{
+					type = a.GetTypeName(),
+					uri = a.uri,
+					name = a.name,
+					ext = a.ext.ToLowerInvariant(),
+				})
+				.ToArray();
+
+			var json = card.ToJson();
 
 			try
 			{
-				using (var stream = new MemoryStream(data))
+				var intermediateFilename = Path.GetTempFileName();
+				using (ZipArchive zip = ZipFile.Open(intermediateFilename, ZipArchiveMode.Update, Encoding.ASCII))
 				{
-					return Image.FromStream(stream);
+					// Write card json (UTF8)
+					var cardEntry = zip.CreateEntry("card.json", CompressionLevel.NoCompression);
+					using (Stream writer = cardEntry.Open())
+                    {
+						byte[] textBuffer = Encoding.UTF8.GetBytes(json);
+						writer.Write(textBuffer, 0, textBuffer.Length);
+                    }
+
+					// Write ginger.txt
+					var gingerEntry = zip.CreateEntry("ginger.txt", CompressionLevel.NoCompression);
+					using (StreamWriter writer = new StreamWriter(gingerEntry.Open()))
+                    {
+						writer.WriteLine("This character card was created using Ginger.");
+						writer.WriteLine("https://www.github.com/DominaeDev/Ginger/");
+                    }
+
+					// Write asset files
+					foreach (var asset in assets)
+					{
+						if (asset.data.Length == 0)
+							continue; // No file data
+
+						string entryName = string.Concat(asset.GetPath(), asset.name, ".", asset.ext);
+						var fileEntry = zip.CreateEntry(string.Format(entryName, CompressionLevel.NoCompression));
+						using (Stream writer = fileEntry.Open())
+						{
+							for (long n = asset.data.Length; n > 0;)
+							{
+								int length = (int)Math.Min(n, (long)int.MaxValue);
+								writer.Write(asset.data.Data, 0, length);
+								n -= (long)length;
+							}
+						}
+					}
 				}
+
+				// Rename Temporaty file to Target file
+				if (File.Exists(filename))
+					File.Delete(filename);
+				File.Move(intermediateFilename, filename);
+				return true;
 			}
 			catch
 			{
-				return null;
 			}
+			return false;
 		}
 	}
 }

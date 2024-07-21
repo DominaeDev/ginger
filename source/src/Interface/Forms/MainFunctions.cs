@@ -606,6 +606,11 @@ namespace Ginger
 				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.Faraday))
 					return; // Success
 			}
+			else if (exportFileDialog.FilterIndex == 7) // CharX
+			{
+				if (FileUtil.ExportToCharX(exportFileDialog.FileName))
+					return; // Success
+			}
 			MessageBox.Show(Resources.error_write_json, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 

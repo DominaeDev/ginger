@@ -14,6 +14,7 @@ namespace Ginger
 		public string userGender = "";
 		public string versionString = "";
 		public HashSet<string> tags = new HashSet<string>();
+		public AssetCollection assets = new AssetCollection(); // ccv3/charx
 
 		public DateTime? creationDate = null;
 		public JsonExtensionData extensionData = null; // Store extensions from imported json
@@ -62,6 +63,7 @@ namespace Ginger
 		{
 			CardData clone = (CardData)this.MemberwiseClone();
 			clone.tags = new HashSet<string>(this.tags);
+			clone.assets = new AssetCollection(this.assets);
 			return clone;
 		}
 	}
