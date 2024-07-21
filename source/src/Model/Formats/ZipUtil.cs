@@ -1,48 +1,52 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
-using ICSharpCode.SharpZipLib.Zip;
 
 namespace Ginger
 {
 	public static partial class FileUtil
 	{
-		private static FileUtil.Error ExtractJsonFromArchive(string filename, out string tavernJsonV3, out string gingerXml)
+		private static Error ExtractJsonFromArchive(string filename, out string tavernJsonV3, out string gingerXml)
 		{
 			tavernJsonV3 = null;
 			gingerXml = null;
 			try
 			{
-				using (var zip_stream = new ZipInputStream(File.OpenRead(filename)))
+				using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
 				{
-					ZipEntry theEntry;
-					while (zip_stream.CanRead && (theEntry = zip_stream.GetNextEntry()) != null)
+					using (var archive = new ZipArchive(fs, ZipArchiveMode.Read))
 					{
-						string entryName = theEntry.Name.ToLowerInvariant();
+						foreach (var entry in archive.Entries)
+						{
+							string entryName = entry.FullName.ToLowerInvariant();
 
-						if (entryName == "ginger.xml")
-						{
-							long dataSize = theEntry.Size;
-							if (dataSize > 0)
+							if (entryName == "ginger.xml")
 							{
-								byte[] buffer = new byte[dataSize];
-								zip_stream.Read(buffer, 0, (int)dataSize);
-								gingerXml = new string(Encoding.UTF8.GetChars(buffer));
+								long dataSize = entry.Length;
+								if (dataSize > 0)
+								{
+									var dataStream = entry.Open();
+									byte[] buffer = new byte[dataSize];
+									dataStream.Read(buffer, 0, (int)dataSize);
+									gingerXml = new string(Encoding.UTF8.GetChars(buffer));
+								}
+								continue;
 							}
-							continue;
-						}
-						if (entryName == "card.json")
-						{
-							long dataSize = theEntry.Size;
-							if (dataSize > 0)
+							if (entryName == "card.json")
 							{
-								byte[] buffer = new byte[dataSize];
-								zip_stream.Read(buffer, 0, (int)dataSize);
-								tavernJsonV3 = new string(Encoding.UTF8.GetChars(buffer));
+								long dataSize = entry.Length;
+								if (dataSize > 0)
+								{
+									var dataStream = entry.Open();
+									byte[] buffer = new byte[dataSize];
+									dataStream.Read(buffer, 0, (int)dataSize);
+									tavernJsonV3 = new string(Encoding.UTF8.GetChars(buffer));
+								}
+								continue;
 							}
-							continue;
 						}
 					}
 				}
@@ -63,20 +67,23 @@ namespace Ginger
 			{
 				entryName = entryName.Replace('\\', '/');
 
-				using (var zip_stream = new ZipInputStream(File.OpenRead(filename)))
+				using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
 				{
-					ZipEntry theEntry;
-					while (zip_stream.CanRead && (theEntry = zip_stream.GetNextEntry()) != null)
+					using (var archive = new ZipArchive(fs, ZipArchiveMode.Read))
 					{
-						string thisEntryName = theEntry.Name.Replace('\\', '/');
-						if (thisEntryName == entryName) // Exact match
+						foreach (var entry in archive.Entries)
 						{
-							long dataSize = theEntry.Size;
-							if (dataSize > 0)
+							string thisEntryName = entry.FullName.Replace('\\', '/');
+							if (thisEntryName == entryName) // Exact match
 							{
-								data = new byte[dataSize];
-								zip_stream.Read(data, 0, (int)dataSize);
-								return Error.NoError;
+								long dataSize = entry.Length;
+								if (dataSize > 0)
+								{
+									var dataStream = entry.Open();
+									data = new byte[dataSize];
+									dataStream.Read(data, 0, (int)dataSize);
+									return Error.NoError;
+								}
 							}
 						}
 					}
