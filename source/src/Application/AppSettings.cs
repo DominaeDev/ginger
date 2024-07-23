@@ -141,7 +141,7 @@ namespace Ginger
 		{
 			public static bool EnableBackyardAI = true;
 			public static bool EnableCCV2 = true;
-			public static bool EnableCCV3 = true;
+			public static bool EnableCCV3 = false;
 		}
 
 		public static bool LoadFromIni(string filePath)
