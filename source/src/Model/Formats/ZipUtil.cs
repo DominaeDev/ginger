@@ -91,7 +91,7 @@ namespace Ginger
 								continue; // Skip folder entries
 
 							string entryName = entry.FullName.Replace('\\', '/');
-							int idxAsset = assets.FindIndex(a => a.uri == string.Concat(AssetFile.EmbeddedURIPrefix, entryName));
+							int idxAsset = assets.FindIndex(a => string.Compare(string.Concat(a.uriPath ?? "", a.uriName ?? ""), entryName, StringComparison.Ordinal) == 0);
 							if (idxAsset == -1)
 								continue; // Unreferenced asset
 
@@ -157,10 +157,9 @@ namespace Ginger
 						// Add main icon asset
 						assets.Insert(0, new AssetFile() {
 							assetType = AssetFile.AssetType.Icon,
-							fileType = AssetFile.FileType.Image,
-							uri = string.Concat(AssetFile.EmbeddedURIPrefix, "assets/icon/images/main.png"),
 							name = "main",
 							ext = "png",
+							uriType = AssetFile.UriType.Embedded,
 							data = new AssetData() {
 								data = stream.ToArray(),
 							},
@@ -170,6 +169,7 @@ namespace Ginger
 				}
 				catch
 				{
+					bWriteNullImage = true;
 				}
 
 			}
@@ -177,24 +177,19 @@ namespace Ginger
 			if (bWriteNullImage)
 			{
 				// Add default icon asset
-				assets.Insert(0, new AssetFile() {
-					assetType = AssetFile.AssetType.Icon,
-					uri = AssetFile.DefaultURI,
-					name = "main",
-					ext = "unknown",
-				});
+				assets.Insert(0, AssetFile.MakeDefault(AssetFile.AssetType.Icon, "main"));
 			}
 
 			// Validate names and uris
-			assets.Validate(AssetCollection.Mode.CharX);
+			assets.Validate();
 
 			card.data.assets = assets
 				.Select(a => new TavernCardV3.Data.Asset() 
 				{
 					type = a.GetTypeName(),
-					uri = a.uri,
+					uri = a.GetUri(AssetFile.UriFormat.CharX_Prefix),
 					name = a.name,
-					ext = a.ext.ToLowerInvariant(),
+					ext = a.ext,
 				})
 				.ToArray();
 
@@ -215,11 +210,12 @@ namespace Ginger
 						writer.Write(textBuffer, 0, textBuffer.Length);
                     }
 
-					// Write ginger.txt
-					var gingerEntry = zip.CreateEntry("ginger.txt", CompressionLevel.NoCompression);
+					// Write readme.txt
+					var gingerEntry = zip.CreateEntry("readme.txt", CompressionLevel.NoCompression);
 					using (StreamWriter writer = new StreamWriter(gingerEntry.Open()))
                     {
 						writer.WriteLine("This character card was created using Ginger.");
+						writer.WriteLine();
 						writer.WriteLine(Constants.WebsiteURL);
                     }
 
@@ -228,11 +224,10 @@ namespace Ginger
 					{
 						if (asset.data.length == 0)
 							continue; // No file data
-
-						if (asset.uri.BeginsWith(AssetFile.EmbeddedURIPrefix) == false)
+						if (asset.uriType != AssetFile.UriType.Embedded)
 							continue; // Not an embed
 
-						string entryName = asset.uri.Substring(AssetFile.EmbeddedURIPrefix.Length);
+						string entryName = asset.GetUri(AssetFile.UriFormat.CharX);
 						var fileEntry = zip.CreateEntry(string.Format(entryName, CompressionLevel.NoCompression));
 						using (Stream writer = fileEntry.Open())
 						{

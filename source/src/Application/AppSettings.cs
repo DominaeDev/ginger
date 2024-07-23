@@ -137,9 +137,11 @@ namespace Ginger
 			public static bool PruneExampleChat = true;
 		}
 
-		public static class CCV3
+		public static class FileFormat
 		{
-			public static bool EnablePNGV3 = true;
+			public static bool EnableBackyardAI = true;
+			public static bool EnableCCV2 = true;
+			public static bool EnableCCV3 = true;
 		}
 
 		public static bool LoadFromIni(string filePath)
@@ -261,10 +263,12 @@ namespace Ginger
 				ReadBool(ref Faraday.PruneExampleChat, faradaySection, "PruneExampleChat");
 			}
 
-			var ccv3Section = iniData.Sections["CCV3"];
-			if (ccv3Section != null)
+			var fileFormatSection = iniData.Sections["FileFormat"];
+			if (fileFormatSection != null)
 			{
-				ReadBool(ref CCV3.EnablePNGV3, ccv3Section, "EnablePNGV3");
+				ReadBool(ref FileFormat.EnableBackyardAI, fileFormatSection, "EnableBackyardAI");
+				ReadBool(ref FileFormat.EnableCCV2, fileFormatSection, "EnableCCV2");
+				ReadBool(ref FileFormat.EnableCCV3, fileFormatSection, "EnableCCV3");
 			}
 
 			var mruSection = iniData.Sections["MRU"];
@@ -370,8 +374,10 @@ namespace Ginger
 					Write(outputFile, "PruneExampleChat", Faraday.PruneExampleChat);
 					
 					// CCV3
-					WriteSection(outputFile, "CCV3");
-					Write(outputFile, "EnablePNGV3", CCV3.EnablePNGV3);
+					WriteSection(outputFile, "FileFormat");
+					Write(outputFile, "EnableBackyardAI", FileFormat.EnableBackyardAI);
+					Write(outputFile, "EnableCCV2", FileFormat.EnableCCV2);
+					Write(outputFile, "EnableCCV3", FileFormat.EnableCCV3);
 
 					// MRU list
 					WriteSection(outputFile, "MRU");

@@ -3,10 +3,228 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Ginger
 {
+	public class AssetFile : ICloneable
+	{
+		public string name;
+		public AssetType assetType = AssetType.Undefined;
+		public string ext;
+		public AssetData data;
+
+		// Uri
+		public UriType uriType = UriType.Undefined;
+		public string fullUri { get; private set; }
+		public string uriPath { get; private set; }
+		public string uriName { get; set; } // with ext
+
+		public bool isDefaultAsset { get { return uriType == UriType.Default; } }
+		public bool isEmbeddedAsset { get { return uriType == UriType.Embedded; } }
+
+		public static readonly string DefaultUri = "ccdefault:";
+		public static readonly string CharXEmbedUriPrefix = "embeded://";
+		public static readonly string PNGEmbedUriPrefix = "__asset:";
+		public static readonly string PNGEmbedKeyPrefix = "chara-ext-asset_"; // ?
+
+		public enum AssetType
+		{
+			Undefined,
+			Icon,
+			UserIcon,
+			Background,
+			Expression, // Emotion
+			Other,
+		};
+
+		public enum UriType
+		{
+			Undefined,
+			Default,
+			Embedded,
+			Custom,
+		}
+
+		private static AssetType AssetTypeFromString(string value)
+		{
+			if (string.IsNullOrEmpty(value) == false)
+			{
+				value = value.Trim().ToLowerInvariant();
+				switch (value)
+				{
+				case "icon":
+					return AssetType.Icon;
+				case "user_icon":
+					return AssetType.UserIcon;
+				case "background":
+					return AssetType.Background;
+				case "emotion":
+					return AssetType.Expression;
+				case "other":
+					return AssetType.Other;
+				}
+			}
+			return AssetType.Undefined;
+		}
+
+		public string GetTypeName()
+		{
+			switch (assetType)
+			{
+			case AssetType.Icon:
+				return "icon";
+			case AssetType.UserIcon:
+				return "user_icon";
+			case AssetType.Background:
+				return "background";
+			case AssetType.Expression:
+				return "emotion";
+			default:
+				return "other";
+			}
+		}
+
+		public static AssetFile FromV3Asset(TavernCardV3.Data.Asset assetInfo, byte[] data = null)
+		{
+			string name = assetInfo.name.Trim();
+			string uri = assetInfo.uri.Trim();
+			string ext = assetInfo.ext != null ? assetInfo.ext : null;
+			string type = assetInfo.type.Trim().ToLowerInvariant();
+
+			uri = uri.Replace("embedded://", CharXEmbedUriPrefix); // Quirk in the v3 spec
+			uri = uri.Replace(PNGEmbedUriPrefix, CharXEmbedUriPrefix);
+			uri = uri.Replace('\\', '/');
+
+			// Default asset
+			if (uri.Length == 0 || string.Compare(uri, DefaultUri, StringComparison.OrdinalIgnoreCase) == 0)
+			{
+				return new AssetFile() {
+					name = name,
+					ext = ext ?? "unknown",
+					assetType = AssetTypeFromString(type),
+					uriType = UriType.Default,
+					fullUri = DefaultUri,
+					uriPath = null,
+					uriName = null,
+				};
+			}
+			
+			// Remote/Custom asset
+			if (uri.BeginsWith(CharXEmbedUriPrefix) == false)
+			{
+				string uriPath = uri;
+				int idxProtocol = uri.IndexOf("://");
+				if (idxProtocol == -1)
+					uriPath = uri.Substring(idxProtocol + 3);
+
+				return new AssetFile() {
+					name = name,
+					ext = ext,
+					assetType = AssetTypeFromString(type),
+					uriType = UriType.Custom,
+					fullUri = uri,
+					uriPath = uriPath,
+					uriName = null,
+				};
+			}
+
+			// Embedded asset
+			string path = null;
+			string filename = uri.Substring(CharXEmbedUriPrefix.Length);
+			int idxPath = filename.LastIndexOf('/');
+			if (idxPath != -1)
+			{
+				path = filename.Substring(0, idxPath + 1);
+				filename = filename.Substring(idxPath + 1);
+			}
+
+			return new AssetFile() {
+				name = name,
+				ext = ext,
+				assetType = AssetTypeFromString(type),
+				uriType = UriType.Embedded,
+				fullUri = uri,
+				uriPath = path,
+				uriName = filename,
+				data = AssetData.FromBytes(data),
+			};
+		}
+
+		public static AssetFile MakeDefault(AssetType type, string name, string ext = null)
+		{
+			return new AssetFile() {
+				assetType = type,
+				fullUri = DefaultUri,
+				uriType = UriType.Default,
+				name = name ?? "main",
+				ext = ext ?? "unknown",
+				uriName = null,
+				uriPath = null,
+			};
+		}
+
+		public enum UriFormat 
+		{ 
+			Png,
+			Png_Prefix,
+			CharX, 
+			CharX_Prefix, 
+		}
+
+		public string GetUri(UriFormat format)
+		{
+			if (uriType == UriType.Default)
+				return DefaultUri;
+			else if (uriType == UriType.Custom)
+				return fullUri;
+			else
+			{
+				string path;
+				if (assetType == AssetType.Icon)
+					path = "assets/icon/";
+				else if (assetType == AssetType.UserIcon)
+					path = "assets/user_icon/";
+				else if (assetType == AssetType.Background)
+					path = "assets/background/";
+				else if (assetType == AssetType.Expression)
+					path = "assets/emotion/";
+				else
+					path = "assets/other/";
+
+				switch (format)
+				{
+				case UriFormat.Png:
+					return string.Concat(path, uriName ?? "");
+				case UriFormat.Png_Prefix:
+					return string.Concat(PNGEmbedUriPrefix, path, uriName ?? "");
+				default:
+				case UriFormat.CharX:
+					return string.Concat(path, uriName ?? "", ext != null ? "." : "", ext ?? "");
+				case UriFormat.CharX_Prefix:
+					return string.Concat(CharXEmbedUriPrefix, path, uriName ?? "", ext != null ? "." : "", ext ?? "");
+				}
+			}
+		}
+
+		public object Clone()
+		{
+			return this.MemberwiseClone();
+		}
+	}
+
+	public struct AssetData
+	{
+		public byte[] data;
+		public long length { get { return data != null ? data.Length : 0; } }
+
+		public static AssetData FromBytes(byte[] bytes)
+		{
+			return new AssetData() {
+				data = bytes,
+			};
+		}
+	}
+
 	public class AssetCollection : List<AssetFile>, ICloneable
 	{
 		public AssetCollection() : base() {}
@@ -59,7 +277,7 @@ namespace Ginger
 			}
 			else
 			{
-				int idx = this.FindIndex(a => string.Compare(a.name, "main", System.StringComparison.OrdinalIgnoreCase) == 0);
+				int idx = this.FindIndex(a => string.Compare(a.name, "main", StringComparison.OrdinalIgnoreCase) == 0);
 				if (idx != -1)
 				{
 					this.RemoveAt(idx);
@@ -72,14 +290,10 @@ namespace Ginger
 			}
 		}
 
-		public enum Mode
-		{
-			Png,
-			CharX,
-		}
-		public void Validate(Mode mode)
+		public void Validate()
 		{
 			var validated = this
+				// Ensure there is at least one "main" asset per type
 				.GroupBy(a => a.assetType)
 				.Select(g => {
 					var assetType = g.Key;
@@ -91,7 +305,6 @@ namespace Ginger
 							assets = assetsOfType,
 						};
 
-					// Ensure there is at least one "main" asset per type
 					string mainName = assetType == AssetFile.AssetType.Expression ? "neutral" : "main";
 
 					if (assetsOfType.Count == 1)
@@ -121,26 +334,7 @@ namespace Ginger
 				{
 					string name = assetsOfType[i].name.ToLowerInvariant().Trim();
 					if (name == "")
-						assetsOfType[i].name = name = "untitled"; // Name cannot be empty
-
-					if (mode == Mode.Png)
-					{
-						int maxLength = 50; // PNG limit (- space for prefix, type, and suffix)
-						if (name.Length > maxLength)
-							name = name.Substring(0, maxLength);
-
-						var sbName = new StringBuilder(name.Length);
-						sbName.Replace(' ', '-');
-						for (int j = 0; j < name.Length; ++j)
-						{
-							char ch = name[j];
-							if ((ch >= 0x20 && ch <= 0x7E) || (ch >= 0xA1 && ch <= 0xFF)) // Legal char ranges
-								sbName.Append(ch);
-							else
-								sbName.Append('_');
-						}
-						name = sbName.ToString();
-					}
+						assetsOfType[i].name = name = "untitled"; // Name mustn't be empty
 
 					if (used_names.ContainsKey(name) == false)
 					{
@@ -157,48 +351,23 @@ namespace Ginger
 					}
 					assetsOfType[i].name = testName;
 				}
-				return assetsOfType;
-			})
-			.Select(asset => {
-				// Set uri
-				if (asset.isDefaultAsset)
-					asset.uri = AssetFile.DefaultURI;
-				else if (asset.protocol == AssetFile.EmbeddedURIPrefix)
+
+				// Assign new filenames
+				int counter = 1;
+				for (int i = 0; i < assetsOfType.Count; ++i)
 				{
-					if (mode == Mode.CharX)
-						asset.uri = string.Concat(asset.protocol, asset.GetPath(), EscapeName(asset.name), ".", asset.ext).ToLowerInvariant();
-					else if (mode == Mode.Png)
-						asset.uri = string.Concat(AssetFile.PNGEmbeddedURIPrefix, asset.GetTypeName(), "_", asset.name).ToLowerInvariant();
+					if (assetsOfType[i].isEmbeddedAsset == false)
+						continue;
+					
+					assetsOfType[i].uriName = string.Format("{0:00}", counter++);
 				}
 
-				// Fix ext
-				if (asset.ext != null)
-					asset.ext = asset.ext.ToLowerInvariant();
-				else
-					asset.ext = "unknown";
-				return asset;
+				return assetsOfType;
 			})
 			.ToArray();
-			
+
 			Clear();
 			AddRange(validated);
-		}
-
-		public static string EscapeName(string name)
-		{
-			var sb = new StringBuilder(name.Length);
-			var illegal_chars = new char[] { '%', ':', '\\', '/', '?', '"', '*', '<', '>', '|' };
-			for (int i = 0; i < name.Length; ++i)
-			{
-				char ch = name[i];
-				if ((ch & 0xFF) != ch)
-					sb.AppendFormat("%u{0:X4}", (int)ch);
-				else if ((ch >= 0x00 && ch <= 0x1f) || (ch >= 0x7f && ch <= 0x9f) || ch >= 0xA0 || illegal_chars.Contains(ch))
-					sb.AppendFormat("%{0:X2}", (int)(ch & 0xff));
-				else
-					sb.Append(ch);
-			}
-			return sb.ToString();
 		}
 
 		public object Clone()
@@ -212,304 +381,6 @@ namespace Ginger
 		public bool HasDefaultIcon()
 		{
 			return this.ContainsAny(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
-		}
-	}
-
-	public class AssetFile : ICloneable
-	{
-		public string name;
-		public string ext;
-		public string uri;
-		public AssetType assetType = AssetType.Undefined;
-		public FileType fileType = FileType.Undefined;
-		public AssetData data;
-		public string protocol
-		{
-			get
-			{
-				if (string.IsNullOrEmpty(this.uri))
-					return "";
-				int idxProtocol = this.uri.IndexOf("://");
-				if (idxProtocol == -1)
-					return "";
-				return this.uri.Substring(0, idxProtocol + 3).ToLowerInvariant();
-			}
-		}
-
-		public static readonly string DefaultURI = "ccdefault:";
-		public static readonly string EmbeddedURIPrefix = "embeded://";
-		public static readonly string PNGEmbeddedURIPrefix = "__asset:";
-		public static readonly string PNGEmbeddedNamePrefix = "chara-ext-asset_"; // ?
-
-		public bool isDefaultAsset { get { return uri == DefaultURI; } }
-		public bool isEmbeddedAsset { get { return protocol == EmbeddedURIPrefix || protocol == PNGEmbeddedURIPrefix; } }
-
-		public enum AssetType
-		{
-			Undefined,
-			Icon,
-			UserIcon,
-			Background,
-			Expression, // Emotion
-			Other,
-		};
-
-		public enum FileType
-		{
-			Undefined,
-			Image,
-			Audio,
-			Video,
-			Model3D,
-			ModelAI,
-			Live2D,
-			Font,
-			Script,
-			Other,
-		};
-
-		public string GetPath()
-		{
-			string typePath;
-			switch (assetType)
-			{
-			case AssetType.Icon:
-				typePath = "icon";
-				break;
-			case AssetType.UserIcon:
-				typePath = "user_icon";
-				break;
-			case AssetType.Background:
-				typePath = "background";
-				break;
-			case AssetType.Expression:
-				typePath = "emotion";
-				break;
-			case AssetType.Other:
-			default:
-				typePath = "other";
-				break;
-			}
-
-			switch (fileType)
-			{
-			case FileType.Image:
-				return string.Concat("assets/", typePath, "/images/");
-			case FileType.Audio:
-				return string.Concat("assets/", typePath, "/audio/");
-			case FileType.Video:
-				return string.Concat("assets/", typePath, "/video/");
-			case FileType.Model3D:
-				return string.Concat("assets/", typePath, "/3d/");
-			case FileType.ModelAI:
-				return string.Concat("assets/", typePath, "/ai/");
-			case FileType.Live2D:
-				return string.Concat("assets/", typePath, "/l2d/");
-			case FileType.Font:
-				return string.Concat("assets/", typePath, "/fonts/");
-			case FileType.Script:
-				return string.Concat("assets/", typePath, "/code/");
-			case FileType.Other:
-			default:
-				return string.Concat("assets/", typePath, "/other/");
-			}
-		}
-
-		public static FileType FileTypeFromExt(string ext)
-		{
-			if (ext != null)
-			{
-				ext = ext.Trim().ToLowerInvariant();
-				switch (ext)
-				{
-				case "jpg":
-				case "jpeg":
-				case "png":
-				case "apng":
-				case "webp":
-				case "avif":
-					return FileType.Image;
-
-				case "mp3":
-				case "wav":
-				case "ogg":
-				case "flac":
-				case "aiff":
-					return FileType.Audio;
-
-				case "mp4":
-				case "mov":
-				case "avi":
-				case "mpg":
-				case "mpeg":
-				case "webm":
-				case "mkv":
-					return FileType.Video;
-
-				case "otf":
-				case "ttf":
-					return FileType.Font;
-
-				case "obj":
-				case "mmd":
-				case "blend":
-				case "gltf":
-				case "fbx":
-					return FileType.Model3D;
-
-				case "safetensor":
-				case "ckpt":
-				case "onnx":
-					return FileType.ModelAI;
-
-				case "lua":
-				case "js":
-				case "py":
-				case "html":
-					return FileType.Script;
-				default:
-					return FileType.Other;
-				}
-			}
-			return FileType.Undefined;
-		}
-
-		public static FileType FileTypeFromPath(string path)
-		{
-			if (string.IsNullOrEmpty(path))
-				return FileType.Undefined;
-
-			if (path.EndsWith("/images/"))
-				return FileType.Image;
-			if (path.EndsWith("/audio/"))
-				return FileType.Audio;
-			if (path.EndsWith("/video/"))
-				return FileType.Video;
-			if (path.EndsWith("/3d/"))
-				return FileType.Model3D;
-			if (path.EndsWith("/ai/"))
-				return FileType.ModelAI;
-			if (path.EndsWith("/l2d/"))
-				return FileType.Live2D;
-			if (path.EndsWith("/fonts/"))
-				return FileType.Font;
-			if (path.EndsWith("/code/"))
-				return FileType.Script;
-			if (path.EndsWith("/other/"))
-				return FileType.Other;
-			return FileType.Undefined;
-		}
-
-		public static AssetType AssetTypeFromString(string value)
-		{
-			if (string.IsNullOrEmpty(value) == false)
-			{
-				value = value.Trim().ToLowerInvariant();
-				switch (value)
-				{
-				case "icon":
-					return AssetType.Icon;
-				case "user_icon":
-					return AssetType.UserIcon;
-				case "background":
-					return AssetType.Background;
-				case "emotion":
-					return AssetType.Expression;
-				case "other":
-					return AssetType.Other;
-				}
-			}
-			return AssetType.Undefined;
-		}
-
-		public string GetTypeName()
-		{
-			switch (assetType)
-			{
-			case AssetType.Icon:
-				return "icon";
-			case AssetType.UserIcon:
-				return "user_icon";
-			case AssetType.Background:
-				return "background";
-			case AssetType.Expression:
-				return "emotion";
-			default:
-				return "other";
-			}
-		}
-
-		public static AssetFile FromV3Asset(TavernCardV3.Data.Asset assetInfo, byte[] data = null)
-		{
-			string name = assetInfo.name.Trim();
-			string uri = assetInfo.uri.Trim();
-			string ext = assetInfo.ext != null ? assetInfo.ext : null;
-			string type = assetInfo.type.Trim().ToLowerInvariant();
-
-			uri = uri.Replace("embedded://", EmbeddedURIPrefix); // Quirk in the v3 spec
-			uri = uri.Replace("__asset:", EmbeddedURIPrefix);
-
-			// Default asset
-			if (uri.Length == 0 || string.Compare(uri, DefaultURI, StringComparison.OrdinalIgnoreCase) == 0)
-			{
-				return new AssetFile() {
-					name = name,
-					assetType = AssetTypeFromString(type),
-					ext = ext ?? "unknown",
-					fileType = FileTypeFromExt(ext),
-					uri = DefaultURI,
-				};
-			}
-
-			// Extract path
-			string path = uri;
-			if (path.BeginsWith(PNGEmbeddedURIPrefix))
-			{
-				path = path.Substring(PNGEmbeddedURIPrefix.Length);
-			}
-			else
-			{
-				int idxProtocol = path.IndexOf("://");
-				if (idxProtocol != -1)
-					path = path.Substring(idxProtocol + 3);
-			}
-
-			int idxPath = path.LastIndexOf('/');
-			if (idxPath != -1)
-				path = path.Substring(0, idxPath + 1);
-			else
-				path = "";
-
-			FileType fileType = FileTypeFromPath(path);
-			if (fileType == FileType.Undefined)
-				fileType = FileTypeFromExt(ext);
-
-			return new AssetFile() {
-				name = name,
-				ext = ext,
-				assetType = AssetTypeFromString(type),
-				fileType = fileType,
-				uri = uri,
-				data = AssetData.FromBytes(data),
-			};
-		}
-
-		public object Clone()
-		{
-			return this.MemberwiseClone();
-		}
-	}
-
-	public struct AssetData
-	{
-		public byte[] data;
-		public long length { get { return data != null ? data.Length : 0; } }
-
-		public static AssetData FromBytes(byte[] bytes)
-		{
-			return new AssetData() {
-				data = bytes,
-			};
 		}
 	}
 }

@@ -133,7 +133,7 @@ namespace Ginger
 		public static FaradayCardV3 FromOutput(Generator.Output output)
 		{
 			FaradayCardV3 card = new FaradayCardV3();
-			card.data.displayName = Utility.FirstNonEmpty(Current.Card.name, Current.MainCharacter.spokenName, Constants.DefaultName);
+			card.data.displayName = Current.CardName;
 			card.data.name = Current.Name;
 			card.data.system = output.system.ToFaraday();
 			card.data.persona = output.persona.ToFaraday();

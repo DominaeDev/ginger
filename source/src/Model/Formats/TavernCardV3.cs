@@ -266,7 +266,7 @@ namespace Ginger
 			TavernCardV3 card = new TavernCardV3();
 			card.spec = "chara_card_v3";
 			card.spec_version = "3.0";
-			card.data.name = Current.Name;
+			card.data.name = Current.CardName;
 			card.data.nickname = Current.Name;
 			card.data.creator = Current.Card.creator;
 			card.data.creator_notes = Current.Card.comment.ConvertLinebreaks(Linebreak.LF);

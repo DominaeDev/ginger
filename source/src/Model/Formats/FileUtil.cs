@@ -29,7 +29,7 @@ namespace Ginger
 			public string tavernJsonV2;
 			public string tavernJsonV3;
 			public string gingerXml;
-			public Dictionary<string, byte[]> embeddedAssets;
+			public Dictionary<string, byte[]> assets;
 
 			public bool isEmpty 
 			{
@@ -119,30 +119,28 @@ namespace Ginger
 						result.tavernJsonV2 = new string(Encoding.UTF8.GetChars(byteArray));
 					}
 
-					if (AppSettings.CCV3.EnablePNGV3)
+					// Read Tavern v3 json (PNG chunk)
+					if (metaData.ContainsKey("ccv3"))
 					{
-						// Read Tavern v3 json (PNG chunk)
-						if (metaData.ContainsKey("ccv3"))
-						{
-							bDataFound = true;
-							string charaBase64 = metaData["ccv3"];
-							byte[] byteArray = Convert.FromBase64String(charaBase64);
-							result.tavernJsonV3 = new string(Encoding.UTF8.GetChars(byteArray));
-						}
+						bDataFound = true;
+						string charaBase64 = metaData["ccv3"];
+						byte[] byteArray = Convert.FromBase64String(charaBase64);
+						result.tavernJsonV3 = new string(Encoding.UTF8.GetChars(byteArray));
 
 						// Read embedded PNGv3 assets
-						if (metaData.Keys.ContainsAny(key => key.BeginsWith(AssetFile.PNGEmbeddedNamePrefix)))
+						if (metaData.Keys.ContainsAny(key => key.BeginsWith(AssetFile.PNGEmbedKeyPrefix)))
 						{
-							result.embeddedAssets = new Dictionary<string, byte[]>();
-							foreach (var kvp in metaData.Where(kvp => kvp.Key.BeginsWith(AssetFile.PNGEmbeddedNamePrefix)))
+							result.assets = new Dictionary<string, byte[]>();
+							foreach (var kvp in metaData.Where(kvp => kvp.Key.BeginsWith(AssetFile.PNGEmbedKeyPrefix)))
 							{
-								string path = kvp.Key.Substring(AssetFile.PNGEmbeddedNamePrefix.Length);
-								byte[] byteArray = Convert.FromBase64String(kvp.Value);
-								if (path.Length > 0 && byteArray.Length > 0)
-									result.embeddedAssets.TryAdd(path, byteArray);
+								string path = kvp.Key.Substring(AssetFile.PNGEmbedKeyPrefix.Length);
+								byte[] embedBuffer = Convert.FromBase64String(kvp.Value);
+								if (path.Length > 0 && embedBuffer.Length > 0)
+									result.assets.TryAdd(path, embedBuffer);
 							}
 						}
 					}
+					
 				}
 				catch
 				{
@@ -171,7 +169,6 @@ namespace Ginger
 			public TavernCardV3 tavernDataV3;
 			public FaradayCardV4 faradayData;   // Version 4
 			public int jsonErrors;
-			public AssetCollection embeddedAssets;
 		}
 
 		public static Error Import(string filename, out ImportResult result)
@@ -201,24 +198,7 @@ namespace Ginger
 			if (extractResult.tavernJsonV2 != null)
 				result.tavernDataV2 = TavernCardV2.FromJson(extractResult.tavernJsonV2, out result.jsonErrors);
 			if (extractResult.tavernJsonV3 != null)
-			{
 				result.tavernDataV3 = TavernCardV3.FromJson(extractResult.tavernJsonV3, out result.jsonErrors);
-				if (result.tavernDataV3 != null && result.tavernDataV3.data.assets != null && extractResult.embeddedAssets != null)
-				{
-					result.embeddedAssets = new AssetCollection();
-					for (int i = 0; i < result.tavernDataV3.data.assets.Length; ++i)
-					{
-						var assetInfo = result.tavernDataV3.data.assets[i];
-						if (assetInfo.uri.BeginsWith(AssetFile.PNGEmbeddedURIPrefix))
-						{
-							var path = assetInfo.uri.Substring(AssetFile.PNGEmbeddedURIPrefix.Length);
-							byte[] data;
-							extractResult.embeddedAssets.TryGetValue(path, out data);
-							result.embeddedAssets.Add(AssetFile.FromV3Asset(assetInfo, data));
-						}
-					}
-				}
-			}
 			if (extractResult.gingerXml != null)
 				result.gingerData = GingerCardV1.FromXml(extractResult.gingerXml);
 			
@@ -286,7 +266,7 @@ namespace Ginger
 				List<MetaData> metaData = new List<MetaData>();
 
 				// Tavern json (v2)
-				if (formats.Contains(Format.SillyTavernV2) && false) //!!
+				if (formats.Contains(Format.SillyTavernV2) && AppSettings.FileFormat.EnableCCV2)
 				{
 					var tavernData = TavernCardV2_Export.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavern));
 					tavernData.data.extensions.ginger = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
@@ -300,7 +280,7 @@ namespace Ginger
 				}
 
 				// Tavern json (v3)
-				if (formats.Contains(Format.SillyTavernV3) && AppSettings.CCV3.EnablePNGV3)
+				if (formats.Contains(Format.SillyTavernV3) && AppSettings.FileFormat.EnableCCV3)
 				{
 					var tavernData = TavernCardV3.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavern));
 					tavernData.data.extensions.ginger = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
@@ -309,22 +289,17 @@ namespace Ginger
 					var assets = (AssetCollection)Current.Card.assets.Clone();
 					if (assets.HasDefaultIcon() == false)
 					{
-						// Add default icon asset
-						assets.Add(new AssetFile() {
-							assetType = AssetFile.AssetType.Icon,
-							uri = AssetFile.DefaultURI,
-							name = "main",
-							ext = "png",
-						});
+						// Add default icon
+						assets.Insert(0, AssetFile.MakeDefault(AssetFile.AssetType.Icon, "main", "png"));
 					}
 
-					assets.Validate(AssetCollection.Mode.Png);
+					assets.Validate();
 
 					tavernData.data.assets = assets
 						.Select(a => new TavernCardV3.Data.Asset() 
 						{
 							type = a.GetTypeName(),
-							uri = a.uri,
+							uri = a.GetUri(AssetFile.UriFormat.Png_Prefix),
 							name = a.name,
 							ext = a.ext.ToLowerInvariant(),
 						})
@@ -341,16 +316,13 @@ namespace Ginger
 					// Write assets
 					foreach (var asset in assets)
 					{
-						if (asset.isDefaultAsset || asset.data.length == 0)
+						if (asset.isEmbeddedAsset == false || asset.data.length == 0)
 							continue;
 
-						if (asset.uri.BeginsWith(AssetFile.PNGEmbeddedURIPrefix) == false)
-							continue;
-
-						string path = asset.uri.Substring(AssetFile.PNGEmbeddedURIPrefix.Length);
+						string key = string.Concat(AssetFile.PNGEmbedKeyPrefix, asset.GetUri(AssetFile.UriFormat.Png));
 						var assetBase64 = Convert.ToBase64String(asset.data.data);
 						metaData.Add(new MetaData() {
-							key = string.Concat(AssetFile.PNGEmbeddedNamePrefix, path),
+							key = key,
 							value = assetBase64,
 							compressed = false,
 						});
@@ -374,7 +346,7 @@ namespace Ginger
 					return false; // Error
 
 				// Write Faraday json
-				if (formats.Contains(Format.Faraday))
+				if (formats.Contains(Format.Faraday) && AppSettings.FileFormat.EnableBackyardAI)
 				{
 					string faradayJson = FaradayCardV4.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.Faraday)).ToJson();
 					var faradayBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(faradayJson));
@@ -909,7 +881,7 @@ namespace Ginger
 							hasGingerData |= string.Compare(textChunk.Keyword, "ginger", true) == 0;
 							if (string.Compare(textChunk.Keyword, "chara", true) == 0 && string.IsNullOrEmpty(jsonData))
 								jsonData = textChunk.Text;
-							if (string.Compare(textChunk.Keyword, "ccv3", true) == 0 && AppSettings.CCV3.EnablePNGV3)
+							if (string.Compare(textChunk.Keyword, "ccv3", true) == 0)
 								jsonData = textChunk.Text;
 						}
 						else if (chunk is zTXtChunk) // Compressed
@@ -1054,7 +1026,11 @@ namespace Ginger
 			}
 
 			if (importResult.gingerData != null && formats.Contains(Format.Ginger))
+			{
 				Current.ReadGingerCard(importResult.gingerData, image);
+				if (importResult.tavernDataV3 != null && formats.Contains(Format.SillyTavernV3) )
+					ExtractAssetsFromPNG(filename, importResult.tavernDataV3, out Current.Card.assets);
+			}
 			else if (importResult.faradayData != null && formats.Contains(Format.Faraday))
 				Current.ReadFaradayCard(importResult.faradayData, image);
 			else if (importResult.tavernDataV3 != null && formats.Contains(Format.SillyTavernV3))
@@ -1072,18 +1048,80 @@ namespace Ginger
 					// Remove portrait image (it will be re-added on save/export)
 					Current.Card.assets.RemovePortraitImage();
 				}
+				else if (ext == ".png")
+				{
+					ExtractAssetsFromPNG(filename, importResult.tavernDataV3, out Current.Card.assets);
+				}
 			}
 			else if (importResult.tavernDataV2 != null && formats.Contains(Format.SillyTavernV2))
 				Current.ReadTavernCard(importResult.tavernDataV2, image);
 			else
 				return Error.UnrecognizedFormat;
 
-			if (importResult.embeddedAssets != null)
-				Current.Card.assets = importResult.embeddedAssets;
-
 			return bFallbackWarning ? Error.FallbackError : Error.NoError;
 		}
 
-		
+		private static Error ExtractAssetsFromPNG(string filename, TavernCardV3 tavernV3Card, out AssetCollection assets)
+		{
+			var assetList = tavernV3Card.data.assets;
+			if (assetList == null || assetList.Length == 0)
+			{
+				assets = new AssetCollection(); // Empty
+				return Error.NoDataFound;
+			}
+
+			try
+			{
+				// Read PNG chunks
+				Dictionary<string, string> metaData = new Dictionary<string, string>();
+				using (FileStream stream = File.OpenRead(filename))
+				{
+					PNGImage image = new PNGImage(stream);
+					foreach (var chunk in image.Chunks)
+					{
+						if (chunk is tEXtChunk) // Uncompressed
+						{
+							var textChunk = chunk as tEXtChunk;
+							metaData.TryAdd(textChunk.Keyword.ToLowerInvariant(), textChunk.Text);
+						}
+						else if (chunk is zTXtChunk) // Compressed
+						{
+							var textChunk = chunk as zTXtChunk;
+							metaData.TryAdd(textChunk.Keyword.ToLowerInvariant(), textChunk.Text);
+						}
+					}
+				}
+
+				assets = new AssetCollection();
+				foreach (var assetInfo in assetList)
+					assets.Add(AssetFile.FromV3Asset(assetInfo));
+
+				// Read embedded PNGv3 assets
+				if (metaData.Keys.ContainsAny(key => key.BeginsWith(AssetFile.PNGEmbedKeyPrefix)))
+				{
+					foreach (var kvp in metaData.Where(kvp => kvp.Key.BeginsWith(AssetFile.PNGEmbedKeyPrefix)))
+					{
+						string entryName = kvp.Key.Substring(AssetFile.PNGEmbedKeyPrefix.Length);
+						int idxAsset = assets.FindIndex(a => string.Compare(string.Concat(a.uriPath ?? "", a.uriName ?? ""), entryName, StringComparison.Ordinal) == 0);
+						if (idxAsset == -1)
+							continue; // Unreferenced asset
+
+						byte[] buffer = Convert.FromBase64String(kvp.Value);
+						assets[idxAsset].data = new AssetData() {
+							data = buffer,
+						};				
+					}
+				}
+
+				if (assets.Count == 0)
+					return Error.NoDataFound;
+				return Error.NoError;	
+			}
+			catch
+			{
+				assets = null;
+				return Error.FileReadError;
+			}
+		}
 	}
 }

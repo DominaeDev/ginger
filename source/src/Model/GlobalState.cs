@@ -28,6 +28,7 @@ namespace Ginger
 
 		public static bool IsLoading = false;
 
+		public static string CardName { get { return Utility.FirstNonEmpty(Card.name, MainCharacter.spokenName, Constants.DefaultName); } }
 		public static string Name { get { return Utility.FirstNonEmpty(Character.spokenName, Card.name, Constants.DefaultName); } }
 
 		public static int SelectedCharacter { get; set; }
