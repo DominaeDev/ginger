@@ -23,36 +23,50 @@ namespace Ginger
 			FallbackError,
 		}
 
-		public static Error ExtractJsonFromPNG(string filename, 
-			out string faradayJson,
-			out string tavernJsonV2,
-			out string tavernJsonV3,
-			out string gingerXml)
+		public struct EmbeddedData
 		{
-			bool hasData = false;
+			public string faradayJson;
+			public string tavernJsonV2;
+			public string tavernJsonV3;
+			public string gingerXml;
+			public Dictionary<string, byte[]> embeddedAssets;
+
+			public bool isEmpty 
+			{
+				get
+				{
+					return string.IsNullOrEmpty(faradayJson)
+						&& string.IsNullOrEmpty(tavernJsonV2)
+						&& string.IsNullOrEmpty(tavernJsonV3)
+						&& string.IsNullOrEmpty(gingerXml);
+				}
+			}
+		}
+
+		public static Error ExtractJsonFromPNG(string filename, out EmbeddedData result)
+		{
+			bool bDataFound = false;
+			result = new EmbeddedData();
 			try
 			{
 				// Read Faraday json (Exif)
 				ExifData exifData = new ExifData(filename);
-				if (exifData.GetTagValue(ExifTag.UserComment, out faradayJson, StrCoding.IdCode_UsAscii))
+				if (exifData.GetTagValue(ExifTag.UserComment, out result.faradayJson, StrCoding.IdCode_UsAscii))
 				{
-					hasData = true;
-					if (faradayJson.BeginsWith('{') == false
-						 && faradayJson.Length > 0 && faradayJson.Length % 4 == 0) // Base64?
+					bDataFound = true;
+
+					// Decode base64
+					if (result.faradayJson.BeginsWith('{') == false
+						 && result.faradayJson.Length > 0 && result.faradayJson.Length % 4 == 0) // Base64?
 					{
-						byte[] byteArray = Convert.FromBase64String(faradayJson);
-						faradayJson = new string(Encoding.UTF8.GetChars(byteArray));
+						byte[] byteArray = Convert.FromBase64String(result.faradayJson);
+						result.faradayJson = new string(Encoding.UTF8.GetChars(byteArray));
 					}
 				}
 			}
-			catch (FormatException e)
-			{
-				hasData = false;
-				faradayJson = null;
-			}
 			catch
 			{
-				faradayJson = null;
+				result.faradayJson = null;
 			}
 
 			try
@@ -83,17 +97,15 @@ namespace Ginger
 					// Read ginger (PNG chunk)
 					if (metaData.ContainsKey("ginger"))
 					{
-						hasData = true;
+						bDataFound = true;
 						string gingerBase64 = metaData["ginger"];
 						byte[] byteArray = Convert.FromBase64String(gingerBase64);
-						gingerXml = new string(Encoding.UTF8.GetChars(byteArray));
+						result.gingerXml = new string(Encoding.UTF8.GetChars(byteArray));
 					}
-					else
-						gingerXml = null;
 				}
 				catch
 				{
-					gingerXml = null;
+					result.gingerXml = null;
 				}
 				
 				try
@@ -101,41 +113,53 @@ namespace Ginger
 					// Read Tavern v2 json (PNG chunk)
 					if (metaData.ContainsKey("chara"))
 					{
-						hasData = true;
+						bDataFound = true;
 						string charaBase64 = metaData["chara"];
 						byte[] byteArray = Convert.FromBase64String(charaBase64);
-						tavernJsonV2 = new string(Encoding.UTF8.GetChars(byteArray));
+						result.tavernJsonV2 = new string(Encoding.UTF8.GetChars(byteArray));
 					}
-					else
-						tavernJsonV2 = null;
 
-					// Read Tavern v3 json (PNG chunk)
-					if (metaData.ContainsKey("ccv3") && AppSettings.CCV3.EnablePNGV3)
+					if (AppSettings.CCV3.EnablePNGV3)
 					{
-						hasData = true;
-						string charaBase64 = metaData["ccv3"];
-						byte[] byteArray = Convert.FromBase64String(charaBase64);
-						tavernJsonV3 = new string(Encoding.UTF8.GetChars(byteArray));
+						// Read Tavern v3 json (PNG chunk)
+						if (metaData.ContainsKey("ccv3"))
+						{
+							bDataFound = true;
+							string charaBase64 = metaData["ccv3"];
+							byte[] byteArray = Convert.FromBase64String(charaBase64);
+							result.tavernJsonV3 = new string(Encoding.UTF8.GetChars(byteArray));
+						}
+
+						// Read embedded PNGv3 assets
+						if (metaData.Keys.ContainsAny(key => key.BeginsWith(AssetFile.PNGEmbeddedNamePrefix)))
+						{
+							result.embeddedAssets = new Dictionary<string, byte[]>();
+							foreach (var kvp in metaData.Where(kvp => kvp.Key.BeginsWith(AssetFile.PNGEmbeddedNamePrefix)))
+							{
+								string path = kvp.Key.Substring(AssetFile.PNGEmbeddedNamePrefix.Length);
+								byte[] byteArray = Convert.FromBase64String(kvp.Value);
+								if (path.Length > 0 && byteArray.Length > 0)
+									result.embeddedAssets.TryAdd(path, byteArray);
+							}
+						}
 					}
-					else
-						tavernJsonV3 = null;
 				}
 				catch
 				{
-					tavernJsonV2 = null;
-					tavernJsonV3 = null;
+					result.tavernJsonV2 = null;
+					result.tavernJsonV3 = null;
 				}
 			}
 			catch
 			{
-				tavernJsonV2 = null;
-				tavernJsonV3 = null;
-				gingerXml = null;
+				result.tavernJsonV2 = null;
+				result.tavernJsonV3 = null;
+				result.gingerXml = null;
 			}
 
-			if (!hasData)
+			if (!bDataFound)
 				return Error.NoDataFound;
-			if (string.IsNullOrEmpty(gingerXml) && string.IsNullOrEmpty(tavernJsonV2) && string.IsNullOrEmpty(tavernJsonV3) && string.IsNullOrEmpty(faradayJson))
+			if (result.isEmpty)
 				return Error.InvalidData;
 			return Error.NoError;
 		}
@@ -147,15 +171,11 @@ namespace Ginger
 			public TavernCardV3 tavernDataV3;
 			public FaradayCardV4 faradayData;   // Version 4
 			public int jsonErrors;
+			public AssetCollection embeddedAssets;
 		}
 
 		public static Error Import(string filename, out ImportResult result)
 		{
-			string faradayJson;
-			string tavernV2Json;
-			string tavernV3Json;
-			string gingerXml;
-
 			if (File.Exists(filename) == false)
 			{
 				result = new ImportResult();
@@ -163,16 +183,11 @@ namespace Ginger
 			}
 
 			Error readError;
+			EmbeddedData extractResult;
 			if (Path.GetExtension(filename).ToLowerInvariant() == ".charx")
-			{
-				faradayJson = null;
-				tavernV2Json = null;
-				readError = ExtractJsonFromArchive(filename, out tavernV3Json, out gingerXml);
-			}
+				readError = ExtractJsonFromArchive(filename, out extractResult);
 			else
-			{
-				readError = ExtractJsonFromPNG(filename, out faradayJson, out tavernV2Json, out tavernV3Json, out gingerXml);
-			}
+				readError = ExtractJsonFromPNG(filename, out extractResult);
 
 			if (readError != Error.NoError)
 			{
@@ -181,14 +196,31 @@ namespace Ginger
 			}
 			
 			result = new ImportResult();
-			if (faradayJson != null)
-				result.faradayData = FaradayCardV4.FromJson(faradayJson);
-			if (tavernV2Json != null)
-				result.tavernDataV2 = TavernCardV2.FromJson(tavernV2Json, out result.jsonErrors);
-			if (tavernV3Json != null)
-				result.tavernDataV3 = TavernCardV3.FromJson(tavernV3Json, out result.jsonErrors);
-			if (gingerXml != null)
-				result.gingerData = GingerCardV1.FromXml(gingerXml);
+			if (extractResult.faradayJson != null)
+				result.faradayData = FaradayCardV4.FromJson(extractResult.faradayJson);
+			if (extractResult.tavernJsonV2 != null)
+				result.tavernDataV2 = TavernCardV2.FromJson(extractResult.tavernJsonV2, out result.jsonErrors);
+			if (extractResult.tavernJsonV3 != null)
+			{
+				result.tavernDataV3 = TavernCardV3.FromJson(extractResult.tavernJsonV3, out result.jsonErrors);
+				if (result.tavernDataV3 != null && result.tavernDataV3.data.assets != null && extractResult.embeddedAssets != null)
+				{
+					result.embeddedAssets = new AssetCollection();
+					for (int i = 0; i < result.tavernDataV3.data.assets.Length; ++i)
+					{
+						var assetInfo = result.tavernDataV3.data.assets[i];
+						if (assetInfo.uri.BeginsWith(AssetFile.PNGEmbeddedURIPrefix))
+						{
+							var path = assetInfo.uri.Substring(AssetFile.PNGEmbeddedURIPrefix.Length);
+							byte[] data;
+							extractResult.embeddedAssets.TryGetValue(path, out data);
+							result.embeddedAssets.Add(AssetFile.FromV3Asset(assetInfo, data));
+						}
+					}
+				}
+			}
+			if (extractResult.gingerXml != null)
+				result.gingerData = GingerCardV1.FromXml(extractResult.gingerXml);
 			
 			if (result.faradayData == null && result.tavernDataV2 == null && result.tavernDataV3 == null && result.gingerData == null)
 			{
@@ -197,8 +229,8 @@ namespace Ginger
 				return Error.InvalidData;
 			}
 
-			// Failed to parse ginger data (fall back)
-			if (gingerXml != null && result.gingerData == null)
+			// Failed to parse ginger data (use other data as fallback)
+			if (extractResult.gingerXml != null && result.gingerData == null)
 				return Error.FallbackError;
 
 			// Success
@@ -254,7 +286,7 @@ namespace Ginger
 				List<MetaData> metaData = new List<MetaData>();
 
 				// Tavern json (v2)
-				if (formats.Contains(Format.SillyTavernV2))
+				if (formats.Contains(Format.SillyTavernV2) && false) //!!
 				{
 					var tavernData = TavernCardV2_Export.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavern));
 					tavernData.data.extensions.ginger = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
@@ -272,6 +304,32 @@ namespace Ginger
 				{
 					var tavernData = TavernCardV3.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavern));
 					tavernData.data.extensions.ginger = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
+
+					// Compile assets
+					var assets = (AssetCollection)Current.Card.assets.Clone();
+					if (assets.HasDefaultIcon() == false)
+					{
+						// Add default icon asset
+						assets.Add(new AssetFile() {
+							assetType = AssetFile.AssetType.Icon,
+							uri = AssetFile.DefaultURI,
+							name = "main",
+							ext = "png",
+						});
+					}
+
+					assets.Validate(AssetCollection.Mode.Png);
+
+					tavernData.data.assets = assets
+						.Select(a => new TavernCardV3.Data.Asset() 
+						{
+							type = a.GetTypeName(),
+							uri = a.uri,
+							name = a.name,
+							ext = a.ext.ToLowerInvariant(),
+						})
+						.ToArray();
+
 					var tavernJson = tavernData.ToJson();
 					var tavernBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(tavernJson));
 					metaData.Add(new MetaData() {
@@ -279,6 +337,24 @@ namespace Ginger
 						value = tavernBase64,
 						compressed = false,
 					});
+
+					// Write assets
+					foreach (var asset in assets)
+					{
+						if (asset.isDefaultAsset || asset.data.length == 0)
+							continue;
+
+						if (asset.uri.BeginsWith(AssetFile.PNGEmbeddedURIPrefix) == false)
+							continue;
+
+						string path = asset.uri.Substring(AssetFile.PNGEmbeddedURIPrefix.Length);
+						var assetBase64 = Convert.ToBase64String(asset.data.data);
+						metaData.Add(new MetaData() {
+							key = string.Concat(AssetFile.PNGEmbeddedNamePrefix, path),
+							value = assetBase64,
+							compressed = false,
+						});
+					}
 				}
 
 				// Ginger xml
@@ -992,7 +1068,7 @@ namespace Ginger
 
 					// Load portrait image
 					Current.Card.portraitImage = ImageRef.FromImage(Current.Card.assets.GetPortraitImage());
-					
+
 					// Remove portrait image (it will be re-added on save/export)
 					Current.Card.assets.RemovePortraitImage();
 				}
@@ -1001,6 +1077,10 @@ namespace Ginger
 				Current.ReadTavernCard(importResult.tavernDataV2, image);
 			else
 				return Error.UnrecognizedFormat;
+
+			if (importResult.embeddedAssets != null)
+				Current.Card.assets = importResult.embeddedAssets;
+
 			return bFallbackWarning ? Error.FallbackError : Error.NoError;
 		}
 

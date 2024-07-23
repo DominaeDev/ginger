@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -11,10 +10,9 @@ namespace Ginger
 {
 	public static partial class FileUtil
 	{
-		private static Error ExtractJsonFromArchive(string filename, out string tavernJsonV3, out string gingerXml)
+		private static Error ExtractJsonFromArchive(string filename, out EmbeddedData result)
 		{
-			tavernJsonV3 = null;
-			gingerXml = null;
+			result = new EmbeddedData();
 			try
 			{
 				using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
@@ -36,7 +34,7 @@ namespace Ginger
 									var dataStream = entry.Open();
 									byte[] buffer = new byte[dataSize];
 									dataStream.Read(buffer, 0, (int)dataSize);
-									gingerXml = new string(Encoding.UTF8.GetChars(buffer));
+									result.gingerXml = new string(Encoding.UTF8.GetChars(buffer));
 								}
 								continue;
 							}
@@ -48,7 +46,7 @@ namespace Ginger
 									var dataStream = entry.Open();
 									byte[] buffer = new byte[dataSize];
 									dataStream.Read(buffer, 0, (int)dataSize);
-									tavernJsonV3 = new string(Encoding.UTF8.GetChars(buffer));
+									result.tavernJsonV3 = new string(Encoding.UTF8.GetChars(buffer));
 								}
 								continue;
 							}
@@ -56,8 +54,8 @@ namespace Ginger
 					}
 				}
 
-				if (string.IsNullOrEmpty(tavernJsonV3) && string.IsNullOrEmpty(gingerXml))
-					return Error.NoDataFound;
+				if (result.isEmpty)
+					return Error.InvalidData;
 				return Error.NoError;
 			}
 			catch
@@ -80,39 +78,7 @@ namespace Ginger
 				assets = new AssetCollection();
 				foreach (var assetInfo in assetList)
 				{
-					var assetType = AssetFile.AssetTypeFromString(assetInfo.type);
-					var fileType = AssetFile.FileTypeFromExt(assetInfo.ext);
-					string uri = assetInfo.uri.Trim();
-
-					// Default asset
-					if (string.Compare(uri, AssetFile.DefaultURI, StringComparison.OrdinalIgnoreCase) == 0)
-					{
-						assets.Add(new AssetFile() {
-							name = assetInfo.name,
-							assetType = assetType,
-							ext = assetInfo.ext,
-							fileType = fileType,
-							uri = AssetFile.DefaultURI,
-						});
-						continue;
-					}
-
-					int idxProtocol = uri.IndexOf("://");
-					if (idxProtocol == -1)
-						continue; // Invalid uri
-
-					string protocol = uri.Substring(0, idxProtocol + 3).ToLowerInvariant();
-					string path = uri.Substring(idxProtocol + 3);
-					if (protocol == "embedded://")
-						protocol = "embeded://"; // A quirk in the v3 spec
-				
-					assets.Add(new AssetFile() {
-						name = assetInfo.name,
-						assetType = assetType,
-						ext = assetInfo.ext,
-						fileType = fileType,
-						uri = string.Concat(protocol, path),
-					});
+					assets.Add(AssetFile.FromV3Asset(assetInfo));
 				}
 
 				using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
@@ -125,7 +91,7 @@ namespace Ginger
 								continue; // Skip folder entries
 
 							string entryName = entry.FullName.Replace('\\', '/');
-							int idxAsset = assets.FindIndex(a => a.uri == string.Concat("embeded://", entryName));
+							int idxAsset = assets.FindIndex(a => a.uri == string.Concat(AssetFile.EmbeddedURIPrefix, entryName));
 							if (idxAsset == -1)
 								continue; // Unreferenced asset
 
@@ -136,7 +102,7 @@ namespace Ginger
 								var dataStream = entry.Open();
 								dataStream.Read(buffer, 0, (int)dataSize);
 								assets[idxAsset].data = new AssetData() {
-									Data = buffer,
+									data = buffer,
 								};
 							}
 						}
@@ -192,11 +158,11 @@ namespace Ginger
 						assets.Insert(0, new AssetFile() {
 							assetType = AssetFile.AssetType.Icon,
 							fileType = AssetFile.FileType.Image,
-							uri = "embeded://assets/icon/images/main.png",
+							uri = string.Concat(AssetFile.EmbeddedURIPrefix, "assets/icon/images/main.png"),
 							name = "main",
 							ext = "png",
 							data = new AssetData() {
-								Data = stream.ToArray(),
+								data = stream.ToArray(),
 							},
 						});
 						bWriteNullImage = false;
@@ -220,7 +186,7 @@ namespace Ginger
 			}
 
 			// Validate names and uris
-			assets.Validate();
+			assets.Validate(AssetCollection.Mode.CharX);
 
 			card.data.assets = assets
 				.Select(a => new TavernCardV3.Data.Asset() 
@@ -254,28 +220,26 @@ namespace Ginger
 					using (StreamWriter writer = new StreamWriter(gingerEntry.Open()))
                     {
 						writer.WriteLine("This character card was created using Ginger.");
-						writer.WriteLine("https://www.github.com/DominaeDev/Ginger/");
+						writer.WriteLine(Constants.WebsiteURL);
                     }
 
 					// Write asset files
 					foreach (var asset in assets)
 					{
-						if (asset.data.Length == 0)
+						if (asset.data.length == 0)
 							continue; // No file data
 
-						// Get archive path
-						int idxProtocol = asset.uri.IndexOf("://");
-						if (idxProtocol == -1)
-							continue;
-						string entryName = asset.uri.Substring(idxProtocol + 3);
+						if (asset.uri.BeginsWith(AssetFile.EmbeddedURIPrefix) == false)
+							continue; // Not an embed
 
+						string entryName = asset.uri.Substring(AssetFile.EmbeddedURIPrefix.Length);
 						var fileEntry = zip.CreateEntry(string.Format(entryName, CompressionLevel.NoCompression));
 						using (Stream writer = fileEntry.Open())
 						{
-							for (long n = asset.data.Length; n > 0;)
+							for (long n = asset.data.length; n > 0;)
 							{
 								int length = (int)Math.Min(n, (long)int.MaxValue);
-								writer.Write(asset.data.Data, 0, length);
+								writer.Write(asset.data.data, 0, length);
 								n -= (long)length;
 							}
 						}
