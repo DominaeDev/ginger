@@ -816,7 +816,7 @@ namespace Ginger
 			if (string.IsNullOrEmpty(recipe.filename))
 				return;
 
-			LaunchTextEditor.OpenFile(recipe.filename);
+			LaunchTextEditor.OpenTextFile(recipe.filename);
 		}
 
 		public bool ImportExternalRecipe(Recipe recipe)

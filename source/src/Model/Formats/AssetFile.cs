@@ -29,12 +29,12 @@ namespace Ginger
 
 		public enum AssetType
 		{
-			Undefined,
-			Icon,
-			UserIcon,
-			Background,
-			Expression, // Emotion
-			Other,
+			Undefined	= 0,
+			Icon		= 1,
+			UserIcon	= 2,
+			Background	= 3,
+			Expression	= 4, // Emotion
+			Other		= 5,
 		};
 
 		public enum UriType

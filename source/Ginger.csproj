@@ -174,6 +174,12 @@
     <Compile Include="src\Interface\Controls\UserNotes.Designer.cs">
       <DependentUpon>UserNotes.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\AssetViewDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\AssetViewDialog.Designer.cs">
+      <DependentUpon>AssetViewDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\FindDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -567,6 +573,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Controls\UserNotes.resx">
       <DependentUpon>UserNotes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\AssetViewDialog.resx">
+      <DependentUpon>AssetViewDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\FindDialog.resx">
       <DependentUpon>FindDialog.cs</DependentUpon>

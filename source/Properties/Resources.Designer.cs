@@ -255,6 +255,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Export asset file.
+        /// </summary>
+        internal static string cap_export_asset {
+            get {
+                return ResourceManager.GetString("cap_export_asset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Export character.
         /// </summary>
         internal static string cap_export_character {
@@ -287,6 +296,15 @@ namespace Ginger.Properties {
         internal static string cap_find {
             get {
                 return ResourceManager.GetString("cap_find", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import asset file.
+        /// </summary>
+        internal static string cap_import_asset {
+            get {
+                return ResourceManager.GetString("cap_import_asset", resourceCulture);
             }
         }
         
@@ -598,6 +616,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to write to file..
+        /// </summary>
+        internal static string error_export_file {
+            get {
+                return ResourceManager.GetString("error_export_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This file contains unsupported or corrupted data. The text was successfully recovered, but Ginger was unable to recover the recipes..
         /// </summary>
         internal static string error_fallback {
@@ -684,6 +711,15 @@ namespace Ginger.Properties {
         internal static string error_open_character_card {
             get {
                 return ResourceManager.GetString("error_open_character_card", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to open file..
+        /// </summary>
+        internal static string error_open_file_in_exporer {
+            get {
+                return ResourceManager.GetString("error_open_file_in_exporer", resourceCulture);
             }
         }
         

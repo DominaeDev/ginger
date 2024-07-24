@@ -633,4 +633,16 @@ Some data may be missing.</value>
   <data name="tavern_characterbook_v2_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Schemas\tavern_characterbook_v2.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="error_open_file_in_exporer" xml:space="preserve">
+    <value>Failed to open file.</value>
+  </data>
+  <data name="cap_export_asset" xml:space="preserve">
+    <value>Export asset file</value>
+  </data>
+  <data name="error_export_file" xml:space="preserve">
+    <value>Failed to write to file.</value>
+  </data>
+  <data name="cap_import_asset" xml:space="preserve">
+    <value>Import asset file</value>
+  </data>
 </root>

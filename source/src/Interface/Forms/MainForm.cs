@@ -1193,6 +1193,9 @@ namespace Ginger
 				pasteMenuItem.Text = "Paste";
 				pasteMenuItem.Enabled = false;
 			}
+
+			// View assets
+			embeddedAssetsMenuItem.Visible = AppSettings.FileFormat.EnableCCV3 || (Current.Card.assets != null && Current.Card.assets.Count > 0);
 		}
 
 		private void PopulateMRUMenu(ToolStripItemCollection items)
@@ -2004,6 +2007,18 @@ namespace Ginger
 			recipeList.PasteFromClipboard(null);
 		}
 
+		private void embeddedAssetsMenuItem_Click(object sender, EventArgs e)
+		{
+			AssetViewDialog dlg = new AssetViewDialog();
+			dlg.ShowDialog();
+			if (dlg.Changed)
+			{
+				Current.Card.assets = (AssetCollection)dlg.Assets.Clone();
+				Undo.Push(Undo.Kind.Parameter, "Changed embedded assets");
+
+				Current.IsFileDirty = true;
+			}
+		}
 	}
 
 	public interface IIdleHandler
