@@ -1,0 +1,152 @@
+{
+	"type": "object",
+	"properties": {
+		"spec": {
+			"required": true,
+			"type": "string"
+		},
+		"data": {
+			"required": true,
+			"type": "object",
+			"properties": {
+				"name": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"description": {
+					"required": false,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"scan_depth": {
+					"required": false,
+					"type": "integer"
+				},
+				"token_budget": {
+					"required": false,
+					"type": "integer"
+				},
+				"recursive_scanning": {
+					"required": false,
+					"type": "boolean"
+				},
+				"entries": {
+					"required": true,
+					"type": "array",
+					"items": {
+						"type": [
+							"object",
+							"null"
+						],
+						"properties": {
+							"id": {
+								"required": false,
+								"type": "integer"
+							},
+							"keys": {
+								"required": true,
+								"type": [
+									"array",
+									"null"
+								],
+								"items": {
+									"type": [
+										"string",
+										"null"
+									]
+								}
+							},
+							"secondary_keys": {
+								"required": false,
+								"type": [
+									"array",
+									"null"
+								],
+								"items": {
+									"type": [
+										"string",
+										"null"
+									]
+								}
+							},
+							"comment": {
+								"required": false,
+								"type": [
+									"string",
+									"null"
+								]
+							},
+							"content": {
+								"required": true,
+								"type": "string"
+							},
+							"constant": {
+								"required": false,
+								"type": "boolean"
+							},
+							"selective": {
+								"required": false,
+								"type": "boolean"
+							},
+							"insertion_order": {
+								"required": false,
+								"type": "integer"
+							},
+							"enabled": {
+								"required": false,
+								"type": "boolean"
+							},
+							"position": {
+								"required": false,
+								"type": [
+									"string",
+									"null"
+								]
+							},
+							"case_sensitive": {
+								"required": false,
+								"type": "boolean"
+							},
+							"name": {
+								"required": false,
+								"type": [
+									"string",
+									"null"
+								]
+							},
+							"priority": {
+								"required": false,
+								"type": "integer"
+							},
+							"extensions": {
+								"required": false,
+								"type": [
+									"object",
+									"null"
+								],
+								"properties": {}
+							},
+							"use_regex": {
+								"required": false,
+								"type": "boolean"
+							}
+						}
+					}
+				},
+				"extensions": {
+					"required": false,
+					"type": [
+						"object",
+						"null"
+					],
+					"properties": {}
+				}
+			}
+		}
+	}
+}

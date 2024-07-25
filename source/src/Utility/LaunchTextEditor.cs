@@ -86,7 +86,7 @@ namespace Ginger
 		}
 
 
-		public static void OpenFile(string filename)
+		public static void OpenTextFile(string filename)
 		{
 			if (File.Exists(filename) == false)
 			{
@@ -112,6 +112,33 @@ namespace Ginger
 			catch
 			{
 				MessageBox.Show(Resources.error_launch_text_editor, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+			}
+		}
+
+		public static void OpenAnyFile(string filename)
+		{
+			if (File.Exists(filename) == false)
+			{
+				MessageBox.Show(Resources.error_file_not_found, Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			try
+			{
+				var argument = filename.Replace("/", "\\");
+				if (argument.Contains(" "))
+					argument = string.Concat("\"", argument, "\"");
+
+				var processInfo = new ProcessStartInfo() {
+					FileName = "explorer",
+					Arguments = argument,
+					UseShellExecute = true,
+				};
+				Process.Start(processInfo);
+			}
+			catch
+			{
+				MessageBox.Show(Resources.error_open_file_in_exporer, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 			}
 		}
 

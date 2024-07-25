@@ -88,7 +88,7 @@ namespace Ginger
 				RecipeBook.LoadRecipes();
 
 				if (AppSettings.User.LaunchTextEditor)
-					LaunchTextEditor.OpenFile(filename);
+					LaunchTextEditor.OpenTextFile(filename);
 			}
 			return true;
 		}
@@ -174,7 +174,7 @@ namespace Ginger
 				RecipeBook.LoadRecipes();
 
 				if (AppSettings.User.LaunchTextEditor)
-					LaunchTextEditor.OpenFile(filename);
+					LaunchTextEditor.OpenTextFile(filename);
 			}
 			return true;
 		}

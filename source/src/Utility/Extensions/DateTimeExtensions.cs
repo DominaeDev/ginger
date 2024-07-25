@@ -4,21 +4,31 @@ namespace Ginger
 {
 	public static class DateTimeExtensions
 	{
-		public static long ToUnixTimeMilliseconds(this DateTime dateTime)
-		{
-			return ((DateTimeOffset)dateTime).ToUnixTimeMilliseconds();
-		}
-
-		public static DateTime FromUnixTimeMilliseconds(long unixTime)
+		public static DateTime FromUnixTime(long unixTime)
 		{
 			try
 			{
-				return DateTimeOffset.FromUnixTimeMilliseconds(unixTime).DateTime;
+				if (unixTime == 0) // Undefined
+					return DateTime.UtcNow;
+				else if (unixTime > 999999999999) // In milliseconds (probably)
+					return DateTimeOffset.FromUnixTimeMilliseconds(unixTime).DateTime;
+				else // In seconds
+					return DateTimeOffset.FromUnixTimeSeconds(unixTime).DateTime;
 			}
 			catch
 			{
 				return DateTime.UtcNow;
 			}
+		}
+
+		public static long ToUnixTimeMilliseconds(this DateTime dateTime)
+		{
+			return ((DateTimeOffset)dateTime).ToUnixTimeMilliseconds();
+		}
+
+		public static long ToUnixTimeSeconds(this DateTime dateTime)
+		{
+			return ((DateTimeOffset)dateTime).ToUnixTimeMilliseconds() / 1000L;
 		}
 	}
 }

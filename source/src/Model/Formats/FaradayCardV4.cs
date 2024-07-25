@@ -10,11 +10,11 @@ namespace Ginger
 {
 	public class FaradayCardV4
 	{
-		private static JsonSchema _schema;
+		private static JsonSchema _faradayCardV4Schema;
 
 		static FaradayCardV4()
 		{
-			_schema = JsonSchema.Parse(Resources.faraday_charactercard_v4_schema);
+			_faradayCardV4Schema = JsonSchema.Parse(Resources.faraday_charactercard_v4_schema);
 		}
 
 		public FaradayCardV4()
@@ -136,7 +136,7 @@ namespace Ginger
 		public static FaradayCardV4 FromOutput(Generator.Output output)
 		{
 			FaradayCardV4 card = new FaradayCardV4();
-			card.data.displayName = Utility.FirstNonEmpty(Current.Card.name, Current.MainCharacter.spokenName, Constants.DefaultName);
+			card.data.displayName = Current.CardName;
 			card.data.name = Current.Name;
 			card.data.system = output.system.ToFaraday();
 			card.data.persona = output.persona.ToFaraday();
@@ -211,7 +211,7 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_schema))
+				if (jObject.IsValid(_faradayCardV4Schema))
 				{
 					var card = JsonConvert.DeserializeObject<FaradayCardV4>(json);
 					if (card.version >= 4)
@@ -225,7 +225,7 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_schema))
+				if (jObject.IsValid(_faradayCardV4Schema))
 				{
 					var card = JsonConvert.DeserializeObject<FaradayCardV3>(json);
 					if (card.version >= 3)
@@ -239,7 +239,7 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_schema))
+				if (jObject.IsValid(_faradayCardV4Schema))
 				{
 					var card = JsonConvert.DeserializeObject<FaradayCardV2>(json);
 					if (card.version == 2)
@@ -253,7 +253,7 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_schema))
+				if (jObject.IsValid(_faradayCardV4Schema))
 				{
 					var card = JsonConvert.DeserializeObject<FaradayCardV1>(json);
 					if (card.version == 1)
@@ -342,6 +342,22 @@ namespace Ginger
 			card.data.loreItems = cardV3.data.loreItems;
 			card.data.promptTemplate = cardV3.data.promptTemplate;
 			return card;
+		}
+
+		public static bool Validate(string jsonData)
+		{
+			try
+			{
+				JObject jObject = JObject.Parse(jsonData);
+				return jObject.IsValid(_faradayCardV4Schema)
+					|| FaradayCardV3.Validate(jsonData)
+					|| FaradayCardV2.Validate(jsonData)
+					|| FaradayCardV1.Validate(jsonData);
+			}
+			catch
+			{
+				return false;
+			}
 		}
 
 	}

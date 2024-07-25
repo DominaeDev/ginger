@@ -305,10 +305,6 @@ namespace Ginger
 			if (files.Length != 1)
 				return; // Error
 
-			string ext = Path.GetExtension(files[0]).ToLowerInvariant();
-			if (!(ext == ".png" || ext == ".json"))
-				return; // Error
-
 			string filename = files[0];
 
 			var fileType = FileUtil.CheckFileType(filename);
@@ -365,19 +361,38 @@ namespace Ginger
 			if (ConfirmSave(Resources.cap_open_character_card) == false)
 				return;
 
-			if (FileMutex.CanAcquire(filename) == false)
+			string ext = Path.GetExtension(filename).ToLowerInvariant();
+			if (ext == ".png") // Open
 			{
-				MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(filename)), Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
+				// Acquire mutex
+				if (FileMutex.CanAcquire(filename) == false)
+				{
+					MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(filename)), Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
 
-			if (ext == ".png")
 				OpenFile(filename);
-			else if (ext == ".json")
+			}
+			else if (ext == ".charx") // Import
+			{
+				int errors;
+				if (FileUtil.ImportCharacterFromPNG(filename, out errors, FileUtil.Format.SillyTavernV3) != FileUtil.Error.NoError)
+					return;
+
+				FileMutex.Release();
+				if (errors > 0)
+					MessageBox.Show(string.Format(Resources.msg_load_with_error, errors), Resources.cap_load_with_error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+				Current.IsDirty = false;
+				Current.IsFileDirty = false;
+				Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
+			}
+			else if (ext == ".json") // Import
 			{
 				int errors;
 				if (FileUtil.ImportCharacterJson(filename, out errors) != FileUtil.Error.NoError)
 					return;
+				FileMutex.Release();
 
 				if (errors > 0)
 					MessageBox.Show(string.Format(Resources.msg_load_with_error, errors), Resources.cap_load_with_error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -839,7 +854,7 @@ namespace Ginger
 			SaveIncremental();
 		}
 
-		private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
+		private void OpenFileMenuItem_Click(object sender, EventArgs e)
 		{
 			// Open file...
 			openFileDialog.Title = Resources.cap_open_character_card;
@@ -873,7 +888,8 @@ namespace Ginger
 
 			SetStatusBarMessage("Reading character card...");
 
-			if (Path.GetExtension(filename).ToLowerInvariant() == ".json")
+			string ext = Path.GetExtension(filename).ToLowerInvariant();
+			if (ext == ".json")
 			{
 				int jsonErrors;
 				var error = FileUtil.ImportCharacterJson(filename, out jsonErrors);
@@ -896,23 +912,23 @@ namespace Ginger
 				if (jsonErrors > 0)
 					MessageBox.Show(string.Format(Resources.msg_load_with_error, jsonErrors), Resources.cap_load_with_error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
-			else
+			else if (ext == ".png")
 			{
 				int errors;
-				var loadResult = Current.LoadCharacterFile(filename, out errors);
-				if (loadResult == Current.LoadResult.NoData)
+				var loadError = FileUtil.ImportCharacterFromPNG(filename, out errors);
+				if (loadError == FileUtil.Error.NoDataFound)
 				{
 					MessageBox.Show(string.Format(Resources.error_no_data, Path.GetFileName(filename)), Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					ClearStatusBarMessage();
 					return false;
 				}
-				else if (loadResult == Current.LoadResult.FileError)
+				else if (loadError == FileUtil.Error.FileReadError || loadError == FileUtil.Error.FileNotFound || loadError == FileUtil.Error.InvalidData)
 				{
 					MessageBox.Show(Resources.error_open_character_card, Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					ClearStatusBarMessage();
 					return false;
 				}
-				else if (loadResult == Current.LoadResult.Fallback)
+				else if (loadError == FileUtil.Error.FallbackError)
 				{
 					MessageBox.Show(Resources.error_fallback, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				}
@@ -927,6 +943,12 @@ namespace Ginger
 					ClearStatusBarMessage();
 					return false;
 				}
+			}
+			else
+			{
+				MessageBox.Show(string.Format(Resources.error_open_wrong_file_type, Path.GetFileName(filename)), Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				ClearStatusBarMessage();
+				return false;
 			}
 
 			Cursor = Cursors.WaitCursor;
@@ -1298,7 +1320,7 @@ namespace Ginger
 
 		private void ExportCharacterMenuItem_Click(object sender, EventArgs e)
 		{
-			ExportCharacterJson();
+			ExportCharacter();
 		}
 		
 		private void UndoMenuItem_Click(object sender, EventArgs e)
@@ -1627,7 +1649,7 @@ namespace Ginger
 		private void ExportLorebookMenuItem_Click(object sender, EventArgs e)
 		{
 			var output = Generator.Generate();
-			ExportLorebookJson(output, false); 
+			ExportLorebook(output, false); 
 			Lorebooks.LoadLorebooks();
 		}
 
@@ -1982,6 +2004,18 @@ namespace Ginger
 			recipeList.PasteFromClipboard(null);
 		}
 
+		private void embeddedAssetsMenuItem_Click(object sender, EventArgs e)
+		{
+			AssetViewDialog dlg = new AssetViewDialog();
+			dlg.ShowDialog();
+			if (dlg.Changed)
+			{
+				Current.Card.assets = (AssetCollection)dlg.Assets.Clone();
+				Undo.Push(Undo.Kind.Parameter, "Changed embedded assets");
+
+				Current.IsFileDirty = true;
+			}
+		}
 	}
 
 	public interface IIdleHandler

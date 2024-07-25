@@ -14,11 +14,12 @@ namespace Ginger
 #pragma warning disable 0414
 #pragma warning disable 0169
 
+		private static JsonSchema _agnaisticCharacterCardSchema;
 		private static JsonSchema _agnaisticCharacterBookSchema;
-
 		static AgnaisticCard()
 		{
-			_agnaisticCharacterBookSchema = JsonSchema.Parse(Resources.agnaistic_charactercard_schema);
+			_agnaisticCharacterCardSchema = JsonSchema.Parse(Resources.agnaistic_charactercard_schema);
+			_agnaisticCharacterBookSchema = JsonSchema.Parse(Resources.agnaistic_characterbook_schema);
 		}
 
 		public AgnaisticCard()
@@ -207,6 +208,19 @@ namespace Ginger
 				}
 				return null;
 			}
+
+			public static bool Validate(string jsonData)
+			{
+				try
+				{
+					JObject jObject = JObject.Parse(jsonData);
+					return jObject.IsValid(_agnaisticCharacterBookSchema);
+				}
+				catch
+				{
+					return false;
+				}
+			}
 		}
 
 		[JsonIgnore]
@@ -313,7 +327,7 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_agnaisticCharacterBookSchema))
+				if (jObject.IsValid(_agnaisticCharacterCardSchema))
 				{
 					var card = JsonConvert.DeserializeObject<AgnaisticCard>(json, settings);
 					if (Validate(card))
@@ -354,6 +368,24 @@ namespace Ginger
 			catch
 			{
 				return null;
+			}
+		}
+
+		public static bool Validate(string jsonData)
+		{
+			try
+			{
+				JObject jObject = JObject.Parse(jsonData);
+				if (jObject.IsValid(_agnaisticCharacterCardSchema))
+				{
+					var card = JsonConvert.DeserializeObject<AgnaisticCard>(jsonData);
+					return Validate(card);
+				}
+				return false;
+			}
+			catch
+			{
+				return false;
 			}
 		}
 	}

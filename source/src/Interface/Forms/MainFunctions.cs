@@ -292,7 +292,7 @@ namespace Ginger
 		{
 			// Open file...
 			importFileDialog.Title = Resources.cap_import_character;
-			importFileDialog.Filter = "Character Json|*.json|SillyTavern card|*.png|Backyard AI card|*.png";
+			importFileDialog.Filter = "JSON file|*.json|Character card|*.png;*.charx";
 			importFileDialog.FilterIndex = AppSettings.User.LastImportCharacterFilter;
 			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			var result = importFileDialog.ShowDialog();
@@ -312,11 +312,8 @@ namespace Ginger
 			case 1: // Json
 				error = FileUtil.ImportCharacterJson(importFileDialog.FileName, out jsonErrors);
 				break;
-			case 2: // Tavern png
-				error = FileUtil.ImportCharacterFromPNG(importFileDialog.FileName, out jsonErrors, FileUtil.Format.SillyTavern);
-				break;
-			case 3: // Faraday png
-				error = FileUtil.ImportCharacterFromPNG(importFileDialog.FileName, out jsonErrors, FileUtil.Format.Faraday);
+			case 2: // PNG file
+				error = FileUtil.ImportCharacterFromPNG(importFileDialog.FileName, out jsonErrors, FileUtil.Format.SillyTavernV2 | FileUtil.Format.SillyTavernV3 | FileUtil.Format.Faraday);
 				break;
 			default:
 				return false;
@@ -347,7 +344,7 @@ namespace Ginger
 		{
 			// Open file...
 			importFileDialog.Title = Resources.cap_import_lorebook;
-			importFileDialog.Filter = "Lorebook json|*.json|Lorebook csv|*.csv|SillyTavern card|*.png|Backyard AI card|*.png";
+			importFileDialog.Filter = "Supported JSON formats|*.json|Supported character card|*.png|Comma separated values|*.csv";
 			importFileDialog.FilterIndex = AppSettings.User.LastImportLorebookFilter;
 			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.ContentPath("Lorebooks");
 			var result = importFileDialog.ShowDialog();
@@ -367,16 +364,7 @@ namespace Ginger
 					return false;
 				}
 			}
-			else if (importFileDialog.FilterIndex == 2) // CSV
-			{
-				lorebook = new Lorebook();
-				if (lorebook.LoadFromCsv(importFileDialog.FileName) == false)
-				{
-					MessageBox.Show(Resources.error_unrecognized_lorebook_format, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return false;
-				}
-			}
-			else // PNG
+			else if (importFileDialog.FilterIndex == 2) // PNG
 			{
 				int jsonErrors;
 				FileUtil.ImportResult importResult;
@@ -386,15 +374,19 @@ namespace Ginger
 
 				if (error == FileUtil.Error.NoError)
 				{
-					if (importFileDialog.FilterIndex == 3 // SillyTavern
-						&& importResult.tavernData != null
-						&& importResult.tavernData.data.character_book != null)
+					if (importResult.tavernDataV3 != null // SillyTavern v3
+						&& importResult.tavernDataV3.data.character_book != null)
 					{
-						lorebook = Lorebook.FromTavernBook(importResult.tavernData.data.character_book);
-						lorebook.name = string.Concat(importResult.tavernData.data.name, " lorebook");
+						lorebook = Lorebook.FromTavernBook(importResult.tavernDataV3.data.character_book);
+						lorebook.name = string.Concat(importResult.tavernDataV3.data.name, " lorebook");
 					}
-					else if (importFileDialog.FilterIndex == 4 // Faraday
-						&& importResult.faradayData != null
+					else if (importResult.tavernDataV2 != null // SillyTavern v2
+						&& importResult.tavernDataV2.data.character_book != null)
+					{
+						lorebook = Lorebook.FromTavernBook(importResult.tavernDataV2.data.character_book);
+						lorebook.name = string.Concat(importResult.tavernDataV2.data.name, " lorebook");
+					}
+					else if (importResult.faradayData != null // Faraday
 						&& importResult.faradayData.data.loreItems != null)
 					{
 						lorebook = Lorebook.FromFaradayBook(importResult.faradayData.data.loreItems);
@@ -422,7 +414,15 @@ namespace Ginger
 					return false;
 				}
 			}
-
+			else if (importFileDialog.FilterIndex == 3) // CSV
+			{
+				lorebook = new Lorebook();
+				if (lorebook.LoadFromCsv(importFileDialog.FileName) == false)
+				{
+					MessageBox.Show(Resources.error_unrecognized_lorebook_format, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
+				}
+			}
 			if (lorebook == null || lorebook.isEmpty)
 			{
 				MessageBox.Show(Resources.error_no_lorebook, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -473,7 +473,8 @@ namespace Ginger
 						return false;
 					}
 
-					if (FileUtil.ExportTavernLorebook(lorebook, destFilename) == false)
+					// Save to Lorebooks folder
+					if (FileUtil.ExportTavernV2Lorebook(lorebook, destFilename) == false)
 					{
 						MessageBox.Show(Resources.error_save_character_card, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 						return false;
@@ -506,7 +507,7 @@ namespace Ginger
 			return true;
 		}
 
-		private void ExportCharacterJson()
+		private void ExportCharacter()
 		{
 			ConfirmName(); 
 			
@@ -518,15 +519,17 @@ namespace Ginger
 
 			if (string.IsNullOrEmpty(filename) == false)
 			{
-				if (AppSettings.User.LastExportCharacterFilter == 4 || AppSettings.User.LastExportCharacterFilter == 5) // png
+				if (AppSettings.User.LastExportCharacterFilter == 5 || AppSettings.User.LastExportCharacterFilter == 6) // png
 					filename = string.Concat(filename, ".png");
+				else if (AppSettings.User.LastExportCharacterFilter == 7) // charx
+					filename = string.Concat(filename, ".charx");
 				else // json
 					filename = string.Concat(filename, ".json");
 			}
 
 			// Save as...
 			exportFileDialog.Title = Resources.cap_export_character;
-			exportFileDialog.Filter = "SillyTavern character json|*.json|Agnaistic character json|*.json|PygmalionAI character json|*.json|SillyTavern card|*.png|Backyard AI card|*.png";
+			exportFileDialog.Filter = "Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard AI PNG|*.png|CharX file|*.charx";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			exportFileDialog.FilterIndex = AppSettings.User.LastExportCharacterFilter;
@@ -541,7 +544,7 @@ namespace Ginger
 			var gingerExt = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
 
 
-			if (exportFileDialog.FilterIndex == 1) // Tavern
+			if (exportFileDialog.FilterIndex == 1) // Tavern V2
 			{
 				var card = TavernCardV2.FromOutput(output);
 				card.data.extensions.ginger = gingerExt;
@@ -550,7 +553,16 @@ namespace Ginger
 				if (tavernJson != null && FileUtil.ExportTextFile(exportFileDialog.FileName, tavernJson))
 					return; // Success
 			}
-			else if (exportFileDialog.FilterIndex == 2) // Agnaistic
+			else if (exportFileDialog.FilterIndex == 2) // Tavern V3
+			{
+				var card = TavernCardV3.FromOutput(output);
+				card.data.extensions.ginger = gingerExt;
+
+				string tavernJson = card.ToJson();
+				if (tavernJson != null && FileUtil.ExportTextFile(exportFileDialog.FileName, tavernJson))
+					return; // Success
+			}
+			else if (exportFileDialog.FilterIndex == 3) // Agnaistic
 			{
 				var card = AgnaisticCard.FromOutput(output);
 				card.extensions.ginger = gingerExt;
@@ -563,14 +575,14 @@ namespace Ginger
 				if (agnaisticJson != null && FileUtil.ExportTextFile(exportFileDialog.FileName, agnaisticJson))
 					return; // Success
 			}
-			else if (exportFileDialog.FilterIndex == 3) // Pygmalion
+			else if (exportFileDialog.FilterIndex == 4) // Pygmalion / CAI
 			{
 				var card = PygmalionCard.FromOutput(output);
 				string json = card.ToJson();
 				if (json != null && FileUtil.ExportTextFile(exportFileDialog.FileName, json))
 					return; // Success
 			}
-			else if (exportFileDialog.FilterIndex == 4) // SillyTavern PNG
+			else if (exportFileDialog.FilterIndex == 5) // PNGv2
 			{
 				// Open in another instance?
 				if (FileMutex.CanAcquire(exportFileDialog.FileName) == false)
@@ -579,10 +591,22 @@ namespace Ginger
 					return;
 				}
 
-				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.SillyTavern))
+				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.SillyTavernV2))
 					return; // Success
 			}
-			else if (exportFileDialog.FilterIndex == 5) // Faraday PNG
+			else if (exportFileDialog.FilterIndex == 6) // PNGv3
+			{
+				// Open in another instance?
+				if (FileMutex.CanAcquire(exportFileDialog.FileName) == false)
+				{
+					MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(exportFileDialog.FileName)), Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
+
+				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.SillyTavernV3))
+					return; // Success
+			}
+			else if (exportFileDialog.FilterIndex == 7) // Faraday PNG
 			{
 				// Open in another instance?
 				if (FileMutex.CanAcquire(exportFileDialog.FileName) == false)
@@ -594,10 +618,15 @@ namespace Ginger
 				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.Faraday))
 					return; // Success
 			}
+			else if (exportFileDialog.FilterIndex == 8) // CharX
+			{
+				if (FileUtil.ExportToCharX(exportFileDialog.FileName))
+					return; // Success
+			}
 			MessageBox.Show(Resources.error_write_json, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
-		private void ExportLorebookJson(Generator.Output output, bool saveLocal)
+		private void ExportLorebook(Generator.Output output, bool saveLocal)
 		{
 			var lorebook = output.lorebook;
 			if (output.hasLore == false)
@@ -614,14 +643,14 @@ namespace Ginger
 
 			if (string.IsNullOrEmpty(filename) == false)
 			{
-				if (AppSettings.User.LastExportLorebookFilter == 3) // csv
+				if (AppSettings.User.LastExportLorebookFilter == 4) // csv
 					filename = string.Concat(filename, ".csv");
 				else // json
 					filename = string.Concat(filename, ".json");
 			}
 
 			exportFileDialog.Title = Resources.cap_export_lorebook;
-			exportFileDialog.Filter = "SillyTavern lorebook json|*.json|Agnaistic lorebook json|*.json|CSV file|*.csv";
+			exportFileDialog.Filter = "SillyTavern World Book|*.json|Agnai Character Book|*.json|Lorebook JSON (CCV3)|*.json|Comma separated values|*.csv";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			if (saveLocal)
 				exportFileDialog.InitialDirectory = Utility.ContentPath("Lorebooks");
@@ -639,17 +668,22 @@ namespace Ginger
 			if (string.IsNullOrEmpty(lorebook.name))
 				lorebook.name = Path.GetFileNameWithoutExtension(exportFileDialog.FileName);
 
-			if (exportFileDialog.FilterIndex == 1) // Tavern
+			if (exportFileDialog.FilterIndex == 1) // V2
 			{
-				if (FileUtil.ExportTavernLorebook(lorebook, exportFileDialog.FileName))
+				if (FileUtil.ExportTavernV2Lorebook(lorebook, exportFileDialog.FileName))
 					return; // Success
 			} 
-			else if (exportFileDialog.FilterIndex == 2) // Agnaistic
+			else if (exportFileDialog.FilterIndex == 2) // Agnai lorebook
 			{
 				if (FileUtil.ExportAgnaisticLorebook(lorebook, exportFileDialog.FileName))
 					return; // Success
 			}
-			else if (exportFileDialog.FilterIndex == 3) // CSV
+			else if (exportFileDialog.FilterIndex == 3) // V3
+			{
+				if (FileUtil.ExportTavernV3Lorebook(lorebook, exportFileDialog.FileName))
+					return; // Success
+			} 
+			else if (exportFileDialog.FilterIndex == 4) // CSV
 			{
 				if (FileUtil.ExportLorebookCsv(lorebook, exportFileDialog.FileName))
 					return; // Success
@@ -794,7 +828,7 @@ namespace Ginger
 			if (string.IsNullOrEmpty(recipe.filename))
 				return;
 
-			LaunchTextEditor.OpenFile(recipe.filename);
+			LaunchTextEditor.OpenTextFile(recipe.filename);
 		}
 
 		public bool ImportExternalRecipe(Recipe recipe)
@@ -940,7 +974,7 @@ namespace Ginger
 
 			var recipe = panel.recipe;
 			var output = Generator.Generate(recipe, Generator.Option.Export);
-			ExportLorebookJson(output, true);
+			ExportLorebook(output, true);
 			Lorebooks.LoadLorebooks();
 		}
 
@@ -948,6 +982,12 @@ namespace Ginger
 		{
 			if (string.IsNullOrEmpty(filename))
 				return SaveAs();
+ 
+			if (filename != null && Path.GetExtension(filename).ToLowerInvariant() == ".charx") //!!
+			{
+				MessageBox.Show("Not supported yet", "Cannot save CharX");
+				return false;
+			}
 
 			// Ensure text parameters get an opportunity to save
 			var focused = GetFocusedControl();
@@ -969,7 +1009,12 @@ namespace Ginger
 			if (Current.Card.creationDate == null)
 				Current.Card.creationDate = DateTime.UtcNow;
 
-			if (FileUtil.Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image))
+			// Only write ccv3 if necessary
+			var formats = FileUtil.Format.Ginger | FileUtil.Format.Faraday | FileUtil.Format.SillyTavernV2;
+			if (Current.Card.assets != null && Current.Card.assets.ContainsAny(a => a.isDefaultAsset == false))
+				formats |= FileUtil.Format.SillyTavernV3;
+
+			if (FileUtil.Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, formats))
 			{
 				SaveNotes(filename);
 
@@ -995,7 +1040,7 @@ namespace Ginger
 			string filename = string.Concat(Utility.FirstNonEmpty(Current.Card.name, Current.Character.spokenName, Constants.DefaultName), ".png");
 
 			// Save as...
-			saveFileDialog.Filter = "Ginger character card|*.png";
+			saveFileDialog.Filter = "Ginger Character Card|*.png";
 			saveFileDialog.InitialDirectory = AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			saveFileDialog.FileName = Utility.ValidFilename(filename);
 			var result = saveFileDialog.ShowDialog();

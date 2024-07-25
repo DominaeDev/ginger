@@ -1,28 +1,28 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Schema;
 using Ginger.Properties;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace Ginger
 {
-	public class TavernCardV2
+	public class TavernCardV3
 	{
-		private static JsonSchema _tavernCharacterCardV1Schema;
-		private static JsonSchema _tavernCharacterCardV2Schema;
-		private static JsonSchema _tavernCharacterBookV2Schema;
+		private static JsonSchema _tavernCharacterCardSchemaV3;
 
-		static TavernCardV2()
+		static TavernCardV3()
 		{
-			_tavernCharacterCardV1Schema = JsonSchema.Parse(Resources.tavern_charactercard_v1_schema);
-			_tavernCharacterCardV2Schema = JsonSchema.Parse(Resources.tavern_charactercard_v2_schema);
-			_tavernCharacterBookV2Schema = JsonSchema.Parse(Resources.tavern_characterbook_v2_schema);
+		//	JsonSchemaGenerator generator = new JsonSchemaGenerator();
+		//	JsonSchema schema = generator.Generate(typeof(TavernCardV3));
+		//	string jsonSchema = schema.ToString();
+
+			_tavernCharacterCardSchemaV3 = JsonSchema.Parse(Resources.tavern_charactercard_v3_schema);
 		}
 
-		public TavernCardV2()
+		public TavernCardV3()
 		{
 			data = new Data();
 		}
@@ -30,77 +30,109 @@ namespace Ginger
 		[JsonProperty("data", Required = Required.Always)]
 		public Data data;
 		[JsonProperty("spec", Required = Required.Always)]
-		string spec = null; // "chara_card_v2"
+		string spec = null; // "chara_card_v3"
 #pragma warning disable 0414 // Remove unread private members
 		[JsonProperty("spec_version", Required = Required.Always)]
-		string spec_version = null; //"2.0";
+		string spec_version = null;
 #pragma warning restore 0414 // Remove unread private members
 
 		public class Data
 		{
+			// Same as V2
 			[JsonProperty("name", Required = Required.Always)]
 			public string name = "";
-			
+
 			[JsonProperty("description")]
 			public string persona = "";
-			
+
 			[JsonProperty("personality")]
 			public string personality = "";
-			
+
 			[JsonProperty("scenario")]
 			public string scenario = "";
-			
+
 			[JsonProperty("first_mes")]
 			public string greeting = "";
-			
+
 			[JsonProperty("mes_example")]
 			public string example = "";
-			
+
 			[JsonProperty("system_prompt")]
 			public string system = "";
 
 			[JsonProperty("creator_notes")]
 			public string creator_notes = "";
-			
+
 			[JsonProperty("post_history_instructions")]
 			public string post_history_instructions = "";
-			
+
 			[JsonProperty("alternate_greetings")]
 			public string[] alternate_greetings = new string[0];
-			
+
 			[JsonProperty("character_book")]
-			public CharacterBook character_book = new CharacterBook();
-			
+			public TavernCardV3.CharacterBook character_book = null; // New v3 spec
+
 			[JsonProperty("tags")]
 			public string[] tags = new string[0];
-			
+
 			[JsonProperty("creator")]
 			public string creator = "";
-			
+
 			[JsonProperty("character_version")]
 			public string character_version = "";
 
 			[JsonProperty("extensions")]
 			public GingerJsonExtensionData extensions = new GingerJsonExtensionData();
+
+			// New in V3
+			[JsonProperty("nickname")]
+			public string nickname = "";
+			[JsonProperty("creator_notes_multilingual")]
+			public Dictionary<string, string> creator_notes_multilingual = new Dictionary<string, string>();
+			[JsonProperty("source")]
+			public string[] source = new string[0];
+			[JsonProperty("group_only_greetings")]
+			public string[] alternate_greetings_for_groups = new string[0];
+
+			[JsonProperty("creation_date")]
+			public long? creationDate = null;
+			[JsonProperty("modification_date")]
+			public long? updateDate = null;
+
+			public class Asset
+			{
+				[JsonProperty("name", Required = Required.Always)]
+				public string name = "";
+				[JsonProperty("type", Required = Required.Always)]
+				public string type = "";
+				[JsonProperty("uri", Required = Required.Always)]
+				public string uri = "";
+				[JsonProperty("ext")]
+				public string ext = "";
+			}
+
+			[JsonProperty("assets")]
+			public Asset[] assets = null;
 		}
-		
+
+		// Lorebook (v3)
 		public class CharacterBook
 		{
 			[JsonProperty("name")]
 			public string name;
-			
+
 			[JsonProperty("description")]
 			public string description;
-			
+
 			[JsonProperty("scan_depth")]
 			public int scan_depth = 50;
-			
+
 			[JsonProperty("token_budget")]
 			public int token_budget = 500;
-			
+
 			[JsonProperty("recursive_scanning")]
 			public bool recursive_scanning = false;
-			
+
 			[JsonProperty("entries", Required = Required.Always)]
 			public Entry[] entries = new Entry[0];
 
@@ -111,78 +143,55 @@ namespace Ginger
 			{
 				[JsonProperty("id")]
 				public int id;
-				
+
 				[JsonProperty("keys")]
 				public string[] keys;
-				
+
 				[JsonProperty("secondary_keys")]
 				public string[] secondary_keys = new string[0];
-				
+
 				[JsonProperty("comment")]
 				public string comment = "";
-				
+
 				[JsonProperty("content", Required = Required.Always)]
 				public string content;
-				
+
 				[JsonProperty("constant")]
 				public bool constant = false;
-				
+
 				[JsonProperty("selective")]
 				public bool selective = false;
-				
+
 				[JsonProperty("insertion_order", Required = Required.Always)]
 				public int insertion_order = 100;
-				
+
 				[JsonProperty("enabled", Required = Required.Always)]
 				public bool enabled = true;
-				
+
 				[JsonProperty("position")]
 				public string position = "before_char"; // 'before_char' | 'after_char'
-				
+
 				[JsonProperty("case_sensitive")]
 				public bool case_sensitive = false;
-				
+
 				[JsonProperty("name")]
 				public string name = "";
-				
+
 				[JsonProperty("priority")]
 				public int priority = 10;
-				
+
 				[JsonProperty("extensions")]
 				public JsonExtensionData extensions = new JsonExtensionData();
-			}
 
-			public static CharacterBook FromJson(string json)
-			{
-				try
-				{
-					JObject jObject = JObject.Parse(json);
-					if (jObject.IsValid(_tavernCharacterBookV2Schema))
-						return JsonConvert.DeserializeObject<CharacterBook>(json);
-				}
-				catch
-				{
-				}
-				return null;
-			}
-
-			public static bool Validate(string jsonData)
-			{
-				try
-				{
-					JObject jObject = JObject.Parse(jsonData);
-					return jObject.IsValid(_tavernCharacterBookV2Schema);
-				}
-				catch
-				{
-					return false;
-				}
+				// New in V3
+				[JsonProperty("use_regex")]
+				public bool use_regex = false;
 			}
 		}
 
-		private static TavernCardV2 FromV1(TavernCardV1 card)
+		private static TavernCardV3 FromV1(TavernCardV1 card)
 		{
-			return new TavernCardV2() {
+			return new TavernCardV3() {
 				data = new Data() {
 					name = card.name,
 					persona = card.description,
@@ -194,16 +203,77 @@ namespace Ginger
 			};
 		}
 
-		public static TavernCardV2 FromOutput(Generator.Output output)
+		private static TavernCardV3 FromV2(TavernCardV2 cardV2)
 		{
-			TavernCardV2 card = new TavernCardV2();
-			card.spec = "chara_card_v2";
-			card.spec_version = "2.0";
-			card.data.name = Current.Name;
+			TavernCardV3 card = new TavernCardV3();
+			card.spec = "chara_card_v3";
+			card.spec_version = "3.0";
+			card.data.name = cardV2.data.name;
+			card.data.creator = cardV2.data.creator;
+			card.data.creator_notes = cardV2.data.creator_notes;
+			card.data.character_version = cardV2.data.character_version;
+			card.data.tags = cardV2.data.tags != null ? (string[])cardV2.data.tags.Clone() : new string[0];
+
+			card.data.extensions = (GingerJsonExtensionData)cardV2.data.extensions.Clone();
+
+			card.data.system = cardV2.data.system;
+			card.data.post_history_instructions = cardV2.data.post_history_instructions;
+			card.data.persona = cardV2.data.persona;
+			card.data.personality = cardV2.data.personality;
+			card.data.scenario = cardV2.data.scenario;
+			card.data.greeting = cardV2.data.greeting;
+			card.data.example = cardV2.data.example;
+			card.data.alternate_greetings = cardV2.data.alternate_greetings != null ? (string[])cardV2.data.alternate_greetings.Clone() : new string[0];
+
+			card.data.character_book = null; //!!
+			if (cardV2.data.character_book != null)
+			{
+				card.data.character_book = new TavernCardV3.CharacterBook();
+
+				card.data.character_book.recursive_scanning = cardV2.data.character_book.recursive_scanning;
+				card.data.character_book.scan_depth = cardV2.data.character_book.scan_depth;
+				card.data.character_book.token_budget = cardV2.data.character_book.token_budget;
+				card.data.character_book.extensions = cardV2.data.character_book.extensions;
+				
+				card.data.character_book.entries =
+					cardV2.data.character_book.entries.Select(e => {
+						string[] keys = e.keys;
+						var entry = new TavernCardV3.CharacterBook.Entry() {
+							id = e.id,
+							comment = keys.Length > 0 ? keys[0] : "",
+							keys = keys,
+							content = e.content,
+							case_sensitive = e.case_sensitive,
+							constant = e.constant,
+							enabled = e.enabled,
+							insertion_order = e.insertion_order,
+							position = e.position,
+							priority = e.priority,
+							secondary_keys = e.secondary_keys,
+							selective = e.selective,
+							extensions = e.extensions ?? new JsonExtensionData(),
+							use_regex = false,
+						};
+						return entry;
+					}).ToArray();
+			}
+
+			return card;
+		}
+
+		public static TavernCardV3 FromOutput(Generator.Output output)
+		{
+			TavernCardV3 card = new TavernCardV3();
+			card.spec = "chara_card_v3";
+			card.spec_version = "3.0";
+			card.data.name = Current.CardName;
+			card.data.nickname = Current.Name;
 			card.data.creator = Current.Card.creator;
 			card.data.creator_notes = Current.Card.comment.ConvertLinebreaks(Linebreak.LF);
 			card.data.character_version = Current.Card.versionString;
 			card.data.tags = Current.Card.tags.ToArray();
+			card.data.creationDate = (int)(Current.Card.creationDate ?? DateTime.UtcNow).ToUnixTimeSeconds();
+			card.data.updateDate = (int)DateTime.UtcNow.ToUnixTimeSeconds();
 
 			if (Current.Card.extensionData != null)
 				card.data.extensions = Current.Card.extensionData.WithGinger();
@@ -224,8 +294,8 @@ namespace Ginger
 
 			if (output.hasLore)
 			{
-				card.data.character_book = new CharacterBook();
-				
+				card.data.character_book = new TavernCardV3.CharacterBook();
+
 				if (output.lorebook.unused != null)
 				{
 					card.data.character_book.recursive_scanning = output.lorebook.unused.recursive_scanning;
@@ -237,7 +307,7 @@ namespace Ginger
 				card.data.character_book.entries =
 					output.lorebook.entries.Select(e => {
 						string[] keys = e.keys;
-						var entry = new CharacterBook.Entry() {
+						var entry = new TavernCardV3.CharacterBook.Entry() {
 							comment = keys.Length > 0 ? keys[0] : "",
 							keys = keys,
 							content = GingerString.FromString(e.value).ToTavern(),
@@ -254,6 +324,7 @@ namespace Ginger
 							entry.secondary_keys = e.unused.secondary_keys;
 							entry.selective = e.unused.selective;
 							entry.extensions = e.unused.extensions ?? new JsonExtensionData();
+							entry.use_regex = false;
 						}
 						return entry;
 					}).ToArray();
@@ -261,10 +332,15 @@ namespace Ginger
 				for (int i = 0; i < card.data.character_book.entries.Length; ++i)
 					card.data.character_book.entries[i].id = i + 1;
 			}
+			else
+			{
+				card.data.character_book = null;
+			}
+
 			return card;
 		}
 
-		public static TavernCardV2 FromJson(string json, out int errors)
+		public static TavernCardV3 FromJson(string json, out int errors)
 		{
 			List<string> lsErrors = new List<string>();
 			JsonSerializerSettings settings = new JsonSerializerSettings() {
@@ -282,35 +358,15 @@ namespace Ginger
 				},
 			};
 
-			// Version 2
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_tavernCharacterCardV2Schema))
+				if (jObject.IsValid(_tavernCharacterCardSchemaV3))
 				{
-					var card = JsonConvert.DeserializeObject<TavernCardV2>(json, settings);
+					var card = JsonConvert.DeserializeObject<TavernCardV3>(json, settings);
 					errors = lsErrors.Count;
 					if (Validate(card))
 						return card;
-				}
-			}
-			catch
-			{
-			}
-
-			// Version 1
-			try
-			{
-				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_tavernCharacterCardV1Schema))
-				{
-					var cardV1 = JsonConvert.DeserializeObject<TavernCardV1>(json, settings);
-					errors = lsErrors.Count;
-					if (Validate(cardV1))
-					{
-						var cardV2 = FromV1(cardV1);
-						return cardV2;
-					}
 				}
 			}
 			catch
@@ -336,24 +392,13 @@ namespace Ginger
 			}
 		}
 
-		private static bool Validate(TavernCardV2 card)
+		private static bool Validate(TavernCardV3 card)
 		{
 			if (card == null || card.data == null)
 				return false;
 			if (string.IsNullOrEmpty(card.data.name))
 				return false;
-			return card.spec == "chara_card_v2";
-		}
-
-		private static bool Validate(TavernCardV1 card)
-		{
-			if (card == null)
-				return false;
-			if (string.IsNullOrEmpty(card.name))
-				return false;
-			if (string.IsNullOrEmpty(card.description) && string.IsNullOrEmpty(card.personality))
-				return false;
-			return true;
+			return card.spec == "chara_card_v3";
 		}
 
 		public static bool Validate(string jsonData)
@@ -361,14 +406,9 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(jsonData);
-				if (jObject.IsValid(_tavernCharacterCardV2Schema))
+				if (jObject.IsValid(_tavernCharacterCardSchemaV3))
 				{
-					var card = JsonConvert.DeserializeObject<TavernCardV2>(jsonData);
-					return Validate(card);
-				}
-				if (jObject.IsValid(_tavernCharacterCardV1Schema))
-				{
-					var card = JsonConvert.DeserializeObject<TavernCardV1>(jsonData);
+					var card = JsonConvert.DeserializeObject<TavernCardV3>(jsonData);
 					return Validate(card);
 				}
 				return false;
@@ -380,179 +420,36 @@ namespace Ginger
 		}
 	}
 
-	public class TavernWorldBook
+	public class TavernLorebookV3
 	{
-		[JsonProperty("name")]
-		public string name;
+		[JsonProperty("spec", Required = Required.Always)]
+		public string spec = null; //"lorebook_v3";
+		[JsonProperty("data", Required = Required.Always)]
+		public TavernCardV3.CharacterBook data;
 
-		[JsonProperty("description")]
-		public string description;
+		private static JsonSchema _tavernLorebookSchemaV3;
 
-		[JsonProperty("scan_depth")]
-		public int scan_depth = 50;
-
-		[JsonProperty("token_budget")]
-		public int token_budget = 500;
-
-		[JsonProperty("recursive_scanning")]
-		public bool recursive_scanning = false;
-
-		[JsonProperty("entries", Required = Required.Always)]
-		public Dictionary<string, Entry> entries = new Dictionary<string, Entry>();
-
-		[JsonProperty("extensions")]
-		public SmallGingerJsonExtensionData extensions = new SmallGingerJsonExtensionData();
-
-		public class Entry
+		static TavernLorebookV3()
 		{
-			[JsonProperty("uid")]
-			public int uid;
-
-			[JsonProperty("key", Required = Required.Always)]
-			public string[] key;
-
-			[JsonProperty("keysecondary")]
-			public string[] secondary_keys = new string[0];
-
-			[JsonProperty("comment")]
-			public string comment = "";
-
-			[JsonProperty("content", Required = Required.Always)]
-			public string content;
-
-			[JsonProperty("constant")]
-			public bool constant = false;
-
-			[JsonProperty("selective")]
-			public bool selective = false;
-
-			[JsonProperty("order")]
-			public int order = 100;
-
-			[JsonProperty("position")]
-			public int position = 0; // 0: before_char 1: after_char 2: before_authors_note 3:after_authors note 4:at_depth
-
-			[JsonProperty("excludeRecursion")]
-			public bool excludeRecursion = false;
-
-			[JsonProperty("disable")]
-			public bool disable = false;
-
-			[JsonProperty("addMemo")]
-			public bool addMemo = true;
-
-			[JsonProperty("displayIndex")]
-			public int displayIndex;
-
-			[JsonProperty("probability")]
-			public int probability = 100;
-
-			[JsonProperty("useProbability")]
-			public bool useProbability = true;
-
-			[JsonProperty("depth")]
-			public int depth = 4;
-
-			[JsonProperty("selectiveLogic")]
-			public int selectiveLogic = 0;
-
-			[JsonProperty("group")]
-			public string group = "";
-
-
-			[JsonProperty("extensions")]
-			public JsonExtensionData extensions = new JsonExtensionData();
+			_tavernLorebookSchemaV3 = JsonSchema.Parse(Resources.tavern_characterbook_v3_schema);
 		}
 
-		private static JsonSchema _tavernWorldBookSchema;
-
-		static TavernWorldBook()
-		{
-			_tavernWorldBookSchema = JsonSchema.Parse(Resources.tavern_worldbook_schema);
-		}
-
-		public static TavernWorldBook FromJson(string json)
+		public static TavernLorebookV3 FromJson(string json)
 		{
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_tavernWorldBookSchema))
-					return JsonConvert.DeserializeObject<TavernWorldBook>(json);
+				if (jObject.IsValid(_tavernLorebookSchemaV3))
+				{
+					var lorebook = JsonConvert.DeserializeObject<TavernLorebookV3>(json);
+					if (Validate(lorebook))
+						return lorebook;
+				}
 			}
 			catch
 			{
 			}
 			return null;
-		}
-
-		public static bool Validate(string jsonData)
-		{
-			try
-			{
-				JObject jObject = JObject.Parse(jsonData);
-				return jObject.IsValid(_tavernWorldBookSchema);
-			}
-			catch
-			{
-				return false;
-			}
-		}
-	}
-
-	public class TavernCardV2_Export // Tavern v2 + v1 merge
-	{
-		public TavernCardV2_Export()
-		{
-			data = new TavernCardV2.Data();
-		}
-
-#pragma warning disable 0414
-		[JsonProperty("spec", Required = Required.Always)]
-		string spec = "chara_card_v2";
-		[JsonProperty("spec_version", Required = Required.Always)]
-		string spec_version = "2.0";
-#pragma warning restore 0414
-
-		#region V1 fields
-		[JsonProperty("name", Required = Required.Always)]
-		public string name = "";
-		
-		[JsonProperty("description", Required = Required.Always)]
-		public string description = "";
-		
-		[JsonProperty("personality", Required = Required.Always)]
-		public string personality = "";
-		
-		[JsonProperty("scenario", Required = Required.Always)]
-		public string scenario = "";
-		
-		[JsonProperty("first_mes", Required = Required.Always)]
-		public string greeting = "";
-		
-		[JsonProperty("mes_example", Required = Required.Always)]
-		public string example = "";
-		#endregion
-
-		#region V2 fields
-		[JsonProperty("data", Required = Required.Always)]
-		public TavernCardV2.Data data;
-		#endregion
-
-		public static TavernCardV2_Export FromOutput(Generator.Output output)
-		{
-			TavernCardV2_Export card = new TavernCardV2_Export();
-			var cardV2 = TavernCardV2.FromOutput(output);
-			card.data = cardV2.data;
-
-			// V2 fields
-			card.name = card.data.name;
-			card.description = card.data.persona;
-			card.personality = card.data.personality;
-			card.scenario = card.data.scenario;
-			card.greeting = card.data.greeting;
-			card.example = card.data.example;
-
-			return card;
 		}
 
 		public string ToJson()
@@ -569,5 +466,27 @@ namespace Ginger
 				return null;
 			}
 		}
+
+		private static bool Validate(TavernLorebookV3 lorebook)
+		{
+			if (lorebook.data == null)
+				return false;
+			return lorebook.spec == "lorebook_v3";
+		}
+
+		public static bool Validate(string jsonData)
+		{
+			try
+			{
+				JObject jObject = JObject.Parse(jsonData);
+				return jObject.IsValid(_tavernLorebookSchemaV3);
+			}
+			catch
+			{
+				return false;
+			}
+		}
 	}
+
+
 }

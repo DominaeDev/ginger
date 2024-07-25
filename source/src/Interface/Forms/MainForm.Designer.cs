@@ -101,8 +101,8 @@ namespace Ginger {
 			this.tokenBudget1K = new System.Windows.Forms.ToolStripMenuItem();
 			this.tokenBudget2K = new System.Windows.Forms.ToolStripMenuItem();
 			this.tokenBudget3K = new System.Windows.Forms.ToolStripMenuItem();
-			this.tokenBudget5K = new System.Windows.Forms.ToolStripMenuItem();
 			this.tokenBudget4K = new System.Windows.Forms.ToolStripMenuItem();
+			this.tokenBudget5K = new System.Windows.Forms.ToolStripMenuItem();
 			this.tokenBudget6K = new System.Windows.Forms.ToolStripMenuItem();
 			this.tokenBudget8K = new System.Windows.Forms.ToolStripMenuItem();
 			this.tokenBudget10K = new System.Windows.Forms.ToolStripMenuItem();
@@ -139,6 +139,7 @@ namespace Ginger {
 			this.statusBar = new System.Windows.Forms.StatusStrip();
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusBarActor = new System.Windows.Forms.ToolStripStatusLabel();
+			this.embeddedAssetsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -655,7 +656,7 @@ namespace Ginger {
 			this.openMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
 			this.openMenuItem.Size = new System.Drawing.Size(259, 22);
 			this.openMenuItem.Text = "&Open...";
-			this.openMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
+			this.openMenuItem.Click += new System.EventHandler(this.OpenFileMenuItem_Click);
 			// 
 			// openRecentMenuItem
 			// 
@@ -704,14 +705,14 @@ namespace Ginger {
 			// 
 			this.importCharacterMenuItem.Name = "importCharacterMenuItem";
 			this.importCharacterMenuItem.Size = new System.Drawing.Size(171, 22);
-			this.importCharacterMenuItem.Text = "Import character...";
+			this.importCharacterMenuItem.Text = "Import character file...";
 			this.importCharacterMenuItem.Click += new System.EventHandler(this.ImportCharacterMenuItem_Click);
 			// 
 			// importLorebookMenuItem
 			// 
 			this.importLorebookMenuItem.Name = "importLorebookMenuItem";
 			this.importLorebookMenuItem.Size = new System.Drawing.Size(171, 22);
-			this.importLorebookMenuItem.Text = "Import lorebook...";
+			this.importLorebookMenuItem.Text = "Import lorebook file...";
 			this.importLorebookMenuItem.Click += new System.EventHandler(this.ImportLorebookJsonMenuItem_Click);
 			// 
 			// exportToolStripMenuItem
@@ -727,14 +728,14 @@ namespace Ginger {
 			// 
 			this.exportCharacterMenuItem.Name = "exportCharacterMenuItem";
 			this.exportCharacterMenuItem.Size = new System.Drawing.Size(169, 22);
-			this.exportCharacterMenuItem.Text = "Export character...";
+			this.exportCharacterMenuItem.Text = "Export character file...";
 			this.exportCharacterMenuItem.Click += new System.EventHandler(this.ExportCharacterMenuItem_Click);
 			// 
 			// exportLorebookMenuItem
 			// 
 			this.exportLorebookMenuItem.Name = "exportLorebookMenuItem";
 			this.exportLorebookMenuItem.Size = new System.Drawing.Size(169, 22);
-			this.exportLorebookMenuItem.Text = "Export lorebook...";
+			this.exportLorebookMenuItem.Text = "Export lorebook file...";
 			this.exportLorebookMenuItem.Click += new System.EventHandler(this.ExportLorebookMenuItem_Click);
 			// 
 			// changeLanguageMenuItem
@@ -860,6 +861,7 @@ namespace Ginger {
             this.viewRecipeMenuItem,
             this.viewOutputMenuItem,
             this.viewNotesMenuItem,
+            this.embeddedAssetsMenuItem,
             toolStripMenuItem5,
             this.collapseAllMenuItem,
             this.expandAllMenuItem,
@@ -974,7 +976,7 @@ namespace Ginger {
 			// 
 			this.tokenBudgetNone.CheckOnClick = true;
 			this.tokenBudgetNone.Name = "tokenBudgetNone";
-			this.tokenBudgetNone.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudgetNone.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudgetNone.Text = "None";
 			this.tokenBudgetNone.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
 			// 
@@ -982,7 +984,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget1K.CheckOnClick = true;
 			this.tokenBudget1K.Name = "tokenBudget1K";
-			this.tokenBudget1K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget1K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget1K.Text = "1024";
 			this.tokenBudget1K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
 			// 
@@ -990,7 +992,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget2K.CheckOnClick = true;
 			this.tokenBudget2K.Name = "tokenBudget2K";
-			this.tokenBudget2K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget2K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget2K.Text = "2048";
 			this.tokenBudget2K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
 			// 
@@ -998,31 +1000,31 @@ namespace Ginger {
 			// 
 			this.tokenBudget3K.CheckOnClick = true;
 			this.tokenBudget3K.Name = "tokenBudget3K";
-			this.tokenBudget3K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget3K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget3K.Text = "3072";
 			this.tokenBudget3K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
-			// 
-			// tokenBudget5K
-			// 
-			this.tokenBudget5K.CheckOnClick = true;
-			this.tokenBudget5K.Name = "tokenBudget5K";
-			this.tokenBudget5K.Size = new System.Drawing.Size(180, 22);
-			this.tokenBudget5K.Text = "5120";
-			this.tokenBudget5K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
 			// 
 			// tokenBudget4K
 			// 
 			this.tokenBudget4K.CheckOnClick = true;
 			this.tokenBudget4K.Name = "tokenBudget4K";
-			this.tokenBudget4K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget4K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget4K.Text = "4096";
 			this.tokenBudget4K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
+			// 
+			// tokenBudget5K
+			// 
+			this.tokenBudget5K.CheckOnClick = true;
+			this.tokenBudget5K.Name = "tokenBudget5K";
+			this.tokenBudget5K.Size = new System.Drawing.Size(104, 22);
+			this.tokenBudget5K.Text = "5120";
+			this.tokenBudget5K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
 			// 
 			// tokenBudget6K
 			// 
 			this.tokenBudget6K.CheckOnClick = true;
 			this.tokenBudget6K.Name = "tokenBudget6K";
-			this.tokenBudget6K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget6K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget6K.Text = "6144";
 			this.tokenBudget6K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
 			// 
@@ -1030,7 +1032,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget8K.CheckOnClick = true;
 			this.tokenBudget8K.Name = "tokenBudget8K";
-			this.tokenBudget8K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget8K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget8K.Text = "8192";
 			this.tokenBudget8K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
 			// 
@@ -1038,7 +1040,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget10K.CheckOnClick = true;
 			this.tokenBudget10K.Name = "tokenBudget10K";
-			this.tokenBudget10K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget10K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget10K.Text = "10240";
 			this.tokenBudget10K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
 			// 
@@ -1046,7 +1048,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget12K.CheckOnClick = true;
 			this.tokenBudget12K.Name = "tokenBudget12K";
-			this.tokenBudget12K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget12K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget12K.Text = "12288";
 			this.tokenBudget12K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
 			// 
@@ -1054,7 +1056,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget16K.CheckOnClick = true;
 			this.tokenBudget16K.Name = "tokenBudget16K";
-			this.tokenBudget16K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget16K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget16K.Text = "16384";
 			this.tokenBudget16K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
 			// 
@@ -1062,7 +1064,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget24K.CheckOnClick = true;
 			this.tokenBudget24K.Name = "tokenBudget24K";
-			this.tokenBudget24K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget24K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget24K.Text = "24576";
 			this.tokenBudget24K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
 			// 
@@ -1070,7 +1072,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget32K.CheckOnClick = true;
 			this.tokenBudget32K.Name = "tokenBudget32K";
-			this.tokenBudget32K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget32K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget32K.Text = "32768";
 			this.tokenBudget32K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
 			// 
@@ -1309,6 +1311,13 @@ namespace Ginger {
 			this.statusBarActor.Spring = true;
 			this.statusBarActor.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
+			// embeddedAssetsMenuItem
+			// 
+			this.embeddedAssetsMenuItem.Name = "embeddedAssetsMenuItem";
+			this.embeddedAssetsMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.embeddedAssetsMenuItem.Text = "Embedded &assets";
+			this.embeddedAssetsMenuItem.Click += new System.EventHandler(this.embeddedAssetsMenuItem_Click);
+			// 
 			// MainForm
 			// 
 			this.AllowDrop = true;
@@ -1459,6 +1468,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem pasteMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem tokenBudget5K;
 		private System.Windows.Forms.ToolStripMenuItem tokenBudget10K;
+		private System.Windows.Forms.ToolStripMenuItem embeddedAssetsMenuItem;
 	}
 }
 

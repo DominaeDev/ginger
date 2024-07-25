@@ -114,6 +114,8 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -171,6 +173,12 @@
     </Compile>
     <Compile Include="src\Interface\Controls\UserNotes.Designer.cs">
       <DependentUpon>UserNotes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\AssetViewDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\AssetViewDialog.Designer.cs">
+      <DependentUpon>AssetViewDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\FindDialog.cs">
       <SubType>Form</SubType>
@@ -303,8 +311,11 @@
       <DependentUpon>RecipePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Model\CardData.cs" />
+    <Compile Include="src\Model\Formats\AssetFile.cs" />
     <Compile Include="src\Model\Formats\FaradayCardV4.cs" />
     <Compile Include="src\Model\Formats\FaradayCardV3.cs" />
+    <Compile Include="src\Model\Formats\TavernCardV3.cs" />
+    <Compile Include="src\Model\Formats\ZipUtil.cs" />
     <Compile Include="src\Model\Generation\BlockBuilder.cs" />
     <Compile Include="src\Model\Formats\FaradayCardV2.cs" />
     <Compile Include="src\Model\Formats\JsonExtensionData.cs" />
@@ -563,6 +574,9 @@
     <EmbeddedResource Include="src\Interface\Controls\UserNotes.resx">
       <DependentUpon>UserNotes.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\AssetViewDialog.resx">
+      <DependentUpon>AssetViewDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\FindDialog.resx">
       <DependentUpon>FindDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -774,6 +788,21 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Recipes\Other\personality_recipe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\tavern_characterbook_v3.schema.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\tavern_charactercard_v3.schema.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\faraday_charactercard_v1.schema.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\faraday_charactercard_v2.schema.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\tavern_characterbook_v2.schema.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

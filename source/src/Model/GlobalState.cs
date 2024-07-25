@@ -28,6 +28,7 @@ namespace Ginger
 
 		public static bool IsLoading = false;
 
+		public static string CardName { get { return Utility.FirstNonEmpty(Card.name, MainCharacter.spokenName, Constants.DefaultName); } }
 		public static string Name { get { return Utility.FirstNonEmpty(Character.spokenName, Card.name, Constants.DefaultName); } }
 
 		public static int SelectedCharacter { get; set; }
@@ -235,84 +236,6 @@ namespace Ginger
 			return true;
 		}
 
-		public enum LoadResult
-		{
-			Success,
-			FileError,
-			NoData,
-			Fallback,
-		}
-
-		public static LoadResult LoadCharacterFile(string filename, out int errors)
-		{
-			if (string.IsNullOrEmpty(filename))
-			{
-				errors = 0;
-				return LoadResult.FileError;
-			}
-
-			// Clear the state
-			// (In case a default value invokes {card} or {name}.)
-			var prevCurrentCard = Card;
-			var prevCurrentCharacters = Characters;
-			var prevSelectedCharacter = SelectedCharacter;
-			Card = new CardData();
-			Character = new CharacterData();
-			SelectedCharacter = 0;
-
-			// Load image first
-			Image image;
-			try
-			{
-				byte[] bytes = File.ReadAllBytes(filename);
-				using (var stream = new MemoryStream(bytes))
-				{
-					image = Image.FromStream(stream);
-				}
-			}
-			catch
-			{
-				Card = prevCurrentCard;
-				Characters = prevCurrentCharacters;
-				SelectedCharacter = prevSelectedCharacter;
-				errors = 0;
-				return LoadResult.FileError;
-			}
-
-			// Load character data
-			FileUtil.ImportResult importResult;
-			FileUtil.Error importError = FileUtil.Import(filename, out importResult);
-			bool bFallback = false;
-			if (importError == FileUtil.Error.FallbackError)
-			{
-				bFallback = true;
-				importError = FileUtil.Error.NoError;
-			}
-
-			if (importError != FileUtil.Error.NoError)
-			{
-				Card = prevCurrentCard;
-				Characters = prevCurrentCharacters;
-				SelectedCharacter = prevSelectedCharacter;
-				errors = 0;
-				if (importError == FileUtil.Error.NoDataFound)
-					return LoadResult.NoData;
-				return LoadResult.FileError;
-			}
-			errors = importResult.jsonErrors;
-
-			if (importResult.gingerData != null)
-			{
-				errors += importResult.gingerData.missingRecipes;
-				ReadGingerCard(importResult.gingerData, image);
-			}
-			else if (importResult.faradayData != null)
-				ReadFaradayCard(importResult.faradayData, image);
-			else if (importResult.tavernData != null)
-				ReadTavernCard(importResult.tavernData, image);
-			return bFallback ? LoadResult.Fallback : LoadResult.Success;
-		}
-
 		public static void ReadGingerCard(GingerCardV1 card, Image portrait)
 		{
 			if (card == null)
@@ -423,21 +346,61 @@ namespace Ginger
 			AddChannel(GingerString.FromTavern(card.data.post_history_instructions).ToParameter(), Resources.post_history_recipe);
 			AddChannel(GingerString.FromTavern(card.data.persona).ToParameter(), Resources.persona_recipe);
 			if (string.IsNullOrEmpty(card.data.personality) == false)
-			{
 				AddChannel(GingerString.FromTavern(card.data.personality).ToParameter(), Resources.personality_recipe);
 
-				// Combine persona + personality
-/*				StringBuilder sb = new StringBuilder();
-				sb.AppendLine(card.data.persona.Trim());
-				sb.AppendLine();
-				sb.Append("{{char}}'s personality: ");
-				sb.AppendLine(card.data.personality.Trim());
-				AddChannel(GingerString.FromTavern(sb.TrimEnd().ToString()).ToParameter(), Resources.persona_recipe);
-*/
-			}
-			else
+			AddChannel(GingerString.FromTavern(card.data.scenario).ToParameter(), Resources.scenario_recipe);
+			AddChannel(GingerString.FromTavern(card.data.greeting).ToParameter(), Resources.greeting_recipe);
+			if (card.data.alternate_greetings != null)
 			{
+				for (int i = 0; i < card.data.alternate_greetings.Length; ++i)
+					AddChannel(GingerString.FromTavern(card.data.alternate_greetings[i]).ToParameter(), Resources.greeting_recipe);
 			}
+
+
+			if (string.IsNullOrEmpty(card.data.example) == false)
+				AddChannel(GingerString.FromTavernChat(card.data.example).ToParameter(), Resources.example_recipe);
+
+			if (card.data.character_book != null && card.data.character_book.entries.Length > 0)
+			{
+				var loreBook = Lorebook.FromTavernBook(card.data.character_book);
+				var loreBookRecipe = RecipeBook.AddRecipeFromResource(Resources.lorebook_recipe);
+				(loreBookRecipe.parameters[0] as LorebookParameter).value = loreBook;
+			}
+
+			return true;
+		}
+
+		public static bool ReadTavernCard(TavernCardV3 card, Image portrait)
+		{
+			if (card == null)
+				return false;
+
+			Reset();
+			Card = new CardData() {
+				name = card.data.name,
+				userGender = null,
+				creator = card.data.creator,
+				comment = card.data.creator_notes.ConvertLinebreaks(Linebreak.Default),
+				versionString = card.data.character_version,
+				portraitImage = ImageRef.FromImage(portrait),
+				extensionData = card.data.extensions,
+				creationDate = DateTimeExtensions.FromUnixTime(card.data.creationDate ?? 0L),
+			};
+			Character = new CharacterData() {
+				spokenName = null,
+			};
+
+			if (card.data.tags != null)
+				Card.tags = new HashSet<string>(card.data.tags);
+
+			InferGender(GingerString.FromTavern(card.data.persona), out Character.gender);
+			Card.textStyle = DetectTextStyle(card.data.example, card.data.greeting);
+
+			AddChannel(GingerString.FromTavern(card.data.system).ToParameter(), Resources.system_recipe);
+			AddChannel(GingerString.FromTavern(card.data.post_history_instructions).ToParameter(), Resources.post_history_recipe);
+			AddChannel(GingerString.FromTavern(card.data.persona).ToParameter(), Resources.persona_recipe);
+			if (string.IsNullOrEmpty(card.data.personality) == false)
+				AddChannel(GingerString.FromTavern(card.data.personality).ToParameter(), Resources.personality_recipe);
 
 			AddChannel(GingerString.FromTavern(card.data.scenario).ToParameter(), Resources.scenario_recipe);
 			AddChannel(GingerString.FromTavern(card.data.greeting).ToParameter(), Resources.greeting_recipe);
@@ -533,7 +496,7 @@ namespace Ginger
 				userGender = null,
 				creator = card.metaData.creator,
 				comment = card.metaData.comment.ConvertLinebreaks(Linebreak.Default),
-				creationDate = card.metaData != null ? DateTimeExtensions.FromUnixTimeMilliseconds(card.metaData.creationDate) : DateTime.UtcNow,
+				creationDate = card.metaData != null ? DateTimeExtensions.FromUnixTime(card.metaData.creationDate) : DateTime.UtcNow,
 			};
 
 			Character = new CharacterData() {
