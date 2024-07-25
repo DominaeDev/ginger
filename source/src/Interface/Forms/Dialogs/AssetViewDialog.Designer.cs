@@ -32,6 +32,7 @@ namespace Ginger
 			System.Windows.Forms.Panel listPanel;
 			System.Windows.Forms.Panel leftPanel;
 			System.Windows.Forms.Panel spacer;
+			System.Windows.Forms.Panel panel1;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AssetViewDialog));
 			this.assetsDataView = new System.Windows.Forms.DataGridView();
 			this.columnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -45,9 +46,11 @@ namespace Ginger
 			this.btnAdd = new System.Windows.Forms.Button();
 			this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
+			this.label1 = new System.Windows.Forms.Label();
 			listPanel = new System.Windows.Forms.Panel();
 			leftPanel = new System.Windows.Forms.Panel();
 			spacer = new System.Windows.Forms.Panel();
+			panel1 = new System.Windows.Forms.Panel();
 			listPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.assetsDataView)).BeginInit();
 			leftPanel.SuspendLayout();
@@ -67,7 +70,7 @@ namespace Ginger
 			// 
 			this.assetsDataView.AllowDrop = true;
 			this.assetsDataView.AllowUserToAddRows = false;
-			this.assetsDataView.AllowUserToOrderColumns = true;
+			this.assetsDataView.AllowUserToDeleteRows = false;
 			this.assetsDataView.AllowUserToResizeColumns = false;
 			this.assetsDataView.AllowUserToResizeRows = false;
 			this.assetsDataView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
@@ -131,6 +134,8 @@ namespace Ginger
 			// 
 			// leftPanel
 			// 
+			leftPanel.Controls.Add(this.label1);
+			leftPanel.Controls.Add(panel1);
 			leftPanel.Controls.Add(this.btnApply);
 			leftPanel.Controls.Add(this.btnExport);
 			leftPanel.Controls.Add(this.btnView);
@@ -206,6 +211,26 @@ namespace Ginger
 			// 
 			this.importFileDialog.Multiselect = true;
 			// 
+			// label1
+			// 
+			this.label1.Dock = System.Windows.Forms.DockStyle.Top;
+			this.label1.ForeColor = System.Drawing.SystemColors.GrayText;
+			this.label1.Location = new System.Drawing.Point(4, 152);
+			this.label1.Name = "label1";
+			this.label1.Padding = new System.Windows.Forms.Padding(3);
+			this.label1.Size = new System.Drawing.Size(192, 52);
+			this.label1.TabIndex = 7;
+			this.label1.Text = "Note: Embedded assets are only supported in CCV3 and CHARX cards.";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// panel1
+			// 
+			panel1.Dock = System.Windows.Forms.DockStyle.Top;
+			panel1.Location = new System.Drawing.Point(4, 140);
+			panel1.Name = "panel1";
+			panel1.Size = new System.Drawing.Size(192, 12);
+			panel1.TabIndex = 4;
+			// 
 			// AssetViewDialog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -242,5 +267,6 @@ namespace Ginger
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnSize;
 		private System.Windows.Forms.SaveFileDialog exportFileDialog;
 		private System.Windows.Forms.OpenFileDialog importFileDialog;
+		private System.Windows.Forms.Label label1;
 	}
 }

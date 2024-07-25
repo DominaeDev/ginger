@@ -25,7 +25,8 @@ namespace Ginger
 		public static readonly string DefaultUri = "ccdefault:";
 		public static readonly string CharXEmbedUriPrefix = "embeded://";
 		public static readonly string PNGEmbedUriPrefix = "__asset:";
-		public static readonly string PNGEmbedKeyPrefix = "chara-ext-asset_"; // ?
+		public static readonly string PNGEmbedKeyPrefix = "chara-ext-asset_:";
+		public static readonly string PNGEmbedKeyPrefix_Risu = "chara-ext-asset_";
 
 		public enum AssetType
 		{
@@ -332,7 +333,7 @@ namespace Ginger
 				var used_names = new Dictionary<string, int>();
 				for (int i = 0; i < assetsOfType.Count; ++i)
 				{
-					string name = assetsOfType[i].name.ToLowerInvariant().Trim();
+					string name = (assetsOfType[i].name ?? "").ToLowerInvariant().Trim();
 					if (name == "")
 						assetsOfType[i].name = name = "untitled"; // Name mustn't be empty
 
@@ -342,13 +343,12 @@ namespace Ginger
 						continue;
 					}
 
-					int count;
-					string testName = name;
-					while (used_names.TryGetValue(testName, out count))
-					{
-						testName = string.Format("{0}_{1:00}", name, count + 1);
-						++used_names[name];
-					}
+					int count = used_names[name];
+					string testName = string.Format("{0}_{1:00}", name, ++count);
+					while (used_names.ContainsKey(testName))
+						testName = string.Format("{0}_{1:00}", name, ++count);
+					used_names.Add(testName, 1);
+					used_names[name] = count;
 					assetsOfType[i].name = testName;
 				}
 
@@ -380,7 +380,7 @@ namespace Ginger
 
 		public bool HasDefaultIcon()
 		{
-			return this.ContainsAny(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
+			return this.ContainsAny(a => a.assetType == AssetFile.AssetType.Icon && (a.isDefaultAsset || a.name == "main" ));
 		}
 	}
 }

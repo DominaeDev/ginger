@@ -29,7 +29,6 @@ namespace Ginger
 			public string tavernJsonV2;
 			public string tavernJsonV3;
 			public string gingerXml;
-			public Dictionary<string, byte[]> assets;
 
 			public bool isEmpty 
 			{
@@ -126,19 +125,6 @@ namespace Ginger
 						string charaBase64 = metaData["ccv3"];
 						byte[] byteArray = Convert.FromBase64String(charaBase64);
 						result.tavernJsonV3 = new string(Encoding.UTF8.GetChars(byteArray));
-
-						// Read embedded PNGv3 assets
-						if (metaData.Keys.ContainsAny(key => key.BeginsWith(AssetFile.PNGEmbedKeyPrefix)))
-						{
-							result.assets = new Dictionary<string, byte[]>();
-							foreach (var kvp in metaData.Where(kvp => kvp.Key.BeginsWith(AssetFile.PNGEmbedKeyPrefix)))
-							{
-								string path = kvp.Key.Substring(AssetFile.PNGEmbedKeyPrefix.Length);
-								byte[] embedBuffer = Convert.FromBase64String(kvp.Value);
-								if (path.Length > 0 && embedBuffer.Length > 0)
-									result.assets.TryAdd(path, embedBuffer);
-							}
-						}
 					}
 					
 				}
@@ -233,8 +219,7 @@ namespace Ginger
 			SillyTavernV2 = 1 << 2,
 			SillyTavernV3 = 1 << 3,
 			
-			SillyTavern = SillyTavernV2 | SillyTavernV3,
-			All = Ginger | SillyTavern | Faraday,
+			All = Ginger | SillyTavernV2 | SillyTavernV3 | Faraday,
 		}
 
 		public static bool Export(string filename, Image image, Format formats = Format.All)
@@ -266,7 +251,7 @@ namespace Ginger
 				List<MetaData> metaData = new List<MetaData>();
 
 				// Tavern json (v2)
-				if (formats.Contains(Format.SillyTavernV2) && AppSettings.FileFormat.EnableCCV2)
+				if (formats.Contains(Format.SillyTavernV2))
 				{
 					var tavernData = TavernCardV2_Export.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavern));
 					tavernData.data.extensions.ginger = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
@@ -280,7 +265,7 @@ namespace Ginger
 				}
 
 				// Tavern json (v3)
-				if (formats.Contains(Format.SillyTavernV3) && AppSettings.FileFormat.EnableCCV3)
+				if (formats.Contains(Format.SillyTavernV3))
 				{
 					var tavernData = TavernCardV3.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavern));
 					tavernData.data.extensions.ginger = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
@@ -346,7 +331,7 @@ namespace Ginger
 					return false; // Error
 
 				// Write Faraday json
-				if (formats.Contains(Format.Faraday) && AppSettings.FileFormat.EnableBackyardAI)
+				if (formats.Contains(Format.Faraday))
 				{
 					string faradayJson = FaradayCardV4.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.Faraday)).ToJson();
 					var faradayBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(faradayJson));
@@ -1097,12 +1082,17 @@ namespace Ginger
 					assets.Add(AssetFile.FromV3Asset(assetInfo));
 
 				// Read embedded PNGv3 assets
-				if (metaData.Keys.ContainsAny(key => key.BeginsWith(AssetFile.PNGEmbedKeyPrefix)))
+				if (metaData.Keys.ContainsAny(key => key.BeginsWith(AssetFile.PNGEmbedKeyPrefix_Risu)))
 				{
-					foreach (var kvp in metaData.Where(kvp => kvp.Key.BeginsWith(AssetFile.PNGEmbedKeyPrefix)))
+					foreach (var kvp in metaData.Where(kvp => kvp.Key.BeginsWith(AssetFile.PNGEmbedKeyPrefix_Risu)))
 					{
-						string entryName = kvp.Key.Substring(AssetFile.PNGEmbedKeyPrefix.Length);
-						int idxAsset = assets.FindIndex(a => string.Compare(string.Concat(a.uriPath ?? "", a.uriName ?? ""), entryName, StringComparison.Ordinal) == 0);
+						// We need to handle both "chara-ext-asset_" and "chara-ext-asset_:" here
+						// due to a bug in the RisuAI client
+						string entryUri = kvp.Key.Substring(AssetFile.PNGEmbedKeyPrefix_Risu.Length);
+						if (entryUri.BeginsWith(":"))
+							entryUri = entryUri.Substring(1);
+
+						int idxAsset = assets.FindIndex(a => string.Compare(string.Concat(a.uriPath ?? "", a.uriName ?? ""), entryUri, StringComparison.Ordinal) == 0);
 						if (idxAsset == -1)
 							continue; // Unreferenced asset
 

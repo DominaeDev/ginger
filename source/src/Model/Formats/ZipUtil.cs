@@ -128,7 +128,7 @@ namespace Ginger
 
 			// Add current portrait image
 			Image image = Current.Card.portraitImage;
-			bool bWriteNullImage = true;
+			bool bAddDefaultIcon = true;
 			if (image != null)
 			{
 				// Write image to buffer
@@ -164,21 +164,24 @@ namespace Ginger
 								data = stream.ToArray(),
 							},
 						});
-						bWriteNullImage = false;
+						
+						// Remove any existing default icon
+						assets.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
+						bAddDefaultIcon = false;
 					}
 				}
 				catch
 				{
-					bWriteNullImage = true;
+					bAddDefaultIcon = true;
 				}
-
 			}
 			
-			if (bWriteNullImage)
+			if (bAddDefaultIcon)
 			{
 				// Add default icon asset
 				assets.Insert(0, AssetFile.MakeDefault(AssetFile.AssetType.Icon, "main"));
 			}
+
 
 			// Validate names and uris
 			assets.Validate();

@@ -313,7 +313,7 @@ namespace Ginger
 				error = FileUtil.ImportCharacterJson(importFileDialog.FileName, out jsonErrors);
 				break;
 			case 2: // PNG file
-				error = FileUtil.ImportCharacterFromPNG(importFileDialog.FileName, out jsonErrors, FileUtil.Format.SillyTavern | FileUtil.Format.Faraday);
+				error = FileUtil.ImportCharacterFromPNG(importFileDialog.FileName, out jsonErrors, FileUtil.Format.SillyTavernV2 | FileUtil.Format.SillyTavernV3 | FileUtil.Format.Faraday);
 				break;
 			default:
 				return false;
@@ -529,7 +529,7 @@ namespace Ginger
 
 			// Save as...
 			exportFileDialog.Title = Resources.cap_export_character;
-			exportFileDialog.Filter = "Character V2 JSON|*.json|Character V3 JSON|*.json|Agnai character json|*.json|PygmalionAI character json|*.json|SillyTavern card|*.png|Backyard AI card|*.png|CharX file|*.charx";
+			exportFileDialog.Filter = "Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard AI PNG|*.png|CharX file|*.charx";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			exportFileDialog.FilterIndex = AppSettings.User.LastExportCharacterFilter;
@@ -582,7 +582,7 @@ namespace Ginger
 				if (json != null && FileUtil.ExportTextFile(exportFileDialog.FileName, json))
 					return; // Success
 			}
-			else if (exportFileDialog.FilterIndex == 5) // SillyTavern PNG
+			else if (exportFileDialog.FilterIndex == 5) // PNGv2
 			{
 				// Open in another instance?
 				if (FileMutex.CanAcquire(exportFileDialog.FileName) == false)
@@ -591,10 +591,22 @@ namespace Ginger
 					return;
 				}
 
-				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.SillyTavernV2 | FileUtil.Format.SillyTavernV3))
+				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.SillyTavernV2))
 					return; // Success
 			}
-			else if (exportFileDialog.FilterIndex == 6) // Faraday PNG
+			else if (exportFileDialog.FilterIndex == 6) // PNGv3
+			{
+				// Open in another instance?
+				if (FileMutex.CanAcquire(exportFileDialog.FileName) == false)
+				{
+					MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(exportFileDialog.FileName)), Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
+
+				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.SillyTavernV3))
+					return; // Success
+			}
+			else if (exportFileDialog.FilterIndex == 7) // Faraday PNG
 			{
 				// Open in another instance?
 				if (FileMutex.CanAcquire(exportFileDialog.FileName) == false)
@@ -606,7 +618,7 @@ namespace Ginger
 				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.Faraday))
 					return; // Success
 			}
-			else if (exportFileDialog.FilterIndex == 7) // CharX
+			else if (exportFileDialog.FilterIndex == 8) // CharX
 			{
 				if (FileUtil.ExportToCharX(exportFileDialog.FileName))
 					return; // Success
@@ -638,7 +650,7 @@ namespace Ginger
 			}
 
 			exportFileDialog.Title = Resources.cap_export_lorebook;
-			exportFileDialog.Filter = "SillyTavern world book|*.json|Lorebook JSON (v3)|*.json|Agnai lorebook|*.json|Comma separated values|*.csv";
+			exportFileDialog.Filter = "SillyTavern World Book|*.json|Agnai Character Book|*.json|Lorebook JSON (CCV3)|*.json|Comma separated values|*.csv";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			if (saveLocal)
 				exportFileDialog.InitialDirectory = Utility.ContentPath("Lorebooks");
@@ -656,21 +668,21 @@ namespace Ginger
 			if (string.IsNullOrEmpty(lorebook.name))
 				lorebook.name = Path.GetFileNameWithoutExtension(exportFileDialog.FileName);
 
-			if (exportFileDialog.FilterIndex == 1) // Tavern V2
+			if (exportFileDialog.FilterIndex == 1) // V2
 			{
 				if (FileUtil.ExportTavernV2Lorebook(lorebook, exportFileDialog.FileName))
 					return; // Success
 			} 
-			else if (exportFileDialog.FilterIndex == 2) // Tavern V3
-			{
-				if (FileUtil.ExportTavernV3Lorebook(lorebook, exportFileDialog.FileName))
-					return; // Success
-			} 
-			else if (exportFileDialog.FilterIndex == 3) // Agnaistic
+			else if (exportFileDialog.FilterIndex == 2) // Agnai lorebook
 			{
 				if (FileUtil.ExportAgnaisticLorebook(lorebook, exportFileDialog.FileName))
 					return; // Success
 			}
+			else if (exportFileDialog.FilterIndex == 3) // V3
+			{
+				if (FileUtil.ExportTavernV3Lorebook(lorebook, exportFileDialog.FileName))
+					return; // Success
+			} 
 			else if (exportFileDialog.FilterIndex == 4) // CSV
 			{
 				if (FileUtil.ExportLorebookCsv(lorebook, exportFileDialog.FileName))
@@ -997,7 +1009,12 @@ namespace Ginger
 			if (Current.Card.creationDate == null)
 				Current.Card.creationDate = DateTime.UtcNow;
 
-			if (FileUtil.Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image))
+			// Only write ccv3 if necessary
+			var formats = FileUtil.Format.Ginger | FileUtil.Format.Faraday | FileUtil.Format.SillyTavernV2;
+			if (Current.Card.assets != null && Current.Card.assets.ContainsAny(a => a.isDefaultAsset == false))
+				formats |= FileUtil.Format.SillyTavernV3;
+
+			if (FileUtil.Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, formats))
 			{
 				SaveNotes(filename);
 
@@ -1023,7 +1040,7 @@ namespace Ginger
 			string filename = string.Concat(Utility.FirstNonEmpty(Current.Card.name, Current.Character.spokenName, Constants.DefaultName), ".png");
 
 			// Save as...
-			saveFileDialog.Filter = "Ginger character card|*.png";
+			saveFileDialog.Filter = "Ginger Character Card|*.png";
 			saveFileDialog.InitialDirectory = AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			saveFileDialog.FileName = Utility.ValidFilename(filename);
 			var result = saveFileDialog.ShowDialog();

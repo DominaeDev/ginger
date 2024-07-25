@@ -1193,9 +1193,6 @@ namespace Ginger
 				pasteMenuItem.Text = "Paste";
 				pasteMenuItem.Enabled = false;
 			}
-
-			// View assets
-			embeddedAssetsMenuItem.Visible = AppSettings.FileFormat.EnableCCV3 || (Current.Card.assets != null && Current.Card.assets.Count > 0);
 		}
 
 		private void PopulateMRUMenu(ToolStripItemCollection items)

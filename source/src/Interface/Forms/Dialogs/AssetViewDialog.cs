@@ -140,6 +140,8 @@ namespace Ginger
 					{
 						Assets[i].name = value;
 						Changed = true;
+
+						ResolveDuplicateNames();
 					}
 				}
 				else if (e.ColumnIndex == 2) // Type
@@ -150,6 +152,8 @@ namespace Ginger
 					{
 						Assets[i].assetType = value;
 						Changed = true;
+
+						ResolveDuplicateNames();
 					}
 				}
 			}
@@ -335,6 +339,60 @@ namespace Ginger
 			{
 				return false;
 			}
+		}
+
+		private void ResolveDuplicateNames()
+		{
+			var types = new AssetFile.AssetType[] {
+				AssetFile.AssetType.Icon,
+				AssetFile.AssetType.UserIcon,
+				AssetFile.AssetType.Background,
+				AssetFile.AssetType.Expression,
+				AssetFile.AssetType.Other,
+			};
+
+			foreach (var assetType in types)
+			{
+				var used_names = new Dictionary<string, int>();
+				for (int i = 0; i < Assets.Count; ++i)
+				{
+					var asset = Assets[i];
+					if (asset.assetType != assetType || asset.isEmbeddedAsset == false)
+						continue;
+
+					string name = (Assets[i].name ?? "").ToLowerInvariant().Trim();
+					if (name == "")
+						Assets[i].name = name = "untitled"; // Name mustn't be empty
+
+					if (used_names.ContainsKey(name) == false)
+					{
+						used_names.Add(name, 1);
+						continue;
+					}
+
+					int count = used_names[name];
+					string testName = string.Format("{0}_{1:00}", name, ++count);
+					while (used_names.ContainsKey(testName))
+						testName = string.Format("{0}_{1:00}", name, ++count);
+					used_names.Add(testName, 1);
+					used_names[name] = count;
+					Assets[i].name = testName;
+				}
+			}
+
+			// Refresh data table
+			int row = 0;
+			for (int i = 0; i < Assets.Count; ++i)
+			{
+				if (Assets[i].isEmbeddedAsset == false)
+					continue;
+
+				string value = assetsDataView.Rows[row].Cells[0].Value as string;
+				if (value != Assets[i].name)
+					assetsDataView.Rows[row].Cells[0].Value = Assets[i].name;
+				++row;
+			}
+
 		}
 	}
 }
