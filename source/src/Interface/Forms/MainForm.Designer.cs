@@ -705,7 +705,7 @@ namespace Ginger {
 			// 
 			this.importCharacterMenuItem.Name = "importCharacterMenuItem";
 			this.importCharacterMenuItem.Size = new System.Drawing.Size(171, 22);
-			this.importCharacterMenuItem.Text = "Import character file...";
+			this.importCharacterMenuItem.Text = "Import character card...";
 			this.importCharacterMenuItem.Click += new System.EventHandler(this.ImportCharacterMenuItem_Click);
 			// 
 			// importLorebookMenuItem
@@ -728,7 +728,7 @@ namespace Ginger {
 			// 
 			this.exportCharacterMenuItem.Name = "exportCharacterMenuItem";
 			this.exportCharacterMenuItem.Size = new System.Drawing.Size(169, 22);
-			this.exportCharacterMenuItem.Text = "Export character file...";
+			this.exportCharacterMenuItem.Text = "Export character card...";
 			this.exportCharacterMenuItem.Click += new System.EventHandler(this.ExportCharacterMenuItem_Click);
 			// 
 			// exportLorebookMenuItem

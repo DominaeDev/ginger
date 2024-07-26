@@ -121,7 +121,7 @@ namespace Ginger
 
 		public static bool ExportToCharX(string filename)
 		{
-			var card = TavernCardV3.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavern));
+			var card = TavernCardV3.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavernV3));
 			card.data.extensions.ginger = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
 
 			AssetCollection assets = (AssetCollection)Current.Card.assets.Clone();

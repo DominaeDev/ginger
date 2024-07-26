@@ -53,7 +53,7 @@ namespace Ginger
 			textBox_Text.richTextBox.GotFocus += RichTextBox_GotFocus;
 			textBox_Text.richTextBox.LostFocus += RichTextBox_LostFocus;
 			textBox_Text.richTextBox.ControlAltEnterPressed += RichTextBox_ControlAltEnterPressed;
-			textBox_Text.richTextBox.syntaxFlags = RichTextBoxEx.SyntaxFlags.Default;
+			textBox_Text.richTextBox.syntaxFlags = RichTextBoxEx.SyntaxFlags.LoreText;
 
 			SetTooltip(Resources.tooltip_open_write, btnWrite);
 			SetTooltip(Resources.tooltip_move_up, btnMoveUp);

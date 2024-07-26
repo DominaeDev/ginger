@@ -176,7 +176,8 @@ namespace Ginger
 
 			Preview = 1 << 12,
 			Faraday = 1 << 13,
-			SillyTavern = 1 << 14,
+			SillyTavernV2 = 1 << 14,
+			SillyTavernV3 = 1 << 15,
 		}
 
 		public static Output Generate(Option option = Option.Export)
@@ -204,8 +205,12 @@ namespace Ginger
 					context.AddTag("__faraday");
 					context.AddTag("__backyard");
 				}
-				else if (option.Contains(Option.SillyTavern))
+				else if (option.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3))
 					context.AddTag("__tavern");
+				if (option.ContainsAny(Option.SillyTavernV2))
+					context.AddTag("__ccv2");
+				else if (option.ContainsAny(Option.SillyTavernV3))
+					context.AddTag("__ccv3");
 
 				if (option.Contains(Option.Preview))
 				{
@@ -316,12 +321,12 @@ namespace Ginger
 
 			// (Silly tavern) Build important block separately
 			GingerString postHistory = GingerString.Empty;
-			if (options.ContainsAny(Option.SillyTavern | Option.Snippet | Option.Bake))
+			if (options.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3 | Option.Snippet | Option.Bake))
 				postHistory = GingerString.FromOutput(blockBuilder.Build("system/important"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 
 			// (Silly tavern) Build personality block
 			GingerString personality = GingerString.Empty;
-			if (options.Contains(Option.SillyTavern) && options.ContainsAny(Option.Snippet | Option.Bake) == false)
+			if (options.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3) && options.ContainsAny(Option.Snippet | Option.Bake) == false)
 				personality = GingerString.FromOutput(blockBuilder.Build("persona/output/personality"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 
 			// Build blocks
@@ -332,6 +337,10 @@ namespace Ginger
 			var userPersonaOutput = GingerString.FromOutput(blockBuilder.GetFinishedBlock("user"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 			var scenarioOutput = GingerString.FromOutput(blockBuilder.GetFinishedBlock("scenario"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 			var exampleOutput = GingerString.FromOutput(blockBuilder.GetFinishedBlock("example"), characterIndex, bMain, Text.EvalOption.ExampleFormatting);
+
+			// Strip lorebook decorators
+			if (partialOutput.lore != null && !options.Contains(Option.SillyTavernV3 | Option.Export))
+				partialOutput.lore.StripDecorators();
 
 			return new Output() {
 				system = systemOutput,
@@ -728,7 +737,7 @@ namespace Ginger
 			// Standard output:
 
 			GingerString postHistory = GingerString.Empty;
-			if (options.ContainsAny(Option.SillyTavern | Option.Snippet | Option.Bake))
+			if (options.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3 | Option.Snippet | Option.Bake))
 				postHistory = GingerString.FromOutput(blockBuilder.Build("system/important"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 
 			var systemOutput = GingerString.FromOutput(blockBuilder.Build("system/output"), characterIndex, bMain, Text.EvalOption.OutputFormatting);

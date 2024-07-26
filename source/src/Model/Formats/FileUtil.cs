@@ -253,7 +253,7 @@ namespace Ginger
 				// Tavern json (v2)
 				if (formats.Contains(Format.SillyTavernV2))
 				{
-					var tavernData = TavernCardV2_Export.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavern));
+					var tavernData = TavernCardV2_Export.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavernV2));
 					tavernData.data.extensions.ginger = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
 					var tavernJson = tavernData.ToJson();
 					var tavernBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(tavernJson));
@@ -267,7 +267,7 @@ namespace Ginger
 				// Tavern json (v3)
 				if (formats.Contains(Format.SillyTavernV3))
 				{
-					var tavernData = TavernCardV3.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavern));
+					var tavernData = TavernCardV3.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.SillyTavernV3));
 					tavernData.data.extensions.ginger = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
 
 					// Compile assets

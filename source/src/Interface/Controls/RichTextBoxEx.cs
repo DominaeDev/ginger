@@ -145,11 +145,13 @@ namespace Ginger
 			Wildcards		= 1 << 8,
 			SpellChecking	= 1 << 9,
 			DarkMode		= 1 << 10,
+			Decorators		= 1 << 11,
 
 			Default = Standard | Names | Dialogue | Actions | Commands | Numbers | CodeBlock | SpellChecking,
 			Limited = Standard | Names | Commands | Numbers | SpellChecking,
 			Code	= Standard | Names | Commands | Numbers,
 			LoreKey = Names | Commands | Numbers | Wildcards | SpellChecking,
+			LoreText = Standard | Decorators,
 		}
 		public SyntaxFlags syntaxFlags
 		{
@@ -753,6 +755,7 @@ namespace Ginger
 			Color colorCode = bLight ? Constants.Colors.Light.Code : Constants.Colors.Dark.Code;
 			Color colorError = bLight ? Constants.Colors.Light.Error : Constants.Colors.Dark.Error;
 			Color colorWildcard = bLight ? Constants.Colors.Light.Wildcard : Constants.Colors.Dark.Wildcard;
+			Color colorDecorator = bLight ? Constants.Colors.Light.Decorator : Constants.Colors.Dark.Decorator;
 
 			syntaxHighlighter.ClearPatterns();
 			if (_syntaxFlags.Contains(SyntaxFlags.Standard))
@@ -784,9 +787,13 @@ namespace Ginger
 			if (_syntaxFlags.Contains(SyntaxFlags.Actions))
 				syntaxHighlighter.AddPattern(new PatternDefinition("\\*+[^\\*]*\\*+"), new SyntaxStyle(colorNarration, false, false), 0);
 			
-			// Wildcards ...*
+			// Lorebook: Wildcards ...*
 			if (_syntaxFlags.Contains(SyntaxFlags.Wildcards))
 				syntaxHighlighter.AddPattern(new PatternDefinition("[^\\*,]*\\*+[^\\*,]*"), new SyntaxStyle(colorWildcard, false, false), 0);
+
+			// Lorebook: Decorators @@...
+			if (_syntaxFlags.Contains(SyntaxFlags.Decorators))
+				syntaxHighlighter.AddPattern(new PatternDefinition("(^|\\n+)@@.*"), new SyntaxStyle(colorDecorator, false, true), -1);
 
 			// Commands {char}, {user}, {they}, etc.
 			if (_syntaxFlags.Contains(SyntaxFlags.Commands))

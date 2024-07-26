@@ -18,7 +18,7 @@ namespace Ginger
 			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
 				options |= Generator.Option.Faraday;
 			else if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern)
-				options |= Generator.Option.SillyTavern;
+				options |= Generator.Option.SillyTavernV2;
 
 			Generator.Output output = Generator.Generate(options);
 
@@ -292,7 +292,7 @@ namespace Ginger
 		{
 			// Open file...
 			importFileDialog.Title = Resources.cap_import_character;
-			importFileDialog.Filter = "JSON file|*.json|Character card|*.png;*.charx";
+			importFileDialog.Filter = "All supported types|*.png;*.json;*.charx|PNG files|*.png|JSON files|*.json|CHARX files|*.charx";
 			importFileDialog.FilterIndex = AppSettings.User.LastImportCharacterFilter;
 			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			var result = importFileDialog.ShowDialog();
@@ -305,19 +305,18 @@ namespace Ginger
 			if (ConfirmSave(Resources.cap_import_character) == false)
 				return false;
 
-			int jsonErrors;
+			string ext = (Path.GetExtension(importFileDialog.FileName) ?? "").ToLowerInvariant();
+
+			int jsonErrors = 0;
 			FileUtil.Error error;
-			switch (importFileDialog.FilterIndex)
-			{
-			case 1: // Json
+			if (ext == ".json")
 				error = FileUtil.ImportCharacterJson(importFileDialog.FileName, out jsonErrors);
-				break;
-			case 2: // PNG file
+			else if (ext == ".png")
 				error = FileUtil.ImportCharacterFromPNG(importFileDialog.FileName, out jsonErrors, FileUtil.Format.SillyTavernV2 | FileUtil.Format.SillyTavernV3 | FileUtil.Format.Faraday);
-				break;
-			default:
-				return false;
-			}
+			else if (ext == ".charx")
+				error = FileUtil.ImportCharacterFromPNG(importFileDialog.FileName, out jsonErrors, FileUtil.Format.SillyTavernV3);
+			else
+				error = FileUtil.Error.UnrecognizedFormat;
 
 			if (error == FileUtil.Error.FileNotFound)
 			{
@@ -344,7 +343,7 @@ namespace Ginger
 		{
 			// Open file...
 			importFileDialog.Title = Resources.cap_import_lorebook;
-			importFileDialog.Filter = "Supported JSON formats|*.json|Supported character card|*.png|Comma separated values|*.csv";
+			importFileDialog.Filter = "All supported types|*.json;*.png;*.csv;*.charx|JSON files|*.json|PNG files|*.png|CHARX files|*.charx|CSV files|*.csv";
 			importFileDialog.FilterIndex = AppSettings.User.LastImportLorebookFilter;
 			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.ContentPath("Lorebooks");
 			var result = importFileDialog.ShowDialog();
@@ -354,8 +353,10 @@ namespace Ginger
 			AppSettings.User.LastImportLorebookFilter = importFileDialog.FilterIndex;
 			AppSettings.Paths.LastImportPath = Path.GetDirectoryName(importFileDialog.FileName);
 
+			string ext = (Path.GetExtension(importFileDialog.FileName) ?? "").ToLowerInvariant();
+
 			Lorebook lorebook = null;
-			if (importFileDialog.FilterIndex == 1) // Json
+			if (ext == ".json")
 			{
 				lorebook = new Lorebook();
 				if (lorebook.LoadFromJson(importFileDialog.FileName) == false)
@@ -364,7 +365,7 @@ namespace Ginger
 					return false;
 				}
 			}
-			else if (importFileDialog.FilterIndex == 2) // PNG
+			else if (ext == ".png" || ext == ".charx")
 			{
 				int jsonErrors;
 				FileUtil.ImportResult importResult;
@@ -414,7 +415,7 @@ namespace Ginger
 					return false;
 				}
 			}
-			else if (importFileDialog.FilterIndex == 3) // CSV
+			else if (ext == ".csv")
 			{
 				lorebook = new Lorebook();
 				if (lorebook.LoadFromCsv(importFileDialog.FileName) == false)
@@ -422,7 +423,12 @@ namespace Ginger
 					MessageBox.Show(Resources.error_unrecognized_lorebook_format, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return false;
 				}
+			} else
+			{
+				MessageBox.Show(Resources.error_unrecognized_lorebook_format, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
 			}
+
 			if (lorebook == null || lorebook.isEmpty)
 			{
 				MessageBox.Show(Resources.error_no_lorebook, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);

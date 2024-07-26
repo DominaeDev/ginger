@@ -8,6 +8,7 @@ using System.Linq;
 using System.Xml;
 using Ginger.Properties;
 using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace Ginger
 {
@@ -709,5 +710,33 @@ namespace Ginger
 
 			return true;
 		}
+
+		public void StripDecorators()
+		{
+			foreach (var entry in entries)
+			{
+				int pos_decorator = entry.value.IndexOf("@@", 0);
+				if (pos_decorator == -1)
+					continue;
+
+				var sb = new StringBuilder(entry.value);
+				while (pos_decorator != -1)
+				{
+					if (pos_decorator > 0 && sb[pos_decorator - 1] != '\n')
+					{
+						pos_decorator = sb.IndexOf("@@", pos_decorator + 2);
+						continue;
+					}
+					int pos_end = sb.IndexOf('\n', pos_decorator + 2);
+					if (pos_end == -1)
+						pos_end = sb.Length - 1;
+					sb.RemoveFromTo(pos_decorator, pos_end);
+					pos_decorator = sb.IndexOf("@@", pos_decorator);
+				}
+
+				entry.value = sb.ToString();
+			}
+		}
+
 	}
 }
