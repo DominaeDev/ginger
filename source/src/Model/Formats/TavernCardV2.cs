@@ -225,7 +225,7 @@ namespace Ginger
 			if (output.hasLore)
 			{
 				card.data.character_book = new CharacterBook();
-				
+
 				if (output.lorebook.unused != null)
 				{
 					card.data.character_book.recursive_scanning = output.lorebook.unused.recursive_scanning;
@@ -261,6 +261,9 @@ namespace Ginger
 				for (int i = 0; i < card.data.character_book.entries.Length; ++i)
 					card.data.character_book.entries[i].id = i + 1;
 			}
+			else
+				card.data.character_book = null;
+
 			return card;
 		}
 

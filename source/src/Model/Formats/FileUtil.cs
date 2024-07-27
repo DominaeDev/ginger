@@ -281,13 +281,7 @@ namespace Ginger
 					assets.Validate();
 
 					tavernData.data.assets = assets
-						.Select(a => new TavernCardV3.Data.Asset() 
-						{
-							type = a.GetTypeName(),
-							uri = a.GetUri(AssetFile.UriFormat.Png_Prefix),
-							name = a.name,
-							ext = a.ext.ToLowerInvariant(),
-						})
+						.Select(a => a.ToV3Asset(AssetFile.UriFormat.Png_Prefix))
 						.ToArray();
 
 					var tavernJson = tavernData.ToJson();
@@ -305,7 +299,7 @@ namespace Ginger
 							continue;
 
 						string key = string.Concat(AssetFile.PNGEmbedKeyPrefix, asset.GetUri(AssetFile.UriFormat.Png));
-						var assetBase64 = Convert.ToBase64String(asset.data.data);
+						var assetBase64 = Convert.ToBase64String(asset.data.bytes);
 						metaData.Add(new MetaData() {
 							key = key,
 							value = assetBase64,
@@ -763,12 +757,13 @@ namespace Ginger
 
 			try
 			{
-				if (base64.BeginsWith("data:image/png;base64,"))
-					base64 = base64.Remove(0, 22);
-				else if (base64.BeginsWith("data:image/jpeg;base64,"))
-					base64 = base64.Remove(0, 23);
-				else
-					return null; // Invalid mime
+				if (base64.BeginsWith("data:") == false)
+					return null; // Not a valid string
+				int pos_mime_end = base64.IndexOf(";base64,");
+				if (pos_mime_end == -1)
+					return null; // Not a valid string
+
+				base64 = base64.Substring(pos_mime_end + 8); // Ignore mime type. Will fail downstream if unsupported.
 
 				// Load image first
 				Image image;
@@ -939,11 +934,31 @@ namespace Ginger
 				return Error.FileReadError;
 			}
 
-			// Tavern
-			var card = TavernCardV2.FromJson(json, out jsonErrors);
-			if (card != null)
+			// Tavern (v3)
+			var tavernCardV3 = TavernCardV3.FromJson(json, out jsonErrors);
+			if (tavernCardV3 != null)
 			{
-				Current.ReadTavernCard(card, null);
+				Current.ReadTavernCard(tavernCardV3, null);
+
+				// Read asset data
+				var assets = new AssetCollection();
+				foreach (var assetInfo in tavernCardV3.data.assets)
+					assets.Add(AssetFile.FromV3Asset(assetInfo));
+				Current.Card.assets = assets;
+
+				// Load portrait image
+				Current.Card.portraitImage = ImageRef.FromImage(Current.Card.assets.GetPortraitImage());
+				// Remove portrait image (it will be re-added on save/export)
+				Current.Card.assets.RemovePortraitImage();
+
+				return Error.NoError;
+			}
+
+			// Tavern (v2)
+			var tavernCardV2 = TavernCardV2.FromJson(json, out jsonErrors);
+			if (tavernCardV2 != null)
+			{
+				Current.ReadTavernCard(tavernCardV2, null);
 				return Error.NoError;
 			}
 
@@ -1098,7 +1113,7 @@ namespace Ginger
 
 						byte[] buffer = Convert.FromBase64String(kvp.Value);
 						assets[idxAsset].data = new AssetData() {
-							data = buffer,
+							bytes = buffer,
 						};				
 					}
 				}

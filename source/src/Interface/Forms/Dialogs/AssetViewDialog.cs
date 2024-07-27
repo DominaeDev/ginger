@@ -75,7 +75,7 @@ namespace Ginger
 				assetExt = "JPEG";
 			string assetType = TypeLabels[EnumHelper.ToInt(asset.assetType)];
 			string assetSize = "N/A";
-			if (asset.data.data != null)
+			if (asset.data.bytes != null)
 			{
 				decimal size = (decimal)asset.data.length / 1_000_000m;
 				if (size >= 1.0m)
@@ -179,7 +179,7 @@ namespace Ginger
 				return;
 
 			string tempPath = Path.Combine(Path.GetTempPath(), "Ginger");
-			string filename = Path.Combine(tempPath, string.Format("temp_{0:X8}.{1}", asset.data.data.GetHashCode(), asset.ext ?? ""));
+			string filename = Path.Combine(tempPath, string.Format("temp_{0:X8}.{1}", asset.data.bytes.GetHashCode(), asset.ext ?? ""));
 
 			if (File.Exists(filename) == false)
 			{
@@ -194,7 +194,7 @@ namespace Ginger
 						for (long n = asset.data.length; n > 0;)
 						{
 							int length = (int)Math.Min(n, (long)int.MaxValue);
-							fs.Write(asset.data.data, 0, length);
+							fs.Write(asset.data.bytes, 0, length);
 							n -= (long)length;
 						}
 					}
@@ -248,7 +248,7 @@ namespace Ginger
 					for (long n = asset.data.length; n > 0;)
 					{
 						int length = (int)Math.Min(n, (long)int.MaxValue);
-						fs.Write(asset.data.data, 0, length);
+						fs.Write(asset.data.bytes, 0, length);
 						n -= (long)length;
 					}
 				}

@@ -102,7 +102,7 @@ namespace Ginger
 								var dataStream = entry.Open();
 								dataStream.Read(buffer, 0, (int)dataSize);
 								assets[idxAsset].data = new AssetData() {
-									data = buffer,
+									bytes = buffer,
 								};
 							}
 						}
@@ -126,74 +126,13 @@ namespace Ginger
 
 			AssetCollection assets = (AssetCollection)Current.Card.assets.Clone();
 
-			// Add current portrait image
-			Image image = Current.Card.portraitImage;
-			bool bAddDefaultIcon = true;
-			if (image != null)
-			{
-				// Write image to buffer
-				try
-				{
-					using (var stream = new MemoryStream())
-					{
-						if (image.RawFormat.Equals(ImageFormat.Png))
-						{
-							image.Save(stream, ImageFormat.Png);
-						}
-						else // Convert to png
-						{
-							using (Image bmpNewImage = new Bitmap(image.Width, image.Height))
-							{
-								Graphics gfxNewImage = Graphics.FromImage(bmpNewImage);
-								gfxNewImage.DrawImage(image, new Rectangle(0, 0, bmpNewImage.Width, bmpNewImage.Height),
-													  0, 0,
-													  image.Width, image.Height,
-													  GraphicsUnit.Pixel);
-								gfxNewImage.Dispose();
-								bmpNewImage.Save(stream, ImageFormat.Png);
-							}
-						}
-
-						// Add main icon asset
-						assets.Insert(0, new AssetFile() {
-							assetType = AssetFile.AssetType.Icon,
-							name = "main",
-							ext = "png",
-							uriType = AssetFile.UriType.Embedded,
-							data = new AssetData() {
-								data = stream.ToArray(),
-							},
-						});
-						
-						// Remove any existing default icon
-						assets.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
-						bAddDefaultIcon = false;
-					}
-				}
-				catch
-				{
-					bAddDefaultIcon = true;
-				}
-			}
-			
-			if (bAddDefaultIcon)
-			{
-				// Add default icon asset
-				assets.Insert(0, AssetFile.MakeDefault(AssetFile.AssetType.Icon, "main"));
-			}
-
+			assets.BakePortraitImage(true);
 
 			// Validate names and uris
 			assets.Validate();
 
 			card.data.assets = assets
-				.Select(a => new TavernCardV3.Data.Asset() 
-				{
-					type = a.GetTypeName(),
-					uri = a.GetUri(AssetFile.UriFormat.CharX_Prefix),
-					name = a.name,
-					ext = a.ext,
-				})
+				.Select(a => a.ToV3Asset(AssetFile.UriFormat.CharX_Prefix))
 				.ToArray();
 
 			var json = card.ToJson();
@@ -237,7 +176,7 @@ namespace Ginger
 							for (long n = asset.data.length; n > 0;)
 							{
 								int length = (int)Math.Min(n, (long)int.MaxValue);
-								writer.Write(asset.data.data, 0, length);
+								writer.Write(asset.data.bytes, 0, length);
 								n -= (long)length;
 							}
 						}

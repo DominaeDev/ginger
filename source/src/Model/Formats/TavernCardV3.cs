@@ -225,7 +225,6 @@ namespace Ginger
 			card.data.example = cardV2.data.example;
 			card.data.alternate_greetings = cardV2.data.alternate_greetings != null ? (string[])cardV2.data.alternate_greetings.Clone() : new string[0];
 
-			card.data.character_book = null; //!!
 			if (cardV2.data.character_book != null)
 			{
 				card.data.character_book = new TavernCardV3.CharacterBook();
@@ -234,7 +233,7 @@ namespace Ginger
 				card.data.character_book.scan_depth = cardV2.data.character_book.scan_depth;
 				card.data.character_book.token_budget = cardV2.data.character_book.token_budget;
 				card.data.character_book.extensions = cardV2.data.character_book.extensions;
-				
+
 				card.data.character_book.entries =
 					cardV2.data.character_book.entries.Select(e => {
 						string[] keys = e.keys;
@@ -257,6 +256,8 @@ namespace Ginger
 						return entry;
 					}).ToArray();
 			}
+			else
+				card.data.character_book = null;
 
 			return card;
 		}
@@ -333,9 +334,7 @@ namespace Ginger
 					card.data.character_book.entries[i].id = i + 1;
 			}
 			else
-			{
 				card.data.character_book = null;
-			}
 
 			return card;
 		}

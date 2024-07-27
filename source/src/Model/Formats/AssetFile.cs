@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 
@@ -92,10 +93,6 @@ namespace Ginger
 			string ext = assetInfo.ext != null ? assetInfo.ext : null;
 			string type = assetInfo.type.Trim().ToLowerInvariant();
 
-			uri = uri.Replace("embedded://", CharXEmbedUriPrefix); // Quirk in the v3 spec
-			uri = uri.Replace(PNGEmbedUriPrefix, CharXEmbedUriPrefix);
-			uri = uri.Replace('\\', '/');
-
 			// Default asset
 			if (uri.Length == 0 || string.Compare(uri, DefaultUri, StringComparison.OrdinalIgnoreCase) == 0)
 			{
@@ -110,44 +107,86 @@ namespace Ginger
 				};
 			}
 			
-			// Remote/Custom asset
-			if (uri.BeginsWith(CharXEmbedUriPrefix) == false)
+			// Data uri
+			if (uri.BeginsWith("data:"))
 			{
-				string uriPath = uri;
-				int idxProtocol = uri.IndexOf("://");
-				if (idxProtocol == -1)
-					uriPath = uri.Substring(idxProtocol + 3);
+				int pos_mime_end = uri.IndexOf(";base64,");
+				if (pos_mime_end != -1)
+				{
+					try
+					{
+						string mimeType = uri.Substring(5, pos_mime_end - 5);
+						byte[] bytes = Convert.FromBase64String(uri.Substring(pos_mime_end + 8));
+						return new AssetFile() {
+							name = name,
+							ext = ext,
+							assetType = AssetTypeFromString(type),
+							uriType = UriType.Embedded,
+							fullUri = string.Concat(CharXEmbedUriPrefix, name ?? "unnamed", ext != null ? "." : "", ext ?? ""),
+							uriPath = null,
+							uriName = null,
+							data = AssetData.FromBytes(bytes),
+						};
+					}
+					catch
+					{
+					}
+				}
+			}
+
+			uri = uri.Replace("embedded://", CharXEmbedUriPrefix); // Quirk in the v3 spec
+			uri = uri.Replace(PNGEmbedUriPrefix, CharXEmbedUriPrefix);
+			uri = uri.Replace('\\', '/');
+
+			// Embedded asset
+			if (uri.BeginsWith(CharXEmbedUriPrefix))
+			{
+				string path = null;
+				string filename = uri.Substring(CharXEmbedUriPrefix.Length);
+				int idxPath = filename.LastIndexOf('/');
+				if (idxPath != -1)
+				{
+					path = filename.Substring(0, idxPath + 1);
+					filename = filename.Substring(idxPath + 1);
+				}
 
 				return new AssetFile() {
 					name = name,
 					ext = ext,
 					assetType = AssetTypeFromString(type),
-					uriType = UriType.Custom,
+					uriType = UriType.Embedded,
 					fullUri = uri,
-					uriPath = uriPath,
-					uriName = null,
+					uriPath = path,
+					uriName = filename,
+					data = AssetData.FromBytes(data),
 				};
 			}
 
-			// Embedded asset
-			string path = null;
-			string filename = uri.Substring(CharXEmbedUriPrefix.Length);
-			int idxPath = filename.LastIndexOf('/');
-			if (idxPath != -1)
-			{
-				path = filename.Substring(0, idxPath + 1);
-				filename = filename.Substring(idxPath + 1);
-			}
+			// Remote/other asset
+			string uriPath = uri;
+			int idxProtocol = uri.IndexOf("://");
+			if (idxProtocol != -1)
+				uriPath = uri.Substring(idxProtocol + 3);
 
 			return new AssetFile() {
 				name = name,
 				ext = ext,
 				assetType = AssetTypeFromString(type),
-				uriType = UriType.Embedded,
+				uriType = UriType.Custom,
 				fullUri = uri,
-				uriPath = path,
-				uriName = filename,
-				data = AssetData.FromBytes(data),
+				uriPath = uriPath,
+				uriName = null,
+			};
+		}
+
+		public TavernCardV3.Data.Asset ToV3Asset(UriFormat format)
+		{
+			return new TavernCardV3.Data.Asset() 
+			{
+				type = GetTypeName(),
+				uri = GetUri(format),
+				name = name,
+				ext = ext,
 			};
 		}
 
@@ -170,6 +209,7 @@ namespace Ginger
 			Png_Prefix,
 			CharX, 
 			CharX_Prefix, 
+			Data,
 		}
 
 		public string GetUri(UriFormat format)
@@ -178,6 +218,49 @@ namespace Ginger
 				return DefaultUri;
 			else if (uriType == UriType.Custom)
 				return fullUri;
+			else if (format == UriFormat.Data)
+			{
+				string mimeType;
+				switch (ext)
+				{
+				case "jpeg":
+				case "jpg":
+					mimeType = "image/jpeg";
+					break;
+				case "gif":
+				case "png":
+				case "apng":
+				case "avif":
+				case "webp":
+				case "tiff":
+					mimeType = string.Format("image/{0}", ext);
+					break;
+				case "wav":
+				case "mp3":
+				case "ogg":
+				case "wma":
+					mimeType = string.Format("audio/{0}", ext);
+					break;
+				case "mp4":
+				case "mpeg":
+				case "wmv":
+				case "av1":
+					mimeType = string.Format("audio/{0}", ext);
+					break;
+				case "mkv":
+					mimeType = "audio/matroska";
+					break;
+				case "mov":
+					mimeType = "audio/quicktime";
+					break;
+				default:
+					mimeType = "application/octet-stream";
+					break;
+				}
+
+				return string.Concat("data:", mimeType, ";base64,", data.length > 0 ?
+					Convert.ToBase64String(data.bytes) : "");
+			}
 			else
 			{
 				string path;
@@ -215,13 +298,13 @@ namespace Ginger
 
 	public struct AssetData
 	{
-		public byte[] data;
-		public long length { get { return data != null ? data.Length : 0; } }
+		public byte[] bytes;
+		public long length { get { return bytes != null ? bytes.Length : 0; } }
 
 		public static AssetData FromBytes(byte[] bytes)
 		{
 			return new AssetData() {
-				data = bytes,
+				bytes = bytes,
 			};
 		}
 	}
@@ -254,7 +337,7 @@ namespace Ginger
 
 			try
 			{
-				using (var stream = new MemoryStream(assetData.data))
+				using (var stream = new MemoryStream(assetData.bytes))
 				{
 					return Image.FromStream(stream);
 				}
@@ -381,6 +464,63 @@ namespace Ginger
 		public bool HasDefaultIcon()
 		{
 			return this.ContainsAny(a => a.assetType == AssetFile.AssetType.Icon && (a.isDefaultAsset || a.name == "main" ));
+		}
+
+		public void BakePortraitImage(bool bAddDefault = true)
+		{
+			// Add current portrait image
+			Image image = Current.Card.portraitImage;
+			if (image != null)
+			{
+				// Write image to buffer
+				try
+				{
+					using (var stream = new MemoryStream())
+					{
+						if (image.RawFormat.Equals(ImageFormat.Png)) // Save png
+						{
+							image.Save(stream, ImageFormat.Png);
+						}
+						else // or convert to png
+						{
+							using (Image bmpNewImage = new Bitmap(image.Width, image.Height))
+							{
+								Graphics gfxNewImage = Graphics.FromImage(bmpNewImage);
+								gfxNewImage.DrawImage(image, new Rectangle(0, 0, bmpNewImage.Width, bmpNewImage.Height),
+														0, 0,
+														image.Width, image.Height,
+														GraphicsUnit.Pixel);
+								gfxNewImage.Dispose();
+								bmpNewImage.Save(stream, ImageFormat.Png);
+							}
+						}
+
+						// Add asset
+						this.Insert(0, new AssetFile() {
+							assetType = AssetFile.AssetType.Icon,
+							name = "main",
+							ext = "png",
+							uriType = AssetFile.UriType.Embedded,
+							data = new AssetData() {
+								bytes = stream.ToArray(),
+							},
+						});
+
+						// Remove any existing default icon(s)
+						this.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
+						bAddDefault = false;
+					}
+				}
+				catch
+				{
+				}
+			}
+
+			if (bAddDefault)
+			{
+				// Add default icon asset
+				this.Insert(0, AssetFile.MakeDefault(AssetFile.AssetType.Icon, "main"));
+			}
 		}
 	}
 }

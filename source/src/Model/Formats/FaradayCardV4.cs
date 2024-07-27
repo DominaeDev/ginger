@@ -173,8 +173,6 @@ namespace Ginger
 				}
 			}
 
-
-
 			if (output.hasLore)
 			{
 				card.data.loreItems = output.lorebook.entries

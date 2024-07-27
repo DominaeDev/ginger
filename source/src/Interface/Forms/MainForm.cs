@@ -1768,6 +1768,12 @@ namespace Ginger
 			try
 			{
 				var argument = Utility.AppPath("Docs\\index.html");
+				if (File.Exists(argument) == false) // Can't find docs
+				{
+					MessageBox.Show(Resources.error_file_not_found, Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
+
 				argument = argument.Replace("/", "\\");
 				if (argument.Contains(" "))
 					argument = string.Concat("\"", argument, "\"");

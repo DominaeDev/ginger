@@ -564,6 +564,14 @@ namespace Ginger
 				var card = TavernCardV3.FromOutput(output);
 				card.data.extensions.ginger = gingerExt;
 
+				var assets = (AssetCollection)Current.Card.assets.Clone();
+				assets.BakePortraitImage(false);
+				assets.Validate();
+
+				card.data.assets = assets
+					.Select(a => a.ToV3Asset(AssetFile.UriFormat.Data))
+					.ToArray();
+
 				string tavernJson = card.ToJson();
 				if (tavernJson != null && FileUtil.ExportTextFile(exportFileDialog.FileName, tavernJson))
 					return; // Success
@@ -989,12 +997,6 @@ namespace Ginger
 			if (string.IsNullOrEmpty(filename))
 				return SaveAs();
  
-			if (filename != null && Path.GetExtension(filename).ToLowerInvariant() == ".charx") //!!
-			{
-				MessageBox.Show("Not supported yet", "Cannot save CharX");
-				return false;
-			}
-
 			// Ensure text parameters get an opportunity to save
 			var focused = GetFocusedControl();
 			if (focused is TextBoxBase)
