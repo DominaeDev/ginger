@@ -394,7 +394,7 @@ namespace Ginger
 			}
 
 			int index = 0;
-			foreach (var loreEntry in lorebook.entries)
+			foreach (var loreEntry in lorebook.entries.OrderBy(e => e.sortOrder))
 			{
 				if (loreEntry.keys == null || loreEntry.keys.Length == 0)
 					continue;
@@ -478,7 +478,7 @@ namespace Ginger
 
 			int index = 0;
 			var entries = new List<TavernCardV3.CharacterBook.Entry>();
-			foreach (var loreEntry in lorebook.entries)
+			foreach (var loreEntry in lorebook.entries.OrderBy(e => e.sortOrder))
 			{
 				if (loreEntry.keys == null || loreEntry.keys.Length == 0)
 					continue;
@@ -541,13 +541,12 @@ namespace Ginger
 				agnaiBook.tokenBudget = lorebook.unused.token_budget;
 			}
 
-			agnaiBook.entries = new AgnaisticCard.CharacterBook.Entry[lorebook.entries.Count];
-			for (int i = 0; i < lorebook.entries.Count; ++i)
+			var entries = new List<AgnaisticCard.CharacterBook.Entry>(lorebook.entries.Count);
+			int id = 1;
+			foreach (var loreEntry in lorebook.entries.OrderBy(e => e.sortOrder))
 			{
-				var loreEntry = lorebook.entries[i];
-
 				var agnaiBookEntry = new AgnaisticCard.CharacterBook.Entry() {
-					id = i + 1,
+					id = id++,
 					name = loreEntry.keys[0],
 					keywords = loreEntry.keys,
 					entry = loreEntry.value,
@@ -565,8 +564,9 @@ namespace Ginger
 					agnaiBookEntry.selective = loreEntry.unused.selective;
 				}
 
-				agnaiBook.entries[i] = agnaiBookEntry;
+				entries.Add(agnaiBookEntry);
 			}
+			agnaiBook.entries = entries.ToArray();
 
 			try
 			{

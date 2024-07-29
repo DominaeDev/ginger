@@ -37,6 +37,8 @@
 			this.btnMoveDown = new System.Windows.Forms.PictureBox();
 			this.cbEnabled = new System.Windows.Forms.CheckBox();
 			this.rightPanel = new System.Windows.Forms.Panel();
+			this.labelIndex = new System.Windows.Forms.Label();
+			this.textBox_Index = new Ginger.TextBoxEx();
 			this.textBox_Keys = new Ginger.FlatRichTextBox();
 			this.textBox_Text = new Ginger.FlatRichTextBox();
 			((System.ComponentModel.ISupportInitialize)(this.btnRemove)).BeginInit();
@@ -154,8 +156,30 @@
 			this.rightPanel.Location = new System.Drawing.Point(469, 0);
 			this.rightPanel.Margin = new System.Windows.Forms.Padding(0);
 			this.rightPanel.Name = "rightPanel";
-			this.rightPanel.Size = new System.Drawing.Size(26, 111);
+			this.rightPanel.Size = new System.Drawing.Size(26, 113);
 			this.rightPanel.TabIndex = 2;
+			// 
+			// labelIndex
+			// 
+			this.labelIndex.Location = new System.Drawing.Point(380, 0);
+			this.labelIndex.Margin = new System.Windows.Forms.Padding(2);
+			this.labelIndex.MinimumSize = new System.Drawing.Size(50, 16);
+			this.labelIndex.Name = "labelIndex";
+			this.labelIndex.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
+			this.labelIndex.Size = new System.Drawing.Size(50, 21);
+			this.labelIndex.TabIndex = 3;
+			this.labelIndex.Text = "Order:";
+			this.labelIndex.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// textBox_Index
+			// 
+			this.textBox_Index.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.textBox_Index.Location = new System.Drawing.Point(405, 1);
+			this.textBox_Index.Name = "textBox_Index";
+			this.textBox_Index.Placeholder = null;
+			this.textBox_Index.ShortcutsEnabled = false;
+			this.textBox_Index.Size = new System.Drawing.Size(64, 23);
+			this.textBox_Index.TabIndex = 1;
 			// 
 			// textBox_Keys
 			// 
@@ -168,7 +192,7 @@
 			this.textBox_Keys.Placeholder = "Enter keyword (or keywords, separated by commas)";
 			this.textBox_Keys.SelectionLength = 0;
 			this.textBox_Keys.SelectionStart = 0;
-			this.textBox_Keys.Size = new System.Drawing.Size(329, 21);
+			this.textBox_Keys.Size = new System.Drawing.Size(168, 21);
 			this.textBox_Keys.SpellChecking = true;
 			this.textBox_Keys.SyntaxHighlighting = true;
 			this.textBox_Keys.TabIndex = 0;
@@ -185,31 +209,35 @@
 			this.textBox_Text.Placeholder = null;
 			this.textBox_Text.SelectionLength = 0;
 			this.textBox_Text.SelectionStart = 0;
-			this.textBox_Text.Size = new System.Drawing.Size(329, 86);
+			this.textBox_Text.Size = new System.Drawing.Size(329, 88);
 			this.textBox_Text.SpellChecking = true;
 			this.textBox_Text.SyntaxHighlighting = true;
-			this.textBox_Text.TabIndex = 1;
+			this.textBox_Text.TabIndex = 2;
 			this.textBox_Text.TextSize = new System.Drawing.Size(0, 0);
 			// 
 			// LorebookEntryPanel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.labelIndex);
 			this.Controls.Add(this.labelText);
 			this.Controls.Add(this.labelTokens);
+			this.Controls.Add(this.textBox_Index);
 			this.Controls.Add(this.textBox_Keys);
 			this.Controls.Add(this.textBox_Text);
 			this.Controls.Add(this.labelKey);
 			this.Controls.Add(this.rightPanel);
 			this.Margin = new System.Windows.Forms.Padding(0);
 			this.Name = "LorebookEntryPanel";
-			this.Size = new System.Drawing.Size(495, 111);
+			this.Size = new System.Drawing.Size(495, 113);
+			this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.LorebookEntryPanel_MouseClick);
 			((System.ComponentModel.ISupportInitialize)(this.btnRemove)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.btnWrite)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.btnMoveUp)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.btnMoveDown)).EndInit();
 			this.rightPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -225,5 +253,7 @@
 		private System.Windows.Forms.PictureBox btnMoveDown;
 		private System.Windows.Forms.CheckBox cbEnabled;
 		private System.Windows.Forms.Panel rightPanel;
+		private System.Windows.Forms.Label labelIndex;
+		private TextBoxEx textBox_Index;
 	}
 }

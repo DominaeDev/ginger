@@ -306,29 +306,32 @@ namespace Ginger
 				}
 
 				card.data.character_book.entries =
-					output.lorebook.entries.Select(e => {
-						string[] keys = e.keys;
-						var entry = new TavernCardV3.CharacterBook.Entry() {
-							comment = keys.Length > 0 ? keys[0] : "",
-							keys = keys,
-							content = GingerString.FromString(e.value).ToTavern(),
-						};
-						if (e.unused != null)
-						{
-							entry.case_sensitive = e.unused.case_sensitive;
-							entry.comment = e.unused.comment;
-							entry.constant = e.unused.constant;
-							entry.enabled = e.unused.enabled;
-							entry.insertion_order = e.unused.insertion_order;
-							entry.position = e.unused.placement;
-							entry.priority = e.unused.priority;
-							entry.secondary_keys = e.unused.secondary_keys;
-							entry.selective = e.unused.selective;
-							entry.extensions = e.unused.extensions ?? new JsonExtensionData();
-							entry.use_regex = false;
-						}
-						return entry;
-					}).ToArray();
+					output.lorebook.entries
+						.OrderBy(e => e.sortOrder)
+						.Select(e => {
+							string[] keys = e.keys;
+							var entry = new TavernCardV3.CharacterBook.Entry() {
+								comment = keys.Length > 0 ? keys[0] : "",
+								keys = keys,
+								content = GingerString.FromString(e.value).ToTavern(),
+							};
+							if (e.unused != null)
+							{
+								entry.case_sensitive = e.unused.case_sensitive;
+								entry.comment = e.unused.comment;
+								entry.constant = e.unused.constant;
+								entry.enabled = e.unused.enabled;
+								entry.insertion_order = e.unused.insertion_order;
+								entry.position = e.unused.placement;
+								entry.priority = e.unused.priority;
+								entry.secondary_keys = e.unused.secondary_keys;
+								entry.selective = e.unused.selective;
+								entry.extensions = e.unused.extensions ?? new JsonExtensionData();
+								entry.use_regex = false;
+							}
+							return entry;
+						})
+						.ToArray();
 
 				for (int i = 0; i < card.data.character_book.entries.Length; ++i)
 					card.data.character_book.entries[i].id = i + 1;

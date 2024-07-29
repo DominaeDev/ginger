@@ -284,25 +284,27 @@ namespace Ginger
 					card.character_book.tokenBudget = output.lorebook.unused.token_budget;
 				}
 				card.character_book.entries =
-					output.lorebook.entries.Select(e => {
-						string[] keys = e.keys;
-						var entry = new CharacterBook.Entry() {
-							keywords = keys,
-							entry = GingerString.FromString(e.value).ToTavern(),
-						};
-						if (e.unused != null)
-						{
-							entry.comment = e.unused.comment;
-							entry.constant = e.unused.constant;
-							entry.enabled = e.unused.enabled;
-							entry.weight = e.unused.insertion_order;
-							entry.position = e.unused.placement;
-							entry.priority = e.unused.priority;
-							entry.secondaryKeys = e.unused.secondary_keys;
-							entry.selective = e.unused.selective;
-						}
-						return entry;
-					}).ToArray();
+					output.lorebook.entries
+						.OrderBy(e => e.sortOrder)
+						.Select(e => {
+							string[] keys = e.keys;
+							var entry = new CharacterBook.Entry() {
+								keywords = keys,
+								entry = GingerString.FromString(e.value).ToTavern(),
+							};
+							if (e.unused != null)
+							{
+								entry.comment = e.unused.comment;
+								entry.constant = e.unused.constant;
+								entry.enabled = e.unused.enabled;
+								entry.weight = e.unused.insertion_order;
+								entry.position = e.unused.placement;
+								entry.priority = e.unused.priority;
+								entry.secondaryKeys = e.unused.secondary_keys;
+								entry.selective = e.unused.selective;
+							}
+							return entry;
+						}).ToArray();
 
 				for (int i = 0; i < card.character_book.entries.Length; ++i)
 					card.character_book.entries[i].id = i + 1;

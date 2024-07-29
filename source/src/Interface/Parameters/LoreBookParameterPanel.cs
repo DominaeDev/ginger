@@ -18,7 +18,7 @@ namespace Ginger
 
 		private static readonly int EntrySpacing = 6;
 		private static readonly int ScrollStep = 150; // Scroll only
-		private static readonly int MaxEntriesInView = 3;
+		private static readonly int MaxEntriesInView = 5;
 
 		public LoreBookParameterPanel()
 		{
@@ -47,6 +47,7 @@ namespace Ginger
 			entryPanel.Changed += OnChangedEntry;
 			entryPanel.OnCopy += OnCopy;
 			entryPanel.OnPaste += OnPaste;
+			entryPanel.OnInsert += OnInsertAt;
 			entryPanel.OnDuplicate += OnDuplicate;
 			entryPanel.OnAddEntry += BtnAddEntry_Click;
 			return entryPanel;
@@ -62,7 +63,9 @@ namespace Ginger
 			LorebookEntryPanel entryPanel = null;
 
 			this.DisableRedrawAndDo(() => {
-				var newEntry = new Lorebook.Entry();
+				var newEntry = new Lorebook.Entry() {
+					addition_index = lorebook.GetNextIndex(),
+				};
 				lorebook.entries.Add(newEntry);
 
 				entryPanel = CreateEntryPanel();
@@ -92,8 +95,6 @@ namespace Ginger
 			NotifyValueChanged(string.Format("entry-{0}-{1}", _entryPanels.Count - 1, _entryPanels.Count));
 			Undo.Resume();
 			Undo.Push(Undo.Kind.Parameter, "Add lore entry");
-
-			NotifySizeChanged(); // Notify parent the size has changed
 		}
 
 		private void OnChangedEntry(object sender, LorebookEntryPanel.LorebookChangedEventArgs e)
@@ -108,9 +109,11 @@ namespace Ginger
 				lorebook.entries[index].keys = e.Keys;
 			if (e.Text != null)
 				lorebook.entries[index].value = e.Text;
+			if (e.SortOrder.HasValue)
+				lorebook.entries[index].sortOrder = e.SortOrder.Value;
 			lorebook.entries[index].isEnabled = e.Enabled;
 
-			NotifyValueChanged(string.Format("entry-{0}-{1}-{2}", index, _entryPanels.Count, e.Text.GetHashCode()));
+			NotifyValueChanged(string.Format("entry-{0}-{1}-{2}", index, _entryPanels.Count, e.Text != null ? e.Text.GetHashCode() : 0));
 		}
 
 		private void OnRemoveEntry(object sender, EventArgs e)
@@ -145,8 +148,12 @@ namespace Ginger
 		{
 			LorebookEntryPanel panel = (LorebookEntryPanel)sender;
 			int index = _entryPanels.IndexOf(panel);
+			int newIndex = index - 1;
 
-			if (MoveEntry(index, index - 1))
+			if (ModifierKeys == Keys.Shift)
+				newIndex = 0;
+
+			if (MoveEntry(index, newIndex))
 			{
 //				SetDirty(string.Format("entry-{0}-{1}", index, _entryPanels.Count));
 				Undo.Push(Undo.Kind.Parameter, "Move lore entry");
@@ -157,8 +164,12 @@ namespace Ginger
 		{
 			LorebookEntryPanel panel = (LorebookEntryPanel)sender;
 			int index = _entryPanels.IndexOf(panel);
+			int newIndex = index + 1;
 
-			if (MoveEntry(index, index + 1))
+			if (ModifierKeys == Keys.Shift)
+				newIndex = lorebook.entries.Count - 1;
+
+			if (MoveEntry(index, newIndex))
 			{
 //				SetDirty(string.Format("entry-{0}-{1}", index, _entryPanels.Count));
 				Undo.Push(Undo.Kind.Parameter, "Move lore entry");
@@ -281,9 +292,7 @@ namespace Ginger
 
 			// Tab order
 			for (int i = 0; i < _entryPanels.Count; ++i)
-			{
 				_entryPanels[i].TabIndex = i;
-			}
 
 //			centerPanel.ResumeLayout(true);
 			centerPanel.Resume();
@@ -298,10 +307,57 @@ namespace Ginger
 			Undo.Push(Undo.Kind.Parameter, "Paste lore");
 		}
 
+		private void OnInsertAt(object sender, EventArgs e)
+		{
+			var panel = sender as LorebookEntryPanel;
+			var newEntry = new Lorebook.Entry() {
+				addition_index = lorebook.GetNextIndex(),
+				sortOrder = panel.lorebookEntry.sortOrder,
+			};
+
+			int insertionIndex = _entryPanels.IndexOf(panel);
+
+			MainForm.StealFocus();
+
+			centerPanel.Suspend();
+//			centerPanel.SuspendLayout();
+
+			lorebook.entries.Insert(insertionIndex, newEntry);
+
+			var entryPanel = CreateEntryPanel();
+			_entryPanels.Insert(insertionIndex, entryPanel);
+			centerPanel.Controls.Add(entryPanel);
+
+			entryPanel.SetContent(newEntry);
+			entryPanel.textBox_Keys.Focus();
+
+			ResizeCenterPanel();
+			RefreshLayout();
+
+			// Tab order
+			for (int i = 0; i < _entryPanels.Count; ++i)
+			{
+				_entryPanels[i].TabIndex = i;
+			}
+			
+//			centerPanel.ResumeLayout(true);
+			centerPanel.Resume();
+
+			if (centerPanel.Controls.Count > 0)
+				centerPanel.ScrollControlIntoView(centerPanel.Controls[0]);
+
+			Undo.Suspend();
+			EntriesChanged?.Invoke(this, EventArgs.Empty);
+			NotifyValueChanged(string.Format("entry-{0}-{1}", _entryPanels.Count - 1, _entryPanels.Count));
+			Undo.Resume();
+			Undo.Push(Undo.Kind.Parameter, "Insert lore");
+		}
+
 		private void OnDuplicate(object sender, EventArgs e)
 		{
 			var panel = sender as LorebookEntryPanel;
 			var duplicateEntry = panel.lorebookEntry.Clone();
+			duplicateEntry.addition_index = lorebook.GetNextIndex();
 
 			int insertionIndex = _entryPanels.IndexOf(panel) + 1;
 			duplicateEntry.key = string.Concat("Copy of ", duplicateEntry.key);
@@ -366,13 +422,16 @@ namespace Ginger
 			}
 			centerPanel.Controls.AddRange(addedPanels.ToArray());
 
-			ResizeCenterPanel();
-
 			for (int i = 0; i < _entryPanels.Count; ++i)
 			{
 				_entryPanels[i].TabIndex = i;
 				_entryPanels[i].SetContent(parameter.value.entries[i]);
 			}
+
+			ResizeCenterPanel();
+			RefreshLayout();
+
+			RefreshSyntaxHighlight(true, true);
 
 			RichTextBoxEx.AllowSyntaxHighlighting = bSyntaxHighlightingWasEnabled;
 		}
@@ -428,6 +487,9 @@ namespace Ginger
 			}
 			else
 				centerPanel.Size = new Size();
+			
+			this.HideHorizontalScrollbar();
+			NotifySizeChanged(); // Notify parent the size has changed
 		}
 
 		public void RefreshSyntaxHighlight(bool immediate, bool invalidate)
@@ -442,6 +504,29 @@ namespace Ginger
 				panel.textBox_Keys.richTextBox.RefreshSyntaxHighlight(immediate);
 				panel.textBox_Text.richTextBox.RefreshSyntaxHighlight(immediate);
 			}
+		}
+
+		public void Sort(Lorebook.Sorting sorting)
+		{
+			MainForm.StealFocus();
+			lorebook.SortEntries(sorting, false);
+
+			bool bSyntaxHighlightingWasEnabled = RichTextBoxEx.AllowSyntaxHighlighting;
+			if (bSyntaxHighlightingWasEnabled)
+				RichTextBoxEx.AllowSyntaxHighlighting = false;
+
+			for (int i = 0; i < _entryPanels.Count; ++i)
+			{
+				_entryPanels[i].TabIndex = i;
+				_entryPanels[i].SetContent(lorebook.entries[i]);
+			}
+			RichTextBoxEx.AllowSyntaxHighlighting = bSyntaxHighlightingWasEnabled;
+			RefreshSyntaxHighlight(true, true);
+
+			Undo.Suspend();
+			NotifyValueChanged();
+			Undo.Resume();
+			Undo.Push(Undo.Kind.Parameter, "Sort lorebook");
 		}
 	}
 }

@@ -73,13 +73,15 @@ namespace Ginger
 			public string key;
 			public string text;
 			public ICondition condition;
+			public int order = Lorebook.Entry.DefaultSortOrder;
 
 			public override int GetHashCode()
 			{
 				return Utility.MakeHashCode(
 					key,
 					text,
-					condition);
+					condition, 
+					order);
 			}
 		}
 
@@ -371,6 +373,7 @@ namespace Ginger
 			{
 				var key = loreNode.GetValueElement("Name").Trim();
 				var text = loreNode.GetValueElement("Value").Trim();
+				var order = loreNode.GetAttributeInt("order", Lorebook.Entry.DefaultSortOrder);
 
 				if (!(string.IsNullOrEmpty(key) || string.IsNullOrEmpty(text)))
 				{
@@ -381,6 +384,7 @@ namespace Ginger
 					loreItems.Add(new LoreItem() {
 						key = key,
 						text = text,
+						order = order,
 						condition = condition,
 					});
 				}
@@ -531,6 +535,7 @@ namespace Ginger
 				loreNode.AddValueElement("Name", lore.key);
 				loreNode.AddValueElement("Value", lore.text);
 
+				loreNode.AddAttribute("order", lore.order);
 				if (lore.condition != null)
 					loreNode.AddAttribute("rule", lore.condition.ToString());
 				loreNode.AddTextValue(lore.text);
@@ -639,6 +644,7 @@ namespace Ginger
 					key = other.key,
 					text = other.text,
 					condition = other.condition,
+					order = other.order,
 				});
 			}
 

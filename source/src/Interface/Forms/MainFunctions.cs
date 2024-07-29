@@ -1282,6 +1282,8 @@ namespace Ginger
 					lorebook.entries.RemoveAt(i);
 			}
 
+			lorebook.Reindex(true);
+
 			recipeList.ResumeLayout(false);
 			recipeList.Resume();
 			recipeList.ScrollToRecipe(primaryRecipe);

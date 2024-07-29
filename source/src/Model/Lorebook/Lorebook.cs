@@ -1,13 +1,9 @@
 ﻿using Com.StellmanGreene.CSVReader;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using Ginger.Properties;
-using Newtonsoft.Json.Linq;
 using System.Text;
 
 namespace Ginger
@@ -19,6 +15,14 @@ namespace Ginger
 		public List<Entry> entries = new List<Entry>();
 		public string filename;
 		public UnusedProperties unused = null;
+
+		public enum Sorting
+		{
+			Default		= 0,	// By internal order
+			ByIndex,			// By addition order
+			ByKey,				// Alphabetical
+			ByOrder,			// By sort order
+		}
 
 		public bool isEmpty
 		{
@@ -57,6 +61,8 @@ namespace Ginger
 
 		public class Entry
 		{
+			public static readonly int DefaultSortOrder = 10;
+
 			public string key
 			{ 
 				get { return _key; }
@@ -84,10 +90,13 @@ namespace Ginger
 					_value = value; 
 				}
 			}
+
 			private string _value;
 			private string _key;
 			private string[] _keys = new string[0];
 			public bool isEnabled = true;
+			public int addition_index;
+			public int sortOrder = DefaultSortOrder;
 
 			public int tokenCount = 0;
 			private string _uniqueID = null;
@@ -203,6 +212,8 @@ namespace Ginger
 					key = this.key,
 					value = this.value,
 					isEnabled = this.isEnabled,
+					sortOrder = this.sortOrder,
+					addition_index = this.addition_index,
 					unused = this.unused,
 					_uniqueID = GetUID(),
 				};
@@ -212,6 +223,13 @@ namespace Ginger
 			{
 				return Utility.MakeHashCode(_key, _value);
 			}
+		}
+
+		public int GetNextIndex()
+		{
+			if (entries.Count == 0)
+				return 0;
+			return entries.Max(a => a.addition_index) + 1;
 		}
 
 #pragma warning disable 0618
@@ -288,6 +306,7 @@ namespace Ginger
 				{
 					List<string> row;
 					var delim = new char[] { ',' };
+					int index = 0;
 					while (true)
 					{
 						row = reader.ReadRow();
@@ -307,6 +326,7 @@ namespace Ginger
 								this.entries.Add(new Entry() {
 									keys = keys,
 									value = GingerString.FromFaraday(value).ToString(),
+									addition_index = index++,
 								});
 							}
 						}
@@ -356,6 +376,7 @@ namespace Ginger
 				extensions = book.extensions,
 			};
 
+			int index = GetNextIndex();
 			foreach (var entry in book.entries)
 			{
 				if (string.IsNullOrEmpty(entry.content))
@@ -374,6 +395,8 @@ namespace Ginger
 				this.entries.Add(new Entry() {
 					keys = keys,
 					value = GingerString.FromTavern(entry.content).ToString(),
+					sortOrder = entry.insertion_order,
+					addition_index = index++,
 					unused = new Entry.UnusedProperties() {
 						name = entry.name,
 						comment = entry.comment,
@@ -382,7 +405,7 @@ namespace Ginger
 						priority = entry.priority,
 						case_sensitive = entry.case_sensitive,
 
-						insertion_order = entry.insertion_order,
+//						insertion_order = entry.insertion_order,
 						placement = entry.position,
 						secondary_keys = entry.secondary_keys,
 						selective = entry.selective,
@@ -404,6 +427,7 @@ namespace Ginger
 				extensions = book.extensions,
 			};
 
+			int index = GetNextIndex();
 			foreach (var entry in book.entries)
 			{
 				if (string.IsNullOrEmpty(entry.content))
@@ -422,6 +446,8 @@ namespace Ginger
 				this.entries.Add(new Entry() {
 					keys = keys,
 					value = GingerString.FromTavern(entry.content).ToString(),
+					sortOrder = entry.insertion_order,
+					addition_index = index++,
 					unused = new Entry.UnusedProperties() {
 						name = entry.name,
 						comment = entry.comment,
@@ -429,7 +455,7 @@ namespace Ginger
 						enabled = entry.enabled,
 						priority = entry.priority,
 						case_sensitive = entry.case_sensitive,
-						insertion_order = entry.insertion_order,
+//						insertion_order = entry.insertion_order,
 						placement = entry.position,
 						secondary_keys = entry.secondary_keys,
 						selective = entry.selective,
@@ -437,15 +463,6 @@ namespace Ginger
 						extensions = entry.extensions,
 					}
 				});
-			}
-		}
-
-		public void Bake()
-		{
-			foreach (var entry in entries)
-			{
-				entry.key = GingerString.FromString(entry.key).ToBaked();
-				entry.value = GingerString.FromString(entry.value).ToBaked();
 			}
 		}
 
@@ -461,6 +478,7 @@ namespace Ginger
 				extensions = book.extensions,
 			};
 
+			int index = GetNextIndex();
 			foreach (var kvp in book.entries)
 			{
 				var entry = kvp.Value;
@@ -471,13 +489,15 @@ namespace Ginger
 				this.entries.Add(new Entry() {
 					keys = entry.key,
 					value = GingerString.FromTavern(entry.content).ToString(),
+					sortOrder = entry.order,
+					addition_index = index++,
 					unused = new Entry.UnusedProperties() {
 						comment = entry.comment,
 						constant = entry.constant,
 						enabled = !entry.disable,
 
 						name = entry.comment,
-						insertion_order = entry.order,
+//						insertion_order = entry.order,
 						position = entry.position,
 						secondary_keys = entry.secondary_keys,
 						selective = entry.selective,
@@ -493,6 +513,15 @@ namespace Ginger
 						extensions = entry.extensions,
 					}
 				});
+			}
+		}
+
+		public void Bake()
+		{
+			foreach (var entry in entries)
+			{
+				entry.key = GingerString.FromString(entry.key).ToBaked();
+				entry.value = GingerString.FromString(entry.value).ToBaked();
 			}
 		}
 
@@ -515,6 +544,7 @@ namespace Ginger
 				// Agnai: no extensions
 			};
 
+			int index = GetNextIndex();
 			for (int i = 0; i < book.entries.Length; ++i)
 			{
 				var entry = book.entries[i];
@@ -534,6 +564,8 @@ namespace Ginger
 				this.entries.Add(new Entry() {
 					keys = entry.keywords,
 					value = GingerString.FromTavern(entry.entry).ToString(),
+					sortOrder = 100,
+					addition_index = index++,
 					unused = new Entry.UnusedProperties() {
 						case_sensitive = false,
 						comment = entry.comment,
@@ -554,14 +586,16 @@ namespace Ginger
 		{
 			var lorebook = new Lorebook();
 			lorebook.name = "Lorebook";
-
 			lorebook.entries = new List<Entry>(entries.Length);
+
+			int index = 0;
 			for (int i = 0; i < entries.Length; ++i)
 			{
 				var entry = entries[i];
 				lorebook.entries.Add(new Entry() {
 					key = entry.key,
 					value = GingerString.FromFaraday(entry.value).ToString(),
+					addition_index = index++,
 				});
 			}
 			return lorebook;
@@ -586,15 +620,20 @@ namespace Ginger
 			var entriesNode = xmlNode.GetFirstElement("Entries");
 			if (entriesNode != null)
 			{
+				int index = 0;
 				var entryNode = entriesNode.GetFirstElement("Entry");
 				while (entryNode != null)
 				{
 					string key = entryNode.GetValueElement("Name");
 					string value = entryNode.GetValueElement("Value");
 					bool isEnabled = entryNode.GetAttributeBool("enabled", true);
+					int order = entryNode.GetAttributeInt("order", Entry.DefaultSortOrder);
+
 					var entry = new Entry() {
 						key = key,
 						value = bLoadFromClipboard ? Parameter.FromClipboard(value) : value,
+						sortOrder = order,
+						addition_index = index++,
 						isEnabled = isEnabled,
 					};
 
@@ -610,6 +649,9 @@ namespace Ginger
 					
 					entryNode = entryNode.GetNextSibling();
 				}
+
+				if (entries.ContainsNoneOf(e => e.sortOrder != -1))
+					SortEntries(Sorting.Default, true); // Assign order indices
 			}
 
 			// Unused
@@ -632,13 +674,14 @@ namespace Ginger
 				xmlNode.AddValueElement("Description", description);
 
 			var entriesNode = xmlNode.AddElement("Entries");
-			foreach (var entry in entries)
+			foreach (var entry in entries.OrderBy(a => a.addition_index))
 			{
 				var entryNode = entriesNode.AddElement("Entry");
 				entryNode.AddValueElement("Name", entry.key);
 				entryNode.AddValueElement("Value", bSaveToClipboard ? Parameter.ToClipboard(entry.value) : entry.value);
 				if (entry.isEnabled == false)
 					entryNode.AddAttribute("enabled", false);
+				entryNode.AddAttribute("order", entry.sortOrder);
 
 				if (entry.unused != null)
 				{
@@ -653,6 +696,14 @@ namespace Ginger
 				var unusedNode = xmlNode.AddElement("Properties");
 				unused.SaveToXml(unusedNode);
 			}
+		}
+
+		public void Reindex(bool bSort)
+		{
+			if (bSort)
+				entries = entries.OrderBy(e => e.sortOrder).ToList();
+			for (int i = 0; i < entries.Count; ++i)
+				entries[i].addition_index = i;
 		}
 
 		public override int GetHashCode()
@@ -685,6 +736,9 @@ namespace Ginger
 					lorebook.entries.Add(entry.Clone());
 				}
 			}
+			for (int i = 0; i < lorebook.entries.Count; ++i)
+				lorebook.entries[i].addition_index = i;
+
 			return lorebook;
 		}
 
@@ -735,6 +789,30 @@ namespace Ginger
 				}
 
 				entry.value = sb.ToString();
+			}
+		}
+
+		public void SortEntries(Sorting sorting, bool bResetOrder)
+		{
+			switch (sorting)
+			{
+			case Sorting.ByIndex:
+				entries = entries.OrderBy(a => a.addition_index).ToList();
+				break;
+			case Sorting.ByKey:
+				entries = entries.OrderBy(a => a.key).ToList();
+				break;
+			case Sorting.ByOrder:
+				entries = entries.OrderBy(a => a.sortOrder).ToList();
+				break;
+			default:
+				break;
+			}
+			
+			if (bResetOrder)
+			{
+				for (int i = 0; i < entries.Count; ++i)
+					entries[i].sortOrder = i + 1;
 			}
 		}
 

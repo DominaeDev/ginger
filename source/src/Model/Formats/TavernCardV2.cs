@@ -235,7 +235,9 @@ namespace Ginger
 				}
 
 				card.data.character_book.entries =
-					output.lorebook.entries.Select(e => {
+					output.lorebook.entries
+						.OrderBy(e => e.sortOrder)
+						.Select(e => {
 						string[] keys = e.keys;
 						var entry = new CharacterBook.Entry() {
 							comment = keys.Length > 0 ? keys[0] : "",

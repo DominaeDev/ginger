@@ -16,6 +16,7 @@ namespace Ginger
 		{
 			public string[] Keys { get; set; }
 			public string Text { get; set; }
+			public int? SortOrder { get; set; }
 			public bool Enabled { get; set; }
 		}
 		public event EventHandler<LorebookChangedEventArgs> Changed;
@@ -25,6 +26,7 @@ namespace Ginger
 		public event EventHandler MoveDownClicked;
 		public event EventHandler OnCopy;
 		public event EventHandler OnPaste;
+		public event EventHandler OnInsert;
 		public event EventHandler OnDuplicate;
 		public event EventHandler OnAddEntry;
 
@@ -55,6 +57,11 @@ namespace Ginger
 			textBox_Text.richTextBox.ControlAltEnterPressed += RichTextBox_ControlAltEnterPressed;
 			textBox_Text.richTextBox.syntaxFlags = RichTextBoxEx.SyntaxFlags.LoreText;
 
+			textBox_Index.GotFocus += TextBox_Index_GotFocus;
+			textBox_Index.LostFocus += TextBox_Index_LostFocus;
+			textBox_Index.KeyPress += TextBox_Index_KeyPress;
+			textBox_Index.PreviewKeyDown += TextBox_Index_PreviewKeyDown;
+
 			SetTooltip(Resources.tooltip_open_write, btnWrite);
 			SetTooltip(Resources.tooltip_move_up, btnMoveUp);
 			SetTooltip(Resources.tooltip_move_down, btnMoveDown);
@@ -71,6 +78,7 @@ namespace Ginger
 			_bIgnoreEvents = true;
 			textBox_Keys.Font = this.Font;
 			textBox_Text.Font = this.Font;
+			textBox_Index.Font = this.Font;
 			_bIgnoreEvents = false;
 		}
 
@@ -99,6 +107,7 @@ namespace Ginger
 				Changed?.Invoke(this, new LorebookChangedEventArgs() {
 					Keys = keys.ToArray(),
 					Text = textBox_Text.Text,
+					SortOrder = null,
 					Enabled = lorebookEntry.isEnabled,
 				});
 			}
@@ -115,6 +124,11 @@ namespace Ginger
 			textBox_Text.richTextBox.SetText(lorebookEntry.value.Trim());
 			textBox_Text.InitUndo();
 			textBox_Text.Enabled = lorebookEntry.isEnabled;
+			
+			// Index
+			textBox_Index.SetText(lorebookEntry.sortOrder.ToString());
+			textBox_Index.InitUndo();
+			textBox_Index.Enabled = lorebookEntry.isEnabled;
 
 			_keyHash = textBox_Keys.Text.GetHashCode();
 			_contentHash = textBox_Text.Text.GetHashCode();
@@ -139,6 +153,12 @@ namespace Ginger
 			textBox_Text.InitUndo();
 			textBox_Text.Enabled = entry.isEnabled;
 
+			// Index
+			textBox_Index.SetText(entry.sortOrder.ToString());
+			textBox_Index.InitUndo();
+			textBox_Index.Enabled = entry.isEnabled;
+
+
 			// Enabled checkbox
 			cbEnabled.Checked = entry.isEnabled;
 
@@ -154,6 +174,7 @@ namespace Ginger
 		{
 			textBox_Keys.Enabled = cbEnabled.Checked;
 			textBox_Text.Enabled = cbEnabled.Checked;
+			textBox_Index.Enabled = cbEnabled.Checked;
 			if (_bIgnoreEvents || Enabled == false)
 				return;
 
@@ -162,6 +183,7 @@ namespace Ginger
 			Changed?.Invoke(this, new LorebookChangedEventArgs() {
 				Keys = null,
 				Text = textBox_Text.Text,
+				SortOrder = null,
 				Enabled = lorebookEntry.isEnabled,
 			});
 		}
@@ -276,6 +298,9 @@ namespace Ginger
 					Checked = lorebookEntry.isEnabled,
 				});
 				menu.Items.Add("-");
+				menu.Items.Add(new ToolStripMenuItem("Insert entry here", null, (s, e) => {
+					OnInsert?.Invoke(this, EventArgs.Empty);
+				}));
 				menu.Items.Add(new ToolStripMenuItem("Copy this entry", null, (s, e) => {
 					OnCopy?.Invoke(this, EventArgs.Empty);
 				}) {
@@ -364,13 +389,79 @@ namespace Ginger
 		{
 			base.OnResize(e);
 
-			SizeToWidth(textBox_Keys);
+			var scaleFactor = this.Font.SizeInPoints / Constants.ReferenceFontSize;
+
+			int kIndexWidth = 40;
+
+			textBox_Index.Bounds = new Rectangle(
+				this.Size.Width - Convert.ToInt32((Constants.ParameterPanel.CheckboxWidth + kIndexWidth) * scaleFactor),
+				textBox_Keys.Location.Y,
+				Convert.ToInt32(Math.Ceiling(kIndexWidth * scaleFactor)),
+				textBox_Index.Size.Height);
+
+			labelIndex.Bounds = new Rectangle(
+				textBox_Index.Left - labelIndex.Width,
+				labelKey.Location.Y - 1,
+				labelIndex.Width,
+				textBox_Index.Size.Height);
+
+			textBox_Keys.Bounds = new Rectangle(
+				Convert.ToInt32(Constants.ParameterPanel.LabelWidth * scaleFactor - 3),
+				textBox_Keys.Location.Y,
+				Convert.ToInt32((this.Size.Width - (Constants.ParameterPanel.LabelWidth + Constants.ParameterPanel.CheckboxWidth) * scaleFactor) + 4 
+				- (labelIndex.Width + textBox_Index.Width)),
+				textBox_Keys.Size.Height);
+
+			//SizeToWidth(textBox_Keys);
 			SizeToWidth(textBox_Text);
 		}
 
 		private int CalcFaradayLoreLimit(int tokenBudget)
 		{
 			return Math.Max(Convert.ToInt32(Math.Floor((Math.Log(tokenBudget * 2, 2) - 10.0) * 256)), 256) - 4;
+		}
+
+		private void TextBox_Index_KeyPress(object sender, KeyPressEventArgs e)
+		{
+			if (char.IsDigit(e.KeyChar) || char.IsControl(e.KeyChar))
+			{
+				e.Handled = false; //Do not reject the input
+			}
+			else
+			{
+				e.Handled = true; //Reject the input
+			}
+		}
+
+		private void TextBox_Index_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+			if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
+				textBox_Index.KillFocus();
+		}
+
+		private void TextBox_Index_GotFocus(object sender, EventArgs e)
+		{
+			textBox_Index.SelectAll();
+		}
+
+		private void TextBox_Index_LostFocus(object sender, EventArgs e)
+		{
+			int sortOrder;
+			if (int.TryParse(textBox_Index.Text, out sortOrder) == false)
+				sortOrder = 0;
+			sortOrder = Math.Max(sortOrder, 0);
+
+			_bIgnoreEvents = true;
+			textBox_Index.SetText(sortOrder.ToString());
+			textBox_Index.InitUndo();
+			_bIgnoreEvents = false;
+
+			Changed?.Invoke(this, new LorebookChangedEventArgs() {
+				Keys = null,
+				Text = textBox_Text.Text,
+				SortOrder = sortOrder,
+				Enabled = lorebookEntry.isEnabled,
+			});
 		}
 	}
 }

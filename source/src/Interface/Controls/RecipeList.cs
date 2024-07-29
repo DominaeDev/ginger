@@ -731,6 +731,7 @@ namespace Ginger
 			RecipePanel pastedPanel = null;
 			var lorebook = new Lorebook();
 			lorebook.entries.AddRange(entries);
+			lorebook.Reindex(false);
 			var instance = Current.AddLorebook(lorebook);
 			AddRecipePanel(instance, true, insertionIndex);
 

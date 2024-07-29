@@ -339,8 +339,12 @@ namespace Ginger
 			var exampleOutput = GingerString.FromOutput(blockBuilder.GetFinishedBlock("example"), characterIndex, bMain, Text.EvalOption.ExampleFormatting);
 
 			// Strip lorebook decorators
-			if (partialOutput.lore != null && !options.Contains(Option.SillyTavernV3 | Option.Export))
-				partialOutput.lore.StripDecorators();
+			if (partialOutput.lore != null)
+			{
+				if (!options.Contains(Option.SillyTavernV3 | Option.Export))
+					partialOutput.lore.StripDecorators();
+				partialOutput.lore.SortEntries(Lorebook.Sorting.ByOrder, false);
+			}
 
 			return new Output() {
 				system = systemOutput,
@@ -579,6 +583,7 @@ namespace Ginger
 							lorebook.entries.Add(new Lorebook.Entry() {
 								key = key,
 								value = value,
+								sortOrder = loreItem.order,
 							});
 						}
 					}

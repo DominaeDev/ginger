@@ -388,13 +388,33 @@ namespace Ginger
 
 			menu.Items.Add("-");
 
-			if (recipe.isLorebook)
+			if (recipe.isLorebook && recipe.parameters.Count == 1 && recipe.parameters[0] is LorebookParameter)
 			{
+				var lorebookParameter = recipe.parameters[0] as LorebookParameter;
+				bool isEmpty = lorebookParameter.value.isEmpty;
+
 				menu.Items.Add(new ToolStripMenuItem("Save lorebook...", null, (s, e) => {
 					OnSaveLorebook?.Invoke(this, EventArgs.Empty);
 				}) {
-					Enabled = recipe.parameters.ContainsAny(p => p is LorebookParameter && (p as LorebookParameter).value.isEmpty == false),
+					Enabled = !isEmpty,
 				});
+
+				var lorebookPanel = parameterPanels[0] as LoreBookParameterPanel;
+				if (lorebookPanel != null)
+				{
+					var sortMenu = new ToolStripMenuItem("Sort lore entries");
+					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By key (alphabetical)", null, (s, e) => {
+						lorebookPanel.Sort(Lorebook.Sorting.ByKey);
+					}) { Enabled = !isEmpty, ToolTipText = "Rearranges the " });
+					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By order of addition", null, (s, e) => {
+						lorebookPanel.Sort(Lorebook.Sorting.ByIndex);
+					}) { Enabled = !isEmpty });
+					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By order number", null, (s, e) => {
+						lorebookPanel.Sort(Lorebook.Sorting.ByOrder);
+					}) { Enabled = !isEmpty });
+					menu.Items.Add(sortMenu);
+				}
+
 			}
 			else
 			{
@@ -847,6 +867,7 @@ namespace Ginger
 		}
 
 		public void RefreshSyntaxHighlighting(bool immediate)
+
 		{
 			foreach (var parameter in parameterPanels.OfType<ISyntaxHighlighted>())
 				parameter.RefreshSyntaxHighlight(immediate);

@@ -9,7 +9,7 @@ namespace Ginger
 		public TextSpan[] spans;
 		public int Count { get { return spans != null ? spans.Length : 0; } }
 
-		private static readonly char[] SpanBreakChars = new char[] { '\n', '/', '`', '<', '!' };
+		private static readonly char[] SpanBreakChars = new char[] { '\n', '/', '`', '<', '!', '@' };
 
 		public static TextSpans FromString(string text)
 		{
@@ -18,11 +18,13 @@ namespace Ginger
 			int pos_end = text.IndexOfAny(SpanBreakChars, pos);
 			while (pos_end != -1)
 			{
-				bool eol = text[pos_end] == '\n';
-				bool isComment = text[pos_end] == '/';
-				bool isHtmlComment = text[pos_end] == '<';
-				bool isCode = text[pos_end] == '`';
-				bool isMarkdownImage = text[pos_end] == '!';
+				char ch = text[pos_end];
+				bool eol = ch == '\n';
+				bool isComment = ch == '/';
+				bool isHtmlComment = ch == '<';
+				bool isCode = ch == '`';
+				bool isMarkdownImage = ch == '!';
+				bool isDecorator = ch == '@';
 
 				if (isComment) // /* ... */
 				{
@@ -100,7 +102,24 @@ namespace Ginger
 					pos_end = text.IndexOfAny(SpanBreakChars, pos_end + 1);
 					continue;
 				}
+				if (isDecorator) // @@ ... \n
+				{
+					if (pos_end + 1 < text.Length && text[pos_end + 1] == '@' && (pos_end == 0 || text[pos_end - 1] == '\n'))
+					{
+						int end_decorator = text.IndexOf('\n', pos_end + 2);
+						if (end_decorator == -1)
+							end_decorator = text.Length - 1;
 
+						spans.Add(TextSpan.FromString(text.Substring(pos, pos_end - pos), pos));
+						spans.Add(TextSpan.Empty(text.Substring(pos_end, end_decorator - pos_end + 1), pos_end));
+						pos = end_decorator;
+						pos_end = text.IndexOfAny(SpanBreakChars, pos);
+						continue;
+					}
+					// Wasn't a comment. Continue...
+					pos_end = text.IndexOfAny(SpanBreakChars, pos_end + 1);
+					continue;
+				}
 				var span = TextSpan.FromString(text.Substring(pos, pos_end - pos), pos);
 				spans.Add(span);
 

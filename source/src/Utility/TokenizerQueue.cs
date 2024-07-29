@@ -123,11 +123,6 @@ namespace Ginger
 				sb.Replace("{{char}}", args.characterPlaceholder, true);
 				sb.Replace("{{user}}", args.userPlaceholder, true);
 
-//				if (args.format == AppSettings.Settings.OutputPreviewFormat.Faraday)
-//				{
-//					sb.ConvertLinebreaks(Linebreak.LF);
-//				}
-
 				var tokens = LlamaTokenizer.LlamaTokenizer.encode(sb.ToString(), true, true);
 				total += tokens.Length;
 				if (channel == Recipe.Component.System || channel == Recipe.Component.System_PostHistory)

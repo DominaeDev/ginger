@@ -33,6 +33,7 @@ namespace Ginger
 				entryNode.AddValueElement("Value", Parameter.ToClipboard(entry.value));
 				if (entry.isEnabled == false)
 					entryNode.AddAttribute("enabled", false);
+				entryNode.AddAttribute("order", entry.sortOrder);
 
 				if (entry.unused != null)
 				{
@@ -98,6 +99,7 @@ namespace Ginger
 					string key = entryNode.GetValueElement("Name");
 					string value = entryNode.GetValueElement("Value");
 					bool isEnabled = entryNode.GetAttributeBool("enabled", true);
+					int sortOrder = entryNode.GetAttributeInt("order", Lorebook.Entry.DefaultSortOrder);
 					var entry = new Lorebook.Entry() {
 						key = key,
 						value = Parameter.FromClipboard(value),

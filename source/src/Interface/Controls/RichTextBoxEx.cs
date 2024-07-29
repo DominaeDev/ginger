@@ -151,7 +151,7 @@ namespace Ginger
 			Limited = Standard | Names | Commands | Numbers | SpellChecking,
 			Code	= Standard | Names | Commands | Numbers,
 			LoreKey = Names | Commands | Numbers | Wildcards | SpellChecking,
-			LoreText = Standard | Decorators,
+			LoreText = Standard | Decorators | SpellChecking,
 		}
 		public SyntaxFlags syntaxFlags
 		{

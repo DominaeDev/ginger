@@ -87,6 +87,11 @@ namespace Ginger
 			_undo.PushState(new UndoState(stateHistory[0], stateHistory[1]));
 		}
 
+		public void SetText(string text)
+		{
+			SetState(text, 0, 0);
+		}
+
 		public void SetState(string text, int selectionStart, int selectionLength = 0)
 		{
 			if (_bIgnoreEvents == false)
