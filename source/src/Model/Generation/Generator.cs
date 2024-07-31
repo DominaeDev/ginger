@@ -466,7 +466,7 @@ namespace Ginger
 							Text.EvalOption.Capitalization | Text.EvalOption.Whitespace | Text.EvalOption.NoInternal)
 							.Trim();
 
-						string attributeLabel = Text.Eval(string.Format("[!attrib:{0}]", attributeName), localContext, evalConfig,
+						string attributeLabel = Text.Eval(string.Format("[!__attrib:{0}]", attributeName), localContext, evalConfig,
 							Text.EvalOption.None);
 						
 						blockBuilder.AddAttribute(attribute, attributeName, attributeLabel, text);
