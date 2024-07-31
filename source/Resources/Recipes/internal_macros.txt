@@ -6,6 +6,8 @@
 	<Wrapper id="raw">[noparse]_[parse]</Wrapper>
 	<Wrapper id="property-label">_:[sp]</Wrapper>
 	<Macro id="the">[..the?|the]</Macro>
+	<Wrapper id="__attrib, attrib">_:[sp]</Wrapper>
+
 
 	<!-- Chat style -->
 	<Rule id="is-faraday">__faraday or __backyard</Rule>

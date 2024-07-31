@@ -7,7 +7,7 @@
 
 <Ginger>
 	<!-- Attribute labels template -->
-	<Wrapper id="attrib">_:[sp]</Wrapper>
+	<Wrapper id="__attrib, attrib">_:[sp]</Wrapper>
 
 	<!-- Gendered descriptors -->
 	<Macro id="person, man, woman, girl, boy">[@person]</Macro>
