@@ -514,10 +514,12 @@ Some data may be missing.</value>
     <value>This file contains unsupported or corrupted data. The text was successfully recovered, but Ginger was unable to recover the recipes.</value>
   </data>
   <data name="tooltip_move_down" xml:space="preserve">
-    <value>Move down</value>
+    <value>Move down
+(Hold Shift key to move to bottom)</value>
   </data>
   <data name="tooltip_move_up" xml:space="preserve">
-    <value>Move up</value>
+    <value>Move up
+(Hold Shift key to move to top)</value>
   </data>
   <data name="tooltip_open_write" xml:space="preserve">
     <value>Open text editor</value>

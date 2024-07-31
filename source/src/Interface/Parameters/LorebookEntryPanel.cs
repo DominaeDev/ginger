@@ -22,8 +22,10 @@ namespace Ginger
 		public event EventHandler<LorebookChangedEventArgs> Changed;
 
 		public event EventHandler RemoveClicked;
-		public event EventHandler MoveUpClicked;
-		public event EventHandler MoveDownClicked;
+		public event EventHandler OnMoveUp;
+		public event EventHandler OnMoveDown;
+		public event EventHandler OnMoveToTop;
+		public event EventHandler OnMoveToBottom;
 		public event EventHandler OnCopy;
 		public event EventHandler OnPaste;
 		public event EventHandler OnInsert;
@@ -248,13 +250,23 @@ namespace Ginger
 		private void btnMoveUp_MouseClick(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Left)
-				MoveUpClicked?.Invoke(this, EventArgs.Empty);
+			{
+				if (ModifierKeys == Keys.Shift)
+					OnMoveToTop?.Invoke(this, EventArgs.Empty);
+				else
+					OnMoveUp?.Invoke(this, EventArgs.Empty);
+			}
 		}
 
 		private void btnMoveDown_MouseClick(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Left)
-				MoveDownClicked?.Invoke(this, EventArgs.Empty);
+			{
+				if (ModifierKeys == Keys.Shift)
+					OnMoveToBottom?.Invoke(this, EventArgs.Empty);
+				else
+					OnMoveDown?.Invoke(this, EventArgs.Empty);
+			}
 		}
 
 		public void RefreshTokenCount()
@@ -293,30 +305,42 @@ namespace Ginger
 			{
 				var menu = new ContextMenuStrip();
 				menu.Items.Add(new ToolStripMenuItem("Enabled", null, (s, e) => {
+					CommitChange();
 					cbEnabled.Checked = !lorebookEntry.isEnabled;
 				}) {
 					Checked = lorebookEntry.isEnabled,
 				});
 				menu.Items.Add("-");
 				menu.Items.Add(new ToolStripMenuItem("Insert entry here", null, (s, e) => {
+					CommitChange();
 					OnInsert?.Invoke(this, EventArgs.Empty);
 				}));
 				menu.Items.Add(new ToolStripMenuItem("Copy this entry", null, (s, e) => {
+					CommitChange();
 					OnCopy?.Invoke(this, EventArgs.Empty);
 				}) {
 					Enabled = !isEmpty,
 				});
 				menu.Items.Add(new ToolStripMenuItem("Duplicate this entry", null, (s, e) => {
+					CommitChange();
 					OnDuplicate?.Invoke(this, EventArgs.Empty);
 				}) {
 					Enabled = !isEmpty,
 				});
 
 				menu.Items.Add(new ToolStripMenuItem("Paste", null, (s, e) => {
+					CommitChange();
 					OnPaste?.Invoke(this, EventArgs.Empty);
 				}) {
 					Enabled = Clipboard.ContainsData(LoreClipboard.Format),
 				});
+
+				menu.Items.Add(new ToolStripSeparator());
+
+				menu.Items.Add(new ToolStripMenuItem("Move up", null, (s, e) => { CommitChange(); OnMoveUp?.Invoke(this, e); }));
+				menu.Items.Add(new ToolStripMenuItem("Move down", null, (s, e) => { CommitChange(); OnMoveDown?.Invoke(this, e); }));
+				menu.Items.Add(new ToolStripMenuItem("Move to top", null, (s, e) => { CommitChange(); OnMoveToTop?.Invoke(this, e); }));
+				menu.Items.Add(new ToolStripMenuItem("Move to bottom", null, (s, e) => { CommitChange(); OnMoveToBottom?.Invoke(this, e); }));
 
 				menu.Show(sender as Control, new Point(args.X, args.Y));
 			}
@@ -462,6 +486,16 @@ namespace Ginger
 				SortOrder = sortOrder,
 				Enabled = lorebookEntry.isEnabled,
 			});
+		}
+
+		public void CommitChange()
+		{
+			if (ActiveControl != null)
+			{
+				var focused = MainForm.instance.GetFocusedControl();
+				if (focused != null)
+					focused.KillFocus(); // Send WM_KILLFOCUS, which triggers the value to be saved, if changed.
+			}
 		}
 	}
 }

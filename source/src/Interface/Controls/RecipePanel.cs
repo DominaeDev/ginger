@@ -403,14 +403,14 @@ namespace Ginger
 				if (lorebookPanel != null)
 				{
 					var sortMenu = new ToolStripMenuItem("Sort lore entries");
-					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By key (alphabetical)", null, (s, e) => {
+					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By key", null, (s, e) => {
 						lorebookPanel.Sort(Lorebook.Sorting.ByKey);
 					}) { Enabled = !isEmpty, ToolTipText = "Rearranges the " });
-					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By order of addition", null, (s, e) => {
-						lorebookPanel.Sort(Lorebook.Sorting.ByIndex);
-					}) { Enabled = !isEmpty });
 					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By order number", null, (s, e) => {
 						lorebookPanel.Sort(Lorebook.Sorting.ByOrder);
+					}) { Enabled = !isEmpty });
+					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By time added", null, (s, e) => {
+						lorebookPanel.Sort(Lorebook.Sorting.ByIndex);
 					}) { Enabled = !isEmpty });
 					menu.Items.Add(sortMenu);
 				}

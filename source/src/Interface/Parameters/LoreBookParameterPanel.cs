@@ -42,8 +42,10 @@ namespace Ginger
 		{
 			var entryPanel = new LorebookEntryPanel();
 			entryPanel.RemoveClicked += OnRemoveEntry;
-			entryPanel.MoveUpClicked += OnMoveUpEntry;
-			entryPanel.MoveDownClicked += OnMoveDownEntry;
+			entryPanel.OnMoveUp += OnMoveUpEntry;
+			entryPanel.OnMoveDown += OnMoveDownEntry;
+			entryPanel.OnMoveToTop += OnMoveToTop;
+			entryPanel.OnMoveToBottom += OnMoveToBottom;
 			entryPanel.Changed += OnChangedEntry;
 			entryPanel.OnCopy += OnCopy;
 			entryPanel.OnPaste += OnPaste;
@@ -148,12 +150,8 @@ namespace Ginger
 		{
 			LorebookEntryPanel panel = (LorebookEntryPanel)sender;
 			int index = _entryPanels.IndexOf(panel);
-			int newIndex = index - 1;
 
-			if (ModifierKeys == Keys.Shift)
-				newIndex = 0;
-
-			if (MoveEntry(index, newIndex))
+			if (MoveEntry(index, index - 1))
 			{
 //				SetDirty(string.Format("entry-{0}-{1}", index, _entryPanels.Count));
 				Undo.Push(Undo.Kind.Parameter, "Move lore entry");
@@ -164,12 +162,32 @@ namespace Ginger
 		{
 			LorebookEntryPanel panel = (LorebookEntryPanel)sender;
 			int index = _entryPanels.IndexOf(panel);
-			int newIndex = index + 1;
 
-			if (ModifierKeys == Keys.Shift)
-				newIndex = lorebook.entries.Count - 1;
+			if (MoveEntry(index, index + 1))
+			{
+//				SetDirty(string.Format("entry-{0}-{1}", index, _entryPanels.Count));
+				Undo.Push(Undo.Kind.Parameter, "Move lore entry");
+			}
+		}
 
-			if (MoveEntry(index, newIndex))
+		private void OnMoveToTop(object sender, EventArgs e)
+		{
+			LorebookEntryPanel panel = (LorebookEntryPanel)sender;
+			int index = _entryPanels.IndexOf(panel);
+
+			if (MoveEntry(index, 0))
+			{
+//				SetDirty(string.Format("entry-{0}-{1}", index, _entryPanels.Count));
+				Undo.Push(Undo.Kind.Parameter, "Move lore entry");
+			}
+		}
+
+		private void OnMoveToBottom(object sender, EventArgs e)
+		{
+			LorebookEntryPanel panel = (LorebookEntryPanel)sender;
+			int index = _entryPanels.IndexOf(panel);
+
+			if (MoveEntry(index, lorebook.entries.Count - 1))
 			{
 //				SetDirty(string.Format("entry-{0}-{1}", index, _entryPanels.Count));
 				Undo.Push(Undo.Kind.Parameter, "Move lore entry");
