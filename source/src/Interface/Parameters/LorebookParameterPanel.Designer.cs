@@ -36,7 +36,6 @@
 			// 
 			// centerPanel
 			// 
-			this.centerPanel.AutoScroll = true;
 			this.centerPanel.Location = new System.Drawing.Point(2, 3);
 			this.centerPanel.Margin = new System.Windows.Forms.Padding(0);
 			this.centerPanel.Name = "centerPanel";
@@ -60,7 +59,7 @@
 			this.btnAddEntry.Name = "btnAddEntry";
 			this.btnAddEntry.Size = new System.Drawing.Size(437, 24);
 			this.btnAddEntry.TabIndex = 0;
-			this.btnAddEntry.Text = "New entry";
+			this.btnAddEntry.Text = "Add entry";
 			this.btnAddEntry.UseVisualStyleBackColor = true;
 			this.btnAddEntry.Click += new System.EventHandler(this.BtnAddEntry_Click);
 			// 

@@ -20,7 +20,7 @@ namespace Ginger
 
 			Init(label, textBox, cbEnabled, btnWrite);
 
-			Resize += TextBox_Resize;
+			Resize += OnResize;
 			Load += ChatParameterPanel_Load;
 		}
 
@@ -67,7 +67,7 @@ namespace Ginger
 				RefreshFlexibleSize();
 		}
 
-		private void TextBox_Resize(object sender, System.EventArgs e)
+		private void OnResize(object sender, System.EventArgs e)
 		{
 			if (isIgnoringEvents)
 				return;
@@ -113,7 +113,7 @@ namespace Ginger
 		protected override void OnSetParameter()
 		{
 			base.OnSetParameter();
-			RefreshFlexibleSize();
+//			RefreshFlexibleSize();
 		}
 
 		protected override void OnSetEnabled(bool bEnabled)

@@ -245,7 +245,7 @@ namespace Ginger
 
 			TextParameterPanelBase.AllowFlexibleHeight = true;
 
-			foreach (var panel in addedPanels.OfType<MultiTextParameterPanel>())
+			foreach (var panel in addedPanels.OfType<IFlexibleParameterPanel>())
 				panel.RefreshFlexibleSize();
 
 			RefreshParameterLayout();
@@ -258,7 +258,6 @@ namespace Ginger
 			btnUp.Visible = !recipe.isBase;
 			btnDown.Visible = !recipe.isBase;
 			SetEnabled(recipe.isEnabled);
-
 
 			MainForm.ResumeGeneration();
 		}

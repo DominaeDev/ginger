@@ -642,7 +642,7 @@ namespace Ginger
 				}
 			}
 			// Draw border
-			//			e.Graphics.DrawRectangle(new Pen(Color.Green), new Rectangle(0, 0, Width - 1, Height - 1));
+//			e.Graphics.DrawRectangle(new Pen(Color.Green), new Rectangle(0, 0, Width - 1, Height - 1));
 		}
 
 		public void InitUndo()
@@ -1400,7 +1400,6 @@ namespace Ginger
 		{
 			return ControlExtensions.Find(this, match, matchCase, matchWord, reverse, startIndex);
 		}
-
 
 		private void ReplaceWordAt(int pos, int length, string replacement)
 		{

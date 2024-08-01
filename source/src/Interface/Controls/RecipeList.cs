@@ -42,6 +42,7 @@ namespace Ginger
 
 			this.Paint += OnPaint;
 
+			this.AutoScroll = false;
 			this.DoubleBuffered = true;
 			this.SuspendLayout(); // Manual layout
 		}
@@ -1275,6 +1276,7 @@ namespace Ginger
 			if (recipePanels.Count > 0)
 				scrollHeight = this.VerticalScroll.Value + recipePanels[recipePanels.Count - 1].Location.Y + recipePanels[recipePanels.Count - 1].Size.Height + AutoScrollMargin.Height;
 			bool bEnableScrollbar = scrollHeight > this.ClientSize.Height;
+
 			if (bEnableScrollbar != VerticalScroll.Enabled)
 			{
 				this.AutoScroll = false; // Must be disabled or Enabled does nothing
@@ -1284,7 +1286,12 @@ namespace Ginger
 					ScrollToTop();
 			}
 
-			AdjustFormScrollbars(true); // Resize
+			if (bEnableScrollbar)
+			{
+				int vscroll = this.VerticalScroll.Value;
+				AdjustFormScrollbars(true); // Resize
+				this.VerticalScroll.Value = vscroll;
+			}
 			_bShouldUpdateScrollbars = false;
 		}
 

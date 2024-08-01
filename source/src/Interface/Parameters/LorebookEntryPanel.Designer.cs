@@ -156,7 +156,7 @@
 			this.rightPanel.Location = new System.Drawing.Point(469, 0);
 			this.rightPanel.Margin = new System.Windows.Forms.Padding(0);
 			this.rightPanel.Name = "rightPanel";
-			this.rightPanel.Size = new System.Drawing.Size(26, 113);
+			this.rightPanel.Size = new System.Drawing.Size(26, 90);
 			this.rightPanel.TabIndex = 2;
 			// 
 			// labelIndex
@@ -209,7 +209,7 @@
 			this.textBox_Text.Placeholder = null;
 			this.textBox_Text.SelectionLength = 0;
 			this.textBox_Text.SelectionStart = 0;
-			this.textBox_Text.Size = new System.Drawing.Size(329, 88);
+			this.textBox_Text.Size = new System.Drawing.Size(329, 65);
 			this.textBox_Text.SpellChecking = true;
 			this.textBox_Text.SyntaxHighlighting = true;
 			this.textBox_Text.TabIndex = 2;
@@ -229,7 +229,7 @@
 			this.Controls.Add(this.rightPanel);
 			this.Margin = new System.Windows.Forms.Padding(0);
 			this.Name = "LorebookEntryPanel";
-			this.Size = new System.Drawing.Size(495, 113);
+			this.Size = new System.Drawing.Size(495, 90);
 			this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.LorebookEntryPanel_MouseClick);
 			((System.ComponentModel.ISupportInitialize)(this.btnRemove)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.btnWrite)).EndInit();

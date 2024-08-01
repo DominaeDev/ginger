@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class LoreBookParameterPanel : LoreBookParameterPanelDummy, ISyntaxHighlighted, ISearchableContainer
+	public partial class LoreBookParameterPanel : LoreBookParameterPanelDummy, ISyntaxHighlighted, ISearchableContainer, IFlexibleParameterPanel
 	{
 		protected override CheckBox parameterCheckBox { get { return null; } }
 		protected override Label parameterLabel { get { return null; } }
@@ -24,6 +24,8 @@ namespace Ginger
 		{
 			InitializeComponent();
 
+			this.SuspendLayout(); // Manual layout
+			centerPanel.SuspendLayout(); // Manual layout
 			centerPanel.VerticalScroll.SmallChange = ScrollStep;
 			centerPanel.VerticalScroll.LargeChange = ScrollStep * MaxEntriesInView;
 		}
@@ -52,6 +54,7 @@ namespace Ginger
 			entryPanel.OnInsert += OnInsertAt;
 			entryPanel.OnDuplicate += OnDuplicate;
 			entryPanel.OnAddEntry += BtnAddEntry_Click;
+			entryPanel.TextSizeChanged += EntryPanel_TextSizeChanged;
 			return entryPanel;
 		}
 
@@ -59,41 +62,37 @@ namespace Ginger
 		{
 			MainForm.EnableFormLevelDoubleBuffering(true);
 
-//			centerPanel.Suspend();
-//			centerPanel.SuspendLayout();
+			this.DisableRedrawAndDo(() => {
 
 			LorebookEntryPanel entryPanel = null;
 
-			this.DisableRedrawAndDo(() => {
-				var newEntry = new Lorebook.Entry() {
-					addition_index = lorebook.GetNextIndex(),
-				};
-				lorebook.entries.Add(newEntry);
+			var newEntry = new Lorebook.Entry() {
+				addition_index = lorebook.GetNextIndex(),
+			};
+			lorebook.entries.Add(newEntry);
 
-				entryPanel = CreateEntryPanel();
-				entryPanel.SetContent(newEntry);
+			entryPanel = CreateEntryPanel();
+			entryPanel.SetContent(newEntry);
 
-				centerPanel.Controls.Add(entryPanel);
-				_entryPanels.Add(entryPanel);
+			centerPanel.Controls.Add(entryPanel);
+			_entryPanels.Add(entryPanel);
 
-				// Tab order
-				for (int i = 0; i < _entryPanels.Count; ++i)
-					_entryPanels[i].TabIndex = i;
+			// Tab order
+			for (int i = 0; i < _entryPanels.Count; ++i)
+				_entryPanels[i].TabIndex = i;
 
-				centerPanel.Invalidate();
-			});
-
+			centerPanel.Invalidate();
 
 			ResizeCenterPanel();
 			RefreshLayout();
 
-			this.DisableRedrawAndDo(() => {
-				centerPanel.ScrollControlIntoView(_entryPanels[_entryPanels.Count - 1]);
-			});
+			centerPanel.ScrollControlIntoView(_entryPanels[_entryPanels.Count - 1]);
+
 			entryPanel.textBox_Keys.Focus();
+			});
 
 			Undo.Suspend();
-			EntriesChanged?.Invoke(this, EventArgs.Empty);
+//			EntriesChanged?.Invoke(this, EventArgs.Empty);
 			NotifyValueChanged(string.Format("entry-{0}-{1}", _entryPanels.Count - 1, _entryPanels.Count));
 			Undo.Resume();
 			Undo.Push(Undo.Kind.Parameter, "Add lore entry");
@@ -206,8 +205,6 @@ namespace Ginger
 				return false;
 
 			var panel = _entryPanels[position];
-//			centerPanel.Suspend();
-//			centerPanel.SuspendLayout();
 
 			_entryPanels.RemoveAt(position);
 			_entryPanels.Insert(newPosition, panel);
@@ -223,9 +220,17 @@ namespace Ginger
 			for (int i = 0; i < _entryPanels.Count; ++i)
 				_entryPanels[i].TabIndex = i;
 
-//			centerPanel.ResumeLayout(true);
 //			centerPanel.Resume();
 			return true;
+		}
+
+		private void EntryPanel_TextSizeChanged(object sender, EventArgs e)
+		{
+			if (isIgnoringEvents)
+				return;
+
+			ResizeCenterPanel();
+			RefreshLayout();
 		}
 
 		public void RefreshLoreTokenCounts(Dictionary<string, int> loreTokens)
@@ -290,7 +295,6 @@ namespace Ginger
 			MainForm.StealFocus();
 
 			centerPanel.Suspend();
-//			centerPanel.SuspendLayout();
 
 			foreach (var entry in entries)
 			{
@@ -312,7 +316,6 @@ namespace Ginger
 			for (int i = 0; i < _entryPanels.Count; ++i)
 				_entryPanels[i].TabIndex = i;
 
-//			centerPanel.ResumeLayout(true);
 			centerPanel.Resume();
 
 			if (centerPanel.Controls.Count > 0)
@@ -338,7 +341,6 @@ namespace Ginger
 			MainForm.StealFocus();
 
 			centerPanel.Suspend();
-//			centerPanel.SuspendLayout();
 
 			lorebook.entries.Insert(insertionIndex, newEntry);
 
@@ -358,7 +360,6 @@ namespace Ginger
 				_entryPanels[i].TabIndex = i;
 			}
 			
-//			centerPanel.ResumeLayout(true);
 			centerPanel.Resume();
 
 			if (centerPanel.Controls.Count > 0)
@@ -383,7 +384,6 @@ namespace Ginger
 			MainForm.StealFocus();
 
 			centerPanel.Suspend();
-//			centerPanel.SuspendLayout();
 
 			lorebook.entries.Insert(insertionIndex, duplicateEntry);
 
@@ -402,7 +402,6 @@ namespace Ginger
 				_entryPanels[i].TabIndex = i;
 			}
 			
-//			centerPanel.ResumeLayout(true);
 			centerPanel.Resume();
 
 			if (centerPanel.Controls.Count > 0)
@@ -479,10 +478,10 @@ namespace Ginger
 
 			if (_entryPanels.Count > 0)
 			{
-				int entryHeight = _entryPanels[0].Height;
 				int parameterY = Constants.ParameterPanel.TopMargin;
 				for (int i = 0; i < _entryPanels.Count; ++i)
 				{
+					int entryHeight = _entryPanels[i].Height;
 					if (i > 0)
 						parameterY += EntrySpacing;
 					var entryPanel = _entryPanels[i] as Control;
@@ -498,15 +497,17 @@ namespace Ginger
 		{
 			if (centerPanel.Controls.Count > 0)
 			{
-				int entryHeight = centerPanel.Controls[0].Size.Height;
-				centerPanel.Size = new Size(centerPanel.Size.Width,
-					Math.Min(entryHeight * MaxEntriesInView + (EntrySpacing * MaxEntriesInView - 1),
-					entryHeight * _entryPanels.Count + (EntrySpacing * _entryPanels.Count - 1)) + 2);
+				int totalHeight = 0;
+				int count = centerPanel.Controls.Count;
+				for (int i = 0; i < count; ++i)
+					totalHeight += centerPanel.Controls[i].Size.Height;
+
+				centerPanel.Size = new Size(centerPanel.Size.Width, totalHeight + (EntrySpacing * count - 1) + 2);
 			}
 			else
 				centerPanel.Size = new Size();
 			
-			this.HideHorizontalScrollbar();
+//			this.HideHorizontalScrollbar();
 			NotifySizeChanged(); // Notify parent the size has changed
 		}
 
@@ -545,6 +546,17 @@ namespace Ginger
 			NotifyValueChanged();
 			Undo.Resume();
 			Undo.Push(Undo.Kind.Parameter, "Sort lorebook");
+		}
+
+		public void RefreshFlexibleSize()
+		{
+			WhileIgnoringEvents(() => {
+				foreach (var panel in _entryPanels)
+				{
+					panel.RefreshFlexibleSize();
+				}
+			});
+			ResizeCenterPanel();
 		}
 	}
 }

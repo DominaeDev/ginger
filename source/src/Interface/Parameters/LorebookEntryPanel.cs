@@ -6,7 +6,7 @@ using WinFormsSyntaxHighlighter;
 
 namespace Ginger
 {
-	public partial class LorebookEntryPanel : UserControl
+	public partial class LorebookEntryPanel : UserControl, IFlexibleParameterPanel
 	{
 		private bool _bIgnoreEvents = false;
 		private int _keyHash;
@@ -31,10 +31,13 @@ namespace Ginger
 		public event EventHandler OnInsert;
 		public event EventHandler OnDuplicate;
 		public event EventHandler OnAddEntry;
+		public event EventHandler TextSizeChanged;
 
 		public Lorebook.Entry lorebookEntry { get; private set; }
 
 		public bool isEmpty { get { return (lorebookEntry.keys.Length == 0) && string.IsNullOrWhiteSpace(lorebookEntry.value); } }
+
+		public static bool AllowFlexibleHeight = true;
 
 		public LorebookEntryPanel()
 		{
@@ -58,6 +61,7 @@ namespace Ginger
 			textBox_Text.richTextBox.LostFocus += RichTextBox_LostFocus;
 			textBox_Text.richTextBox.ControlAltEnterPressed += RichTextBox_ControlAltEnterPressed;
 			textBox_Text.richTextBox.syntaxFlags = RichTextBoxEx.SyntaxFlags.LoreText;
+			textBox_Text.TextSizeChanged += TextBox_TextSizeChanged;
 
 			textBox_Index.GotFocus += TextBox_Index_GotFocus;
 			textBox_Index.LostFocus += TextBox_Index_LostFocus;
@@ -495,6 +499,36 @@ namespace Ginger
 				var focused = MainForm.instance.GetFocusedControl();
 				if (focused != null)
 					focused.KillFocus(); // Send WM_KILLFOCUS, which triggers the value to be saved, if changed.
+			}
+		}
+
+		private void TextBox_TextSizeChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			RefreshFlexibleSize();
+		}
+
+		public void RefreshFlexibleSize()
+		{
+			if (AllowFlexibleHeight == false)
+				return;
+
+			float scaleFactor = this.Font.SizeInPoints / Constants.ReferenceFontSize;
+
+			int height = textBox_Text.TextSize.Height;
+			height += 16; // Padding
+			height = (int)Math.Min(Math.Max(height, 72f * scaleFactor), 203f * scaleFactor); // Clamp
+
+			if (textBox_Text.Size.Height != height)
+			{
+				textBox_Text.Size = new Size(textBox_Text.Size.Width, height);
+				textBox_Text.Invalidate(); // Repaint (to avoid border artifacts)
+
+				this.Size = new Size(this.Size.Width, textBox_Text.Bottom);
+
+				TextSizeChanged?.Invoke(this, EventArgs.Empty); // Notify parent the size has changed
 			}
 		}
 	}

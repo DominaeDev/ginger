@@ -57,7 +57,7 @@
 			this.btnAddEntry.Name = "btnAddEntry";
 			this.btnAddEntry.Size = new System.Drawing.Size(489, 24);
 			this.btnAddEntry.TabIndex = 0;
-			this.btnAddEntry.Text = "New entry";
+			this.btnAddEntry.Text = "Add entry";
 			this.btnAddEntry.UseVisualStyleBackColor = true;
 			this.btnAddEntry.Click += new System.EventHandler(this.BtnAddEntry_Click);
 			// 
