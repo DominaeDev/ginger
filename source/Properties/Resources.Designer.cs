@@ -168,6 +168,16 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap arrow_left {
+            get {
+                object obj = ResourceManager.GetObject("arrow_left", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap arrow_right {
             get {
                 object obj = ResourceManager.GetObject("arrow_right", resourceCulture);
@@ -1101,11 +1111,12 @@ namespace Ginger.Properties {
         ///	&lt;Wrapper id=&quot;raw&quot;&gt;[noparse]_[parse]&lt;/Wrapper&gt;
         ///	&lt;Wrapper id=&quot;property-label&quot;&gt;_:[sp]&lt;/Wrapper&gt;
         ///	&lt;Macro id=&quot;the&quot;&gt;[..the?|the]&lt;/Macro&gt;
+        ///	&lt;Wrapper id=&quot;__attrib, attrib&quot;&gt;_:[sp]&lt;/Wrapper&gt;
+        ///
         ///
         ///	&lt;!-- Chat style --&gt;
         ///	&lt;Rule id=&quot;is-faraday&quot;&gt;__faraday or __backyard&lt;/Rule&gt;
-        ///	&lt;Wrapper id=&quot;dialogue, dialog&quot;&gt;[@dialogue-symbol-open]_[@dialogue-symbol-close]&lt;/Wrapper&gt;
-        ///	&lt;Wrappe [rest of string was truncated]&quot;;.
+        ///	&lt;Wrapper id=&quot;dialogue, dialog&quot;&gt;[@dialogue-symbo [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string internal_macros {
             get {
@@ -2076,7 +2087,8 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Move down.
+        ///   Looks up a localized string similar to Move down
+        ///(Hold Shift key to move to bottom).
         /// </summary>
         internal static string tooltip_move_down {
             get {
@@ -2085,7 +2097,8 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Move up.
+        ///   Looks up a localized string similar to Move up
+        ///(Hold Shift key to move to top).
         /// </summary>
         internal static string tooltip_move_up {
             get {

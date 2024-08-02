@@ -4,6 +4,8 @@ namespace Ginger
 {
 	public class LorebookParameter : BaseParameter<Lorebook>
 	{
+		public int pageIndex = 0; // Volatile
+
 		public LorebookParameter() : base()
 		{
 		}
@@ -32,6 +34,7 @@ namespace Ginger
 		{
 			var clone = CreateClone<LorebookParameter>();
 			clone.value = this.value.Clone();
+			clone.pageIndex = this.pageIndex;
 			return clone;
 		}
 

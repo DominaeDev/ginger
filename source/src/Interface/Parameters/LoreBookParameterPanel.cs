@@ -18,8 +18,10 @@ namespace Ginger
 
 		private static readonly int EntrySpacing = 6;
 		private static readonly int ScrollStep = 150; // Scroll only
-		private static readonly int MaxEntriesInView = 5;
 
+		private int FirstEntryIndex { get { return parameter.pageIndex * AppSettings.Settings.LoreEntriesPerPage; } }
+		private static int EntriesPerPage { get { return AppSettings.Settings.LoreEntriesPerPage; } }
+		
 		public LoreBookParameterPanel()
 		{
 			InitializeComponent();
@@ -27,7 +29,9 @@ namespace Ginger
 			this.SuspendLayout(); // Manual layout
 			centerPanel.SuspendLayout(); // Manual layout
 			centerPanel.VerticalScroll.SmallChange = ScrollStep;
-			centerPanel.VerticalScroll.LargeChange = ScrollStep * MaxEntriesInView;
+			centerPanel.VerticalScroll.LargeChange = ScrollStep * 5;
+
+			pageChanger.PageChanged += PageChanger_PageChanged;
 		}
 
 		protected override void OnSetParameter()
@@ -53,43 +57,50 @@ namespace Ginger
 			entryPanel.OnPaste += OnPaste;
 			entryPanel.OnInsert += OnInsertAt;
 			entryPanel.OnDuplicate += OnDuplicate;
-			entryPanel.OnAddEntry += BtnAddEntry_Click;
+			entryPanel.OnAddEntry += OnAddEntry;
 			entryPanel.TextSizeChanged += EntryPanel_TextSizeChanged;
 			return entryPanel;
 		}
 
-		private void BtnAddEntry_Click(object sender, EventArgs e)
+		private void OnAddEntry(object sender, EventArgs e)
 		{
 			MainForm.EnableFormLevelDoubleBuffering(true);
-
-			this.DisableRedrawAndDo(() => {
-
-			LorebookEntryPanel entryPanel = null;
 
 			var newEntry = new Lorebook.Entry() {
 				addition_index = lorebook.GetNextIndex(),
 			};
 			lorebook.entries.Add(newEntry);
 
-			entryPanel = CreateEntryPanel();
-			entryPanel.SetContent(newEntry);
+			if (lorebook.entries.Count - FirstEntryIndex <= EntriesPerPage)
+			{
+				LorebookEntryPanel entryPanel = null;
+				this.DisableRedrawAndDo(() => {
+					entryPanel = CreateEntryPanel();
+					entryPanel.SetContent(newEntry);
 
-			centerPanel.Controls.Add(entryPanel);
-			_entryPanels.Add(entryPanel);
+					centerPanel.Controls.Add(entryPanel);
+					_entryPanels.Add(entryPanel);
 
-			// Tab order
-			for (int i = 0; i < _entryPanels.Count; ++i)
-				_entryPanels[i].TabIndex = i;
+					// Tab order
+					for (int i = 0; i < _entryPanels.Count; ++i)
+						_entryPanels[i].TabIndex = i;
 
-			centerPanel.Invalidate();
+					centerPanel.Invalidate();
 
-			ResizeCenterPanel();
-			RefreshLayout();
+					ResizeCenterPanel();
+					RefreshLayout();
+					centerPanel.ScrollControlIntoView(_entryPanels[_entryPanels.Count - 1]);
+				});
+				entryPanel.textBox_Keys.Focus();
+			}
+			else
+			{
+				ChangePage(1 + lorebook.entries.Count / EntriesPerPage);
 
-			centerPanel.ScrollControlIntoView(_entryPanels[_entryPanels.Count - 1]);
+				var entryPanel = _entryPanels[_entryPanels.Count - 1];
+				entryPanel.textBox_Keys.Focus();
+			}
 
-			entryPanel.textBox_Keys.Focus();
-			});
 
 			Undo.Suspend();
 //			EntriesChanged?.Invoke(this, EventArgs.Empty);
@@ -104,7 +115,9 @@ namespace Ginger
 				return;
 
 			LorebookEntryPanel panel = (LorebookEntryPanel)sender;
-			int index = _entryPanels.IndexOf(panel);
+			int index = lorebook.entries.IndexOf(panel.lorebookEntry);
+			if (index == -1)
+				return;
 
 			if (e.Keys != null)
 				lorebook.entries[index].keys = e.Keys;
@@ -122,21 +135,29 @@ namespace Ginger
 			MainForm.StealFocus();
 
 			LorebookEntryPanel panel = (LorebookEntryPanel)sender;
-			int index = _entryPanels.IndexOf(panel);
+			int index = lorebook.entries.IndexOf(panel.lorebookEntry);
+			if (index == -1)
+				return;
 
 			Undo.Suspend();
-			centerPanel.Suspend();
-			WhileIgnoringEvents(() => {
-				centerPanel.Controls.Remove(panel);
-			});
-			_entryPanels.Remove(panel);
-			panel.Dispose();
-
 			lorebook.entries.RemoveAt(index);
 
-			ResizeCenterPanel();
+			if (FirstEntryIndex < lorebook.entries.Count)
+			{
+				centerPanel.Suspend();
+				WhileIgnoringEvents(() => {
+					centerPanel.Controls.Remove(panel);
+					_entryPanels.Remove(panel);
+					panel.Dispose();
+				});
 
-			centerPanel.Resume();
+				ResizeCenterPanel();
+				centerPanel.Resume();
+			}
+			else
+			{
+				ChangePage(parameter.pageIndex); // will get clamped
+			}
 
 			EntriesChanged?.Invoke(this, EventArgs.Empty);
 			NotifyValueChanged(string.Format("entry-{0}-{1}", index, _entryPanels.Count));
@@ -148,7 +169,9 @@ namespace Ginger
 		private void OnMoveUpEntry(object sender, EventArgs e)
 		{
 			LorebookEntryPanel panel = (LorebookEntryPanel)sender;
-			int index = _entryPanels.IndexOf(panel);
+			int index = lorebook.entries.IndexOf(panel.lorebookEntry);
+			if (index == -1)
+				return;
 
 			if (MoveEntry(index, index - 1))
 			{
@@ -160,7 +183,9 @@ namespace Ginger
 		private void OnMoveDownEntry(object sender, EventArgs e)
 		{
 			LorebookEntryPanel panel = (LorebookEntryPanel)sender;
-			int index = _entryPanels.IndexOf(panel);
+			int index = lorebook.entries.IndexOf(panel.lorebookEntry);
+			if (index == -1)
+				return;
 
 			if (MoveEntry(index, index + 1))
 			{
@@ -172,7 +197,9 @@ namespace Ginger
 		private void OnMoveToTop(object sender, EventArgs e)
 		{
 			LorebookEntryPanel panel = (LorebookEntryPanel)sender;
-			int index = _entryPanels.IndexOf(panel);
+			int index = lorebook.entries.IndexOf(panel.lorebookEntry);
+			if (index == -1)
+				return;
 
 			if (MoveEntry(index, 0))
 			{
@@ -184,7 +211,9 @@ namespace Ginger
 		private void OnMoveToBottom(object sender, EventArgs e)
 		{
 			LorebookEntryPanel panel = (LorebookEntryPanel)sender;
-			int index = _entryPanels.IndexOf(panel);
+			int index = lorebook.entries.IndexOf(panel.lorebookEntry);
+			if (index == -1)
+				return;
 
 			if (MoveEntry(index, lorebook.entries.Count - 1))
 			{
@@ -193,34 +222,40 @@ namespace Ginger
 			}
 		}
 
-		private bool MoveEntry(int position, int newPosition)
+		private bool MoveEntry(int index, int newIndex)
 		{
 			MainForm.StealFocus();
 
-			if (newPosition < 0)
-				newPosition = 0;
-			if (newPosition > _entryPanels.Count - 1)
-				newPosition = _entryPanels.Count - 1;
-			if (newPosition == position)
+			if (newIndex < 0)
+				newIndex = 0;
+			if (newIndex >= lorebook.entries.Count)
+				newIndex = lorebook.entries.Count - 1;
+
+			var panelIndex		= index - parameter.pageIndex * EntriesPerPage;
+			var newPanelIndex	= newIndex - parameter.pageIndex * EntriesPerPage;
+
+			if (panelIndex < 0 || panelIndex >= _entryPanels.Count)
 				return false;
 
-			var panel = _entryPanels[position];
+			// Move panel
+			var panel = _entryPanels[panelIndex];
+			_entryPanels.RemoveAt(panelIndex);
+			_entryPanels.Insert(newPanelIndex, panel);
 
-			_entryPanels.RemoveAt(position);
-			_entryPanels.Insert(newPosition, panel);
-			var loreEntry = lorebook.entries[position];
-			lorebook.entries.RemoveAt(position);
-			lorebook.entries.Insert(newPosition, loreEntry);
+			// Move lore entry
+			var loreEntry = lorebook.entries[index];
+			lorebook.entries.RemoveAt(index);
+			lorebook.entries.Insert(newIndex, loreEntry);
 
 			RefreshLayout();
 
-			centerPanel.ScrollControlIntoView(_entryPanels[newPosition]);
+			centerPanel.ScrollControlIntoView(_entryPanels[newPanelIndex]);
 			centerPanel.Invalidate();
+
 			// Tab order
 			for (int i = 0; i < _entryPanels.Count; ++i)
 				_entryPanels[i].TabIndex = i;
 
-//			centerPanel.Resume();
 			return true;
 		}
 
@@ -336,7 +371,11 @@ namespace Ginger
 				sortOrder = panel.lorebookEntry.sortOrder,
 			};
 
-			int insertionIndex = _entryPanels.IndexOf(panel);
+			int insertionIndex = lorebook.entries.IndexOf(panel.lorebookEntry);
+			if (insertionIndex == -1)
+				return;
+
+			int panelInsertionIndex = _entryPanels.IndexOf(panel);
 
 			MainForm.StealFocus();
 
@@ -345,7 +384,7 @@ namespace Ginger
 			lorebook.entries.Insert(insertionIndex, newEntry);
 
 			var entryPanel = CreateEntryPanel();
-			_entryPanels.Insert(insertionIndex, entryPanel);
+			_entryPanels.Insert(panelInsertionIndex, entryPanel);
 			centerPanel.Controls.Add(entryPanel);
 
 			entryPanel.SetContent(newEntry);
@@ -378,17 +417,21 @@ namespace Ginger
 			var duplicateEntry = panel.lorebookEntry.Clone();
 			duplicateEntry.addition_index = lorebook.GetNextIndex();
 
-			int insertionIndex = _entryPanels.IndexOf(panel) + 1;
+			int insertionIndex = lorebook.entries.IndexOf(panel.lorebookEntry);
+			if (insertionIndex == -1)
+				return;
+
+			int panelInsertionIndex = _entryPanels.IndexOf(panel);
 			duplicateEntry.key = string.Concat("Copy of ", duplicateEntry.key);
 
 			MainForm.StealFocus();
 
 			centerPanel.Suspend();
 
-			lorebook.entries.Insert(insertionIndex, duplicateEntry);
+			lorebook.entries.Insert(insertionIndex + 1, duplicateEntry);
 
 			var entryPanel = CreateEntryPanel();
-			_entryPanels.Insert(insertionIndex, entryPanel);
+			_entryPanels.Insert(panelInsertionIndex + 1, entryPanel);
 			centerPanel.Controls.Add(entryPanel);
 
 			entryPanel.SetContent(duplicateEntry);
@@ -416,8 +459,13 @@ namespace Ginger
 
 		protected override void OnRefreshValue()
 		{
+			int numEntries = parameter.value.entries.Count;
+			int entryFrom = parameter.pageIndex * EntriesPerPage;
+			int entryTo = Math.Min(entryFrom + EntriesPerPage - 1, numEntries - 1);
+			int entriesInPage = (entryTo - entryFrom) + 1;
+
 			// Remove
-			while (_entryPanels.Count > parameter.value.entries.Count)
+			while (_entryPanels.Count > entriesInPage)
 			{
 				var panel = _entryPanels[_entryPanels.Count - 1];
 				centerPanel.Controls.Remove(panel);
@@ -431,7 +479,7 @@ namespace Ginger
 
 			// Add
 			var addedPanels = new List<LorebookEntryPanel>();
-			while (_entryPanels.Count < parameter.value.entries.Count)
+			while (_entryPanels.Count < entriesInPage)
 			{
 				var entryPanel = CreateEntryPanel();
 				_entryPanels.Add(entryPanel);
@@ -442,15 +490,18 @@ namespace Ginger
 			for (int i = 0; i < _entryPanels.Count; ++i)
 			{
 				_entryPanels[i].TabIndex = i;
-				_entryPanels[i].SetContent(parameter.value.entries[i]);
+				_entryPanels[i].SetContent(parameter.value.entries[entryFrom + i]);
 			}
 
+			pageChanger.SetPage(parameter.pageIndex + 1, Math.Max(lorebook.entries.Count / EntriesPerPage + 1, 1));
+			pageChanger.Visible = lorebook.entries.Count > EntriesPerPage;
+
+			RefreshFlexibleSize();
 			ResizeCenterPanel();
 			RefreshLayout();
 
-			RefreshSyntaxHighlight(true, true);
-
 			RichTextBoxEx.AllowSyntaxHighlighting = bSyntaxHighlightingWasEnabled;
+			RefreshSyntaxHighlight(true, true);
 		}
 
 		public override int GetParameterHeight()
@@ -472,9 +523,6 @@ namespace Ginger
 		private void RefreshLayout()
 		{
 			int clientWidth = this.Width - 4;
-
-			if (_entryPanels.Count > MaxEntriesInView)
-				clientWidth -= 24;
 
 			if (_entryPanels.Count > 0)
 			{
@@ -501,12 +549,12 @@ namespace Ginger
 				int count = centerPanel.Controls.Count;
 				for (int i = 0; i < count; ++i)
 					totalHeight += centerPanel.Controls[i].Size.Height;
-
-				centerPanel.Size = new Size(centerPanel.Size.Width, totalHeight + (EntrySpacing * count - 1) + 2);
+				totalHeight += (EntrySpacing * count - 1) + 2;
+				centerPanel.Size = new Size(centerPanel.Size.Width, totalHeight);
 			}
 			else
 				centerPanel.Size = new Size();
-			
+
 //			this.HideHorizontalScrollbar();
 			NotifySizeChanged(); // Notify parent the size has changed
 		}
@@ -530,17 +578,9 @@ namespace Ginger
 			MainForm.StealFocus();
 			lorebook.SortEntries(sorting, false);
 
-			bool bSyntaxHighlightingWasEnabled = RichTextBoxEx.AllowSyntaxHighlighting;
-			if (bSyntaxHighlightingWasEnabled)
-				RichTextBoxEx.AllowSyntaxHighlighting = false;
+			parameter.pageIndex = 0;
 
-			for (int i = 0; i < _entryPanels.Count; ++i)
-			{
-				_entryPanels[i].TabIndex = i;
-				_entryPanels[i].SetContent(lorebook.entries[i]);
-			}
-			RichTextBoxEx.AllowSyntaxHighlighting = bSyntaxHighlightingWasEnabled;
-			RefreshSyntaxHighlight(true, true);
+			OnRefreshValue();
 
 			Undo.Suspend();
 			NotifyValueChanged();
@@ -558,5 +598,26 @@ namespace Ginger
 			});
 			ResizeCenterPanel();
 		}
+
+		private void PageChanger_PageChanged(object sender, PageChanger.PageChangedEventArgs e)
+		{
+			ChangePage(e.page);
+		}
+
+		public void ChangePage(int page)
+		{
+			this.DisableRedrawAndDo(() => {
+				foreach (var panel in _entryPanels)
+					panel.CommitChange();
+
+				int pageIndex = page - 1;
+				parameter.pageIndex = pageIndex;
+
+				OnRefreshValue();
+
+				RefreshSyntaxHighlight(true, true);
+			});
+		}
+
 	}
 }

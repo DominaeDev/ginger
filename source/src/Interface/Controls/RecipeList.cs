@@ -1290,7 +1290,7 @@ namespace Ginger
 			{
 				int vscroll = this.VerticalScroll.Value;
 				AdjustFormScrollbars(true); // Resize
-				this.VerticalScroll.Value = vscroll;
+				this.VerticalScroll.Value = Math.Min(Math.Max(vscroll, VerticalScroll.Minimum), VerticalScroll.Maximum);
 			}
 			_bShouldUpdateScrollbars = false;
 		}

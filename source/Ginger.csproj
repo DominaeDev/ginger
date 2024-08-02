@@ -156,6 +156,12 @@
     <Compile Include="src\Interface\Controls\OutputPreview.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="src\Interface\Controls\PageChanger.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\PageChanger.Designer.cs">
+      <DependentUpon>PageChanger.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\Interface\Controls\RecipeList.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -562,6 +568,9 @@
     <EmbeddedResource Include="src\Interface\Controls\FlatRichTextBox.resx">
       <DependentUpon>FlatRichTextBox.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Controls\PageChanger.resx">
+      <DependentUpon>PageChanger.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Controls\RecipeList.resx">
       <DependentUpon>RecipeList.cs</DependentUpon>
     </EmbeddedResource>
@@ -803,6 +812,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Schemas\tavern_characterbook_v2.schema.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\arrow_left.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
