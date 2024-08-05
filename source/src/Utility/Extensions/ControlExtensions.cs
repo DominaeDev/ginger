@@ -125,5 +125,10 @@ namespace Ginger
 		{
 			ShowScrollBar(control.Handle, (int)ScrollBarDirection.SB_HORZ, false); // Never draw horizontal scrollbar
 		}
+
+		public static void HideVerticalScrollbar(this Control control)
+		{
+			ShowScrollBar(control.Handle, (int)ScrollBarDirection.SB_VERT, false); // Never draw horizontal scrollbar
+		}
 	}
 }

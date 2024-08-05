@@ -238,6 +238,7 @@ namespace Ginger
 	public interface IFlexibleParameterPanel
 	{
 		void RefreshFlexibleSize();
+		void RefreshLineWidth();
 	}
 
 	public class ParameterEventArgs : EventArgs

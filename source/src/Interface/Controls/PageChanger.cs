@@ -7,8 +7,8 @@ namespace Ginger
 {
 	public partial class PageChanger : UserControl
 	{
-		public int currentPage	{ get; private set; }	// 1-based
-		public int maxPages		{ get; private set; }	// 1-based
+		public int currentPage	{ get; private set; }	// zero-based
+		public int maxPages		{ get; private set; }	// zero-based
 
 		private bool _bIgnoreEvents;
 
@@ -33,7 +33,7 @@ namespace Ginger
 			if (_bIgnoreEvents)
 				return;
 
-			if (currentPage > 1)
+			if (currentPage > 0)
 			{
 				SetPage(currentPage - 1, maxPages);
 
@@ -66,7 +66,7 @@ namespace Ginger
 			int page;
 			if (int.TryParse(textBox_Page.Text, out page))
 			{
-				page = Math.Min(Math.Max(page, 0), maxPages);
+				page = Math.Min(Math.Max(page - 1, 0), maxPages);
 				SetPage(page, this.maxPages);
 
 				PageChanged?.Invoke(this, new PageChangedEventArgs() {
@@ -104,12 +104,12 @@ namespace Ginger
 
 		public void SetPage(int page, int maxPages)
 		{
-			this.currentPage = Math.Min(Math.Max(page, 1), maxPages);
+			this.currentPage = Math.Min(Math.Max(page, 0), maxPages);
 			this.maxPages = maxPages;
 
 			_bIgnoreEvents = true;
-			textBox_Page.SetText(this.currentPage.ToString(CultureInfo.InvariantCulture));
-			label_Pages.Text = string.Format(CultureInfo.InvariantCulture, "/ {0}", this.maxPages);
+			textBox_Page.SetText((this.currentPage + 1).ToString(CultureInfo.InvariantCulture));
+			label_Pages.Text = string.Format(CultureInfo.InvariantCulture, "/ {0}", this.maxPages + 1);
 			_bIgnoreEvents = false;
 		}
 

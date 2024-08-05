@@ -14,7 +14,8 @@ namespace Ginger
 		[Category("Appearance"), Description("Gradient color")]
 		public Color GradientColor { get; set; }
 
-		private List<RecipePanel> recipePanels = new List<RecipePanel>();
+		public IEnumerable<RecipePanel> recipePanels { get { return _recipePanels; } }
+		private List<RecipePanel> _recipePanels = new List<RecipePanel>();
 
 		public event EventHandler SaveAsSnippet;
 		public event EventHandler SaveAsRecipe;
@@ -55,7 +56,7 @@ namespace Ginger
 			if (_lastSize != this.Size)
 			{
 				_lastSize = this.Size;
-				if (recipePanels.Count > 0)
+				if (_recipePanels.Count > 0)
 					ResizeRecipePanels();
 			}
 			this.HideHorizontalScrollbar();
@@ -109,7 +110,7 @@ namespace Ginger
 
 			var panel = new RecipePanel();
 			Controls.Add(panel);
-			panel.Name = "recipe_" + recipePanels.Count.ToString("00");
+			panel.Name = "recipe_" + _recipePanels.Count.ToString("00");
 			panel.Size = new Size(this.ClientSize.Width, 100);
 			panel.OnRemove += OnRemoveRecipe;
 			panel.OnMoveUp += OnMoveRecipeUp;
@@ -136,19 +137,19 @@ namespace Ginger
 
 			if (insertAt < 0)
 			{
-				recipePanels.Add(panel);
+				_recipePanels.Add(panel);
 			}
 			else
 			{
-				insertAt = Math.Min(insertAt, recipePanels.Count);
-				recipePanels.Insert(insertAt, panel);
+				insertAt = Math.Min(insertAt, _recipePanels.Count);
+				_recipePanels.Insert(insertAt, panel);
 			}
 
 			// Tab stop
-			for (int i = 0; i < recipePanels.Count; ++i)
+			for (int i = 0; i < _recipePanels.Count; ++i)
 			{
-				recipePanels[i].TabIndex = i;
-				recipePanels[i].RefreshTitle(); // Greeting titles depend on order and count
+				_recipePanels[i].TabIndex = i;
+				_recipePanels[i].RefreshTitle(); // Greeting titles depend on order and count
 			}
 
 			panel.Visible = true;
@@ -199,7 +200,7 @@ namespace Ginger
 				{
 					var panel = new RecipePanel();
 					panel.Dock = DockStyle.None;
-					panel.Name = "recipe_" + recipePanels.Count.ToString("00");
+					panel.Name = "recipe_" + _recipePanels.Count.ToString("00");
 					panel.Size = new Size(this.ClientSize.Width, 100);
 					panel.Font = this.Font;
 					panel.OnRemove += OnRemoveRecipe;
@@ -228,9 +229,9 @@ namespace Ginger
 				// There should only be one, but we can't know that for sure.
 				int insert = 0;
 				foreach (var baseRecipe in addedPanels.Where(p => p.recipe.isBase))
-					recipePanels.Insert(insert++, baseRecipe);
+					_recipePanels.Insert(insert++, baseRecipe);
 
-				recipePanels.AddRange(addedPanels.Where(p => p.recipe.isBase == false));
+				_recipePanels.AddRange(addedPanels.Where(p => p.recipe.isBase == false));
 				Controls.AddRange(addedPanels.ToArray());
 
 				// Tab stop
@@ -275,17 +276,17 @@ namespace Ginger
 
 		public void RemoveAllPanels()
 		{
-			foreach (var panel in recipePanels)
+			foreach (var panel in _recipePanels)
 				panel.Dispose();
 			this.Controls.Clear();
-			recipePanels.Clear();
+			_recipePanels.Clear();
 		}
 
 		public void RemoveRecipe(Recipe recipe, bool bLayout)
 		{
 			MainForm.StealFocus();
 
-			var panel = recipePanels.Find(p => p.recipe == recipe);
+			var panel = _recipePanels.Find(p => p.recipe == recipe);
 			if (panel == null)
 				return;
 
@@ -293,15 +294,15 @@ namespace Ginger
 				this.Suspend();
 
 			this.Controls.Remove(panel);
-			recipePanels.Remove(panel);
+			_recipePanels.Remove(panel);
 			panel.Dispose();
 
 			Current.Character.RemoveRecipe(recipe);
 			RefreshParameterVisibility();
 
 			// Tab stop
-			for (int i = 0; i < recipePanels.Count; ++i)
-				recipePanels[i].RefreshTitle(); // Greeting titles depend on order and count
+			for (int i = 0; i < _recipePanels.Count; ++i)
+				_recipePanels[i].RefreshTitle(); // Greeting titles depend on order and count
 
 			if (bLayout)
 			{
@@ -364,7 +365,7 @@ namespace Ginger
 
 		public void RefreshAllParameters()
 		{
-			foreach (var panel in recipePanels)
+			foreach (var panel in _recipePanels)
 				panel.RefreshAllParameters();
 			Invalidate(false);
 		}
@@ -382,7 +383,7 @@ namespace Ginger
 		public void RefreshParameterVisibility()
 		{
 			bool bChanged = false;
-			foreach (var panel in recipePanels)
+			foreach (var panel in _recipePanels)
 			{
 				if (panel.recipe.isEnabled == false)
 					continue;
@@ -399,7 +400,7 @@ namespace Ginger
 				return;
 
 			var panel = sender as RecipePanel;
-			int position = recipePanels.IndexOf(panel);
+			int position = _recipePanels.IndexOf(panel);
 
 			if (MoveRecipe(position, position - 1, true))
 			{
@@ -414,7 +415,7 @@ namespace Ginger
 				return;
 
 			var panel = sender as RecipePanel;
-			int position = recipePanels.IndexOf(panel);
+			int position = _recipePanels.IndexOf(panel);
 
 			if (MoveRecipe(position, position + 1, true))
 			{
@@ -429,7 +430,7 @@ namespace Ginger
 				return;
 
 			var panel = sender as RecipePanel;
-			int position = recipePanels.IndexOf(panel);
+			int position = _recipePanels.IndexOf(panel);
 			
 			if (MoveRecipe(position, 0, true))
 			{
@@ -444,9 +445,9 @@ namespace Ginger
 				return;
 
 			var panel = sender as RecipePanel;
-			int position = recipePanels.IndexOf(panel);
+			int position = _recipePanels.IndexOf(panel);
 			
-			if (MoveRecipe(position, recipePanels.Count - 1, true))
+			if (MoveRecipe(position, _recipePanels.Count - 1, true))
 			{
 				Current.IsDirty = true;
 				Undo.Push(Undo.Kind.RecipeOrder, "Move recipe to bottom");
@@ -457,18 +458,18 @@ namespace Ginger
 		{
 			if (newPosition < 0)
 				newPosition = 0;
-			if (newPosition > recipePanels.Count - 1)
-				newPosition = recipePanels.Count - 1;
-			if (newPosition == 0 && recipePanels[0].recipe.isBase)
+			if (newPosition > _recipePanels.Count - 1)
+				newPosition = _recipePanels.Count - 1;
+			if (newPosition == 0 && _recipePanels[0].recipe.isBase)
 				newPosition = 1;
 
 			if (newPosition == position)
 				return false;
 
-			var panel = recipePanels[position];
+			var panel = _recipePanels[position];
 
-			recipePanels.RemoveAt(position);
-			recipePanels.Insert(newPosition, panel);
+			_recipePanels.RemoveAt(position);
+			_recipePanels.Insert(newPosition, panel);
 			var instance = Current.Character.recipes[position];
 			Current.Character.recipes.RemoveAt(position);
 			Current.Character.recipes.Insert(newPosition, instance);
@@ -479,10 +480,10 @@ namespace Ginger
 				RefreshLayout();
 
 				// Tab stop
-				for (int i = 0; i < recipePanels.Count; ++i)
+				for (int i = 0; i < _recipePanels.Count; ++i)
 				{
-					recipePanels[i].TabIndex = i;
-					recipePanels[i].RefreshTitle(); // Greeting titles depend on order and count
+					_recipePanels[i].TabIndex = i;
+					_recipePanels[i].RefreshTitle(); // Greeting titles depend on order and count
 				}
 
 				ScrollToPanel(panel);
@@ -498,7 +499,7 @@ namespace Ginger
 			MainForm.EnableFormLevelDoubleBuffering(true);
 
 			LockAndDo(() => {
-				foreach (var panel in recipePanels)
+				foreach (var panel in _recipePanels)
 					panel.Expand();
 				RefreshLayout();
 			});
@@ -514,7 +515,7 @@ namespace Ginger
 				MainForm.StealFocus();
 
 			LockAndDo(() => {
-				foreach (var panel in recipePanels)
+				foreach (var panel in _recipePanels)
 					panel.Collapse();
 				RefreshLayout();
 			});
@@ -710,9 +711,9 @@ namespace Ginger
 
 			int insertionIndex = -1;
 			if (targetPanel != null)
-				insertionIndex = recipePanels.FindIndex(p => p.recipe == targetPanel.recipe);
+				insertionIndex = _recipePanels.FindIndex(p => p.recipe == targetPanel.recipe);
 			if (insertionIndex == -1)
-				insertionIndex = recipePanels.Count;
+				insertionIndex = _recipePanels.Count;
 
 			if (insertionIndex == 0
 				&& Current.Character.recipes.Count > 0
@@ -758,9 +759,9 @@ namespace Ginger
 
 			int insertionIndex = -1;
 			if (targetPanel != null)
-				insertionIndex = recipePanels.FindIndex(p => p.recipe == targetPanel.recipe);
+				insertionIndex = _recipePanels.FindIndex(p => p.recipe == targetPanel.recipe);
 			if (insertionIndex == -1)
-				insertionIndex = recipePanels.Count;
+				insertionIndex = _recipePanels.Count;
 
 			if (insertionIndex == 0
 				&& Current.Character.recipes.Count > 0
@@ -802,12 +803,12 @@ namespace Ginger
 		private void OnMakePrimaryGreeting(object sender, EventArgs e)
 		{
 			var panel = sender as RecipePanel;
-			int position = recipePanels.IndexOf(panel);
+			int position = _recipePanels.IndexOf(panel);
 			if (panel.recipe.isGreeting == false)
 				return; // Not a greeting
 
-			int from = recipePanels.IndexOf(panel);
-			int to = recipePanels.FindIndex(p => p.recipe.isGreeting);
+			int from = _recipePanels.IndexOf(panel);
+			int to = _recipePanels.FindIndex(p => p.recipe.isGreeting);
 			if (from == -1 || to == -1 || from == to)
 				return; // Can't move
 
@@ -817,10 +818,10 @@ namespace Ginger
 			MoveRecipe(from, to, false);
 
 			// Tab stop
-			for (int i = 0; i < recipePanels.Count; ++i)
+			for (int i = 0; i < _recipePanels.Count; ++i)
 			{
-				recipePanels[i].TabIndex = i;
-				recipePanels[i].RefreshTitle(); // Greeting titles depend on order and count
+				_recipePanels[i].TabIndex = i;
+				_recipePanels[i].RefreshTitle(); // Greeting titles depend on order and count
 			}
 
 //			ScrollToPanel(panel);
@@ -891,12 +892,12 @@ namespace Ginger
 
 				menu.Items.Add("-");
 
-				menu.Items.Add(new ToolStripMenuItem("Copy recipes", null, (s, e) => { OnCopy(null, e); }) {
+				menu.Items.Add(new ToolStripMenuItem("Copy recipe(s)", null, (s, e) => { OnCopy(null, e); }) {
 					Enabled = !Current.Character.recipes.IsEmpty(),
 				});
 				if (Clipboard.ContainsData(RecipeClipboard.Format))
 				{
-					menu.Items.Add(new ToolStripMenuItem("Paste recipes", null, (s, e) => { OnPaste(null, e); }));
+					menu.Items.Add(new ToolStripMenuItem("Paste recipe(s)", null, (s, e) => { OnPaste(null, e); }));
 				} 
 				else if (Clipboard.ContainsData(LoreClipboard.Format))
 				{
@@ -917,7 +918,7 @@ namespace Ginger
 
 		public bool ReplaceRecipe(Recipe recipe, Recipe newRecipe)
 		{
-			int position = recipePanels.FindIndex(r => r.recipe == recipe);
+			int position = _recipePanels.FindIndex(r => r.recipe == recipe);
 			if (position == -1)
 				return false;
 
@@ -947,8 +948,8 @@ namespace Ginger
 			panel.SetEnabled(recipe.isEnabled);
 
 			RefreshParameterVisibility();
-			for (int i = 0; i < recipePanels.Count; ++i)
-				recipePanels[i].RefreshTitle(); // Greeting titles depend on this
+			for (int i = 0; i < _recipePanels.Count; ++i)
+				_recipePanels[i].RefreshTitle(); // Greeting titles depend on this
 
 			Current.IsDirty = true;
 			Undo.Push(Undo.Kind.Parameter, recipe.isEnabled ? "Enabled recipe" : "Disabled recipe");
@@ -973,13 +974,13 @@ namespace Ginger
 
 		public void RefreshLoreTokenCounts(Dictionary<string, int> loreTokens)
 		{
-			foreach (var panel in recipePanels)
+			foreach (var panel in _recipePanels)
 				panel.RefreshLoreTokenCounts(loreTokens);
 		}
 
 		public void ScrollToRecipe(Recipe recipe)
 		{
-			ScrollToPanel(recipePanels.FirstOrDefault(p => p.recipe == recipe));
+			ScrollToPanel(_recipePanels.FirstOrDefault(p => p.recipe == recipe));
 		}
 
 		public void ScrollToPanel(RecipePanel panel)
@@ -995,7 +996,7 @@ namespace Ginger
 
 		public Searchable[] GetSearchables()
 		{
-			var temp = recipePanels.Select(p => new {
+			var temp = _recipePanels.Select(p => new {
 				container = p,
 				controls = p.parameterPanels
 					.OfType<ISearchableContainer>()
@@ -1047,7 +1048,7 @@ namespace Ginger
 
 		public RecipePanel GetRecipePanel(Recipe recipe)
 		{
-			return recipePanels.FirstOrDefault(p => p.recipe == recipe);
+			return _recipePanels.FirstOrDefault(p => p.recipe == recipe);
 		}
 
 		private static List<T> FindAllControlsOfType<T>(Control parent) where T : Control
@@ -1063,28 +1064,28 @@ namespace Ginger
 		public T[] FindAllControlsOfType<T>() where T : Control
 		{
 			var controls = new List<T>();
-			foreach (var panel in recipePanels)
+			foreach (var panel in _recipePanels)
 				controls.AddRange(FindAllControlsOfType<T>(panel));
 			return controls.ToArray();
 		}
 
 		public bool RefreshReferences()
 		{
-			if (Current.Character.recipes.Count != recipePanels.Count)
+			if (Current.Character.recipes.Count != _recipePanels.Count)
 				return false;
 
 			this.Suspend();
 			RichTextBoxEx.AllowSyntaxHighlighting = false;
 
 			// Validate
-			for (int i = 0; i < recipePanels.Count; ++i)
+			for (int i = 0; i < _recipePanels.Count; ++i)
 			{
-				if (recipePanels[i].recipe.id != Current.Character.recipes[i].id)
+				if (_recipePanels[i].recipe.id != Current.Character.recipes[i].id)
 					return false;
 			}
 
-			for (int i = 0; i < recipePanels.Count; ++i)
-				recipePanels[i].ResetRecipeReference(Current.Character.recipes[i]);
+			for (int i = 0; i < _recipePanels.Count; ++i)
+				_recipePanels[i].ResetRecipeReference(Current.Character.recipes[i]);
 
 			RefreshParameterVisibility();
 			RefreshFlexibleTextBoxes();
@@ -1104,9 +1105,9 @@ namespace Ginger
 				this.Suspend();
 				RichTextBoxEx.AllowSyntaxHighlighting = false;
 
-				if (Current.Character.recipes.Count > recipePanels.Count) // Recipe added
+				if (Current.Character.recipes.Count > _recipePanels.Count) // Recipe added
 				{
-					var oldRecipes = recipePanels.Select(r => r.recipe).ToList();
+					var oldRecipes = _recipePanels.Select(r => r.recipe).ToList();
 					var newRecipes = Current.Character.recipes;
 
 					var added = new HashSet<int>();
@@ -1126,14 +1127,14 @@ namespace Ginger
 						if (added.Contains(i))
 							AddRecipePanel(newRecipes[i], false, i);
 						else
-							recipePanels[i].ResetRecipeReference(newRecipes[i]);
+							_recipePanels[i].ResetRecipeReference(newRecipes[i]);
 					}
 
 					return true;
 				}
-				else if (Current.Character.recipes.Count < recipePanels.Count) // Recipe removed
+				else if (Current.Character.recipes.Count < _recipePanels.Count) // Recipe removed
 				{
-					var oldRecipes = recipePanels.Select(r => r.recipe).ToList();
+					var oldRecipes = _recipePanels.Select(r => r.recipe).ToList();
 					var newRecipes = Current.Character.recipes;
 
 					var removed = new List<int>();
@@ -1151,15 +1152,15 @@ namespace Ginger
 					// Remove panels
 					for (int i = removed.Count - 1; i >= 0; --i)
 					{
-						var panel = recipePanels[removed[i]];
+						var panel = _recipePanels[removed[i]];
 						this.Controls.Remove(panel);
-						recipePanels.Remove(panel);
+						_recipePanels.Remove(panel);
 						panel.Dispose();
 					}
 
 					// Update the rest
 					for (int i = 0; i < Current.Character.recipes.Count; ++i)
-						recipePanels[i].ResetRecipeReference(Current.Character.recipes[i]);
+						_recipePanels[i].ResetRecipeReference(Current.Character.recipes[i]);
 
 					return true;
 				}
@@ -1172,10 +1173,10 @@ namespace Ginger
 				RefreshFlexibleTextBoxes();
 				RefreshLayout();
 
-				for (int i = 0; i < recipePanels.Count; ++i)
+				for (int i = 0; i < _recipePanels.Count; ++i)
 				{
-					recipePanels[i].TabIndex = i;
-					recipePanels[i].RefreshTitle(); // Greeting titles depend on order and count
+					_recipePanels[i].TabIndex = i;
+					_recipePanels[i].RefreshTitle(); // Greeting titles depend on order and count
 				}
 
 
@@ -1188,10 +1189,10 @@ namespace Ginger
 
 		public bool RefreshReferencesUnordered()
 		{
-			if (Current.Character.recipes.Count != recipePanels.Count)
+			if (Current.Character.recipes.Count != _recipePanels.Count)
 				return false;
 
-			var oldRecipes = recipePanels.Select(r => r.recipe).ToList();
+			var oldRecipes = _recipePanels.Select(r => r.recipe).ToList();
 			var newRecipes = Current.Character.recipes;
 
 			var order = new Dictionary<int, int>();
@@ -1213,18 +1214,18 @@ namespace Ginger
 			{
 				int from = kvp.Key;
 				int to = kvp.Value;
-				reordered.Add(recipePanels[from]);
+				reordered.Add(_recipePanels[from]);
 			}
-			recipePanels = reordered;
+			_recipePanels = reordered;
 
 			this.Suspend();
 			RichTextBoxEx.AllowSyntaxHighlighting = false;
 
-			for (int i = 0; i < recipePanels.Count; ++i)
+			for (int i = 0; i < _recipePanels.Count; ++i)
 			{
-				recipePanels[i].ResetRecipeReference(Current.Character.recipes[i]);
-				recipePanels[i].TabIndex = i;
-				recipePanels[i].RefreshTitle(); // Greeting titles depend on order and count
+				_recipePanels[i].ResetRecipeReference(Current.Character.recipes[i]);
+				_recipePanels[i].TabIndex = i;
+				_recipePanels[i].RefreshTitle(); // Greeting titles depend on order and count
 			}
 
 			RefreshParameterVisibility();
@@ -1241,11 +1242,11 @@ namespace Ginger
 
 		public bool ValidateState()
 		{
-			if (Current.Character.recipes.Count != recipePanels.Count)
+			if (Current.Character.recipes.Count != _recipePanels.Count)
 				return false;
-			for (int i = 0; i < recipePanels.Count; ++i)
+			for (int i = 0; i < _recipePanels.Count; ++i)
 			{
-				if (Current.Character.recipes[i] != recipePanels[i].recipe)
+				if (Current.Character.recipes[i] != _recipePanels[i].recipe)
 					return false;
 			}
 			return true;
@@ -1253,16 +1254,16 @@ namespace Ginger
 
 		public void Sort()
 		{
-			recipePanels = recipePanels
+			_recipePanels = _recipePanels
 				.OrderBy(r => r.recipe.GetSortingOrder())
 				.ToList();
 
-			Current.Character.recipes = recipePanels.Select(r => r.recipe).ToList();
+			Current.Character.recipes = _recipePanels.Select(r => r.recipe).ToList();
 
-			for (int i = 0; i < recipePanels.Count; ++i)
+			for (int i = 0; i < _recipePanels.Count; ++i)
 			{
-				recipePanels[i].TabIndex = i;
-				recipePanels[i].RefreshTitle(); // Greeting titles depend on order and count
+				_recipePanels[i].TabIndex = i;
+				_recipePanels[i].RefreshTitle(); // Greeting titles depend on order and count
 			}
 			RefreshParameterVisibility();
 			RefreshLayout();
@@ -1273,25 +1274,27 @@ namespace Ginger
 		public void RefreshScrollbar()
 		{
 			int scrollHeight = 0;
-			if (recipePanels.Count > 0)
-				scrollHeight = this.VerticalScroll.Value + recipePanels[recipePanels.Count - 1].Location.Y + recipePanels[recipePanels.Count - 1].Size.Height + AutoScrollMargin.Height;
+			if (_recipePanels.Count > 0)
+				scrollHeight = this.VerticalScroll.Value + _recipePanels[_recipePanels.Count - 1].Location.Y + _recipePanels[_recipePanels.Count - 1].Size.Height + AutoScrollMargin.Height;
 			bool bEnableScrollbar = scrollHeight > this.ClientSize.Height;
 
 			if (bEnableScrollbar != VerticalScroll.Enabled)
 			{
-				this.AutoScroll = false; // Must be disabled or Enabled does nothing
+//				this.AutoScroll = false; // Must be disabled or Enabled does nothing
 				this.VerticalScroll.Enabled = bEnableScrollbar;
-				this.AutoScroll = true;
+//				this.AutoScroll = true;
 				if (!bEnableScrollbar) // Scrollbar was disabled. Reset scroll.
 					ScrollToTop();
 			}
 
-			if (bEnableScrollbar)
+			AdjustFormScrollbars(true); // Resize
+
+			if (ActiveControl != null) // Scroll to active control
 			{
-				int vscroll = this.VerticalScroll.Value;
-				AdjustFormScrollbars(true); // Resize
-				this.VerticalScroll.Value = Math.Min(Math.Max(vscroll, VerticalScroll.Minimum), VerticalScroll.Maximum);
+				var control = MainForm.instance.GetFocusedControl();
+				ScrollControlIntoView(control);
 			}
+
 			_bShouldUpdateScrollbars = false;
 		}
 
@@ -1317,18 +1320,20 @@ namespace Ginger
 
 			// Resize flexible textboxes first
 			TextParameterPanelBase.AllowFlexibleHeight = false;
-			for (int i = 0; i < recipePanels.Count; ++i)
+			LorebookEntryPanel.AllowFlexibleHeight = false;
+			for (int i = 0; i < _recipePanels.Count; ++i)
 			{
-				var panel = recipePanels[i];
+				var panel = _recipePanels[i];
 				if (panel.parameterPanels.ContainsNoneOf(pp => pp is IFlexibleParameterPanel))
 					continue;
 
 				panel.Size = new Size(clientWidth, panel.Size.Height);
 			}
 			TextParameterPanelBase.AllowFlexibleHeight = true;
-			for (int i = 0; i < recipePanels.Count; ++i)
+			LorebookEntryPanel.AllowFlexibleHeight = true;
+			for (int i = 0; i < _recipePanels.Count; ++i)
 			{
-				var panel = recipePanels[i];
+				var panel = _recipePanels[i];
 				var flexibleParameters = panel.parameterPanels.OfType<IFlexibleParameterPanel>().ToArray();
 				if (flexibleParameters.Length == 0)
 					continue;
@@ -1339,9 +1344,9 @@ namespace Ginger
 			
 			// Resize the rest
 			int panelY = 0;
-			for (int i = 0; i < recipePanels.Count; ++i)
+			for (int i = 0; i < _recipePanels.Count; ++i)
 			{
-				var panel = recipePanels[i];
+				var panel = _recipePanels[i];
 				panel.Bounds = new Rectangle(-HorizontalScroll.Value, panelY - VerticalScroll.Value, clientWidth, panel.Size.Height);
 				panel.RefreshSize();
 				panelY += panel.Size.Height;
@@ -1355,9 +1360,9 @@ namespace Ginger
 		public void RefreshLayout()
 		{
 			int parameterY = 0;
-			for (int i = 0; i < recipePanels.Count; ++i)
+			for (int i = 0; i < _recipePanels.Count; ++i)
 			{
-				var panel = recipePanels[i];
+				var panel = _recipePanels[i];
 				if (panel.Visible == false)
 					continue;
 				panel.Location = new Point(-HorizontalScroll.Value, parameterY - VerticalScroll.Value);
@@ -1371,7 +1376,7 @@ namespace Ginger
 
 		public void RefreshSyntaxHighlighting(bool immediate)
 		{
-			foreach (var panel in recipePanels)
+			foreach (var panel in _recipePanels)
 				panel.RefreshSyntaxHighlighting(immediate);
 		}
 
@@ -1413,13 +1418,13 @@ namespace Ginger
 
 		public void RefreshTitles()
 		{
-			foreach (var panel in recipePanels)
+			foreach (var panel in _recipePanels)
 				panel.RefreshTitle();
 		}
 
 		public void RefreshFlexibleTextBoxes()
 		{
-			foreach (var panel in recipePanels)
+			foreach (var panel in _recipePanels)
 			{
 				foreach (var parameter in panel.parameterPanels.OfType<IFlexibleParameterPanel>())
 					parameter.RefreshFlexibleSize();

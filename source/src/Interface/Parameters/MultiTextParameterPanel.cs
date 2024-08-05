@@ -80,7 +80,7 @@ namespace Ginger
 			}
 			else
 			{
-				textBox.richTextBox.RightMargin = 0;
+				textBox.richTextBox.RightMargin = Math.Max(richTextBox.Size.Width - 26, 0); // Account for scrollbar
 				textBox.richTextBox.WordWrap = true;
 			}
 

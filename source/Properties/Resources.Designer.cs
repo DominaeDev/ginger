@@ -2078,6 +2078,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Lore entries with lower order numbers are inserted into the context first..
+        /// </summary>
+        internal static string tooltip_lore_order {
+            get {
+                return ResourceManager.GetString("tooltip_lore_order", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Merge all lorebooks into one.
         /// </summary>
         internal static string tooltip_merge_lorebooks {

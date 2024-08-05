@@ -92,7 +92,7 @@
 			// 
 			this.btnRemove.BackColor = System.Drawing.Color.Transparent;
 			this.btnRemove.Image = global::Ginger.Properties.Resources.delete;
-			this.btnRemove.Location = new System.Drawing.Point(2, 88);
+			this.btnRemove.Location = new System.Drawing.Point(2, 48);
 			this.btnRemove.Margin = new System.Windows.Forms.Padding(0);
 			this.btnRemove.Name = "btnRemove";
 			this.btnRemove.Size = new System.Drawing.Size(22, 22);
@@ -113,6 +113,7 @@
 			// 
 			// btnMoveUp
 			// 
+			this.btnMoveUp.Enabled = false;
 			this.btnMoveUp.Image = global::Ginger.Properties.Resources.lore_up;
 			this.btnMoveUp.Location = new System.Drawing.Point(4, 46);
 			this.btnMoveUp.Margin = new System.Windows.Forms.Padding(0);
@@ -120,10 +121,12 @@
 			this.btnMoveUp.Size = new System.Drawing.Size(20, 20);
 			this.btnMoveUp.TabIndex = 8;
 			this.btnMoveUp.TabStop = false;
+			this.btnMoveUp.Visible = false;
 			this.btnMoveUp.MouseClick += new System.Windows.Forms.MouseEventHandler(this.btnMoveUp_MouseClick);
 			// 
 			// btnMoveDown
 			// 
+			this.btnMoveDown.Enabled = false;
 			this.btnMoveDown.Image = global::Ginger.Properties.Resources.lore_down;
 			this.btnMoveDown.Location = new System.Drawing.Point(4, 66);
 			this.btnMoveDown.Margin = new System.Windows.Forms.Padding(0);
@@ -131,6 +134,7 @@
 			this.btnMoveDown.Size = new System.Drawing.Size(20, 20);
 			this.btnMoveDown.TabIndex = 9;
 			this.btnMoveDown.TabStop = false;
+			this.btnMoveDown.Visible = false;
 			this.btnMoveDown.MouseClick += new System.Windows.Forms.MouseEventHandler(this.btnMoveDown_MouseClick);
 			// 
 			// cbEnabled
@@ -149,9 +153,9 @@
 			// 
 			this.rightPanel.Controls.Add(this.cbEnabled);
 			this.rightPanel.Controls.Add(this.btnWrite);
+			this.rightPanel.Controls.Add(this.btnRemove);
 			this.rightPanel.Controls.Add(this.btnMoveUp);
 			this.rightPanel.Controls.Add(this.btnMoveDown);
-			this.rightPanel.Controls.Add(this.btnRemove);
 			this.rightPanel.Dock = System.Windows.Forms.DockStyle.Right;
 			this.rightPanel.Location = new System.Drawing.Point(469, 0);
 			this.rightPanel.Margin = new System.Windows.Forms.Padding(0);

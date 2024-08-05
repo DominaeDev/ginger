@@ -22,7 +22,18 @@ namespace Ginger
 			public static bool AutoBreakLine = true;
 			public static string Locale = Locales.DefaultLocale;
 			public static bool EnableFormLevelBuffering = true;
-			public static int LoreEntriesPerPage = 10;
+
+			public static int LoreEntriesPerPage { get { return 5;/* _loreEntriesPerPage > 0 ? Math.Max(_loreEntriesPerPage, 10) : int.MaxValue;*/ } }
+			public static string LoreEntriesPerPageSerialize
+			{
+				get { return _loreEntriesPerPage.ToString(CultureInfo.InvariantCulture); }
+				set 
+				{
+					if (int.TryParse(value, out _loreEntriesPerPage) == false)
+						_loreEntriesPerPage = 10;
+				}
+			}
+			private static int _loreEntriesPerPage = 10;
 
 			public static string FontFace = null;
 			private static Font _font = new Font(Constants.DefaultFontFace, Constants.DefaultFontSize, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -181,7 +192,7 @@ namespace Ginger
 				ReadString(ref Settings.Locale, settingsSection, "Locale");
 				ReadBool(ref Settings.ShowRecipeCategory, settingsSection, "ShowRecipeCategory");
 				ReadBool(ref Settings.EnableFormLevelBuffering, settingsSection, "FormBuffering");
-				ReadInt(ref Settings.LoreEntriesPerPage, settingsSection, "LoreEntriesPerPage");
+				Settings.LoreEntriesPerPageSerialize = settingsSection["LoreEntriesPerPage"];
 				
 				try
 				{
@@ -313,7 +324,7 @@ namespace Ginger
 					Write(outputFile, "Dictionary", Settings.Dictionary);
 					Write(outputFile, "Locale", Settings.Locale);
 					Write(outputFile, "ShowRecipeCategory", Settings.ShowRecipeCategory);
-					Write(outputFile, "LoreEntriesPerPage", Settings.LoreEntriesPerPage);
+					Write(outputFile, "LoreEntriesPerPage", Settings.LoreEntriesPerPageSerialize);
 
 					// User
 					WriteSection(outputFile, "User");

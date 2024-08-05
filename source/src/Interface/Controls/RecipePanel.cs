@@ -144,6 +144,7 @@ namespace Ginger
 			MainForm.SuspendGeneration();
 
 			TextParameterPanelBase.AllowFlexibleHeight = false; // Don't resize during instantiation / layout
+			LorebookEntryPanel.AllowFlexibleHeight = false;
 
 			List<IParameterPanel> addedPanels = new List<IParameterPanel>();
 
@@ -244,6 +245,7 @@ namespace Ginger
 				panel.RefreshValue(); // Set value
 
 			TextParameterPanelBase.AllowFlexibleHeight = true;
+			LorebookEntryPanel.AllowFlexibleHeight = true;
 
 			foreach (var panel in addedPanels.OfType<IFlexibleParameterPanel>())
 				panel.RefreshFlexibleSize();
@@ -401,17 +403,30 @@ namespace Ginger
 				var lorebookPanel = parameterPanels[0] as LoreBookParameterPanel;
 				if (lorebookPanel != null)
 				{
-					var sortMenu = new ToolStripMenuItem("Sort lore entries");
+					var sortMenu = new ToolStripMenuItem("Sort all entries");
 					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By key", null, (s, e) => {
 						lorebookPanel.Sort(Lorebook.Sorting.ByKey);
-					}) { Enabled = !isEmpty, ToolTipText = "Rearranges the " });
+					}) { Enabled = !isEmpty });
 					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By order number", null, (s, e) => {
 						lorebookPanel.Sort(Lorebook.Sorting.ByOrder);
 					}) { Enabled = !isEmpty });
-					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By time added", null, (s, e) => {
+					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By creation", null, (s, e) => {
 						lorebookPanel.Sort(Lorebook.Sorting.ByIndex);
 					}) { Enabled = !isEmpty });
 					menu.Items.Add(sortMenu);
+
+					int numEntries = lorebookPanel.lorebook.entries.Count;
+					if (numEntries > AppSettings.Settings.LoreEntriesPerPage)
+					{
+						int pageIndex = (lorebookPanel.GetParameter() as LorebookParameter).pageIndex;
+						menu.Items.Add(new ToolStripMenuItem("Next page", null, (s, e) => { CommitChange(); lorebookPanel.OnNextPage(s, e); }) {
+							Enabled = pageIndex < numEntries / AppSettings.Settings.LoreEntriesPerPage,
+						});
+						menu.Items.Add(new ToolStripMenuItem("Previous page", null, (s, e) => { CommitChange(); lorebookPanel.OnPreviousPage(s, e); }) {
+							Enabled = pageIndex > 0,
+						});
+					}
+
 				}
 
 			}

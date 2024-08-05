@@ -1175,7 +1175,7 @@ namespace Ginger
 			copyMenuItem.Enabled = !Current.Character.recipes.IsEmpty();
 			if (Clipboard.ContainsData(RecipeClipboard.Format))
 			{
-				pasteMenuItem.Text = "Paste recipes";
+				pasteMenuItem.Text = "Paste recipe(s)";
 				pasteMenuItem.Enabled = true;
 			}
 			else if (Clipboard.ContainsData(LoreClipboard.Format))

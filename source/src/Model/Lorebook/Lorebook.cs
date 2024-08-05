@@ -229,7 +229,7 @@ namespace Ginger
 		{
 			if (entries.Count == 0)
 				return 0;
-			return entries.Max(a => a.addition_index) + 1;
+			return Math.Max(entries.Max(a => a.addition_index) + 1, 0);
 		}
 
 #pragma warning disable 0618
@@ -620,7 +620,6 @@ namespace Ginger
 			var entriesNode = xmlNode.GetFirstElement("Entries");
 			if (entriesNode != null)
 			{
-				int index = 0;
 				var entryNode = entriesNode.GetFirstElement("Entry");
 				while (entryNode != null)
 				{
@@ -628,12 +627,13 @@ namespace Ginger
 					string value = entryNode.GetValueElement("Value");
 					bool isEnabled = entryNode.GetAttributeBool("enabled", true);
 					int order = entryNode.GetAttributeInt("order", Entry.DefaultSortOrder);
+					int addition_index = entryNode.GetAttributeInt("index", -1);
 
 					var entry = new Entry() {
 						key = key,
 						value = bLoadFromClipboard ? Parameter.FromClipboard(value) : value,
 						sortOrder = order,
-						addition_index = index++,
+						addition_index = addition_index,
 						isEnabled = isEnabled,
 					};
 
@@ -648,6 +648,12 @@ namespace Ginger
 					entries.Add(entry);
 					
 					entryNode = entryNode.GetNextSibling();
+				}
+
+				for (int i = 0; i < entries.Count; ++i)
+				{
+					if (entries[i].addition_index < 0)
+						entries[i].addition_index = GetNextIndex();
 				}
 
 				if (entries.ContainsNoneOf(e => e.sortOrder != -1))
@@ -674,7 +680,7 @@ namespace Ginger
 				xmlNode.AddValueElement("Description", description);
 
 			var entriesNode = xmlNode.AddElement("Entries");
-			foreach (var entry in entries.OrderBy(a => a.addition_index))
+			foreach (var entry in entries)
 			{
 				var entryNode = entriesNode.AddElement("Entry");
 				entryNode.AddValueElement("Name", entry.key);
@@ -682,6 +688,7 @@ namespace Ginger
 				if (entry.isEnabled == false)
 					entryNode.AddAttribute("enabled", false);
 				entryNode.AddAttribute("order", entry.sortOrder);
+				entryNode.AddAttribute("index", entry.addition_index);
 
 				if (entry.unused != null)
 				{

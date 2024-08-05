@@ -1354,7 +1354,7 @@ namespace Ginger
 		{
 			AppSettings.Settings.AutoBreakLine = autoWrap;
 
-			var panels = instance.recipeList.FindAllControlsOfType<MultiTextParameterPanel>();
+			var panels = instance.recipeList.FindAllControlsOfType<Control>().OfType<IFlexibleParameterPanel>();
 			foreach (var panel in panels)
 				panel.RefreshLineWidth();
 		}

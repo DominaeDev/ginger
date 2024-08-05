@@ -21,7 +21,13 @@ namespace Ginger
 		}
 		public event EventHandler<LorebookChangedEventArgs> Changed;
 
-		public event EventHandler RemoveClicked;
+		public class LorebookSortEventArgs : EventArgs
+		{
+			public Lorebook.Sorting Sorting { get; set; }
+		}
+		public event EventHandler<LorebookSortEventArgs> OnSortEntries;
+
+		public event EventHandler OnRemove;
 		public event EventHandler OnMoveUp;
 		public event EventHandler OnMoveDown;
 		public event EventHandler OnMoveToTop;
@@ -31,8 +37,11 @@ namespace Ginger
 		public event EventHandler OnInsert;
 		public event EventHandler OnDuplicate;
 		public event EventHandler OnAddEntry;
+		public event EventHandler OnNextPage;
+		public event EventHandler OnPreviousPage;
 		public event EventHandler TextSizeChanged;
 
+		public Lorebook lorebook { get; private set; }
 		public Lorebook.Entry lorebookEntry { get; private set; }
 
 		public bool isEmpty { get { return (lorebookEntry.keys.Length == 0) && string.IsNullOrWhiteSpace(lorebookEntry.value); } }
@@ -62,6 +71,7 @@ namespace Ginger
 			textBox_Text.richTextBox.ControlAltEnterPressed += RichTextBox_ControlAltEnterPressed;
 			textBox_Text.richTextBox.syntaxFlags = RichTextBoxEx.SyntaxFlags.LoreText;
 			textBox_Text.TextSizeChanged += TextBox_TextSizeChanged;
+			textBox_Text.Resize += TextBox_Text_Resize;
 
 			textBox_Index.GotFocus += TextBox_Index_GotFocus;
 			textBox_Index.LostFocus += TextBox_Index_LostFocus;
@@ -72,6 +82,33 @@ namespace Ginger
 			SetTooltip(Resources.tooltip_move_up, btnMoveUp);
 			SetTooltip(Resources.tooltip_move_down, btnMoveDown);
 			SetTooltip(Resources.tooltip_remove_lore, btnRemove);
+			SetTooltip(Resources.tooltip_lore_order, textBox_Index, labelIndex);
+		}
+
+		private void TextBox_Text_Resize(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			RefreshLineWidth();
+		}
+
+		public void RefreshLineWidth()
+		{
+			var richTextBox = textBox_Text.richTextBox;
+			if (AppSettings.Settings.AutoBreakLine)
+			{
+				richTextBox.RightMargin = Math.Min((int)Math.Round(Constants.AutoWrapWidth * richTextBox.Font.SizeInPoints), Math.Max(richTextBox.Size.Width - 26, 0));
+				richTextBox.WordWrap = true;
+			}
+			else
+			{
+				richTextBox.RightMargin = Math.Max(richTextBox.Size.Width - 26, 0); // Account for scrollbar
+				richTextBox.WordWrap = true;
+			}
+
+			if (richTextBox.Multiline)
+				richTextBox.SetInnerMargins(3, 2, 2, 0);
 		}
 
 		private void RichTextBox_ControlAltEnterPressed(object sender, EventArgs e)
@@ -143,9 +180,10 @@ namespace Ginger
 			cbEnabled.Checked = lorebookEntry.isEnabled;
 		}
 
-		public void SetContent(Lorebook.Entry entry)
+		public void SetContent(Lorebook.Entry entry, Lorebook lorebook)
 		{
 			this.lorebookEntry = entry;
+			this.lorebook = lorebook;
 
 			_bIgnoreEvents = true;
 
@@ -197,7 +235,7 @@ namespace Ginger
 		private void Btn_Remove_MouseClick(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Left)
-				RemoveClicked?.Invoke(this, EventArgs.Empty);
+				OnRemove?.Invoke(this, EventArgs.Empty);
 		}
 
 		private void btnWrite_MouseClick(object sender, MouseEventArgs e)
@@ -319,32 +357,66 @@ namespace Ginger
 					CommitChange();
 					OnInsert?.Invoke(this, EventArgs.Empty);
 				}));
-				menu.Items.Add(new ToolStripMenuItem("Copy this entry", null, (s, e) => {
+				menu.Items.Add(new ToolStripMenuItem("Copy", null, (s, e) => {
 					CommitChange();
 					OnCopy?.Invoke(this, EventArgs.Empty);
 				}) {
 					Enabled = !isEmpty,
 				});
-				menu.Items.Add(new ToolStripMenuItem("Duplicate this entry", null, (s, e) => {
-					CommitChange();
-					OnDuplicate?.Invoke(this, EventArgs.Empty);
-				}) {
-					Enabled = !isEmpty,
-				});
-
 				menu.Items.Add(new ToolStripMenuItem("Paste", null, (s, e) => {
 					CommitChange();
 					OnPaste?.Invoke(this, EventArgs.Empty);
 				}) {
 					Enabled = Clipboard.ContainsData(LoreClipboard.Format),
 				});
-
+				menu.Items.Add(new ToolStripMenuItem("Duplicate", null, (s, e) => {
+					CommitChange();
+					OnDuplicate?.Invoke(this, EventArgs.Empty);
+				}) {
+					Enabled = !isEmpty,
+				});
 				menu.Items.Add(new ToolStripSeparator());
 
 				menu.Items.Add(new ToolStripMenuItem("Move up", null, (s, e) => { CommitChange(); OnMoveUp?.Invoke(this, e); }));
 				menu.Items.Add(new ToolStripMenuItem("Move down", null, (s, e) => { CommitChange(); OnMoveDown?.Invoke(this, e); }));
 				menu.Items.Add(new ToolStripMenuItem("Move to top", null, (s, e) => { CommitChange(); OnMoveToTop?.Invoke(this, e); }));
 				menu.Items.Add(new ToolStripMenuItem("Move to bottom", null, (s, e) => { CommitChange(); OnMoveToBottom?.Invoke(this, e); }));
+				menu.Items.Add(new ToolStripSeparator());
+
+				var sortMenu = new ToolStripMenuItem("Sort all entries");
+				sortMenu.DropDownItems.Add(new ToolStripMenuItem("By key", null, (s, e) => {
+					CommitChange(); 
+					OnSortEntries?.Invoke(this, new LorebookSortEventArgs() {
+						Sorting = Lorebook.Sorting.ByKey,
+					});
+				}) { Enabled = lorebook.entries.Count > 1 });
+				sortMenu.DropDownItems.Add(new ToolStripMenuItem("By order number", null, (s, e) => {
+					CommitChange(); 
+					OnSortEntries?.Invoke(this, new LorebookSortEventArgs() {
+						Sorting = Lorebook.Sorting.ByOrder,
+					});
+				}) { Enabled = lorebook.entries.Count > 1 });
+				sortMenu.DropDownItems.Add(new ToolStripMenuItem("By creation", null, (s, e) => {
+					CommitChange(); 
+					OnSortEntries?.Invoke(this, new LorebookSortEventArgs() {
+						Sorting = Lorebook.Sorting.ByIndex,
+					});
+				}) { Enabled = lorebook.entries.Count > 1 });
+				menu.Items.Add(sortMenu);
+
+
+
+				int numEntries = lorebook.entries.Count;
+				if (numEntries > AppSettings.Settings.LoreEntriesPerPage)
+				{
+					int pageIndex = lorebook.entries.IndexOf(lorebookEntry) / AppSettings.Settings.LoreEntriesPerPage;
+					menu.Items.Add(new ToolStripMenuItem("Next page", null, (s, e) => { CommitChange(); OnNextPage?.Invoke(this, e); }) {
+						Enabled = pageIndex < numEntries / AppSettings.Settings.LoreEntriesPerPage,
+					});
+					menu.Items.Add(new ToolStripMenuItem("Previous page", null, (s, e) => { CommitChange(); OnPreviousPage?.Invoke(this, e); }){
+						Enabled = pageIndex > 0,
+					});
+				}
 
 				menu.Show(sender as Control, new Point(args.X, args.Y));
 			}
@@ -515,6 +587,7 @@ namespace Ginger
 			if (AllowFlexibleHeight == false)
 				return;
 
+			_bIgnoreEvents = true;
 			float scaleFactor = this.Font.SizeInPoints / Constants.ReferenceFontSize;
 
 			int height = textBox_Text.TextSize.Height;
@@ -523,6 +596,9 @@ namespace Ginger
 
 			if (textBox_Text.Size.Height != height)
 			{
+				if (height <= (int)(203f * scaleFactor))
+					this.HideVerticalScrollbar();
+
 				textBox_Text.Size = new Size(textBox_Text.Size.Width, height);
 				textBox_Text.Invalidate(); // Repaint (to avoid border artifacts)
 
@@ -530,6 +606,7 @@ namespace Ginger
 
 				TextSizeChanged?.Invoke(this, EventArgs.Empty); // Notify parent the size has changed
 			}
+			_bIgnoreEvents = false;
 		}
 	}
 }

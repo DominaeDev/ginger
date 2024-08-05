@@ -650,4 +650,7 @@ Some data may be missing.</value>
   <data name="arrow_left" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\arrow_left.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="tooltip_lore_order" xml:space="preserve">
+    <value>Lore entries with lower order numbers are inserted into the context first.</value>
+  </data>
 </root>
