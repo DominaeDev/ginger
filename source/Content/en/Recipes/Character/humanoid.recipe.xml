@@ -140,7 +140,7 @@
 		The [thick-fur?large, fluffy|prominent] tail that curls down to [their] knees only emphasizes [their] inhumanity.
 	</Node>
 	<Node path="appearance/features" rule="ears and not (rodent or avian or reptile)">
-		[Their] [animal.lower] ears stand pert and alert [primary-color and secondary-color?, with a [thick-fur?fluffy] {secondary-color.lower} interior and [thick-fur?fluffy] {primary-color.lower} exterior.]
+		[Their] [animal.lower] ears stand pert and alert [primary-color and secondary-color?, with a [thick-fur?fluffy] {secondary-color.lower} interior and [thick-fur?fluffy] {primary-color.lower} exterior].
 	</Node>
 	<Node path="appearance/features" rule="ears and rodent">
 		[Their] [animal.lower] ears are big, round, and pink.

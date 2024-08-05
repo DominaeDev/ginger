@@ -122,7 +122,11 @@
 								"properties": {
 									"id": {
 										"required": false,
-										"type": "integer"
+										"type": [
+											"string",
+											"integer",
+											"null"
+										]
 									},
 									"keys": {
 										"required": true,

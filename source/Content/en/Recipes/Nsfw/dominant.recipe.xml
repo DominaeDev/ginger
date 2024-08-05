@@ -1,5 +1,6 @@
-﻿<Ginger version="1.0">
-	<Name>Personality/Dominant</Name>
+﻿<Ginger id="dominant" version="1.0">
+	<Name>Personality/Domineering</Name>
+	<Title>Domineering</Title>
 	<Description>The character has dominant personality.</Description>
 	<Author>Ginger</Author>
 	<Category>Personality</Category>

@@ -1008,13 +1008,25 @@ namespace Ginger
 			if (string.IsNullOrEmpty(text))
 				return;
 
-			if (text.IndexOfAny(new char[] { '\u201C', '\u201D', '\u201E', '\u201F' }) != -1)
+			if (text.IndexOfAny(new char[] { '\u201C', '\u201D', '\u201E', '\u201F', '\u2019', '\u2032' }) != -1)
 			{
 				StringBuilder sb = new StringBuilder(text);
 				sb.Replace('\u201C', '"');
 				sb.Replace('\u201D', '"');
 				sb.Replace('\u201E', '"');
 				sb.Replace('\u201F', '"');
+
+				// Replace single quotation mark / prime used as apostrophes
+				sb.Replace("n\u2019t", "n't");
+				sb.Replace("n\u2032t", "n't");
+				sb.Replace("\u2019s", "'s");
+				sb.Replace("\u2032s", "'s");
+				sb.Replace("\u2019d", "'d");
+				sb.Replace("\u2032d", "'d");
+				sb.Replace("\u2019ve", "'ve");
+				sb.Replace("\u2032ve", "'ve");
+
+
 				text = sb.ToString();
 			}
 		}

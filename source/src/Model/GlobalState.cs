@@ -477,11 +477,6 @@ namespace Ginger
 				(loreBookRecipe.parameters[0] as LorebookParameter).value = loreBook;
 			}
 
-			IsDirty = false;
-			IsFileDirty = false;
-			Filename = null;
-			OnLoadCharacter?.Invoke(null, EventArgs.Empty);
-
 			return true;
 		}
 
@@ -512,11 +507,6 @@ namespace Ginger
 
 			if (string.IsNullOrEmpty(card.example) == false)
 				AddChannel(GingerString.FromTavernChat(card.example).ToParameter(), Resources.example_recipe);
-
-			IsDirty = false;
-			IsFileDirty = false;
-			Filename = null;
-			OnLoadCharacter?.Invoke(null, EventArgs.Empty);
 
 			return true;
 		}

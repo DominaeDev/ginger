@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -485,7 +486,7 @@ namespace Ginger
 
 				int entryId = index + 1;
 				var copy = new TavernCardV3.CharacterBook.Entry() {
-					id = entryId,
+					id = entryId.ToString(CultureInfo.InvariantCulture),
 					keys = loreEntry.keys,
 					name = loreEntry.key,
 					content = GingerString.FromString(loreEntry.value).ToTavern(),

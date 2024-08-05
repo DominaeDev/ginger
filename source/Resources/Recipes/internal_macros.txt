@@ -4,17 +4,15 @@
 	<Macro id="everyone">[!list:[user];[char];[actors]]</Macro>
 	<Wrapper id="abbr">[noparse]_[parse][nocap]</Wrapper>
 	<Wrapper id="raw">[noparse]_[parse]</Wrapper>
-	<Wrapper id="property-label">_:[sp]</Wrapper>
 	<Macro id="the">[..the?|the]</Macro>
 	<Wrapper id="__attrib, attrib">_:[sp]</Wrapper>
 
-
 	<!-- Chat style -->
-	<Rule id="is-faraday">__faraday or __backyard</Rule>
+	<Rule id="is-faraday, is-backyard">__faraday or __backyard</Rule>
 	<Wrapper id="dialogue, dialog">[@dialogue-symbol-open]_[@dialogue-symbol-close]</Wrapper>
 	<Wrapper id="action, narrate, narration">[@action-symbol-open]_[@action-symbol-close]</Wrapper>
-	<Wrapper id="chat">[is-faraday?#][char]: [!dialogue:_]</Wrapper>
-	<Wrapper id="#chat">[is-faraday?#][user]: [!dialogue:_]</Wrapper>
+	<Wrapper id="chat">[__faraday or __backyard?#][char]: [!dialogue:_]</Wrapper>
+	<Wrapper id="#chat">[__faraday or __backyard?#][user]: [!dialogue:_]</Wrapper>
 
 	<String id="dialogue-symbol-open">
 		<String rule="__style-quotes" priority="1">&quot;</String>

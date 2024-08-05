@@ -6,6 +6,7 @@ using Newtonsoft.Json.Schema;
 using Ginger.Properties;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Globalization;
 
 namespace Ginger
 {
@@ -142,7 +143,7 @@ namespace Ginger
 			public class Entry
 			{
 				[JsonProperty("id")]
-				public int id;
+				public string id;
 
 				[JsonProperty("keys")]
 				public string[] keys;
@@ -238,7 +239,7 @@ namespace Ginger
 					cardV2.data.character_book.entries.Select(e => {
 						string[] keys = e.keys;
 						var entry = new TavernCardV3.CharacterBook.Entry() {
-							id = e.id,
+							id = e.id.ToString(CultureInfo.InvariantCulture),
 							comment = keys.Length > 0 ? keys[0] : "",
 							keys = keys,
 							content = e.content,
@@ -334,7 +335,7 @@ namespace Ginger
 						.ToArray();
 
 				for (int i = 0; i < card.data.character_book.entries.Length; ++i)
-					card.data.character_book.entries[i].id = i + 1;
+					card.data.character_book.entries[i].id = (i + 1).ToString(CultureInfo.InvariantCulture);
 			}
 			else
 				card.data.character_book = null;
