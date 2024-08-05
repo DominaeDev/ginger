@@ -390,7 +390,7 @@ namespace Ginger
 						Sorting = Lorebook.Sorting.ByKey,
 					});
 				}) { Enabled = lorebook.entries.Count > 1 });
-				sortMenu.DropDownItems.Add(new ToolStripMenuItem("By order number", null, (s, e) => {
+				sortMenu.DropDownItems.Add(new ToolStripMenuItem("By order", null, (s, e) => {
 					CommitChange(); 
 					OnSortEntries?.Invoke(this, new LorebookSortEventArgs() {
 						Sorting = Lorebook.Sorting.ByOrder,

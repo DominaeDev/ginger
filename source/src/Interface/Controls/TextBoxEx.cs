@@ -404,5 +404,13 @@ namespace Ginger
 		{
 			return ControlExtensions.Find(this, match, matchCase, matchWord, reverse, startIndex);
 		}
+
+		public TextBoxBase SearchableControl { get { return this; } }
+
+		public void FocusAndSelect(int start, int length)
+		{
+			Focus();
+			Select(start, length);
+		}
 	}
 }

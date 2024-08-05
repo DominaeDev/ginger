@@ -1719,7 +1719,7 @@ namespace Ginger
 					if (replacements > 0)
 					{
 						Undo.Push(Undo.Kind.Parameter, "Replace text");
-						recipeList.RefreshAllParameters(); //!
+						recipeList.RefreshAllParameters();
 					}
 
 					if (replacements == 1)

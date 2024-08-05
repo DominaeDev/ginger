@@ -1008,7 +1008,7 @@ namespace Ginger
 			{
 				list.AddRange(x.controls.Select(c => new Searchable() {
 					panel = x.container,
-					control = c,
+					instance = c,
 				}));
 			}
 			return list.ToArray();

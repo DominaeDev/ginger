@@ -1557,5 +1557,13 @@ namespace Ginger
 			IntPtr ptrLparam = new IntPtr(0);
 			SendMessage(handle, WM_VSCROLL, ptrWparam, ptrLparam);
 		}
+
+		public TextBoxBase SearchableControl { get { return this; } }
+
+		public void FocusAndSelect(int start, int length)
+		{
+			Focus();
+			Select(start, length);
+		}
 	}
 }

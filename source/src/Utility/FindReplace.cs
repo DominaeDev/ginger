@@ -96,8 +96,18 @@ namespace Ginger
 				{
 					foreach (var entry in recipe.parameters.OfType<LorebookParameter>().SelectMany(p => p.value.entries))
 					{
-						string value = entry.value;
+						// Key
+						string value = entry.key;
 						int n = Replace(ref value, word, replacement, bWholeWord, bIgnoreCase);
+						if (n > 0) 
+						{
+							entry.key = value;
+							replacements += n;
+						}
+
+						// Value
+						value = entry.value;
+						n = Replace(ref value, word, replacement, bWholeWord, bIgnoreCase);
 						if (n > 0) 
 						{
 							entry.value = value;

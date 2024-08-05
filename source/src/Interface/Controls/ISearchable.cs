@@ -1,11 +1,13 @@
-﻿namespace Ginger
+﻿using System.Windows.Forms;
+
+namespace Ginger
 {
 	public interface ISearchable
 	{
-		int Find(string match, bool matchCase, bool matchWord, bool reverse, int startIndex = -1);
-		int SelectionStart { get; }
-		void Select(int start, int length);
+		TextBoxBase SearchableControl { get; }
 		bool Enabled { get; }
+		int Find(string match, bool matchCase, bool matchWord, bool reverse, int startIndex = -1);
+		void FocusAndSelect(int start, int length);
 	}
 
 	public interface ISearchableContainer
@@ -17,6 +19,6 @@
 	public struct Searchable 
 	{
 		public RecipePanel panel;
-		public ISearchable control;
+		public ISearchable instance;
 	}
 }

@@ -277,14 +277,6 @@ namespace Ginger
 				_entryPanels[i].RefreshTokenCount();
 		}
 
-		public ISearchable[] GetSearchables()
-		{
-			return _entryPanels.SelectMany(p => new ISearchable[] {
-				p.textBox_Keys.richTextBox,
-				p.textBox_Text.richTextBox,
-			}).ToArray();
-		}
-
 		private void OnCopyAll(object sender, EventArgs e)
 		{
 			OnCopy(null, e);
@@ -575,6 +567,110 @@ namespace Ginger
 
 			RefreshLayout();
 			ResizeCenterPanel();
+		}
+
+		public LorebookEntryPanel GetEntryPanel(Lorebook.Entry entry)
+		{
+			return _entryPanels.FirstOrDefault(e => e.lorebookEntry == entry);
+		}
+
+		public ISearchable[] GetSearchables()
+		{
+			var searchables = new List<LorebookSearchable>();
+			for (int i = 0; i < lorebook.entries.Count; ++i)
+			{
+				var entry = lorebook.entries[i];
+				var panel = GetEntryPanel(entry);
+
+				// Key
+				searchables.Add(new LorebookSearchable() {
+					panel = this,
+					entry = entry,
+					valueType = LorebookSearchable.ValueType.Key,
+					text = entry.key,
+					SearchableControl = panel != null ? panel.textBox_Keys.richTextBox : null,
+					Enabled = entry.isEnabled,
+				});
+
+				// Value
+				searchables.Add(new LorebookSearchable() {
+					panel = this,
+					entry = entry,
+					valueType = LorebookSearchable.ValueType.Value,
+					text = entry.value,
+					SearchableControl = panel != null ? panel.textBox_Text.richTextBox : null,
+					Enabled = entry.isEnabled,
+				});
+			}
+
+			return searchables.ToArray();
+		}
+
+	}
+
+	public class LorebookSearchable : ISearchable
+	{
+		public LoreBookParameterPanel panel;
+		public Lorebook.Entry entry;
+		public string text;
+		
+		public enum ValueType { Key, Value }
+		public ValueType valueType;
+
+		public TextBoxBase SearchableControl { get; set; }
+		public bool Enabled { get; set; }
+
+		public int Find(string match, bool matchCase, bool matchWord, bool reverse, int startIndex = -1)
+		{
+			if (reverse == false)
+			{
+				if (startIndex >= 0)
+					startIndex = Math.Min(startIndex, text.Length);
+				else
+					startIndex = 0;
+
+				if (matchWord)
+					return Utility.FindWholeWord(text, match, startIndex, !matchCase);
+				else
+					return text.IndexOf(match, startIndex, matchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
+			}
+			else
+			{
+				if (startIndex >= 0)
+					startIndex = Math.Min(startIndex, text.Length);
+
+				if (matchWord)
+					return Utility.FindWholeWordReverse(text, match, startIndex, !matchCase);
+				else
+					return text.IndexOfReverse(match, startIndex, !matchCase);
+			}
+		}
+
+		public void FocusAndSelect(int start, int length)
+		{
+			var lorebook = panel.lorebook;
+			int index = lorebook.entries.IndexOf(entry);
+			if (index == -1)
+				return;
+
+			int page = index / AppSettings.Settings.LoreEntriesPerPage;
+			if (page != (panel.GetParameter() as LorebookParameter).pageIndex)
+				panel.ChangePage(page);
+
+			var entryPanel = panel.GetEntryPanel(entry);
+			if (entryPanel == null)
+				return;
+
+			if (valueType == ValueType.Key)
+			{
+				entryPanel.textBox_Keys.Focus();
+				entryPanel.textBox_Keys.Select(start, length);
+			}
+			else if (valueType == ValueType.Value)
+			{
+				entryPanel.textBox_Text.Focus();
+				entryPanel.textBox_Text.Select(start, length);
+			}
 		}
 	}
 }

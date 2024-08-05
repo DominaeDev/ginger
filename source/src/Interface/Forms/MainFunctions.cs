@@ -1173,7 +1173,7 @@ namespace Ginger
 			if (tabControl.SelectedIndex != 0)
 				tabControl.SelectedIndex = 0;
 
-			IEnumerable<Searchable> lsSearchables = recipeList.GetSearchables().Where(s => s.control.Enabled);
+			IEnumerable<Searchable> lsSearchables = recipeList.GetSearchables().Where(s => s.instance.Enabled);
 			if (e.reverse)
 				lsSearchables = lsSearchables.Reverse();
 
@@ -1186,15 +1186,16 @@ namespace Ginger
 				return;
 			}
 
-			TextBoxBase focused = GetFocusedControl() as TextBoxBase;
 			int offset = 0;
+			int idxFocused = 0;
 
-			int idxFocused = Array.FindIndex(searchables, s => s.control == focused);
-			if (idxFocused == -1)
-				idxFocused = 0;
-
+			TextBoxBase focused = GetFocusedControl() as TextBoxBase;
 			if (focused != null)
 			{
+				idxFocused = Array.FindIndex(searchables, s => s.instance.SearchableControl == focused);
+				if (idxFocused == -1)
+					idxFocused = 0;
+
 				if (focused.SelectionStart >= 0 && focused.Text.Length >= focused.SelectionStart + e.match.Length)
 				{
 					var selectedText = focused.Text.Substring(focused.SelectionStart, e.match.Length);
@@ -1218,7 +1219,7 @@ namespace Ginger
 			{
 				int index = (idxFocused + i) % searchables.Length;
 				var searchable = searchables[index];
-				int find = searchable.control.Find(e.match, e.matchCase, e.wholeWord, e.reverse, i == 0 ? offset : -1);
+				int find = searchable.instance.Find(e.match, e.matchCase, e.wholeWord, e.reverse, i == 0 ? offset : -1);
 				if (find != -1)
 				{
 					if (searchable.panel.Collapsed && searchable.panel.CanExpand)
@@ -1227,8 +1228,8 @@ namespace Ginger
 						recipeList.RefreshLayout();
 						recipeList.ScrollToPanel(searchable.panel);
 					}
-					searchable.control.Select(find, e.match.Length);
-					(searchable.control as Control).Focus();
+
+					searchable.instance.FocusAndSelect(find, e.match.Length);
 					return; // Success
 				}
 			}

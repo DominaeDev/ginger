@@ -407,7 +407,7 @@ namespace Ginger
 					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By key", null, (s, e) => {
 						lorebookPanel.Sort(Lorebook.Sorting.ByKey);
 					}) { Enabled = !isEmpty });
-					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By order number", null, (s, e) => {
+					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By order", null, (s, e) => {
 						lorebookPanel.Sort(Lorebook.Sorting.ByOrder);
 					}) { Enabled = !isEmpty });
 					sortMenu.DropDownItems.Add(new ToolStripMenuItem("By creation", null, (s, e) => {

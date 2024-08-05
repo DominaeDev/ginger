@@ -133,7 +133,7 @@ namespace Ginger
 
 			int index;
 			int length = match.Length;
-			if (startIndex < 0)
+			if (startIndex < 0 || startIndex >= text.Length)
 				startIndex = text.Length - match.Length;
 
 			int maxLength = text.Length;
@@ -144,7 +144,7 @@ namespace Ginger
 			else
 				fnComp = (a, b) => a == b;
 
-			for (int i = startIndex; i >= 0; --i)
+			for (int i = startIndex; i >= 0 && i < text.Length; --i)
 			{
 				if (fnComp(text[i], match[0]))
 				{
