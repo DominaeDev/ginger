@@ -23,7 +23,7 @@ namespace Ginger
 			public static string Locale = Locales.DefaultLocale;
 			public static bool EnableFormLevelBuffering = true;
 
-			public static int LoreEntriesPerPage { get { return 5;/* _loreEntriesPerPage > 0 ? Math.Max(_loreEntriesPerPage, 10) : int.MaxValue;*/ } }
+			public static int LoreEntriesPerPage { get { return _loreEntriesPerPage > 0 ? Math.Max(_loreEntriesPerPage, 10) : int.MaxValue; } }
 			public static string LoreEntriesPerPageSerialize
 			{
 				get { return _loreEntriesPerPage.ToString(CultureInfo.InvariantCulture); }
