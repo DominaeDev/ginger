@@ -1,6 +1,6 @@
 ﻿<Ginger id="__attribute" version="1.0">
-	<Name>Other/Add attribute</Name>
-	<Title>Attribute</Title>
+	<Name>Other/Custom attribute</Name>
+	<Title>Custom attribute</Title>
 	<Description>Add a custom character attribute</Description>
 	<Order>3</Order>
 	<Color>#fefefe</Color>

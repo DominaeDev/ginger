@@ -45,7 +45,7 @@ namespace Ginger
 
 				// Parameters
 				foreach (var parameter in recipe.parameters)
-					parameter.SaveValueToXml(instanceNode, true);
+					parameter.SaveValueToXml(instanceNode);
 			}
 
 			StringBuilder sbXml = new StringBuilder();
@@ -144,7 +144,7 @@ namespace Ginger
 					StringHandle parameterID = parameterNode.GetAttribute("id", null);
 					var parameter = recipe.parameters.Find(p => p.id == parameterID);
 					if (parameter != null)
-						parameter.LoadValueFromXml(parameterNode, true);
+						parameter.LoadValueFromXml(parameterNode, Utility.FirstNonEmpty(Current.MainCharacter.spokenName, Constants.DefaultCharacterName), Current.Card.userPlaceholder);
 					parameterNode = parameterNode.GetNextSibling();
 				}
 

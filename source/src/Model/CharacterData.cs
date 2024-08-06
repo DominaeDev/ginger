@@ -22,7 +22,7 @@ namespace Ginger
 
 		public string namePlaceholder
 		{
-			get { return string.IsNullOrWhiteSpace(spokenName) ? Constants.DefaultName : spokenName.Trim(); }
+			get { return string.IsNullOrWhiteSpace(spokenName) ? Constants.DefaultCharacterName : spokenName.Trim(); }
 		}
 
 		public string _spokenName = null;
@@ -51,8 +51,8 @@ namespace Ginger
 		{
 			Context context = Context.CreateEmpty();
 			// Name(s)
-			context.SetValue("card", Utility.FirstNonEmpty(Current.Card.name, Current.Name, Constants.DefaultName));
-			context.SetValue("name", Utility.FirstNonEmpty(this.spokenName, Current.Card.name, Constants.DefaultName));
+			context.SetValue("card", Utility.FirstNonEmpty(Current.Card.name, Current.Name, Constants.DefaultCharacterName));
+			context.SetValue("name", Utility.FirstNonEmpty(this.spokenName, Current.Card.name, Constants.DefaultCharacterName));
 			context.SetValue("#name", GingerString.InternalUserMarker);
 			context.SetValue("names", 
 				string.Join(Text.Delimiter,

@@ -83,43 +83,42 @@ namespace Ginger
 
 		public static string ToClipboard(string value)
 		{
-			StringBuilder sb = new StringBuilder(value);
-
-			Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, "__CCCC__", true);
-			Utility.ReplaceWholeWord(sb, GingerString.UserMarker, "__UUUU__", true);
-
 			if (AppSettings.Settings.AutoConvertNames)
 			{
+				StringBuilder sb = new StringBuilder(value);
+
+				Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, "__CCCC__", true);
+				Utility.ReplaceWholeWord(sb, GingerString.UserMarker, "__UUUU__", true);
+
 				string userPlaceholder = (Current.Card.userPlaceholder ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
 					Utility.ReplaceWholeWord(sb, userPlaceholder, "__UUUU__", false);
 				string characterPlaceholder = (Current.Character.namePlaceholder ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
 					Utility.ReplaceWholeWord(sb, characterPlaceholder, "__CCCC__", false);
+
+				sb.Replace("__CCCC__", GingerString.CharacterMarker);
+				sb.Replace("__UUUU__", GingerString.UserMarker);
+				return sb.ToString();
 			}
-
-			sb.Replace("__CCCC__", GingerString.CharacterMarker);
-			sb.Replace("__UUUU__", GingerString.UserMarker);
-
-			return sb.ToString();
+			return value;
 		}
 
-		public static string FromClipboard(string value)
+		public static string FromClipboard(string value, string characterName, string userName)
 		{
-			StringBuilder sb = new StringBuilder(value);
-
 			if (AppSettings.Settings.AutoConvertNames)
 			{
-				string userPlaceholder = (Current.Card.userPlaceholder ?? "").Trim();
-				string characterPlaceholder = (Current.MainCharacter.spokenName ?? "").Trim();
+				StringBuilder sb = new StringBuilder(value);
+				string characterPlaceholder = (characterName ?? "").Trim();
+				string userPlaceholder = (userName ?? "").Trim();
 
 				if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
 					sb.Replace(GingerString.CharacterMarker, characterPlaceholder);
 				if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
 					sb.Replace(GingerString.UserMarker, userPlaceholder);
+				return sb.ToString();
 			}
-
-			return sb.ToString();
+			return value;
 		}
 	}
 
@@ -306,7 +305,7 @@ namespace Ginger
 
 	public static class ParameterExtensions
 	{
-		public static bool LoadValueFromXml(this IParameter parameter, XmlNode parameterNode, bool bLoadFromClipboard = false)
+		public static bool LoadValueFromXml(this IParameter parameter, XmlNode parameterNode, string characterName, string userName)
 		{
 			if (parameter is SetFlagParameter || parameter is SetVarParameter || parameter is HintParameter)
 				return false;
@@ -317,7 +316,7 @@ namespace Ginger
 			if (parameter is BaseParameter<string>)
 			{
 				var textParameter = parameter as BaseParameter<string>;
-				textParameter.Set(bLoadFromClipboard ? Parameter.FromClipboard(defaultValue) : defaultValue);
+				textParameter.Set(Parameter.FromClipboard(defaultValue, characterName, userName));
 				textParameter.isEnabled = isEnabled;
 				return true;
 			}
@@ -345,7 +344,7 @@ namespace Ginger
 			else if (parameter is BaseParameter<Lorebook>)
 			{
 				var lorebookParameter = parameter as BaseParameter<Lorebook>;
-				lorebookParameter.value.LoadFromXml(parameterNode, bLoadFromClipboard);
+				lorebookParameter.value.LoadFromXml(parameterNode, characterName, userName);
 				lorebookParameter.isEnabled = isEnabled;
 				return true;
 			}
@@ -353,7 +352,7 @@ namespace Ginger
 			return false;
 		}
 
-		public static XmlNode SaveValueToXml(this IParameter parameter, XmlNode xmlNode, bool bSaveToClipboard = false)
+		public static XmlNode SaveValueToXml(this IParameter parameter, XmlNode xmlNode)
 		{
 			string value = null;
 			if (parameter is SetFlagParameter || parameter is SetVarParameter || parameter is EraseParameter || parameter is HintParameter)
@@ -369,14 +368,14 @@ namespace Ginger
 					if (!string.IsNullOrEmpty(textParameter.value))
 					{
 						cdata = textParameter.mode == TextParameter.Mode.Code || textParameter.isRaw;
-						value = (bSaveToClipboard && textParameter.isRaw == false) ? Parameter.ToClipboard(textParameter.value) : textParameter.value;
+						value = textParameter.isRaw == false ? Parameter.ToClipboard(textParameter.value) : textParameter.value;
 					}
 				}
 				else
 				{
 					var stringParameter = parameter as BaseParameter<string>;
 					if (!string.IsNullOrEmpty(stringParameter.value) && stringParameter.value != stringParameter.GetDefaultValue())
-						value = bSaveToClipboard ? Parameter.ToClipboard(stringParameter.value) : stringParameter.value;
+						value = Parameter.ToClipboard(stringParameter.value);
 				}
 			}
 			else if (parameter is BaseParameter<bool>)
@@ -406,7 +405,7 @@ namespace Ginger
 				if (parameter.isEnabled == false)
 					parameterNode.AddAttribute("enabled", false);
 
-				lorebookParameter.value.SaveToXml(parameterNode, bSaveToClipboard);
+				lorebookParameter.value.SaveToXml(parameterNode);
 				return parameterNode;
 			}
 

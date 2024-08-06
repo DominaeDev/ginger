@@ -25,4 +25,8 @@
 	
 	<Name>__internal</Name>
 	<Flags>__nobake, __internal, __hidden</Flags>
+	<SetVar id="__version">1.1.0</SetVar>
+	<SetVar id="__version_major">1</SetVar>
+	<SetVar id="__version_minor">1</SetVar>
+	<SetVar id="__version_build">0</SetVar>
 </Ginger>

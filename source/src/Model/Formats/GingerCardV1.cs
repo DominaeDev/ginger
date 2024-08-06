@@ -90,7 +90,7 @@ namespace Ginger
 				else if (string.IsNullOrWhiteSpace(name) == false)
 					characterNamePlaceholder = name;
 				else
-					characterNamePlaceholder = Constants.DefaultName;
+					characterNamePlaceholder = Constants.DefaultCharacterName;
 
 				var characterRecipesNode = characterNode.GetFirstElement("Recipes");
 				if (characterRecipesNode != null)
@@ -154,7 +154,7 @@ namespace Ginger
 							else
 								parameter = recipe.parameters.Find(p => p.id == parameterID);
 							if (parameter != null)
-								parameter.LoadValueFromXml(parameterNode, false);
+								parameter.LoadValueFromXml(parameterNode, Utility.FirstNonEmpty(characters[0].spokenName, name, Constants.DefaultCharacterName), Current.Card.userPlaceholder);
 
 							++parameterIndex;
 							parameterNode = parameterNode.GetNextSibling();

@@ -28,8 +28,8 @@ namespace Ginger
 
 		public static bool IsLoading = false;
 
-		public static string CardName { get { return Utility.FirstNonEmpty(Card.name, MainCharacter.spokenName, Constants.DefaultName); } }
-		public static string Name { get { return Utility.FirstNonEmpty(Character.spokenName, Card.name, Constants.DefaultName); } }
+		public static string CardName { get { return Utility.FirstNonEmpty(Card.name, MainCharacter.spokenName, Constants.DefaultCharacterName); } }
+		public static string Name { get { return Utility.FirstNonEmpty(Character.spokenName, Card.name, Constants.DefaultCharacterName); } }
 
 		public static int SelectedCharacter { get; set; }
 
@@ -307,6 +307,7 @@ namespace Ginger
 			AddChannel(GingerString.FromFaraday(card.data.scenario).ToParameter(), Resources.scenario_recipe);
 			AddChannel(GingerString.FromFaraday(card.data.greeting).ToParameter(), Resources.greeting_recipe);
 			AddChannel(GingerString.FromFaraday(card.data.example).ToParameter(), Resources.example_recipe);
+			AddChannel(card.data.grammar, Resources.grammar_recipe);
 
 			if (card.data.loreItems != null && card.data.loreItems.Length > 0)
 			{

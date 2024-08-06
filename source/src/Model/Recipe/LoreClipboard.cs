@@ -102,7 +102,8 @@ namespace Ginger
 					int sortOrder = entryNode.GetAttributeInt("order", Lorebook.Entry.DefaultSortOrder);
 					var entry = new Lorebook.Entry() {
 						key = key,
-						value = Parameter.FromClipboard(value),
+						value = Parameter.FromClipboard(value, Current.Name, Current.Card.userPlaceholder),
+						sortOrder = sortOrder,
 						isEnabled = isEnabled,
 					};
 

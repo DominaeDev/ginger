@@ -74,10 +74,10 @@ namespace Ginger
 			textBox_characterName.Text = Current.Card.name;
 			textBox_characterName.InitUndo();
 			textBox_characterName.Enabled = Current.SelectedCharacter == 0;
-			textBox_characterName.Placeholder = Utility.FirstNonEmpty(Current.Character._spokenName, Constants.DefaultName);
+			textBox_characterName.Placeholder = Utility.FirstNonEmpty(Current.Character._spokenName, Constants.DefaultCharacterName);
 
 			textBox_characterSpokenName.Text = Current.Character._spokenName;
-			textBox_characterSpokenName.Placeholder = Utility.FirstNonEmpty(Current.Card.name, Constants.DefaultName);
+			textBox_characterSpokenName.Placeholder = Utility.FirstNonEmpty(Current.Card.name, Constants.DefaultCharacterName);
 			textBox_characterSpokenName.InitUndo();
 			textBox_userPlaceholder.Text = Current.Card._userPlaceholder;
 			textBox_userPlaceholder.InitUndo();
@@ -446,7 +446,7 @@ namespace Ginger
 				Current.Card.name = CardName;
 				Current.IsDirty = true;
 			}
-			textBox_characterSpokenName.Placeholder = Utility.FirstNonEmpty(CardName, Constants.DefaultName);
+			textBox_characterSpokenName.Placeholder = Utility.FirstNonEmpty(CardName, Constants.DefaultCharacterName);
 		}
 
 		private void TextBox_characterSpokenName_TextChanged(object sender, EventArgs e)
@@ -458,7 +458,7 @@ namespace Ginger
 			textBox_characterSpokenName.Text = textBox_characterSpokenName.Text;
 			textBox_characterSpokenName.SelectionStart = cursorPos;
 
-			textBox_characterName.Placeholder = Utility.FirstNonEmpty(SpokenName, Constants.DefaultName);
+			textBox_characterName.Placeholder = Utility.FirstNonEmpty(SpokenName, Constants.DefaultCharacterName);
 		}
 
 		private void PortraitImage_MouseClick(object sender, MouseEventArgs args)

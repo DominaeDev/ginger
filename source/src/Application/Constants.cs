@@ -121,7 +121,8 @@ namespace Ginger
 			public static readonly string ToggleFormatting = "__formatting";
 		}
 
-		public static readonly string DefaultName = "Unnamed";
+		public static readonly string DefaultCharacterName = "Unnamed";
+		public static readonly string DefaultUserName = "User";
 		public static readonly float AutoWrapWidth = 54;
 
 		public static readonly string DefaultFontFace = "Segoe UI";

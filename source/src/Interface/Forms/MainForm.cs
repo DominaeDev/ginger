@@ -1251,7 +1251,7 @@ namespace Ginger
 			// Secondary characters
 			for (int i = 1; i < Current.Characters.Count; ++i)
 			{
-				string subName = Utility.FirstNonEmpty(Current.Characters[i].spokenName, Constants.DefaultName);
+				string subName = Utility.FirstNonEmpty(Current.Characters[i].spokenName, Constants.DefaultCharacterName);
 
 				var menuItem = new ToolStripMenuItem() {
 					Text = subName,
@@ -1593,7 +1593,7 @@ namespace Ginger
 			recipeList.RecreatePanels();
 			sidePanel.RefreshValues();
 			RefreshTitle();
-			sidePanel.SetSpokenName(Constants.DefaultName);
+			sidePanel.SetSpokenName(Constants.DefaultCharacterName);
 
 			Undo.Push(Undo.Kind.RecipeList, "Add actor");
 		}
@@ -1736,7 +1736,7 @@ namespace Ginger
 			AppSettings.Settings.AutoConvertNames = bEnabled;
 			Current.IsDirty = true;
 
-			if (!bEnabled)
+			if (bEnabled == false && Current.AllRecipes.IsEmpty() == false)
 			{
 				var mr = MessageBox.Show("Replace names with placeholders?", Resources.cap_confirm, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
 				if (mr == DialogResult.Yes)

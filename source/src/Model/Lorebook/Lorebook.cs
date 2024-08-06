@@ -611,7 +611,7 @@ namespace Ginger
 			return clone;
 		}
 
-		public bool LoadFromXml(XmlNode xmlNode, bool bLoadFromClipboard)
+		public bool LoadFromXml(XmlNode xmlNode, string characterName, string userName)
 		{
 			name = xmlNode.GetValueElement("Name");
 			description = xmlNode.GetValueElement("Description");
@@ -631,7 +631,7 @@ namespace Ginger
 
 					var entry = new Entry() {
 						key = key,
-						value = bLoadFromClipboard ? Parameter.FromClipboard(value) : value,
+						value = Parameter.FromClipboard(value, characterName, userName),
 						sortOrder = order,
 						addition_index = addition_index,
 						isEnabled = isEnabled,
@@ -672,7 +672,7 @@ namespace Ginger
 			return true;
 		}
 
-		public void SaveToXml(XmlNode xmlNode, bool bSaveToClipboard)
+		public void SaveToXml(XmlNode xmlNode)
 		{
 			if (string.IsNullOrEmpty(name) == false)
 				xmlNode.AddValueElement("Name", name);
@@ -684,7 +684,7 @@ namespace Ginger
 			{
 				var entryNode = entriesNode.AddElement("Entry");
 				entryNode.AddValueElement("Name", entry.key);
-				entryNode.AddValueElement("Value", bSaveToClipboard ? Parameter.ToClipboard(entry.value) : entry.value);
+				entryNode.AddValueElement("Value", Parameter.ToClipboard(entry.value));
 				if (entry.isEnabled == false)
 					entryNode.AddAttribute("enabled", false);
 				entryNode.AddAttribute("order", entry.sortOrder);

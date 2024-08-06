@@ -1045,7 +1045,7 @@ namespace Ginger
 
 		private bool SaveAs()
 		{
-			string filename = string.Concat(Utility.FirstNonEmpty(Current.Card.name, Current.Character.spokenName, Constants.DefaultName), ".png");
+			string filename = string.Concat(Utility.FirstNonEmpty(Current.Card.name, Current.Character.spokenName, Constants.DefaultCharacterName), ".png");
 
 			// Save as...
 			saveFileDialog.Filter = "Ginger Character Card|*.png";

@@ -27,7 +27,7 @@ namespace Ginger
 
 		public string userPlaceholder
 		{
-			get { return string.IsNullOrWhiteSpace(_userPlaceholder) ? "User" : _userPlaceholder.Trim() ?? ""; }
+			get { return string.IsNullOrWhiteSpace(_userPlaceholder) ? Constants.DefaultUserName : _userPlaceholder.Trim() ?? ""; }
 			set { _userPlaceholder = value; }
 		}
 
