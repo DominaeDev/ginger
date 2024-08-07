@@ -243,6 +243,7 @@ namespace Ginger
 
 			Reset();
 			Card = new CardData() {
+				id = card.id,
 				name = card.name,
 				creator = card.creator,
 				comment = card.comment,
@@ -252,6 +253,7 @@ namespace Ginger
 				creationDate = card.creationDate,
 				detailLevel = EnumHelper.FromInt(card.detailLevel, CardData.DetailLevel.Normal),
 				textStyle = EnumHelper.FromInt(card.textStyle, CardData.TextStyle.None),
+				extraFlags = EnumHelper.FromInt(card.flags, CardData.Flag.None),
 				lastTokenCounts = card.tokens ?? new int[] { 0, 0, 0 },
 			};
 

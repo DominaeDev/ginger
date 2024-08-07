@@ -1,6 +1,7 @@
 ﻿using Ginger.Properties;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Ginger
@@ -55,6 +56,7 @@ namespace Ginger
 			SetToolTip(Resources.tooltip_text_style, label_textStyle, comboBox_textStyle);
 			SetToolTip(Resources.tooltip_tokens, label_Tokens_Value);
 			SetToolTip(Resources.tooltip_tokens_permanent, label_Tokens_Permanent_Value);
+			SetToolTip(Resources.tooltip_misc_settings, label_More, btn_More);
 
 			SetToolTip(Resources.tooltip_creator, label_creator, textBox_creator);
 			SetToolTip(Resources.tooltip_version, label_version, textBox_version);
@@ -726,5 +728,38 @@ namespace Ginger
 
 		}
 
+		private void btn_More_MouseClick(object sender, MouseEventArgs args)
+		{
+			ContextMenuStrip menu = new ContextMenuStrip();
+
+//			menu.Items.Add(new ToolStripStatusLabel("Additional settings"));
+//			menu.Items.Add(new ToolStripSeparator());
+
+			var output = new ToolStripMenuItem("Output");
+			menu.Items.Add(output);
+			AddSetting(output,
+				CardData.Flag.PruneScenario,
+				"Prune scenario",
+				Resources.tooltip_prune_scenario);
+
+			menu.Show(sender as Control, new Point(args.X + 10, args.Y + 10));
+		}
+
+		private void AddSetting(ToolStripMenuItem output, CardData.Flag flag, string label, string tooltip)
+		{
+			output.DropDownItems.Add(new ToolStripMenuItem(label, null, (s, e) => { ChangeFlag(flag); }) {
+				Checked = Current.Card.extraFlags.Contains(flag),
+				ToolTipText = tooltip,
+			});
+		}
+
+		private void ChangeFlag(CardData.Flag flag)
+		{
+			if (Current.Card.extraFlags.Contains(flag))
+				Current.Card.extraFlags &= ~flag;
+			else
+				Current.Card.extraFlags |= flag;
+			Current.IsDirty = true;
+		}
 	}
 }

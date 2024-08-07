@@ -654,4 +654,17 @@ Some data may be missing.</value>
     <value>Lore entries are sorted by this number, in ascending order.
 (Lower order = higher priority.)</value>
   </data>
+  <data name="menu" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\menu.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tooltip_misc_settings" xml:space="preserve">
+    <value>Click to view additional text generation settings.</value>
+  </data>
+  <data name="prune_scenario_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Other\prune_scenario_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="tooltip_prune_scenario" xml:space="preserve">
+    <value>If enabled, places the scenario at the top of the example chat, allowing 
+it to eventually leave the context.</value>
+  </data>
 </root>

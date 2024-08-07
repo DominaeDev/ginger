@@ -11,6 +11,7 @@ namespace Ginger
 	{
 		public static int Version = 1;
 
+		public string id = null;	// Unique card id
 		public string name = "";
 		public string userGender = "";
 		public string creator = "";
@@ -19,6 +20,7 @@ namespace Ginger
 		public string[] tags;
 		public int detailLevel = 0;
 		public int textStyle = 0;
+		public int flags = (int)CardData.Flag.Default;
 		public int[] tokens = new int[3] { 0, 0, 0 };
 		public DateTime creationDate = DateTime.UtcNow;
 		public int missingRecipes = 0;
@@ -33,6 +35,7 @@ namespace Ginger
 
 		public bool LoadFromXml(XmlNode xmlNode)
 		{
+			id = xmlNode.GetValueElement("ID", null);
 			name = xmlNode.GetValueElement("Name");
 			userGender = xmlNode.GetValueElement("UserGender");
 			creator = xmlNode.GetValueElement("Creator");
@@ -40,6 +43,7 @@ namespace Ginger
 			versionString = xmlNode.GetValueElement("Version");
 			detailLevel = xmlNode.GetValueElementInt("Detail");
 			textStyle = xmlNode.GetValueElementInt("TextStyle");
+			flags = xmlNode.GetValueElementInt("Flags");
 
 			tokens[0] = 0;
 			tokens[1] = 0;
@@ -175,6 +179,8 @@ namespace Ginger
 		public void SaveToXml(XmlNode xmlNode)
 		{
 			// Card info
+			if (string.IsNullOrEmpty(id) == false)
+				xmlNode.AddValueElement("ID", id);
 			xmlNode.AddValueElement("Name", name);
 			if (string.IsNullOrWhiteSpace(userGender) == false)
 				xmlNode.AddValueElement("UserGender", userGender);
@@ -186,6 +192,7 @@ namespace Ginger
 				xmlNode.AddValueElement("Version", versionString);
 			xmlNode.AddValueElement("Detail", detailLevel);
 			xmlNode.AddValueElement("TextStyle", textStyle);
+			xmlNode.AddValueElement("Flags", flags);
 			xmlNode.AddValueElement("TokenCount", string.Format("{0}, {1}, {2}", tokens[0], tokens[1], tokens[2]));
 			xmlNode.AddValueElement("Created", creationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK"));
 
@@ -308,6 +315,7 @@ namespace Ginger
 		public static GingerCardV1 Create()
 		{
 			GingerCardV1 card = new GingerCardV1() {
+				id = Current.Card.id,
 				name = Current.Card.name,
 				creator = Current.Card.creator,
 				comment = Current.Card.comment,
@@ -315,6 +323,7 @@ namespace Ginger
 				userGender = Current.Card.userGender,
 				detailLevel = EnumHelper.ToInt(Current.Card.detailLevel),
 				textStyle = EnumHelper.ToInt(Current.Card.textStyle),
+				flags = EnumHelper.ToInt(Current.Card.extraFlags),
 				tags = Current.Card.tags.ToArray(),
 				creationDate = Current.Card.creationDate ?? DateTime.UtcNow,
 				tokens = Current.Card.lastTokenCounts,

@@ -38,6 +38,9 @@ namespace Ginger
 			public MetaData()
 			{
 				creationDate = updateDate = DateTime.UtcNow.ToUnixTimeMilliseconds();
+				tool = new Tool() {
+					id = Current.Card.id,
+				};
 			}
 
 			[JsonProperty("version")]
@@ -68,6 +71,9 @@ namespace Ginger
 
 				[JsonProperty("version")]
 				public string version = "1.0";
+
+				[JsonProperty("card_id")]
+				public string id;
 
 				[JsonProperty("url")]
 				public string url = Constants.WebsiteURL;

@@ -726,9 +726,6 @@
     <None Include="Resources\Icons\persona.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Icons\scenario.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Icons\snippet.png" />
   </ItemGroup>
   <ItemGroup>
@@ -758,7 +755,6 @@
     <None Include="Resources\Icons\write.png" />
     <None Include="Resources\Icons\lore_down.png" />
     <None Include="Resources\Icons\lore_up.png" />
-    <None Include="Resources\Icons\concept.png" />
     <None Include="Resources\Icons\personality.png" />
     <None Include="Resources\Icons\appicon.ico" />
     <None Include="Resources\Icons\appicon.png" />
@@ -778,7 +774,6 @@
     <None Include="Resources\Icons\folder.png" />
     <None Include="Resources\Icons\characteristic.png" />
     <None Include="Resources\Icons\delete.png" />
-    <None Include="Resources\Icons\arrow_none.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Recipes\Other\attribute_recipe.txt" />
@@ -815,6 +810,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Icons\arrow_left.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\menu.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Recipes\Other\prune_scenario_recipe.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

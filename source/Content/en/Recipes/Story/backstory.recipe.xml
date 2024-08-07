@@ -14,29 +14,12 @@
 		<Label>Premise</Label>
 		<Description>Describe a starting off point for the story.</Description>
 	</Text>
-	
-	<Toggle id="as-example">
-		<Default>yes</Default>
-		<Label>As example chat</Label>
-		<Description>
-			Places the premise in the example chat field.
-			This allows it to leave the context after the story has begun.
-		</Description>
-	</Toggle>
 		
 	<!-- Output -->
-	
-	<!-- As scenario -->
-	<Node path="scenario/premise" style="text" mode="exclude" rule="not as-example">
+	<Node path="scenario/premise" style="text" mode="exclude">
 		[p]Premise:  
 		{inner} 
 	</Node>
-	<Node path="scenario/premise/summary" rule="text and not as-example">{text}.</Node>
-
-	<!-- As example chat -->
-	<Node path="example/premise" order="-0" style="text" rule="as-example">
-		[_backyard?#][user]: [inner]
-	</Node>
-	<Node path="example/premise/summary" rule="text and as-example">{text}.</Node>
+	<Node path="scenario/premise/summary" rule="text">{text}.</Node>
 
 </Ginger>

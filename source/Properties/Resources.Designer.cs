@@ -1183,6 +1183,16 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap menu {
+            get {
+                object obj = ResourceManager.GetObject("menu", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap model {
             get {
                 object obj = ResourceManager.GetObject("model", resourceCulture);
@@ -1427,6 +1437,22 @@ namespace Ginger.Properties {
         internal static string post_history_recipe {
             get {
                 return ResourceManager.GetString("post_history_recipe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__prune-scenario&quot;&gt;
+        ///	&lt;Name&gt;__prune-scenario&lt;/Name&gt;
+        ///	&lt;Flags&gt;__nobake, __internal, __hidden&lt;/Flags&gt;
+        ///		
+        ///	&lt;Node path=&quot;example/__scenario&quot; order=&quot;0&quot; format=&quot;none&quot;&gt;
+        ///		[__faraday or __backyard?#[user]: ][[{inner}]]
+        ///	&lt;/Node&gt;
+        ///&lt;/Ginger&gt;.
+        /// </summary>
+        internal static string prune_scenario_recipe {
+            get {
+                return ResourceManager.GetString("prune_scenario_recipe", resourceCulture);
             }
         }
         
@@ -2094,6 +2120,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Click to view additional text generation settings..
+        /// </summary>
+        internal static string tooltip_misc_settings {
+            get {
+                return ResourceManager.GetString("tooltip_misc_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Move down
         ///(Hold Shift key to move to bottom).
         /// </summary>
@@ -2164,6 +2199,16 @@ namespace Ginger.Properties {
         internal static string tooltip_portrait_image {
             get {
                 return ResourceManager.GetString("tooltip_portrait_image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If enabled, places the scenario at the top of the example chat, allowing 
+        ///it to eventually leave the context..
+        /// </summary>
+        internal static string tooltip_prune_scenario {
+            get {
+                return ResourceManager.GetString("tooltip_prune_scenario", resourceCulture);
             }
         }
         

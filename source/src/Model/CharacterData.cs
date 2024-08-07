@@ -151,6 +151,10 @@ namespace Ginger
 				}
 			}
 
+			// Flags
+			if (Current.Card.extraFlags.Contains(CardData.Flag.PruneScenario))
+				context.AddTag("__prune-scenario");
+
 			if (type == ContextType.Full)
 			{
 				ParameterState[] parameterStates = new ParameterState[recipes.Count];

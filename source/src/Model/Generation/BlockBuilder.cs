@@ -195,7 +195,7 @@ namespace Ginger
 
 			Default = Space,
 		}
-		public Style style;
+		public Style style = Style.Undefined;
 		
 		public enum Formatting
 		{
@@ -967,6 +967,8 @@ namespace Ginger
 		public void RemoveBlock(BlockID blockID, bool includeChildren = true)
 		{
 			_entries = _entries.Where(kvp => !(kvp.Key == blockID || (includeChildren && kvp.Key.IsChildOf(blockID))))
+				.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+			_finishedBlocks = _finishedBlocks.Where(kvp => !(kvp.Key == blockID || (includeChildren && kvp.Key.IsChildOf(blockID))))
 				.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 		}
 	}

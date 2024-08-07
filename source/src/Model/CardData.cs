@@ -6,6 +6,17 @@ namespace Ginger
 {
 	public class CardData
 	{
+		public string id 
+		{ 
+			get
+			{
+				if (string.IsNullOrEmpty(_id))
+					_id = Cuid.NewCuid();
+				return _id;
+			}
+			set { _id = value; }
+		}
+		private string _id = null;
 		public string name = "";
 		public ImageRef portraitImage;
 		public string _userPlaceholder;
@@ -53,6 +64,16 @@ namespace Ginger
 			Default = None,
 		}
 		public TextStyle textStyle = TextStyle.Default;
+
+		[Flags]
+		public enum Flag
+		{
+			None = 0,
+			PruneScenario = 1 << 0,
+
+			Default = None,
+		}
+		public Flag extraFlags = Flag.Default;
 
 		public CardData()
 		{

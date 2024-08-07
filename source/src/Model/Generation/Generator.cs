@@ -187,6 +187,7 @@ namespace Ginger
 			int numChannels = EnumHelper.ToInt(Recipe.Component.Count);
 			Recipe internalGlobalRecipe = RecipeBook.allRecipes.FirstOrDefault(r => r.id == RecipeBook.GlobalInternal);
 			Recipe externalGlobalRecipe = RecipeBook.allRecipes.FirstOrDefault(r => r.id == RecipeBook.GlobalExternal);
+			Recipe pruneScenarioRecipe = RecipeBook.allRecipes.FirstOrDefault(r => r.id == "__prune-scenario");
 
 			for (int index = 0; index < Current.Characters.Count; ++index)
 			{
@@ -197,6 +198,8 @@ namespace Ginger
 					recipes.Insert(0, externalGlobalRecipe);
 				if (internalGlobalRecipe != null)
 					recipes.Insert(0, internalGlobalRecipe);
+				if (pruneScenarioRecipe != null && Current.Card.extraFlags.Contains(CardData.Flag.PruneScenario))
+					recipes.Insert(0, pruneScenarioRecipe);
 				recipes.AddRange(character.recipes);
 
 				var context = character.GetContext(CharacterData.ContextType.None);
@@ -328,6 +331,17 @@ namespace Ginger
 			GingerString personality = GingerString.Empty;
 			if (options.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3) && options.ContainsAny(Option.Snippet | Option.Bake) == false)
 				personality = GingerString.FromOutput(blockBuilder.Build("persona/output/personality"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
+
+			// Option: Prune scenario
+			if (context.HasTag("__prune-scenario") && options.ContainsAny(Option.Snippet | Option.Bake) == false)
+			{
+				GingerString scenario = GingerString.FromOutput(blockBuilder.Build("scenario/output"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
+				blockBuilder.Add(new Block() {
+					id = "example/__scenario/text",
+					style = Block.Style.Undefined,
+				}, scenario.ToString());
+				blockBuilder.RemoveBlock("scenario/output");
+			}
 
 			// Build blocks
 			blockBuilder.Build();

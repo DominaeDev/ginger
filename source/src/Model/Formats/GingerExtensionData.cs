@@ -18,6 +18,9 @@ namespace Ginger
 		public class Data
 		{
 			// Parameters
+			[JsonProperty("card_id")]
+			public string id;
+
 			[JsonProperty("card_name")]
 			public string name;
 			
@@ -94,6 +97,7 @@ namespace Ginger
 			GingerExtensionData ext = new GingerExtensionData();
 
 			ext.data = new Data() {
+				id = Current.Card.id,
 				name = Current.Card.name ?? "",
 				spokenName = Current.MainCharacter.spokenName ?? "",
 				gender = Current.MainCharacter.gender ?? "",
