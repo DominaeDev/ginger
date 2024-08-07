@@ -197,8 +197,8 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__attribute&quot; version=&quot;1.0&quot;&gt;
-        ///	&lt;Name&gt;Other/Add attribute&lt;/Name&gt;
-        ///	&lt;Title&gt;Attribute&lt;/Title&gt;
+        ///	&lt;Name&gt;Other/Custom attribute&lt;/Name&gt;
+        ///	&lt;Title&gt;Custom attribute&lt;/Title&gt;
         ///	&lt;Description&gt;Add a custom character attribute&lt;/Description&gt;
         ///	&lt;Order&gt;3&lt;/Order&gt;
         ///	&lt;Color&gt;#fefefe&lt;/Color&gt;
@@ -210,8 +210,7 @@ namespace Ginger.Properties {
         ///		&lt;Description&gt;Attribute name. (E.g., Personality, Appearance, Likes, Dislikes, ...)&lt;/Description&gt;
         ///	&lt;/Text&gt;
         ///	&lt;Text id=&quot;text-value&quot; rule=&quot;type:local is text&quot;&gt;
-        ///		&lt;Label&gt;Value&lt;/Label&gt;
-        ///	&lt;/Tex [rest of string was truncated]&quot;;.
+        ///		&lt;Label&gt;Value&lt;/Labe [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string attribute_recipe {
             get {
@@ -1109,14 +1108,12 @@ namespace Ginger.Properties {
         ///	&lt;Macro id=&quot;everyone&quot;&gt;[!list:[user];[char];[actors]]&lt;/Macro&gt;
         ///	&lt;Wrapper id=&quot;abbr&quot;&gt;[noparse]_[parse][nocap]&lt;/Wrapper&gt;
         ///	&lt;Wrapper id=&quot;raw&quot;&gt;[noparse]_[parse]&lt;/Wrapper&gt;
-        ///	&lt;Wrapper id=&quot;property-label&quot;&gt;_:[sp]&lt;/Wrapper&gt;
         ///	&lt;Macro id=&quot;the&quot;&gt;[..the?|the]&lt;/Macro&gt;
         ///	&lt;Wrapper id=&quot;__attrib, attrib&quot;&gt;_:[sp]&lt;/Wrapper&gt;
         ///
-        ///
         ///	&lt;!-- Chat style --&gt;
-        ///	&lt;Rule id=&quot;is-faraday&quot;&gt;__faraday or __backyard&lt;/Rule&gt;
-        ///	&lt;Wrapper id=&quot;dialogue, dialog&quot;&gt;[@dialogue-symbo [rest of string was truncated]&quot;;.
+        ///	&lt;Rule id=&quot;is-faraday, is-backyard&quot;&gt;__faraday or __backyard&lt;/Rule&gt;
+        ///	&lt;Wrapper id=&quot;dialogue, dialog&quot;&gt;[@dialogue-symbol-open]_[@dialogue-symbol-close]&lt;/Wra [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string internal_macros {
             get {
@@ -2078,7 +2075,8 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Lore entries with lower order numbers are inserted into the context first..
+        ///   Looks up a localized string similar to Lore entries are sorted by this number, in ascending order.
+        ///(Lower order = higher priority.).
         /// </summary>
         internal static string tooltip_lore_order {
             get {

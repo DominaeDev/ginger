@@ -308,21 +308,19 @@ namespace Ginger
 
 				card.data.character_book.entries =
 					output.lorebook.entries
-						.OrderBy(e => e.sortOrder)
 						.Select(e => {
 							string[] keys = e.keys;
 							var entry = new TavernCardV3.CharacterBook.Entry() {
-								comment = keys.Length > 0 ? keys[0] : "",
+								comment = keys.Length > 0 ? string.Join(", ", keys) : "",
 								keys = keys,
 								content = GingerString.FromString(e.value).ToTavern(),
+								insertion_order = e.sortOrder,
 							};
 							if (e.unused != null)
 							{
 								entry.case_sensitive = e.unused.case_sensitive;
-								entry.comment = e.unused.comment;
 								entry.constant = e.unused.constant;
 								entry.enabled = e.unused.enabled;
-								entry.insertion_order = e.unused.insertion_order;
 								entry.position = e.unused.placement;
 								entry.priority = e.unused.priority;
 								entry.secondary_keys = e.unused.secondary_keys;

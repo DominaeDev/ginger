@@ -62,6 +62,7 @@ namespace Ginger
 			entryPanel.OnAddEntry += OnAddEntry;
 			entryPanel.OnNextPage += OnNextPage;
 			entryPanel.OnPreviousPage += OnPreviousPage;
+			entryPanel.OnResetOrder += OnResetOrder;
 			entryPanel.TextSizeChanged += EntryPanel_TextSizeChanged;
 			entryPanel.OnSortEntries += EntryPanel_OnSortEntries;
 			return entryPanel;
@@ -556,6 +557,18 @@ namespace Ginger
 
 				RefreshSyntaxHighlight(true, true);
 			});
+		}
+
+		public void OnResetOrder(object sender, EventArgs e)
+		{
+			for (int i = 0; i < lorebook.entries.Count; ++i)
+				lorebook.entries[i].sortOrder = Lorebook.Entry.DefaultSortOrder;
+
+			foreach (var panel in _entryPanels)
+			{
+				panel.RefreshValue();
+			}
+			Undo.Push(Undo.Kind.Parameter, "Reset lore order");
 		}
 
 		public void RefreshLineWidth()

@@ -109,13 +109,13 @@ namespace Ginger
 				public string name = "";
 				public string comment = ""; // Alt name
 				public string[] secondary_keys = new string[0];
-				public int insertion_order = 100;
-				public int priority = 10;
+				public int weight = 0;		// Agnai
+				public int priority = 0;	// Agnai
 				public bool enabled = true;
 				public bool case_sensitive = false;
 				public bool selective = false;
 				public bool constant = false;
-				public bool use_regex = false;
+				public bool use_regex = false; // v3
 				public string placement = "before_char"; // position: 'before_char' | 'after_char'
 
 				// Tavern world book
@@ -141,7 +141,7 @@ namespace Ginger
 					excludeRecursion = xmlNode.GetAttributeBool("exclude-recursion", excludeRecursion);
 					enabled = xmlNode.GetAttributeBool("enabled", enabled);
 					group = xmlNode.GetValueElement("group", group);
-					insertion_order = xmlNode.GetAttributeInt("insertion-order", insertion_order);
+					weight = xmlNode.GetAttributeInt("weight", weight);
 					placement = xmlNode.GetAttribute("placement", placement);
 					position = xmlNode.GetAttributeInt("position", position);
 					priority = xmlNode.GetAttributeInt("priority", priority);
@@ -178,11 +178,11 @@ namespace Ginger
 						xmlNode.AddAttribute("enabled", false);
 					if (string.IsNullOrEmpty(group) == false)
 						xmlNode.AddAttribute("group", group);
-					if (insertion_order != 100)
-						xmlNode.AddAttribute("insertion-order", insertion_order);
+					if (weight != 0)
+						xmlNode.AddAttribute("weight", weight);
 					if (position != 0)
 						xmlNode.AddAttribute("position", position);
-					if (priority != 10)
+					if (priority != 0)
 						xmlNode.AddAttribute("priority", priority);
 					if (probability != 100)
 						xmlNode.AddAttribute("probability", probability);
@@ -564,14 +564,14 @@ namespace Ginger
 				this.entries.Add(new Entry() {
 					keys = entry.keywords,
 					value = GingerString.FromTavern(entry.entry).ToString(),
-					sortOrder = 100,
+					sortOrder = entry.priority, // Inverse
 					addition_index = index++,
 					unused = new Entry.UnusedProperties() {
 						case_sensitive = false,
 						comment = entry.comment,
 						constant = entry.constant,
 						enabled = entry.enabled,
-						insertion_order = entry.weight,
+						weight = entry.weight,
 						name = entry.name,
 						placement = entry.position,
 						priority = entry.priority,
@@ -579,6 +579,25 @@ namespace Ginger
 						selective = entry.selective,
 					}
 				});
+			}
+
+			// Priority -> Sort order
+			int minPriority = int.MaxValue;
+			int maxPriority = int.MinValue;
+			for (int i = 0; i < this.entries.Count; ++i)
+			{
+				var entry = this.entries[i];
+				minPriority = Math.Min(entry.sortOrder, minPriority);
+				maxPriority = Math.Max(entry.sortOrder, maxPriority);
+			}
+
+			if (minPriority != maxPriority)
+			{
+				for (int i = 0; i < this.entries.Count; ++i)
+				{
+					var entry = this.entries[i];
+					this.entries[i].sortOrder = maxPriority - (entry.sortOrder - minPriority) - minPriority;
+				}
 			}
 		}
 

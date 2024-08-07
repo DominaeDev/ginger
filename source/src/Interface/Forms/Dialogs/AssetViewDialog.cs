@@ -26,6 +26,10 @@ namespace Ginger
 			btnExport.Click += BtnExport_Click;
 			btnRemove.Click += BtnRemove_Click;
 			btnAdd.Click += BtnAdd_Click;
+
+			DragEnter += OnDragEnter;
+			DragDrop += OnDragDrop;
+
 		}
 
 		private void AssetViewDialog_FormClosed(object sender, FormClosedEventArgs e)
@@ -300,9 +304,8 @@ namespace Ginger
 
 			_bIgnoreEvents = true;
 			foreach (var filename in importFileDialog.FileNames)
-			{
 				AddAsset(filename);
-			}
+
 			_bIgnoreEvents = false;
 		}
 
@@ -319,13 +322,18 @@ namespace Ginger
 				if (ext == "jpg")
 					ext = "jpeg";
 
+				var data = AssetData.FromBytes(bytes);
+				if (Assets.ContainsAny(a => a.data.hash == data.hash 
+					&& string.Compare(a.ext, ext, StringComparison.InvariantCultureIgnoreCase) == 0))
+					return false; // Already added
+
 				if (bytes != null && bytes.Length > 0)
 				{
 					var asset = new AssetFile() {
 						name = name,
 						ext = ext,
 						assetType = AssetFile.AssetType.Undefined,
-						data = AssetData.FromBytes(bytes),
+						data = data,
 						uriType = AssetFile.UriType.Embedded,
 					};
 					Assets.Add(asset);
@@ -392,7 +400,28 @@ namespace Ginger
 					assetsDataView.Rows[row].Cells[0].Value = Assets[i].name;
 				++row;
 			}
+		}
 
+		private void OnDragEnter(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+			{
+				e.Effect = DragDropEffects.Copy;
+				return;
+			}
+			e.Effect = DragDropEffects.None;
+		}
+
+		private void OnDragDrop(object sender, DragEventArgs e)
+		{
+			Activate();
+
+			if (e.Data.GetDataPresent(DataFormats.FileDrop) == false)
+				return;
+
+			string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+			foreach (var filename in files)
+				AddAsset(filename);
 		}
 	}
 }

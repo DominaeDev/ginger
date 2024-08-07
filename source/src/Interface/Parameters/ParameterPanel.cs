@@ -124,6 +124,7 @@ namespace Ginger
 			toolTip.UseFading = false;
 			toolTip.UseAnimation = false;
 			toolTip.AutomaticDelay = 250;
+			toolTip.AutoPopDelay = 3500;
 
 			foreach (var control in controls)
 			{
@@ -145,6 +146,7 @@ namespace Ginger
 			toolTip.UseFading = false;
 			toolTip.UseAnimation = false;
 			toolTip.AutomaticDelay = 250;
+			toolTip.AutoPopDelay = 3500;
 
 			foreach (var control in controls)
 				toolTip.SetToolTip(control, tooltip);

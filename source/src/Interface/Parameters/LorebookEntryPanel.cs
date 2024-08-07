@@ -39,6 +39,7 @@ namespace Ginger
 		public event EventHandler OnAddEntry;
 		public event EventHandler OnNextPage;
 		public event EventHandler OnPreviousPage;
+		public event EventHandler OnResetOrder;
 		public event EventHandler TextSizeChanged;
 
 		public Lorebook lorebook { get; private set; }
@@ -403,12 +404,13 @@ namespace Ginger
 					});
 				}) { Enabled = lorebook.entries.Count > 1 });
 				menu.Items.Add(sortMenu);
-
-
-
+				menu.Items.Add(new ToolStripMenuItem("Reset order (all)", null, (s, e) => { CommitChange(); OnResetOrder?.Invoke(this, e); }) {
+					Enabled = lorebook.entries.Count > 0,
+				});
 				int numEntries = lorebook.entries.Count;
 				if (numEntries > AppSettings.Settings.LoreEntriesPerPage)
 				{
+					menu.Items.Add(new ToolStripSeparator());
 					int pageIndex = lorebook.entries.IndexOf(lorebookEntry) / AppSettings.Settings.LoreEntriesPerPage;
 					menu.Items.Add(new ToolStripMenuItem("Next page", null, (s, e) => { CommitChange(); OnNextPage?.Invoke(this, e); }) {
 						Enabled = pageIndex < numEntries / AppSettings.Settings.LoreEntriesPerPage,
@@ -436,6 +438,7 @@ namespace Ginger
 			toolTip.UseFading = false;
 			toolTip.UseAnimation = false;
 			toolTip.AutomaticDelay = 250;
+			toolTip.AutoPopDelay = 3500;
 
 			foreach (var control in controls)
 				toolTip.SetToolTip(control, tooltip);

@@ -285,29 +285,45 @@ namespace Ginger
 				}
 				card.character_book.entries =
 					output.lorebook.entries
-						.OrderBy(e => e.sortOrder)
 						.Select(e => {
 							string[] keys = e.keys;
 							var entry = new CharacterBook.Entry() {
 								keywords = keys,
 								entry = GingerString.FromString(e.value).ToTavern(),
+								priority = e.sortOrder
 							};
 							if (e.unused != null)
 							{
 								entry.comment = e.unused.comment;
 								entry.constant = e.unused.constant;
 								entry.enabled = e.unused.enabled;
-								entry.weight = e.unused.insertion_order;
+								entry.weight = e.unused.weight;
 								entry.position = e.unused.placement;
-								entry.priority = e.unused.priority;
 								entry.secondaryKeys = e.unused.secondary_keys;
 								entry.selective = e.unused.selective;
 							}
 							return entry;
 						}).ToArray();
 
+				int minPriority = int.MaxValue;
+				int maxPriority = int.MinValue;
 				for (int i = 0; i < card.character_book.entries.Length; ++i)
-					card.character_book.entries[i].id = i + 1;
+				{
+					var entry = card.character_book.entries[i];
+					entry.id = i + 1;
+					minPriority = Math.Min(entry.priority, minPriority);
+					maxPriority = Math.Max(entry.priority, maxPriority);
+				}
+
+				// Sort order -> Priority
+				if (minPriority != maxPriority)
+				{
+					for (int i = 0; i < card.character_book.entries.Length; ++i)
+					{
+						var entry = card.character_book.entries[i];
+						card.character_book.entries[i].priority = maxPriority - (entry.priority - minPriority) - minPriority;
+					}
+				}
 			}
 
 			return card;

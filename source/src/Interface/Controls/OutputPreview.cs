@@ -150,11 +150,12 @@ namespace Ginger
 			if (output.hasLore)
 			{
 				sbOutput.AppendLine(Header(string.Format("LOREBOOK ({0} {1})", output.lorebook.entries.Count, output.lorebook.entries.Count == 1 ? "ENTRY" : "ENTRIES")));
-				int index = 1;
-				foreach (var entry in output.lorebook.entries)
+				
+				for (int i = 0; i < output.lorebook.entries.Count; ++i)
 				{
+					var entry = output.lorebook.entries[i];
 					sbOutput.AppendLine();
-					sbOutput.AppendLine(string.Format("Item #{1} [{0}]", GingerString.FromString(entry.key).ToOutputPreview(Recipe.Component.Invalid), index++));
+					sbOutput.AppendLine(string.Format("#{0} [{1}]", i + 1, GingerString.FromString(entry.key).ToOutputPreview(Recipe.Component.Invalid)));
 					sbOutput.AppendLine(GingerString.FromString(entry.value).ToOutputPreview(Recipe.Component.Invalid));
 				}
 			}

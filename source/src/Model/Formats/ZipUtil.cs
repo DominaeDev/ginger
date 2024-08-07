@@ -101,9 +101,7 @@ namespace Ginger
 								var buffer = new byte[dataSize];
 								var dataStream = entry.Open();
 								dataStream.Read(buffer, 0, (int)dataSize);
-								assets[idxAsset].data = new AssetData() {
-									bytes = buffer,
-								};
+								assets[idxAsset].data = AssetData.FromBytes(buffer);
 							}
 						}
 					}

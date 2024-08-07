@@ -286,6 +286,7 @@ namespace Ginger
 			toolTip.UseFading = false;
 			toolTip.UseAnimation = false;
 			toolTip.AutomaticDelay = 250;
+			toolTip.AutoPopDelay = 3500;
 		}
 
 		private bool ImportCharacterJson()
@@ -490,11 +491,8 @@ namespace Ginger
 				Lorebooks.LoadLorebooks();
 			}
 
-			if (lorebook.entries.Count >= 40)
-				SetStatusBarMessage(string.Format("Building lorebook with {0} entries. Please wait...", lorebook.entries.Count));
-			else
-				SetStatusBarMessage("Refreshing recipe list...");
 			Cursor = Cursors.WaitCursor;
+			SetStatusBarMessage("Refreshing recipe list...");
 
 			// Add to recipe list
 			var instance = Current.AddLorebook(lorebook);

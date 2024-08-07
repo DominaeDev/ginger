@@ -31,14 +31,15 @@ namespace Ginger
 		{
 			System.Windows.Forms.Panel listPanel;
 			System.Windows.Forms.Panel leftPanel;
-			System.Windows.Forms.Panel spacer;
 			System.Windows.Forms.Panel panel1;
+			System.Windows.Forms.Panel spacer;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AssetViewDialog));
 			this.assetsDataView = new System.Windows.Forms.DataGridView();
 			this.columnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.columnFileExt = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.columnType = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.columnSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.label1 = new System.Windows.Forms.Label();
 			this.btnApply = new System.Windows.Forms.Button();
 			this.btnExport = new System.Windows.Forms.Button();
 			this.btnView = new System.Windows.Forms.Button();
@@ -46,11 +47,10 @@ namespace Ginger
 			this.btnAdd = new System.Windows.Forms.Button();
 			this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
-			this.label1 = new System.Windows.Forms.Label();
 			listPanel = new System.Windows.Forms.Panel();
 			leftPanel = new System.Windows.Forms.Panel();
-			spacer = new System.Windows.Forms.Panel();
 			panel1 = new System.Windows.Forms.Panel();
+			spacer = new System.Windows.Forms.Panel();
 			listPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.assetsDataView)).BeginInit();
 			leftPanel.SuspendLayout();
@@ -68,7 +68,6 @@ namespace Ginger
 			// 
 			// assetsDataView
 			// 
-			this.assetsDataView.AllowDrop = true;
 			this.assetsDataView.AllowUserToAddRows = false;
 			this.assetsDataView.AllowUserToDeleteRows = false;
 			this.assetsDataView.AllowUserToResizeColumns = false;
@@ -149,6 +148,26 @@ namespace Ginger
 			leftPanel.Size = new System.Drawing.Size(200, 414);
 			leftPanel.TabIndex = 0;
 			// 
+			// label1
+			// 
+			this.label1.Dock = System.Windows.Forms.DockStyle.Top;
+			this.label1.ForeColor = System.Drawing.SystemColors.GrayText;
+			this.label1.Location = new System.Drawing.Point(4, 152);
+			this.label1.Name = "label1";
+			this.label1.Padding = new System.Windows.Forms.Padding(3);
+			this.label1.Size = new System.Drawing.Size(192, 52);
+			this.label1.TabIndex = 7;
+			this.label1.Text = "Note: Embedded assets are only supported in CCV3 and CHARX cards.";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// panel1
+			// 
+			panel1.Dock = System.Windows.Forms.DockStyle.Top;
+			panel1.Location = new System.Drawing.Point(4, 140);
+			panel1.Name = "panel1";
+			panel1.Size = new System.Drawing.Size(192, 12);
+			panel1.TabIndex = 4;
+			// 
 			// btnApply
 			// 
 			this.btnApply.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -211,28 +230,9 @@ namespace Ginger
 			// 
 			this.importFileDialog.Multiselect = true;
 			// 
-			// label1
-			// 
-			this.label1.Dock = System.Windows.Forms.DockStyle.Top;
-			this.label1.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.label1.Location = new System.Drawing.Point(4, 152);
-			this.label1.Name = "label1";
-			this.label1.Padding = new System.Windows.Forms.Padding(3);
-			this.label1.Size = new System.Drawing.Size(192, 52);
-			this.label1.TabIndex = 7;
-			this.label1.Text = "Note: Embedded assets are only supported in CCV3 and CHARX cards.";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			// 
-			// panel1
-			// 
-			panel1.Dock = System.Windows.Forms.DockStyle.Top;
-			panel1.Location = new System.Drawing.Point(4, 140);
-			panel1.Name = "panel1";
-			panel1.Size = new System.Drawing.Size(192, 12);
-			panel1.TabIndex = 4;
-			// 
 			// AssetViewDialog
 			// 
+			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(681, 414);

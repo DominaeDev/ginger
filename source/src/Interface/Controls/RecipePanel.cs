@@ -414,10 +414,14 @@ namespace Ginger
 						lorebookPanel.Sort(Lorebook.Sorting.ByIndex);
 					}) { Enabled = !isEmpty });
 					menu.Items.Add(sortMenu);
+					menu.Items.Add(new ToolStripMenuItem("Reset order (all)", null, (s, e) => { CommitChange(); lorebookPanel.OnResetOrder(s, e); }) {
+						Enabled = lorebookPanel.lorebook.entries.Count > 0,
+					});
 
 					int numEntries = lorebookPanel.lorebook.entries.Count;
 					if (numEntries > AppSettings.Settings.LoreEntriesPerPage)
 					{
+						menu.Items.Add(new ToolStripSeparator());
 						int pageIndex = (lorebookPanel.GetParameter() as LorebookParameter).pageIndex;
 						menu.Items.Add(new ToolStripMenuItem("Next page", null, (s, e) => { CommitChange(); lorebookPanel.OnNextPage(s, e); }) {
 							Enabled = pageIndex < numEntries / AppSettings.Settings.LoreEntriesPerPage,

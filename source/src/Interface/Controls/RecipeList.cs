@@ -1385,11 +1385,8 @@ namespace Ginger
 			if (lorebook == null)
 				return;
 
-			if (lorebook.entries.Count >= 40)
-				MainForm.SetStatusBarMessage(string.Format("Building lorebook with {0} entries. Please wait...", lorebook.entries.Count));
-			else
-				MainForm.SetStatusBarMessage("Refreshing recipe list...");
 			MainForm.instance.Cursor = Cursors.WaitCursor;
+			MainForm.SetStatusBarMessage("Refreshing recipe list...");
 
 			this.Suspend();
 			var instance = Current.AddLorebook(lorebook);

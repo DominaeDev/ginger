@@ -328,11 +328,8 @@ namespace Ginger
 
 				if (lorebook != null)
 				{
-					if (lorebook.entries.Count >= 40)
-						SetStatusBarMessage(string.Format("Building lorebook with {0} entries. Please wait...", lorebook.entries.Count));
-					else
-						SetStatusBarMessage("Refreshing recipe list...");
 					Cursor = Cursors.WaitCursor;
+					SetStatusBarMessage("Refreshing recipe list...");
 
 					// Add to recipe list
 					var instance = Current.AddLorebook(lorebook);
@@ -953,20 +950,7 @@ namespace Ginger
 
 			Cursor = Cursors.WaitCursor;
 
-			// Inform user when loading large lorebooks
-			var lorebookRecipe = Current.Character.recipes.FirstOrDefault(r => r.isLorebook);
-			if (lorebookRecipe != null && lorebookRecipe.parameters.Count > 0 && lorebookRecipe.parameters[0] is LorebookParameter)
-			{
-				var lorebook = (lorebookRecipe.parameters[0] as LorebookParameter).value;
-				if (lorebook != null && lorebook.entries.Count >= 40)
-					SetStatusBarMessage(string.Format("Building lorebook with {0} entries. Please wait...", lorebook.entries.Count));
-				else
-					SetStatusBarMessage("Refreshing recipe list...");
-			}
-			else
-			{
-				SetStatusBarMessage("Refreshing recipe list...");
-			}
+			SetStatusBarMessage("Refreshing recipe list...");
 
 			sidePanel.Enabled = true;
 			userNotes.Clear();

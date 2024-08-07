@@ -298,13 +298,28 @@ namespace Ginger
 
 	public struct AssetData
 	{
-		public byte[] bytes;
+		public byte[] bytes { get; private set; }
 		public long length { get { return bytes != null ? bytes.Length : 0; } }
+		public string hash { get { return _hash; } }
+		private string _hash;
 
 		public static AssetData FromBytes(byte[] bytes)
 		{
+			string hash;
+
+			if (bytes != null && bytes.Length > 0)
+			{
+				using (var sha1 = new System.Security.Cryptography.SHA256CryptoServiceProvider())
+				{
+					hash = string.Concat(sha1.ComputeHash(bytes).Select(x => x.ToString("X2")));
+				}
+			}
+			else
+				hash = "";
+
 			return new AssetData() {
 				bytes = bytes,
+				_hash = hash,
 			};
 		}
 	}
@@ -501,9 +516,7 @@ namespace Ginger
 							name = "main",
 							ext = "png",
 							uriType = AssetFile.UriType.Embedded,
-							data = new AssetData() {
-								bytes = stream.ToArray(),
-							},
+							data = AssetData.FromBytes(stream.ToArray()),
 						});
 
 						// Remove any existing default icon(s)

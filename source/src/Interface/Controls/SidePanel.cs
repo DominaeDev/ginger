@@ -668,7 +668,7 @@ namespace Ginger
 				toolTip.UseFading = false;
 				toolTip.UseAnimation = false;
 				toolTip.AutomaticDelay = 250;
-				toolTip.AutoPopDelay = 5000;
+				toolTip.AutoPopDelay = 3500;
 			}
 
 			if (string.IsNullOrEmpty(text) == false)

@@ -395,7 +395,7 @@ namespace Ginger
 			}
 
 			int index = 0;
-			foreach (var loreEntry in lorebook.entries.OrderBy(e => e.sortOrder))
+			foreach (var loreEntry in lorebook.entries)
 			{
 				if (loreEntry.keys == null || loreEntry.keys.Length == 0)
 					continue;
@@ -407,6 +407,7 @@ namespace Ginger
 					comment = loreEntry.keys[0] ?? "",
 					key = loreEntry.keys,
 					content = GingerString.FromString(loreEntry.value).ToTavern(),
+					order = loreEntry.sortOrder,
 				};
 
 				if (loreEntry.unused != null)
@@ -415,7 +416,6 @@ namespace Ginger
 					tavernBookEntry.constant = loreEntry.unused.constant;
 					tavernBookEntry.disable = !loreEntry.unused.enabled;
 					tavernBookEntry.comment = loreEntry.unused.name;
-					tavernBookEntry.order = loreEntry.unused.insertion_order;
 					tavernBookEntry.position = loreEntry.unused.position;
 					tavernBookEntry.secondary_keys = loreEntry.unused.secondary_keys;
 					tavernBookEntry.addMemo = loreEntry.unused.addMemo;
@@ -479,7 +479,7 @@ namespace Ginger
 
 			int index = 0;
 			var entries = new List<TavernCardV3.CharacterBook.Entry>();
-			foreach (var loreEntry in lorebook.entries.OrderBy(e => e.sortOrder))
+			foreach (var loreEntry in lorebook.entries)
 			{
 				if (loreEntry.keys == null || loreEntry.keys.Length == 0)
 					continue;
@@ -490,6 +490,7 @@ namespace Ginger
 					keys = loreEntry.keys,
 					name = loreEntry.key,
 					content = GingerString.FromString(loreEntry.value).ToTavern(),
+					insertion_order = loreEntry.sortOrder,
 					use_regex = false,
 				};
 
@@ -499,7 +500,6 @@ namespace Ginger
 					copy.comment = loreEntry.unused.comment;
 					copy.constant = loreEntry.unused.constant;
 					copy.enabled = loreEntry.unused.enabled;
-					copy.insertion_order = loreEntry.unused.insertion_order;
 					copy.position = loreEntry.unused.placement;
 					copy.secondary_keys = loreEntry.unused.secondary_keys;
 					copy.priority = loreEntry.unused.priority;
@@ -544,13 +544,16 @@ namespace Ginger
 
 			var entries = new List<AgnaisticCard.CharacterBook.Entry>(lorebook.entries.Count);
 			int id = 1;
-			foreach (var loreEntry in lorebook.entries.OrderBy(e => e.sortOrder))
+			int minPriority = int.MaxValue;
+			int maxPriority = int.MinValue;
+			foreach (var loreEntry in lorebook.entries)
 			{
 				var agnaiBookEntry = new AgnaisticCard.CharacterBook.Entry() {
 					id = id++,
 					name = loreEntry.keys[0],
 					keywords = loreEntry.keys,
 					entry = loreEntry.value,
+					priority = loreEntry.sortOrder, // Inverse
 				};
 
 				if (loreEntry.unused != null)
@@ -558,15 +561,27 @@ namespace Ginger
 					agnaiBookEntry.comment = loreEntry.unused.comment;
 					agnaiBookEntry.constant = loreEntry.unused.constant;
 					agnaiBookEntry.enabled = loreEntry.unused.enabled;
-					agnaiBookEntry.weight = loreEntry.unused.insertion_order;
+					agnaiBookEntry.weight = loreEntry.unused.weight;
 					agnaiBookEntry.position = loreEntry.unused.placement;
-					agnaiBookEntry.priority = loreEntry.unused.priority;
 					agnaiBookEntry.secondaryKeys = loreEntry.unused.secondary_keys;
 					agnaiBookEntry.selective = loreEntry.unused.selective;
 				}
+				minPriority = Math.Min(loreEntry.sortOrder, minPriority);
+				maxPriority = Math.Max(loreEntry.sortOrder, maxPriority);
 
 				entries.Add(agnaiBookEntry);
 			}
+
+			// Sort order -> Priority
+			if (minPriority != maxPriority)
+			{
+				for (int i = 0; i < entries.Count; ++i)
+				{
+					var entry = entries[i];
+					entries[i].priority = maxPriority - (entry.priority - minPriority) - minPriority;
+				}
+			}
+
 			agnaiBook.entries = entries.ToArray();
 
 			try
@@ -1113,9 +1128,7 @@ namespace Ginger
 							continue; // Unreferenced asset
 
 						byte[] buffer = Convert.FromBase64String(kvp.Value);
-						assets[idxAsset].data = new AssetData() {
-							bytes = buffer,
-						};				
+						assets[idxAsset].data = AssetData.FromBytes(buffer);
 					}
 				}
 
