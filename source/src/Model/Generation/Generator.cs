@@ -340,7 +340,6 @@ namespace Ginger
 					id = "example/__scenario/text",
 					style = Block.Style.Undefined,
 				}, scenario.ToString());
-				blockBuilder.RemoveBlock("scenario/output");
 			}
 
 			// Build blocks

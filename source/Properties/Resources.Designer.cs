@@ -1445,8 +1445,8 @@ namespace Ginger.Properties {
         ///	&lt;Name&gt;__prune-scenario&lt;/Name&gt;
         ///	&lt;Flags&gt;__nobake, __internal, __hidden&lt;/Flags&gt;
         ///		
-        ///	&lt;Node path=&quot;example/__scenario&quot; order=&quot;0&quot; format=&quot;none&quot;&gt;
-        ///		[__faraday or __backyard?#[user]: ][[{inner}]]
+        ///	&lt;Node path=&quot;example/__scenario&quot; order=&quot;-0&quot; format=&quot;none&quot;&gt;
+        ///		[__faraday or __backyard?#[user]: ][[[[{inner}]]]]
         ///	&lt;/Node&gt;
         ///&lt;/Ginger&gt;.
         /// </summary>
@@ -2203,8 +2203,8 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If enabled, places the scenario at the top of the example chat, allowing 
-        ///it to eventually leave the context..
+        ///   Looks up a localized string similar to If enabled, places the scenario in the example chat, allowing 
+        ///it to leave the context over time..
         /// </summary>
         internal static string tooltip_prune_scenario {
             get {
