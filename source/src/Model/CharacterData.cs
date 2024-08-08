@@ -268,7 +268,12 @@ namespace Ginger
 						break;
 					case Recipe.Component.Persona: xmlSource = Resources.persona_recipe; break;
 					case Recipe.Component.Scenario: xmlSource = Resources.scenario_recipe; break;
-					case Recipe.Component.Greeting: xmlSource = Resources.greeting_recipe; break;
+					case Recipe.Component.Greeting: 
+						if (template.isGroupOnly)
+							xmlSource = Resources.group_greeting_recipe; 
+						else
+							xmlSource = Resources.greeting_recipe; 
+						break;
 					case Recipe.Component.Example: xmlSource = Resources.example_recipe; break;
 					case Recipe.Component.Grammar: xmlSource = Resources.grammar_recipe; break;
 					case Recipe.Component.UserPersona: xmlSource = Resources.user_recipe; break;

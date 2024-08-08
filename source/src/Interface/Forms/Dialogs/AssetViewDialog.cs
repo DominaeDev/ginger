@@ -182,12 +182,12 @@ namespace Ginger
 			if (asset == null || asset.data.length == 0)
 				return;
 
-			string tempPath = Path.Combine(Path.GetTempPath(), "Ginger");
-			string filename = Path.Combine(tempPath, string.Format("temp_{0:X8}.{1}", asset.data.bytes.GetHashCode(), asset.ext ?? ""));
-
-			if (File.Exists(filename) == false)
+			try
 			{
-				try
+				string tempPath = Path.Combine(Path.GetTempPath(), "Ginger");
+				string filename = Path.Combine(tempPath, string.Concat(asset.data.hash.ToLowerInvariant(), ".", asset.ext ?? ""));
+
+				if (File.Exists(filename) == false)
 				{
 					// Create directory
 					if (Directory.Exists(tempPath) == false)
@@ -203,14 +203,13 @@ namespace Ginger
 						}
 					}
 				}
-				catch
-				{
-					MessageBox.Show(Resources.error_open_file_in_exporer, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-					return;
-				}
+				LaunchTextEditor.OpenAnyFile(filename);
 			}
-
-			LaunchTextEditor.OpenAnyFile(filename);
+			catch
+			{
+				MessageBox.Show(Resources.error_open_file_in_exporer, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				return;
+			}
 		}
 
 		private void BtnExport_Click(object sender, EventArgs e)

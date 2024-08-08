@@ -69,6 +69,10 @@ namespace Ginger
 				labelChannel.Text = "Greeting";
 				BackColor = Constants.RecipeColorByCategory[Recipe.Category.Chat];
 				break;
+			case Recipe.Component.Greeting_Group:
+				labelChannel.Text = "Greeting (Group)";
+				BackColor = Constants.RecipeColorByCategory[Recipe.Category.Chat];
+				break;
 			case Recipe.Component.Example:
 				labelChannel.Text = "Example";
 				BackColor = Constants.RecipeColorByCategory[Recipe.Category.Chat];
@@ -123,8 +127,6 @@ namespace Ginger
 					switch (channel)
 					{
 					case Recipe.Component.System:
-						BackColor = Constants.RecipeColorByCategory[Recipe.Category.Model];
-						break;
 					case Recipe.Component.System_PostHistory:
 						BackColor = Constants.RecipeColorByCategory[Recipe.Category.Model];
 						break;
@@ -135,6 +137,7 @@ namespace Ginger
 						BackColor = Constants.RecipeColorByCategory[Recipe.Category.Story];
 						break;
 					case Recipe.Component.Greeting:
+					case Recipe.Component.Greeting_Group:
 						BackColor = Constants.RecipeColorByCategory[Recipe.Category.Chat];
 						break;
 					case Recipe.Component.Example:

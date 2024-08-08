@@ -14,9 +14,17 @@ namespace Ginger
 		public static bool CreateRecipe(string filename, string name, string title, Recipe.Category category, string recipeXml, Generator.Output output, IEnumerable<StringHandle> flags = null)
 		{
 			string[] greetings = null;
+			string[] group_greetings = null;
 			if (output.greetings != null)
 			{
 				greetings = output.greetings
+					.Select(g => Format(g))
+					.NotNull()
+					.ToArray();
+			}
+			if (output.group_greetings != null)
+			{
+				group_greetings = output.group_greetings
 					.Select(g => Format(g))
 					.NotNull()
 					.ToArray();
@@ -62,13 +70,20 @@ namespace Ginger
 			AddRecipeComponent("Grammar", grammar, null, sbXml);
 
 			if (greetings != null && greetings.Length > 0)
-				AddRecipeComponents("Greeting", greetings, sbXml);
+				AddRecipeComponents("Greeting", greetings, null, sbXml);
 			else
 				AddRecipeComponent("Greeting", null, null, sbXml);
+
+			if (group_greetings != null && group_greetings.Length > 0)
+				AddRecipeComponents("GroupGreeting", group_greetings, "group=\"true\"", sbXml);
+			else
+				AddRecipeComponent("GroupGreeting", null, null, sbXml);
 
 			// Fix <SystemPost>
 			sbXml.Replace("<PostHistory", "<System");
 			sbXml.Replace("</PostHistory", "</System");
+			sbXml.Replace("<GroupGreeting", "<Greeting");
+			sbXml.Replace("</GroupGreeting", "</Greeting");
 
 			AddRecipeLore(loreItems, sbXml);
 
@@ -96,9 +111,17 @@ namespace Ginger
 		public static bool CreateRecipe(string filename, string name, string title, Recipe.Category category, string recipeXml, Generator.OutputWithNodes output, IEnumerable<StringHandle> flags = null)
 		{
 			string[] greetings = null;
+			string[] group_greetings = null;
 			if (output.greetings != null)
 			{
 				greetings = output.greetings
+					.Select(g => Format(g))
+					.NotNull()
+					.ToArray();
+			}
+			if (output.group_greetings != null)
+			{
+				group_greetings = output.group_greetings
 					.Select(g => Format(g))
 					.NotNull()
 					.ToArray();
@@ -142,13 +165,19 @@ namespace Ginger
 			AddRecipeComponent("Grammar", grammar, null, sbXml);
 
 			if (greetings != null && greetings.Length > 0)
-				AddRecipeComponents("Greeting", greetings, sbXml);
+				AddRecipeComponents("Greeting", greetings, null, sbXml);
 			else
 				AddRecipeComponent("Greeting", null, null, sbXml);
 
-			// Fix <SystemPost>
+			if (group_greetings != null && group_greetings.Length > 0)
+				AddRecipeComponents("GroupGreeting", group_greetings, "group=\"true\"", sbXml);
+			else
+				AddRecipeComponent("GroupGreeting", null, null, sbXml);
+
 			sbXml.Replace("<PostHistory", "<System");
 			sbXml.Replace("</PostHistory", "</System");
+			sbXml.Replace("<GroupGreeting", "<Greeting");
+			sbXml.Replace("</GroupGreeting", "</Greeting");
 
 			AddRecipeLore(loreItems, sbXml);
 			AddNodes(output.nodes, sbXml);
@@ -179,24 +208,39 @@ namespace Ginger
 			return true;
 		}
 
-		public static void CreateSnippet(string filename, string snippetName, string[] texts)
+		public static void CreateSnippet(string filename, string snippetName, Generator.OutputWithNodes output)
 		{
-			if (string.IsNullOrEmpty(filename) || string.IsNullOrEmpty(snippetName)
-				|| texts == null || texts.Length == 0)
+			if (string.IsNullOrEmpty(filename) || string.IsNullOrEmpty(snippetName))
 				return;
+
+			string[] greetings = null;
+			string[] group_greetings = null;
+			if (output.greetings != null)
+			{
+				greetings = output.greetings
+					.Select(g => Format(g))
+					.NotNull()
+					.ToArray();
+			}
+			if (output.group_greetings != null)
+			{
+				group_greetings = output.group_greetings
+					.Select(g => Format(g))
+					.NotNull()
+					.ToArray();
+			}
 
 			var sbXml = new StringBuilder(Resources.snippet_template);
 			sbXml.Replace("%%NAME%%", SecurityElement.Escape(snippetName));
 			sbXml.Replace("%%AUTHOR%%", SecurityElement.Escape(Current.Card.creator.Trim()));
 
-			var system = GingerString.Escape(texts[EnumHelper.ToInt(Recipe.Component.System)]);
-			var post_history = GingerString.Escape(texts[EnumHelper.ToInt(Recipe.Component.System_PostHistory)]);
-			var persona = GingerString.Escape(texts[EnumHelper.ToInt(Recipe.Component.Persona)]);
-			var scenario = GingerString.Escape(texts[EnumHelper.ToInt(Recipe.Component.Scenario)]);
-			var grammar = GingerString.Escape(texts[EnumHelper.ToInt(Recipe.Component.Grammar)]);
-			var userPersona = GingerString.Escape(texts[EnumHelper.ToInt(Recipe.Component.UserPersona)]);
-			var greeting = GingerString.Escape(texts[EnumHelper.ToInt(Recipe.Component.Greeting)]);
-			var example = GingerString.Escape(texts[EnumHelper.ToInt(Recipe.Component.Example)]);
+			var system = GingerString.Escape(Format(output.system));
+			var post_history = GingerString.Escape(Format(output.system_post_history));
+			var persona = GingerString.Escape(Format(output.persona));
+			var scenario = GingerString.Escape(Format(output.scenario));
+			var example = GingerString.Escape(Format(output.example));
+			var grammar = GingerString.Escape(Format(output.grammar));
+			var userPersona = GingerString.Escape(Format(output.userPersona));
 
 			AddRecipeComponent("System", system, null, sbXml);
 			AddRecipeComponent("PostHistory", post_history, "important=\"true\"", sbXml);
@@ -205,11 +249,21 @@ namespace Ginger
 			AddRecipeComponent("Scenario", scenario, null, sbXml);
 			AddRecipeComponent("Example", example, null, sbXml);
 			AddRecipeComponent("Grammar", grammar, null, sbXml);
-			AddRecipeComponent("Greeting", greeting, null, sbXml);
 
-			// Fix <SystemPost>
+			if (greetings != null && greetings.Length > 0)
+				AddRecipeComponents("Greeting", greetings, null, sbXml);
+			else
+				AddRecipeComponent("Greeting", null, null, sbXml);
+
+			if (group_greetings != null && group_greetings.Length > 0)
+				AddRecipeComponents("GroupGreeting", group_greetings, "group=\"true\"", sbXml);
+			else
+				AddRecipeComponent("GroupGreeting", null, null, sbXml);
+
 			sbXml.Replace("<PostHistory", "<System");
 			sbXml.Replace("</PostHistory", "</System");
+			sbXml.Replace("<GroupGreeting", "<Greeting");
+			sbXml.Replace("</GroupGreeting", "</Greeting");
 
 			try
 			{
@@ -279,7 +333,7 @@ namespace Ginger
 			}
 		}
 
-		private static void AddRecipeComponents(string element, string[] values, StringBuilder sbXml)
+		private static void AddRecipeComponents(string element, string[] values, string arguments, StringBuilder sbXml)
 		{
 			string mask = string.Concat("%%", element.ToUpperInvariant(), "%%");
 			int pos_insert = sbXml.IndexOf(mask, 0);
@@ -293,7 +347,13 @@ namespace Ginger
 
 				var lines = SecurityElement.Escape(values[i]).Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
 
-				sb.AppendLine($"\t<{element}>");
+				sb.Append($"\t<{element}");
+				if (string.IsNullOrEmpty(arguments) == false)
+				{
+					sb.Append(" ");
+					sb.Append(arguments);
+				}
+				sb.AppendLine(">");
 				foreach (var line in lines)
 				{
 					sb.Append("\t\t");

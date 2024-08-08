@@ -544,6 +544,7 @@ namespace Ginger
 			recipes.Add(BakeChannel(output, Recipe.Component.UserPersona, Resources.user_recipe));
 			recipes.Add(BakeChannel(output, Recipe.Component.Scenario, Resources.scenario_recipe));
 			recipes.Add(BakeChannel(output, Recipe.Component.Greeting, Resources.greeting_recipe));
+			recipes.Add(BakeChannel(output, Recipe.Component.Greeting_Group, Resources.group_greeting_recipe));
 			recipes.Add(BakeChannel(output, Recipe.Component.Example, Resources.example_recipe));
 			recipes.Add(BakeChannel(output, Recipe.Component.Grammar, Resources.grammar_recipe));
 

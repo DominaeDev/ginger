@@ -28,6 +28,14 @@ namespace Ginger
 				else
 					this.greetings = null;
 
+				if (other.group_greetings != null)
+				{
+					this.group_greetings = new GingerString[other.group_greetings.Length];
+					Array.Copy(other.group_greetings, this.group_greetings, this.group_greetings.Length);
+				}
+				else
+					this.group_greetings = null;
+
 				if (other.lorebook != null)
 					lorebook = other.lorebook.Clone();
 				else
@@ -44,6 +52,7 @@ namespace Ginger
 			public GingerString grammar;
 			public GingerString greeting { get { return greetings != null && greetings.Length > 0 ? greetings[0] : default(GingerString); } }
 			public GingerString[] greetings;
+			public GingerString[] group_greetings;
 			public GingerString[] alternativeGreetings
 			{ 
 				get 
@@ -158,6 +167,7 @@ namespace Ginger
 					example,
 					grammar);
 				hash ^= Utility.MakeHashCode(greetings, Utility.HashOption.Default);
+				hash ^= Utility.MakeHashCode(group_greetings, Utility.HashOption.Default);
 				hash ^= Utility.MakeHashCode(lorebook);
 				return hash;
 			}
@@ -254,6 +264,7 @@ namespace Ginger
 			// Combine outputs
 			var outputByChannel = new GingerString[numChannels];
 			GingerString[] greetings = null;
+			GingerString[] group_greetings = null;
 			for (int iChannel = 0; iChannel < numChannels; ++iChannel)
 			{
 				var eChannel = EnumHelper.FromInt(iChannel, Recipe.Component.Invalid);
@@ -262,6 +273,13 @@ namespace Ginger
 				{
 					greetings = outputPerCharacter
 						.SelectMany(o => o.greetings)
+						.Where(g => g.IsNullOrEmpty() == false)
+						.ToArray(); 
+				}
+				else if (eChannel == Recipe.Component.Greeting_Group)
+				{
+					group_greetings = outputPerCharacter
+						.SelectMany(o => o.group_greetings)
 						.Where(g => g.IsNullOrEmpty() == false)
 						.ToArray(); 
 				}
@@ -295,6 +313,7 @@ namespace Ginger
 				example = outputByChannel[4],
 				grammar = outputByChannel[5],
 				greetings = greetings,
+				group_greetings = group_greetings,
 				lorebook = lorebook,
 			};
 #if DEBUG
@@ -369,6 +388,7 @@ namespace Ginger
 				example = exampleOutput,
 				grammar = partialOutput.grammarOutput,
 				greetings = partialOutput.greetings,
+				group_greetings = partialOutput.group_greetings,
 				lorebook = partialOutput.lore,
 			};
 		}
@@ -377,6 +397,7 @@ namespace Ginger
 		{
 			public BlockBuilder blockBuilder;
 			public GingerString[] greetings;
+			public GingerString[] group_greetings;
 			public GingerString grammarOutput;
 			public Lorebook lore;
 		}
@@ -536,6 +557,8 @@ namespace Ginger
 						var channel = template.channel;
 						if (channel == Recipe.Component.System && template.isImportant)
 							channel = Recipe.Component.System_PostHistory;
+						else if (channel == Recipe.Component.Greeting && template.isGroupOnly)
+							channel = Recipe.Component.Greeting_Group;
 
 						if (template.isRaw)
 							lsOutputsByChannel[(int)channel].Add(Text.DontProcess(text));
@@ -608,6 +631,7 @@ namespace Ginger
 
 			// Combine and finalize outputs
 			GingerString[] greetings = null;
+			GingerString[] group_greetings = null;
 			GingerString grammarOutput = new GingerString();
 
 			for (int iChannel = 0; iChannel < numChannels; ++iChannel)
@@ -637,7 +661,7 @@ namespace Ginger
 					lsOutputsByChannel[iChannel][i] = text;
 				}
 
-				if (channel == Recipe.Component.Greeting) // Separate greetings
+				if (channel == Recipe.Component.Greeting || channel == Recipe.Component.Greeting_Group) // Separate greetings
 				{
 					StringBuilder sbGreeting = new StringBuilder();
 					var lsGreetings = new List<GingerString>();
@@ -669,7 +693,10 @@ namespace Ginger
 						lsGreetings.Add(GingerString.FromString(sbGreeting.ToString()).ApplyTextStyle(Current.Card.textStyle));
 					}
 
-					greetings = lsGreetings.ToArray();
+					if (channel == Recipe.Component.Greeting)
+						greetings = lsGreetings.ToArray();
+					else if (channel == Recipe.Component.Greeting_Group)
+						group_greetings = lsGreetings.ToArray();
 				}
 				else if (channel == Recipe.Component.Example)
 				{
@@ -723,6 +750,7 @@ namespace Ginger
 				blockBuilder = blockBuilder,
 				grammarOutput = grammarOutput,
 				greetings = greetings,
+				group_greetings = group_greetings,
 				lore = Lorebook.Merge(loreEntries),
 			};
 		
@@ -738,6 +766,7 @@ namespace Ginger
 			public GingerString example;
 			public GingerString grammar;
 			public GingerString[] greetings;
+			public GingerString[] group_greetings;
 			public Lorebook lorebook;
 			public Dictionary<BlockID, string> nodes;
 			public List<AttributeBlock> attributes;
@@ -811,6 +840,7 @@ namespace Ginger
 				example = exampleOutput,
 				grammar = partialOutput.grammarOutput,
 				greetings = partialOutput.greetings,
+				group_greetings = partialOutput.group_greetings,
 				lorebook = partialOutput.lore,
 				nodes = nodes,
 				attributes = attributes,

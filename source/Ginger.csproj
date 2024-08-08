@@ -132,6 +132,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="src\Application\AppVersion.cs" />
     <Compile Include="src\Application\Constants.cs" />
     <Compile Include="src\Application\DefaultPortrait.cs" />
     <Compile Include="src\Application\Dictionaries.cs" />
@@ -816,6 +817,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Recipes\Other\prune_scenario_recipe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Recipes\Other\group_greeting_recipe.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

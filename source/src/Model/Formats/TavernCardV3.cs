@@ -91,9 +91,9 @@ namespace Ginger
 			[JsonProperty("creator_notes_multilingual")]
 			public Dictionary<string, string> creator_notes_multilingual = new Dictionary<string, string>();
 			[JsonProperty("source")]
-			public string[] source = new string[0];
+			public string[] source = new string[1] { Constants.GitHubURL };
 			[JsonProperty("group_only_greetings")]
-			public string[] alternate_greetings_for_groups = new string[0];
+			public string[] group_greetings = new string[0];
 
 			[JsonProperty("creation_date")]
 			public long? creationDate = null;
@@ -288,6 +288,7 @@ namespace Ginger
 			card.data.greeting = output.greeting.ToTavern();
 			card.data.example = output.example.ToTavernChat();
 			card.data.alternate_greetings = output.alternativeGreetings.Select(s => s.ToTavern()).ToArray();
+			card.data.group_greetings = output.group_greetings.Select(s => s.ToTavern()).ToArray();
 
 			// Append user persona
 			string userPersona = output.userPersona.ToTavern();

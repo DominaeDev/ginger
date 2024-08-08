@@ -62,7 +62,7 @@
 	</Node>
 	
 	<!-- User persona block -->
-	<Node path="user/attributes" style="line" order="200">
+	<Node path="user/attributes" style="line" order="200" rule="not (__bake or __snippet)">
 		[["{user}":  
 		{inner}  
 		]]

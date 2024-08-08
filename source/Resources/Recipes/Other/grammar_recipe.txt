@@ -5,7 +5,7 @@
 		(Only supported in Backyard AI.)
 	</Description>
 	<Color>#bfd0db</Color>
-	<Order>2</Order>
+	<Order>3</Order>
 	<Requires>not (grammar or __actor)</Requires>
 	<Flags>grammar, __grammar, __component, __internal</Flags>
 	

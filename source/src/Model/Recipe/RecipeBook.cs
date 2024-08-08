@@ -120,6 +120,7 @@ namespace Ginger
 			recipes.Add(CreateRecipeFromResource(Resources.personality_recipe,	Recipe.Type.Component, Recipe.Drawer.Components));
 			recipes.Add(CreateRecipeFromResource(Resources.grammar_recipe,		Recipe.Type.Component, Recipe.Drawer.Components));
 			recipes.Add(CreateRecipeFromResource(Resources.post_history_recipe,	Recipe.Type.Component, Recipe.Drawer.Components));
+			recipes.Add(CreateRecipeFromResource(Resources.group_greeting_recipe,	Recipe.Type.Component, Recipe.Drawer.Components));
 			recipes.Add(CreateRecipeFromResource(Resources.prune_scenario_recipe,	Recipe.Type.Component, Recipe.Drawer.Undefined));
 
 			// Load macros

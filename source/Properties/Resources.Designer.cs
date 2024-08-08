@@ -1074,6 +1074,31 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__group-greeting&quot;&gt;
+        ///	&lt;Name&gt;Group greeting&lt;/Name&gt;
+        ///	&lt;Description&gt;
+        ///		Greeting to be used in group chats.
+        ///	&lt;/Description&gt;
+        ///	&lt;Color&gt;FloralWhite&lt;/Color&gt;
+        ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
+        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
+        ///	&lt;Flags&gt;greeting, __greeting, __group-greeting,  __component, __formatting, __internal&lt;/Flags&gt;
+        ///	
+        ///	&lt;!-- Parameters --&gt;
+        ///	&lt;Text id=&quot;greeting&quot; style=&quot;component&quot;&gt;
+        ///		&lt;Label&gt;Message&lt;/Label&gt;
+        ///	&lt;/Text&gt;
+        ///	
+        ///	&lt;Greeting group=&quot;true&quot;&gt;{greeting:local}&lt;/Greeting&gt;
+        ///&lt;/Ginger&gt;.
+        /// </summary>
+        internal static string group_greeting_recipe {
+            get {
+                return ResourceManager.GetString("group_greeting_recipe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon icon {
@@ -2203,7 +2228,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If enabled, places the scenario in the example chat, allowing 
+        ///   Looks up a localized string similar to If enabled, inserts the scenario as example chat, allowing 
         ///it to leave the context over time..
         /// </summary>
         internal static string tooltip_prune_scenario {

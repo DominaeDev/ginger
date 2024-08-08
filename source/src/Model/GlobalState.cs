@@ -412,7 +412,11 @@ namespace Ginger
 				for (int i = 0; i < card.data.alternate_greetings.Length; ++i)
 					AddChannel(GingerString.FromTavern(card.data.alternate_greetings[i]).ToParameter(), Resources.greeting_recipe);
 			}
-
+			if (card.data.group_greetings != null)
+			{
+				for (int i = 0; i < card.data.group_greetings.Length; ++i)
+					AddChannel(GingerString.FromTavern(card.data.group_greetings[i]).ToParameter(), Resources.group_greeting_recipe);
+			}
 
 			if (string.IsNullOrEmpty(card.data.example) == false)
 				AddChannel(GingerString.FromTavernChat(card.data.example).ToParameter(), Resources.example_recipe);

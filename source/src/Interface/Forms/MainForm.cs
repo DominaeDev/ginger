@@ -1626,7 +1626,7 @@ namespace Ginger
 			{
 				dlg.SetOutput(output);
 				if (dlg.ShowDialog() == DialogResult.OK)
-					RecipeMaker.CreateSnippet(dlg.FileName, dlg.SnippetName, dlg.Texts);
+					RecipeMaker.CreateSnippet(dlg.FileName, dlg.SnippetName, dlg.Output);
 			}
 		}
 

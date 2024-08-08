@@ -735,9 +735,9 @@ namespace Ginger
 //			menu.Items.Add(new ToolStripStatusLabel("Additional settings"));
 //			menu.Items.Add(new ToolStripSeparator());
 
-			var output = new ToolStripMenuItem("Output");
-			menu.Items.Add(output);
-			AddSetting(output,
+//			var output = new ToolStripMenuItem("Output");
+//			menu.Items.Add(output);
+			AddSetting(menu,
 				CardData.Flag.PruneScenario,
 				"Prune scenario",
 				Resources.tooltip_prune_scenario);
@@ -745,9 +745,17 @@ namespace Ginger
 			menu.Show(sender as Control, new Point(args.X + 10, args.Y + 10));
 		}
 
-		private void AddSetting(ToolStripMenuItem output, CardData.Flag flag, string label, string tooltip)
+		private void AddSetting(ContextMenuStrip menu, CardData.Flag flag, string label, string tooltip)
 		{
-			output.DropDownItems.Add(new ToolStripMenuItem(label, null, (s, e) => { ChangeFlag(flag); }) {
+			menu.Items.Add(new ToolStripMenuItem(label, null, (s, e) => { ChangeFlag(flag); }) {
+				Checked = Current.Card.extraFlags.Contains(flag),
+				ToolTipText = tooltip,
+			});
+		}
+
+		private void AddSetting(ToolStripMenuItem menuItem, CardData.Flag flag, string label, string tooltip)
+		{
+			menuItem.DropDownItems.Add(new ToolStripMenuItem(label, null, (s, e) => { ChangeFlag(flag); }) {
 				Checked = Current.Card.extraFlags.Contains(flag),
 				ToolTipText = tooltip,
 			});

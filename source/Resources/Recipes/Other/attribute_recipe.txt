@@ -2,7 +2,7 @@
 	<Name>Other/Custom attribute</Name>
 	<Title>Custom attribute</Title>
 	<Description>Add a custom character attribute</Description>
-	<Order>3</Order>
+	<Order>4</Order>
 	<Color>#fefefe</Color>
 	<Multiple>Yes</Multiple>
 	<Flags>__component, __internal</Flags>

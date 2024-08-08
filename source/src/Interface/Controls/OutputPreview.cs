@@ -139,6 +139,20 @@ namespace Ginger
 					sbOutput.AppendLine();
 				}
 			}
+			if (output.group_greetings != null && output.group_greetings.Length > 0)
+			{
+				for (int i = 0; i < output.group_greetings.Length; ++i)
+				{
+					var greeting = output.group_greetings[i].ToOutputPreview(Recipe.Component.Greeting);
+					if (output.group_greetings.Length > 1)
+						sbOutput.AppendLine(Header(string.Format("GROUP-ONLY GREETING #{0}", i + 1)));
+					else
+						sbOutput.AppendLine(Header("GROUP-ONLY GREETING"));
+					sbOutput.AppendLine();
+					sbOutput.AppendLine(greeting);
+					sbOutput.AppendLine();
+				}
+			}
 			if (string.IsNullOrEmpty(outputGrammar) == false)
 			{
 				sbOutput.AppendLine(Header("GRAMMAR"));

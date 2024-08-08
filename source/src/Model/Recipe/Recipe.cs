@@ -23,6 +23,7 @@ namespace Ginger
 			Grammar,
 			Greeting,
 			System_PostHistory, // System/Important
+			Greeting_Group,
 
 			Count,
 		}
@@ -47,6 +48,7 @@ namespace Ginger
 				Detached	= 1 << 0,
 				Raw			= 1 << 1,
 				Important	= 1 << 2,
+				GroupOnly	= 1 << 3,
 			}
 
 			public Component channel;
@@ -57,6 +59,7 @@ namespace Ginger
 			public bool isRaw { get { return flags.Contains(Flags.Raw); } }
 			public bool isDetached { get { return flags.Contains(Flags.Detached); } }
 			public bool isImportant { get { return flags.Contains(Flags.Important); } }
+			public bool isGroupOnly { get { return flags.Contains(Flags.GroupOnly); } }
 
 			public override int GetHashCode()
 			{
@@ -348,8 +351,11 @@ namespace Ginger
 					bool detached = componentNode.GetAttributeBool("detached", false);
 					bool raw = componentNode.GetAttributeBool("raw", false);
 					bool important = false;
+					bool groupOnly = false;
 					if (componentNode.Name == "System")
 						important = componentNode.GetAttributeBool("important", false);
+					else if (componentNode.Name == "Greeting")
+						groupOnly = componentNode.GetAttributeBool("group", false);
 
 					ICondition condition = null;
 					if (componentNode.HasAttribute("rule"))
@@ -361,7 +367,8 @@ namespace Ginger
 						text = text.ConvertLinebreaks(Linebreak.CRLF),
 						flags = (detached ? Template.Flags.Detached : 0) 
 							| (raw ? Template.Flags.Raw : 0)
-							| (important ? Template.Flags.Important : 0),
+							| (important ? Template.Flags.Important : 0)
+							| (groupOnly ? Template.Flags.GroupOnly : 0),
 					});
 					componentNode = componentNode.GetNextSibling();
 				}
@@ -524,6 +531,8 @@ namespace Ginger
 					templateNode.AddAttribute("raw", true);
 				if (template.isImportant)
 					templateNode.AddAttribute("important", true);
+				if (template.isGroupOnly)
+					templateNode.AddAttribute("group", true);
 				templateNode.AddTextValue(template.text);
 			}
 

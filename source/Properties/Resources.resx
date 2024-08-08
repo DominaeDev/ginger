@@ -664,7 +664,10 @@ Some data may be missing.</value>
     <value>..\Resources\Recipes\Other\prune_scenario_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="tooltip_prune_scenario" xml:space="preserve">
-    <value>If enabled, places the scenario in the example chat, allowing 
+    <value>If enabled, inserts the scenario as example chat, allowing 
 it to leave the context over time.</value>
+  </data>
+  <data name="group_greeting_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Other\group_greeting_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

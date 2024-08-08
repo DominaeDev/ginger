@@ -14,7 +14,7 @@ namespace Ginger
 
 		public string SnippetName;
 		public string FileName;
-		public string[] Texts = null;
+		public Generator.OutputWithNodes Output;
 
 		private bool _bIgnoreEvents = false;
 
@@ -97,38 +97,51 @@ namespace Ginger
 				Recipe.Component.Persona,
 				Recipe.Component.UserPersona,
 				Recipe.Component.Scenario,
-				Recipe.Component.Example,
 				Recipe.Component.Greeting,
+				Recipe.Component.Greeting_Group,
+				Recipe.Component.Example,
 				Recipe.Component.Grammar,
 			};
 
 			for (int i = 0; i < numChannels; ++i)
 			{
 				var channel = channels[i];
-				string text = output.GetText(channel).ToString();
 
-				if (string.IsNullOrWhiteSpace(text) == false)
+				if (channel == Recipe.Component.Greeting && output.greetings != null)
 				{
-					string originalText = ToSnippet(text);
-					if (channel == Recipe.Component.Greeting || channel == Recipe.Component.Example)
-						originalText = TextStyleConverter.Convert(originalText, CardData.TextStyle.Mixed);
-
-					string swappedText = originalText;
-					GenderSwap.ToNeutralMarkers(ref swappedText); // him -> {them}
-
-					if (string.Compare(originalText, swappedText, true) != 0)
-						canSwap = true;
-
-					var snippetPanel = new SnippetPanel();
-					panelList.Controls.Add(snippetPanel);
-					panelList.Controls.SetChildIndex(snippetPanel, 0);
-					snippetPanel.Dock = DockStyle.Top;
-
-					snippetPanel.SetText(originalText, swappedText, channel);
-					panels.Add(snippetPanel);
-
-					panelHeight = snippetPanel.Size.Height;
-					bEmpty = false;
+					for (int j = 0; j < output.greetings.Length; ++j)
+					{
+						string text = output.greetings[j].ToString();
+						if (string.IsNullOrWhiteSpace(text) == false)
+						{
+							var snippetPanel = AddChannelPanel(channel, text, ref canSwap);
+							panelHeight = snippetPanel.Size.Height;
+							bEmpty = false;
+						}
+					}
+				}
+				else if (channel == Recipe.Component.Greeting_Group && output.group_greetings != null)
+				{
+					for (int j = 0; j < output.group_greetings.Length; ++j)
+					{
+						string text = output.group_greetings[j].ToString();
+						if (string.IsNullOrWhiteSpace(text) == false)
+						{
+							var snippetPanel = AddChannelPanel(channel, text, ref canSwap);
+							panelHeight = snippetPanel.Size.Height;
+							bEmpty = false;
+						}
+					}
+				}
+				else
+				{
+					string text = output.GetText(channel).ToString();
+					if (string.IsNullOrWhiteSpace(text) == false)
+					{
+						var snippetPanel = AddChannelPanel(channel, text, ref canSwap);
+						panelHeight = snippetPanel.Size.Height;
+						bEmpty = false;
+					}
 				}
 			}
 
@@ -167,6 +180,31 @@ namespace Ginger
 			panelList.Size = new System.Drawing.Size(panelList.Size.Width, listHeight + 2);
 
 			ResumeLayout();
+		}
+
+		private SnippetPanel AddChannelPanel(Recipe.Component channel, string text, ref bool bCanSwap)
+		{
+			string originalText = ToSnippet(text);
+			if (channel == Recipe.Component.Greeting
+				|| channel == Recipe.Component.Greeting_Group
+				|| channel == Recipe.Component.Example)
+				originalText = TextStyleConverter.Convert(originalText, CardData.TextStyle.Mixed);
+
+			string swappedText = originalText;
+			GenderSwap.ToNeutralMarkers(ref swappedText); // him -> {them}
+
+			if (string.Compare(originalText, swappedText, true) != 0)
+				bCanSwap = true;
+
+			var snippetPanel = new SnippetPanel();
+			panelList.Controls.Add(snippetPanel);
+			panelList.Controls.SetChildIndex(snippetPanel, 0);
+			snippetPanel.Dock = DockStyle.Top;
+
+			snippetPanel.SetText(originalText, swappedText, channel);
+			panels.Add(snippetPanel);
+
+			return snippetPanel;
 		}
 
 		private static string ToSnippet(string text)
@@ -208,7 +246,9 @@ namespace Ginger
 
 			// Prepare texts
 			int numChannels = EnumHelper.ToInt(Recipe.Component.Count);
-			Texts = new string[numChannels];
+			var outputByChannel = new Dictionary<Recipe.Component, string>();
+			var greetings = new List<string>();
+			var group_greetings = new List<string>();
 			foreach (var panel in panels)
 			{
 				if (panel.isEnabled == false)
@@ -218,10 +258,15 @@ namespace Ginger
 				if (string.IsNullOrEmpty(text))
 					continue;
 
-				Texts[EnumHelper.ToInt(panel.channel)] = text;
+				if (panel.channel == Recipe.Component.Greeting)
+					greetings.Add(text);
+				else if (panel.channel == Recipe.Component.Greeting_Group)
+					group_greetings.Add(text);
+				else
+					outputByChannel.TryAdd(panel.channel, text);
 			}
 
-			if (Texts.ContainsNoneOf(t => string.IsNullOrEmpty(t) == false))
+			if (outputByChannel.Count == 0)
 			{
 				MessageBox.Show(Resources.error_empty_snippet, Resources.cap_save_snippet_error, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				return; // All text was erased by user
@@ -237,6 +282,18 @@ namespace Ginger
 					return;
 			}
 
+			Output = new Generator.OutputWithNodes() {
+				system = GingerString.FromString(outputByChannel.GetOrDefault(Recipe.Component.System)),
+				system_post_history = GingerString.FromString(outputByChannel.GetOrDefault(Recipe.Component.System_PostHistory)),
+				persona = GingerString.FromString(outputByChannel.GetOrDefault(Recipe.Component.Persona)),
+				userPersona = GingerString.FromString(outputByChannel.GetOrDefault(Recipe.Component.UserPersona)),
+				scenario = GingerString.FromString(outputByChannel.GetOrDefault(Recipe.Component.Scenario)),
+				example = GingerString.FromString(outputByChannel.GetOrDefault(Recipe.Component.Example)),
+				grammar = GingerString.FromString(outputByChannel.GetOrDefault(Recipe.Component.Grammar)),
+				greetings = greetings.Select(g => GingerString.FromString(g)).ToArray(),
+				group_greetings = group_greetings.Select(g => GingerString.FromString(g)).ToArray(),
+			};
+
 			DialogResult = DialogResult.OK;
 			Close();
 		}
@@ -245,7 +302,6 @@ namespace Ginger
 		{
 			SnippetName = null;
 			FileName = null;
-			Texts = null;
 			DialogResult = DialogResult.Cancel;
 			Close();
 		}

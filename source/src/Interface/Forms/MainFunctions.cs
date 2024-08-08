@@ -217,6 +217,17 @@ namespace Ginger
 					(recipe.parameters[0] as TextParameter).value = text;
 					greetings.Add(recipe);
 				}
+
+				foreach (var greeting in output.group_greetings)
+				{
+					string text = greeting.ToBaked();
+					if (string.IsNullOrWhiteSpace(text))
+						continue;
+
+					Recipe recipe = RecipeBook.CreateRecipeFromResource(Resources.group_greeting_recipe, Recipe.Type.Component, Recipe.Drawer.Components);
+					(recipe.parameters[0] as TextParameter).value = text;
+					greetings.Add(recipe);
+				}
 			}
 			return greetings;
 		}
@@ -806,7 +817,7 @@ namespace Ginger
 			{
 				dlg.SetOutput(output);
 				if (dlg.ShowDialog() == DialogResult.OK)
-					RecipeMaker.CreateSnippet(dlg.FileName, dlg.SnippetName, dlg.Texts);
+					RecipeMaker.CreateSnippet(dlg.FileName, dlg.SnippetName, dlg.Output);
 			}
 		}
 

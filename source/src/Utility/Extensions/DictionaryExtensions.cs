@@ -21,5 +21,14 @@ namespace Ginger
 			}
 			return false;
 		}
+
+		public static T GetOrDefault<K, T>(this Dictionary<K, T> dictionary, K key)
+		{
+			T value;
+			if (dictionary.TryGetValue(key, out value))
+				return value;
+			else
+				return default(T);
+		}
 	}
 }
