@@ -69,9 +69,10 @@ namespace Ginger
 		public enum Flag
 		{
 			None = 0,
-			PruneScenario = 1 << 0,
+			PruneScenario			= 1 << 0,
+			UserPersonaInScenario	= 1 << 1,
 
-			Default = None,
+			Default = UserPersonaInScenario,
 		}
 		public Flag extraFlags = Flag.Default;
 

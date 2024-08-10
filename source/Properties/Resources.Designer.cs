@@ -200,7 +200,7 @@ namespace Ginger.Properties {
         ///	&lt;Name&gt;Other/Custom attribute&lt;/Name&gt;
         ///	&lt;Title&gt;Custom attribute&lt;/Title&gt;
         ///	&lt;Description&gt;Add a custom character attribute&lt;/Description&gt;
-        ///	&lt;Order&gt;3&lt;/Order&gt;
+        ///	&lt;Order&gt;10&lt;/Order&gt;
         ///	&lt;Color&gt;#fefefe&lt;/Color&gt;
         ///	&lt;Multiple&gt;Yes&lt;/Multiple&gt;
         ///	&lt;Flags&gt;__component, __internal&lt;/Flags&gt;
@@ -210,7 +210,7 @@ namespace Ginger.Properties {
         ///		&lt;Description&gt;Attribute name. (E.g., Personality, Appearance, Likes, Dislikes, ...)&lt;/Description&gt;
         ///	&lt;/Text&gt;
         ///	&lt;Text id=&quot;text-value&quot; rule=&quot;type:local is text&quot;&gt;
-        ///		&lt;Label&gt;Value&lt;/Labe [rest of string was truncated]&quot;;.
+        ///		&lt;Label&gt;Value&lt;/Lab [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string attribute_recipe {
             get {
@@ -1029,10 +1029,10 @@ namespace Ginger.Properties {
         ///	&lt;Name&gt;Other/Grammar&lt;/Name&gt;
         ///	&lt;Description&gt;
         ///		Custom grammar definition.
-        ///		(Only supported in Backyard AI.)
+        ///		(Only supported in Backyard.ai)
         ///	&lt;/Description&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
-        ///	&lt;Order&gt;2&lt;/Order&gt;
+        ///	&lt;Order&gt;3&lt;/Order&gt;
         ///	&lt;Requires&gt;not (grammar or __actor)&lt;/Requires&gt;
         ///	&lt;Flags&gt;grammar, __grammar, __component, __internal&lt;/Flags&gt;
         ///	
@@ -1042,7 +1042,7 @@ namespace Ginger.Properties {
         ///text ::= [[a-zA-Z0-9,.?!&quot; &apos;:;\n]]+]]&gt;&lt;/Default&gt;
         ///		&lt;/Text&gt;
         ///
-        ///	&lt;Grammar&gt;{grammar:local}&lt;/ [rest of string was truncated]&quot;;.
+        ///	&lt;Grammar&gt;{grammar:local}&lt;/G [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string grammar_recipe {
             get {
@@ -1075,22 +1075,23 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__group-greeting&quot;&gt;
-        ///	&lt;Name&gt;Group greeting&lt;/Name&gt;
+        ///	&lt;Name&gt;Other/Greeting (Group only)&lt;/Name&gt;
+        ///	&lt;Title&gt;Greeting (Group only)&lt;/Title&gt;
         ///	&lt;Description&gt;
-        ///		Greeting to be used in group chats.
+        ///		Greeting for group chats.
         ///	&lt;/Description&gt;
         ///	&lt;Color&gt;FloralWhite&lt;/Color&gt;
+        ///	&lt;Order&gt;2&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
-        ///	&lt;Flags&gt;greeting, __greeting, __group-greeting,  __component, __formatting, __internal&lt;/Flags&gt;
+        ///	&lt;Flags&gt;__group-greeting, __component, __formatting, __internal, __ccv3&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
         ///	&lt;Text id=&quot;greeting&quot; style=&quot;component&quot;&gt;
         ///		&lt;Label&gt;Message&lt;/Label&gt;
         ///	&lt;/Text&gt;
         ///	
-        ///	&lt;Greeting group=&quot;true&quot;&gt;{greeting:local}&lt;/Greeting&gt;
-        ///&lt;/Ginger&gt;.
+        ///	&lt;Greeting group=&quot;true&quot;&gt;{greeting:local [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string group_greeting_recipe {
             get {
@@ -1564,7 +1565,7 @@ namespace Ginger.Properties {
         ///	&lt;!-- Parameters? --&gt;
         ///	
         ///	&lt;!-- Output --&gt;
-        ///%%NODES%%%%ATTRIBUTES%%%%SYSTEM%%%%POSTHISTORY%%%%PERSONA%%%%USER%%%%SCENARIO%%%%GREETING%%%%EXAMPLE%%%%GRAMMAR%%%%LORE%%&lt;/Ginger&gt;.
+        ///%%NODES%%%%ATTRIBUTES%%%%SYSTEM%%%%POSTHISTORY%%%%PERSONA%%%%USER%%%%SCENARIO%%%%GREETING%%%%GROUPGREETING%%%%EXAMPLE%%%%GRAMMAR%%%%LORE%%&lt;/Ginger&gt;.
         /// </summary>
         internal static string recipe_template_card {
             get {
@@ -1760,7 +1761,7 @@ namespace Ginger.Properties {
         ///	&lt;Name&gt;%%NAME%%&lt;/Name&gt;
         ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///
-        ///%%SYSTEM%%%%POSTHISTORY%%%%PERSONA%%%%USER%%%%SCENARIO%%%%GREETING%%%%EXAMPLE%%%%GRAMMAR%%&lt;/Ginger&gt;.
+        ///%%SYSTEM%%%%POSTHISTORY%%%%PERSONA%%%%USER%%%%SCENARIO%%%%GREETING%%%%GROUPGREETING%%%%EXAMPLE%%%%GRAMMAR%%&lt;/Ginger&gt;.
         /// </summary>
         internal static string snippet_template {
             get {
@@ -2136,6 +2137,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enables NSFW content even if no recipe has set the NSFW flag..
+        /// </summary>
+        internal static string tooltip_mark_nsfw {
+            get {
+                return ResourceManager.GetString("tooltip_mark_nsfw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Merge all lorebooks into one.
         /// </summary>
         internal static string tooltip_merge_lorebooks {
@@ -2372,6 +2382,24 @@ namespace Ginger.Properties {
         internal static string tooltip_user_gender {
             get {
                 return ResourceManager.GetString("tooltip_user_gender", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If enabled, place the user persona inside the character persona..
+        /// </summary>
+        internal static string tooltip_user_in_persona {
+            get {
+                return ResourceManager.GetString("tooltip_user_in_persona", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If enabled, place the user persona inside the scenario..
+        /// </summary>
+        internal static string tooltip_user_in_scenario {
+            get {
+                return ResourceManager.GetString("tooltip_user_in_scenario", resourceCulture);
             }
         }
         

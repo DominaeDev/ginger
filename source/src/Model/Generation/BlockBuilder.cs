@@ -213,7 +213,7 @@ namespace Ginger
 			Replace,	// Replace existing
 			Discard,	// Remove existing
 			Exclusive,	// Can only be replaced by another exclusive
-			Exclude,	// Will be replaced by another
+			Exclude,	// Can be replaced by another
 			Parent,		// Require parent
 			Sibling,	// Require sibling
 

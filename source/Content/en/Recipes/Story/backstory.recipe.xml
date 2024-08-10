@@ -16,10 +16,10 @@
 	</Text>
 		
 	<!-- Output -->
-	<Node path="scenario/premise" style="block" mode="exclude">
+	<Node path="scenario/output/premise" style="block" order="600">
 		[p]Premise:  
 		{inner} 
 	</Node>
-	<Node path="scenario/premise/summary" rule="text">{text}.</Node>
+	<Node path="scenario/output/premise/text" rule="text">{text}.</Node>
 
 </Ginger>

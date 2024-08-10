@@ -1142,7 +1142,7 @@ namespace Ginger
 
 			// Settings
 			autoConvertNameMenuItem.Checked = AppSettings.Settings.AutoConvertNames;
-			showNSFWRecipesMenuItem.Checked = AppSettings.Settings.ShowNSFW;
+			showNSFWRecipesMenuItem.Checked = AppSettings.Settings.AllowNSFW;
 			autoBreakMenuItem.Checked = AppSettings.Settings.AutoBreakLine;
 			enableSpellCheckingMenuItem.Checked = AppSettings.Settings.SpellChecking;
 
@@ -1794,7 +1794,7 @@ namespace Ginger
 				return;
 			}
 
-			AppSettings.Settings.ShowNSFW = showNSFWRecipesMenuItem.Checked;
+			AppSettings.Settings.AllowNSFW = showNSFWRecipesMenuItem.Checked;
 			AppSettings.Settings.ConfirmNSFW = false;
 			recipeList.RefreshParameterVisibility();
 			Current.IsDirty = true;

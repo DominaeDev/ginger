@@ -70,11 +70,7 @@ namespace Ginger
 			{
 				var recipe = new Recipe(recipeFiles[i]);
 				if (recipe.LoadFromXml(recipeFiles[i], "Ginger"))
-				{
-					if (recipeFiles[i].ToLowerInvariant().Contains("nsfw"))
-						recipe.flags.Add("nsfw"); // Tag as nsfw by folder
 					recipes.Add(recipe);
-				}
 			}
 			recipes = recipes.Distinct(new RecipeEqualityComparer()).ToList();
 
@@ -158,7 +154,7 @@ namespace Ginger
 				.Where(r => {
 					if (r.path.Length == 0)
 						return false;
-					if (r.isNSFW && !AppSettings.Settings.ShowNSFW)
+					if (r.isNSFW && !AppSettings.Settings.AllowNSFW)
 						return false; // Not allowed
 					if (r.isHidden)
 						return false; // Hidden
@@ -193,7 +189,7 @@ namespace Ginger
 
 			return recipes
 				.Where(r => {
-					if (r.isNSFW && !AppSettings.Settings.ShowNSFW)
+					if (r.isNSFW && !AppSettings.Settings.AllowNSFW)
 						return false; // Not allowed
 					if (r.isHidden)
 						return false; // Hidden

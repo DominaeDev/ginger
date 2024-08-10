@@ -670,4 +670,13 @@ it to leave the context over time.</value>
   <data name="group_greeting_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Recipes\Other\group_greeting_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="tooltip_mark_nsfw" xml:space="preserve">
+    <value>Enables NSFW content even if no recipe has set the NSFW flag.</value>
+  </data>
+  <data name="tooltip_user_in_persona" xml:space="preserve">
+    <value>If enabled, place the user persona inside the character persona.</value>
+  </data>
+  <data name="tooltip_user_in_scenario" xml:space="preserve">
+    <value>If enabled, place the user persona inside the scenario.</value>
+  </data>
 </root>

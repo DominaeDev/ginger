@@ -1,5 +1,5 @@
-﻿<Ginger version="1.0">
-	<Name>Modifiers/Stay awake</Name>
+﻿<Ginger id="stay-awake" version="1.0">
+	<Name>Modifiers/Behavior/Stay awake</Name>
 	<Title>Stay awake</Title>
 	<Description>Disuade the bot from wanting to go to sleep.</Description>
 	<Author>Ginger</Author>

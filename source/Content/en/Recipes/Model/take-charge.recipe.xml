@@ -1,6 +1,6 @@
-﻿<Ginger version="1.0">
-	<Name>Modifiers/Take charge</Name>
-	<Title>Take charge</Title>
+﻿<Ginger id="take-charge" version="1.0">
+	<Name>Modifiers/Behavior/Be proactive</Name>
+	<Title>Be proactive</Title>
 	<Description>Encourage the bot to take initiative and push the story forward.</Description>
 	<Author>Ginger</Author>
 	<Category>Modifier</Category>

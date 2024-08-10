@@ -102,7 +102,7 @@ namespace Ginger
 			}
 
 			// Allow nsfw?
-			if (AppSettings.Settings.ShowNSFW)
+			if (AppSettings.Settings.AllowNSFW)
 				context.AddTag("allow-nsfw");
 
 			// Level of detail

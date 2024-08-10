@@ -1,0 +1,40 @@
+﻿<Ginger version="1.0">
+	<!-- Preamble -->
+	<Name>Appearance/Shortstack</Name>
+	<Title>Shortstack</Title>
+	<Author>Ginger</Author>
+	<Category>Appearance</Category>
+	<Flags>shortstack</Flags>
+	<Description>
+		The character is short, yet voluptuous.
+	</Description>
+	
+	<!-- Parameters -->
+
+	<Number id="height" style="length" min="0" shared="yes" rule="not height">
+		<Label>Height</Label>
+		<Placeholder>Height (cm/ft)</Placeholder>
+		<Default>5 ft</Default>
+		<Description>
+			Enter the character's height.
+			(Use either metric or imperial units.)
+		</Description>
+	</Number>
+	
+	<Attribute order="100" rule="height:local">
+		<Name>Height</Name>
+		<Value>[less-detail?{height}|{height.ftin} ({height.cm})]</Value>
+	</Attribute>
+	<Hint rule="height and not height:local">Height is already defined.</Hint>	
+	
+	<Attribute>
+		<Name>Appearance</Name>
+		<Value>short, shortstack</Value>
+	</Attribute>
+	
+	<!-- Output -->
+	<Persona>
+		[Name] is very short, has wide hips, thick thighs and a large [nsfw?ass|backside].
+	</Persona>
+
+</Ginger>

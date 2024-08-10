@@ -15,7 +15,7 @@ namespace Ginger
 		{
 			public static bool AutoConvertNames = true;
 			public static string UserPlaceholder = "User";
-			public static bool ShowNSFW = false;
+			public static bool AllowNSFW = false;
 			public static bool ConfirmNSFW = true;
 			public static int UndoSteps = 80;
 			public static int TokenBudget = 0;
@@ -181,7 +181,7 @@ namespace Ginger
 			{
 				ReadBool(ref Settings.AutoConvertNames, settingsSection, "AutoConvertNames");
 				ReadString(ref Settings.UserPlaceholder, settingsSection, "UserPlaceholder");
-				ReadBool(ref Settings.ShowNSFW, settingsSection, "ShowNSFW");
+				ReadBool(ref Settings.AllowNSFW, settingsSection, "ShowNSFW");
 				ReadBool(ref Settings.ConfirmNSFW, settingsSection, "ConfirmNSFW");
 				ReadInt(ref Settings.UndoSteps, settingsSection, "UndoSteps");
 				ReadInt(ref Settings.TokenBudget, settingsSection, "TokenBudget", 0, 32768);
@@ -314,7 +314,7 @@ namespace Ginger
 						Write(outputFile, "FormBuffering", Settings.EnableFormLevelBuffering);
 					Write(outputFile, "AutoConvertNames", Settings.AutoConvertNames);
 					Write(outputFile, "UserPlaceholder", Settings.UserPlaceholder);
-					Write(outputFile, "ShowNSFW", Settings.ShowNSFW);
+					Write(outputFile, "ShowNSFW", Settings.AllowNSFW);
 					Write(outputFile, "ConfirmNSFW", Settings.ConfirmNSFW);
 					Write(outputFile, "UndoSteps", Settings.UndoSteps);
 					Write(outputFile, "TokenBudget", Settings.TokenBudget);

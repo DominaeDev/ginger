@@ -732,33 +732,52 @@ namespace Ginger
 		{
 			ContextMenuStrip menu = new ContextMenuStrip();
 
-//			menu.Items.Add(new ToolStripStatusLabel("Additional settings"));
+//			var label = new ToolStripStatusLabel("Miscellaneous settings");
+//			label.ForeColor = SystemColors.GrayText;
+//			menu.Items.Add(label);
 //			menu.Items.Add(new ToolStripSeparator());
 
-//			var output = new ToolStripMenuItem("Output");
-//			menu.Items.Add(output);
-			AddSetting(menu,
+			var scenario = new ToolStripMenuItem("Scenario");
+			menu.Items.Add(scenario);
+			AddSetting(scenario,
 				CardData.Flag.PruneScenario,
 				"Prune scenario",
 				Resources.tooltip_prune_scenario);
 
+			var userMenu = new ToolStripMenuItem("User persona");
+			menu.Items.Add(userMenu);
+			AddSetting(userMenu,
+				CardData.Flag.UserPersonaInScenario,
+				"In character persona",
+				Resources.tooltip_user_in_persona,
+				true);
+			AddSetting(userMenu,
+				CardData.Flag.UserPersonaInScenario,
+				"In scenario",
+				Resources.tooltip_user_in_scenario,
+				false);
+
 			menu.Show(sender as Control, new Point(args.X + 10, args.Y + 10));
 		}
 
-		private void AddSetting(ContextMenuStrip menu, CardData.Flag flag, string label, string tooltip)
+		private ToolStripMenuItem AddSetting(ContextMenuStrip menu, CardData.Flag flag, string label, string tooltip, bool inverse = false)
 		{
-			menu.Items.Add(new ToolStripMenuItem(label, null, (s, e) => { ChangeFlag(flag); }) {
-				Checked = Current.Card.extraFlags.Contains(flag),
+			var menuItem = new ToolStripMenuItem(label, null, (s, e) => { ChangeFlag(flag); }) {
+				Checked = Current.Card.extraFlags.Contains(flag) != inverse,
 				ToolTipText = tooltip,
-			});
+			};
+			menu.Items.Add(menuItem);
+			return menuItem;
 		}
 
-		private void AddSetting(ToolStripMenuItem menuItem, CardData.Flag flag, string label, string tooltip)
+		private ToolStripMenuItem AddSetting(ToolStripMenuItem parentItem, CardData.Flag flag, string label, string tooltip, bool inverse = false)
 		{
-			menuItem.DropDownItems.Add(new ToolStripMenuItem(label, null, (s, e) => { ChangeFlag(flag); }) {
-				Checked = Current.Card.extraFlags.Contains(flag),
+			var menuItem = new ToolStripMenuItem(label, null, (s, e) => { ChangeFlag(flag); }) {
+				Checked = Current.Card.extraFlags.Contains(flag) != inverse,
 				ToolTipText = tooltip,
-			});
+			};
+			parentItem.DropDownItems.Add(menuItem);
+			return menuItem;
 		}
 
 		private void ChangeFlag(CardData.Flag flag)

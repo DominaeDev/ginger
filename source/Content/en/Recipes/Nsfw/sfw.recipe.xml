@@ -1,10 +1,18 @@
 ﻿<Ginger id="toggle-nsfw" version="1.0">
-	<Name>Modifiers/Force SFW</Name>
-	<Description>Disable any NSFW content regardless of setting.</Description>
+	<Name>Modifiers/Toggle NSFW//SFW</Name>
+	<Description>Overrides the NSFW content setting.</Description>
 	<Author>Ginger</Author>
 	<Category>Modifier</Category>
+	<Requires>allow-nsfw</Requires>
 	
-	<Erase>nsfw</Erase>
-	<Erase>allow-nsfw</Erase>
+	<Choice id="toggle" style="radio" required="yes">
+		<Label>NSFW</Label>
+		<Option>On</Option>
+		<Option>Off</Option>
+		<Default>Off</Default>
+	</Choice>
+	
+	<Erase rule="toggle is off">nsfw, allow-nsfw</Erase>
+	<SetFlag rule="toggle is on">nsfw, allow-nsfw</SetFlag>
 
 </Ginger>

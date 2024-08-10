@@ -272,7 +272,12 @@ namespace Ginger
 			// Append user persona
 			string userPersona = output.userPersona.ToTavern();
 			if (string.IsNullOrEmpty(userPersona) == false)
-				card.scenario = string.Concat(card.scenario, "\n\n", userPersona).Trim();
+			{
+				if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario))
+					card.scenario = string.Concat(card.scenario, "\n\n", userPersona).Trim();
+				else
+					card.persona = string.Concat(card.persona, "\n\n", userPersona).Trim();
+			}
 
 			if (output.hasLore)
 			{

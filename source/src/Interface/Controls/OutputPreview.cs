@@ -57,6 +57,20 @@ namespace Ginger
 					}
 				}
 			}
+			
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern
+				|| AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
+			{
+				// Combine user persona
+				if (string.IsNullOrEmpty(outputUserPersona) == false)
+				{
+					if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario)) // -> Scenario
+						outputScenario = string.Concat(outputScenario, "\r\n\r\n", outputUserPersona).Trim();
+					else // -> Persona
+						outputPersona = string.Concat(outputPersona, "\r\n\r\n", outputUserPersona).Trim();
+					outputUserPersona = null;
+				}
+			}
 
 			if (output.userPersona.IsNullOrEmpty() == false)
 			{
@@ -203,7 +217,7 @@ namespace Ginger
 				Enabled = SelectionLength > 0,
 			});
 
-			menu.Items.Add(new ToolStripMenuItem("Copy all", null, (s, e) => { SelectAll(); Copy(); }));
+			menu.Items.Add(new ToolStripMenuItem("Copy all", null, (s, e) => { CopyAll(); }));
 
 			menu.Items.Add(new ToolStripSeparator());
 
@@ -215,17 +229,28 @@ namespace Ginger
 				(s, e) => { Copy(Recipe.Component.Persona); }) {
 				Enabled = output.persona.IsNullOrEmpty() == false,
 			});
+			if (output.userPersona.IsNullOrEmpty() == false 
+				&& (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Default 
+				|| AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.PlainText))
+			{
+				menu.Items.Add(new ToolStripMenuItem("Copy user persona", null,
+					(s, e) => { Copy(Recipe.Component.UserPersona); }) {
+					Enabled = output.persona.IsNullOrEmpty() == false,
+				});
+			}
+
+
 			menu.Items.Add(new ToolStripMenuItem("Copy scenario", null, 
 				(s, e) => { Copy(Recipe.Component.Scenario); }) {
 				Enabled = output.scenario.IsNullOrEmpty() == false,
 			});
-			menu.Items.Add(new ToolStripMenuItem("Copy greeting", null, 
-				(s, e) => { Copy(Recipe.Component.Greeting); }) {
-				Enabled = output.greeting.IsNullOrEmpty() == false,
-			});
 			menu.Items.Add(new ToolStripMenuItem("Copy example chat", null, 
 				(s, e) => { Copy(Recipe.Component.Example); }) {
 				Enabled = output.example.IsNullOrEmpty() == false,
+			});
+			menu.Items.Add(new ToolStripMenuItem("Copy greeting", null, 
+				(s, e) => { Copy(Recipe.Component.Greeting); }) {
+				Enabled = output.greeting.IsNullOrEmpty() == false,
 			});
 			menu.Items.Add(new ToolStripMenuItem("Copy grammar", null, 
 				(s, e) => { Copy(Recipe.Component.Grammar); }) {
@@ -279,9 +304,19 @@ namespace Ginger
 			if (string.IsNullOrEmpty(outputSystemPostHistory) == false)
 				outputSystem = string.Join("\r\n", outputSystem, outputSystemPostHistory).TrimStart();
 
-			// Combine scenario + user info
-			if (string.IsNullOrEmpty(outputUserPersona) == false)
-				outputScenario = string.Concat(outputScenario, "\n\n", outputUserPersona).Trim();
+			// Combine user info
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern
+				|| AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
+			{
+				if (string.IsNullOrEmpty(outputUserPersona) == false)
+				{
+					if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario)) // -> Scenario
+						outputScenario = string.Concat(outputScenario, "\r\n\r\n", outputUserPersona).Trim();
+					else // -> Persona
+						outputPersona = string.Concat(outputPersona, "\r\n\r\n", outputUserPersona).Trim();
+				}
+				outputUserPersona = null;
+			}
 
 			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
 			{
@@ -301,17 +336,6 @@ namespace Ginger
 						outputSystem = sbSystem.ToString();
 					}
 				}
-			}
-
-			if (output.userPersona.IsNullOrEmpty() == false)
-			{
-				// Append user persona to the persona for a more accurate token count
-				string scenario = output.scenario.ToString() ?? "";
-				string userPersona = output.userPersona.ToString();
-
-				scenario = string.Concat(scenario, "\r\n\r\n\"{user}\":\r\n[", userPersona, "]").Trim();
-				output.scenario = GingerString.FromString(scenario);
-				output.userPersona = new GingerString(); // Empty
 			}
 
 			switch (component)
@@ -338,6 +362,129 @@ namespace Ginger
 				CopyToClipboard(outputGrammar);
 				break;
 			}
+		}
+
+		private void CopyAll()
+		{
+			string outputSystem = output.system.ToOutputPreview();
+			string outputSystemPostHistory = output.system_post_history.ToOutputPreview();
+			string outputPersona = output.persona.ToOutputPreview();
+			string outputUserPersona = output.userPersona.ToOutputPreview();
+			string outputScenario = output.scenario.ToOutputPreview();
+			string outputGreeting = output.greeting.ToOutputPreview(Recipe.Component.Greeting);
+			string outputExample = output.example.ToOutputPreview(Recipe.Component.Example);
+			string outputGrammar = output.grammar.ToOutputPreview();
+
+			// Combine system prompts
+			if (string.IsNullOrEmpty(outputSystemPostHistory) == false)
+				outputSystem = string.Join("\r\n", outputSystem, outputSystemPostHistory).TrimStart();
+
+			// Combine user info
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern
+				|| AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
+			{
+				if (string.IsNullOrEmpty(outputUserPersona) == false)
+				{
+					if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario)) // -> Scenario
+						outputScenario = string.Concat(outputScenario, "\r\n\r\n", outputUserPersona).Trim();
+					else // -> Persona
+						outputPersona = string.Concat(outputPersona, "\r\n\r\n", outputUserPersona).Trim();
+				}
+				outputUserPersona = null;
+			}
+
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
+			{
+				// Add default system prompt if empty
+				string original = FaradayCardV4.OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)];
+				if (string.IsNullOrWhiteSpace(outputSystem))
+					outputSystem = original;
+				else
+				{
+					int pos_original = outputSystem.IndexOf("{original}", 0);
+					if (pos_original != -1)
+					{
+						var sbSystem = new StringBuilder(outputSystem);
+						sbSystem.Remove(pos_original, 10);
+						sbSystem.Insert(pos_original, original);
+						sbSystem.Replace("{original}", ""); // Only once
+						outputSystem = sbSystem.ToString();
+					}
+				}
+			}
+
+			StringBuilder sb = new StringBuilder();
+			if (string.IsNullOrEmpty(outputSystem) == false)
+			{
+				sb.AppendLine("System prompt:");
+				sb.AppendLine(outputSystem);
+			}
+			if (string.IsNullOrEmpty(outputPersona) == false)
+			{
+				sb.NewParagraph();
+				sb.AppendLine("Character persona:");
+				sb.AppendLine(outputPersona);
+			}
+			if (string.IsNullOrEmpty(outputUserPersona) == false)
+			{
+				sb.NewParagraph();
+				sb.AppendLine("User persona:");
+				sb.AppendLine(outputUserPersona);
+			}			
+			if (string.IsNullOrEmpty(outputScenario) == false)
+			{
+				sb.NewParagraph();
+				sb.AppendLine("Scenario:");
+				sb.AppendLine(outputScenario);
+			}
+
+			if (string.IsNullOrEmpty(outputGreeting) == false)
+			{
+				sb.NewParagraph();
+				sb.AppendLine("Greeting:");
+				sb.AppendLine(outputGreeting);
+			}
+			if (output.greetings != null && output.greetings.Length > 1)
+			{
+				for (int i = 1; i < output.greetings.Length; ++i)
+				{
+					sb.NewParagraph();
+					var greeting = output.greetings[i].ToOutputPreview(Recipe.Component.Greeting);
+					if (output.greetings.Length > 2)
+						sb.AppendLine(string.Format("Alternate greeting #{0}:", i));
+					else
+						sb.AppendLine("Alternate greeting:");
+					sb.AppendLine(greeting);
+				}
+			}
+			if (output.group_greetings != null && output.group_greetings.Length > 0)
+			{
+				for (int i = 0; i < output.group_greetings.Length; ++i)
+				{
+					sb.NewParagraph();
+					var greeting = output.group_greetings[i].ToOutputPreview(Recipe.Component.Greeting);
+					if (output.group_greetings.Length > 1)
+						sb.AppendLine(string.Format("Group-only greeting #{0}:", i + 1));
+					else
+						sb.AppendLine("Group-only greeting:");
+					sb.AppendLine(greeting);
+				}
+			}
+
+			if (string.IsNullOrEmpty(outputExample) == false)
+			{
+				sb.NewParagraph();
+				sb.AppendLine("Example chat:");
+				sb.AppendLine(outputExample);
+			}
+			if (string.IsNullOrEmpty(outputGrammar) == false)
+			{
+				sb.NewParagraph();
+				sb.AppendLine("Grammar:");
+				sb.AppendLine(outputGrammar);
+			}
+
+			CopyToClipboard(sb.ToString());
 		}
 
 		private static void CopyToClipboard(string text)

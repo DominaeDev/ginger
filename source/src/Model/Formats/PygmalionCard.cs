@@ -114,7 +114,12 @@ namespace Ginger
 			// Append user persona
 			string userPersona = output.userPersona.ToTavern();
 			if (string.IsNullOrEmpty(userPersona) == false)
-				card.persona = string.Concat(userPersona, "\n\n", card.persona).Trim();
+			{
+				if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario))
+					card.scenario = string.Concat(card.scenario, "\n\n", userPersona).Trim();
+				else
+					card.persona = string.Concat(card.persona, "\n\n", userPersona).Trim();
+			}
 
 			card.metaData.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToUnixTimeMilliseconds();
 			card.metaData.updateDate = DateTime.UtcNow.ToUnixTimeMilliseconds();

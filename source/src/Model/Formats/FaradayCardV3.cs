@@ -146,7 +146,12 @@ namespace Ginger
 			// Append user persona
 			string userPersona = output.userPersona.ToFaraday();
 			if (string.IsNullOrEmpty(userPersona) == false)
-				card.data.scenario = string.Concat(card.data.scenario, "\n\n", userPersona).Trim();
+			{
+				if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario))
+					card.data.scenario = string.Concat(card.data.scenario, "\n\n", userPersona).Trim();
+				else
+					card.data.persona = string.Concat(card.data.persona, "\n\n", userPersona).Trim();
+			}
 
 			// Join system prompt + post_history (jic. post_history should be empty)
 			string system_post = output.system_post_history.ToFaraday();
