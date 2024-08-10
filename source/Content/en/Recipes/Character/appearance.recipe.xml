@@ -252,7 +252,7 @@
 	<Node path="appearance/body" order="10" rule="normal-detail and body-type is plump">[Their] body is rather plump, with soft, round features.</Node>
 	<Node path="appearance/body" order="10" rule="normal-detail and body-type is short">[They] [are] quite short, substantially shorter than [user].</Node>
 	<Node path="appearance/body" order="10" rule="normal-detail and body-type is shortstack">[They] [are] very short, has very wide hips, thick thighs and a huge [allow-nsfw?ass|posterior].</Node>
-	<Node path="appearance/body" order="10" rule="normal-detail and body-type is skinny">[char] has a very skinny, lithe body.</Node>
+	<Node path="appearance/body" order="10" rule="normal-detail and body-type is skinny">[char] has a skinny, lithe body.</Node>
 	<Node path="appearance/body" order="10" rule="normal-detail and body-type is slender">[Their] body is lean, slender and flexible[is-woman?, with a narrow waist].</Node>
 	<Node path="appearance/body" order="10" rule="normal-detail and body-type is small">[Their] body is small, with a slim and petite frame.</Node>
 	<Node path="appearance/body" order="10" rule="normal-detail and body-type is tall">[They] [are] quite tall, significantly taller than [user].</Node>

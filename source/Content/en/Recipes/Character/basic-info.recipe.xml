@@ -81,6 +81,6 @@
 	</Attribute>
 
 	<!-- Background -->
-	<Node path="description/background" rule="background">{background}.</Node>
+	<Node path="description/background" order="100" rule="background">{background}.</Node>
 
 </Ginger>

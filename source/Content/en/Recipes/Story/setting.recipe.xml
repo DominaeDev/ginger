@@ -20,7 +20,7 @@
 	</Node>
 
 	<!-- Output -->	
-	<Node path="scenario/world/description/summary" style="text" mode="exclude"/>
+	<Node path="scenario/world/description/summary" style="block" mode="exclude"/>
 	<Node path="scenario/world/description/summary/text">{text}</Node>
 
 </Ginger>

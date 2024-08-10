@@ -16,7 +16,7 @@
 		]
 	</Node>
 	
-	<Attribute style="text">
+	<Attribute style="block">
 		<Name>Speech pattern</Name>
 		<Value>[char] habitually mixes profanity into their speech; words like 'fuck', 'fucking', 'damn', 'shit' and similar profanities. [They] often inject[s] profanities in [their] responses for emphasis.</Value>
 	</Attribute>

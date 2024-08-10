@@ -57,12 +57,12 @@
 		<Value>[@occupation]</Value>
 	</Attribute>
 	
-	<Attribute style="text" rule="maid">
+	<Attribute style="block" rule="maid">
 		<Name>Outfit</Name>
 		<Value>{{char}} wears a French maid outfit; a black dress with short frilly skirt, cute headband, collar with a bow, white wristbands, stockings with garterbelt, and a white apron with frilly shoulder bands. [normal-detail?The clicks of [their] heels can be heard echoing through the halls of the mansion.]</Value>
 	</Attribute>
 	
-	<Attribute style="text" rule="butler">
+	<Attribute style="block" rule="butler">
 		<Name>Outfit</Name>
 		<Value>[char] wears a traditional butler outfit; a black tuxedo with black pants, a pristine white shirt, a bowtie, and shiny black shoes.</Value>
 	</Attribute>

@@ -15,7 +15,7 @@
 	</Text>
 	
 	<!-- Output -->
-	<Node path="persona/behavior" style="text" order="800" mode="exclude">
+	<Node path="persona/behavior" style="block" order="800" mode="exclude">
 		[char's] behavior:  
 		{inner}
 	</Node>

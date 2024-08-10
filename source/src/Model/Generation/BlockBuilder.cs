@@ -211,7 +211,7 @@ namespace Ginger
 		{
 			Append = 0,
 			Replace,	// Replace existing
-			Remove,		// Remove existing
+			Discard,	// Remove existing
 			Exclusive,	// Can only be replaced by another exclusive
 			Exclude,	// Will be replaced by another
 			Parent,		// Require parent
@@ -319,7 +319,7 @@ namespace Ginger
 				condition = Rule.Parse(xmlNode.GetAttribute("rule"));
 
 			mode = xmlNode.GetAttributeEnum("mode", Mode.Default);
-			if (mode == Mode.Remove)
+			if (mode == Mode.Discard)
 				return false; // Not allowed for attributes
 
 			order = xmlNode.GetAttributeInt("order", DefaultOrder);
@@ -439,7 +439,7 @@ namespace Ginger
 				_entries.Add(blockID, new List<Entry>()); // Add
 			else if (mode == Block.Mode.Exclusive)
 				_entries[blockID].Clear(); // Replace
-			else if (mode == Block.Mode.Remove)
+			else if (mode == Block.Mode.Discard)
 			{
 				_entries = _entries.Where(e => !(e.Key == blockID || e.Key.IsChildOf(blockID))) // Remove (incl. children)
 					.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);

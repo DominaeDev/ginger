@@ -41,7 +41,7 @@
 	<!-- Output -->
 	<Attribute style="list" order="450" rule="less-detail and has-outfit">
 		<Name>Outfit</Name>
-		<Value>{top.lower}; {bottom.lower}; {accessories.lower}; {glasses?glasses};</Value>
+		<Value>[!commalist:{top.lower}; {bottom.lower}; {accessories.lower}; {glasses?glasses}]</Value>
 	</Attribute>
 	
 	<Node path="persona/appearance/outfit" order="600" rule="normal-detail and has-outfit and placement is persona">Today, [char] is wearing [!list:{top.lower}; {bottom.lower}; {accessories.lower}; {glasses?glasses}].</Node>
@@ -82,7 +82,5 @@
 		<Name>[@lore-key]</Name>
 		<Value>[@outfit]</Value>
 	</Lore>	
-	
-	        <Name>underwear, unmentionables, undress*, strip*, panties</Name>
 	
 </Ginger>

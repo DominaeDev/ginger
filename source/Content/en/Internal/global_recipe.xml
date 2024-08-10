@@ -48,21 +48,21 @@
 	<Node path="persona/attributes/appearance" style="list" order="400">[!__attrib:Appearance]{inner}</Node>
 
 	<!-- Description block -->
-	<Node path="persona/description" style="text" order="600" rule="not multi-character"/>
-	<Node path="persona/description" style="text" order="600" rule="multi-character">
+	<Node path="persona/description" style="block" order="600" rule="not multi-character"/>
+	<Node path="persona/description" style="block" order="600" rule="multi-character">
 		[char's] description:  
 		{inner}
 	</Node>
 
 	<!-- Appearance block -->
-	<Node path="persona/appearance" style="text" order="700" rule="not multi-character"/>
-	<Node path="persona/appearance" style="text" order="700" rule="multi-character">
+	<Node path="persona/appearance" style="block" order="700" rule="not multi-character"/>
+	<Node path="persona/appearance" style="block" order="700" rule="multi-character">
 		[char's] appearance:  
 		{inner}
 	</Node>
 	
 	<!-- User persona block -->
-	<Node path="user/attributes" style="line" order="200" rule="not (__bake or __snippet)">
+	<Node path="user/attributes" style="line" order="200">
 		[["{user}":  
 		{inner}  
 		]]

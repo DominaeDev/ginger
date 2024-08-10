@@ -1,4 +1,4 @@
-<Ginger version="1.0">
+<Ginger id="sexuality" version="1.1">
 	<Name>Sexuality/Sexuality</Name>
 	<Description>Describe the sexual preferences of this character.</Description>
 	<Author>Ginger</Author>
@@ -12,7 +12,7 @@
 		<Option>Bisexual</Option>
 		<Option>Homosexual</Option>
 		<Option>Pansexual</Option>
-		<Option>Asexual</Option>
+		<Option id="asexual">None</Option>
 	</Choice>
 	
 	<List id="fetishes">
@@ -30,26 +30,21 @@
 		<Value>{sexuality.capital}</Value>
 	</Attribute>
 	
-	<String id="attraction" rule="more-detail and (male or female) and not sexuality:custom">(attracted to [@attracted-to])</String>
 	<String id="attracted-to">
-		<String rule="male and heterosexual">women</String>
-		<String rule="male and homosexual">other men</String>
-		<String rule="female and heterosexual">men</String>
-		<String rule="female and homosexual">other women</String>
-		<String rule="bisexual">both men and women</String>
-		<String rule="pansexual">all genders</String>
-		<String rule="asexual">neither men nor women</String>
+		<String rule="male and heterosexual:local">women</String>
+		<String rule="male and homosexual:local">other men</String>
+		<String rule="female and heterosexual:local">men</String>
+		<String rule="female and homosexual:local">other women</String>
+		<String rule="bisexual:local">both men and women</String>
+		<String rule="pansexual:local">all genders</String>
+		<String rule="asexual:local">neither men nor women</String>
 	</String>
 	
-	<Node path="description/sexuality" order="10" rule="heterosexual and normal-detail">[char] is straight [@attraction].</Node>
-	<Node path="description/sexuality" order="10" rule="bisexual and not normal-detail">[char] is bisexual [@attraction].</Node>
-	<Node path="description/sexuality" order="10" rule="homosexual and normal-detail">[char] is [female?a lesbian|homosexual] [@attraction].</Node>
-	<Node path="description/sexuality" order="10" rule="pansexual and normal-detail">[char] is pansexual [@attraction].</Node>
-	<Node path="description/sexuality" order="10" rule="asexual and normal-detail">[char] is asexual [@attraction].</Node>
-	<Node path="description/sexuality" order="10" rule="more">{more}.</Node>
+	<Node path="description/sexuality" order="300" rule="normal-detail">[char] is attracted to [@attracted-to].</Node>
+	<Node path="description/sexuality" order="300" rule="more">{more}.</Node>
 
 	<Attribute style="list">
-		<Name>Fetishes</Name>
+		<Name>Turn-ons</Name>
 		<Value>{fetishes}</Value>
 	</Attribute>
 

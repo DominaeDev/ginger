@@ -609,19 +609,19 @@ namespace Ginger
 			};
 			foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
 			{
-				if (parameter.isConditional == false)
-					continue;
-
-				var parameterPanel = _parameterPanels.Find(p => p.GetParameter() == parameter);
-
-				if (parameterPanel != null)
+				if (parameter.isConditional)
 				{
-					var localContext = Context.Copy(parameterState.evalContext);
-					parameterState.localParameters.ApplyToContext(localContext);
+					var parameterPanel = _parameterPanels.Find(p => p.GetParameter() == parameter);
 
-					bool wasVisible = parameterPanel.Active;
-					parameterPanel.Active = parameter.IsActive(localContext);
-					bChanged |= wasVisible != parameterPanel.Active;
+					if (parameterPanel != null)
+					{
+						var localContext = Context.Copy(parameterState.evalContext);
+						parameterState.localParameters.ApplyToContext(localContext);
+
+						bool wasVisible = parameterPanel.Active;
+						parameterPanel.Active = parameter.IsActive(localContext);
+						bChanged |= wasVisible != parameterPanel.Active;
+					}
 				}
 								
 				// Apply parameter to context

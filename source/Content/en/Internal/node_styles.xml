@@ -10,7 +10,10 @@
 	
 	<!-- Text value style -->
 	<Style id="text">quote</Style>
-	
+
+	<!-- Block style -->
+	<Style id="block">default</Style>
+
 	<!-- Number value style -->
 	<Style id="number">default</Style>
 	

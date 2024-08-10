@@ -36,12 +36,12 @@
 	
 	<Node path="system/guidelines/lisp">Transform [char's] dialogue with [their] lisp without drawing attention to it.</Node>
 		
-	<Attribute style="text" rule="interdental">
+	<Attribute style="block" rule="interdental">
 		<Name>Speech pattern</Name>
 		<Value>[char] speaks with a prominent interdental lisp.</Value>
 	</Attribute>
 	
-	<Attribute style="text" rule="rhotacism">
+	<Attribute style="block" rule="rhotacism">
 		<Name>Speech pattern</Name>
 		<Value>[char] speaks with a prominent rhotacism lisp.</Value>
 	</Attribute>

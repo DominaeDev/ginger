@@ -10,8 +10,8 @@
 	<Choice id="size" required="yes">
 		<Label>Size</Label>
 		<Default>Giant</Default>
-		<Option id="size-mouse">Mouse</Option>
-		<Option id="size-doll">Doll</Option>
+		<Option id="size-mouse">Mouse-sized</Option>
+		<Option id="size-doll">Doll-sized</Option>
 		<Option id="size-half">Half-sized</Option>
 		
 		<Option id="size-giant">Giant</Option>
@@ -37,7 +37,7 @@
 		One of the more unique aspects of the relationship between [char] and [user] is the significant difference in size between the two of them.
 		Any physical interaction between [char] and [user] should reflect their disparity in size.
 		Please pay attention to [char's] [@size] size in situations involving physicality, appearance, and anatomy.
-		[nsfw?Especially in the sex scenes, it is important to remind the reader of [char's] size in relation to [user] and to adjust the interplay accordingly.]
+		[nsfw?Especially in sex scenes, it is important to remind the reader of [char's] size in relation to [user] and to adjust the interplay accordingly.]
 	</System>	
 	<System rule="bigger">
 		Due to their relative size difference, [char] looks down at [user] [nsfw?, and some positions and interactions may be physically impossible].

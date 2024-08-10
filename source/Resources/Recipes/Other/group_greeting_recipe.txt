@@ -1,5 +1,5 @@
 <Ginger id="__group-greeting">
-	<Name>Other/Group greeting</Name>
+	<Name>Other/Greeting (Group only)</Name>
 	<Title>Greeting (Group only)</Title>
 	<Description>
 		Greeting for group chats.
@@ -8,7 +8,7 @@
 	<Order>2</Order>
 	<Multiple>True</Multiple>
 	<Requires>not __actor</Requires>
-	<Flags>__group-greeting, __component, __formatting, __internal</Flags>
+	<Flags>__group-greeting, __component, __formatting, __internal, __ccv3</Flags>
 	
 	<!-- Parameters -->
 	<Text id="greeting" style="component">

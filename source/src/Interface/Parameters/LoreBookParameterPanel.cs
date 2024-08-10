@@ -21,7 +21,7 @@ namespace Ginger
 
 		private int FirstEntryIndex { get { return parameter.pageIndex * EntriesPerPage; } }
 		private int numEntries { get { return lorebook.entries.Count; } }
-		private int numPages { get { return Math.Max((int)Math.Ceiling((double)numEntries / EntriesPerPage), 1); } }
+		private int numPages { get { return Math.Max((int)Math.Ceiling((float)numEntries / EntriesPerPage), 1); } }
 		private static int EntriesPerPage { get { return AppSettings.Settings.LoreEntriesPerPage; } }
 		
 		public LoreBookParameterPanel()
@@ -438,7 +438,7 @@ namespace Ginger
 
 		private void RefreshPageChanger()
 		{
-			pageChanger.SetPage(parameter.pageIndex, Math.Max(numEntries / EntriesPerPage, 0));
+			pageChanger.SetPage(parameter.pageIndex, numPages);
 			pageChanger.Visible = numEntries > EntriesPerPage;
 		}
 

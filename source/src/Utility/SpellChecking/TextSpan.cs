@@ -34,7 +34,7 @@ namespace Ginger
 						if (end_comment != -1)
 						{
 							spans.Add(TextSpan.FromString(text.Substring(pos, pos_end - pos), pos));
-							spans.Add(TextSpan.Empty(text.Substring(pos_end, end_comment - pos_end + 2), pos_end));
+							spans.Add(TextSpan.Ignore(text.Substring(pos_end, end_comment - pos_end + 2), pos_end));
 							pos = end_comment + 2;
 							pos_end = text.IndexOfAny(SpanBreakChars, pos);
 							continue;
@@ -52,7 +52,7 @@ namespace Ginger
 						if (end_comment != -1)
 						{
 							spans.Add(TextSpan.FromString(text.Substring(pos, pos_end - pos), pos));
-							spans.Add(TextSpan.Empty(text.Substring(pos_end, end_comment - pos_end + 3), pos_end));
+							spans.Add(TextSpan.Ignore(text.Substring(pos_end, end_comment - pos_end + 3), pos_end));
 							pos = end_comment + 3;
 							pos_end = text.IndexOfAny(SpanBreakChars, pos);
 							continue;
@@ -76,7 +76,7 @@ namespace Ginger
 							if (end_markdown != -1 && end_markdown < pos_endl)
 							{
 								spans.Add(TextSpan.FromString(text.Substring(pos, pos_end - pos), pos));
-								spans.Add(TextSpan.Empty(text.Substring(pos_end, end_markdown - pos_end + 1), pos_end));
+								spans.Add(TextSpan.Ignore(text.Substring(pos_end, end_markdown - pos_end + 1), pos_end));
 								pos = end_markdown + 1;
 								pos_end = text.IndexOfAny(SpanBreakChars, pos);
 								continue;
@@ -93,7 +93,7 @@ namespace Ginger
 					if (end_code != -1)
 					{
 						spans.Add(TextSpan.FromString(text.Substring(pos, pos_end - pos), pos));
-						spans.Add(TextSpan.Empty(text.Substring(pos_end, end_code - pos_end + 1), pos_end));
+						spans.Add(TextSpan.Ignore(text.Substring(pos_end, end_code - pos_end + 1), pos_end));
 						pos = end_code + 1;
 						pos_end = text.IndexOfAny(SpanBreakChars, pos);
 						continue;
@@ -111,7 +111,7 @@ namespace Ginger
 							end_decorator = text.Length - 1;
 
 						spans.Add(TextSpan.FromString(text.Substring(pos, pos_end - pos), pos));
-						spans.Add(TextSpan.Empty(text.Substring(pos_end, end_decorator - pos_end + 1), pos_end));
+						spans.Add(TextSpan.Ignore(text.Substring(pos_end, end_decorator - pos_end + 1), pos_end));
 						pos = end_decorator;
 						pos_end = text.IndexOfAny(SpanBreakChars, pos);
 						continue;
@@ -308,7 +308,7 @@ namespace Ginger
 			};
 		}
 
-		public static TextSpan Empty(string text, int offset)
+		public static TextSpan Ignore(string text, int offset)
 		{
 			return new TextSpan() {
 				text = text,

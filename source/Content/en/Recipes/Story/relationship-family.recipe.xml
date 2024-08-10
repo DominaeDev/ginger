@@ -1,4 +1,4 @@
-<Ginger version="1.0" id="family-member">
+<Ginger version="1.1" id="family-member">
 	<Name>Relationship/Familial</Name>
 	<Title>Familial relationship</Title>
 	<Description>A familial relationship to the user.</Description>
@@ -30,32 +30,44 @@
 	
 	<Toggle id="identical-twin" rule="twin" label="Identical twin" default="yes"/>
 	
-	<Toggle id="biological" rule="(parent or child or sibling) and not twin" label="Biological" default="true"/>
+	<Choice id="kinship" style="radio" required="yes" rule="(parent or child or sibling) and not twin">
+		<Label>Kinship</Label>
+		<Option>Biological</Option>
+		<Option>Adoptive</Option>
+		<Option>Legal</Option>
+		<Default>Biological</Default>
+	</Choice>
+	
+	<String id="kinship">
+		<String rule="biological:local and more-detail">biological</String>
+		<String rule="adoptive:local">adoptive</String>
+		<String rule="legal:local">step-[clr]</String>
+	</String>
 	
 	<!-- Output -->	
 	<String id="parent">
-		<String rule="is-woman">[biological?biological|step] mother</String>
-		<String rule="is-man">[biological?biological|step] father</String>
-		<String>[biological?biological|step] parent</String>
+		<String rule="is-woman">[@kinship] mother</String>
+		<String rule="is-man">[@kinship] father</String>
+		<String>[@kinship] parent</String>
 	</String>
 
 	<String id="sibling">
-		<String rule="not biological and is-woman and younger" priority="2">younger step-sister</String>
-		<String rule="not biological and is-woman and older" priority="2">older step-sister</String>
-		<String rule="not biological and is-man and younger" priority="2">younger step-brother</String>
-		<String rule="not biological and is-man and older" priority="2">older step-brother</String>
-		<String rule="is-woman and younger" priority="1">little sister</String>
-		<String rule="is-woman and older" priority="1">older sister</String>
-		<String rule="is-woman and not sibling-age" priority="1">sister</String>
-		<String rule="is-man and younger" priority="1">little brother</String>
-		<String rule="is-man and older" priority="1">older brother</String>
-		<String rule="is-man and not-sibling-age" priority="1">brother</String>
+		<String rule="not biological and is-woman and younger" priority="2">younger [@kinship] sister</String>
+		<String rule="not biological and is-woman and older" priority="2">older [@kinship] sister</String>
+		<String rule="not biological and is-man and younger" priority="2">younger [@kinship] brother</String>
+		<String rule="not biological and is-man and older" priority="2">older [@kinship] brother</String>
+		<String rule="is-woman and younger" priority="1">[@kinship] little sister</String>
+		<String rule="is-woman and older" priority="1">[@kinship] older sister</String>
+		<String rule="is-woman and not sibling-age" priority="1">[@kinship] sister</String>
+		<String rule="is-man and younger" priority="1">[@kinship] little brother</String>
+		<String rule="is-man and older" priority="1">[@kinship] older brother</String>
+		<String rule="is-man and not-sibling-age" priority="1">[@kinship] brother</String>
 		<String rule="is-woman and twin" priority="1">twin sister</String>
 		<String rule="is-man and twin" priority="1">twin brother</String>
 		<String rule="twin">twin</String>
-		<String rule="younger">younger sibling</String>
-		<String rule="older">older sibling</String>
-		<String>sibling</String>
+		<String rule="younger">[@kinship] younger sibling</String>
+		<String rule="older">[@kinship] older sibling</String>
+		<String>[@kinship] sibling</String>
 	</String>
 
 	<String id="half-sibling">
@@ -65,9 +77,9 @@
 	</String>
 
 	<String id="child">
-		<String rule="is-woman">[not biological?step-]daughter</String>
-		<String rule="is-man">[not biological?step-]son</String>
-		<String>[not biological?step-]child</String>
+		<String rule="is-woman">[@kinship] daughter</String>
+		<String rule="is-man">[@kinship] son</String>
+		<String>[@kinship] child</String>
 	</String>
 
 	<String id="grandparent">
@@ -82,15 +94,15 @@
 		<String>grandchild</String>
 	</String>
 
-	<Persona rule="parent">[char] is [user's] [@parent].</Persona>
-	<Persona rule="child">[char] is [user]'s [@child].</Persona>
-	<Persona rule="half-sibling">[char] is [user]'s [@half-sibling].</Persona>
-	<Persona rule="sibling">[char] is [user]'s [@sibling].</Persona>
-	<Persona rule="cousin">[char] is [user]'s cousin.</Persona>
-	<Persona rule="second-cousin">[char] is [user]'s second-cousin.</Persona>
-	<Persona rule="grandparent">[char] is [user]'s [@grandparent].</Persona>
-	<Persona rule="grandchild">[char] is [user]'s [@grandchild].</Persona>
-	<Persona rule="not family-member">[char] is a close relative to [user].</Persona>
-	<Persona rule="twin">[char] and [user] are [identical-twin?identical|fraternal] twins.</Persona>
+	<Node path="description/family" order="150" rule="parent">[char] is [user's] [@parent].</Node>
+	<Node path="description/family" order="150" rule="child">[char] is [user]'s [@child].</Node>
+	<Node path="description/family" order="150" rule="half-sibling">[char] is [user]'s [@half-sibling].</Node>
+	<Node path="description/family" order="150" rule="sibling">[char] is [user]'s [@sibling].</Node>
+	<Node path="description/family" order="150" rule="cousin">[char] is [user]'s cousin.</Node>
+	<Node path="description/family" order="150" rule="second-cousin">[char] is [user]'s second-cousin.</Node>
+	<Node path="description/family" order="150" rule="grandparent">[char] is [user]'s [@grandparent].</Node>
+	<Node path="description/family" order="150" rule="grandchild">[char] is [user]'s [@grandchild].</Node>
+	<Node path="description/family" order="150" rule="not family-member">[char] is a close relative to [user].</Node>
+	<Node path="description/family" order="150" rule="twin">[char] and [user] are [identical-twin?identical|fraternal] twins.</Node>
 
 </Ginger>

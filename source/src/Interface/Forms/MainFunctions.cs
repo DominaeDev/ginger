@@ -544,7 +544,7 @@ namespace Ginger
 
 			// Save as...
 			exportFileDialog.Title = Resources.cap_export_character;
-			exportFileDialog.Filter = "Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard AI PNG|*.png|CharX file|*.charx";
+			exportFileDialog.Filter = "Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard.ai PNG|*.png|CharX file|*.charx";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			exportFileDialog.FilterIndex = AppSettings.User.LastExportCharacterFilter;
@@ -1028,7 +1028,7 @@ namespace Ginger
 
 			// Only write ccv3 if necessary
 			var formats = FileUtil.Format.Ginger | FileUtil.Format.Faraday | FileUtil.Format.SillyTavernV2;
-			if (Current.Card.assets != null && Current.Card.assets.ContainsAny(a => a.isDefaultAsset == false))
+			if (Current.ContainsV3Data)
 				formats |= FileUtil.Format.SillyTavernV3;
 
 			if (FileUtil.Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, formats))
@@ -1153,11 +1153,6 @@ namespace Ginger
 		{
 			if (Current.IsFileDirty == false)
 				return true; // No changes
-
-#if DEBUG
-			if (Current.AllRecipes.IsEmpty())
-				return true; // Nothing to save
-#endif
 
 			var mr = MessageBox.Show(Resources.msg_save_changes, caption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
 			if (mr == DialogResult.Cancel)

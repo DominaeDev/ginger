@@ -134,24 +134,25 @@ namespace Ginger
 		public enum SyntaxFlags
 		{
 			None = 0,
-			Standard		= 1 << 0,
-			Names			= 1 << 1,
-			Dialogue		= 1 << 2,
-			Actions			= 1 << 3,
-			Commands		= 1 << 4,
-			Pronouns		= 1 << 5,
-			Numbers			= 1 << 6,
-			CodeBlock		= 1 << 7,
-			Wildcards		= 1 << 8,
-			SpellChecking	= 1 << 9,
-			DarkMode		= 1 << 10,
-			Decorators		= 1 << 11,
+			Names			= 1 << 0,
+			Dialogue		= 1 << 1,
+			Actions			= 1 << 2,
+			Commands		= 1 << 3,
+			Pronouns		= 1 << 4,
+			Numbers			= 1 << 5,
+			CodeBlock		= 1 << 6,
+			Wildcards		= 1 << 7,
+			SpellChecking	= 1 << 8,
+			DarkMode		= 1 << 9,
+			Decorators		= 1 << 10,
+			Comments		= 1 << 11,
+			Markdown		= 1 << 12,
 
-			Default = Standard | Names | Dialogue | Actions | Commands | Numbers | CodeBlock | SpellChecking,
-			Limited = Standard | Names | Commands | Numbers | SpellChecking,
-			Code	= Standard | Names | Commands | Numbers,
+			Default = Names | Dialogue | Actions | Commands | Numbers | CodeBlock | Comments | Markdown | SpellChecking,
+			Limited = Names | Commands | Numbers | Comments | Markdown | SpellChecking,
+			Code	= Names | Commands | Numbers | Comments | Markdown,
 			LoreKey = Names | Commands | Numbers | Wildcards | SpellChecking,
-			LoreText = Standard | Decorators | SpellChecking,
+			LoreText = Limited | Decorators | SpellChecking,
 		}
 		public SyntaxFlags syntaxFlags
 		{
@@ -758,15 +759,17 @@ namespace Ginger
 			Color colorDecorator = bLight ? Constants.Colors.Light.Decorator : Constants.Colors.Dark.Decorator;
 
 			syntaxHighlighter.ClearPatterns();
-			if (_syntaxFlags.Contains(SyntaxFlags.Standard))
+			
+			// Comment /*...*/
+			if (_syntaxFlags.Contains(SyntaxFlags.Comments))
 			{
-				// Comment /*...*/
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"\/\*[\s\S]*?\*\/"), new SyntaxStyle(colorComment, false, true), -1);
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"<!--[\s\S]*?-->"), new SyntaxStyle(colorComment, false, true), -1);
-
-				// Markdown image ![]()
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"!\[(.*)\]\((.+)\)"), new SyntaxStyle(colorError, false, false), -1);
 			}
+
+			// Markdown image ![]()
+			if (_syntaxFlags.Contains(SyntaxFlags.Markdown))
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"!\[(.*)\]\((.+)\)"), new SyntaxStyle(colorError, false, false), -1);
 
 			// Code `...`
 			if (_syntaxFlags.Contains(SyntaxFlags.CodeBlock))

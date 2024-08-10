@@ -358,6 +358,7 @@ namespace Ginger
 				blockBuilder.Add(new Block() {
 					id = "example/__scenario/text",
 					style = Block.Style.Undefined,
+					formatting = Block.Formatting.None,
 				}, scenario.ToString());
 			}
 
@@ -447,7 +448,7 @@ namespace Ginger
 						Lorebook.Entry newEntry = entry.Clone();
 						string key = GingerString.BakeNames(GingerString.EvaluateParameter(newEntry.key, localContext), characterIndex);
 						string value = GingerString.FromParameter(GingerString.EvaluateParameter(newEntry.value, localContext)).ToString();
-						value = GingerString.FromOutput(value, characterIndex, bMain).ToString();
+						value = GingerString.FromOutput(value, characterIndex, bMain, Text.EvalOption.LoreFormatting).ToString();
 
 						if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(value))
 							continue;
@@ -701,13 +702,14 @@ namespace Ginger
 				else if (channel == Recipe.Component.Example)
 				{
 					string text = string.Join(Text.ParagraphBreak, lsOutputsByChannel[iChannel]);
-					text = GingerString.FromOutput(text, characterIndex, bMain, Text.EvalOption.Minimal)
+					text = GingerString.FromOutput(text, characterIndex, bMain, Text.EvalOption.None)
 						.ApplyTextStyle(Current.Card.textStyle)
 						.ToString();
 
 					blockBuilder.Add(new Block() {
 						id = "example/output/value",
 						style = Block.Style.Undefined,
+						formatting = Block.Formatting.None,
 					}, text);
 				}
 				else if (channel == Recipe.Component.Grammar)
@@ -741,6 +743,7 @@ namespace Ginger
 						blockBuilder.Add(new Block() {
 							id = blockID,
 							style = Block.Style.Undefined,
+							formatting = Block.Formatting.None,
 						}, lsOutputsByChannel[iChannel][i]);
 					}
 				}

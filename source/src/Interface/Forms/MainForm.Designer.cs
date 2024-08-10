@@ -1107,7 +1107,7 @@ namespace Ginger {
 			// 
 			this.outputPreviewFaradayMenuItem.Name = "outputPreviewFaradayMenuItem";
 			this.outputPreviewFaradayMenuItem.Size = new System.Drawing.Size(236, 22);
-			this.outputPreviewFaradayMenuItem.Text = "Backyard AI";
+			this.outputPreviewFaradayMenuItem.Text = "Backyard.ai";
 			this.outputPreviewFaradayMenuItem.Click += new System.EventHandler(this.outputPreviewFaradayMenuItem_Click);
 			// 
 			// outputPreviewPlainTextMenuItem

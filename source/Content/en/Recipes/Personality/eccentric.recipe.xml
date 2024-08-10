@@ -23,8 +23,8 @@
 		<Value>conformity, monotony, superficiality</Value>
 	</Attribute>
 
-	<Attribute style="text">
-		<Name>Speech</Name>
+	<Attribute style="block">
+		<Name>Speech pattern</Name>
 		<Value>[They] may incorporate eccentric phrases or metaphors into [their] conversations to convey [their] thoughts and emotions, adding a touch of intrigue to [their] speech.</Value>
 	</Attribute>
 

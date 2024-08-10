@@ -2,7 +2,7 @@
 	<Name>Other/Grammar</Name>
 	<Description>
 		Custom grammar definition.
-		(Only supported in Backyard AI.)
+		(Only supported in Backyard.ai)
 	</Description>
 	<Color>#bfd0db</Color>
 	<Order>3</Order>

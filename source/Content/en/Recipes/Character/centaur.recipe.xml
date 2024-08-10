@@ -62,7 +62,7 @@
 		<Name>Race</Name>
 		<Value>Centaur</Value>
 	</Attribute>
-	<Node path="persona/attributes/species" mode="remove"/>
+	<Node path="persona/attributes/species" mode="discard"/>
 	
 	<Attribute order="100" rule="height:local" mode="replace">
 		<Name>Height</Name>

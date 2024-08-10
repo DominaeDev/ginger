@@ -1281,9 +1281,9 @@ namespace Ginger
 
 			if (bEnableScrollbar != VerticalScroll.Enabled)
 			{
-//				this.AutoScroll = false; // Must be disabled or Enabled does nothing
+				this.AutoScroll = false; // Must be disabled or Enabled does nothing
 				this.VerticalScroll.Enabled = bEnableScrollbar;
-//				this.AutoScroll = true;
+				this.AutoScroll = true;
 				if (!bEnableScrollbar) // Scrollbar was disabled. Reset scroll.
 					ScrollToTop();
 			}

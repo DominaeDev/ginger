@@ -16,7 +16,7 @@
 	</Text>
 		
 	<!-- Output -->
-	<Node path="scenario/premise" style="text" mode="exclude">
+	<Node path="scenario/premise" style="block" mode="exclude">
 		[p]Premise:  
 		{inner} 
 	</Node>

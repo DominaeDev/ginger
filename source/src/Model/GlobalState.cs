@@ -55,6 +55,15 @@ namespace Ginger
 					|| Card.tags.ContainsAny(t => string.Compare(t, "nsfw", true) == 0);
 			}
 		}
+		
+		public static bool ContainsV3Data
+		{
+			get
+			{
+				return (Card.assets != null && Card.assets.ContainsAny(a => a.isDefaultAsset == false))
+					|| AllRecipes.ContainsAny(r => r.flags.Contains("__ccv3"));
+			}
+		}
 
 		public static EventHandler OnLoadCharacter;
 

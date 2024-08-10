@@ -248,7 +248,7 @@ namespace Ginger
 			}) {
 				Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern,
 			});
-			formatMenu.DropDownItems.Add(new ToolStripMenuItem("Backyard AI", null, (s, e) => {
+			formatMenu.DropDownItems.Add(new ToolStripMenuItem("Backyard.ai", null, (s, e) => {
 				AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday;
 				Regenerate();
 			}) {

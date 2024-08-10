@@ -373,22 +373,30 @@ namespace Ginger
 				if (isCondition)
 				{
 					string condition = sbInput.ToString(beginBracket + 1, question - beginBracket - 1).Trim();
-					string options = sbInput.ToString(question + 1, endBracket - (question + 1));
+					string[] options = SplitOptions(sbInput.ToString(question + 1, endBracket - (question + 1)));
 
-					// Preceding word condition?
+					// Preceding word condition? ?..
 					if (condition.EndsWith(".."))
 					{
 						condition = condition.Substring(0, condition.Length - 2);
-						string replacement = string.Format("<%%?..{0}|{1}%%>", condition, options); // Late evaluation
+						options = options
+							.Select(s => Evaluate(new StringBuilder(s), internalContext).ToString())
+							.ToArray();
+
+						string replacement = string.Format("<%%?..{0}|{1}%%>", condition, string.Join("|", options)); // Late evaluation
 						sbInput.ReplaceFromTo(beginBracket, endBracket, replacement);
 						pos = beginBracket + replacement.Length;
 						continue;
 					}
-					// Subsequent word condition?
+					// Subsequent word condition? ..?
 					if (condition.BeginsWith(".."))
 					{
 						condition = condition.Substring(2);
-						string replacement = string.Format("<%%..?{0}|{1}%%>", condition, options); // Late evaluation
+						options = options
+							.Select(s => Evaluate(new StringBuilder(s), internalContext).ToString())
+							.ToArray();
+
+						string replacement = string.Format("<%%..?{0}|{1}%%>", condition, string.Join("|", options)); // Late evaluation
 						sbInput.ReplaceFromTo(beginBracket, endBracket, replacement);
 						pos = beginBracket + replacement.Length;
 						continue;
@@ -542,16 +550,24 @@ namespace Ginger
 			return words;
 		}
 
-		private static string ConditionalWord(string s, bool condition)
+		private static string[] SplitOptions(string s)
 		{
 			List<string> words = ScopedSplit(s, '|');
-			if (words.Count == 0)
-				return string.Empty;
+			if (words.Count >= 2)
+				return new string[] { words[0], words[1] };
+			if (words.Count == 1)
+				return new string[] { words[0], "" };
+			return new string[] { "", "" };
+		}
 
+		private static string ConditionalWord(string[] options, bool condition)
+		{
+			if (options == null || options.Length == 0)
+				return string.Empty;
 			if (condition == true)
-				return words[0];
-			else if (words.Count > 1)
-				return words[1];
+				return options[0];
+			else if (options.Length > 1)
+				return options[1];
 			return string.Empty;
 		}
 
@@ -1295,25 +1311,27 @@ namespace Ginger
 				.TrimEnd()
 				.ToLowerInvariant();
 
+			string[] arrOptions = SplitOptions(options);
+
 			if (prevWord.Length == 0)
 			{
-				value = ConditionalWord(options, false);
+				value = ConditionalWord(arrOptions, false);
 				return;
 			}
 
 			word = word.Trim().ToLowerInvariant();
 			if (prevWord.EndsWith(word) == false)
 			{
-				value = ConditionalWord(options, false);
+				value = ConditionalWord(arrOptions, false);
 				return;
 			}
 			if (prevWord.Length > word.Length) // Word must end
 			{
 				char ch = prevWord[prevWord.Length - (word.Length + 1)];
-				value = ConditionalWord(options, char.IsWhiteSpace(ch) || char.IsPunctuation(ch));
+				value = ConditionalWord(arrOptions, char.IsWhiteSpace(ch) || char.IsPunctuation(ch));
 				return;
 			}
-			value = ConditionalWord(options, true);
+			value = ConditionalWord(arrOptions, true);
 		}
 
 		private static void IfSubsequentWord(StringBuilder sb, int posEnd, string word, string options, ref string value)
@@ -1323,25 +1341,27 @@ namespace Ginger
 				.TrimStart()
 				.ToLowerInvariant();
 
+			string[] arrOptions = SplitOptions(options);
+
 			if (nextWord.Length == 0)
 			{
-				value = ConditionalWord(options, false);
+				value = ConditionalWord(arrOptions, false);
 				return;
 			}
 
 			word = word.Trim().ToLowerInvariant();
 			if (nextWord.BeginsWith(word) == false)
 			{
-				value = ConditionalWord(options, false);
-				return;
-			}
+				value = ConditionalWord(arrOptions, false);
+					return;
+				}
 			if (nextWord.Length > word.Length) // Word must end
-			{
+				{
 				char ch = nextWord[word.Length];
-				value = ConditionalWord(options, char.IsWhiteSpace(ch) || char.IsPunctuation(ch));
-				return;
-			}
-			value = ConditionalWord(options, true);
+				value = ConditionalWord(arrOptions, char.IsWhiteSpace(ch) || char.IsPunctuation(ch));
+						return;
+					}
+			value = ConditionalWord(arrOptions, true);
 		}
 
 		private static void Unparagraph(StringBuilder sb, int pos, string replace = " ")
