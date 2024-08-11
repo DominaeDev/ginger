@@ -35,10 +35,6 @@ namespace Ginger
 			System.Windows.Forms.Panel spacer;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AssetViewDialog));
 			this.assetsDataView = new System.Windows.Forms.DataGridView();
-			this.columnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.columnFileExt = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.columnType = new System.Windows.Forms.DataGridViewComboBoxColumn();
-			this.columnSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.label1 = new System.Windows.Forms.Label();
 			this.btnApply = new System.Windows.Forms.Button();
 			this.btnExport = new System.Windows.Forms.Button();
@@ -47,6 +43,10 @@ namespace Ginger
 			this.btnAdd = new System.Windows.Forms.Button();
 			this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
+			this.columnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.columnFileExt = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.columnType = new System.Windows.Forms.DataGridViewComboBoxColumn();
+			this.columnSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			listPanel = new System.Windows.Forms.Panel();
 			leftPanel = new System.Windows.Forms.Panel();
 			panel1 = new System.Windows.Forms.Panel();
@@ -92,44 +92,6 @@ namespace Ginger
 			this.assetsDataView.ShowRowErrors = false;
 			this.assetsDataView.Size = new System.Drawing.Size(477, 406);
 			this.assetsDataView.TabIndex = 0;
-			// 
-			// columnName
-			// 
-			this.columnName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-			this.columnName.HeaderText = "Name";
-			this.columnName.MinimumWidth = 64;
-			this.columnName.Name = "columnName";
-			this.columnName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-			// 
-			// columnFileExt
-			// 
-			this.columnFileExt.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-			this.columnFileExt.HeaderText = "Ext";
-			this.columnFileExt.MinimumWidth = 60;
-			this.columnFileExt.Name = "columnFileExt";
-			this.columnFileExt.ReadOnly = true;
-			this.columnFileExt.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-			this.columnFileExt.Width = 60;
-			// 
-			// columnType
-			// 
-			this.columnType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-			this.columnType.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
-			this.columnType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.columnType.HeaderText = "Type";
-			this.columnType.MinimumWidth = 110;
-			this.columnType.Name = "columnType";
-			this.columnType.Width = 110;
-			// 
-			// columnSize
-			// 
-			this.columnSize.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-			this.columnSize.HeaderText = "Size";
-			this.columnSize.MinimumWidth = 90;
-			this.columnSize.Name = "columnSize";
-			this.columnSize.ReadOnly = true;
-			this.columnSize.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-			this.columnSize.Width = 90;
 			// 
 			// leftPanel
 			// 
@@ -230,6 +192,44 @@ namespace Ginger
 			// 
 			this.importFileDialog.Multiselect = true;
 			// 
+			// columnName
+			// 
+			this.columnName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+			this.columnName.HeaderText = "Name";
+			this.columnName.MinimumWidth = 64;
+			this.columnName.Name = "columnName";
+			this.columnName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+			// 
+			// columnFileExt
+			// 
+			this.columnFileExt.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+			this.columnFileExt.HeaderText = "Ext.";
+			this.columnFileExt.MinimumWidth = 60;
+			this.columnFileExt.Name = "columnFileExt";
+			this.columnFileExt.ReadOnly = true;
+			this.columnFileExt.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+			this.columnFileExt.Width = 60;
+			// 
+			// columnType
+			// 
+			this.columnType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+			this.columnType.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
+			this.columnType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.columnType.HeaderText = "Type";
+			this.columnType.MinimumWidth = 110;
+			this.columnType.Name = "columnType";
+			this.columnType.Width = 110;
+			// 
+			// columnSize
+			// 
+			this.columnSize.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+			this.columnSize.HeaderText = "Size";
+			this.columnSize.MinimumWidth = 90;
+			this.columnSize.Name = "columnSize";
+			this.columnSize.ReadOnly = true;
+			this.columnSize.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+			this.columnSize.Width = 90;
+			// 
 			// AssetViewDialog
 			// 
 			this.AllowDrop = true;
@@ -261,12 +261,12 @@ namespace Ginger
 		private System.Windows.Forms.Button btnApply;
 		private System.Windows.Forms.Button btnExport;
 		private System.Windows.Forms.Button btnView;
+		private System.Windows.Forms.SaveFileDialog exportFileDialog;
+		private System.Windows.Forms.OpenFileDialog importFileDialog;
+		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnName;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnFileExt;
 		private System.Windows.Forms.DataGridViewComboBoxColumn columnType;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnSize;
-		private System.Windows.Forms.SaveFileDialog exportFileDialog;
-		private System.Windows.Forms.OpenFileDialog importFileDialog;
-		private System.Windows.Forms.Label label1;
 	}
 }

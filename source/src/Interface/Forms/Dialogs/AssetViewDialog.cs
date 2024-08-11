@@ -14,6 +14,11 @@ namespace Ginger
 		public bool Changed = false;
 		private bool _bIgnoreEvents = false;
 
+		private List<string> KnownAssetTypes = new List<string>() { "Image", "User image", "Background", "Expression", "Other" };
+
+		private DataGridViewComboBoxColumn comboBoxColumn { get { return (DataGridViewComboBoxColumn)assetsDataView.Columns[2]; } }
+		private ComboBox _currentComboBox;
+
 		public AssetViewDialog()
 		{
 			InitializeComponent();
@@ -30,6 +35,23 @@ namespace Ginger
 			DragEnter += OnDragEnter;
 			DragDrop += OnDragDrop;
 
+			assetsDataView.EditingControlShowing += AssetsDataView_EditingControlShowing;
+			assetsDataView.DataError += AssetsDataView_DataError;
+		}
+
+		private void AssetViewDialog_Load(object sender, EventArgs e)
+		{
+			assetsDataView.CellEndEdit += AssetsDataView_CellEndEdit;
+			assetsDataView.SelectionChanged += AssetsDataView_SelectionChanged;
+
+			Assets = (AssetCollection)Current.Card.assets.Clone();
+			foreach (var asset in Assets.Where(a => a.assetType == AssetFile.AssetType.Custom).DistinctBy(a => a.type))
+				KnownAssetTypes.Add(asset.type);
+
+			comboBoxColumn.Items.AddRange(KnownAssetTypes.ToArray());
+
+			PopulateTable();
+			assetsDataView.ClearSelection();
 		}
 
 		private void AssetViewDialog_FormClosed(object sender, FormClosedEventArgs e)
@@ -37,19 +59,16 @@ namespace Ginger
 			assetsDataView.EndEdit();
 		}
 
-		private static readonly string [] TypeLabels = new string[] { "Undefined", "Portrait", "User portrait", "Background", "Expression", "Other" };
-
-		private void AssetViewDialog_Load(object sender, EventArgs e)
+		private void AssetsDataView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
 		{
-			((DataGridViewComboBoxColumn)assetsDataView.Columns[2]).DataSource = TypeLabels;
+			var comboBox = _currentComboBox = e.Control as ComboBox;
+			if (comboBox != null)
+				comboBox.DropDownStyle = ComboBoxStyle.DropDown;
+		}
 
-			assetsDataView.CellEndEdit += AssetsDataView_CellEndEdit;
-			assetsDataView.SelectionChanged += AssetsDataView_SelectionChanged;
-
-			Assets = (AssetCollection)Current.Card.assets.Clone();
-
-			PopulateList();
-			assetsDataView.ClearSelection();
+		private void AssetsDataView_DataError(object sender, DataGridViewDataErrorEventArgs e)
+		{
+			// Do nothing
 		}
 
 		private void AssetsDataView_SelectionChanged(object sender, EventArgs e)
@@ -59,15 +78,13 @@ namespace Ginger
 			btnView.Enabled = assetsDataView.SelectedRows.Count == 1;
 		}
 
-		private void PopulateList()
+		private void PopulateTable()
 		{
 			_bIgnoreEvents = true;
 			assetsDataView.Rows.Clear();
 
 			foreach (var asset in Assets.Where(a => a.isEmbeddedAsset))
-			{
 				AddRowForAsset(asset);
-			}
 			_bIgnoreEvents = false;
 		}
 
@@ -77,7 +94,6 @@ namespace Ginger
 			string assetExt = (asset.ext ?? "N/A").ToUpperInvariant();
 			if (assetExt == "JPG")
 				assetExt = "JPEG";
-			string assetType = TypeLabels[EnumHelper.ToInt(asset.assetType)];
 			string assetSize = "N/A";
 			if (asset.data.bytes != null)
 			{
@@ -87,11 +103,38 @@ namespace Ginger
 				else
 					assetSize = string.Format(CultureInfo.InvariantCulture, "{0:0.0} KB", size * 1000);
 			}
+			string assetTypeName; // Prettified name
+			switch (asset.assetType)
+			{
+			case AssetFile.AssetType.Icon:
+				assetTypeName = "Image";
+				break;
+			case AssetFile.AssetType.UserIcon:
+				assetTypeName = "User image";
+				break;
+			case AssetFile.AssetType.Background:
+				assetTypeName = "Background";
+				break;
+			case AssetFile.AssetType.Expression:
+				assetTypeName = "Expression";
+				break;
+			case AssetFile.AssetType.Undefined:
+			case AssetFile.AssetType.Other:
+				assetTypeName = "Other";
+				break;
+			case AssetFile.AssetType.Custom:
+			default:
+				assetTypeName = asset.type;
+				break;
+			}
 
-			assetsDataView.Rows.Add(assetName, assetExt, assetType, assetSize);
+			assetsDataView.Rows.Add(assetName, assetExt, assetTypeName, assetSize);
 		}
 
-		private int GetSelectedAsset()
+		/// <summary>
+		/// Returns the index of the asset corresponding to the selected row
+		/// </summary>
+		private int GetSelectedIndex()
 		{
 			if (assetsDataView.SelectedRows.Count != 1)
 				return -1;
@@ -150,16 +193,120 @@ namespace Ginger
 				}
 				else if (e.ColumnIndex == 2) // Type
 				{
-					int idxValue = Array.IndexOf(TypeLabels, assetsDataView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as string);
-					var value = EnumHelper.FromInt(idxValue, AssetFile.AssetType.Undefined);
-					if (value != Assets[i].assetType)
-					{
-						Assets[i].assetType = value;
-						Changed = true;
-
-						ResolveDuplicateNames();
-					}
+					string value;
+					if (_currentComboBox != null)
+						value = _currentComboBox.Text; // Only reliable way to get the value. This API is so dumb.
+					else
+						value = assetsDataView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as string;
+					SetAssetType(index, value);
 				}
+			}
+			_currentComboBox = null;
+		}
+
+		private void SetAssetType(int index, string value)
+		{
+			if (index < 0)
+				return;
+
+			AssetFile.AssetType assetType;
+			if (string.IsNullOrEmpty(value) == false)
+			{
+				switch (value.ToLowerInvariant())
+				{
+				case "image":
+				case "icon":
+					assetType = AssetFile.AssetType.Icon;
+					value = "icon";
+					break;
+				case "user image":
+				case "user_icon":
+					assetType = AssetFile.AssetType.UserIcon;
+					value = "user_icon";
+					break;
+				case "background":
+					assetType = AssetFile.AssetType.Background;
+					value = "background";
+					break;
+				case "expression":
+				case "emotion":
+					assetType = AssetFile.AssetType.Expression;
+					value = "emotion";
+					break;
+				case "other":
+					assetType = AssetFile.AssetType.Other;
+					value = "other";
+					break;
+				default:
+					assetType = AssetFile.AssetType.Custom;
+					break;
+				}
+			}
+			else
+			{
+				assetType = AssetFile.AssetType.Other;
+				value = null;
+			}
+
+			if (assetType != AssetFile.AssetType.Custom)
+			{
+				if (assetType != Assets[index].assetType)
+				{
+					SetAssetTypeColumn(value);
+					Assets[index].assetType = assetType;
+					Changed = true;
+
+					ResolveDuplicateNames();
+				}
+			}
+			else if (value != Assets[index].type)
+			{
+				SetAssetTypeColumn(value);
+
+				Assets[index].type = value;
+				Changed = true;
+
+				ResolveDuplicateNames();
+			}
+		}
+
+		private void SetAssetTypeColumn(string value)
+		{
+			if (assetsDataView.CurrentCell == null || assetsDataView.CurrentCell.ColumnIndex != 2)
+				return;
+
+			switch ((value ?? "").ToLowerInvariant())
+			{
+			case "icon": 
+				value = "Image"; 
+				break;
+			case "user_icon":
+				value = "User image";
+				break;
+			case "background": 
+				value = "Background"; 
+				break;
+			case "emotion": 
+				value = "Expression"; 
+				break;
+			case "":
+			case "other": 
+				value = "Other";
+				break;
+			}
+
+			int index = comboBoxColumn.Items.Cast<string>().ToList()
+				.FindIndex(s => string.Compare(s, value, StringComparison.OrdinalIgnoreCase) == 0);
+
+			if (index != -1)
+			{
+				assetsDataView.CurrentCell.Value = comboBoxColumn.Items[index];
+			}
+			else
+			{
+				KnownAssetTypes.Add(value);
+				comboBoxColumn.Items.Add(value);
+				assetsDataView.CurrentCell.Value = value;
 			}
 		}
 
@@ -174,7 +321,7 @@ namespace Ginger
 		{
 			assetsDataView.EndEdit();
 
-			int selectedIndex = GetSelectedAsset();
+			int selectedIndex = GetSelectedIndex();
 			if (selectedIndex == -1)
 				return;
 
@@ -216,7 +363,7 @@ namespace Ginger
 		{
 			assetsDataView.EndEdit();
 
-			int selectedIndex = GetSelectedAsset();
+			int selectedIndex = GetSelectedIndex();
 			if (selectedIndex == -1)
 				return;
 
@@ -321,6 +468,14 @@ namespace Ginger
 				if (ext == "jpg")
 					ext = "jpeg";
 
+				AssetFile.AssetType assetType;
+				var imageTypes = new string[] { "jpg", "jpeg", "gif", "png", "apng", "webp", "avif" };
+				if (imageTypes.Contains(ext))
+					assetType = AssetFile.AssetType.Icon;
+				else
+					assetType = AssetFile.AssetType.Other;
+
+
 				var data = AssetData.FromBytes(bytes);
 				if (Assets.ContainsAny(a => a.data.hash == data.hash 
 					&& string.Compare(a.ext, ext, StringComparison.InvariantCultureIgnoreCase) == 0))
@@ -331,7 +486,7 @@ namespace Ginger
 					var asset = new AssetFile() {
 						name = name,
 						ext = ext,
-						assetType = AssetFile.AssetType.Undefined,
+						assetType = assetType,
 						data = data,
 						uriType = AssetFile.UriType.Embedded,
 					};
@@ -361,6 +516,9 @@ namespace Ginger
 			foreach (var assetType in types)
 			{
 				var used_names = new Dictionary<string, int>();
+				if (assetType == AssetFile.AssetType.Icon && Current.Card.portraitImage != null)
+					used_names.Add("main", 1); // Reserve name for main portrait
+
 				for (int i = 0; i < Assets.Count; ++i)
 				{
 					var asset = Assets[i];

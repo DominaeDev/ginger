@@ -10,7 +10,35 @@ namespace Ginger
 	public class AssetFile : ICloneable
 	{
 		public string name;
-		public AssetType assetType = AssetType.Undefined;
+		public AssetType assetType
+		{
+			get { return AssetTypeFromString(type); }
+			set
+			{
+				switch (value)
+				{
+				case AssetType.Icon:
+					type = "icon";
+					break;
+				case AssetType.UserIcon:
+					type = "user_icon";
+					break;
+				case AssetType.Background:
+					type = "background";
+					break;
+				case AssetType.Expression:
+					type = "emotion";
+					break;
+				case AssetType.Other:
+					type = "other";
+					break;
+				default:
+					type = null;
+					break;
+				}
+			}
+		}
+		public string type;
 		public string ext;
 		public AssetData data;
 
@@ -37,6 +65,7 @@ namespace Ginger
 			Background	= 3,
 			Expression	= 4, // Emotion
 			Other		= 5,
+			Custom		= 6,
 		};
 
 		public enum UriType
@@ -49,24 +78,25 @@ namespace Ginger
 
 		private static AssetType AssetTypeFromString(string value)
 		{
-			if (string.IsNullOrEmpty(value) == false)
+			if (string.IsNullOrEmpty(value))
+				return AssetType.Undefined;
+
+			value = value.Trim().ToLowerInvariant();
+			switch (value)
 			{
-				value = value.Trim().ToLowerInvariant();
-				switch (value)
-				{
-				case "icon":
-					return AssetType.Icon;
-				case "user_icon":
-					return AssetType.UserIcon;
-				case "background":
-					return AssetType.Background;
-				case "emotion":
-					return AssetType.Expression;
-				case "other":
-					return AssetType.Other;
-				}
+			case "icon":
+				return AssetType.Icon;
+			case "user_icon":
+				return AssetType.UserIcon;
+			case "background":
+				return AssetType.Background;
+			case "emotion":
+				return AssetType.Expression;
+			case "other":
+				return AssetType.Other;
+			default:
+				return AssetType.Custom;
 			}
-			return AssetType.Undefined;
 		}
 
 		public string GetTypeName()
@@ -99,7 +129,7 @@ namespace Ginger
 				return new AssetFile() {
 					name = name,
 					ext = ext ?? "unknown",
-					assetType = AssetTypeFromString(type),
+					type = type,
 					uriType = UriType.Default,
 					fullUri = DefaultUri,
 					uriPath = null,
@@ -120,7 +150,7 @@ namespace Ginger
 						return new AssetFile() {
 							name = name,
 							ext = ext,
-							assetType = AssetTypeFromString(type),
+							type = type,
 							uriType = UriType.Embedded,
 							fullUri = string.Concat(CharXEmbedUriPrefix, name ?? "unnamed", ext != null ? "." : "", ext ?? ""),
 							uriPath = null,
@@ -153,7 +183,7 @@ namespace Ginger
 				return new AssetFile() {
 					name = name,
 					ext = ext,
-					assetType = AssetTypeFromString(type),
+					type = type,
 					uriType = UriType.Embedded,
 					fullUri = uri,
 					uriPath = path,
@@ -171,7 +201,7 @@ namespace Ginger
 			return new AssetFile() {
 				name = name,
 				ext = ext,
-				assetType = AssetTypeFromString(type),
+				type = type,
 				uriType = UriType.Custom,
 				fullUri = uri,
 				uriPath = uriPath,
