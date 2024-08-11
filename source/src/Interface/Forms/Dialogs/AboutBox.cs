@@ -8,9 +8,9 @@ namespace Ginger
 		public AboutBox()
 		{
 			InitializeComponent();
-			this.Text = string.Format("About {0}", AppVersion.AssemblyTitle);
-			this.labelProductName.Text = AppVersion.AssemblyProduct;
-			this.labelVersion.Text = string.Format("Version {0}", AppVersion.AssemblyVersion);
+			this.Text = string.Format("About {0}", AppVersion.ProductTitle);
+			this.labelProductName.Text = AppVersion.ProductName;
+			this.labelVersion.Text = string.Format("Version {0}", AppVersion.ProductVersion);
 		}
 	}
 }

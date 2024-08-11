@@ -241,6 +241,7 @@ namespace Ginger
 				label_Tokens_Value.Text = tokens.ToString();
 				label_Tokens_Value.ForeColor = this.ForeColor;
 				label_Tokens_Permanent_Value.Text = permanent_tokens.ToString();
+				label_Tokens_Permanent_Value.ForeColor = this.ForeColor;
 			}
 			else
 			{

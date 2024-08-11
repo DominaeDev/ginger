@@ -91,7 +91,7 @@ namespace Ginger
 			[JsonProperty("creator_notes_multilingual")]
 			public Dictionary<string, string> creator_notes_multilingual = new Dictionary<string, string>();
 			[JsonProperty("source")]
-			public string[] source = new string[1] { Constants.GitHubURL };
+			public string[] source = new string[0];
 			[JsonProperty("group_only_greetings")]
 			public string[] group_greetings = new string[0];
 
@@ -143,7 +143,8 @@ namespace Ginger
 			public class Entry
 			{
 				[JsonProperty("id")]
-				public string id;
+				[JsonConverter(typeof(JsonIgnoreTypeConverter<int>))]
+				public int id;
 
 				[JsonProperty("keys")]
 				public string[] keys;
@@ -239,7 +240,7 @@ namespace Ginger
 					cardV2.data.character_book.entries.Select(e => {
 						string[] keys = e.keys;
 						var entry = new TavernCardV3.CharacterBook.Entry() {
-							id = e.id.ToString(CultureInfo.InvariantCulture),
+							id = e.id,
 							comment = keys.Length > 0 ? keys[0] : "",
 							keys = keys,
 							content = e.content,
@@ -276,6 +277,16 @@ namespace Ginger
 			card.data.tags = Current.Card.tags.ToArray();
 			card.data.creationDate = (int)(Current.Card.creationDate ?? DateTime.UtcNow).ToUnixTimeSeconds();
 			card.data.updateDate = (int)DateTime.UtcNow.ToUnixTimeSeconds();
+			if (Current.Card.sources != null)
+			{
+				var lsSource = new List<string>(Current.Card.sources);
+				string source = string.Concat("ginger:", Current.Card.uuid);
+				if (lsSource.Contains(source) == false)
+					lsSource.Add(source);
+				card.data.source = lsSource.ToArray();
+			}
+			else
+				card.data.source = null;
 
 			if (Current.Card.extensionData != null)
 				card.data.extensions = Current.Card.extensionData.WithGinger();
@@ -339,7 +350,7 @@ namespace Ginger
 						.ToArray();
 
 				for (int i = 0; i < card.data.character_book.entries.Length; ++i)
-					card.data.character_book.entries[i].id = (i + 1).ToString(CultureInfo.InvariantCulture);
+					card.data.character_book.entries[i].id = i + 1;
 			}
 			else
 				card.data.character_book = null;
@@ -494,6 +505,24 @@ namespace Ginger
 			}
 		}
 	}
+
+	public class JsonIgnoreTypeConverter<T> : JsonConverter
+    {
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+			writer.WriteValue(value);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            return default(T);
+        }
+
+        public override bool CanConvert(Type objectType)
+        {
+            return true;
+        }
+    }
 
 
 }

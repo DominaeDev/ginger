@@ -673,7 +673,7 @@ namespace Ginger
 			}
 
 			exportFileDialog.Title = Resources.cap_export_lorebook;
-			exportFileDialog.Filter = "SillyTavern World Book|*.json|Agnai Character Book|*.json|Lorebook JSON (CCV3)|*.json|Comma separated values|*.csv";
+			exportFileDialog.Filter = "SillyTavern World Book|*.json|Agnai Character Book|*.json|Character Card V3 Lorebook|*.json|Comma separated values|*.csv";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			if (saveLocal)
 				exportFileDialog.InitialDirectory = Utility.ContentPath("Lorebooks");

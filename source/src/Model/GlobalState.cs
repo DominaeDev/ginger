@@ -252,7 +252,7 @@ namespace Ginger
 
 			Reset();
 			Card = new CardData() {
-				id = card.id,
+				uuid = card.id,
 				name = card.name,
 				creator = card.creator,
 				comment = card.comment,
@@ -268,6 +268,9 @@ namespace Ginger
 
 			if (card.tags != null)
 				Card.tags = new HashSet<string>(card.tags);
+
+			if (card.sources != null && card.sources.Length > 0)
+				Card.sources = new List<string>(card.sources);
 
 			if (card.characters.Count > 0)
 			{
@@ -398,6 +401,10 @@ namespace Ginger
 				extensionData = card.data.extensions,
 				creationDate = DateTimeExtensions.FromUnixTime(card.data.creationDate ?? 0L),
 			};
+
+			if (card.data.source != null && card.data.source.Length > 0)
+				Card.sources = new List<string>(card.data.source);
+
 			Character = new CharacterData() {
 				spokenName = null,
 			};
@@ -505,10 +512,13 @@ namespace Ginger
 			Card = new CardData() {
 				name = card.name,
 				userGender = null,
-				creator = card.metaData.creator,
-				comment = card.metaData.comment.ConvertLinebreaks(Linebreak.Default),
+				creator = card.metaData != null ? (card.metaData.creator ?? "") : "",
+				comment = card.metaData != null ? (card.metaData.comment ?? "").ConvertLinebreaks(Linebreak.Default) : "",
 				creationDate = card.metaData != null ? DateTimeExtensions.FromUnixTime(card.metaData.creationDate) : DateTime.UtcNow,
 			};
+
+			if (card.metaData != null && card.metaData.source != null)
+				Card.sources = new List<string>() { card.metaData.source };
 
 			Character = new CharacterData() {
 				spokenName = null,

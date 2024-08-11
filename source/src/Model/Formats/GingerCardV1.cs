@@ -17,13 +17,14 @@ namespace Ginger
 		public string creator = "";
 		public string comment = "";
 		public string versionString = "";
-		public string[] tags;
+		public string[] tags = null;
 		public int detailLevel = 0;
 		public int textStyle = 0;
 		public int flags = (int)CardData.Flag.Default;
 		public int[] tokens = new int[3] { 0, 0, 0 };
 		public DateTime creationDate = DateTime.UtcNow;
 		public int missingRecipes = 0;
+		public string[] sources = null;
 
 		public class Character
 		{
@@ -40,10 +41,12 @@ namespace Ginger
 			userGender = xmlNode.GetValueElement("UserGender");
 			creator = xmlNode.GetValueElement("Creator");
 			comment = xmlNode.GetValueElement("Comment");
+			tags = Utility.ListFromCommaSeparatedString(xmlNode.GetValueElement("Tags")).ToArray();
 			versionString = xmlNode.GetValueElement("Version");
 			detailLevel = xmlNode.GetValueElementInt("Detail");
 			textStyle = xmlNode.GetValueElementInt("TextStyle");
 			flags = xmlNode.GetValueElementInt("Flags");
+			sources = Utility.ListFromCommaSeparatedString(xmlNode.GetValueElement("Sources")).ToArray();
 
 			tokens[0] = 0;
 			tokens[1] = 0;
@@ -188,6 +191,8 @@ namespace Ginger
 				xmlNode.AddValueElement("Creator", creator);
 			if (string.IsNullOrWhiteSpace(comment) == false)
 				xmlNode.AddValueElement("Comment", comment);
+			if (tags != null && tags.Length > 0)
+				xmlNode.AddValueElement("Tags", Utility.ListToCommaSeparatedString(tags.Where(t => !string.IsNullOrWhiteSpace(t))));
 			if (string.IsNullOrWhiteSpace(versionString) == false)
 				xmlNode.AddValueElement("Version", versionString);
 			xmlNode.AddValueElement("Detail", detailLevel);
@@ -195,6 +200,8 @@ namespace Ginger
 			xmlNode.AddValueElement("Flags", flags);
 			xmlNode.AddValueElement("TokenCount", string.Format("{0}, {1}, {2}", tokens[0], tokens[1], tokens[2]));
 			xmlNode.AddValueElement("Created", creationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK"));
+			if (sources != null && sources.Length > 0)
+				xmlNode.AddValueElement("Sources", Utility.ListToCommaSeparatedString(sources.Where(s => !string.IsNullOrWhiteSpace(s))));
 
 			// Recipes
 			var allRecipes = characters.SelectMany(c => c.recipes);
@@ -315,7 +322,7 @@ namespace Ginger
 		public static GingerCardV1 Create()
 		{
 			GingerCardV1 card = new GingerCardV1() {
-				id = Current.Card.id,
+				id = Current.Card.uuid,
 				name = Current.Card.name,
 				creator = Current.Card.creator,
 				comment = Current.Card.comment,
@@ -327,6 +334,7 @@ namespace Ginger
 				tags = Current.Card.tags.ToArray(),
 				creationDate = Current.Card.creationDate ?? DateTime.UtcNow,
 				tokens = Current.Card.lastTokenCounts,
+				sources = Current.Card.sources != null ? Current.Card.sources.ToArray() : null,
 			};
 
 			card.characters = Current.Characters.Select(c => new Character() {

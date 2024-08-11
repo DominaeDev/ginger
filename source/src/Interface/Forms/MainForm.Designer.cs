@@ -801,7 +801,7 @@ namespace Ginger {
 			// 
 			this.copyMenuItem.Name = "copyMenuItem";
 			this.copyMenuItem.Size = new System.Drawing.Size(242, 22);
-			this.copyMenuItem.Text = "Copy recipes";
+			this.copyMenuItem.Text = "Copy all";
 			this.copyMenuItem.Click += new System.EventHandler(this.copyMenuItem_Click);
 			// 
 			// pasteMenuItem

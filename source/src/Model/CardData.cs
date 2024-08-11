@@ -6,17 +6,17 @@ namespace Ginger
 {
 	public class CardData
 	{
-		public string id 
+		public string uuid 
 		{ 
 			get
 			{
-				if (string.IsNullOrEmpty(_id))
-					_id = Cuid.NewCuid();
-				return _id;
+				if (string.IsNullOrEmpty(_uuid))
+					_uuid = Guid.NewGuid().ToString();
+				return _uuid;
 			}
-			set { _id = value; }
+			set { _uuid = value; }
 		}
-		private string _id = null;
+		private string _uuid = null;
 		public string name = "";
 		public ImageRef portraitImage;
 		public string _userPlaceholder;
@@ -29,6 +29,7 @@ namespace Ginger
 
 		public DateTime? creationDate = null;
 		public JsonExtensionData extensionData = null; // Store extensions from imported json
+		public List<string> sources = null;
 
 		// Token count(s)
 		public int tokens { get { return lastTokenCounts[0]; } }
@@ -86,6 +87,7 @@ namespace Ginger
 			CardData clone = (CardData)this.MemberwiseClone();
 			clone.tags = new HashSet<string>(this.tags);
 			clone.assets = (AssetCollection)this.assets.Clone();
+			clone.sources = this.sources != null ? new List<string>(this.sources) : null;
 			return clone;
 		}
 	}

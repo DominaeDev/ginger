@@ -6,7 +6,7 @@ namespace Ginger
 {
 	public static class AppVersion
 	{
-		public static string AssemblyTitle
+		public static string ProductTitle
 		{
 			get
 			{
@@ -23,7 +23,7 @@ namespace Ginger
 			}
 		}
 
-		public static string AssemblyVersion
+		public static string ProductVersion
 		{
 			get
 			{
@@ -31,7 +31,7 @@ namespace Ginger
 			}
 		}
 
-		public static string AssemblyProduct
+		public static string ProductName
 		{
 			get
 			{

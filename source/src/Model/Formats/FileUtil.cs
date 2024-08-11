@@ -486,7 +486,7 @@ namespace Ginger
 
 				int entryId = index + 1;
 				var copy = new TavernCardV3.CharacterBook.Entry() {
-					id = entryId.ToString(CultureInfo.InvariantCulture),
+					id = entryId,
 					keys = loreEntry.keys,
 					name = loreEntry.key,
 					content = GingerString.FromString(loreEntry.value).ToTavern(),

@@ -39,7 +39,7 @@ namespace Ginger
 			{
 				creationDate = updateDate = DateTime.UtcNow.ToUnixTimeMilliseconds();
 				tool = new Tool() {
-					id = Current.Card.id,
+					id = Current.Card.uuid,
 				};
 			}
 
@@ -70,7 +70,7 @@ namespace Ginger
 				public string name = "Ginger";
 
 				[JsonProperty("version")]
-				public string version = "1.0";
+				public string version = AppVersion.ProductVersion;
 
 				[JsonProperty("card_id")]
 				public string id;
@@ -125,6 +125,7 @@ namespace Ginger
 			card.metaData.updateDate = DateTime.UtcNow.ToUnixTimeMilliseconds();
 			card.metaData.creator = Current.Card.creator;
 			card.metaData.comment = Current.Card.comment.ConvertLinebreaks(Linebreak.LF);
+			card.metaData.source = string.Concat("ginger:", Current.Card.uuid);
 			return card;
 		}
 

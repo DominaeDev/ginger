@@ -97,7 +97,7 @@ namespace Ginger
 			GingerExtensionData ext = new GingerExtensionData();
 
 			ext.data = new Data() {
-				id = Current.Card.id,
+				id = Current.Card.uuid,
 				name = Current.Card.name ?? "",
 				spokenName = Current.MainCharacter.spokenName ?? "",
 				gender = Current.MainCharacter.gender ?? "",
