@@ -104,7 +104,7 @@ namespace Ginger
 			card.persona = output.persona.ToTavern();
 			card.scenario = output.scenario.ToTavern();
 			card.greeting = output.greeting.ToTavern();
-			card.example = output.example.ToTavern();
+			card.example = output.example.ToTavernChat();
 
 			// Append personality
 			string personality = output.personality.ToTavern();

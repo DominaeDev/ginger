@@ -193,7 +193,7 @@ namespace Ginger
 			{
 				// No valid data
 				result = new ImportResult();
-				return Error.InvalidData;
+				return Error.NoDataFound;
 			}
 
 			// Failed to parse ginger data (use other data as fallback)
@@ -810,15 +810,19 @@ namespace Ginger
 			Png				= 1 << 0,
 			Json			= 1 << 1,
 			Csv				= 1 << 2,
-			Character		= 1 << 3,
-			Lorebook		= 1 << 4,
-			Ginger			= 1 << 10,
-			Faraday			= 1 << 11,
-			SillyTavernV2	= 1 << 12,
-			SillyTavernV3	= 1 << 14,
-			Agnaistic		= 1 << 15,
-			Pygmalion		= 1 << 16,
-			CharX			= 1 << 17,
+			Yaml			= 1 << 3,
+			CharX			= 1 << 4,
+
+			Character		= 1 << 10,
+			Lorebook		= 1 << 11,
+
+			Ginger			= 1 << 20,
+			Faraday			= 1 << 21,
+			TavernV2		= 1 << 22,
+			TavernV3		= 1 << 23,
+			Agnaistic		= 1 << 24,
+			Pygmalion		= 1 << 25,
+			TextGenWebUI	= 1 << 26,
 		}
 
 		public static FileType CheckFileType(string filename)
@@ -833,6 +837,13 @@ namespace Ginger
 				string jsonData = Utility.LoadTextFile(filename);
 				if (string.IsNullOrEmpty(jsonData) == false)
 					return DetectJsonFileType(jsonData, FileType.Json);
+			}
+
+			if (ext == ".yaml")
+			{
+				string yamlData = Utility.LoadTextFile(filename);
+				if (string.IsNullOrEmpty(yamlData) == false)
+					return DetectJsonFileType(yamlData, FileType.Yaml);
 			}
 
 			if (ext == ".charx")
@@ -908,30 +919,39 @@ namespace Ginger
 
 		private static FileType DetectJsonFileType(string jsonData, FileType knownFileType = 0)
 		{
-			if (string.IsNullOrEmpty(jsonData) || jsonData.Length == 0 || jsonData[0] != '{')
+			if (jsonData == null || jsonData.Length == 0)
 				return FileType.Unknown;
 
-			// Character cards
-			if (TavernCardV3.Validate(jsonData))
-				return FileType.Character | FileType.SillyTavernV3 | knownFileType;
-			if (TavernCardV2.Validate(jsonData))
-				return FileType.Character | FileType.SillyTavernV2 | knownFileType;
-			if (FaradayCardV4.Validate(jsonData))
-				return FileType.Character | FileType.Faraday | knownFileType;
-			if (AgnaisticCard.Validate(jsonData))
-				return FileType.Character | FileType.Agnaistic | knownFileType;
-			if (PygmalionCard.Validate(jsonData))
-				return FileType.Character | FileType.Pygmalion | knownFileType;
+			if (jsonData[0] == '{') // json
+			{
+				// Character cards
+				if (TavernCardV3.Validate(jsonData))
+					return FileType.Character | FileType.TavernV3 | FileType.Json | knownFileType;
+				if (TavernCardV2.Validate(jsonData))
+					return FileType.Character | FileType.TavernV2 | FileType.Json | knownFileType;
+				if (FaradayCardV4.Validate(jsonData))
+					return FileType.Character | FileType.Faraday | FileType.Json | knownFileType;
+				if (AgnaisticCard.Validate(jsonData))
+					return FileType.Character | FileType.Agnaistic | FileType.Json | knownFileType;
+				if (PygmalionCard.Validate(jsonData))
+					return FileType.Character | FileType.Pygmalion | FileType.Json | knownFileType;
 
-			// Lorebooks
-			if (TavernWorldBook.Validate(jsonData))
-				return FileType.Lorebook | FileType.SillyTavernV2 | knownFileType;
-			if (TavernCardV2.CharacterBook.Validate(jsonData))
-				return FileType.Lorebook | FileType.SillyTavernV2 | knownFileType;
-			if (TavernLorebookV3.Validate(jsonData))
-				return FileType.Lorebook | FileType.SillyTavernV3 | knownFileType;
-			if (AgnaisticCard.CharacterBook.Validate(jsonData))
-				return FileType.Lorebook | FileType.Agnaistic | knownFileType;
+				// Lorebooks
+				if (TavernWorldBook.Validate(jsonData))
+					return FileType.Lorebook | FileType.TavernV2 | FileType.Json | knownFileType;
+				if (TavernCardV2.CharacterBook.Validate(jsonData))
+					return FileType.Lorebook | FileType.TavernV2 | FileType.Json | knownFileType;
+				if (TavernLorebookV3.Validate(jsonData))
+					return FileType.Lorebook | FileType.TavernV3 | FileType.Json | knownFileType;
+				if (AgnaisticCard.CharacterBook.Validate(jsonData))
+					return FileType.Lorebook | FileType.Agnaistic | FileType.Json | knownFileType;
+			}
+			else // not json
+			{
+				if (TextGenWebUICard.Validate(jsonData))
+					return FileType.Character | FileType.TextGenWebUI | FileType.Yaml | knownFileType;
+			}
+
 			return FileType.Unknown;
 		}
 
@@ -950,50 +970,78 @@ namespace Ginger
 				return Error.FileReadError;
 			}
 
+			var fileType = DetectJsonFileType(json);
+
 			// Tavern (v3)
-			var tavernCardV3 = TavernCardV3.FromJson(json, out jsonErrors);
-			if (tavernCardV3 != null)
+			if (fileType.Contains(FileType.TavernV3))
 			{
-				Current.ReadTavernCard(tavernCardV3, null);
+				var tavernCardV3 = TavernCardV3.FromJson(json, out jsonErrors);
+				if (tavernCardV3 != null)
+				{
+					Current.ReadTavernCard(tavernCardV3, null);
 
-				// Read asset data
-				var assets = new AssetCollection();
-				foreach (var assetInfo in tavernCardV3.data.assets)
-					assets.Add(AssetFile.FromV3Asset(assetInfo));
-				Current.Card.assets = assets;
+					// Read asset data
+					var assets = new AssetCollection();
+					foreach (var assetInfo in tavernCardV3.data.assets)
+						assets.Add(AssetFile.FromV3Asset(assetInfo));
+					Current.Card.assets = assets;
 
-				// Load portrait image
-				Current.Card.portraitImage = ImageRef.FromImage(Current.Card.assets.GetPortraitImage());
-				// Remove portrait image (it will be re-added on save/export)
-				Current.Card.assets.RemovePortraitImage();
+					// Load portrait image
+					Current.Card.portraitImage = ImageRef.FromImage(Current.Card.assets.GetPortraitImage());
+					// Remove portrait image (it will be re-added on save/export)
+					Current.Card.assets.RemovePortraitImage();
 
-				return Error.NoError;
+					return Error.NoError;
+				}
 			}
 
 			// Tavern (v2)
-			var tavernCardV2 = TavernCardV2.FromJson(json, out jsonErrors);
-			if (tavernCardV2 != null)
+			if (fileType.Contains(FileType.TavernV2))
 			{
-				Current.ReadTavernCard(tavernCardV2, null);
-				return Error.NoError;
+				var tavernCardV2 = TavernCardV2.FromJson(json, out jsonErrors);
+				if (tavernCardV2 != null)
+				{
+					Current.ReadTavernCard(tavernCardV2, null);
+					return Error.NoError;
+				}
 			}
 
 			// Agnaistic
-			var agnaisticCard = AgnaisticCard.FromJson(json, out jsonErrors);
-			if (agnaisticCard != null)
+			if (fileType.Contains(FileType.Agnaistic))
 			{
-				Current.ReadAgnaisticCard(agnaisticCard);
-				return Error.NoError;
+				var agnaisticCard = AgnaisticCard.FromJson(json, out jsonErrors);
+				if (agnaisticCard != null)
+				{
+					Current.ReadAgnaisticCard(agnaisticCard);
+					return Error.NoError;
+				}
 			}
 
 			// Pygmalion
-			var pygmalionCard = PygmalionCard.FromJson(json);
-			if (pygmalionCard != null)
+			if (fileType.Contains(FileType.Pygmalion))
 			{
-				Current.LoadCharacter(pygmalionCard);
-				return Error.NoError;
+				var pygmalionCard = PygmalionCard.FromJson(json);
+				if (pygmalionCard != null)
+				{
+					jsonErrors = 0;
+					Current.LoadCharacter(pygmalionCard);
+					return Error.NoError;
+				}
 			}
 
+			// Text generation WebUI (yaml)
+			if (fileType.Contains(FileType.TextGenWebUI))
+			{
+				var textGenWebUICard = TextGenWebUICard.FromYaml(json);
+				if (textGenWebUICard != null)
+				{
+					jsonErrors = 0;
+					Current.LoadCharacter(textGenWebUICard);
+					return Error.NoError;
+				}
+			}
+
+			jsonErrors = 0;
 			return Error.UnrecognizedFormat;
 		}
 
@@ -1140,6 +1188,49 @@ namespace Ginger
 			{
 				assets = null;
 				return Error.FileReadError;
+			}
+		}
+		
+		public static bool ExportPNG(string filename, Image image, bool bOverwrite)
+		{
+			if (string.IsNullOrEmpty(filename) || image == null)
+				return false;
+			if (File.Exists(filename) && !bOverwrite)
+				return false;
+
+			try
+			{
+				var intermediateFilename = Path.GetTempFileName();
+				using (var stream = new FileStream(intermediateFilename, FileMode.OpenOrCreate, FileAccess.Write))
+				{
+					if (image.RawFormat.Equals(ImageFormat.Png) == false) // Convert to PNG
+					{
+						using (Image bmpNewImage = new Bitmap(image.Width, image.Height))
+						{
+							Graphics gfxNewImage = Graphics.FromImage(bmpNewImage);
+							gfxNewImage.DrawImage(image, new Rectangle(0, 0, bmpNewImage.Width, bmpNewImage.Height),
+												  0, 0,
+												  image.Width, image.Height,
+												  GraphicsUnit.Pixel);
+							gfxNewImage.Dispose();
+							bmpNewImage.Save(stream, ImageFormat.Png);
+						}
+					}
+					else
+					{
+						image.Save(stream, ImageFormat.Png);
+					}
+				}
+
+				// Rename Temporaty file to Target file
+				if (File.Exists(filename))
+					File.Delete(filename);
+				File.Move(intermediateFilename, filename);
+				return true;
+			}
+			catch
+			{
+				return false;
 			}
 		}
 	}

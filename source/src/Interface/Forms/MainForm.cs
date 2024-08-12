@@ -358,46 +358,13 @@ namespace Ginger
 			if (ConfirmSave(Resources.cap_open_character_card) == false)
 				return;
 
-			string ext = Path.GetExtension(filename).ToLowerInvariant();
-			if (ext == ".png") // Open
+			if (FileMutex.CanAcquire(openFileDialog.FileName) == false)
 			{
-				// Acquire mutex
-				if (FileMutex.CanAcquire(filename) == false)
-				{
-					MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(filename)), Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return;
-				}
-
-				OpenFile(filename);
+				MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(openFileDialog.FileName)), Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
 			}
-			else if (ext == ".charx") // Import
-			{
-				int errors;
-				if (FileUtil.ImportCharacterFromPNG(filename, out errors, FileUtil.Format.SillyTavernV3) != FileUtil.Error.NoError)
-					return;
 
-				FileMutex.Release();
-				if (errors > 0)
-					MessageBox.Show(string.Format(Resources.msg_load_with_error, errors), Resources.cap_load_with_error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-				Current.IsDirty = false;
-				Current.IsFileDirty = false;
-				Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
-			}
-			else if (ext == ".json") // Import
-			{
-				int errors;
-				if (FileUtil.ImportCharacterJson(filename, out errors) != FileUtil.Error.NoError)
-					return;
-				FileMutex.Release();
-
-				if (errors > 0)
-					MessageBox.Show(string.Format(Resources.msg_load_with_error, errors), Resources.cap_load_with_error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-				Current.IsDirty = false;
-				Current.IsFileDirty = false;
-				Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
-			}
+			OpenFile(filename);
 		}
 
 		private void OnChangePortraitImage(object sender, PortraitPreview.ChangePortraitImageEventArgs e)
@@ -855,7 +822,7 @@ namespace Ginger
 		{
 			// Open file...
 			openFileDialog.Title = Resources.cap_open_character_card;
-			openFileDialog.Filter = "Supported card types|*.png;*.json";
+			openFileDialog.Filter = "Supported card types|*.png;*.json;*.charx|PNG files|*.png|JSON files|*.json|CHARX files|*.charx";
 			openFileDialog.InitialDirectory = AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			var result = openFileDialog.ShowDialog();
 			if (result != DialogResult.OK)
@@ -886,28 +853,14 @@ namespace Ginger
 			SetStatusBarMessage("Reading character card...");
 
 			string ext = Path.GetExtension(filename).ToLowerInvariant();
-			if (ext == ".json")
+			if (ext == ".json" || ext == ".yaml" || ext == ".charx")
 			{
-				int jsonErrors;
-				var error = FileUtil.ImportCharacterJson(filename, out jsonErrors);
-				if (error == FileUtil.Error.FileNotFound)
+				if (ImportCharacter(filename) == false)
 				{
-					MessageBox.Show(Resources.error_file_not_found, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show(Resources.error_open_character_card, Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					ClearStatusBarMessage();
 					return false;
 				}
-				else if (error == FileUtil.Error.FileReadError)
-				{
-					MessageBox.Show(Resources.error_read_json, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return false;
-				}
-				else if (error == FileUtil.Error.UnrecognizedFormat)
-				{
-					MessageBox.Show(Resources.error_unrecognized_character_format, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return false;
-				}
-
-				if (jsonErrors > 0)
-					MessageBox.Show(string.Format(Resources.msg_load_with_error, jsonErrors), Resources.cap_load_with_error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
 			else if (ext == ".png")
 			{
@@ -940,6 +893,8 @@ namespace Ginger
 					ClearStatusBarMessage();
 					return false;
 				}
+
+				MRUList.AddToMRU(filename, Current.Card.name);
 			}
 			else
 			{
@@ -959,12 +914,10 @@ namespace Ginger
 			Current.IsLoading = true;
 			Current.IsDirty = false;
 			Current.IsFileDirty = false;
-			_bWasFileDirty = false;
 			Current.Filename = filename;
 
 			Current.OnLoadCharacter?.Invoke(null, EventArgs.Empty);
 			Current.IsLoading = false;
-			MRUList.AddToMRU(filename, Current.Card.name);
 			Cursor = Cursors.Default;
 			ClearStatusBarMessage();
 			return true;
@@ -1297,7 +1250,6 @@ namespace Ginger
 			{
 				Current.IsDirty = false;
 				Current.IsFileDirty = false;
-				_bWasFileDirty = false;
 				Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
 			}
 		}

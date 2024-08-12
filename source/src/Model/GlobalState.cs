@@ -537,6 +537,34 @@ namespace Ginger
 			return true;
 		}
 
+		public static bool LoadCharacter(TextGenWebUICard card)
+		{
+			if (card == null)
+				return false;
+
+			Reset();
+			Card = new CardData() {
+				name = card.name,
+				userGender = null,
+				creationDate = DateTime.UtcNow,
+			};
+
+			Character = new CharacterData() {
+				spokenName = null,
+			};
+
+			InferGender(GingerString.FromTavern(card.context), out Character.gender);
+			Card.textStyle = DetectTextStyle(card.example, card.greeting);
+
+			AddChannel(GingerString.FromTavern(card.context).ToParameter(), Resources.persona_recipe);
+			AddChannel(GingerString.FromTavern(card.greeting).ToParameter(), Resources.greeting_recipe);
+
+			if (string.IsNullOrEmpty(card.example) == false)
+				AddChannel(GingerString.FromTavernChat(card.example).ToParameter(), Resources.example_recipe);
+
+			return true;
+		}
+
 		private static Recipe AddChannel(string text, string xmlSource)
 		{
 			if (string.IsNullOrWhiteSpace(text) == false)

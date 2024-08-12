@@ -304,7 +304,7 @@ namespace Ginger
 		{
 			// Open file...
 			importFileDialog.Title = Resources.cap_import_character;
-			importFileDialog.Filter = "All supported types|*.png;*.json;*.charx|PNG files|*.png|JSON files|*.json|CHARX files|*.charx";
+			importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml";
 			importFileDialog.FilterIndex = AppSettings.User.LastImportCharacterFilter;
 			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			var result = importFileDialog.ShowDialog();
@@ -317,16 +317,50 @@ namespace Ginger
 			if (ConfirmSave(Resources.cap_import_character) == false)
 				return false;
 
-			string ext = (Path.GetExtension(importFileDialog.FileName) ?? "").ToLowerInvariant();
+			return ImportCharacter(importFileDialog.FileName);
+		}
+
+		private bool ImportCharacter(string filename)
+		{
+			string ext = (Path.GetExtension(filename) ?? "").ToLowerInvariant();
 
 			int jsonErrors = 0;
 			FileUtil.Error error;
-			if (ext == ".json")
-				error = FileUtil.ImportCharacterJson(importFileDialog.FileName, out jsonErrors);
-			else if (ext == ".png")
-				error = FileUtil.ImportCharacterFromPNG(importFileDialog.FileName, out jsonErrors, FileUtil.Format.SillyTavernV2 | FileUtil.Format.SillyTavernV3 | FileUtil.Format.Faraday);
+			if (ext == ".png")
+				error = FileUtil.ImportCharacterFromPNG(filename, out jsonErrors, FileUtil.Format.SillyTavernV2 | FileUtil.Format.SillyTavernV3 | FileUtil.Format.Faraday);
+			else if (ext == ".json")
+				error = FileUtil.ImportCharacterJson(filename, out jsonErrors);
 			else if (ext == ".charx")
-				error = FileUtil.ImportCharacterFromPNG(importFileDialog.FileName, out jsonErrors, FileUtil.Format.SillyTavernV3);
+				error = FileUtil.ImportCharacterFromPNG(filename, out jsonErrors, FileUtil.Format.SillyTavernV3);
+			else if (ext == ".yaml")
+			{
+				error = FileUtil.ImportCharacterJson(filename, out jsonErrors);
+					
+				// Load portrait image (if any)
+				if (error == FileUtil.Error.NoError)
+				{
+					var pngFilename = Path.Combine(Path.GetDirectoryName(filename), string.Concat(Path.GetFileNameWithoutExtension(filename), ".png"));
+
+					if (File.Exists(pngFilename))
+					{
+						Image image;
+						try
+						{
+							byte[] bytes = File.ReadAllBytes(pngFilename);
+							using (var stream = new MemoryStream(bytes))
+							{
+								image = Image.FromStream(stream);
+							}
+						}
+						catch
+						{
+							image = null;
+						}
+
+						Current.Card.portraitImage = ImageRef.FromImage(image);
+					}
+				}
+			}
 			else
 				error = FileUtil.Error.UnrecognizedFormat;
 
@@ -345,6 +379,8 @@ namespace Ginger
 				MessageBox.Show(Resources.error_unrecognized_character_format, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
+
+			FileMutex.Release();
 
 			if (jsonErrors > 0)
 				MessageBox.Show(string.Format(Resources.msg_load_with_error, jsonErrors), Resources.cap_load_with_error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -538,13 +574,15 @@ namespace Ginger
 					filename = string.Concat(filename, ".png");
 				else if (AppSettings.User.LastExportCharacterFilter == 7) // charx
 					filename = string.Concat(filename, ".charx");
+				else if (AppSettings.User.LastExportCharacterFilter == 9) // yaml
+					filename = string.Concat(filename, ".yaml");
 				else // json
 					filename = string.Concat(filename, ".json");
 			}
 
 			// Save as...
 			exportFileDialog.Title = Resources.cap_export_character;
-			exportFileDialog.Filter = "Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard.ai PNG|*.png|CharX file|*.charx";
+			exportFileDialog.Filter = "Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard.ai PNG|*.png|CharX file|*.charx|Text Generation WebUI YAML|*.yaml";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			exportFileDialog.FilterIndex = AppSettings.User.LastExportCharacterFilter;
@@ -645,6 +683,21 @@ namespace Ginger
 			{
 				if (FileUtil.ExportToCharX(exportFileDialog.FileName))
 					return; // Success
+			}
+			else if (exportFileDialog.FilterIndex == 9) // Text Generation WebUI Yaml
+			{
+				var card = TextGenWebUICard.FromOutput(output);
+				string yaml = card.ToYaml();
+				if (yaml != null && FileUtil.ExportTextFile(exportFileDialog.FileName, yaml))
+				{
+					// Save portrait
+					if (Current.Card.portraitImage != null)
+					{
+						var pngFilename = Path.Combine(Path.GetDirectoryName(exportFileDialog.FileName), string.Concat(Path.GetFileNameWithoutExtension(exportFileDialog.FileName), ".png"));
+						FileUtil.ExportPNG(pngFilename, Current.Card.portraitImage, false);
+					}
+					return; // Success
+				}
 			}
 			MessageBox.Show(Resources.error_write_json, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
