@@ -76,7 +76,7 @@ namespace Ginger
 			Custom,
 		}
 
-		private static AssetType AssetTypeFromString(string value)
+		public static AssetType AssetTypeFromString(string value)
 		{
 			if (string.IsNullOrEmpty(value))
 				return AssetType.Undefined;
@@ -111,6 +111,8 @@ namespace Ginger
 				return "background";
 			case AssetType.Expression:
 				return "emotion";
+			case AssetType.Custom:
+				return string.IsNullOrWhiteSpace(type) ? "other" : type;
 			default:
 				return "other";
 			}
@@ -226,6 +228,19 @@ namespace Ginger
 				assetType = type,
 				fullUri = DefaultUri,
 				uriType = UriType.Default,
+				name = name ?? "main",
+				ext = ext ?? "unknown",
+				uriName = null,
+				uriPath = null,
+			};
+		}
+
+		public static AssetFile MakeCustomUri(AssetType type, string name, string uri, string ext = null)
+		{
+			return new AssetFile() {
+				assetType = type,
+				fullUri = uri,
+				uriType = UriType.Custom,
 				name = name ?? "main",
 				ext = ext ?? "unknown",
 				uriName = null,
@@ -421,49 +436,20 @@ namespace Ginger
 
 		public void Validate()
 		{
-			var validated = this
-				// Ensure there is at least one "main" asset per type
-				.GroupBy(a => a.assetType)
-				.Select(g => {
-					var assetType = g.Key;
-					var assetsOfType = g.ToList();
-
-					if (assetType == AssetFile.AssetType.Other || assetType == AssetFile.AssetType.Undefined)
-						return new {
-							type = assetType,
-							assets = assetsOfType,
-						};
-
-					string mainName = assetType == AssetFile.AssetType.Expression ? "neutral" : "main";
-
-					if (assetsOfType.Count == 1)
-					{
-						assetsOfType[0].name = mainName;
-						return new {
-							type = assetType,
-							assets = assetsOfType,
-						};
-					}
-
-					int nMain = this.Count(a => string.Compare(a.name, mainName, StringComparison.OrdinalIgnoreCase) == 0);
-					if (nMain == 0)
-						assetsOfType[0].name = mainName;
-
-					return new {
-						type = assetType,
-						assets = assetsOfType,
-					};
-				})
-			.SelectMany(x => {
-				// Ensure unique names within each asset group
-				var assetsOfType = x.assets;
-
+			foreach (var type in this.Select(a => a.type).Distinct())
+			{
+				var assetType = AssetFile.AssetTypeFromString(type);
 				var used_names = new Dictionary<string, int>();
-				for (int i = 0; i < assetsOfType.Count; ++i)
+
+				for (int i = 0; i < this.Count; ++i)
 				{
-					string name = (assetsOfType[i].name ?? "").ToLowerInvariant().Trim();
+					var asset = this[i];
+					if (asset.type != type || asset.isEmbeddedAsset == false)
+						continue;
+
+					string name = (this[i].name ?? "").ToLowerInvariant().Trim();
 					if (name == "")
-						assetsOfType[i].name = name = "untitled"; // Name mustn't be empty
+						this[i].name = name = "untitled"; // Name mustn't be empty
 
 					if (used_names.ContainsKey(name) == false)
 					{
@@ -477,22 +463,31 @@ namespace Ginger
 						testName = string.Format("{0}_{1:00}", name, ++count);
 					used_names.Add(testName, 1);
 					used_names[name] = count;
-					assetsOfType[i].name = testName;
-				}
 
-				// Assign new filenames
-				int counter = 1;
-				for (int i = 0; i < assetsOfType.Count; ++i)
+					this[i].name = testName;
+				}
+			}
+
+			var validated = this
+				.GroupBy(a => a.assetType)
+				.SelectMany(g => 
 				{
-					if (assetsOfType[i].isEmbeddedAsset == false)
-						continue;
-					
-					assetsOfType[i].uriName = string.Format("{0:00}", counter++);
-				}
+                    var assetType = g.Key;
+                    var assetsOfType = g.ToList();
 
-				return assetsOfType;
-			})
-			.ToArray();
+					// Assign new filenames
+					int counter = 1;
+					for (int i = 0; i < assetsOfType.Count; ++i)
+					{
+						if (assetsOfType[i].isEmbeddedAsset == false)
+							continue;
+					
+						assetsOfType[i].uriName = string.Format("{0:00}", counter++);
+					}
+
+					return assetsOfType;
+				})
+				.ToArray();
 
 			Clear();
 			AddRange(validated);

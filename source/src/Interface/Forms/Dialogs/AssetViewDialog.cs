@@ -45,6 +45,7 @@ namespace Ginger
 			assetsDataView.SelectionChanged += AssetsDataView_SelectionChanged;
 
 			Assets = (AssetCollection)Current.Card.assets.Clone();
+
 			foreach (var asset in Assets.Where(a => a.assetType == AssetFile.AssetType.Custom).DistinctBy(a => a.type))
 				KnownAssetTypes.Add(asset.type);
 
@@ -195,10 +196,10 @@ namespace Ginger
 				{
 					string value;
 					if (_currentComboBox != null)
-						value = _currentComboBox.Text; // Only reliable way to get the value. This API is so dumb.
+						value = _currentComboBox.Text; // Only reliable way to get the entered value. This API is so dumb.
 					else
 						value = assetsDataView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as string;
-					SetAssetType(index, value);
+					SetAssetType(i, value);
 				}
 			}
 			_currentComboBox = null;
@@ -475,7 +476,6 @@ namespace Ginger
 				else
 					assetType = AssetFile.AssetType.Other;
 
-
 				var data = AssetData.FromBytes(bytes);
 				if (Assets.ContainsAny(a => a.data.hash == data.hash 
 					&& string.Compare(a.ext, ext, StringComparison.InvariantCultureIgnoreCase) == 0))
@@ -505,16 +505,11 @@ namespace Ginger
 
 		private void ResolveDuplicateNames()
 		{
-			var types = new AssetFile.AssetType[] {
-				AssetFile.AssetType.Icon,
-				AssetFile.AssetType.UserIcon,
-				AssetFile.AssetType.Background,
-				AssetFile.AssetType.Expression,
-				AssetFile.AssetType.Other,
-			};
+			var types = Assets.Select(a => a.type).Distinct();
 
-			foreach (var assetType in types)
+			foreach (var type in types)
 			{
+				var assetType = AssetFile.AssetTypeFromString(type);
 				var used_names = new Dictionary<string, int>();
 				if (assetType == AssetFile.AssetType.Icon && Current.Card.portraitImage != null)
 					used_names.Add("main", 1); // Reserve name for main portrait
@@ -522,7 +517,7 @@ namespace Ginger
 				for (int i = 0; i < Assets.Count; ++i)
 				{
 					var asset = Assets[i];
-					if (asset.assetType != assetType || asset.isEmbeddedAsset == false)
+					if (asset.type != type || asset.isEmbeddedAsset == false)
 						continue;
 
 					string name = (Assets[i].name ?? "").ToLowerInvariant().Trim();

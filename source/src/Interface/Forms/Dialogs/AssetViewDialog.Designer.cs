@@ -63,7 +63,7 @@ namespace Ginger
 			listPanel.Location = new System.Drawing.Point(0, 0);
 			listPanel.Name = "listPanel";
 			listPanel.Padding = new System.Windows.Forms.Padding(4, 4, 0, 4);
-			listPanel.Size = new System.Drawing.Size(481, 414);
+			listPanel.Size = new System.Drawing.Size(514, 414);
 			listPanel.TabIndex = 0;
 			// 
 			// assetsDataView
@@ -90,7 +90,7 @@ namespace Ginger
 			this.assetsDataView.ShowCellErrors = false;
 			this.assetsDataView.ShowCellToolTips = false;
 			this.assetsDataView.ShowRowErrors = false;
-			this.assetsDataView.Size = new System.Drawing.Size(477, 406);
+			this.assetsDataView.Size = new System.Drawing.Size(510, 406);
 			this.assetsDataView.TabIndex = 0;
 			// 
 			// leftPanel
@@ -104,7 +104,7 @@ namespace Ginger
 			leftPanel.Controls.Add(this.btnRemove);
 			leftPanel.Controls.Add(this.btnAdd);
 			leftPanel.Dock = System.Windows.Forms.DockStyle.Right;
-			leftPanel.Location = new System.Drawing.Point(481, 0);
+			leftPanel.Location = new System.Drawing.Point(514, 0);
 			leftPanel.Name = "leftPanel";
 			leftPanel.Padding = new System.Windows.Forms.Padding(4);
 			leftPanel.Size = new System.Drawing.Size(200, 414);
@@ -216,9 +216,9 @@ namespace Ginger
 			this.columnType.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
 			this.columnType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.columnType.HeaderText = "Type";
-			this.columnType.MinimumWidth = 110;
+			this.columnType.MinimumWidth = 120;
 			this.columnType.Name = "columnType";
-			this.columnType.Width = 110;
+			this.columnType.Width = 120;
 			// 
 			// columnSize
 			// 
@@ -235,7 +235,7 @@ namespace Ginger
 			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(681, 414);
+			this.ClientSize = new System.Drawing.Size(714, 414);
 			this.Controls.Add(listPanel);
 			this.Controls.Add(leftPanel);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

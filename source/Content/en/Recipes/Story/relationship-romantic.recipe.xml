@@ -10,8 +10,8 @@
 	<!-- Parameters -->
 	<Choice id="romance" required="yes">
 		<Label>Relationship</Label>
-		<Option id="dating">Boyfriend / Girlfriend</Option>
-		<Option id="spouse">Husband / Wife</Option>
+		<Option id="dating">Dating</Option>
+		<Option id="spouse">Spouse</Option>
 	</Choice>
 	
 	<!-- Output -->	
