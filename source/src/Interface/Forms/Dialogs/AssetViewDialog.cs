@@ -26,11 +26,12 @@ namespace Ginger
 			this.Load += AssetViewDialog_Load;
 			this.FormClosed += AssetViewDialog_FormClosed;
 
-			btnApply.Click += BtnApply_Click;
+			btnAdd.Click += BtnAdd_Click;
+			btnAddRemote.Click += BtnAddRemote_Click;
+			btnRemove.Click += BtnRemove_Click;
 			btnView.Click += BtnView_Click;
 			btnExport.Click += BtnExport_Click;
-			btnRemove.Click += BtnRemove_Click;
-			btnAdd.Click += BtnAdd_Click;
+			btnApply.Click += BtnApply_Click;
 
 			DragEnter += OnDragEnter;
 			DragDrop += OnDragDrop;
@@ -75,8 +76,18 @@ namespace Ginger
 		private void AssetsDataView_SelectionChanged(object sender, EventArgs e)
 		{
 			btnRemove.Enabled = assetsDataView.SelectedRows.Count > 0;
-			btnExport.Enabled = assetsDataView.SelectedRows.Count == 1;
-			btnView.Enabled = assetsDataView.SelectedRows.Count == 1;
+
+			if (assetsDataView.SelectedRows.Count == 1)
+			{
+				var selectedAsset = GetSelectedAsset();
+				btnView.Enabled = selectedAsset != null;
+				btnExport.Enabled = selectedAsset != null && selectedAsset.isEmbeddedAsset;
+			}
+			else
+			{
+				btnView.Enabled = false;
+				btnExport.Enabled = false;
+			}
 		}
 
 		private void PopulateTable()
@@ -84,7 +95,7 @@ namespace Ginger
 			_bIgnoreEvents = true;
 			assetsDataView.Rows.Clear();
 
-			foreach (var asset in Assets.Where(a => a.isEmbeddedAsset))
+			foreach (var asset in Assets.Where(a => a.isEmbeddedAsset || a.isRemoteAsset))
 				AddRowForAsset(asset);
 			_bIgnoreEvents = false;
 		}
@@ -95,7 +106,10 @@ namespace Ginger
 			string assetExt = (asset.ext ?? "N/A").ToUpperInvariant();
 			if (assetExt == "JPG")
 				assetExt = "JPEG";
+			else if (assetExt == "")
+				assetExt = "N/A";
 			string assetSize = "N/A";
+			
 			if (asset.data.bytes != null)
 			{
 				decimal size = (decimal)asset.data.length / 1_000_000m;
@@ -104,32 +118,40 @@ namespace Ginger
 				else
 					assetSize = string.Format(CultureInfo.InvariantCulture, "{0:0.0} KB", size * 1000);
 			}
-			string assetTypeName; // Prettified name
+
+			if (asset.isRemoteAsset)
+			{
+				assetName = asset.fullUri;
+				assetSize = "(Remote)";
+			}
+
+			 // Prettify asset type
+			string assetType;
 			switch (asset.assetType)
 			{
 			case AssetFile.AssetType.Icon:
-				assetTypeName = "Image";
+				assetType = "Image";
 				break;
 			case AssetFile.AssetType.UserIcon:
-				assetTypeName = "User image";
+				assetType = "User image";
 				break;
 			case AssetFile.AssetType.Background:
-				assetTypeName = "Background";
+				assetType = "Background";
 				break;
 			case AssetFile.AssetType.Expression:
-				assetTypeName = "Expression";
+				assetType = "Expression";
 				break;
 			case AssetFile.AssetType.Undefined:
 			case AssetFile.AssetType.Other:
-				assetTypeName = "Other";
+				assetType = "Other";
 				break;
 			case AssetFile.AssetType.Custom:
 			default:
-				assetTypeName = asset.type;
+				assetType = asset.type;
 				break;
 			}
 
-			assetsDataView.Rows.Add(assetName, assetExt, assetTypeName, assetSize);
+			assetsDataView.Rows.Add(assetName, assetExt, assetType, assetSize);
 		}
 
 		/// <summary>
@@ -144,7 +166,7 @@ namespace Ginger
 			int index = 0;
 			for (int i = 0; i < Assets.Count; ++i)
 			{
-				if (Assets[i].isEmbeddedAsset == false)
+				if ((Assets[i].isEmbeddedAsset || Assets[i].isRemoteAsset) == false)
 					continue;
 				if (selectedRow != index++)
 					continue;
@@ -153,13 +175,21 @@ namespace Ginger
 			return -1;
 		}
 
+		private AssetFile GetSelectedAsset()
+		{
+			int index = GetSelectedIndex();
+			if (index >= 0 && index < Assets.Count)
+				return Assets[index];
+			return null;
+		}
+
 		private KeyValuePair<int, int>[] GetSelectedAssets() // <Assets index, Row index>
 		{
 			var selection = new List<KeyValuePair<int, int>>(16);
 			int index = 0;
 			for (int i = 0; i < Assets.Count; ++i)
 			{
-				if (Assets[i].isEmbeddedAsset == false)
+				if ((Assets[i].isEmbeddedAsset || Assets[i].isRemoteAsset) == false)
 					continue;
 				if (assetsDataView.Rows[index].Selected)
 					selection.Add(new KeyValuePair<int, int>(i, index));
@@ -176,14 +206,21 @@ namespace Ginger
 			int index = 0;
 			for (int i = 0; i < Assets.Count; ++i)
 			{
-				if (Assets[i].isEmbeddedAsset == false)
+				if ((Assets[i].isEmbeddedAsset || Assets[i].isRemoteAsset) == false)
 					continue;
 				if (e.RowIndex != index++)
 					continue;
 
-				if (e.ColumnIndex == 0) // Name
+				if (e.ColumnIndex == 0 && Assets[i].isEmbeddedAsset) // Name / Uri
 				{
 					string value = assetsDataView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as string;
+					if (value == null)
+					{
+						// Restore last value
+						assetsDataView.Rows[e.RowIndex].Cells[0].Value = Assets[i].name;
+						continue;
+					}
+
 					if (value != Assets[i].name)
 					{
 						Assets[i].name = value;
@@ -191,6 +228,27 @@ namespace Ginger
 
 						ResolveDuplicateNames();
 					}
+				}
+				else if (e.ColumnIndex == 0 && Assets[i].isRemoteAsset) // Uri
+				{
+					string value = assetsDataView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as string;
+					if (value == null)
+					{
+						// Restore last value
+						assetsDataView.Rows[e.RowIndex].Cells[0].Value = Assets[i].fullUri;
+						continue;
+					}
+
+					Assets[i] = AssetFile.MakeRemote(AssetFile.AssetType.Undefined, value);
+					assetsDataView.Rows[e.RowIndex].Cells[0].Value = Assets[i].fullUri;
+					string assetExt = (Assets[i].ext ?? "N/A").ToUpperInvariant();
+					if (assetExt == "")
+						assetExt = "N/A";
+					else if (assetExt == "JPG")
+						assetExt = "JPEG";
+					assetsDataView.Rows[e.RowIndex].Cells[1].Value = assetExt;
+
+					Changed = true;
 				}
 				else if (e.ColumnIndex == 2) // Type
 				{
@@ -327,7 +385,16 @@ namespace Ginger
 				return;
 
 			AssetFile asset = Assets[selectedIndex];
-			if (asset == null || asset.data.length == 0)
+			if (asset == null)
+				return;
+
+			if (asset.isRemoteAsset)
+			{
+				Utility.OpenUrl(asset.fullUri);
+				return;
+			}
+
+			if (asset.data.length == 0)
 				return;
 
 			try
@@ -456,6 +523,26 @@ namespace Ginger
 			_bIgnoreEvents = false;
 		}
 
+		private void BtnAddRemote_Click(object sender, EventArgs e)
+		{
+			assetsDataView.EndEdit();
+
+			// Open file...
+			var dlg = new EnterUrlDialog();
+			if (dlg.ShowDialog() == DialogResult.OK)
+			{
+				var asset = AssetFile.MakeRemote(AssetFile.AssetType.Undefined, dlg.Uri);
+				if (Assets.ContainsNoneOf(a => a.isRemoteAsset && a.fullUri == asset.fullUri))
+				{
+					_bIgnoreEvents = true;
+					Assets.Add(asset);
+					AddRowForAsset(asset);
+					Changed = true;
+					_bIgnoreEvents = false;
+				}
+			}
+		}
+
 		private bool AddAsset(string filename)
 		{
 			try
@@ -544,12 +631,23 @@ namespace Ginger
 			int row = 0;
 			for (int i = 0; i < Assets.Count; ++i)
 			{
-				if (Assets[i].isEmbeddedAsset == false)
+				var asset = Assets[i];
+				if ((asset.isEmbeddedAsset || asset.isRemoteAsset) == false)
 					continue;
 
 				string value = assetsDataView.Rows[row].Cells[0].Value as string;
-				if (value != Assets[i].name)
-					assetsDataView.Rows[row].Cells[0].Value = Assets[i].name;
+				if (value != asset.name && asset.isEmbeddedAsset)
+					assetsDataView.Rows[row].Cells[0].Value = asset.name;
+				else if (asset.isRemoteAsset)
+				{
+					assetsDataView.Rows[row].Cells[0].Value = asset.fullUri;
+					string assetExt = (asset.ext ?? "N/A").ToUpperInvariant();
+					if (assetExt == "")
+						assetExt = "N/A";
+					else if (assetExt == "JPG")
+						assetExt = "JPEG";
+					assetsDataView.Rows[row].Cells[1].Value = assetExt;
+				}
 				++row;
 			}
 		}

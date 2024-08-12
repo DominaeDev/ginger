@@ -31,11 +31,15 @@ namespace Ginger
 		{
 			System.Windows.Forms.Panel listPanel;
 			System.Windows.Forms.Panel leftPanel;
-			System.Windows.Forms.Panel panel1;
-			System.Windows.Forms.Panel spacer;
+			System.Windows.Forms.Label label_ccv3;
+			System.Windows.Forms.Panel spacer_2;
+			System.Windows.Forms.Panel spacer_1;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AssetViewDialog));
 			this.assetsDataView = new System.Windows.Forms.DataGridView();
-			this.label1 = new System.Windows.Forms.Label();
+			this.columnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.columnFileExt = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.columnType = new System.Windows.Forms.DataGridViewComboBoxColumn();
+			this.columnSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.btnApply = new System.Windows.Forms.Button();
 			this.btnExport = new System.Windows.Forms.Button();
 			this.btnView = new System.Windows.Forms.Button();
@@ -43,14 +47,12 @@ namespace Ginger
 			this.btnAdd = new System.Windows.Forms.Button();
 			this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
-			this.columnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.columnFileExt = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.columnType = new System.Windows.Forms.DataGridViewComboBoxColumn();
-			this.columnSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.btnAddRemote = new System.Windows.Forms.Button();
 			listPanel = new System.Windows.Forms.Panel();
 			leftPanel = new System.Windows.Forms.Panel();
-			panel1 = new System.Windows.Forms.Panel();
-			spacer = new System.Windows.Forms.Panel();
+			label_ccv3 = new System.Windows.Forms.Label();
+			spacer_2 = new System.Windows.Forms.Panel();
+			spacer_1 = new System.Windows.Forms.Panel();
 			listPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.assetsDataView)).BeginInit();
 			leftPanel.SuspendLayout();
@@ -93,105 +95,6 @@ namespace Ginger
 			this.assetsDataView.Size = new System.Drawing.Size(510, 406);
 			this.assetsDataView.TabIndex = 0;
 			// 
-			// leftPanel
-			// 
-			leftPanel.Controls.Add(this.label1);
-			leftPanel.Controls.Add(panel1);
-			leftPanel.Controls.Add(this.btnApply);
-			leftPanel.Controls.Add(this.btnExport);
-			leftPanel.Controls.Add(this.btnView);
-			leftPanel.Controls.Add(spacer);
-			leftPanel.Controls.Add(this.btnRemove);
-			leftPanel.Controls.Add(this.btnAdd);
-			leftPanel.Dock = System.Windows.Forms.DockStyle.Right;
-			leftPanel.Location = new System.Drawing.Point(514, 0);
-			leftPanel.Name = "leftPanel";
-			leftPanel.Padding = new System.Windows.Forms.Padding(4);
-			leftPanel.Size = new System.Drawing.Size(200, 414);
-			leftPanel.TabIndex = 0;
-			// 
-			// label1
-			// 
-			this.label1.Dock = System.Windows.Forms.DockStyle.Top;
-			this.label1.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.label1.Location = new System.Drawing.Point(4, 152);
-			this.label1.Name = "label1";
-			this.label1.Padding = new System.Windows.Forms.Padding(3);
-			this.label1.Size = new System.Drawing.Size(192, 52);
-			this.label1.TabIndex = 7;
-			this.label1.Text = "Note: Embedded assets are only supported in CCV3 and CHARX cards.";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			// 
-			// panel1
-			// 
-			panel1.Dock = System.Windows.Forms.DockStyle.Top;
-			panel1.Location = new System.Drawing.Point(4, 140);
-			panel1.Name = "panel1";
-			panel1.Size = new System.Drawing.Size(192, 12);
-			panel1.TabIndex = 4;
-			// 
-			// btnApply
-			// 
-			this.btnApply.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.btnApply.Location = new System.Drawing.Point(4, 379);
-			this.btnApply.Name = "btnApply";
-			this.btnApply.Size = new System.Drawing.Size(192, 31);
-			this.btnApply.TabIndex = 4;
-			this.btnApply.Text = "Close";
-			this.btnApply.UseVisualStyleBackColor = true;
-			// 
-			// btnExport
-			// 
-			this.btnExport.Dock = System.Windows.Forms.DockStyle.Top;
-			this.btnExport.Location = new System.Drawing.Point(4, 109);
-			this.btnExport.Name = "btnExport";
-			this.btnExport.Size = new System.Drawing.Size(192, 31);
-			this.btnExport.TabIndex = 2;
-			this.btnExport.Text = "Export selected";
-			this.btnExport.UseVisualStyleBackColor = true;
-			// 
-			// btnView
-			// 
-			this.btnView.Dock = System.Windows.Forms.DockStyle.Top;
-			this.btnView.Location = new System.Drawing.Point(4, 78);
-			this.btnView.Name = "btnView";
-			this.btnView.Size = new System.Drawing.Size(192, 31);
-			this.btnView.TabIndex = 6;
-			this.btnView.Text = "View selected";
-			this.btnView.UseVisualStyleBackColor = true;
-			// 
-			// spacer
-			// 
-			spacer.Dock = System.Windows.Forms.DockStyle.Top;
-			spacer.Location = new System.Drawing.Point(4, 66);
-			spacer.Name = "spacer";
-			spacer.Size = new System.Drawing.Size(192, 12);
-			spacer.TabIndex = 3;
-			// 
-			// btnRemove
-			// 
-			this.btnRemove.Dock = System.Windows.Forms.DockStyle.Top;
-			this.btnRemove.Location = new System.Drawing.Point(4, 35);
-			this.btnRemove.Name = "btnRemove";
-			this.btnRemove.Size = new System.Drawing.Size(192, 31);
-			this.btnRemove.TabIndex = 1;
-			this.btnRemove.Text = "Remove selected";
-			this.btnRemove.UseVisualStyleBackColor = true;
-			// 
-			// btnAdd
-			// 
-			this.btnAdd.Dock = System.Windows.Forms.DockStyle.Top;
-			this.btnAdd.Location = new System.Drawing.Point(4, 4);
-			this.btnAdd.Name = "btnAdd";
-			this.btnAdd.Size = new System.Drawing.Size(192, 31);
-			this.btnAdd.TabIndex = 0;
-			this.btnAdd.Text = "Add asset...";
-			this.btnAdd.UseVisualStyleBackColor = true;
-			// 
-			// importFileDialog
-			// 
-			this.importFileDialog.Multiselect = true;
-			// 
 			// columnName
 			// 
 			this.columnName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
@@ -230,6 +133,116 @@ namespace Ginger
 			this.columnSize.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
 			this.columnSize.Width = 90;
 			// 
+			// leftPanel
+			// 
+			leftPanel.Controls.Add(label_ccv3);
+			leftPanel.Controls.Add(spacer_2);
+			leftPanel.Controls.Add(this.btnApply);
+			leftPanel.Controls.Add(this.btnExport);
+			leftPanel.Controls.Add(this.btnView);
+			leftPanel.Controls.Add(spacer_1);
+			leftPanel.Controls.Add(this.btnRemove);
+			leftPanel.Controls.Add(this.btnAddRemote);
+			leftPanel.Controls.Add(this.btnAdd);
+			leftPanel.Dock = System.Windows.Forms.DockStyle.Right;
+			leftPanel.Location = new System.Drawing.Point(514, 0);
+			leftPanel.Name = "leftPanel";
+			leftPanel.Padding = new System.Windows.Forms.Padding(4);
+			leftPanel.Size = new System.Drawing.Size(200, 414);
+			leftPanel.TabIndex = 0;
+			// 
+			// label_ccv3
+			// 
+			label_ccv3.Dock = System.Windows.Forms.DockStyle.Top;
+			label_ccv3.ForeColor = System.Drawing.SystemColors.GrayText;
+			label_ccv3.Location = new System.Drawing.Point(4, 183);
+			label_ccv3.Name = "label_ccv3";
+			label_ccv3.Padding = new System.Windows.Forms.Padding(3);
+			label_ccv3.Size = new System.Drawing.Size(192, 52);
+			label_ccv3.TabIndex = 7;
+			label_ccv3.Text = "Note: Embedded assets are only supported in CCV3 and CHARX cards.";
+			label_ccv3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// spacer_2
+			// 
+			spacer_2.Dock = System.Windows.Forms.DockStyle.Top;
+			spacer_2.Location = new System.Drawing.Point(4, 171);
+			spacer_2.Name = "spacer_2";
+			spacer_2.Size = new System.Drawing.Size(192, 12);
+			spacer_2.TabIndex = 4;
+			// 
+			// btnApply
+			// 
+			this.btnApply.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.btnApply.Location = new System.Drawing.Point(4, 379);
+			this.btnApply.Name = "btnApply";
+			this.btnApply.Size = new System.Drawing.Size(192, 31);
+			this.btnApply.TabIndex = 5;
+			this.btnApply.Text = "Close";
+			this.btnApply.UseVisualStyleBackColor = true;
+			// 
+			// btnExport
+			// 
+			this.btnExport.Dock = System.Windows.Forms.DockStyle.Top;
+			this.btnExport.Location = new System.Drawing.Point(4, 140);
+			this.btnExport.Name = "btnExport";
+			this.btnExport.Size = new System.Drawing.Size(192, 31);
+			this.btnExport.TabIndex = 4;
+			this.btnExport.Text = "Export selected";
+			this.btnExport.UseVisualStyleBackColor = true;
+			// 
+			// btnView
+			// 
+			this.btnView.Dock = System.Windows.Forms.DockStyle.Top;
+			this.btnView.Location = new System.Drawing.Point(4, 109);
+			this.btnView.Name = "btnView";
+			this.btnView.Size = new System.Drawing.Size(192, 31);
+			this.btnView.TabIndex = 3;
+			this.btnView.Text = "View selected";
+			this.btnView.UseVisualStyleBackColor = true;
+			// 
+			// spacer_1
+			// 
+			spacer_1.Dock = System.Windows.Forms.DockStyle.Top;
+			spacer_1.Location = new System.Drawing.Point(4, 97);
+			spacer_1.Name = "spacer_1";
+			spacer_1.Size = new System.Drawing.Size(192, 12);
+			spacer_1.TabIndex = 3;
+			// 
+			// btnRemove
+			// 
+			this.btnRemove.Dock = System.Windows.Forms.DockStyle.Top;
+			this.btnRemove.Location = new System.Drawing.Point(4, 66);
+			this.btnRemove.Name = "btnRemove";
+			this.btnRemove.Size = new System.Drawing.Size(192, 31);
+			this.btnRemove.TabIndex = 2;
+			this.btnRemove.Text = "Remove selected";
+			this.btnRemove.UseVisualStyleBackColor = true;
+			// 
+			// btnAdd
+			// 
+			this.btnAdd.Dock = System.Windows.Forms.DockStyle.Top;
+			this.btnAdd.Location = new System.Drawing.Point(4, 4);
+			this.btnAdd.Name = "btnAdd";
+			this.btnAdd.Size = new System.Drawing.Size(192, 31);
+			this.btnAdd.TabIndex = 0;
+			this.btnAdd.Text = "Add asset...";
+			this.btnAdd.UseVisualStyleBackColor = true;
+			// 
+			// importFileDialog
+			// 
+			this.importFileDialog.Multiselect = true;
+			// 
+			// btnAddUrl
+			// 
+			this.btnAddRemote.Dock = System.Windows.Forms.DockStyle.Top;
+			this.btnAddRemote.Location = new System.Drawing.Point(4, 35);
+			this.btnAddRemote.Name = "btnAddUrl";
+			this.btnAddRemote.Size = new System.Drawing.Size(192, 31);
+			this.btnAddRemote.TabIndex = 1;
+			this.btnAddRemote.Text = "Add remote asset...";
+			this.btnAddRemote.UseVisualStyleBackColor = true;
+			// 
 			// AssetViewDialog
 			// 
 			this.AllowDrop = true;
@@ -263,10 +276,10 @@ namespace Ginger
 		private System.Windows.Forms.Button btnView;
 		private System.Windows.Forms.SaveFileDialog exportFileDialog;
 		private System.Windows.Forms.OpenFileDialog importFileDialog;
-		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnName;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnFileExt;
 		private System.Windows.Forms.DataGridViewComboBoxColumn columnType;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnSize;
+		private System.Windows.Forms.Button btnAddRemote;
 	}
 }

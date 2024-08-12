@@ -50,6 +50,7 @@ namespace Ginger
 
 		public bool isDefaultAsset { get { return uriType == UriType.Default; } }
 		public bool isEmbeddedAsset { get { return uriType == UriType.Embedded; } }
+		public bool isRemoteAsset { get { return uriType == UriType.Custom; } }
 
 		public static readonly string DefaultUri = "ccdefault:";
 		public static readonly string CharXEmbedUriPrefix = "embeded://";
@@ -197,7 +198,9 @@ namespace Ginger
 			// Remote/other asset
 			string uriPath = uri;
 			int idxProtocol = uri.IndexOf("://");
-			if (idxProtocol != -1)
+			if (uri.BeginsWith("file:///"))
+				uriPath = uri.Substring(8);
+			else if (idxProtocol != -1)
 				uriPath = uri.Substring(idxProtocol + 3);
 
 			return new AssetFile() {
@@ -235,13 +238,58 @@ namespace Ginger
 			};
 		}
 
-		public static AssetFile MakeCustomUri(AssetType type, string name, string uri, string ext = null)
+		public static AssetFile MakeRemote(AssetType type, string uri)
 		{
+			int idxProtocol = uri.IndexOf("://");
+			string protocol;
+			string path;
+			if (uri.BeginsWith("file:///"))
+			{
+				protocol = "file:///";
+				path = uri.Substring(8);
+			}
+			else if (idxProtocol != -1)
+			{
+				protocol = uri.Substring(0, idxProtocol + 3);
+				path = uri.Substring(idxProtocol + 3);
+			}
+			else
+			{
+				protocol = "http://";
+				path = uri;
+			}
+
+			// Asset name
+			string name = null;
+			int pos_slash = path.LastIndexOf('/');
+			if (pos_slash != -1)
+				name = path.Substring(pos_slash + 1);
+			if (string.IsNullOrEmpty(name))
+				name = path;
+
+			// Extension
+			string ext = Path.GetExtension(name).ToLowerInvariant();
+			if (ext != null && ext.Length > 0 && ext[0] == '.')
+				ext = ext.Substring(1); // Strip '.'
+
+			name = Path.GetFileNameWithoutExtension(name);
+
+			if (type == AssetType.Undefined)
+			{ 
+				bool isImage = ext == "png"
+					|| ext == "apng"
+					|| ext == "jpg"
+					|| ext == "jpeg"
+					|| ext == "webp"
+					|| ext == "avif";
+				type = isImage ? AssetType.Icon : AssetType.Other;
+			}
+
 			return new AssetFile() {
 				assetType = type,
-				fullUri = uri,
+				fullUri = string.Concat(protocol, path),
 				uriType = UriType.Custom,
-				name = name ?? "main",
+				name = name ?? "untitled",
 				ext = ext ?? "unknown",
 				uriName = null,
 				uriPath = null,
@@ -444,7 +492,7 @@ namespace Ginger
 				for (int i = 0; i < this.Count; ++i)
 				{
 					var asset = this[i];
-					if (asset.type != type || asset.isEmbeddedAsset == false)
+					if (asset.type != type)
 						continue;
 
 					string name = (this[i].name ?? "").ToLowerInvariant().Trim();
