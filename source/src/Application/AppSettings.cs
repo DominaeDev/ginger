@@ -265,7 +265,7 @@ namespace Ginger
 				ReadDecimal(ref Faraday.TopP, faradaySection, "TopP", 0m, 1m);
 				ReadDecimal(ref Faraday.MinP, faradaySection, "MinP", 0m, 1m);
 				ReadBool(ref Faraday.MinPEnabled, faradaySection, "MinPEnabled");
-				ReadInt(ref Faraday.PromptTemplate, faradaySection, "PromptTemplate", 0, 3);
+				ReadInt(ref Faraday.PromptTemplate, faradaySection, "PromptTemplate", 0, 6);
 				ReadBool(ref Faraday.PruneExampleChat, faradaySection, "PruneExampleChat");
 			}
 

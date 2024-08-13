@@ -570,9 +570,11 @@ namespace Ginger
 
 			if (string.IsNullOrEmpty(filename) == false)
 			{
-				if (AppSettings.User.LastExportCharacterFilter == 5 || AppSettings.User.LastExportCharacterFilter == 6) // png
+				if (AppSettings.User.LastExportCharacterFilter == 5 
+					|| AppSettings.User.LastExportCharacterFilter == 6
+					|| AppSettings.User.LastExportCharacterFilter == 7) // png
 					filename = string.Concat(filename, ".png");
-				else if (AppSettings.User.LastExportCharacterFilter == 7) // charx
+				else if (AppSettings.User.LastExportCharacterFilter == 8) // charx
 					filename = string.Concat(filename, ".charx");
 				else if (AppSettings.User.LastExportCharacterFilter == 9) // yaml
 					filename = string.Concat(filename, ".yaml");
@@ -612,7 +614,8 @@ namespace Ginger
 				card.data.extensions.ginger = gingerExt;
 
 				var assets = (AssetCollection)Current.Card.assets.Clone();
-				assets.BakePortraitImage(false);
+				
+				assets.AddPortraitImage(FileUtil.FileType.Json);
 				assets.Validate();
 
 				card.data.assets = assets

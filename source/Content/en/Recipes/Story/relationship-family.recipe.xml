@@ -32,7 +32,7 @@
 	
 	<Choice id="kinship" style="radio" required="yes" rule="(parent or child or sibling) and not twin">
 		<Label>Kinship</Label>
-		<Option>Biological</Option>
+		<Option id="biological">Blood-related</Option>
 		<Option>Adoptive</Option>
 		<Option>Legal</Option>
 		<Default>Biological</Default>

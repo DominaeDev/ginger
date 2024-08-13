@@ -554,58 +554,57 @@ namespace Ginger
 			return this.ContainsAny(a => a.assetType == AssetFile.AssetType.Icon && (a.isDefaultAsset || a.name == "main" ));
 		}
 
-		public void BakePortraitImage(bool bAddDefault = true)
+		public void AddPortraitImage(FileUtil.FileType fileType)
 		{
-			// Add current portrait image
-			Image image = Current.Card.portraitImage;
-			if (image != null)
+			// Remove any existing default icon(s)
+			this.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
+
+			if (fileType == FileUtil.FileType.Png)
 			{
-				// Write image to buffer
-				try
-				{
-					using (var stream = new MemoryStream())
-					{
-						if (image.RawFormat.Equals(ImageFormat.Png)) // Save png
-						{
-							image.Save(stream, ImageFormat.Png);
-						}
-						else // or convert to png
-						{
-							using (Image bmpNewImage = new Bitmap(image.Width, image.Height))
-							{
-								Graphics gfxNewImage = Graphics.FromImage(bmpNewImage);
-								gfxNewImage.DrawImage(image, new Rectangle(0, 0, bmpNewImage.Width, bmpNewImage.Height),
-														0, 0,
-														image.Width, image.Height,
-														GraphicsUnit.Pixel);
-								gfxNewImage.Dispose();
-								bmpNewImage.Save(stream, ImageFormat.Png);
-							}
-						}
-
-						// Add asset
-						this.Insert(0, new AssetFile() {
-							assetType = AssetFile.AssetType.Icon,
-							name = "main",
-							ext = "png",
-							uriType = AssetFile.UriType.Embedded,
-							data = AssetData.FromBytes(stream.ToArray()),
-						});
-
-						// Remove any existing default icon(s)
-						this.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
-						bAddDefault = false;
-					}
-				}
-				catch
-				{
-				}
+				this.Insert(0, AssetFile.MakeDefault(AssetFile.AssetType.Icon, "main", "png")); // Add default
+				return;
 			}
 
-			if (bAddDefault)
+			// Embed current portrait image
+			Image image = Current.Card.portraitImage;
+			if (image == null)
+				return;
+
+			// Write image to buffer
+			try
 			{
-				// Add default icon asset
-				this.Insert(0, AssetFile.MakeDefault(AssetFile.AssetType.Icon, "main"));
+				using (var stream = new MemoryStream())
+				{
+					if (image.RawFormat.Equals(ImageFormat.Png)) // Save png
+					{
+						image.Save(stream, ImageFormat.Png);
+					}
+					else // or convert to png
+					{
+						using (Image bmpNewImage = new Bitmap(image.Width, image.Height))
+						{
+							Graphics gfxNewImage = Graphics.FromImage(bmpNewImage);
+							gfxNewImage.DrawImage(image, new Rectangle(0, 0, bmpNewImage.Width, bmpNewImage.Height),
+													0, 0,
+													image.Width, image.Height,
+													GraphicsUnit.Pixel);
+							gfxNewImage.Dispose();
+							bmpNewImage.Save(stream, ImageFormat.Png);
+						}
+					}
+
+					// Add asset
+					this.Insert(0, new AssetFile() {
+						assetType = AssetFile.AssetType.Icon,
+						name = "main",
+						ext = "png",
+						uriType = AssetFile.UriType.Embedded,
+						data = AssetData.FromBytes(stream.ToArray()),
+					});
+				}
+			}
+			catch
+			{
 			}
 		}
 	}

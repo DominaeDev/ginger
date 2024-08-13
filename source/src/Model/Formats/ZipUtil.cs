@@ -124,9 +124,7 @@ namespace Ginger
 
 			AssetCollection assets = (AssetCollection)Current.Card.assets.Clone();
 
-			assets.BakePortraitImage(true);
-
-			// Validate names and uris
+			assets.AddPortraitImage(FileType.CharX);
 			assets.Validate();
 
 			card.data.assets = assets

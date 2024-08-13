@@ -202,6 +202,9 @@ namespace Ginger
 			case 1: card.data.promptTemplate = "general"; break;
 			case 2: card.data.promptTemplate = "ChatML"; break;
 			case 3: card.data.promptTemplate = "Llama3"; break;
+			case 4: card.data.promptTemplate = "Gemma2"; break;
+			case 5: card.data.promptTemplate = "CommandR"; break;
+			case 6: card.data.promptTemplate = "MistralInstruct"; break;
 			default: card.data.promptTemplate = null; break;
 			}
 			card.data.pruneExampleChat = AppSettings.Faraday.PruneExampleChat;
@@ -227,11 +230,10 @@ namespace Ginger
 			// Version 3
 			try
 			{
-				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_faradayCardV4Schema))
+				if (FaradayCardV3.Validate(json))
 				{
 					var card = JsonConvert.DeserializeObject<FaradayCardV3>(json);
-					if (card.version >= 3)
+					if (card.version == 3)
 						return FromV3(card);
 				}
 			}
@@ -241,8 +243,7 @@ namespace Ginger
 			// Version 2
 			try
 			{
-				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_faradayCardV4Schema))
+				if (FaradayCardV2.Validate(json))
 				{
 					var card = JsonConvert.DeserializeObject<FaradayCardV2>(json);
 					if (card.version == 2)
@@ -255,8 +256,7 @@ namespace Ginger
 			// Version 1
 			try
 			{
-				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_faradayCardV4Schema))
+				if (FaradayCardV1.Validate(json))
 				{
 					var card = JsonConvert.DeserializeObject<FaradayCardV1>(json);
 					if (card.version == 1)

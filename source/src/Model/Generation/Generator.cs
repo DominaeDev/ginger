@@ -702,7 +702,7 @@ namespace Ginger
 				else if (channel == Recipe.Component.Example)
 				{
 					string text = string.Join(Text.ParagraphBreak, lsOutputsByChannel[iChannel]);
-					text = GingerString.FromOutput(text, characterIndex, bMain, Text.EvalOption.None)
+					text = GingerString.FromOutput(text, characterIndex, bMain, Text.EvalOption.Minimal)
 						.ApplyTextStyle(Current.Card.textStyle)
 						.ToString();
 

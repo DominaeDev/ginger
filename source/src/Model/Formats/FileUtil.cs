@@ -273,11 +273,7 @@ namespace Ginger
 
 					// Compile assets
 					var assets = (AssetCollection)Current.Card.assets.Clone();
-					if (assets.HasDefaultIcon() == false)
-					{
-						// Add default icon
-						assets.Insert(0, AssetFile.MakeDefault(AssetFile.AssetType.Icon, "main", "png"));
-					}
+					assets.AddPortraitImage(FileType.Png);
 
 					assets.Validate();
 
