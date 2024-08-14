@@ -942,6 +942,32 @@ namespace Ginger
 			public int length;
 		}
 
+		private static bool IsWhole(string text, string word, int pos)
+		{
+			char? left = null;
+			char? right = null;
+			if (pos > 0) left = text[pos - 1];
+			if (pos + word.Length < text.Length) right = text[pos + word.Length];
+
+			char ch = text[pos];
+			var charSet = CharUtil.GetCharacterSet(ch);
+			var leftCharSet = left.HasValue ? CharUtil.GetCharacterSet(left.Value) : CharUtil.CharacterSet.Undefined;
+			var rightCharSet = right.HasValue ? CharUtil.GetCharacterSet(right.Value) : CharUtil.CharacterSet.Undefined;
+
+			bool bTermLeft = !left.HasValue 
+				|| char.IsWhiteSpace(left.Value) 
+				|| charSet == CharUtil.CharacterSet.CJK
+				|| (charSet == CharUtil.CharacterSet.Default && !char.IsLetter(left.Value))
+				|| charSet != leftCharSet;
+			bool bTermRight = !right.HasValue 
+				|| char.IsWhiteSpace(right.Value) 
+				|| charSet == CharUtil.CharacterSet.CJK
+				|| (charSet == CharUtil.CharacterSet.Default && !char.IsLetter(right.Value))
+				|| charSet != rightCharSet;
+
+			return bTermLeft && bTermRight;
+		}
+
 		public static void ReplaceWholeWord(StringBuilder sb, string word, string replace, bool ignoreCase = false)
 		{
 			if (string.IsNullOrEmpty(word))
@@ -952,28 +978,22 @@ namespace Ginger
 
 			List<WholeWord> replacements = new List<WholeWord>();
 
-			string str = sb.ToString();
+			string text = sb.ToString();
 
-			int pos = str.IndexOf(word, 0, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+			int pos = text.IndexOf(word, 0, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 			while (pos != -1)
 			{
-				char? left = null;
-				char? right = null;
-				if (pos > 0) left = sb[pos - 1];
-				if (pos + word.Length < sb.Length) right = sb[pos + word.Length];
-
-				bool whole = (!left.HasValue || char.IsWhiteSpace(left.Value) || !char.IsLetter(left.Value))
-					&& (!right.HasValue || char.IsWhiteSpace(right.Value) || !char.IsLetter(right.Value));
+				bool whole = IsWhole(text, word, pos);
 				if (whole)
 				{
 					replacements.Add(new WholeWord() {
 						start = pos,
 						length = word.Length,
 					});
-					pos = str.IndexOf(word, pos + word.Length, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+					pos = text.IndexOf(word, pos + word.Length, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 					continue;
 				}
-				pos = str.IndexOf(word, pos + 1, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+				pos = text.IndexOf(word, pos + 1, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 			}
 
 			for (int i = replacements.Count - 1; i >= 0; --i)
@@ -984,6 +1004,21 @@ namespace Ginger
 			}
 		}
 
+		public static int[] FindWords(string text, string word, bool bIgnoreCase)
+		{
+			if (string.IsNullOrEmpty(word))
+				return null;
+
+			List<int> found = new List<int>();
+			int pos = text.IndexOf(word, 0, bIgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+			while (pos != -1)
+			{
+				found.Add(pos);
+				pos = text.IndexOf(word, pos + word.Length, bIgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+			}
+			return found.ToArray();
+		}
+
 		public static int FindWholeWord(string text, string word, int startIndex = 0, bool ignoreCase = false)
 		{
 			if (string.IsNullOrEmpty(word))
@@ -992,13 +1027,7 @@ namespace Ginger
 			int pos = text.IndexOf(word, startIndex, ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture);
 			while (pos != -1)
 			{
-				char? left = null;
-				char? right = null;
-				if (pos > 0) left = text[pos - 1];
-				if (pos + word.Length < text.Length) right = text[pos + word.Length];
-
-				bool whole = (!left.HasValue || char.IsWhiteSpace(left.Value) || !char.IsLetter(left.Value))
-					&& (!right.HasValue || char.IsWhiteSpace(right.Value) || !char.IsLetter(right.Value));
+				bool whole = IsWhole(text, word, pos);
 				
 				if (whole)
 					return pos;
@@ -1016,13 +1045,7 @@ namespace Ginger
 			int pos = text.IndexOfReverse(word, startIndex, ignoreCase);
 			while (pos != -1)
 			{
-				char? left = null;
-				char? right = null;
-				if (pos > 0) left = text[pos - 1];
-				if (pos + word.Length < text.Length) right = text[pos + word.Length];
-
-				bool whole = (!left.HasValue || char.IsWhiteSpace(left.Value) || !char.IsLetter(left.Value))
-					&& (!right.HasValue || char.IsWhiteSpace(right.Value) || !char.IsLetter(right.Value));
+				bool whole = IsWhole(text, word, pos);
 
 				if (whole)
 					return pos;
@@ -1040,13 +1063,7 @@ namespace Ginger
 			int pos = text.IndexOf(word, 0, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 			while (pos != -1)
 			{
-				char? left = null;
-				char? right = null;
-				if (pos > 0) left = text[pos - 1];
-				if (pos + word.Length < text.Length) right = text[pos + word.Length];
-
-				bool whole = (!left.HasValue || char.IsWhiteSpace(left.Value) || !(char.IsLetter(left.Value) || left.Value == '{' || left.Value == '#'))
-					&& (!right.HasValue || char.IsWhiteSpace(right.Value) || !(char.IsLetter(right.Value) || right.Value == '}' || right.Value == '#'));
+				bool whole = IsWhole(text, word, pos);
 
 				if (whole)
 				{

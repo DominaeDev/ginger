@@ -1656,6 +1656,10 @@ namespace Ginger
 					{
 						Undo.Push(Undo.Kind.Parameter, "Replace text");
 						recipeList.RefreshAllParameters();
+						if (SpellChecker.IsInitialized && AppSettings.Settings.SpellChecking)
+							RefreshSpellChecking();
+						else
+							recipeList.RefreshSyntaxHighlighting(true);
 					}
 
 					if (replacements == 1)

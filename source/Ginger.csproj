@@ -347,6 +347,7 @@
     <Compile Include="src\Model\Parameters\RangeParameter.cs" />
     <Compile Include="src\Model\Recipe\LoreClipboard.cs" />
     <Compile Include="src\Model\Recipe\RecipeClipboard.cs" />
+    <Compile Include="src\Utility\CharUtil.cs" />
     <Compile Include="src\Utility\Extensions\ControlExtensions.cs" />
     <Compile Include="src\Utility\Extensions\DateTimeExtensions.cs" />
     <Compile Include="src\Utility\Extensions\RichTextBoxExtensions.cs" />

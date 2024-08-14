@@ -55,14 +55,14 @@ namespace WinFormsSyntaxHighlighter
 
             foreach (var token in tokens)
             {
-                var escaptedToken = Regex.Escape(token.Trim());
+                var escapedToken = Regex.Escape(token.Trim());
 
-                if (escaptedToken.Length > 0)
+                if (escapedToken.Length > 0)
                 {
-                    if (Char.IsLetterOrDigit(escaptedToken[0]))
-                        regexTokens.Add(String.Format(@"\b{0}\b", escaptedToken));
+                    if (Char.IsLetterOrDigit(escapedToken[0]))
+                        regexTokens.Add(String.Format(@"\b{0}\b", escapedToken));
                     else
-                        regexTokens.Add(escaptedToken);
+                        regexTokens.Add(escapedToken);
                 }
             }
 

@@ -38,12 +38,12 @@ namespace Ginger
 
 		protected override void OnSetParameter()
 		{
-			centerPanel.Enabled = parameter.isEnabled || !parameter.isOptional;
+			this.Enabled = parameter.isEnabled || !parameter.isOptional;
 		}
 
 		protected override void OnSetEnabled(bool bEnabled)
 		{
-			centerPanel.Enabled = bEnabled;
+			this.Enabled = bEnabled;
 		}
 
 		private LorebookEntryPanel CreateEntryPanel()
@@ -589,6 +589,9 @@ namespace Ginger
 
 		public ISearchable[] GetSearchables()
 		{
+			if (this.Enabled == false)
+				return new ISearchable[0];
+
 			var searchables = new List<LorebookSearchable>();
 			for (int i = 0; i < lorebook.entries.Count; ++i)
 			{
@@ -602,7 +605,7 @@ namespace Ginger
 					valueType = LorebookSearchable.ValueType.Key,
 					text = entry.key,
 					SearchableControl = panel != null ? panel.textBox_Keys.richTextBox : null,
-					Enabled = entry.isEnabled,
+					Enabled = this.parameter.isEnabled && entry.isEnabled,
 				});
 
 				// Value
@@ -612,7 +615,7 @@ namespace Ginger
 					valueType = LorebookSearchable.ValueType.Value,
 					text = entry.value,
 					SearchableControl = panel != null ? panel.textBox_Text.richTextBox : null,
-					Enabled = entry.isEnabled,
+					Enabled =this.parameter.isEnabled && entry.isEnabled,
 				});
 			}
 
