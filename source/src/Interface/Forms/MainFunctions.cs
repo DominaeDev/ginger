@@ -1381,13 +1381,13 @@ namespace Ginger
 			}
 		}
 
-		public static void RefreshSpellChecking()
+		public static void RefreshSpellChecking(bool bRehighlight = true)
 		{
 			if (SpellChecker.IsInitialized && AppSettings.Settings.SpellChecking)
 			{
 				var spellChecked = instance.recipeList.FindAllControlsOfType<TextBoxBase>().OfType<ISpellChecked>();
 				foreach (var control in spellChecked)
-					control.SpellCheck(true, true);
+					control.SpellCheck(true, bRehighlight);
 			}
 		}
 

@@ -48,8 +48,8 @@
 	<Rule id="#female">#gender is female</Rule>
 	
 	<!-- Support flags -->
-	<Rule id="__support-grammar">__backyard</Rule>
-	<Rule id="__support-lore-wildcards">__backyard</Rule>
+	<Rule id="__support-grammar">__backyard or __bake or __snippet</Rule>
+	<Rule id="__support-lore-wildcards">__backyard or __bake or __snippet</Rule>
 
 	<!-- Internal macros-->
 	<Macro id="char, character, bot">&lt;##CHAR##&gt;</Macro>

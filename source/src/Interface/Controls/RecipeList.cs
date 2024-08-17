@@ -1094,7 +1094,6 @@ namespace Ginger
 			this.Resume();
 
 			RichTextBoxEx.AllowSyntaxHighlighting = true;
-			RefreshSyntaxHighlighting(false);
 
 			return true;
 		}

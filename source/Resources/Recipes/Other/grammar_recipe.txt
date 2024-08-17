@@ -6,7 +6,8 @@
 	</Description>
 	<Color>#bfd0db</Color>
 	<Order>3</Order>
-	<Requires>not (grammar or __actor)</Requires>
+	<Multiple>True</Multiple>
+	<Requires>not __actor</Requires>
 	<Flags>grammar, __grammar, __component, __internal</Flags>
 	
 	<Text id="grammar" style="code" raw="yes">

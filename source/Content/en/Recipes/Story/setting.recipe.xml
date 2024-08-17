@@ -1,26 +1,94 @@
-﻿<Ginger id="story" version="1.0">
+﻿<Ginger id="story" version="1.1">
 	<!-- Preamble -->
-	<Name>World // setting</Name>
+	<Name>Setting/Add world // setting</Name>
 	<Title>World / Setting</Title>
 	<Author>Ginger</Author>
 	<Description>Describe the world and setting.</Description>
 	<Category>Story</Category>
-	<Flags>setting</Flags>
+	<Order>0</Order>
 	<Multiple>Yes</Multiple>
 	
 	<!-- Parameters -->
-	<Text id="text" style="flex">
+	<Choice id="setting" style="custom">
 		<Label>Setting</Label>
+		<Option id="college">Academic / College</Option>
+		<Option id="dorm">Academic / Dorm</Option>
+		<Option id="highschool">Academic / Highschool</Option>
+		<Option id="university">Academic / University</Option>
+		<Option id="city">Contemporary / City</Option>
+		<Option id="farm">Contemporary / Farmstead</Option>
+		<Option id="town">Contemporary / Small town</Option>
+		<Option id="fairytale">Fantasy / Fairytale</Option>
+		<Option id="high-fantasy">Fantasy / High</Option>
+		<Option id="isekai">Fantasy / Isekai</Option>
+		<Option id="medieval">Fantasy / Medieval</Option>
+		<Option id="mystical">Fantasy / Enchanted forest</Option>
+		<Option id="dystopia">Future / Dystopian</Option>
+		<Option id="utopia">Future / Utopian</Option>
+		<Option id="apartment">Residential / Apartment</Option>
+		<Option id="house">Residential / House</Option>
+		<Option id="mansion">Residential / Mansion</Option>
+		<Option id="penthouse">Residential / Penthouse</Option>
+		<Option id="alien">Sci-fi / Alien world</Option>
+		<Option id="space-base">Sci-fi / Space base</Option>
+		<Option id="starship">Sci-fi / Starship</Option>
+		<Option id="desert">Nature / Desert</Option>
+		<Option id="forest">Nature / Forest</Option>
+		<Option id="grassland">Nature / Grassland</Option>
+		<Option id="road">Nature / Open road</Option>
+		<Option id="wilderness">Nature / Wilderness</Option>
+	</Choice>
+	
+	<String id="setting">
+		<String rule="college">College</String>
+		<String rule="dorm">Student dormitory</String>
+		<String rule="highschool">Highschool</String>
+		<String rule="university">University grounds</String>
+		<String rule="city">Modern city</String>
+		<String rule="farm">Farmstead</String>
+		<String rule="town">Small town</String>
+		<String rule="fairytale">A whimsical fairytale world</String>
+		<String rule="high-fantasy">High fantasy</String>
+		<String rule="isekai">Fantasy / Isekai</String>
+		<String rule="medieval">Medieval fantasy</String>
+		<String rule="mystical">Enchanted forest</String>
+		<String rule="dystopia">Futuristic dystopia</String>
+		<String rule="utopia">Futuristic utopia</String>
+		<String rule="apartment">Small apartment</String>
+		<String rule="house">Suburban house</String>
+		<String rule="mansion">Large mansion</String>
+		<String rule="penthouse">Penthouse apartment</String>
+		<String rule="alien">Alien world</String>
+		<String rule="space-base">An orbiting space base</String>
+		<String rule="starship">An interstellar starship</String>
+		<String rule="desert">Outdoors / In the middle of a desert</String>
+		<String rule="forest">Outdoors / In a large forest</String>
+		<String rule="grassland">Outdoors / grasslands</String>
+		<String rule="road">Outdoors / On the open road</String>	
+		<String rule="wilderness">Outdoors / Wilderness</String>	
+		<String>{setting:value}</String>
+	</String>
+
+	<Text id="world-name">
+		<Label>Name</Label>
+		<Description>The name of the primary location or world.</Description>
+	</Text>
+	
+	<Text id="text" style="flex">
+		<Label>Description</Label>
 	</Text>
 	
 	<!-- Output -->
-	<Node path="scenario/world/description" order="100" style="line" mode="exclude">
-		WORLD / SETTING:  
+	<Node path="scenario/setting" style="space" order="100">Setting: {inner}.</Node>
+	<Node path="scenario/setting/name" order="0" style="text"/>
+	<Node path="scenario/setting/name/value">{world-name}</Node>
+	<Node path="scenario/setting/value" rule="setting">([@setting])</Node>
+	
+	<Node path="scenario/world/description" order="100" style="block" mode="exclude">
+		World description:  
 		{inner}  
 	</Node>
 
-	<!-- Output -->	
-	<Node path="scenario/world/description/summary" style="block" mode="exclude"/>
-	<Node path="scenario/world/description/summary/text">{text}</Node>
+	<Node path="scenario/world/description/text" rule="text">{text}.</Node>
 
 </Ginger>

@@ -1,6 +1,6 @@
 ﻿<Ginger id="story-plot" version="1.0">
 	<!-- Preamble -->
-	<Name>Plot/Sequence of events</Name>
+	<Name>Story/Sequence of events</Name>
 	<Title>Sequence of events</Title>
 	<Description>Describe the story as a sequence of events.</Description>
 	<Author>Ginger</Author>

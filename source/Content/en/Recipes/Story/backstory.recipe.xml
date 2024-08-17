@@ -1,12 +1,13 @@
 ﻿<Ginger id="backstory" version="1.1">
 	<!-- Preamble -->
-	<Name>Plot/Premise</Name>
+	<Name>Story/Premise</Name>
 	<Title>Premise / Starting point</Title>
 	<Description>
 		Describes a premise, or starting-off point for the story.
 	</Description>
 	<Author>Ginger</Author>
 	<Category>Story</Category>
+	<Order>1</Order>
 	<Multiple>Yes</Multiple>
 	
 	<!-- Parameters -->

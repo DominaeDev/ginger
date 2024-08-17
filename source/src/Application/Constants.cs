@@ -51,12 +51,12 @@ namespace Ginger
 			{ Recipe.Category.Quirk,			Color.Azure },
 			{ Recipe.Category.Emotion,          Color.Azure },
 			{ Recipe.Category.Sexual,           ColorTranslator.FromHtml("#fff0f8") },
+			{ Recipe.Category.Role,				ColorTranslator.FromHtml("#d2f0f0") },
 
 			{ Recipe.Category.User,			    ColorTranslator.FromHtml("#ddf5ef") },
 			{ Recipe.Category.Relationship,	    ColorTranslator.FromHtml("#ddf5ef") },
 
 			{ Recipe.Category.Story,			Color.Linen },
-			{ Recipe.Category.Role,				Color.Linen },
 			{ Recipe.Category.World,			Color.Linen },
 			{ Recipe.Category.Location,			Color.Linen },
 			{ Recipe.Category.Scenario,			Color.Linen },
@@ -92,7 +92,7 @@ namespace Ginger
 			{ Recipe.Category.Quirk,			Recipe.Drawer.Mind },
 			{ Recipe.Category.Emotion,			Recipe.Drawer.Mind },
 			{ Recipe.Category.Sexual,			Recipe.Drawer.Mind },
-			{ Recipe.Category.Role,             Recipe.Drawer.Story },
+			{ Recipe.Category.Role,             Recipe.Drawer.Mind },
 			{ Recipe.Category.Story,			Recipe.Drawer.Story },
 			{ Recipe.Category.World,			Recipe.Drawer.Story },
 			{ Recipe.Category.User,				Recipe.Drawer.Story },

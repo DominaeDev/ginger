@@ -270,8 +270,8 @@ namespace Ginger
 		public static List<Recipe> WithInternal(IEnumerable<Recipe> recipes)
 		{
 			List<Recipe> list = new List<Recipe>(recipes);
-			Recipe externalGlobalRecipe = allRecipes.FirstOrDefault(r => r.id == GlobalExternal);
-			Recipe internalGlobalRecipe = allRecipes.FirstOrDefault(r => r.id == GlobalInternal);
+			Recipe externalGlobalRecipe = GetRecipeByID(GlobalExternal).Instantiate();
+			Recipe internalGlobalRecipe = GetRecipeByID(GlobalInternal).Instantiate();
 			if (externalGlobalRecipe != null)
 				list.Insert(0, externalGlobalRecipe);
 			if (internalGlobalRecipe != null)

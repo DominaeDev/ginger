@@ -195,9 +195,9 @@ namespace Ginger
 			List<Output> outputPerCharacter = new List<Output>();
 			option |= Option.All;
 			int numChannels = EnumHelper.ToInt(Recipe.Component.Count);
-			Recipe internalGlobalRecipe = RecipeBook.allRecipes.FirstOrDefault(r => r.id == RecipeBook.GlobalInternal);
-			Recipe externalGlobalRecipe = RecipeBook.allRecipes.FirstOrDefault(r => r.id == RecipeBook.GlobalExternal);
-			Recipe pruneScenarioRecipe = RecipeBook.allRecipes.FirstOrDefault(r => r.id == "__prune-scenario");
+			Recipe internalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalInternal).Instantiate();
+			Recipe externalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalExternal).Instantiate();
+			Recipe pruneScenarioRecipe = RecipeBook.GetRecipeByID("__prune-scenario").Instantiate();
 
 			for (int index = 0; index < Current.Characters.Count; ++index)
 			{
@@ -325,10 +325,7 @@ namespace Ginger
 
 		public static Output Generate(Recipe recipe, Option option)
 		{
-			var recipes = new List<Recipe>(4) { recipe };
-
-			if (option.ContainsAny(Option.Snippet | Option.Bake))
-				recipes = RecipeBook.WithInternal(recipes);
+			var recipes = RecipeBook.WithInternal(new Recipe[] { recipe });
 
 			var context = Current.Character.GetContextForRecipe(recipe);
 			return Generate(recipes, Current.SelectedCharacter, context, option | Option.Single);
@@ -539,12 +536,6 @@ namespace Ginger
 						) == false)
 						continue;
 
-					if (template.channel == Recipe.Component.Grammar)
-					{
-						lsOutputsByChannel[(int)template.channel].Add(Utility.Unindent(template.text)); // As is
-						continue;
-					}
-
 					string text = Text.Eval(template.text, localContext,
 						new ContextString.EvaluationConfig() {
 							macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
@@ -561,7 +552,9 @@ namespace Ginger
 						else if (channel == Recipe.Component.Greeting && template.isGroupOnly)
 							channel = Recipe.Component.Greeting_Group;
 
-						if (template.isRaw)
+						if (channel == Recipe.Component.Grammar)
+							lsOutputsByChannel[(int)channel].Add(Text.DontProcess(Utility.Unindent(Text.Process(text, Text.EvalOption.Minimal))));
+						else if (template.isRaw)
 							lsOutputsByChannel[(int)channel].Add(Text.DontProcess(text));
 						else
 							lsOutputsByChannel[(int)channel].Add(text);

@@ -1,7 +1,7 @@
 ﻿<Ginger id="related-work" version="1.0">
 	<!-- Preamble -->
-	<Name>Plot/Based on a fictional story</Name>
-	<Title>Based on a fictional story</Title>
+	<Name>Story/Based on a fictional work</Name>
+	<Title>Based on a fictional work</Title>
 	<Description>Refer to a work of fiction such as a book, movie, or video game, etc.</Description>
 	<Author>Ginger</Author>
 	<Category>Story</Category>

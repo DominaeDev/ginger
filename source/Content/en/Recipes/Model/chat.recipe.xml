@@ -31,6 +31,15 @@
 		<Option id="erotic">Erotic</Option>
 	</Choice>
 	<SetFlag rule="erotic">nsfw</SetFlag>
+	
+	<Toggle id="use-grammar">
+		<Label>Use grammar</Label>
+		<Default>Yes</Default>
+		<Description>
+			Enforce the chat format using a grammar.
+			(Backyard.ai only)
+		</Description>
+	</Toggle>		
 		
 	<!-- Output -->
 	<System>
@@ -65,8 +74,8 @@
 
 	<!-- Grammar to enforce chat style -->
 	<!-- Chat (or default) -->
-	<Grammar rule="__support-grammar and (not text-style or text-style eq 1)"><![CDATA[
-		root ::= patterns "\n#"
+	<Grammar rule="use-grammar and __support-grammar and (not text-style or text-style eq 1)"><![CDATA[
+		root ::= patterns "\n"
 		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
 		pa ::= action " " dialogue
 		pb ::= dialogue " " action
@@ -74,12 +83,12 @@
 		pd ::= dialogue " " action " " dialogue
 		pe ::= dialogue " " action " " dialogue " " action
 		pf ::= action " " dialogue " " action " " dialogue
-		dialogue ::= [^<\n*#\"]+
-		action ::= "*" [^ ][a-z .,'?!:;0-9-]+[^ ] "*"
+		dialogue ::= [[^<\n*#\"]]+
+		action ::= "*" [[^ ]][[a-z .,'?!:;0-9-]]+[[^ ]] "*"
 	]]></Grammar>
 	<!-- Novel -->
-	<Grammar rule="__support-grammar and text-style eq 2"><![CDATA[
-		root ::= patterns "\n#"
+	<Grammar rule="use-grammar and __support-grammar and text-style eq 2"><![CDATA[
+		root ::= patterns "\n"
 		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
 		pa ::= action " " dialogue
 		pb ::= dialogue " " action
@@ -87,12 +96,12 @@
 		pd ::= dialogue " " action " " dialogue
 		pe ::= dialogue " " action " " dialogue " " action
 		pf ::= action " " dialogue " " action " " dialogue
-		dialogue ::= "\"" [^<\n*#\"]+ "\""
-		action ::= [^<\n*#\"]+
+		dialogue ::= "\"" [[^<\n*#\"]]+ "\""
+		action ::= [[^<\n*#\"]]+
 	]]></Grammar>
 	<!-- Mixed -->
-	<Grammar rule="__support-grammar and text-style eq 3"><![CDATA[
-		root ::= patterns "\n#"
+	<Grammar rule="use-grammar and __support-grammar and text-style eq 3"><![CDATA[
+		root ::= patterns "\n"
 		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
 		pa ::= action " " dialogue
 		pb ::= dialogue " " action
@@ -100,12 +109,12 @@
 		pd ::= dialogue " " action " " dialogue
 		pe ::= dialogue " " action " " dialogue " " action
 		pf ::= action " " dialogue " " action " " dialogue
-		dialogue ::= "\"" [^<\n*#\"]+ "\""
-		action ::= "*" [^ ][a-z .,'?!:;0-9-]+[^ ] "*"
+		dialogue ::= "\"" [[^<\n*#\"]]+ "\""
+		action ::= "*" [[^ ]][[a-z .,'?!:;0-9-]]+[[^ ]] "*"
 	]]></Grammar>
 	<!-- Decorative -->
-	<Grammar rule="__support-grammar and text-style eq 4"><![CDATA[
-		root ::= patterns "\n#"
+	<Grammar rule="use-grammar and __support-grammar and text-style eq 4"><![CDATA[
+		root ::= patterns "\n"
 		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
 		pa ::= action " " dialogue
 		pb ::= dialogue " " action
@@ -113,12 +122,12 @@
 		pd ::= dialogue " " action " " dialogue
 		pe ::= dialogue " " action " " dialogue " " action
 		pf ::= action " " dialogue " " action " " dialogue
-		dialogue ::= "“" [^<\n*#\"]+ "”"
-		action ::= [^<\n*#\"]+
+		dialogue ::= "“" [[^<\n*#\"]]+ "”"
+		action ::= [[^<\n*#\"]]+
 	]]></Grammar>
 	<!-- Bold -->
-	<Grammar rule="__support-grammar and text-style eq 5"><![CDATA[
-		root ::= patterns "\n#"
+	<Grammar rule="use-grammar and __support-grammar and text-style eq 5"><![CDATA[
+		root ::= patterns "\n"
 		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
 		pa ::= action " " dialogue
 		pb ::= dialogue " " action
@@ -126,12 +135,12 @@
 		pd ::= dialogue " " action " " dialogue
 		pe ::= dialogue " " action " " dialogue " " action
 		pf ::= action " " dialogue " " action " " dialogue
-		dialogue ::= [^<\n*#\"]+
-		action ::= "**" [a-z .,'?!:;0-9-]+ "**"
+		dialogue ::= [[^<\n*#\"]]+
+		action ::= "**" [[a-z .,'?!:;0-9-]]+ "**"
 	]]></Grammar>
 	<!-- Brackets -->
-	<Grammar rule="__support-grammar and text-style eq 6"><![CDATA[
-		root ::= patterns "\n#"
+	<Grammar rule="use-grammar and __support-grammar and text-style eq 6"><![CDATA[
+		root ::= patterns "\n"
 		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
 		pa ::= action " " dialogue
 		pb ::= dialogue " " action
@@ -139,12 +148,12 @@
 		pd ::= dialogue " " action " " dialogue
 		pe ::= dialogue " " action " " dialogue " " action
 		pf ::= action " " dialogue " " action " " dialogue
-		dialogue ::= [^<\n*#\"]+
-		action ::= "(" [^ *][a-z .,'?!:;0-9-]+[^ *] ")"
+		dialogue ::= [[^<\n*#\"]]+
+		action ::= "(" [[^ *]][[a-z .,'?!:;0-9-]]+[[^ *]] ")"
 	]]></Grammar>
 	<!-- CJK -->
-	<Grammar rule="__support-grammar and text-style eq 7"><![CDATA[
-		root ::= patterns "\n#"
+	<Grammar rule="use-grammar and __support-grammar and text-style eq 7"><![CDATA[
+		root ::= patterns "\n"
 		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
 		pa ::= action " " dialogue
 		pb ::= dialogue " " action
@@ -152,7 +161,7 @@
 		pd ::= dialogue " " action " " dialogue
 		pe ::= dialogue " " action " " dialogue " " action
 		pf ::= action " " dialogue " " action " " dialogue
-		dialogue ::= "「" [^<\n*#\"]+ "」"
-		action ::= [^<\n*#\"]+
+		dialogue ::= "「" [[^<\n*#\"]]+ "」"
+		action ::= [[^<\n*#\"]]+
 	]]></Grammar>
 </Ginger>

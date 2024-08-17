@@ -213,7 +213,7 @@ namespace Ginger
 			SetToolTip(btnAdd_Model, "Bot / Instructions");
 			SetToolTip(btnAdd_Character, "Characteristics / Traits");
 			SetToolTip(btnAdd_Traits, "Appearance / Physique");
-			SetToolTip(btnAdd_Mind, "Personality / Mind");
+			SetToolTip(btnAdd_Mind, "Personality / Behavior");
 			SetToolTip(btnAdd_World, "Story / World");
 			SetToolTip(btnAdd_Other, "Components");
 			SetToolTip(btnAdd_Snippets, "Snippets");
@@ -520,7 +520,7 @@ namespace Ginger
 					&& recipeTemplate.requires.Evaluate(context, new EvaluationCookie() { ruleSuppliers = Current.RuleSuppliers }) == false)
 				{
 					menuItem.Enabled = false;
-					menuItem.ToolTipText = Resources.tooltip_cant_add;
+					menuItem.ToolTipText = string.Concat(tooltip.TrimEnd(), "\r\n\r\n(", Resources.tooltip_cant_add, ")");
 				}
 				else
 				{
@@ -659,7 +659,7 @@ namespace Ginger
 					&& recipeTemplate.requires.Evaluate(context, new EvaluationCookie() { ruleSuppliers = Current.RuleSuppliers }) == false)
 				{
 					menuItem.Enabled = false;
-					menuItem.ToolTipText = Resources.tooltip_cant_add;
+					menuItem.ToolTipText = menuItem.ToolTipText = string.Concat(recipeTemplate.tooltip.TrimEnd(), "\r\n\r\n(", Resources.tooltip_cant_add, ")");
 				}
 				menuItem.Click += (s, e) => {
 					AddRecipe(recipeTemplate);
@@ -1299,6 +1299,8 @@ namespace Ginger
 			}
 
 			sidePanel.RefreshValues();
+
+			RefreshSpellChecking(false);
 			recipeList.RefreshSyntaxHighlighting(false);
 			Regenerate();
 			RefreshTitle();
@@ -1656,10 +1658,8 @@ namespace Ginger
 					{
 						Undo.Push(Undo.Kind.Parameter, "Replace text");
 						recipeList.RefreshAllParameters();
-						if (SpellChecker.IsInitialized && AppSettings.Settings.SpellChecking)
-							RefreshSpellChecking();
-						else
-							recipeList.RefreshSyntaxHighlighting(true);
+						RefreshSpellChecking(false);
+						recipeList.RefreshSyntaxHighlighting(true);
 					}
 
 					if (replacements == 1)

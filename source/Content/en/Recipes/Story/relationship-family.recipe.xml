@@ -44,6 +44,10 @@
 		<String rule="legal:local">step-[clr]</String>
 	</String>
 	
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
+	
 	<!-- Output -->	
 	<String id="parent">
 		<String rule="is-woman">[@kinship] mother</String>
@@ -94,15 +98,17 @@
 		<String>grandchild</String>
 	</String>
 
-	<Node path="description/family" order="150" rule="parent">[char] is [user's] [@parent].</Node>
-	<Node path="description/family" order="150" rule="child">[char] is [user]'s [@child].</Node>
-	<Node path="description/family" order="150" rule="half-sibling">[char] is [user]'s [@half-sibling].</Node>
-	<Node path="description/family" order="150" rule="sibling">[char] is [user]'s [@sibling].</Node>
-	<Node path="description/family" order="150" rule="cousin">[char] is [user]'s cousin.</Node>
-	<Node path="description/family" order="150" rule="second-cousin">[char] is [user]'s second-cousin.</Node>
-	<Node path="description/family" order="150" rule="grandparent">[char] is [user]'s [@grandparent].</Node>
-	<Node path="description/family" order="150" rule="grandchild">[char] is [user]'s [@grandchild].</Node>
-	<Node path="description/family" order="150" rule="not family-member">[char] is a close relative to [user].</Node>
-	<Node path="description/family" order="150" rule="twin">[char] and [user] are [identical-twin?identical|fraternal] twins.</Node>
+	<Node path="description/family" order="150"/>
+	<Node path="description/family/kin" rule="parent">[char] is [user's] [@parent].</Node>
+	<Node path="description/family/kin" rule="child">[char] is [user]'s [@child].</Node>
+	<Node path="description/family/kin" rule="half-sibling">[char] is [user]'s [@half-sibling].</Node>
+	<Node path="description/family/kin" rule="sibling">[char] is [user]'s [@sibling].</Node>
+	<Node path="description/family/kin" rule="cousin">[char] is [user]'s cousin.</Node>
+	<Node path="description/family/kin" rule="second-cousin">[char] is [user]'s second-cousin.</Node>
+	<Node path="description/family/kin" rule="grandparent">[char] is [user]'s [@grandparent].</Node>
+	<Node path="description/family/kin" rule="grandchild">[char] is [user]'s [@grandchild].</Node>
+	<Node path="description/family/kin" rule="not family-member">[char] is a close relative to [user].</Node>
+	<Node path="description/family/kin" rule="twin">[char] and [user] are [identical-twin?identical|fraternal] twins.</Node>
+	<Node path="description/family/more" rule="more">{more}.</Node>
 
 </Ginger>

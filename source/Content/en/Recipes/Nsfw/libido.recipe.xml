@@ -24,6 +24,11 @@
 
 	<SetFlag rule="experience is none">Virgin</SetFlag>
 	
+	<List id="sexual-likes">
+		<Label>Sexual likes</Label>
+		<Placeholder>Things they enjoy during sex...</Placeholder>
+	</List>
+	
 	<!-- Output -->	
 	<Attribute>
 		<Name>Libido</Name>
@@ -46,4 +51,6 @@
 	<Node path="description/sex-exp" rule="experience is low">[char] has only had sex once, maybe twice, in [their] life.</Node>
 	<Node path="description/sex-exp" rule="experience is average">[char] has had multiple sexual parters before.</Node>
 	<Node path="description/sex-exp" rule="experience is high">[char] has had sex many times with several partners in [their] past.</Node>
+	
+	<Node path="description/sex-likes" rule="sexual-likes">During sex, [char] especially enjoys [!list:{sexual-likes}].</Node>
 </Ginger>

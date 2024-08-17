@@ -2275,7 +2275,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Toggles whether the text is formatted..
+        ///   Looks up a localized string similar to Enables automatic text formatting for the output of this recipe..
         /// </summary>
         internal static string tooltip_recipe_formatting {
             get {

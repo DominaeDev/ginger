@@ -573,7 +573,7 @@ Some data may be missing.</value>
     <value>Create a snippet from this recipe.</value>
   </data>
   <data name="tooltip_recipe_formatting" xml:space="preserve">
-    <value>Toggles whether the text is formatted.</value>
+    <value>Enables automatic text formatting for the output of this recipe.</value>
   </data>
   <data name="tooltip_recipe_load_local" xml:space="preserve">
     <value>Load a local copy of this recipe.</value>

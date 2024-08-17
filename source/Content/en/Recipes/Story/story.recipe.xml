@@ -1,7 +1,7 @@
 ﻿<Ginger id="synopsis" version="1.0">
 	<!-- Preamble -->
-	<Name>Plot/Synopsis</Name>
-	<Title>Plot synopsis</Title>
+	<Name>Story/Synopsis</Name>
+	<Title>Synopsis</Title>
 	<Description>Describe the outline for the story</Description>
 	<Author>Ginger</Author>
 	<Category>Story</Category>
