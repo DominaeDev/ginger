@@ -359,6 +359,11 @@ namespace Ginger
 				}, scenario.ToString());
 			}
 
+			// Should insert original model instructions?
+			bool bPrependOriginal = options.ContainsAny(Option.Export | Option.Preview)
+				&& !(context.HasTag(Constants.Flag.System) || context.HasTag(Constants.Flag.Base) || context.HasTag("system-prompt")
+					|| blockBuilder.BlockHasChildren("system/output", true));
+
 			// Build blocks
 			blockBuilder.Build();
 
@@ -367,6 +372,14 @@ namespace Ginger
 			var userPersonaOutput = GingerString.FromOutput(blockBuilder.GetFinishedBlock("user"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 			var scenarioOutput = GingerString.FromOutput(blockBuilder.GetFinishedBlock("scenario"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 			var exampleOutput = GingerString.FromOutput(blockBuilder.GetFinishedBlock("example"), characterIndex, bMain, Text.EvalOption.ExampleFormatting);
+
+			// Insert original model instructions
+			if (bPrependOriginal 
+				&& systemOutput.IsNullOrEmpty() == false 
+				&& systemOutput.ToGinger().Contains(GingerString.OriginalMarker) == false)
+			{
+				systemOutput = GingerString.FromString(string.Concat(GingerString.OriginalMarker, "\n\n", systemOutput.ToString()));
+			}
 
 			// Strip lorebook decorators
 			if (partialOutput.lore != null)

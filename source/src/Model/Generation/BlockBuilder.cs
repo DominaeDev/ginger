@@ -959,9 +959,16 @@ namespace Ginger
 			return _entries.ContainsKey(name.ToString());
 		}
 
-		public bool BlockHasChildren(BlockID name)
+		public bool BlockHasChildren(BlockID name, bool bWithContent)
 		{
-			return _entries.Keys.ContainsAny(k => k.ToString().BeginsWith(string.Concat(name.ToString(), "/")));
+			string key = string.Concat(name.ToString(), "/");
+			var children = _entries
+				.Where(kvp => kvp.Key.ToString().BeginsWith(key))
+				.SelectMany(kvp => kvp.Value);
+
+			if (bWithContent)
+				children = children.Where(b => b.hasInnerBlock == false);
+			return !children.IsEmpty();
 		}
 
 		public void RemoveBlock(BlockID blockID, bool includeChildren = true)

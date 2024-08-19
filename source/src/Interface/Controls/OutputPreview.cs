@@ -85,7 +85,10 @@ namespace Ginger
 
 			if (string.IsNullOrEmpty(outputSystem) == false)
 			{
-				sbOutput.AppendLine(Header("MODEL INSTRUCTIONS"));
+				if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
+					sbOutput.AppendLine(Header("MODEL INSTRUCTIONS"));
+				else
+					sbOutput.AppendLine(Header("SYSTEM PROMPT"));
 				sbOutput.AppendLine();
 				sbOutput.AppendLine(outputSystem);
 				sbOutput.AppendLine();
@@ -134,7 +137,11 @@ namespace Ginger
 			}
 			if (string.IsNullOrEmpty(outputGreeting) == false)
 			{
-				sbOutput.AppendLine(Header("GREETING"));
+				if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
+					sbOutput.AppendLine(Header("FIRST MESSAGE"));
+				else
+					sbOutput.AppendLine(Header("GREETING"));
+
 				sbOutput.AppendLine();
 				sbOutput.AppendLine(outputGreeting);
 				sbOutput.AppendLine();
@@ -221,11 +228,27 @@ namespace Ginger
 
 			menu.Items.Add(new ToolStripSeparator());
 
-			menu.Items.Add(new ToolStripMenuItem("Copy system prompt", null,
+			string labelSystem;
+			string labelPersona;
+			string labelGreeting;
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
+			{
+				labelSystem = "Copy model instructions";
+				labelPersona = "Copy character persona";
+				labelGreeting = "Copy first message";
+			}
+			else
+			{
+				labelSystem = "Copy system prompt";
+				labelPersona = "Copy character persona";
+				labelGreeting = "Copy greeting";
+			}
+
+			menu.Items.Add(new ToolStripMenuItem(labelSystem, null,
 				(s, e) => { Copy(Recipe.Component.System); }) {
 				Enabled = output.system.IsNullOrEmpty() == false || output.system_post_history.IsNullOrEmpty() == false,
 			});
-			menu.Items.Add(new ToolStripMenuItem("Copy character persona", null, 
+			menu.Items.Add(new ToolStripMenuItem(labelPersona, null, 
 				(s, e) => { Copy(Recipe.Component.Persona); }) {
 				Enabled = output.persona.IsNullOrEmpty() == false,
 			});
@@ -248,7 +271,7 @@ namespace Ginger
 				(s, e) => { Copy(Recipe.Component.Example); }) {
 				Enabled = output.example.IsNullOrEmpty() == false,
 			});
-			menu.Items.Add(new ToolStripMenuItem("Copy greeting", null, 
+			menu.Items.Add(new ToolStripMenuItem(labelGreeting, null, 
 				(s, e) => { Copy(Recipe.Component.Greeting); }) {
 				Enabled = output.greeting.IsNullOrEmpty() == false,
 			});
