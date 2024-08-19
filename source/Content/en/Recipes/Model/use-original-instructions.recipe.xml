@@ -5,8 +5,7 @@
 	<Author>Ginger</Author>
 	<Category>Modifier</Category>
 	<Description>
-		Include original model instructions.
-		(Equivalent to using {{original}} in SillyTavern.)
+		(SillyTavern) Include the original system prompt.
 	</Description>
 	
 	<!-- Output -->

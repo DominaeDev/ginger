@@ -101,7 +101,7 @@
 		<String rule="beastfolk">[is-woman?Beastwoman|Beastman]</String>
 		<String rule="merfolk">[is-woman?Mermaid|Merman]</String>
 		<String rule="lizardfolk">[is-woman?Lizardwoman|Lizardman]</String>
-		<String>{_race}</String>
+		<String>{_race:value}</String>
 	</String>
 	
 	<Attribute>

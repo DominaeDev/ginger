@@ -384,12 +384,8 @@ namespace Ginger
 		{
 			bool bChanged = false;
 			foreach (var panel in _recipePanels)
-			{
-				if (panel.recipe.isEnabled == false)
-					continue;
-
 				bChanged |= panel.RefreshParameterVisibility();
-			}
+			
 			if (bChanged)
 				Invalidate(false);
 		}

@@ -1,0 +1,155 @@
+﻿<Ginger id="missing-limbs" version="1.0">
+	<!-- Preamble -->
+	<Name>Feature/Missing limbs</Name>
+	<Title>Missing limbs</Title>
+	<Author>Ginger</Author>
+	<Category>Body</Category>
+	<Order>1000</Order>
+	<Description>The character is missing one or more limbs.</Description>
+	
+	<!-- Arms -->
+	<Toggle id="missing-arm">
+		<Label>Missing arms</Label>
+	</Toggle>
+	<Choice id="arm-side" rule="missing-arm" required="yes">
+		<Label>On which side?</Label>
+		<Option id="both-arms">Both arms</Option>
+		<Option id="right-arm">Right arm</Option>
+		<Option id="left-arm">Left arm</Option>
+	</Choice>
+	<Choice id="arm-from" style="radio" rule="missing-arm" required="yes">
+		<Label>From where?</Label>
+		<Option id="from-shoulder">Below the shoulder</Option>
+		<Option id="from-elbow">Below the elbow</Option>
+		<Option id="from-wrist">Below the wrist</Option>
+	</Choice>
+
+	<!-- Legs -->
+	<Toggle id="missing-leg">
+		<Label>Missing legs</Label>
+	</Toggle>
+	<Choice id="leg-side" rule="missing-leg" required="yes">
+		<Label>On which side?</Label>
+		<Option id="both-legs">Both legs</Option>
+		<Option id="right-leg">Right leg</Option>
+		<Option id="left-leg">Left leg</Option>
+	</Choice>
+	<Choice id="leg-from" style="radio" rule="missing-leg" required="yes">
+		<Label>From where?</Label>
+		<Option id="from-waist">Below the waist</Option>
+		<Option id="from-knee">Below the knee</Option>
+		<Option id="from-ankle">Below the ankle</Option>
+	</Choice>
+	
+	<!-- Description -->
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+		<Placeholder>How did the character lose their limbs?</Placeholder>
+	</Text>
+	
+	<Rule id="either-arm">left-arm or right-arm</Rule>
+	<Rule id="either-leg">left-leg or right-leg</Rule>
+		
+	<String id="arms">
+		<String rule="both-arms and not from-wrist">arms</String>
+		<String rule="either-arm and not from-wrist">arm</String>
+		<String rule="both-arms and from-wrist">hands</String>
+		<String rule="either-arm and from-wrist">hand</String>
+	</String>
+	
+	<String id="legs">
+		<String rule="both-legs and not from-ankle">legs</String>
+		<String rule="either-leg and not from-ankle">leg</String>
+		<String rule="both-legs and from-ankle">feet</String>
+		<String rule="either-leg and from-ankle">foot</String>
+	</String>
+	
+	<String id="limbs">
+		<String rule="missing-arm and missing-leg" priority="1">[@arms] and [@legs]</String>
+		<String rule="missing-arm or missing-leg">{[@arms]|[@legs]}</String>
+	</String>
+	
+	<Node path="persona/limbs" order="700" style="block"/>
+	
+	<!-- Missing arm -->
+	<Node path="persona/limbs/arms" rule="both-arms">
+		[if from-shoulder][name] is missing both arms from the shoulder down. [not missing-leg?Only small stumps remain.]
+		[elif from-elbow][name] is missing both arms from the elbow down. [not missing-leg?Only stumps remain.]
+		[elif from-wrist][name] is missing both of [their] hands, [their] arms ending just above the wrists.
+		[endif]
+	</Node>
+	<Node path="persona/limbs/arms" rule="left-arm">
+		[if from-shoulder][name] is missing [their] left arm from the shoulder down. [not missing-leg?Only a small stump remains.]
+		[elif from-elbow][name] is missing [their] left arm from the elbow down. [not missing-leg?Only a stump remains.]
+		[elif from-wrist][name] is missing [their] left hand, [their] arm ending just above the wrist.
+		[endif]
+	</Node>	
+	<Node path="persona/limbs/arms" rule="right-arm">
+		[if from-shoulder][name] is missing [their] right arm from the shoulder down. [not missing-leg?Only a [from-shoulder?small] stump remains.]
+		[elif from-elbow][name] is missing [their] right arm from the elbow down. [not missing-leg?Only a [from-shoulder?small] stump remains.]
+		[elif from-wrist][name] is missing [their] right hand, [their] arm ending just above the wrist.
+		[endif]
+	</Node>
+	
+	<!-- Missing leg -->
+	<Node path="persona/limbs/legs" rule="both-legs">
+		[if from-waist][name] is missing both legs from the waist down. Only a small stump remains.
+		[elif from-knee][name] is missing both legs from the knees down. Only a stump remains.
+		[elif from-ankle][name] is missing both of [their] feet, [their] legs ending just above the ankles.
+		[endif]
+	</Node>
+	<Node path="persona/limbs/legs" rule="left-leg">
+		[if from-waist][name] is missing [their] left leg, from the waist down. Only a small stump remains.
+		[elif from-knee][name] is missing [their] left leg, from the knee down. Only a stump remains.
+		[elif from-ankle][name] is missing [their] left foot, [their] leg ending just above the ankle.
+		[endif]
+	</Node>			
+	<Node path="persona/limbs/legs" rule="right-leg">
+		[if from-waist][name] is missing [their] right leg, from the waist down. Only small stumps remain.
+		[elif from-knee][name] is missing [their] right leg, from the knee down. Only stumps remain.
+		[elif from-ankle][name] is missing [their] right foot, [their] leg ending just above the ankle.
+		[endif]
+	</Node>		
+	
+	<Node path="persona/limbs/handicap" order="550">As a consequence, [inner]</Node>
+	<Node path="persona/limbs/handicap/item" rule="both-arms">[char] cannot grasp, pick up, reach for, or touch things due to [their] lack of hands.</Node>
+	<Node path="persona/limbs/handicap/item" rule="both-arms">[they] [do] not wear rings, bracelets or a wristwatch.</Node>
+	<Node path="persona/limbs/handicap/item" rule="both-arms">[they] usually gesture[s] with [their] head or eyes.</Node>
+	<Node path="persona/limbs/handicap/item" rule="both-legs">[char] cannot walk or run due to [their] lack of [from-ankle?feet|legs].</Node>
+	<Node path="persona/limbs/handicap/item" rule="both-legs">[they] [do] not wear stockings, socks, or shoes.</Node>
+	<Node path="persona/limbs/handicap/item" rule="left-arm">[char] can only use her right arm.</Node>
+	<Node path="persona/limbs/handicap/item" rule="right-arm">[char] can only use her left arm.</Node>
+	<Node path="persona/limbs/handicap/item" rule="either-leg">[char] cannot run or walk normally, due to [their] missing leg.</Node>
+	<Node path="persona/limbs/handicap/item" rule="both-arms and both-legs">[char] is immobile and cannot do anything of [their] own ability without constant assistance.</Node>
+	<Node path="persona/limbs/handicap/end" order="-0">That much should be obvious.</Node>
+	<Node path="persona/limbs/more" order="600" rule="more">{more}.</Node>
+	
+	<Attribute rule="both-legs" style="list">
+		<Name>Traits</Name>
+		<Value>immobile</Value>
+	</Attribute>	
+	<Attribute rule="both-arms" style="list">
+		<Name>Traits</Name>
+		<Value>no hands</Value>
+	</Attribute>
+	<Attribute rule="either-leg">
+		<Name>Traits</Name>
+		<Value>limp</Value>
+	</Attribute>
+	<Attribute rule="both-arms">
+		<Name>Appearance</Name>
+		<Value>no arms</Value>
+	</Attribute>	
+	<Attribute rule="both-legs">
+		<Name>Appearance</Name>
+		<Value>no legs</Value>
+	</Attribute>	
+
+	<!-- System prompt -->
+	<Node path="system/important/limbs">In this story, special attention must be taken when describing [char] and the effects of [their] missing [@limbs].</Node>
+	<Node path="system/important/limbs">
+		Avoid making overt references to [char's] handicap. This is not what the story is about.
+		Instead, weave a plausible narrative that incorporates [char]'s qualities and the consequences of [their] missing [@limbs], while focusing on [their] interactions with [user].
+	</Node>	
+
+</Ginger>

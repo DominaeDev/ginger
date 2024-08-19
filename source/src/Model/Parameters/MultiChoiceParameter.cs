@@ -89,7 +89,9 @@ namespace Ginger
 						return items[index].label;
 					return itemID;
 				}), Text.Delimiter), scope);
-				state.SetFlags(list.Select(s => new StringHandle(s)), scope);
+
+				if (scope == ParameterScope.Local)
+					state.SetFlags(list.Select(s => new StringHandle(s)), scope);
 			}
 		}
 

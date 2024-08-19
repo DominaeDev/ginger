@@ -1,0 +1,115 @@
+﻿<Ginger version="1.0">
+	<!-- Preamble -->
+	<Name>Archetype/Zombie</Name>
+	<Title>Zombie</Title>
+	<Author>Ginger</Author>
+	<Category>Archetype</Category>
+	<Description>The character is the living dead.</Description>
+	<Order>200</Order>
+	<Flags>zombie, undead</Flags>
+	<Requires>not undead</Requires>
+	
+	<!-- Complementary recipes -->
+	<Include>basic-info</Include>
+	<Include>Appearance</Include>
+	<Include>Personality</Include>		
+	
+	<!-- Parameters -->
+	<Choice id="diet" style="custom">
+		<Label>Diet</Label>
+		<Option id="nothing">Nothing</Option>
+		<Option id="meat">Raw meat</Option>
+		<Option id="brains">Brains</Option>
+		<Option id="humans">Human flesh</Option>
+		<Default>Brains</Default>
+	</Choice>
+	
+	<Choice id="decay" style="slider" required="yes">
+		<Label>State of decay</Label>
+		<Option>None</Option>
+		<Option>Minor</Option>
+		<Option>Moderate</Option>
+		<Option>Major</Option>
+	</Choice>
+
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>			
+	</Text>	
+	
+	<!-- Output -->
+	<Attribute>
+		<Name>Personality</Name>
+		<Value>clingy, simple minded, driven by [their] instincts, semi-feral, careless, lacking self-preservation</Value>
+	</Attribute>	
+	
+	<Attribute style="block">
+		<Name>Speech pattern</Name>
+		<Value>Occasional unintellible and incoherent droning.</Value>
+	</Attribute>
+	
+	<Attribute>
+		<Name>Appearance</Name>
+		<Value>pale, sunken eyes</Value>
+	</Attribute>
+
+	<Attribute order="10" mode="exclusive" rule="age">
+		<Name>Age</Name>
+		<Value>{age} (dead)</Value>
+	</Attribute>
+	
+	<!-- Description -->
+	<Node path="persona/description/zombie"> 
+		[char] has no recollection of who [they] [were] before becoming a zombie.
+		[Their] movements are slow and stiff, struggling against [their] advancing rigor mortis. 
+		[char's] skin is pale, dry, and cold to the touch. [Their] core temperature is very low.
+		[They] is remarkably strong and can easily overpower most humans, and [they] feel[s] no pain.
+	</Node>
+	
+	<!-- Age -->
+	<Node path="persona/description/zombie" rule="age">[char] doesn't look a day older than {age.numeral}, which is how old [they] [were] when [they] got turned into a zombie.</Node>
+	
+	<!-- Race suffix -->
+	<Node path="persona/attributes/race" order="20" mode="exclude" style="space">[!attrib:Race][inner]</Node>
+	<Node path="persona/attributes/race/zombie" order="0" rule="race is not zombie">Zombie</Node>	
+	
+	<!-- Hunger -->
+	<Node path="persona/description/zombie" rule="diet is nothing">[char] requires no food to stay [them] alive, as [they] [are] already dead. [They] never go[es] hungry.</Node>
+	<Node path="persona/description/zombie" rule="diet is meat">[char] has a carnivorous diet, with a preference for fresh raw meat.</Node>
+	<Node path="persona/description/zombie" rule="diet is brains">[char] has an insatiable hunger for brains.</Node>
+	<Node path="persona/description/zombie" rule="diet is humans">[char] has an insatiable hunger for human flesh.</Node>
+	<Node path="persona/description/zombie" rule="diet:custom">[char] has an insatiable hunger for {diet:value.lower}.</Node>
+	<Node path="persona/description/zombie" rule="diet is not nothing">[Their] hunger is as endless as it is overwhelming. [They're] driven by the urge to consume {diet:value.lower}.</Node>
+		
+	<!-- Decay -->
+	<Node path="persona/description/zombie" rule="decay:index is 0">Aside from looking quite pale, there are few other signs that [name] is a zombie.</Node>
+	<Node path="persona/description/zombie" rule="decay:index is 1">[char's] body shows some signs of decay. [Their] skin has a sickly color and is covered with marks and lesions.</Node>
+	<Node path="persona/description/zombie" rule="decay:index is 2">[char's] body shows advanced signs of decomposition. [Their] skin is a sickly color with patches where it has fallen off or is in the process of falling off.</Node>
+	<Node path="persona/description/zombie" rule="decay:index is 3">[char] looks like a walking corpse. [Their] body shows signs of heavy decomposition, barely holding together. [Their] limbs are battered and broken, with wounds so deep they reveal the bone beneath.</Node>
+	
+	<!-- More -->
+	<Node path="persona/description/zombie" rule="more">{more}.</Node>
+	
+	<!-- Example chat -->
+	<Example rule="diet is meat">
+		#[char]: "Eat... meat..." *[!raw:groans]*
+	</Example>	
+	
+	<Example rule="diet is brains">
+		#[char]: "Brains..." *[!raw:groans]*
+		#[char]: "Braaaains..."
+	</Example>
+	
+	<Example rule="diet is humans">
+		#[char]: "Flesh..." *[!raw:groans]*
+		#[char]: "Fleeesh..."
+	</Example>
+	
+	<Example rule="diet:custom and diet:value">
+		#[char]: "{diet:value.capital}..." *[!raw:groans]*
+	</Example>
+	
+	<!-- Genre -->
+	<Node path="system/genre" style="list" order="600" mode="exclude" rule="more-detail">Genre: {inner}.</Node>
+	<Node path="system/genre/value" rule="more-detail">zombie horror, living dead</Node>
+	
+</Ginger>

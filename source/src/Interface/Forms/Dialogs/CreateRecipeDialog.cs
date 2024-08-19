@@ -106,7 +106,7 @@ namespace Ginger
 					"(Sample) Recipe with parameters",
 					"(Sample) Recipe with lore"});
 				comboBox_Template.Enabled = true;
-				comboBox_Template.SelectedIndex = 1; // From character
+				comboBox_Template.SelectedIndex = 0; // Empty
 			}
 
 		}

@@ -439,6 +439,11 @@ namespace Ginger
 				_values.Add(id, value);
 		}
 
+		public bool TryGetValue(StringHandle id, out ContextualValue value)
+		{
+			return _values.TryGetValue(id, out value);
+		}
+
 		public void SetFlag(StringHandle flag)
 		{
 			_flags.Add(flag);
@@ -539,6 +544,41 @@ namespace Ginger
 			globalParameters.Erase(flag);
 			evalContext.SetValue(flag, null);
 			evalContext.RemoveTag(flag);
+		}
+	}
+
+	public class ParameterStates : IValueSupplier
+	{
+		public ParameterStates(ICollection<Recipe> recipes)
+		{
+			_states = new ParameterState[recipes.Count];
+		}
+
+		public ParameterState this[int index]
+		{
+			get { return _states[index]; }
+			set { _states[index] = value; }
+		}
+
+		private ParameterState[] _states;
+
+		public bool TryGetValue(StringHandle id, out string value)
+		{
+			for (int i = _states.Length - 1; i >= 0; --i)
+			{
+				if (_states[i] == null)
+					continue;
+				
+				ContextualValue ctxValue;
+				if (_states[i].localParameters.TryGetValue(id, out ctxValue))
+				{
+					value = ctxValue.ToString();
+					return true;
+				}
+			}
+
+			value = default(string);
+			return false;
 		}
 	}
 

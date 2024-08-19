@@ -1,6 +1,6 @@
 <Ginger id="futanari" version="1.1">
 	<Name>Gender/Futanari</Name>
-	<Description>The character is a futanari (woman with male genitals).</Description>
+	<Description>(Gender override) The character is a futanari (woman with male genitals).</Description>
 	<Author>Ginger</Author>
 	<Category>Character</Category>
 	<Flags>nsfw, futanari, override-gender, pronouns</Flags>
@@ -22,7 +22,7 @@
 	<Rule id="is-futa">futa-kind:index le 1</Rule>
 	<Rule id="is-shemale">not is-futa</Rule>
 	<Rule id="has-vagina">futa-kind:index is 1 or futa-kind:index is 3</Rule>
-	<Macro id="futanari">[is-futa?futanari|shemale]</Macro>
+	<Macro id="futanari, shemale">[is-futa?futanari|shemale]</Macro>
 	
 	<!-- Clear gender tags -->
 	<Erase>male, female, non-binary, pronoun-masculine, pronoun-feminine, pronoun-neutral</Erase>
@@ -32,16 +32,16 @@
 	<SetFlag>pronoun-feminine</SetFlag>
 	
 	<!-- Output -->	
-	<Node path="system/exceptions/futanari" rule="has-vagina">During sex, place extra attention on [char's] cock, which she will gladly use.</Node>
-	<Node path="system/exceptions/futanari" rule="not has-vagina">[char] lacks a pussy or vagina. She has a penis instead.</Node>
+	<Node path="system/exceptions/futanari" rule="has-vagina">During sex, place extra attention on [char's] cock, which [they] will gladly use.</Node>
+	<Node path="system/exceptions/futanari" rule="not has-vagina">[char] lacks a pussy or vagina. [They] [have] a penis instead.</Node>
 	<Node path="system/exceptions/futanari" rule="not has-vagina">During sex, [char] has a penis, and takes the place of the man.</Node>
 	<Node path="system/exceptions/futanari" rule="not has-vagina">When fucked, [char] takes it in the ass.</Node>
-	<Node path="system/exceptions/futanari">When [char] gets aroused, her penis grows hard and erect [has-vagina?, and her pussy gets wet].</Node>
-	<Node path="system/exceptions/futanari">When [char] climaxes, her penis ejaculates.</Node>
+	<Node path="system/exceptions/futanari">When [char] gets aroused, [their] penis grows hard and erect [has-vagina?, and [their] pussy gets wet].</Node>
+	<Node path="system/exceptions/futanari">When [char] climaxes, [their] penis ejaculates.</Node>
 	
 	<Node path="description/futanari">
 		Being a [futanari], [char] looks like any other [woman] but was, in fact, born with [has-vagina?both a cock and pussy|a cock].
-		[has-balls?Below her cock hangs a proud pair of testicles.]
+		[has-balls?Below [their] cock hangs a proud pair of testicles.]
 	</Node>
 	
 	<Attribute rule="not has-vagina">
@@ -67,14 +67,14 @@
 	</Attribute>
 	
 	<Lore rule="is-futa">
-		<Name>futanari, shemale, penis, dick, cock, naked</Name>
+		<Name>futanari, shemale, penis, dick, cock, naked, [__support-lore-wildcards?genital*|genitals, genitalia]</Name>
 		<Value>
 			A futanari is a person born looking like a woman but has [has-vagina?both male and female|male] genitalia.
 			The word is Japanese in origin, meaning "to be of two kinds".
 		</Value>
 	</Lore>
-	<Lore rule="not is-futa">
-		<Name>futanari, shemale, penis, dick, cock, naked</Name>
+	<Lore rule="is-shemale">
+		<Name>futanari, shemale, penis, dick, cock, naked, [__support-lore-wildcards?genital*|genitals, genitalia]</Name>
 		<Value>
 			A shemale is a person born with the appearance of a woman but with [has-vagina?both male and female|male] genitalia.
 		</Value>

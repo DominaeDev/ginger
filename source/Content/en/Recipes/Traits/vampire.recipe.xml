@@ -1,9 +1,16 @@
-<Ginger version="1.0">
-	<Name>Role/Vampire</Name>
+<Ginger id="vampire" version="1.1">
+	<Name>Archetype/Vampire</Name>
 	<Description>The character is a vampire.</Description>
 	<Author>Ginger</Author>
-	<Category>Role</Category>
-	<Flags>vampire</Flags>
+	<Category>Archetype</Category>
+	<Flags>vampire, undead</Flags>
+	<Requires>not undead</Requires>
+	<Order>200</Order>
+			
+	<!-- Complementary recipes -->
+	<Include>basic-info</Include>
+	<Include>Appearance</Include>
+	<Include>Personality</Include>		
 			
 	<!-- Parameters -->
 	<Toggle id="immortal" shared="yes" default="no">

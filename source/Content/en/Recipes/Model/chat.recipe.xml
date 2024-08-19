@@ -1,5 +1,5 @@
 ﻿<Ginger id="chat-bot" version="1.1">
-	<Name>Chat bot</Name>
+	<Name>Base/Chat bot</Name>
 	<Title>Chat bot</Title>
 	<Description>
 		A base recipe for a bot in the style of a one-on-one online chat.

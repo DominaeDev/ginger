@@ -1,5 +1,5 @@
 <Ginger id="dream-interpreter-base" version="1.0">
-	<Name>Dream interpreter</Name>
+	<Name>Base/Dream interpreter</Name>
 	<Category>Base</Category>
 	<Author>Ginger</Author>
 	<Description>Base recipe for a virtual assistant that can interpret dreams.</Description>

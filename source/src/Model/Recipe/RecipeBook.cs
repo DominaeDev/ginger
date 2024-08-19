@@ -35,29 +35,10 @@ namespace Ginger
 		private Recipe _template;
 	}
 
-	public class RecipeEqualityComparer : EqualityComparer<Recipe>
-	{
-		public override bool Equals(Recipe a, Recipe b)
-		{
-			if (a == null && b == null)
-				return true;
-			else if (a == null || b == null)
-				return false;
-
-			return (a.uid == b.uid) || (a.id == b.id);
-		}
-
-		public override int GetHashCode(Recipe recipe)
-		{
-			return recipe.uid;
-		}
-	}
-
 	public static class RecipeBook
 	{
 		public static readonly string GlobalInternal = "__internal";
 		public static readonly string GlobalExternal = "__global";
-
 
 		public static void LoadRecipes()
 		{
@@ -72,7 +53,7 @@ namespace Ginger
 				if (recipe.LoadFromXml(recipeFiles[i], "Ginger"))
 					recipes.Add(recipe);
 			}
-			recipes = recipes.Distinct(new RecipeEqualityComparer()).ToList();
+			recipes = recipes.DistinctByVersion().ToList();
 
 			// Read snippets
 			var snippetFiles = Utility.FindFilesInFolder(Utility.ContentPath("Snippets"), "*.snippet", true);
@@ -103,13 +84,13 @@ namespace Ginger
 
 			// Load recipes from resources
 			recipes.Add(CreateRecipeFromResource(Resources.internal_global_recipe,	Recipe.Type.Component, Recipe.Drawer.Undefined));
-			recipes.Add(CreateRecipeFromResource(Resources.system_recipe,		Recipe.Type.Component, Recipe.Drawer.Model));
-			recipes.Add(CreateRecipeFromResource(Resources.persona_recipe,		Recipe.Type.Component, Recipe.Drawer.Character));
-			recipes.Add(CreateRecipeFromResource(Resources.user_recipe,			Recipe.Type.Component, Recipe.Drawer.Character));
-			recipes.Add(CreateRecipeFromResource(Resources.scenario_recipe,		Recipe.Type.Component, Recipe.Drawer.Story));
-			recipes.Add(CreateRecipeFromResource(Resources.example_recipe,		Recipe.Type.Component, Recipe.Drawer.Components));
-			recipes.Add(CreateRecipeFromResource(Resources.greeting_recipe,		Recipe.Type.Component, Recipe.Drawer.Components));
-			recipes.Add(CreateRecipeFromResource(Resources.lorebook_recipe,		Recipe.Type.Lore, Recipe.Drawer.Lore));
+			recipes.Add(CreateRecipeFromResource(Resources.system_recipe,			Recipe.Type.Component, Recipe.Drawer.Model));
+			recipes.Add(CreateRecipeFromResource(Resources.persona_recipe,			Recipe.Type.Component, Recipe.Drawer.Character));
+			recipes.Add(CreateRecipeFromResource(Resources.user_recipe,				Recipe.Type.Component, Recipe.Drawer.Character));
+			recipes.Add(CreateRecipeFromResource(Resources.scenario_recipe,			Recipe.Type.Component, Recipe.Drawer.Story));
+			recipes.Add(CreateRecipeFromResource(Resources.example_recipe,			Recipe.Type.Component, Recipe.Drawer.Components));
+			recipes.Add(CreateRecipeFromResource(Resources.greeting_recipe,			Recipe.Type.Component, Recipe.Drawer.Components));
+			recipes.Add(CreateRecipeFromResource(Resources.lorebook_recipe,			Recipe.Type.Lore, Recipe.Drawer.Lore));
 
 			// Other components
 			recipes.Add(CreateRecipeFromResource(Resources.attribute_recipe,	Recipe.Type.Component, Recipe.Drawer.Components));
@@ -377,6 +358,19 @@ namespace Ginger
 			return new RecipeTemplate(recipe);
 		}
 
+		public static IEnumerable<Recipe> DistinctByVersion(this IEnumerable<Recipe> source)
+		{
+			var recipesByID = source
+				.GroupBy(r => r.id)
+				.Select(g => {
+					StringHandle id = g.Key;
+					IEnumerable<Recipe> recipes = g;
+					return recipes.OrderByDescending(r => r.version).FirstOrDefault();
+				});
+
+			foreach (Recipe element in recipesByID)
+				yield return element;
+		}
 	}
 
 }

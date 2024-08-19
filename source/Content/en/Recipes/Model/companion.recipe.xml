@@ -1,5 +1,5 @@
 ﻿<Ginger id="companion-base" version="1.1">
-	<Name>Virtual companion</Name>
+	<Name>Base/Virtual companion</Name>
 	<Title>Virtual companion</Title>
 	<Description>A base recipe for a one-on-one conversation in the style of a virtual AI companion.</Description>
 	<Author>Ginger</Author>

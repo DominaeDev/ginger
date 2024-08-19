@@ -7,8 +7,8 @@
 	<Flags>nsfw</Flags>
 	<Requires>is-man</Requires>
 	<Description>
-		(Male only) Counteracts a common model bias where male characters turn into 
-		overly dominant or possessive jerks during sexual encounters.
+		(Male only) Discourages the bot from turning into an overly dominant
+		and possessive jerk during sexual encounters.
 	</Description>
 	
 	<!-- Output -->

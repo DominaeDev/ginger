@@ -46,6 +46,7 @@ namespace Ginger
 				comboBox.Items.Add("(Other)");
 
 			SelectByValue(parameter.value);
+			SetSelectedIndex();
 			comboBox.EndUpdate();
 
 			comboBox.Enabled = parameter.isEnabled || !parameter.isOptional;
@@ -55,6 +56,29 @@ namespace Ginger
 			textBox_Custom.Placeholder = parameter.placeholder;
 
 			SetTooltip(label, comboBox);
+		}
+
+		private void SetSelectedIndex()
+		{
+			int index = comboBox.SelectedIndex;
+			if (index <= -1 && parameter.isOptional)
+			{
+				this.parameter.selectedIndex = -1; // Not set
+			}
+			else if (parameter.style == ChoiceParameter.Style.Custom && index >= comboBox.Items.Count - 1)
+			{
+				this.parameter.selectedIndex = -2; // Custom
+			}
+			else
+			{
+				if (parameter.isOptional)
+					index -= 1; // (not set)
+
+				if (index >= 0 && index < comboBox.Items.Count)
+					this.parameter.selectedIndex = index;
+				else
+					this.parameter.selectedIndex = -1;
+			}
 		}
 
 		protected override void OnRefreshValue()
@@ -97,7 +121,7 @@ namespace Ginger
 				this.parameter.value = textBox_Custom.Text;
 				this.parameter.selectedIndex = -2; // Custom
 				textBox_Custom.Visible = true;
-				NotifyValueChanged();
+					NotifyValueChanged();
 				return;
 			}
 			else
@@ -131,6 +155,7 @@ namespace Ginger
 				if (this.parameter.value != textBox_Custom.Text)
 				{
 					this.parameter.value = textBox_Custom.Text;
+					this.parameter.selectedIndex = -2;
 					NotifyValueChanged();
 				}
 			}
@@ -142,7 +167,7 @@ namespace Ginger
 				return;
 
 			int index = this.parameter.items.FindIndex(i => string.Compare(i.value, value, true) == 0 || string.Compare(i.label, value, true) == 0);
-			
+
 			if (index == -1 && parameter.style == ChoiceParameter.Style.Custom && string.IsNullOrWhiteSpace(value) == false)
 			{
 				index = comboBox.Items.Count - 1;

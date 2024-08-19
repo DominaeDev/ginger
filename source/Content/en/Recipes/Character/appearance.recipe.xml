@@ -1,6 +1,6 @@
 <Ginger id="appearance" version="1.0">
-	<Name>Appearance</Name>
-	<Title>Appearance</Title>
+	<Name>Appearance details</Name>
+	<Title>Appearance details</Title>
 	<Description>Describe the general appearance of the character.</Description>
 	<Author>Ginger</Author>
 	<Category>Appearance</Category>
@@ -77,7 +77,7 @@
 	</Choice>
 	
 	<!-- Eyes -->
-	<Choice id="eye-color" style="custom" shared="true">
+	<Choice id="eye-color" style="custom" shared="yes">
 		<Label>Eye color</Label>
 		<Placeholder>e.g. Blue, Green, ...</Placeholder>
 		<Option id="eye-color-black">Black</Option>

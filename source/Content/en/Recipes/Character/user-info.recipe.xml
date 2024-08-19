@@ -55,7 +55,7 @@
 		<String rule="user-age in 19~34">
 			<String rule="user-male">man</String>
 			<String rule="user-female">woman</String>
-			<String>{gender}</String>
+			<String>{user-gender}</String>
 		</String>
 		<String rule="user-age in 35~49">
 			<String rule="user-male">adult man</String>
@@ -65,7 +65,7 @@
 		<String rule="user-age ge 50">
 			<String rule="user-male">older [@man]</String>
 			<String rule="user-female">older [@woman]</String>
-			<String>older {gender}</String>
+			<String>older {user-gender}</String>
 		</String>
 	</String>
 		

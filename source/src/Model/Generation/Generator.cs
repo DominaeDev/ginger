@@ -849,7 +849,7 @@ namespace Ginger
 				return new Context[0];
 
 			Context evalContext = Context.Copy(context);
-			ParameterState[] parameterStates = new ParameterState[recipes.Length];
+			ParameterStates parameterStates = new ParameterStates(recipes);
 			Context[] localContexts = new Context[recipes.Length];
 
 			// Resolve parameters
@@ -867,6 +867,7 @@ namespace Ginger
 					macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
 					referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
 					ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
+					valueSuppliers = new IValueSupplier[] { parameterStates },
 				};
 				foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
 					parameter.Apply(state);

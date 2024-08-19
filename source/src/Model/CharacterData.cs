@@ -157,7 +157,7 @@ namespace Ginger
 
 			if (type == ContextType.Full)
 			{
-				ParameterState[] parameterStates = new ParameterState[recipes.Count];
+				ParameterStates parameterStates = new ParameterStates(recipes);
 				Context[] localContexts = new Context[recipes.Count];
 
 				Context evalContext = Context.Copy(context);
@@ -175,6 +175,7 @@ namespace Ginger
 						macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
 						referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
 						ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
+						valueSuppliers = new IValueSupplier[] { parameterStates },
 					};
 					foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
 						parameter.Apply(state);

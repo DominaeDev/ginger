@@ -1,0 +1,38 @@
+﻿<Ginger version="1.0">
+	<!-- Preamble -->
+	<Name>Build/Chubby</Name>
+	<Title>Chubby</Title>
+	<Description>The character has a chubby physique.</Description>
+	<Author>Ginger</Author>
+	<Category>Appearance</Category>
+	<Requires>not fitness-trait</Requires>
+	<Flags>fitness-trait</Flags>
+		
+	<!-- Output -->
+	<Attribute rule="is-woman">
+		<Name>Appearance</Name>
+		<Value>chubby, curvy, round face, double chin, full lips, overweight, [nsfw?large breasts], wide hips and thick thighs</Value>
+	</Attribute>
+	
+	<Attribute rule="not is-woman">
+		<Name>Appearance</Name>
+		<Value>chubby, pudgy, round face, double chin, thick neck, overweight, pot belly</Value>
+	</Attribute>
+	
+	<Attribute>
+		<Name>Size</Name>
+		<Value>XXL</Value>
+	</Attribute>
+	
+	<Node path="persona/appearance/chubby" order="50" rule="normal-detail">
+		[char] carries some extra weight that gives [them] a slightly chubby build with noticeable love handles and round and squishy belly and [allow-nsfw?fat ass|plump backside]. 
+		[Their] arms are soft and pudgy. [char] could stand to lose some weight. [They've] gotten into bad habits of sitting too much and eating fatty foods.
+	</Node>
+	
+	<Node path="persona/appearance/chubby" order="50" rule="normal-detail and is-woman and nsfw">
+		[char] has an alluring curvy figure that fills out [their] clothes in all the right ways. 
+		[They] [are] definitely plus-sized but wears it well. 
+		[their] voluptuous breasts strain against the confines of [their] tops and bras, threatening to spill out at any moment. 
+	</Node>
+	
+</Ginger>

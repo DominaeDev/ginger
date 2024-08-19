@@ -12,7 +12,7 @@
 	
 	<Text id="grammar" style="code" raw="yes">
 			<Label>Grammar</Label>
-			<Default><![CDATA[root ::= text "\n#"
+			<Default><![CDATA[root ::= text "\n"
 text ::= [[a-zA-Z0-9,.?!" ':;\n]]+]]></Default>
 		</Text>
 

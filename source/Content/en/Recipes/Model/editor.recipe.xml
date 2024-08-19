@@ -1,5 +1,5 @@
 <Ginger id="editor-base" version="1.0">
-	<Name>Writing assistant</Name>
+	<Name>Base/Writing assistant</Name>
 	<Category>Base</Category>
 	<Author>Ginger</Author>
 	<Requires>not base</Requires>

@@ -573,7 +573,7 @@ namespace Ginger
 				return false;
 
 			Context evalContext = Current.Character.GetContext(CharacterData.ContextType.None);
-			ParameterState[] parameterStates = new ParameterState[recipes.Length];
+			ParameterStates parameterStates = new ParameterStates(recipes);
 
 			// Resolve prior recipes
 			for (int i = 0; i < recipes.Length; ++i)
@@ -593,6 +593,7 @@ namespace Ginger
 					macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
 					referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
 					ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
+					valueSuppliers = new IValueSupplier[] { parameterStates },
 				};
 				foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
 					parameter.Apply(state);
@@ -681,8 +682,7 @@ namespace Ginger
 
 		public void SetEnabled(bool enabled)
 		{
-			foreach (var parameter in parameterPanels)
-				parameter.SetEnabled(enabled);
+			parameterContainer.Enabled = enabled;
 
 			if (enabled)
 			{

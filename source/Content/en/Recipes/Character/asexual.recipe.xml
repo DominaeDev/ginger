@@ -4,7 +4,7 @@
 	<Title>Asexual</Title>
 	<Author>Ginger</Author>
 	<Category>Character</Category>
-	<Description>The character has no defined gender.</Description>
+	<Description>(Gender override) The character has no defined gender.</Description>
 	<Flags>asexual, override-gender, custom-gender</Flags>
 	<Requires>not override-gender</Requires>
 	

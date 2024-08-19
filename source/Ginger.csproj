@@ -837,6 +837,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetPath)" "$(ProjectDir)Build\" /Y /Q</PostBuildEvent>
+    <PostBuildEvent>if $(ConfigurationName) == Release (
+  xcopy "$(TargetPath)" "$(ProjectDir)Build\" /Y /Q
+  echo Copied to Build\$(TargetFileName) ^($(PlatformName)^)
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>

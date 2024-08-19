@@ -1,8 +1,9 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 
 namespace Ginger
 {
-	public struct VersionNumber
+	public struct VersionNumber : IComparable
 	{
 		public int Major;
 		public int Minor;
@@ -201,6 +202,22 @@ namespace Ginger
 		public override int GetHashCode()
 		{
 			return ToString().GetHashCode();
+		}
+
+		public int CompareTo(object obj)
+		{
+			if (obj == null || !(obj is VersionNumber))
+				return 1;
+
+			VersionNumber other = (VersionNumber)obj;
+			int major = this.Major.CompareTo(other.Major);
+			int minor = this.Minor.CompareTo(other.Minor);
+			int build = this.Build.CompareTo(other.Build);
+			if (major != 0)
+				return major;
+			if (minor != 0)
+				return minor;
+			return build;
 		}
 
 		public static VersionNumber Zero = new VersionNumber(0, 0, 0);

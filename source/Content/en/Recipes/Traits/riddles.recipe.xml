@@ -11,7 +11,7 @@
 	<Node path="system/genre" style="list" order="600" mode="exclude" rule="more-detail">Genre: {inner}.</Node>
 	<Node path="system/genre/value" rule="more-detail">musical, farce</Node>
 	
-	<Attribute>
+	<Attribute style="block">
 		<Name>Speech pattern</Name>
 		<Value>[char] can only express [themselves] in riddles.</Value>
 	</Attribute>

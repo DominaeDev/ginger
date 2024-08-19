@@ -1,7 +1,7 @@
 ﻿<Ginger id="story" version="1.1">
 	<!-- Preamble -->
-	<Name>Setting/Add world // setting</Name>
-	<Title>World / Setting</Title>
+	<Name>Setting/Add setting</Name>
+	<Title>Setting</Title>
 	<Author>Ginger</Author>
 	<Description>Describe the world and setting.</Description>
 	<Category>Story</Category>

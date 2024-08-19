@@ -210,11 +210,11 @@ namespace Ginger
 			sidePanel.PastePortraitImage += OnPastePortraitImage;
 			sidePanel.RemovePortraitImage += OnRemovePortraitImage;
 
-			SetToolTip(btnAdd_Model, "Bot / Instructions");
-			SetToolTip(btnAdd_Character, "Characteristics / Traits");
-			SetToolTip(btnAdd_Traits, "Appearance / Physique");
-			SetToolTip(btnAdd_Mind, "Personality / Behavior");
-			SetToolTip(btnAdd_World, "Story / World");
+			SetToolTip(btnAdd_Model, "Bot instructions");
+			SetToolTip(btnAdd_Character, "Character");
+			SetToolTip(btnAdd_Traits, "Appearance & Traits");
+			SetToolTip(btnAdd_Mind, "Personality & Behavior");
+			SetToolTip(btnAdd_World, "Story & World");
 			SetToolTip(btnAdd_Other, "Components");
 			SetToolTip(btnAdd_Snippets, "Snippets");
 			SetToolTip(btnAdd_Lore, "Lorebooks");

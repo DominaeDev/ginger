@@ -139,13 +139,18 @@
 		<Option>Mottled</Option>
 	</Choice>
 
-	<Choice id="features" style="multiple" shared="yes">
+	<Choice id="features" style="multiple">
 		<Label>Features</Label>
 		<Option>Fangs</Option>
 		<Option>Horns</Option>
 		<Option>Tail</Option>
 		<Option>Wings</Option>
 	</Choice>
+	
+	<SetFlag id="fangs" rule="fangs in features">fangs</SetFlag>
+	<SetFlag id="horns" rule="horns in features">horns</SetFlag>
+	<SetFlag id="tail" rule="tail in features">tail</SetFlag>
+	<SetFlag id="wings" rule="wings in features">wings</SetFlag>
 	
 	<Choice id="traits" style="multiple">
 		<Label>Traits</Label>
