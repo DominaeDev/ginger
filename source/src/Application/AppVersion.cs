@@ -40,11 +40,9 @@ namespace Ginger
 				{
 					return "";
 				}
-#if BUILD_X64
-				return ((AssemblyProductAttribute)attributes[0]).Product + " (64-bit)";
-#else
+				if (Environment.Is64BitProcess)
+					return ((AssemblyProductAttribute)attributes[0]).Product + " (64-bit)";
 				return ((AssemblyProductAttribute)attributes[0]).Product + " (32-bit)";
-#endif
 			}
 		}
 
