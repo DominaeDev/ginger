@@ -67,13 +67,21 @@ namespace Ginger
 		public TextStyle textStyle = TextStyle.Default;
 
 		[Flags]
-		public enum Flag
+		public enum Flag : int
 		{
 			None = 0,
-			PruneScenario			= 1 << 0,
-			UserPersonaInScenario	= 1 << 1,
+			PruneScenario				= 1 << 0,
+			UserPersonaInScenario		= 1 << 1,
 
-			Default = UserPersonaInScenario,
+			OmitSystemPrompt			= 1 << 25,
+			OmitAttributes				= 1 << 26,
+			OmitScenario				= 1 << 27,
+			OmitExample					= 1 << 28,
+			OmitGreeting				= 1 << 29,
+			OmitGrammar					= 1 << 30,
+			OmitLore					= 1 << 31,
+
+			Default = None,
 		}
 		public Flag extraFlags = Flag.Default;
 

@@ -61,7 +61,7 @@ namespace Ginger
 
 		public class Entry
 		{
-			public static readonly int DefaultSortOrder = 10;
+			public static readonly int DefaultSortOrder = 50;
 
 			public string key
 			{ 

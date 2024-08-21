@@ -364,6 +364,10 @@ namespace Ginger
 				&& !(context.HasTag(Constants.Flag.System) || context.HasTag(Constants.Flag.Base) || context.HasTag("system-prompt")
 					|| blockBuilder.BlockHasChildren("system/output", true));
 
+			// Omit attributes block
+			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitAttributes))
+				blockBuilder.RemoveBlock("persona/attributes");
+
 			// Build blocks
 			blockBuilder.Build();
 
@@ -372,6 +376,10 @@ namespace Ginger
 			var userPersonaOutput = GingerString.FromOutput(blockBuilder.GetFinishedBlock("user"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 			var scenarioOutput = GingerString.FromOutput(blockBuilder.GetFinishedBlock("scenario"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 			var exampleOutput = GingerString.FromOutput(blockBuilder.GetFinishedBlock("example"), characterIndex, bMain, Text.EvalOption.ExampleFormatting);
+			var greetings = partialOutput.greetings;
+			var group_greetings = partialOutput.group_greetings;
+			var grammar = partialOutput.grammarOutput;
+			var lore = partialOutput.lore;
 
 			// Insert original model instructions
 			if (bPrependOriginal 
@@ -381,12 +389,32 @@ namespace Ginger
 				systemOutput = GingerString.FromString(string.Concat(GingerString.OriginalMarker, "\n\n", systemOutput.ToString()));
 			}
 
+			// Omit outputs
+			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitSystemPrompt))
+			{
+				systemOutput = GingerString.Empty;
+				postHistory = GingerString.Empty;
+			}
+			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitScenario))
+				scenarioOutput = GingerString.Empty;
+			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitExample))
+				exampleOutput = GingerString.Empty;
+			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitGrammar))
+				grammar = GingerString.Empty;
+			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitGreeting))
+			{
+				greetings = null;
+				group_greetings = null;
+			}
+			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitLore))
+				lore = null;
+
 			// Strip lorebook decorators
-			if (partialOutput.lore != null)
+			if (lore != null)
 			{
 				if (!options.Contains(Option.SillyTavernV3 | Option.Export))
-					partialOutput.lore.StripDecorators();
-				partialOutput.lore.SortEntries(Lorebook.Sorting.ByOrder, false);
+					lore.StripDecorators();
+				lore.SortEntries(Lorebook.Sorting.ByOrder, false);
 			}
 
 			return new Output() {
@@ -397,10 +425,10 @@ namespace Ginger
 				userPersona = userPersonaOutput,
 				scenario = scenarioOutput,
 				example = exampleOutput,
-				grammar = partialOutput.grammarOutput,
-				greetings = partialOutput.greetings,
-				group_greetings = partialOutput.group_greetings,
-				lorebook = partialOutput.lore,
+				grammar = grammar,
+				greetings = greetings,
+				group_greetings = group_greetings,
+				lorebook = lore,
 			};
 		}
 

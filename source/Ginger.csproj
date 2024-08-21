@@ -835,6 +835,12 @@
   <ItemGroup>
     <None Include="Resources\Recipes\Other\group_greeting_recipe.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\menu_edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\red_dot.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Release (

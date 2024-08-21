@@ -33,6 +33,7 @@
 			System.Windows.Forms.TableLayoutPanel genderTable;
 			System.Windows.Forms.Panel portraitPanel;
 			System.Windows.Forms.GroupBox group_CardInfo;
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SidePanel));
 			System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 			System.Windows.Forms.Panel left;
 			System.Windows.Forms.Panel right;
@@ -58,15 +59,25 @@
 			System.Windows.Forms.Panel panel3;
 			System.Windows.Forms.Panel panel5;
 			System.Windows.Forms.Panel spacer_3;
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SidePanel));
+			this.textBox_customGender = new Ginger.TextBoxEx();
+			this.comboBox_gender = new Ginger.ComboBoxEx();
 			this.label_gender = new System.Windows.Forms.Label();
+			this.textBox_characterSpokenName = new Ginger.TextBoxEx();
 			this.label_characterSpokenName = new System.Windows.Forms.Label();
+			this.textBox_characterName = new Ginger.TextBoxEx();
 			this.label_characterName = new System.Windows.Forms.Label();
+			this.portraitImage = new Ginger.PortraitPreview();
+			this.textBox_tags = new Ginger.CollectionTextBox();
 			this.label_tags = new System.Windows.Forms.Label();
+			this.textBox_creatorNotes = new Ginger.TextBoxEx();
 			this.label_creatorNotes = new System.Windows.Forms.Label();
+			this.textBox_creator = new Ginger.TextBoxEx();
 			this.label_creator = new System.Windows.Forms.Label();
+			this.textBox_version = new Ginger.TextBoxEx();
 			this.label_version = new System.Windows.Forms.Label();
+			this.textBox_userPlaceholder = new Ginger.TextBoxEx();
 			this.label_userPlaceholder = new System.Windows.Forms.Label();
+			this.comboBox_userGender = new Ginger.ComboBoxEx();
 			this.label_userGender = new System.Windows.Forms.Label();
 			this.label_Context_Value = new System.Windows.Forms.Label();
 			this.label_TokenBudget_Value = new System.Windows.Forms.Label();
@@ -74,23 +85,12 @@
 			this.label_Tokens_Value = new System.Windows.Forms.Label();
 			this.label_Lore_Value = new System.Windows.Forms.Label();
 			this.label_Image_Value = new System.Windows.Forms.Label();
+			this.comboBox_textStyle = new Ginger.ComboBoxEx();
 			this.label_textStyle = new System.Windows.Forms.Label();
+			this.comboBox_Detail = new Ginger.ComboBoxEx();
 			this.label_Detail = new System.Windows.Forms.Label();
 			this.btn_More = new System.Windows.Forms.Button();
 			this.label_More = new System.Windows.Forms.Label();
-			this.comboBox_textStyle = new Ginger.ComboBoxEx();
-			this.comboBox_Detail = new Ginger.ComboBoxEx();
-			this.textBox_userPlaceholder = new Ginger.TextBoxEx();
-			this.comboBox_userGender = new Ginger.ComboBoxEx();
-			this.textBox_tags = new Ginger.CollectionTextBox();
-			this.textBox_creatorNotes = new Ginger.TextBoxEx();
-			this.textBox_creator = new Ginger.TextBoxEx();
-			this.textBox_version = new Ginger.TextBoxEx();
-			this.textBox_customGender = new Ginger.TextBoxEx();
-			this.comboBox_gender = new Ginger.ComboBoxEx();
-			this.textBox_characterSpokenName = new Ginger.TextBoxEx();
-			this.textBox_characterName = new Ginger.TextBoxEx();
-			this.portraitImage = new Ginger.PortraitPreview();
 			group_Character = new System.Windows.Forms.GroupBox();
 			infoPanel = new System.Windows.Forms.Panel();
 			genderTable = new System.Windows.Forms.TableLayoutPanel();
@@ -125,6 +125,7 @@
 			infoPanel.SuspendLayout();
 			genderTable.SuspendLayout();
 			portraitPanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).BeginInit();
 			group_CardInfo.SuspendLayout();
 			tableLayoutPanel1.SuspendLayout();
 			left.SuspendLayout();
@@ -141,7 +142,6 @@
 			panel4.SuspendLayout();
 			panel3.SuspendLayout();
 			panel5.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// group_Character
@@ -191,6 +191,42 @@
 			genderTable.Size = new System.Drawing.Size(417, 46);
 			genderTable.TabIndex = 4;
 			// 
+			// textBox_customGender
+			// 
+			this.textBox_customGender.Dock = System.Windows.Forms.DockStyle.Top;
+			this.textBox_customGender.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.textBox_customGender.Location = new System.Drawing.Point(212, 23);
+			this.textBox_customGender.Margin = new System.Windows.Forms.Padding(0);
+			this.textBox_customGender.MaxLength = 256;
+			this.textBox_customGender.MinimumSize = new System.Drawing.Size(4, 23);
+			this.textBox_customGender.Name = "textBox_customGender";
+			this.textBox_customGender.Placeholder = "";
+			this.textBox_customGender.Size = new System.Drawing.Size(205, 23);
+			this.textBox_customGender.TabIndex = 5;
+			this.textBox_customGender.TextChanged += new System.EventHandler(this.TextBox_customGender_TextChanged);
+			// 
+			// comboBox_gender
+			// 
+			this.comboBox_gender.Dock = System.Windows.Forms.DockStyle.Top;
+			this.comboBox_gender.DropDownHeight = 120;
+			this.comboBox_gender.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBox_gender.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.comboBox_gender.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.comboBox_gender.IntegralHeight = false;
+			this.comboBox_gender.Items.AddRange(new object[] {
+            "(Not set)",
+            "Male",
+            "Female",
+            "Other..."});
+			this.comboBox_gender.Location = new System.Drawing.Point(0, 23);
+			this.comboBox_gender.Margin = new System.Windows.Forms.Padding(0);
+			this.comboBox_gender.MaxDropDownItems = 20;
+			this.comboBox_gender.MinimumSize = new System.Drawing.Size(80, 0);
+			this.comboBox_gender.Name = "comboBox_gender";
+			this.comboBox_gender.Size = new System.Drawing.Size(204, 23);
+			this.comboBox_gender.TabIndex = 2;
+			this.comboBox_gender.SelectedValueChanged += new System.EventHandler(this.ComboBox_gender_SelectedValueChanged);
+			// 
 			// label_gender
 			// 
 			this.label_gender.AutoEllipsis = true;
@@ -205,6 +241,20 @@
 			this.label_gender.TabIndex = 0;
 			this.label_gender.Text = "Gender";
 			// 
+			// textBox_characterSpokenName
+			// 
+			this.textBox_characterSpokenName.Dock = System.Windows.Forms.DockStyle.Top;
+			this.textBox_characterSpokenName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.textBox_characterSpokenName.Location = new System.Drawing.Point(1, 67);
+			this.textBox_characterSpokenName.MaxLength = 64;
+			this.textBox_characterSpokenName.Name = "textBox_characterSpokenName";
+			this.textBox_characterSpokenName.Placeholder = "";
+			this.textBox_characterSpokenName.Size = new System.Drawing.Size(417, 23);
+			this.textBox_characterSpokenName.TabIndex = 1;
+			this.textBox_characterSpokenName.TextChanged += new System.EventHandler(this.TextBox_characterSpokenName_TextChanged);
+			this.textBox_characterSpokenName.Leave += new System.EventHandler(this.TextBox_characterPlaceholder_Leave);
+			this.textBox_characterSpokenName.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.TextBox_characterPlaceholder_PreviewKeyDown);
+			// 
 			// label_characterSpokenName
 			// 
 			this.label_characterSpokenName.AutoEllipsis = true;
@@ -218,6 +268,20 @@
 			this.label_characterSpokenName.Size = new System.Drawing.Size(417, 23);
 			this.label_characterSpokenName.TabIndex = 0;
 			this.label_characterSpokenName.Text = "Character name (goes by)";
+			// 
+			// textBox_characterName
+			// 
+			this.textBox_characterName.Dock = System.Windows.Forms.DockStyle.Top;
+			this.textBox_characterName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.textBox_characterName.Location = new System.Drawing.Point(1, 21);
+			this.textBox_characterName.MaxLength = 64;
+			this.textBox_characterName.Name = "textBox_characterName";
+			this.textBox_characterName.Placeholder = null;
+			this.textBox_characterName.Size = new System.Drawing.Size(417, 23);
+			this.textBox_characterName.TabIndex = 0;
+			this.textBox_characterName.TextChanged += new System.EventHandler(this.TextBox_characterName_TextChanged);
+			this.textBox_characterName.Leave += new System.EventHandler(this.TextBox_characterName_Leave);
+			this.textBox_characterName.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.TextBox_characterName_PreviewKeyDown);
 			// 
 			// label_characterName
 			// 
@@ -242,6 +306,20 @@
 			portraitPanel.Size = new System.Drawing.Size(170, 220);
 			portraitPanel.TabIndex = 11;
 			// 
+			// portraitImage
+			// 
+			this.portraitImage.AllowDrop = true;
+			this.portraitImage.BackColor = System.Drawing.Color.DimGray;
+			this.portraitImage.BackgroundImage = global::Ginger.Properties.Resources.checker;
+			this.portraitImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.portraitImage.Location = new System.Drawing.Point(0, 0);
+			this.portraitImage.Name = "portraitImage";
+			this.portraitImage.Size = new System.Drawing.Size(165, 220);
+			this.portraitImage.TabIndex = 0;
+			this.portraitImage.TabStop = false;
+			this.portraitImage.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseClick);
+			this.portraitImage.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseDoubleClick);
+			// 
 			// group_CardInfo
 			// 
 			group_CardInfo.AutoSize = true;
@@ -259,6 +337,20 @@
 			group_CardInfo.TabStop = false;
 			group_CardInfo.Text = "Meta data";
 			// 
+			// textBox_tags
+			// 
+			this.textBox_tags.Collection = ((System.Collections.Generic.HashSet<string>)(resources.GetObject("textBox_tags.Collection")));
+			this.textBox_tags.Dock = System.Windows.Forms.DockStyle.Top;
+			this.textBox_tags.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.textBox_tags.Location = new System.Drawing.Point(6, 189);
+			this.textBox_tags.Margin = new System.Windows.Forms.Padding(0);
+			this.textBox_tags.MaxLength = 256;
+			this.textBox_tags.Name = "textBox_tags";
+			this.textBox_tags.Placeholder = "Enter tags separated by commas";
+			this.textBox_tags.Size = new System.Drawing.Size(588, 23);
+			this.textBox_tags.TabIndex = 7;
+			this.textBox_tags.TextChanged += new System.EventHandler(this.TextBox_tags_TextChanged);
+			// 
 			// label_tags
 			// 
 			this.label_tags.AutoEllipsis = true;
@@ -270,6 +362,18 @@
 			this.label_tags.Size = new System.Drawing.Size(588, 23);
 			this.label_tags.TabIndex = 8;
 			this.label_tags.Text = "Tags";
+			// 
+			// textBox_creatorNotes
+			// 
+			this.textBox_creatorNotes.Dock = System.Windows.Forms.DockStyle.Top;
+			this.textBox_creatorNotes.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.textBox_creatorNotes.Location = new System.Drawing.Point(6, 86);
+			this.textBox_creatorNotes.Multiline = true;
+			this.textBox_creatorNotes.Name = "textBox_creatorNotes";
+			this.textBox_creatorNotes.Placeholder = "Enter name...";
+			this.textBox_creatorNotes.Size = new System.Drawing.Size(588, 80);
+			this.textBox_creatorNotes.TabIndex = 6;
+			this.textBox_creatorNotes.TextChanged += new System.EventHandler(this.TextBox_creatorNotes_TextChanged);
 			// 
 			// label_creatorNotes
 			// 
@@ -310,6 +414,18 @@
 			left.Size = new System.Drawing.Size(294, 44);
 			left.TabIndex = 0;
 			// 
+			// textBox_creator
+			// 
+			this.textBox_creator.Dock = System.Windows.Forms.DockStyle.Top;
+			this.textBox_creator.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.textBox_creator.Location = new System.Drawing.Point(0, 21);
+			this.textBox_creator.MaxLength = 256;
+			this.textBox_creator.Name = "textBox_creator";
+			this.textBox_creator.Placeholder = "Your name";
+			this.textBox_creator.Size = new System.Drawing.Size(294, 23);
+			this.textBox_creator.TabIndex = 4;
+			this.textBox_creator.TextChanged += new System.EventHandler(this.TextBox_creator_TextChanged);
+			// 
 			// label_creator
 			// 
 			this.label_creator.AutoEllipsis = true;
@@ -334,6 +450,21 @@
 			right.Padding = new System.Windows.Forms.Padding(6, 0, 0, 0);
 			right.Size = new System.Drawing.Size(294, 44);
 			right.TabIndex = 1;
+			// 
+			// textBox_version
+			// 
+			this.textBox_version.Dock = System.Windows.Forms.DockStyle.Top;
+			this.textBox_version.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.textBox_version.Location = new System.Drawing.Point(6, 21);
+			this.textBox_version.Margin = new System.Windows.Forms.Padding(0);
+			this.textBox_version.MaximumSize = new System.Drawing.Size(160, 4);
+			this.textBox_version.MaxLength = 256;
+			this.textBox_version.MinimumSize = new System.Drawing.Size(4, 23);
+			this.textBox_version.Name = "textBox_version";
+			this.textBox_version.Placeholder = "1.0";
+			this.textBox_version.Size = new System.Drawing.Size(160, 23);
+			this.textBox_version.TabIndex = 5;
+			this.textBox_version.TextChanged += new System.EventHandler(this.TextBox_version_TextChanged);
 			// 
 			// label_version
 			// 
@@ -397,6 +528,21 @@
 			panel1.Size = new System.Drawing.Size(315, 44);
 			panel1.TabIndex = 0;
 			// 
+			// textBox_userPlaceholder
+			// 
+			this.textBox_userPlaceholder.Dock = System.Windows.Forms.DockStyle.Top;
+			this.textBox_userPlaceholder.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.textBox_userPlaceholder.Location = new System.Drawing.Point(0, 21);
+			this.textBox_userPlaceholder.Margin = new System.Windows.Forms.Padding(0);
+			this.textBox_userPlaceholder.MaxLength = 256;
+			this.textBox_userPlaceholder.Name = "textBox_userPlaceholder";
+			this.textBox_userPlaceholder.Placeholder = "User";
+			this.textBox_userPlaceholder.Size = new System.Drawing.Size(315, 23);
+			this.textBox_userPlaceholder.TabIndex = 3;
+			this.textBox_userPlaceholder.TextChanged += new System.EventHandler(this.TextBox_userPlaceholder_TextChanged);
+			this.textBox_userPlaceholder.Leave += new System.EventHandler(this.TextBox_userPlaceholder_Leave);
+			this.textBox_userPlaceholder.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.TextBox_userPlaceholder_PreviewKeyDown);
+			// 
 			// label_userPlaceholder
 			// 
 			this.label_userPlaceholder.AutoEllipsis = true;
@@ -421,6 +567,26 @@
 			panel2.Padding = new System.Windows.Forms.Padding(6, 0, 0, 0);
 			panel2.Size = new System.Drawing.Size(210, 44);
 			panel2.TabIndex = 1;
+			// 
+			// comboBox_userGender
+			// 
+			this.comboBox_userGender.Dock = System.Windows.Forms.DockStyle.Top;
+			this.comboBox_userGender.DropDownHeight = 120;
+			this.comboBox_userGender.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBox_userGender.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.comboBox_userGender.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.comboBox_userGender.IntegralHeight = false;
+			this.comboBox_userGender.Items.AddRange(new object[] {
+            "(Not set)",
+            "Male",
+            "Female",
+            "Male/Female"});
+			this.comboBox_userGender.Location = new System.Drawing.Point(6, 21);
+			this.comboBox_userGender.MaxDropDownItems = 20;
+			this.comboBox_userGender.Name = "comboBox_userGender";
+			this.comboBox_userGender.Size = new System.Drawing.Size(204, 23);
+			this.comboBox_userGender.TabIndex = 4;
+			this.comboBox_userGender.SelectedValueChanged += new System.EventHandler(this.ComboBox_userGender_SelectedValueChanged);
 			// 
 			// label_userGender
 			// 
@@ -703,6 +869,30 @@
 			panel4.Size = new System.Drawing.Size(315, 44);
 			panel4.TabIndex = 0;
 			// 
+			// comboBox_textStyle
+			// 
+			this.comboBox_textStyle.Dock = System.Windows.Forms.DockStyle.Top;
+			this.comboBox_textStyle.DropDownHeight = 120;
+			this.comboBox_textStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBox_textStyle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.comboBox_textStyle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.comboBox_textStyle.IntegralHeight = false;
+			this.comboBox_textStyle.Items.AddRange(new object[] {
+            "(Not set)",
+            "Chat: Dialogue / *Narration*",
+            "Novel: \"Dialogue\" / Narration",
+            "Mixed: \"Dialogue\" / *Narration*",
+            "Decorative: “Dialogue” / Narration",
+            "Bold: Dialogue / **Narration**",
+            "Brackets: Dialogue / (Narration)",
+            "CJK: 「Dialogue」/ Narration"});
+			this.comboBox_textStyle.Location = new System.Drawing.Point(0, 21);
+			this.comboBox_textStyle.MaxDropDownItems = 20;
+			this.comboBox_textStyle.Name = "comboBox_textStyle";
+			this.comboBox_textStyle.Size = new System.Drawing.Size(315, 23);
+			this.comboBox_textStyle.TabIndex = 4;
+			this.comboBox_textStyle.SelectedValueChanged += new System.EventHandler(this.ComboBox_textStyle_SelectedValueChanged);
+			// 
 			// label_textStyle
 			// 
 			this.label_textStyle.AutoEllipsis = true;
@@ -726,6 +916,25 @@
 			panel3.Padding = new System.Windows.Forms.Padding(6, 0, 0, 0);
 			panel3.Size = new System.Drawing.Size(210, 44);
 			panel3.TabIndex = 1;
+			// 
+			// comboBox_Detail
+			// 
+			this.comboBox_Detail.Dock = System.Windows.Forms.DockStyle.Top;
+			this.comboBox_Detail.DropDownHeight = 120;
+			this.comboBox_Detail.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBox_Detail.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.comboBox_Detail.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.comboBox_Detail.IntegralHeight = false;
+			this.comboBox_Detail.Items.AddRange(new object[] {
+            "Less detail",
+            "Normal detail",
+            "More detail"});
+			this.comboBox_Detail.Location = new System.Drawing.Point(6, 21);
+			this.comboBox_Detail.MaxDropDownItems = 20;
+			this.comboBox_Detail.Name = "comboBox_Detail";
+			this.comboBox_Detail.Size = new System.Drawing.Size(204, 23);
+			this.comboBox_Detail.TabIndex = 0;
+			this.comboBox_Detail.SelectedValueChanged += new System.EventHandler(this.ComboBox_Detail_SelectedValueChanged);
 			// 
 			// label_Detail
 			// 
@@ -785,215 +994,6 @@
 			spacer_3.Size = new System.Drawing.Size(600, 4);
 			spacer_3.TabIndex = 10;
 			// 
-			// comboBox_textStyle
-			// 
-			this.comboBox_textStyle.Dock = System.Windows.Forms.DockStyle.Top;
-			this.comboBox_textStyle.DropDownHeight = 120;
-			this.comboBox_textStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboBox_textStyle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.comboBox_textStyle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.comboBox_textStyle.IntegralHeight = false;
-			this.comboBox_textStyle.Items.AddRange(new object[] {
-            "(Not set)",
-            "Chat: Dialogue / *Narration*",
-            "Novel: \"Dialogue\" / Narration",
-            "Mixed: \"Dialogue\" / *Narration*",
-            "Decorative: “Dialogue” / Narration",
-            "Bold: Dialogue / **Narration**",
-            "Brackets: Dialogue / (Narration)",
-            "CJK: 「Dialogue」/ Narration"});
-			this.comboBox_textStyle.Location = new System.Drawing.Point(0, 21);
-			this.comboBox_textStyle.MaxDropDownItems = 20;
-			this.comboBox_textStyle.Name = "comboBox_textStyle";
-			this.comboBox_textStyle.Size = new System.Drawing.Size(315, 23);
-			this.comboBox_textStyle.TabIndex = 4;
-			this.comboBox_textStyle.SelectedValueChanged += new System.EventHandler(this.ComboBox_textStyle_SelectedValueChanged);
-			// 
-			// comboBox_Detail
-			// 
-			this.comboBox_Detail.Dock = System.Windows.Forms.DockStyle.Top;
-			this.comboBox_Detail.DropDownHeight = 120;
-			this.comboBox_Detail.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboBox_Detail.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.comboBox_Detail.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.comboBox_Detail.IntegralHeight = false;
-			this.comboBox_Detail.Items.AddRange(new object[] {
-            "Less detail",
-            "Normal detail",
-            "More detail"});
-			this.comboBox_Detail.Location = new System.Drawing.Point(6, 21);
-			this.comboBox_Detail.MaxDropDownItems = 20;
-			this.comboBox_Detail.Name = "comboBox_Detail";
-			this.comboBox_Detail.Size = new System.Drawing.Size(204, 23);
-			this.comboBox_Detail.TabIndex = 0;
-			this.comboBox_Detail.SelectedValueChanged += new System.EventHandler(this.ComboBox_Detail_SelectedValueChanged);
-			// 
-			// textBox_userPlaceholder
-			// 
-			this.textBox_userPlaceholder.Dock = System.Windows.Forms.DockStyle.Top;
-			this.textBox_userPlaceholder.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.textBox_userPlaceholder.Location = new System.Drawing.Point(0, 21);
-			this.textBox_userPlaceholder.Margin = new System.Windows.Forms.Padding(0);
-			this.textBox_userPlaceholder.MaxLength = 256;
-			this.textBox_userPlaceholder.Name = "textBox_userPlaceholder";
-			this.textBox_userPlaceholder.Placeholder = "User";
-			this.textBox_userPlaceholder.Size = new System.Drawing.Size(315, 23);
-			this.textBox_userPlaceholder.TabIndex = 3;
-			this.textBox_userPlaceholder.TextChanged += new System.EventHandler(this.TextBox_userPlaceholder_TextChanged);
-			this.textBox_userPlaceholder.Leave += new System.EventHandler(this.TextBox_userPlaceholder_Leave);
-			this.textBox_userPlaceholder.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.TextBox_userPlaceholder_PreviewKeyDown);
-			// 
-			// comboBox_userGender
-			// 
-			this.comboBox_userGender.Dock = System.Windows.Forms.DockStyle.Top;
-			this.comboBox_userGender.DropDownHeight = 120;
-			this.comboBox_userGender.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboBox_userGender.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.comboBox_userGender.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.comboBox_userGender.IntegralHeight = false;
-			this.comboBox_userGender.Items.AddRange(new object[] {
-            "(Not set)",
-            "Male",
-            "Female",
-            "Male/Female"});
-			this.comboBox_userGender.Location = new System.Drawing.Point(6, 21);
-			this.comboBox_userGender.MaxDropDownItems = 20;
-			this.comboBox_userGender.Name = "comboBox_userGender";
-			this.comboBox_userGender.Size = new System.Drawing.Size(204, 23);
-			this.comboBox_userGender.TabIndex = 4;
-			this.comboBox_userGender.SelectedValueChanged += new System.EventHandler(this.ComboBox_userGender_SelectedValueChanged);
-			// 
-			// textBox_tags
-			// 
-			this.textBox_tags.Collection = ((System.Collections.Generic.HashSet<string>)(resources.GetObject("textBox_tags.Collection")));
-			this.textBox_tags.Dock = System.Windows.Forms.DockStyle.Top;
-			this.textBox_tags.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.textBox_tags.Location = new System.Drawing.Point(6, 189);
-			this.textBox_tags.Margin = new System.Windows.Forms.Padding(0);
-			this.textBox_tags.MaxLength = 256;
-			this.textBox_tags.Name = "textBox_tags";
-			this.textBox_tags.Placeholder = "Enter tags separated by commas";
-			this.textBox_tags.Size = new System.Drawing.Size(588, 23);
-			this.textBox_tags.TabIndex = 7;
-			this.textBox_tags.TextChanged += new System.EventHandler(this.TextBox_tags_TextChanged);
-			// 
-			// textBox_creatorNotes
-			// 
-			this.textBox_creatorNotes.Dock = System.Windows.Forms.DockStyle.Top;
-			this.textBox_creatorNotes.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.textBox_creatorNotes.Location = new System.Drawing.Point(6, 86);
-			this.textBox_creatorNotes.Multiline = true;
-			this.textBox_creatorNotes.Name = "textBox_creatorNotes";
-			this.textBox_creatorNotes.Placeholder = "Enter name...";
-			this.textBox_creatorNotes.Size = new System.Drawing.Size(588, 80);
-			this.textBox_creatorNotes.TabIndex = 6;
-			this.textBox_creatorNotes.TextChanged += new System.EventHandler(this.TextBox_creatorNotes_TextChanged);
-			// 
-			// textBox_creator
-			// 
-			this.textBox_creator.Dock = System.Windows.Forms.DockStyle.Top;
-			this.textBox_creator.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.textBox_creator.Location = new System.Drawing.Point(0, 21);
-			this.textBox_creator.MaxLength = 256;
-			this.textBox_creator.Name = "textBox_creator";
-			this.textBox_creator.Placeholder = "Your name";
-			this.textBox_creator.Size = new System.Drawing.Size(294, 23);
-			this.textBox_creator.TabIndex = 4;
-			this.textBox_creator.TextChanged += new System.EventHandler(this.TextBox_creator_TextChanged);
-			// 
-			// textBox_version
-			// 
-			this.textBox_version.Dock = System.Windows.Forms.DockStyle.Top;
-			this.textBox_version.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.textBox_version.Location = new System.Drawing.Point(6, 21);
-			this.textBox_version.Margin = new System.Windows.Forms.Padding(0);
-			this.textBox_version.MaximumSize = new System.Drawing.Size(160, 4);
-			this.textBox_version.MaxLength = 256;
-			this.textBox_version.MinimumSize = new System.Drawing.Size(4, 23);
-			this.textBox_version.Name = "textBox_version";
-			this.textBox_version.Placeholder = "1.0";
-			this.textBox_version.Size = new System.Drawing.Size(160, 23);
-			this.textBox_version.TabIndex = 5;
-			this.textBox_version.TextChanged += new System.EventHandler(this.TextBox_version_TextChanged);
-			// 
-			// textBox_customGender
-			// 
-			this.textBox_customGender.Dock = System.Windows.Forms.DockStyle.Top;
-			this.textBox_customGender.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.textBox_customGender.Location = new System.Drawing.Point(212, 23);
-			this.textBox_customGender.Margin = new System.Windows.Forms.Padding(0);
-			this.textBox_customGender.MaxLength = 256;
-			this.textBox_customGender.MinimumSize = new System.Drawing.Size(4, 23);
-			this.textBox_customGender.Name = "textBox_customGender";
-			this.textBox_customGender.Placeholder = "";
-			this.textBox_customGender.Size = new System.Drawing.Size(205, 23);
-			this.textBox_customGender.TabIndex = 5;
-			this.textBox_customGender.TextChanged += new System.EventHandler(this.TextBox_customGender_TextChanged);
-			// 
-			// comboBox_gender
-			// 
-			this.comboBox_gender.Dock = System.Windows.Forms.DockStyle.Top;
-			this.comboBox_gender.DropDownHeight = 120;
-			this.comboBox_gender.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboBox_gender.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.comboBox_gender.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.comboBox_gender.IntegralHeight = false;
-			this.comboBox_gender.Items.AddRange(new object[] {
-            "(Not set)",
-            "Male",
-            "Female",
-            "Other..."});
-			this.comboBox_gender.Location = new System.Drawing.Point(0, 23);
-			this.comboBox_gender.Margin = new System.Windows.Forms.Padding(0);
-			this.comboBox_gender.MaxDropDownItems = 20;
-			this.comboBox_gender.MinimumSize = new System.Drawing.Size(80, 0);
-			this.comboBox_gender.Name = "comboBox_gender";
-			this.comboBox_gender.Size = new System.Drawing.Size(204, 23);
-			this.comboBox_gender.TabIndex = 2;
-			this.comboBox_gender.SelectedValueChanged += new System.EventHandler(this.ComboBox_gender_SelectedValueChanged);
-			// 
-			// textBox_characterSpokenName
-			// 
-			this.textBox_characterSpokenName.Dock = System.Windows.Forms.DockStyle.Top;
-			this.textBox_characterSpokenName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.textBox_characterSpokenName.Location = new System.Drawing.Point(1, 67);
-			this.textBox_characterSpokenName.MaxLength = 64;
-			this.textBox_characterSpokenName.Name = "textBox_characterSpokenName";
-			this.textBox_characterSpokenName.Placeholder = "";
-			this.textBox_characterSpokenName.Size = new System.Drawing.Size(417, 23);
-			this.textBox_characterSpokenName.TabIndex = 1;
-			this.textBox_characterSpokenName.TextChanged += new System.EventHandler(this.TextBox_characterSpokenName_TextChanged);
-			this.textBox_characterSpokenName.Leave += new System.EventHandler(this.TextBox_characterPlaceholder_Leave);
-			this.textBox_characterSpokenName.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.TextBox_characterPlaceholder_PreviewKeyDown);
-			// 
-			// textBox_characterName
-			// 
-			this.textBox_characterName.Dock = System.Windows.Forms.DockStyle.Top;
-			this.textBox_characterName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.textBox_characterName.Location = new System.Drawing.Point(1, 21);
-			this.textBox_characterName.MaxLength = 64;
-			this.textBox_characterName.Name = "textBox_characterName";
-			this.textBox_characterName.Placeholder = null;
-			this.textBox_characterName.Size = new System.Drawing.Size(417, 23);
-			this.textBox_characterName.TabIndex = 0;
-			this.textBox_characterName.TextChanged += new System.EventHandler(this.TextBox_characterName_TextChanged);
-			this.textBox_characterName.Leave += new System.EventHandler(this.TextBox_characterName_Leave);
-			this.textBox_characterName.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.TextBox_characterName_PreviewKeyDown);
-			// 
-			// portraitImage
-			// 
-			this.portraitImage.AllowDrop = true;
-			this.portraitImage.BackColor = System.Drawing.Color.DimGray;
-			this.portraitImage.BackgroundImage = global::Ginger.Properties.Resources.checker;
-			this.portraitImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.portraitImage.Location = new System.Drawing.Point(0, 0);
-			this.portraitImage.Name = "portraitImage";
-			this.portraitImage.Size = new System.Drawing.Size(165, 220);
-			this.portraitImage.TabIndex = 0;
-			this.portraitImage.TabStop = false;
-			this.portraitImage.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseClick);
-			this.portraitImage.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseDoubleClick);
-			// 
 			// SidePanel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1017,6 +1017,7 @@
 			genderTable.ResumeLayout(false);
 			genderTable.PerformLayout();
 			portraitPanel.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).EndInit();
 			group_CardInfo.ResumeLayout(false);
 			group_CardInfo.PerformLayout();
 			tableLayoutPanel1.ResumeLayout(false);
@@ -1037,7 +1038,6 @@
 			panel4.ResumeLayout(false);
 			panel3.ResumeLayout(false);
 			panel5.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

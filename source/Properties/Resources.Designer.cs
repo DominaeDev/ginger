@@ -1033,16 +1033,17 @@ namespace Ginger.Properties {
         ///	&lt;/Description&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
         ///	&lt;Order&gt;3&lt;/Order&gt;
-        ///	&lt;Requires&gt;not (grammar or __actor)&lt;/Requires&gt;
+        ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
+        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;grammar, __grammar, __component, __internal&lt;/Flags&gt;
         ///	
         ///	&lt;Text id=&quot;grammar&quot; style=&quot;code&quot; raw=&quot;yes&quot;&gt;
         ///			&lt;Label&gt;Grammar&lt;/Label&gt;
-        ///			&lt;Default&gt;&lt;![CDATA[root ::= text &quot;\n#&quot;
+        ///			&lt;Default&gt;&lt;![CDATA[root ::= text &quot;\n&quot;
         ///text ::= [[a-zA-Z0-9,.?!&quot; &apos;:;\n]]+]]&gt;&lt;/Default&gt;
         ///		&lt;/Text&gt;
         ///
-        ///	&lt;Grammar&gt;{grammar:local}&lt;/G [rest of string was truncated]&quot;;.
+        ///	&lt;Grammar&gt;{gra [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string grammar_recipe {
             get {
@@ -1212,6 +1213,16 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap menu {
             get {
                 object obj = ResourceManager.GetObject("menu", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_edit {
+            get {
+                object obj = ResourceManager.GetObject("menu_edit", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1715,6 +1726,16 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap red_dot {
+            get {
+                object obj = ResourceManager.GetObject("red_dot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__scenario&quot;&gt;
         ///	&lt;Name&gt;Scenario&lt;/Name&gt;
         ///	&lt;Order&gt;3&lt;/Order&gt;
@@ -2123,6 +2144,69 @@ namespace Ginger.Properties {
         internal static string tooltip_detail_level {
             get {
                 return ResourceManager.GetString("tooltip_detail_level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include attributes in the character persona..
+        /// </summary>
+        internal static string tooltip_enable_attributes {
+            get {
+                return ResourceManager.GetString("tooltip_enable_attributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include example chat in the output..
+        /// </summary>
+        internal static string tooltip_enable_example {
+            get {
+                return ResourceManager.GetString("tooltip_enable_example", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include grammar in the output..
+        /// </summary>
+        internal static string tooltip_enable_grammar {
+            get {
+                return ResourceManager.GetString("tooltip_enable_grammar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include greeting(s) in the output..
+        /// </summary>
+        internal static string tooltip_enable_greetings {
+            get {
+                return ResourceManager.GetString("tooltip_enable_greetings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include lore in the output..
+        /// </summary>
+        internal static string tooltip_enable_lore {
+            get {
+                return ResourceManager.GetString("tooltip_enable_lore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include model instructions in the output..
+        /// </summary>
+        internal static string tooltip_enable_model_instructions {
+            get {
+                return ResourceManager.GetString("tooltip_enable_model_instructions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include scenario in the output..
+        /// </summary>
+        internal static string tooltip_enable_scenario {
+            get {
+                return ResourceManager.GetString("tooltip_enable_scenario", resourceCulture);
             }
         }
         

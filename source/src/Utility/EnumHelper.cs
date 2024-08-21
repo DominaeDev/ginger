@@ -145,7 +145,7 @@ namespace Ginger
 			if (string.IsNullOrEmpty(enumName))
 				return default_value;
 
-			T result = default(T);
+			T result;
 			if (EnumInfo<T>.Convert(enumName, out result))
 				return result;
 			return default_value;
@@ -153,15 +153,19 @@ namespace Ginger
 
 		public static T FromInt<T>(int enumValue, T default_value = default(T)) where T : struct, IConvertible
 		{
-			T result = default(T);
+			T result;
 			if (EnumInfo<T>.Convert(enumValue, out result))
 				return result;
+
+			if (Enum.TryParse(enumValue.ToString(), out result))
+				return result;
+
 			return default_value;
 		}
 
 		public static T FromLong<T>(long enumValue, T default_value = default(T)) where T : struct, IConvertible
 		{
-			T result = default(T);
+			T result;
 			if (EnumInfo<T>.Convert(enumValue, out result))
 				return result;
 			return default_value;

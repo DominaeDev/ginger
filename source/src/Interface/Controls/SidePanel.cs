@@ -159,11 +159,12 @@ namespace Ginger
 			comboBox_textStyle.SelectedIndex = EnumHelper.ToInt(Current.Card.textStyle);
 
 			RefreshTokenCount();
+			RefreshSettingsButton();
 
 			// Lore count
 			label_Lore_Value.Text = lastLoreCount.ToString();
 
-			// Potrait
+			// Portrait
 			portraitImage.SetImage(Current.Card.portraitImage);
 
 			if (Current.Card.portraitImage != null)
@@ -731,34 +732,93 @@ namespace Ginger
 
 		private void btn_More_MouseClick(object sender, MouseEventArgs args)
 		{
+			ShowTextGenerationOptions(sender as Control, new Point(args.X + 10, args.Y + 10));
+		}
+
+		private void ShowTextGenerationOptions(Control sender, Point location)
+		{
 			ContextMenuStrip menu = new ContextMenuStrip();
 
-//			var label = new ToolStripStatusLabel("Miscellaneous settings");
-//			label.ForeColor = SystemColors.GrayText;
-//			menu.Items.Add(label);
-//			menu.Items.Add(new ToolStripSeparator());
+			var system = AddSettingsMenu(menu, "Model instructions", CardData.Flag.OmitSystemPrompt);
+			var persona = AddSettingsMenu(menu, "Character persona", CardData.Flag.OmitAttributes);
+			var user = AddSettingsMenu(menu, "User persona", CardData.Flag.UserPersonaInScenario);
+			var scenario = AddSettingsMenu(menu, "Scenario", CardData.Flag.OmitScenario | CardData.Flag.PruneScenario);
+			var example = AddSettingsMenu(menu, "Example chat", CardData.Flag.OmitExample);
+			var greeting = AddSettingsMenu(menu, "Greeting", CardData.Flag.OmitGreeting);
+			var grammar = AddSettingsMenu(menu, "Grammar", CardData.Flag.OmitGrammar);
+			var lore = AddSettingsMenu(menu, "Lore", CardData.Flag.OmitLore);
 
-			var scenario = new ToolStripMenuItem("Scenario");
-			menu.Items.Add(scenario);
+			AddSetting(system,
+				CardData.Flag.OmitSystemPrompt,
+				"Enable model instructions",
+				Resources.tooltip_enable_model_instructions,
+				true);
+			AddSetting(persona,
+				CardData.Flag.OmitAttributes,
+				"Enable attributes",
+				Resources.tooltip_enable_attributes,
+				true);
+
+			AddSetting(scenario,
+				CardData.Flag.OmitScenario,
+				"Enable scenario",
+				Resources.tooltip_enable_scenario,
+				true);
+			scenario.DropDownItems.Add(new ToolStripSeparator());
 			AddSetting(scenario,
 				CardData.Flag.PruneScenario,
 				"Prune scenario",
-				Resources.tooltip_prune_scenario);
+				Resources.tooltip_prune_scenario)
+				.Enabled = Current.Card.extraFlags.Contains(CardData.Flag.OmitScenario) == false;
 
-			var userMenu = new ToolStripMenuItem("User persona");
-			menu.Items.Add(userMenu);
-			AddSetting(userMenu,
+			AddSetting(user,
 				CardData.Flag.UserPersonaInScenario,
 				"In character persona",
 				Resources.tooltip_user_in_persona,
 				true);
-			AddSetting(userMenu,
+			AddSetting(user,
 				CardData.Flag.UserPersonaInScenario,
 				"In scenario",
 				Resources.tooltip_user_in_scenario,
 				false);
 
-			menu.Show(sender as Control, new Point(args.X + 10, args.Y + 10));
+			AddSetting(example,
+				CardData.Flag.OmitExample,
+				"Enable example chat",
+				Resources.tooltip_enable_example,
+				true);
+			AddSetting(greeting,
+				CardData.Flag.OmitGreeting,
+				"Enable greeting",
+				Resources.tooltip_enable_greetings,
+				true);
+			AddSetting(grammar,
+				CardData.Flag.OmitGrammar,
+				"Enable grammar",
+				Resources.tooltip_enable_grammar,
+				true);
+			AddSetting(lore,
+				CardData.Flag.OmitLore,
+				"Enable lore",
+				Resources.tooltip_enable_lore,
+				true);
+			menu.Items.Add(new ToolStripSeparator());
+			menu.Items.Add(new ToolStripMenuItem("Reset settings", null, (s, e) => {
+				Current.Card.extraFlags = CardData.Flag.Default;
+				Current.IsDirty = true;
+				RefreshSettingsButton();
+			}));
+
+			menu.Show(sender, location);
+		}
+
+		private static ToolStripMenuItem AddSettingsMenu(ContextMenuStrip menu, string label, CardData.Flag flags)
+		{
+			var item = new ToolStripMenuItem(label);
+			menu.Items.Add(item);
+			if (Current.Card.extraFlags.ContainsAny(flags))
+				item.Image = Resources.red_dot;
+			return item;
 		}
 
 		private ToolStripMenuItem AddSetting(ContextMenuStrip menu, CardData.Flag flag, string label, string tooltip, bool inverse = false)
@@ -787,7 +847,13 @@ namespace Ginger
 				Current.Card.extraFlags &= ~flag;
 			else
 				Current.Card.extraFlags |= flag;
+			RefreshSettingsButton();
 			Current.IsDirty = true;
+		}
+
+		private void RefreshSettingsButton()
+		{
+			btn_More.Image = Current.Card.extraFlags != CardData.Flag.Default ? Resources.menu_edit : Resources.menu;
 		}
 	}
 }

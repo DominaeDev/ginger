@@ -43,35 +43,35 @@
 		<Option>Volume</Option>
 	</Choice>
 
-	<Attribute style="default" rule="type:local is text">
+	<Attribute style="attribute" rule="type:local is text">
 		<Name>{name:local}</Name>
 		<Value>{text-value}</Value>
 	</Attribute>
-	<Attribute style="quote" rule="type:local is long">
+	<Attribute style="text" rule="type:local is long">
 		<Name>{name:local}</Name>
 		<Value>{long-value}</Value>
 	</Attribute>
-	<Attribute style="plus-group" rule="type:local is list">
+	<Attribute style="list" rule="type:local is list">
 		<Name>{name:local}</Name>
 		<Value>{list-value}</Value>
 	</Attribute>
-	<Attribute rule="type:local is number">
+	<Attribute style="number" rule="type:local is number">
 		<Name>{name:local}</Name>
 		<Value>{number-value}</Value>
 	</Attribute>
-	<Attribute style="default" rule="type:local is length and less-detail">
+	<Attribute style="attribute" rule="type:local is length and less-detail">
 		<Name>{name:local}</Name>
 		<Value>{length-value}</Value>
 	</Attribute>
-	<Attribute style="default" rule="type:local is length and normal-detail">
+	<Attribute style="attribute" rule="type:local is length and normal-detail">
 		<Name>{name:local}</Name>
 		<Value>{length-value.ftin} ({length-value.cm})</Value>
 	</Attribute>
-	<Attribute style="default" rule="type:local is weight">
+	<Attribute style="attribute" rule="type:local is weight">
 		<Name>{name:local}</Name>
 		<Value>{weight-value}</Value>
 	</Attribute>
-	<Attribute style="default" rule="type:local is volume">
+	<Attribute style="attribute" rule="type:local is volume">
 		<Name>{name:local}</Name>
 		<Value>{volume-value}</Value>
 	</Attribute>
