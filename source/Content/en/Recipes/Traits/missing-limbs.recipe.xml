@@ -111,7 +111,8 @@
 	</Node>		
 	
 	<Node path="persona/limbs/handicap" order="550">As a consequence, [inner]</Node>
-	<Node path="persona/limbs/handicap/item" rule="both-arms">[char] cannot grasp, pick up, reach for, or touch things due to [their] lack of hands.</Node>
+	<Node path="persona/limbs/handicap/item" rule="both-arms and not either-leg">[char] will use [their] feet to pick up, reach for, and touch things.</Node>
+	<Node path="persona/limbs/handicap/item" rule="both-arms and either-leg">[char] cannot grasp, pick up, reach for, or touch things due to [their] lack of hands.</Node>
 	<Node path="persona/limbs/handicap/item" rule="both-arms">[they] [do] not wear rings, bracelets or a wristwatch.</Node>
 	<Node path="persona/limbs/handicap/item" rule="both-arms">[they] usually gesture[s] with [their] head or eyes.</Node>
 	<Node path="persona/limbs/handicap/item" rule="both-legs">[char] cannot walk or run due to [their] lack of [from-ankle?feet|legs].</Node>
