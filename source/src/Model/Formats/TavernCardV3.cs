@@ -7,6 +7,7 @@ using Ginger.Properties;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Globalization;
+using System.Text;
 
 namespace Ginger
 {
@@ -61,9 +62,6 @@ namespace Ginger
 			[JsonProperty("system_prompt")]
 			public string system = "";
 
-			[JsonProperty("creator_notes")]
-			public string creator_notes = "";
-
 			[JsonProperty("post_history_instructions")]
 			public string post_history_instructions = "";
 
@@ -79,6 +77,9 @@ namespace Ginger
 			[JsonProperty("creator")]
 			public string creator = "";
 
+			[JsonProperty("creator_notes")]
+			public string creator_notes = "";
+
 			[JsonProperty("character_version")]
 			public string character_version = "";
 
@@ -88,15 +89,19 @@ namespace Ginger
 			// New in V3
 			[JsonProperty("nickname")]
 			public string nickname = "";
+
 			[JsonProperty("creator_notes_multilingual")]
 			public Dictionary<string, string> creator_notes_multilingual = new Dictionary<string, string>();
+
 			[JsonProperty("source")]
 			public string[] source = new string[0];
+
 			[JsonProperty("group_only_greetings")]
 			public string[] group_greetings = new string[0];
 
 			[JsonProperty("creation_date")]
 			public long? creationDate = null;
+
 			[JsonProperty("modification_date")]
 			public long? updateDate = null;
 
@@ -104,10 +109,13 @@ namespace Ginger
 			{
 				[JsonProperty("name", Required = Required.Always)]
 				public string name = "";
+
 				[JsonProperty("type", Required = Required.Always)]
 				public string type = "";
+
 				[JsonProperty("uri", Required = Required.Always)]
 				public string uri = "";
+
 				[JsonProperty("ext")]
 				public string ext = "";
 			}
@@ -272,7 +280,6 @@ namespace Ginger
 			card.data.name = Current.CardName;
 			card.data.nickname = Current.Name;
 			card.data.creator = Current.Card.creator;
-			card.data.creator_notes = Current.Card.comment.ConvertLinebreaks(Linebreak.LF);
 			card.data.character_version = Current.Card.versionString;
 			card.data.tags = Current.Card.tags.ToArray();
 			card.data.creationDate = (int)(Current.Card.creationDate ?? DateTime.UtcNow).ToUnixTimeSeconds();
@@ -354,6 +361,67 @@ namespace Ginger
 			}
 			else
 				card.data.character_book = null;
+
+			// Creator notes (multi-language)
+			if (string.IsNullOrWhiteSpace(Current.Card.comment) == false)
+			{
+				var creator_notes_by_language = new Dictionary<string, StringBuilder>();
+				var lines = Current.Card.comment
+					.ConvertLinebreaks(Linebreak.LF)
+					.Split(new char[] { '\n' }, StringSplitOptions.None);
+
+				string currentLocale = "en";
+
+				for (int i = 0; i < lines.Length; ++i)
+				{
+					string line = lines[i];
+
+					// Change language?
+					if (line.Length > 0 && line[0] == '#')
+					{
+						int pos_colon = line.IndexOf(':');
+						if (pos_colon != -1)
+						{
+							string langCode = line.Substring(1, pos_colon - 1).Trim().ToLowerInvariant();
+							if (Locales.AllLocales.ContainsKey(langCode)) // Is valid locale
+							{
+								// Strip region from language code (if any)
+								int pos_region = langCode.IndexOf('_');
+								if (pos_region != -1)
+									langCode = langCode.Substring(0, pos_region);
+
+								// Change current locale
+								currentLocale = langCode;
+							}
+
+							// Remove language marker
+							line = line.Substring(pos_colon + 1);
+						}
+					}
+
+					if (creator_notes_by_language.ContainsKey(currentLocale) == false)
+						creator_notes_by_language.Add(currentLocale, new StringBuilder());
+					creator_notes_by_language[currentLocale].AppendLine(line);
+					var hahaha = creator_notes_by_language[currentLocale].ToString();
+					int k = 0;
+				}
+
+				if (creator_notes_by_language.Count > 0)
+				{
+					if (creator_notes_by_language.ContainsKey("en") && creator_notes_by_language.Count == 1) // English only
+					{
+						card.data.creator_notes = creator_notes_by_language["en"].ToString().Trim().ConvertLinebreaks(Linebreak.LF);
+					}
+					else // Multilingual
+					{
+						card.data.creator_notes_multilingual = creator_notes_by_language
+							.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToString().Trim().ConvertLinebreaks(Linebreak.LF));
+						card.data.creator_notes = string.Join("\n\n", card.data.creator_notes_multilingual
+							.Select(kvp => string.Format("#{0}:\n{1}", kvp.Key, kvp.Value)));
+
+					}
+				}
+			}
 
 			return card;
 		}

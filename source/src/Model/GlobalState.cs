@@ -395,7 +395,6 @@ namespace Ginger
 				name = card.data.name,
 				userGender = null,
 				creator = card.data.creator,
-				comment = card.data.creator_notes.ConvertLinebreaks(Linebreak.Default),
 				versionString = card.data.character_version,
 				portraitImage = ImageRef.FromImage(portrait),
 				extensionData = card.data.extensions,
@@ -442,6 +441,32 @@ namespace Ginger
 				var loreBook = Lorebook.FromTavernBook(card.data.character_book);
 				var loreBookRecipe = RecipeBook.AddRecipeFromResource(Resources.lorebook_recipe);
 				(loreBookRecipe.parameters[0] as LorebookParameter).value = loreBook;
+			}
+
+			// Creator notes (multi-language)
+			var creator_notes_by_language = card.data.creator_notes_multilingual ?? new Dictionary<string, string>();
+			if (string.IsNullOrWhiteSpace(card.data.creator_notes) == false)
+			{
+				if (!(card.data.creator_notes[0] == '#' && creator_notes_by_language.Count > 0 && card.data.creator_notes.IndexOf(':') == -1)) // Might be repeated multilingual
+					creator_notes_by_language.TryAdd("en", card.data.creator_notes);
+			}
+			
+			if (creator_notes_by_language.ContainsKey("en") && creator_notes_by_language.Count == 1)
+				Card.comment = creator_notes_by_language["en"].ConvertLinebreaks(Linebreak.Default);
+			else
+			{
+				var sbComment = new StringBuilder();
+				foreach (var kvp in creator_notes_by_language
+					.Where(kvp => string.IsNullOrWhiteSpace(kvp.Key) == false && string.IsNullOrWhiteSpace(kvp.Value) == false)
+					.OrderBy(kvp => kvp.Key))
+				{
+					sbComment.NewParagraph();
+					sbComment.AppendLine(string.Format("#{0}:", kvp.Key.Trim().ToLowerInvariant()));
+					sbComment.Append(kvp.Value.Trim());
+				}
+
+				sbComment.ConvertLinebreaks(Linebreak.Default);
+				Card.comment = sbComment.ToString();
 			}
 
 			return true;

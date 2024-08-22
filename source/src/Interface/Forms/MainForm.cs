@@ -850,7 +850,7 @@ namespace Ginger
 				return false;
 			}
 
-			SetStatusBarMessage("Reading character card...");
+			SetStatusBarMessage("Reading character card..."); 
 
 			string ext = Path.GetExtension(filename).ToLowerInvariant();
 			if (ext == ".json" || ext == ".yaml" || ext == ".charx")
@@ -894,6 +894,8 @@ namespace Ginger
 					return false;
 				}
 
+				Current.Filename = filename;
+
 				MRUList.AddToMRU(filename, Current.Card.name);
 			}
 			else
@@ -914,7 +916,6 @@ namespace Ginger
 			Current.IsLoading = true;
 			Current.IsDirty = false;
 			Current.IsFileDirty = false;
-			Current.Filename = filename;
 
 			Current.OnLoadCharacter?.Invoke(null, EventArgs.Empty);
 			Current.IsLoading = false;
