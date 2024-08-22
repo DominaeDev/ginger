@@ -5,7 +5,7 @@ The goal of this project is to provide an easy to use tool for both new and expe
 
 ## Download
 
-[Click here to download the latest version (v1.0.0)](https://github.com/DominaeDev/ginger/releases/tag/release-1.0.0)
+[Click here to download the latest version (v1.1.0)](https://github.com/DominaeDev/ginger/releases/tag/release-1.1.0)
 
 ## Features
 
@@ -14,7 +14,7 @@ The goal of this project is to provide an easy to use tool for both new and expe
 * Ginger character cards are supported practically everywhere.
 * Support for multiple characters in one card.
 * Bake recipes into editable text.
-* Over 100 recipes included.
+* Over 150 recipes.
   
 ### Write characters (with or without recipes)
 * Automatic handling of names and placeholders.
