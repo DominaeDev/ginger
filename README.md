@@ -1,6 +1,6 @@
 # Ginger
 
-Ginger is a stand-alone character creator and editor for character cards (.png, .json) for use with AI chat frontends and services.
+Ginger is a stand-alone character creator and editor for character cards (.png, .charx, .json, .yaml) for use with AI chat frontends and services.
 The goal of this project is to provide an easy to use tool for both new and experienced bot makers, while being compatible with the most popular platforms and formats.
 
 ## Download
