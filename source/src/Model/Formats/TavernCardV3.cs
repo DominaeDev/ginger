@@ -402,8 +402,6 @@ namespace Ginger
 					if (creator_notes_by_language.ContainsKey(currentLocale) == false)
 						creator_notes_by_language.Add(currentLocale, new StringBuilder());
 					creator_notes_by_language[currentLocale].AppendLine(line);
-					var hahaha = creator_notes_by_language[currentLocale].ToString();
-					int k = 0;
 				}
 
 				if (creator_notes_by_language.Count > 0)
@@ -418,7 +416,6 @@ namespace Ginger
 							.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToString().Trim().ConvertLinebreaks(Linebreak.LF));
 						card.data.creator_notes = string.Join("\n\n", card.data.creator_notes_multilingual
 							.Select(kvp => string.Format("#{0}:\n{1}", kvp.Key, kvp.Value)));
-
 					}
 				}
 			}
