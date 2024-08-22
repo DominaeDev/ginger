@@ -24,7 +24,7 @@ namespace Ginger
 			InitializeComponent();
 
 			this.Load += AssetViewDialog_Load;
-			this.FormClosed += AssetViewDialog_FormClosed;
+			this.FormClosing += AssetViewDialog_FormClosing;
 
 			btnAdd.Click += BtnAdd_Click;
 			btnAddRemote.Click += BtnAddRemote_Click;
@@ -56,9 +56,15 @@ namespace Ginger
 			assetsDataView.ClearSelection();
 		}
 
-		private void AssetViewDialog_FormClosed(object sender, FormClosedEventArgs e)
+		private void AssetViewDialog_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			assetsDataView.EndEdit();
+			if (DialogResult == DialogResult.Cancel && Changed)
+			{
+				var mr = MessageBox.Show(Resources.msg_dismiss_changes, Resources.cap_confirm, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+				if (mr == DialogResult.No)
+					e.Cancel = true;
+			}
 		}
 
 		private void AssetsDataView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)

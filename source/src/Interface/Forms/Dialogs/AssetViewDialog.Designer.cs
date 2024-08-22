@@ -178,7 +178,7 @@ namespace Ginger
 			this.btnApply.Name = "btnApply";
 			this.btnApply.Size = new System.Drawing.Size(192, 31);
 			this.btnApply.TabIndex = 5;
-			this.btnApply.Text = "Close";
+			this.btnApply.Text = "Apply";
 			this.btnApply.UseVisualStyleBackColor = true;
 			// 
 			// btnExport

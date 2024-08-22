@@ -1954,8 +1954,7 @@ namespace Ginger
 		private void embeddedAssetsMenuItem_Click(object sender, EventArgs e)
 		{
 			AssetViewDialog dlg = new AssetViewDialog();
-			dlg.ShowDialog();
-			if (dlg.Changed)
+			if (dlg.ShowDialog() == DialogResult.OK && dlg.Changed)
 			{
 				Current.Card.assets = (AssetCollection)dlg.Assets.Clone();
 				Undo.Push(Undo.Kind.Parameter, "Changed embedded assets");

@@ -82,7 +82,7 @@
 	<Node path="scenario/setting" style="space" order="100">Setting: {inner}.</Node>
 	<Node path="scenario/setting/name" order="0" style="text"/>
 	<Node path="scenario/setting/name/value">{world-name}</Node>
-	<Node path="scenario/setting/value" rule="setting">([@setting])</Node>
+	<Node path="scenario/setting/value" rule="setting">[world-name?([@setting])|[@setting]]</Node>
 	
 	<Node path="scenario/world/description" order="100" style="block" mode="exclude">
 		World description:  

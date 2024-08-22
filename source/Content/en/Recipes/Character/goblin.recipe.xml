@@ -43,11 +43,6 @@
 		</Description>
 	</Number>
 
-	<Text id="tribe">
-		<Label>Tribe</Label>
-		<Placeholder>Enter the name of a tribe (e.g. Vile Tooth)</Placeholder>
-	</Text>
-	
 	<Choice id="caste">
 		<Label>Caste</Label>
 		<Option id="hunter-gatherer">Hunter-gatherer</Option>
@@ -56,6 +51,11 @@
 		<Option id="chieftain">Chieftain / Chieftess</Option>
 	</Choice>
 
+	<Text id="tribe">
+		<Label>Name of tribe</Label>
+		<Placeholder>Enter the name of a tribe (e.g. Vile Tooth)</Placeholder>
+	</Text>
+	
 	<Text id="more" style="flex">
 		<Label>Additional details</Label>			
 	</Text>

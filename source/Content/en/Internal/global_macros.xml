@@ -32,12 +32,12 @@
 		</String>
 		<String rule="is-man">man</String>
 		<String rule="is-woman">woman</String>
-		<String>individual</String>
+		<String>person</String>
 	</String>
 	<String id="#person">
 		<String rule="#male">man</String>
 		<String rule="#female">woman</String>
-		<String>individual</String>
+		<String>person</String>
 	</String>
 	
 	<!-- Grammar -->

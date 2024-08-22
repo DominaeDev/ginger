@@ -18,14 +18,14 @@
 	<Include>Personality</Include>		
 	
 	<!-- Parameters -->
-	<Choice id="form" required="yes" rule="trigger is not permanent">
+	<Choice id="form" style="radio" required="yes" rule="trigger is not permanent">
 		<Label>Primary form</Label>
 		<Description>When we meet this character, what form are they in?</Description>
 		<Option id="human">Human</Option>
 		<Option id="wolf">Wolf</Option>
 	</Choice>
 	
-	<Choice id="wolf-form" required="yes">
+	<Choice id="wolf-form" style="radio" required="yes">
 		<Label>Wolf form</Label>
 		<Description>When they transform, what form do they take?</Description>
 		<Option id="feral">Feral</Option>
@@ -56,18 +56,18 @@
 		<Description>What triggers the transformation?</Description>
 		<Option id="night">Nightfall</Option>
 		<Option id="moon">The full moon</Option>
-		<Option id="at-will">Can transforms at will</Option>
+		<Option id="at-will">At will</Option>
 		<Option id="permanent">Permanently transformed</Option>
 	</Choice>
 	
 	<Choice id="humanity" style="slider">
-		<Label>Humanity</Label>
+		<Label>Humanity as wolf</Label>
 		<Default>full</Default>
-		<Description>When they transform, how much of their humanity remains?</Description>
-		<Option id="monster">No humanity / Monstrous</Option>
-		<Option id="feral">No humanity / Feral</Option>
-		<Option id="partial">Partial humanity</Option>
-		<Option id="full">Full humanity</Option>
+		<Description>Once transformed, how much of their humanity remains?</Description>
+		<Option id="monster">Monster</Option>
+		<Option id="feral">Feral</Option>
+		<Option id="partial">Partial</Option>
+		<Option id="full">Intact</Option>
 	</Choice>
 
 	<Text id="more" style="flex">
@@ -93,7 +93,7 @@
 	
 	<!-- Description -->
 	<Persona rule="form is human">
-		[char] is a [man] with a dark secret. 
+		[char] is [a] [man] with a dark secret. 
 		[if trigger is night]
 			On some nights, [they] transform into a werewolf.
 		[elif trigger is moon]
@@ -138,7 +138,7 @@
 		[can-transform?As a wolf,] [they've] got large pointy ears and walks on four pawed legs.
 	</Node>
 	<Node path="persona/werewolf/form" order="0" rule="is-anthro and can-transform">
-		[can-transform?When transformed,] [char's] appearance is that of a tall, muscular, anthropomorphic wolf[man], standing on two legs, with the head of a wolf [eye-color?and large {eye-color:value.lower} eyes].
+		[can-transform?When transformed,] [char's] appearance is that of a tall, muscular, anthropomorphic wolf-[man], standing on two legs, with the head of a wolf [eye-color?and large {eye-color:value.lower} eyes].
 	</Node>
 	<Node path="persona/werewolf/fur" rule="can-transform">
 		[Their] body is covered in thick [fur-color?, dull, {fur-color.lower}] fur.
@@ -153,7 +153,7 @@
 		[They've] got large pointy ears, and walks on four pawed legs.
 	</Node>
 	<Node path="persona/appearance/werewolf" order="0" rule="is-anthro and not can-transform">
-		[char's] is a tall, muscular, anthropomorphic wolf[man], standing on two legs, with the head of a wolf.
+		[char's] is a tall, muscular, anthropomorphic wolf-[man], standing on two legs, with the head of a wolf.
 	</Node>
 	<Node path="persona/appearance/werewolf" rule="not can-transform">
 		[Their] body is covered in thick [fur-color?, dull, {fur-color.lower}] fur.
@@ -181,7 +181,7 @@
 	<Node path="persona/humanity/info" rule="humanity is full">
 		[can-transform?Even when transformed,|Despite [their] bestial nature,] [char] retains all of [their] senses and wits.
 	</Node>
-	<Node path="persona/humanity/nsfw" rule="allow-nsfw and nsfw">[Their] senses and instincts become heightened, and [they] [are] consumed by an unwavering need to breed.</Node>
+	<Node path="persona/humanity/nsfw" rule="nsfw">[Their] senses and instincts become heightened, and [they] [are] consumed by an unwavering need to breed.</Node>
 	
 	<!-- Transformation -->
 	<Node path="scenario/hint/werewolf" rule="form is human">When [user] meets [char], [they] appear[s] human.</Node>
