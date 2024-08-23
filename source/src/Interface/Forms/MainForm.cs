@@ -1131,6 +1131,10 @@ namespace Ginger
 				pasteMenuItem.Text = "Paste";
 				pasteMenuItem.Enabled = false;
 			}
+
+			// Link menu
+			enableLinkMenuItem.Checked = AppSettings.FaradayLink.Enabled;
+			importFromFaradayMenuItem.Enabled = AppSettings.FaradayLink.Enabled;
 		}
 
 		private void PopulateMRUMenu(ToolStripItemCollection items)
@@ -1961,6 +1965,27 @@ namespace Ginger
 
 				Current.IsFileDirty = true;
 			}
+		}
+
+		private void enableLinkMenuItem_Click(object sender, EventArgs e)
+		{
+			if (AppSettings.FaradayLink.Enabled == false)
+			{
+				if (FaradayBridge.EstablishLink() == FaradayBridge.Error.NoError)
+				{
+					AppSettings.FaradayLink.Enabled = true; // Enable link
+				}
+				else
+				{
+					MessageBox.Show("Failed to establish link with Backyard.ai.", "Link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
+			}
+			else
+			{
+				AppSettings.FaradayLink.Enabled = false; // Disable
+			}
+
 		}
 	}
 

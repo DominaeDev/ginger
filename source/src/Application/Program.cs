@@ -29,6 +29,13 @@ namespace Ginger
 			if (args.Length > 0 && File.Exists(args[0]))
 				MainForm.instance.SetFirstLoad(args[0]);
 
+			// Initialize link
+			if (AppSettings.FaradayLink.Enabled)
+			{
+				if (FaradayBridge.EstablishLink() != FaradayBridge.Error.NoError)
+					AppSettings.FaradayLink.Enabled = false;
+			}
+
 			Application.Run(mainForm);
 
 			// Clean up

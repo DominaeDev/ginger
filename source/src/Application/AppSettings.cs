@@ -149,6 +149,12 @@ namespace Ginger
 			public static bool PruneExampleChat = true;
 		}
 
+		public static class FaradayLink
+		{
+			public static bool Enabled = false;
+			public static string Location = null;
+		}
+
 		public static bool LoadFromIni(string filePath)
 		{
 			// Load
@@ -269,6 +275,13 @@ namespace Ginger
 				ReadBool(ref Faraday.PruneExampleChat, faradaySection, "PruneExampleChat");
 			}
 
+			var linkSection = iniData.Sections["BackyardAI.Link"];
+			if (linkSection != null)
+			{
+				ReadBool(ref FaradayLink.Enabled, linkSection, "Enabled");
+				ReadString(ref FaradayLink.Location, linkSection, "Location");
+			}
+
 			var mruSection = iniData.Sections["MRU"];
 			if (mruSection != null)
 			{
@@ -372,6 +385,11 @@ namespace Ginger
 					Write(outputFile, "PromptTemplate", Faraday.PromptTemplate);
 					Write(outputFile, "PruneExampleChat", Faraday.PruneExampleChat);
 					
+					// Faraday link
+					WriteSection(outputFile, "BackyardAI.Link");
+					Write(outputFile, "Enabled", FaradayLink.Enabled);
+					Write(outputFile, "Location", FaradayLink.Location);
+
 					// MRU list
 					WriteSection(outputFile, "MRU");
 					int mruIndex = 0;
