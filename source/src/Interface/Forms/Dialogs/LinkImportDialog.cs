@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 namespace Ginger
@@ -7,7 +9,8 @@ namespace Ginger
 	public partial class LinkImportDialog : Form
 	{
 		public FaradayBridge.CharacterInstance[] Characters;
-		public FaradayBridge.CharacterInstance CharacterInstance;
+		public FaradayBridge.FolderInstance[] Folders;
+		public FaradayBridge.CharacterInstance SelectedCharacter;
 
 		public LinkImportDialog()
 		{
@@ -18,45 +21,87 @@ namespace Ginger
 
 		private void OnLoad(object sender, EventArgs e)
 		{
-			assetsDataView.SelectionChanged += AssetsDataView_SelectionChanged;
-
-			PopulateTable();
-			assetsDataView.ClearSelection();
+			PopulateTree();
+			treeView.SelectedNode = null;
 
 			btnOk.Enabled = false;
 		}
 
-		private void AssetsDataView_SelectionChanged(object sender, EventArgs e)
+		private void PopulateTree()
 		{
-			btnOk.Enabled = assetsDataView.SelectedRows.Count > 0;
-		}
+			treeView.Suspend();
+			treeView.Nodes.Clear();
 
-		private void PopulateTable()
-		{
-			assetsDataView.Rows.Clear();
-			if (Characters != null)
+			if (Folders == null || Folders.Length == 0 || Characters == null || Characters.Length == 0)
+				return; // Nothing to show
+
+			// Create folders
+			var nodesById = new Dictionary<string, TreeNode>();
+			string rootId = Folders.FirstOrDefault(f => f.isRoot).instanceId;
+			nodesById.Add(rootId, null);
+			foreach (var folder in Folders.Where(f => f.parentId != null))
+				CreateFolderNode(folder, nodesById, Characters.Count(c => c.folderId == folder.instanceId));
+
+			// Create characters
+			foreach (var character in Characters
+				.OrderBy(c => c.displayName)
+				.ThenByDescending(c => c.creationDate))
 			{
-				foreach (var character in Characters.OrderByDescending(c => c.updateDate))
-					AddRowForAsset(character);
+				int similarCount = Characters.Count(c => c.displayName == character.displayName && c.folderId == character.folderId);
+				CreateCharacterNode(character, nodesById, similarCount > 1);
 			}
+			treeView.Resume();
 		}
 
-		private void AddRowForAsset(FaradayBridge.CharacterInstance character)
+		private TreeNode CreateFolderNode(FaradayBridge.FolderInstance folder, Dictionary<string, TreeNode> nodes, int count)
 		{
-			assetsDataView.Rows.Add(character.displayName, character.name);
+			TreeNode parentNode;
+			nodes.TryGetValue(folder.parentId, out parentNode);
+
+			var node = new TreeNode(string.Format("{0} ({1})", folder.name, count), 0, 0);
+			if (parentNode != null)
+				parentNode.Nodes.Add(node);
+			else
+				treeView.Nodes.Add(node);
+			nodes.Add(folder.instanceId, node);
+			return node;
+		}
+
+		private TreeNode CreateCharacterNode(FaradayBridge.CharacterInstance character, Dictionary<string, TreeNode> nodes, bool showTimeStamp)
+		{
+			TreeNode parentNode;
+			nodes.TryGetValue(character.folderId, out parentNode);
+
+			string label = character.displayName;
+			if (string.Compare(character.name, label, StringComparison.OrdinalIgnoreCase) != 0)
+				label = string.Concat(label, " (", character.name, ")");
+
+			var sbTooltip = new StringBuilder();
+			sbTooltip.Append(character.displayName);
+			if (string.Compare(character.name, label, StringComparison.OrdinalIgnoreCase) != 0)
+			{
+				sbTooltip.Append(" (aka. ");
+				sbTooltip.Append(character.name);
+				sbTooltip.Append(")");
+			}
+
+			sbTooltip.NewParagraph();
+			sbTooltip.AppendLine($"Created: {character.creationDate.ToShortDateString()}");
+			sbTooltip.AppendLine($"Last modified: {character.updateDate.ToShortDateString()}");
+
+			var node = new TreeNode(label, 1, 1);
+			node.Tag = character;
+			node.ToolTipText = sbTooltip.ToString();
+			if (parentNode != null)
+				parentNode.Nodes.Add(node);
+			else
+				treeView.Nodes.Add(node);
+			return node;
 		}
 
 		private void BtnOk_Click(object sender, EventArgs e)
 		{
-			int index = -1;
-			if (assetsDataView.SelectedRows.Count == 1)
-				index = assetsDataView.SelectedRows[0].Index;
-			if (index >= 0 && index < Characters.Length)
-				CharacterInstance = Characters[index];
-			else
-				CharacterInstance = default(FaradayBridge.CharacterInstance);
-
-				DialogResult = DialogResult.OK;
+			DialogResult = DialogResult.OK;
 			Close();
 		}
 
@@ -66,5 +111,31 @@ namespace Ginger
 			Close();
 		}
 
+		private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
+		{
+			if (e.Node == null || e.Node.Tag == null)
+			{
+				SelectedCharacter = default(FaradayBridge.CharacterInstance);
+				btnOk.Enabled = false;
+			}
+			else
+			{
+				SelectedCharacter = (FaradayBridge.CharacterInstance)e.Node.Tag;
+				btnOk.Enabled = true;
+			}
+		}
+
+		private void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+		{
+			if (e.Node == null || e.Node.Tag == null || e.Node != treeView.SelectedNode)
+			{
+				return; // Double-clicked folder: Do nothing
+			}
+			else
+			{
+				SelectedCharacter = (FaradayBridge.CharacterInstance)e.Node.Tag;
+				BtnOk_Click(this, EventArgs.Empty);
+			}
+		}
 	}
 }

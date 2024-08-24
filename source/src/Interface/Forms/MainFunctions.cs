@@ -1482,6 +1482,7 @@ namespace Ginger
 			}
 
 			dlg.Characters = characters;
+			dlg.Folders = folders;
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return false;
 
@@ -1493,7 +1494,7 @@ namespace Ginger
 			// Import...
 			FaradayCardV4 faradayData;
 			Image image;
-			var importError = FaradayBridge.ImportCharacter(dlg.CharacterInstance, out faradayData, out image);
+			var importError = FaradayBridge.ImportCharacter(dlg.SelectedCharacter, out faradayData, out image);
 			if (importError == FaradayBridge.Error.NoDataFound)
 			{
 				MessageBox.Show("No data found.", Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);

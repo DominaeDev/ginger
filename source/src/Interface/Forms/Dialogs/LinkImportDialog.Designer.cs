@@ -29,59 +29,66 @@ namespace Ginger
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.Panel listPanel;
-			System.Windows.Forms.FlowLayoutPanel buttonLayout;
+			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Character", 1, 1);
+			System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
+            treeNode3});
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkImportDialog));
-			this.assetsDataView = new System.Windows.Forms.DataGridView();
+			System.Windows.Forms.FlowLayoutPanel buttonLayout;
+			this.treeView = new System.Windows.Forms.TreeView();
+			this.imageList = new System.Windows.Forms.ImageList(this.components);
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.btnOk = new System.Windows.Forms.Button();
 			this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
-			this.columnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.columnFileExt = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			listPanel = new System.Windows.Forms.Panel();
 			buttonLayout = new System.Windows.Forms.FlowLayoutPanel();
 			listPanel.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.assetsDataView)).BeginInit();
 			buttonLayout.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// listPanel
 			// 
-			listPanel.Controls.Add(this.assetsDataView);
+			listPanel.Controls.Add(this.treeView);
 			listPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			listPanel.Location = new System.Drawing.Point(0, 0);
 			listPanel.Name = "listPanel";
 			listPanel.Padding = new System.Windows.Forms.Padding(4, 4, 0, 4);
-			listPanel.Size = new System.Drawing.Size(515, 316);
+			listPanel.Size = new System.Drawing.Size(484, 319);
 			listPanel.TabIndex = 0;
 			// 
-			// assetsDataView
+			// treeView
 			// 
-			this.assetsDataView.AllowUserToAddRows = false;
-			this.assetsDataView.AllowUserToDeleteRows = false;
-			this.assetsDataView.AllowUserToResizeColumns = false;
-			this.assetsDataView.AllowUserToResizeRows = false;
-			this.assetsDataView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-			this.assetsDataView.CausesValidation = false;
-			this.assetsDataView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-			this.assetsDataView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.columnName,
-            this.columnFileExt});
-			this.assetsDataView.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.assetsDataView.Location = new System.Drawing.Point(4, 4);
-			this.assetsDataView.Name = "assetsDataView";
-			this.assetsDataView.RowHeadersVisible = false;
-			this.assetsDataView.RowHeadersWidth = 32;
-			this.assetsDataView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-			this.assetsDataView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.assetsDataView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.assetsDataView.ShowCellErrors = false;
-			this.assetsDataView.ShowCellToolTips = false;
-			this.assetsDataView.ShowEditingIcon = false;
-			this.assetsDataView.ShowRowErrors = false;
-			this.assetsDataView.Size = new System.Drawing.Size(511, 308);
-			this.assetsDataView.TabIndex = 0;
+			this.treeView.CausesValidation = false;
+			this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.treeView.HideSelection = false;
+			this.treeView.ImageIndex = 0;
+			this.treeView.ImageList = this.imageList;
+			this.treeView.Location = new System.Drawing.Point(4, 4);
+			this.treeView.Name = "treeView";
+			treeNode3.ImageIndex = 1;
+			treeNode3.Name = "tmpNode1";
+			treeNode3.SelectedImageIndex = 1;
+			treeNode3.Text = "Character";
+			treeNode4.Name = "tmpNode1";
+			treeNode4.SelectedImageIndex = 0;
+			treeNode4.Text = "Folder";
+			this.treeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
+            treeNode4});
+			this.treeView.SelectedImageIndex = 0;
+			this.treeView.ShowNodeToolTips = true;
+			this.treeView.Size = new System.Drawing.Size(480, 311);
+			this.treeView.TabIndex = 0;
+			this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
+			this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseDoubleClick);
+			// 
+			// imageList
+			// 
+			this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
+			this.imageList.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageList.Images.SetKeyName(0, "folder.png");
+			this.imageList.Images.SetKeyName(1, "character_small.png");
 			// 
 			// buttonLayout
 			// 
@@ -90,17 +97,17 @@ namespace Ginger
 			buttonLayout.Controls.Add(this.btnOk);
 			buttonLayout.Dock = System.Windows.Forms.DockStyle.Bottom;
 			buttonLayout.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-			buttonLayout.Location = new System.Drawing.Point(0, 274);
+			buttonLayout.Location = new System.Drawing.Point(0, 319);
 			buttonLayout.Margin = new System.Windows.Forms.Padding(0);
 			buttonLayout.Name = "buttonLayout";
 			buttonLayout.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-			buttonLayout.Size = new System.Drawing.Size(515, 42);
+			buttonLayout.Size = new System.Drawing.Size(484, 42);
 			buttonLayout.TabIndex = 7;
 			// 
 			// btnCancel
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnCancel.Location = new System.Drawing.Point(395, 9);
+			this.btnCancel.Location = new System.Drawing.Point(364, 9);
 			this.btnCancel.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(117, 30);
@@ -112,12 +119,12 @@ namespace Ginger
 			// btnOk
 			// 
 			this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnOk.Location = new System.Drawing.Point(272, 9);
+			this.btnOk.Location = new System.Drawing.Point(241, 9);
 			this.btnOk.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
 			this.btnOk.Name = "btnOk";
 			this.btnOk.Size = new System.Drawing.Size(117, 30);
 			this.btnOk.TabIndex = 1;
-			this.btnOk.Text = "Import";
+			this.btnOk.Text = "Open";
 			this.btnOk.UseVisualStyleBackColor = true;
 			this.btnOk.Click += new System.EventHandler(this.BtnOk_Click);
 			// 
@@ -125,31 +132,14 @@ namespace Ginger
 			// 
 			this.importFileDialog.Multiselect = true;
 			// 
-			// columnName
-			// 
-			this.columnName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-			this.columnName.HeaderText = "Display Name";
-			this.columnName.MinimumWidth = 64;
-			this.columnName.Name = "columnName";
-			this.columnName.ReadOnly = true;
-			this.columnName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-			// 
-			// columnFileExt
-			// 
-			this.columnFileExt.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-			this.columnFileExt.HeaderText = "Real Name";
-			this.columnFileExt.MinimumWidth = 60;
-			this.columnFileExt.Name = "columnFileExt";
-			this.columnFileExt.ReadOnly = true;
-			this.columnFileExt.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-			// 
 			// LinkImportDialog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(515, 316);
-			this.Controls.Add(buttonLayout);
+			this.ClientSize = new System.Drawing.Size(484, 361);
 			this.Controls.Add(listPanel);
+			this.Controls.Add(buttonLayout);
+			this.DoubleBuffered = true;
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -158,22 +148,19 @@ namespace Ginger
 			this.Name = "LinkImportDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Import character";
+			this.Text = "Import character from Backyard.ai";
 			listPanel.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.assetsDataView)).EndInit();
 			buttonLayout.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
-
-		private System.Windows.Forms.DataGridView assetsDataView;
 		private System.Windows.Forms.SaveFileDialog exportFileDialog;
 		private System.Windows.Forms.OpenFileDialog importFileDialog;
 		private System.Windows.Forms.Button btnCancel;
 		private System.Windows.Forms.Button btnOk;
-		private System.Windows.Forms.DataGridViewTextBoxColumn columnName;
-		private System.Windows.Forms.DataGridViewTextBoxColumn columnFileExt;
+		private System.Windows.Forms.TreeView treeView;
+		private System.Windows.Forms.ImageList imageList;
 	}
 }

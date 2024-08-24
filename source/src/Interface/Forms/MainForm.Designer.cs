@@ -219,7 +219,7 @@ namespace Ginger {
             this.exportToFaradayMenuItem});
 			linkMenuItem.Name = "linkMenuItem";
 			linkMenuItem.Size = new System.Drawing.Size(259, 22);
-			linkMenuItem.Text = "Bridge";
+			linkMenuItem.Text = "&Link";
 			// 
 			// enableLinkMenuItem
 			// 

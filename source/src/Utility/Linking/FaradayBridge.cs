@@ -3,6 +3,7 @@ using System.Data.SQLite;
 using System.Collections.Generic;
 using System.IO;
 using System.Drawing;
+using System.Linq;
 
 namespace Ginger
 {
@@ -312,7 +313,7 @@ namespace Ginger
 
 					connection.Close();
 					characters = lsCharacters.ToArray();
-					folders = lsFolders.ToArray();
+					folders = lsFolders.OrderBy(f => f.name).ToArray();
 					return Error.NoError;
 				}
 			}
