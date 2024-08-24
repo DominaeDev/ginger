@@ -56,6 +56,31 @@ namespace Ginger
 			return null;
 		}
 
+		public static bool LoadImageFile(string filename, out Image image)
+		{
+			if (string.IsNullOrEmpty(filename) || File.Exists(filename) == false)
+			{
+				image = default(Image);
+				return false;
+			}
+
+			// Load image first
+			try
+			{
+				byte[] bytes = File.ReadAllBytes(filename);
+				using (var stream = new MemoryStream(bytes))
+				{
+					image = Image.FromStream(stream);
+					return true;
+				}
+			}
+			catch
+			{
+				image = default(Image);
+				return false;
+			}
+		}
+
 		public static int StringToInt(string s, int default_value = 0)
 		{
 			int value;

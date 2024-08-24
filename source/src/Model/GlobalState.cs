@@ -219,32 +219,6 @@ namespace Ginger
 			IsFileDirty = false;
 		}
 
-		public static bool LoadPortraitImage(string filename, out Image image)
-		{
-			if (string.IsNullOrEmpty(filename))
-			{
-				image = default(Image);
-				return false;
-			}
-
-			// Load image first
-			try
-			{
-				byte[] bytes = File.ReadAllBytes(filename);
-				using (var stream = new MemoryStream(bytes))
-				{
-					image = Image.FromStream(stream);
-				}
-			}
-			catch
-			{
-				image = default(Image);
-				return false;
-			}
-
-			return true;
-		}
-
 		public static void ReadGingerCard(GingerCardV1 card, Image portrait)
 		{
 			if (card == null)

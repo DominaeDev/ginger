@@ -2,6 +2,7 @@
 using System.Data.SQLite;
 using System.Collections.Generic;
 using System.IO;
+using System.Drawing;
 
 namespace Ginger
 {
@@ -11,18 +12,24 @@ namespace Ginger
 		{
 			public string instanceID;	// CharacterConfig
 			public string configID;		// CharacterConfigVersion
-			public string cardName;
-			public string characterName;
+			public string displayName;
+			public string name;
+			public DateTime creationDate;
+			public DateTime updateDate;
 		}
 
 		public enum Error
 		{
 			NoError,
+			UnrecognizedStructure,
+			NotConnected,
 			FileNotFound,
 			CommandFailed,
-			UnrecognizedStructure,
+			NoDataFound,
 			Unknown,
 		}
+
+		public static bool ConnectionEstablished = false;
 
 		private static SQLiteConnection ConnectToDB()
 		{
@@ -36,11 +43,17 @@ namespace Ginger
 				throw new FileNotFoundException();
 
 			AppSettings.FaradayLink.Location = dbFilename;
-			return new SQLiteConnection($"Data Source={dbFilename}; Version=3;Foreign Keys=True;");
+			return new SQLiteConnection($"Data Source={dbFilename}; Version=3;Foreign Keys=True;Mode=ReadWrite;Pooling=False;");
 		}
 
 		public static Error GetCharacters(out CharacterInstance[] characters)
 		{
+			if (ConnectionEstablished == false)
+			{
+				characters = null;
+				return Error.NotConnected;
+			}
+
 			try
 			{
 				using (var connection = ConnectToDB())
@@ -53,10 +66,16 @@ namespace Ginger
 					var cmdReadCharacterIds = connection.CreateCommand();
 					cmdReadCharacterIds.CommandText =
 						@"
-						SELECT CharacterConfig.id, CharacterConfigVersion.id, CharacterConfigVersion.displayName, CharacterConfigVersion.name 
-						FROM CharacterConfig
-						INNER JOIN CharacterConfigVersion ON CharacterConfigVersion.characterConfigId = CharacterConfig.id
-						WHERE isUserControlled=0;";
+						SELECT 
+							A.id, 
+							B.id, 
+							B.displayName, 
+							B.name, 
+							B.createdAt, 
+							B.updatedAt 
+						FROM CharacterConfig as A
+						INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
+						WHERE isUserControlled=0";
 
 					var characterInstanceIds = new HashSet<string>();
 					using (var reader = cmdReadCharacterIds.ExecuteReader())
@@ -67,37 +86,48 @@ namespace Ginger
 							string configId = reader.GetString(1);
 							string displayName = reader.GetString(2);
 							string name = reader.GetString(3);
-
+							DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(4));
+							DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(5));
 							if (string.IsNullOrEmpty(instanceId) || string.IsNullOrEmpty(configId))
 								continue;
 
 							result.Add(new CharacterInstance() {
 									instanceID = instanceId,
 									configID = configId,
-									cardName = displayName,
-									characterName = name,
+									displayName = displayName,
+									name = name,
+									creationDate = createdAt,
+									updateDate = updatedAt,
 								});
 						}
 					}
 
+					connection.Close();
 					characters = result.ToArray();
 					return Error.NoError;
 				}
 			}
 			catch (FileNotFoundException e)
 			{
+				Disconnect();
 				characters = null;
 				return Error.FileNotFound;
 			}
 			catch (SQLiteException e)
 			{
+				Disconnect();
 				characters = null;
 				return Error.CommandFailed;
 			}
-			catch
+			catch (Exception e)
 			{
+				Disconnect();
 				characters = null;
 				return Error.Unknown;
+			}
+			finally
+			{
+				SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
 			}
 		}
 
@@ -238,22 +268,169 @@ namespace Ginger
 						}
 					}
 
+					connection.Close();
+					ConnectionEstablished = true;
 					return Error.NoError;
 				}
 			}
 			catch (FileNotFoundException e)
 			{
+				Disconnect();
 				return Error.FileNotFound;
 			}
 			catch (SQLiteException e)
 			{
+				Disconnect();
 				return Error.CommandFailed;
 			}
 			catch (Exception e)
 			{
+				Disconnect();
 				return Error.Unknown;
+			}
+			finally
+			{
+				SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
 			}
 		}
 
+		public static void Disconnect()
+		{
+			ConnectionEstablished = false;
+			AppSettings.FaradayLink.Enabled = false;
+			SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
+		}
+
+		public static Error ImportCharacter(CharacterInstance character, out FaradayCardV4 card, out Image portraitImage)
+		{
+			if (ConnectionEstablished == false)
+			{
+				card = null;
+				portraitImage = null;
+				return Error.NotConnected;
+			}
+			try
+			{
+				using (var connection = ConnectToDB())
+				{
+					connection.Open();
+
+					var result = new List<CharacterInstance>();
+
+					// Fetch character instance ids
+					var cmdCharacterData = connection.CreateCommand();
+					cmdCharacterData.CommandText = @"
+						SELECT 
+							A.id,
+							A.createdAt, 
+							A.updatedAt, 
+							A.displayName, 
+							A.name, 
+							A.persona, 
+							C.context,
+							C.customDialogue,
+							C.modelInstructions,
+							C.grammar
+						FROM CharacterConfigVersion as A
+						INNER JOIN _CharacterConfigToGroupConfig AS B 
+							ON B.A = $1
+						INNER JOIN Chat AS C 
+							ON C.groupConfigId = B.B
+						WHERE A.id = $2;";
+					cmdCharacterData.Parameters.AddWithValue("$1", character.instanceID);
+					cmdCharacterData.Parameters.AddWithValue("$2", character.configID);
+
+					card = null;
+
+					var characterInstanceIds = new HashSet<string>();
+					using (var reader = cmdCharacterData.ExecuteReader())
+					{
+						if (!reader.Read())
+						{
+							portraitImage = null;
+							return Error.NoDataFound;
+						}
+
+						string instanceId = reader.GetString(0);
+						DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(1));
+						DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(2));
+						string displayName = reader.GetString(3);
+						string name = reader.GetString(4);
+						string persona = reader.GetString(5);
+						string scenario = reader.GetString(6);
+						string example = reader.GetString(7);
+						string system = reader.GetString(8);
+						string grammar = reader.GetString(9);
+
+						card = new FaradayCardV4();
+						card.data.displayName = displayName;
+						card.data.name = name;
+						card.data.system = system;
+						card.data.persona = persona;
+						card.data.scenario = scenario;
+						card.data.example = example;
+						card.data.grammar = grammar;
+						card.data.creationDate = createdAt.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+						card.data.updateDate = updatedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+					}
+
+					// Find image
+					var cmdImageLookup = connection.CreateCommand();
+					cmdImageLookup.CommandText = @"
+						SELECT 
+							imageUrl
+						FROM AppImage
+						WHERE id IN (
+							SELECT A
+							FROM _AppImageToCharacterConfigVersion
+							WHERE B = $1
+						)
+						ORDER BY 'order' ASC";
+					cmdImageLookup.Parameters.AddWithValue("$1", character.configID);
+					var imageUrls = new List<string>();
+					using (var reader = cmdImageLookup.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							imageUrls.Add(reader.GetString(0));
+						}
+					}
+
+					if (imageUrls.Count > 0)
+						Utility.LoadImageFile(imageUrls[0], out portraitImage);
+					else
+						portraitImage = null;
+
+					connection.Close();
+					return card == null ? Error.NoDataFound : Error.NoError;
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Disconnect();
+				card = null;
+				portraitImage = null;
+				return Error.FileNotFound;
+			}
+			catch (SQLiteException e)
+			{
+				Disconnect();
+				card = null;
+				portraitImage = null;
+				return Error.CommandFailed;
+			}
+			catch (Exception e)
+			{
+				Disconnect();
+				card = null;
+				portraitImage = null;
+				return Error.Unknown;
+			}
+			finally
+			{
+				SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
+			}
+
+		}
 	}
 }

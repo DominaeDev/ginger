@@ -1468,5 +1468,54 @@ namespace Ginger
 			}
 			return true;
 		}
+
+		private bool ImportCharacterFromFaraday()
+		{
+			LinkImportDialog dlg = new LinkImportDialog();
+
+			FaradayBridge.CharacterInstance[] characters;
+			if (FaradayBridge.GetCharacters(out characters) != FaradayBridge.Error.NoError)
+			{
+				MessageBox.Show("Failed to establish link with Backyard.ai.", "Link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			dlg.Characters = characters;
+			if (dlg.ShowDialog() != DialogResult.OK)
+				return false;
+
+			if (ConfirmSave(Resources.cap_import_character) == false)
+				return false;
+
+			SetStatusBarMessage("Importing character data...");
+
+			// Import...
+			FaradayCardV4 faradayData;
+			Image image;
+			var importError = FaradayBridge.ImportCharacter(dlg.CharacterInstance, out faradayData, out image);
+			if (importError == FaradayBridge.Error.NoDataFound)
+			{
+				MessageBox.Show("No data found.", Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				ClearStatusBarMessage();
+				return false;
+			}
+			else if (importError != FaradayBridge.Error.NoError || faradayData == null)
+			{
+				MessageBox.Show(Resources.error_read_data, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				ClearStatusBarMessage();
+				return false;
+			}
+
+			// Success
+			Current.ReadFaradayCard(faradayData, image);
+
+			ClearStatusBarMessage();
+
+			Current.Filename = null;
+			Current.IsDirty = false;
+			Current.IsFileDirty = false;
+			Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
+			return true;
+		}
 	}
 }

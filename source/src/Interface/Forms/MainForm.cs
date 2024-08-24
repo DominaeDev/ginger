@@ -386,7 +386,7 @@ namespace Ginger
 			}
 
 			Image image;
-			if (Current.LoadPortraitImage(filename, out image) == false)
+			if (Utility.LoadImageFile(filename, out image) == false)
 			{
 				MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				return;
@@ -1133,8 +1133,9 @@ namespace Ginger
 			}
 
 			// Link menu
-			enableLinkMenuItem.Checked = AppSettings.FaradayLink.Enabled;
-			importFromFaradayMenuItem.Enabled = AppSettings.FaradayLink.Enabled;
+			enableLinkMenuItem.Checked = FaradayBridge.ConnectionEstablished;
+			importFromFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
+			exportToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
 		}
 
 		private void PopulateMRUMenu(ToolStripItemCollection items)
@@ -1969,23 +1970,30 @@ namespace Ginger
 
 		private void enableLinkMenuItem_Click(object sender, EventArgs e)
 		{
-			if (AppSettings.FaradayLink.Enabled == false)
+			if (FaradayBridge.ConnectionEstablished == false)
 			{
 				if (FaradayBridge.EstablishLink() == FaradayBridge.Error.NoError)
 				{
-					AppSettings.FaradayLink.Enabled = true; // Enable link
+					AppSettings.FaradayLink.Enabled = true;
+					return;
 				}
 				else
 				{
-					MessageBox.Show("Failed to establish link with Backyard.ai.", "Link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show("Unable to read from Backyard.ai.", "Link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					AppSettings.FaradayLink.Enabled = false;
 					return;
 				}
 			}
 			else
 			{
-				AppSettings.FaradayLink.Enabled = false; // Disable
+				AppSettings.FaradayLink.Enabled = false;
+				FaradayBridge.Disconnect();
 			}
+		}
 
+		private void importFromFaradayMenuItem_Click(object sender, EventArgs e)
+		{
+			ImportCharacterFromFaraday();
 		}
 	}
 
