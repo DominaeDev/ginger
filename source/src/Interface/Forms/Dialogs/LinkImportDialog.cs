@@ -80,12 +80,17 @@ namespace Ginger
 			sbTooltip.Append(character.displayName);
 			if (string.Compare(character.name, label, StringComparison.OrdinalIgnoreCase) != 0)
 			{
-				sbTooltip.Append(" (aka. ");
+				sbTooltip.Append(" (aka ");
 				sbTooltip.Append(character.name);
 				sbTooltip.Append(")");
 			}
-
 			sbTooltip.NewParagraph();
+			if (character.creator != null)
+			{
+				sbTooltip.Append("By: ");
+				sbTooltip.Append(character.creator);
+				sbTooltip.AppendLine();
+			}
 			sbTooltip.AppendLine($"Created: {character.creationDate.ToShortDateString()}");
 			sbTooltip.AppendLine($"Last modified: {character.updateDate.ToShortDateString()}");
 

@@ -31,9 +31,9 @@ namespace Ginger
 		{
 			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.Panel listPanel;
-			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Character", 1, 1);
-			System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
-            treeNode3});
+			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Character", 1, 1);
+			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
+            treeNode1});
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkImportDialog));
 			System.Windows.Forms.FlowLayoutPanel buttonLayout;
 			this.treeView = new System.Windows.Forms.TreeView();
@@ -67,15 +67,15 @@ namespace Ginger
 			this.treeView.ImageList = this.imageList;
 			this.treeView.Location = new System.Drawing.Point(4, 4);
 			this.treeView.Name = "treeView";
-			treeNode3.ImageIndex = 1;
-			treeNode3.Name = "tmpNode1";
-			treeNode3.SelectedImageIndex = 1;
-			treeNode3.Text = "Character";
-			treeNode4.Name = "tmpNode1";
-			treeNode4.SelectedImageIndex = 0;
-			treeNode4.Text = "Folder";
+			treeNode1.ImageIndex = 1;
+			treeNode1.Name = "tmpNode1";
+			treeNode1.SelectedImageIndex = 1;
+			treeNode1.Text = "Character";
+			treeNode2.Name = "tmpNode1";
+			treeNode2.SelectedImageIndex = 0;
+			treeNode2.Text = "Folder";
 			this.treeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode4});
+            treeNode2});
 			this.treeView.SelectedImageIndex = 0;
 			this.treeView.ShowNodeToolTips = true;
 			this.treeView.Size = new System.Drawing.Size(480, 311);
@@ -141,14 +141,13 @@ namespace Ginger
 			this.Controls.Add(buttonLayout);
 			this.DoubleBuffered = true;
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "LinkImportDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Import character from Backyard.ai";
+			this.Text = "Open character from Backyard AI";
 			listPanel.ResumeLayout(false);
 			buttonLayout.ResumeLayout(false);
 			this.ResumeLayout(false);

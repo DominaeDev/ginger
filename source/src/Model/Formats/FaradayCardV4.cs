@@ -130,6 +130,24 @@ namespace Ginger
 			public FaradayCardV1.LoreBookEntry[] loreItems = new FaradayCardV1.LoreBookEntry[0];
 		}
 
+		// Not JSON
+		public string hubCharacterId;
+		public string hubAuthorUsername;
+
+		public string comment
+		{
+			get 
+			{ 
+				var sbComment = new StringBuilder();
+				if (string.IsNullOrEmpty(hubAuthorUsername) == false)
+					sbComment.AppendLine(string.Concat("Original character by @", hubAuthorUsername));
+				if (string.IsNullOrEmpty(hubCharacterId) == false)
+					sbComment.AppendLine(string.Concat("https://backyard.ai/hub/character/", hubCharacterId));
+				sbComment.ConvertLinebreaks(Linebreak.LF);
+				return sbComment.ToString();
+			}
+		}
+
 		[JsonProperty("version", Required = Required.Always)]
 		public int version = 4;
 

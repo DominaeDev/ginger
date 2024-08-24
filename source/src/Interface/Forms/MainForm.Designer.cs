@@ -37,6 +37,7 @@ namespace Ginger {
 			this.enableLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem10 = new System.Windows.Forms.ToolStripSeparator();
 			this.importFromFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveNewToFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitContainer = new System.Windows.Forms.SplitContainer();
 			this.sidePanel = new Ginger.SidePanel();
 			this.tabControl = new System.Windows.Forms.CustomTabControl();
@@ -144,7 +145,7 @@ namespace Ginger {
 			this.statusBar = new System.Windows.Forms.StatusStrip();
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusBarActor = new System.Windows.Forms.ToolStripStatusLabel();
-			this.exportToFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveToFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -216,7 +217,8 @@ namespace Ginger {
             this.enableLinkMenuItem,
             this.toolStripMenuItem10,
             this.importFromFaradayMenuItem,
-            this.exportToFaradayMenuItem});
+            this.saveToFaradayMenuItem,
+            this.saveNewToFaradayMenuItem});
 			linkMenuItem.Name = "linkMenuItem";
 			linkMenuItem.Size = new System.Drawing.Size(259, 22);
 			linkMenuItem.Text = "&Link";
@@ -224,23 +226,29 @@ namespace Ginger {
 			// enableLinkMenuItem
 			// 
 			this.enableLinkMenuItem.Name = "enableLinkMenuItem";
-			this.enableLinkMenuItem.Size = new System.Drawing.Size(196, 22);
-			this.enableLinkMenuItem.Text = "Connect to Backyard.ai";
-			this.enableLinkMenuItem.ToolTipText = "Enables Ginger to read and write characters for a local installation of Backyard." +
-    "ai.\r\n(Backyard.ai must be installed on the system.)";
+			this.enableLinkMenuItem.Size = new System.Drawing.Size(187, 22);
+			this.enableLinkMenuItem.Text = "Link with Backyard AI";
+			this.enableLinkMenuItem.ToolTipText = "Enable Ginger to open and save characters for a local installation of Backyard AI" +
+    ".\r\n(Backyard AI must be installed on the system.)";
 			this.enableLinkMenuItem.Click += new System.EventHandler(this.enableLinkMenuItem_Click);
 			// 
 			// toolStripMenuItem10
 			// 
 			this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-			this.toolStripMenuItem10.Size = new System.Drawing.Size(193, 6);
+			this.toolStripMenuItem10.Size = new System.Drawing.Size(184, 6);
 			// 
 			// importFromFaradayMenuItem
 			// 
 			this.importFromFaradayMenuItem.Name = "importFromFaradayMenuItem";
-			this.importFromFaradayMenuItem.Size = new System.Drawing.Size(196, 22);
-			this.importFromFaradayMenuItem.Text = "Load character...";
+			this.importFromFaradayMenuItem.Size = new System.Drawing.Size(187, 22);
+			this.importFromFaradayMenuItem.Text = "Open...";
 			this.importFromFaradayMenuItem.Click += new System.EventHandler(this.importFromFaradayMenuItem_Click);
+			// 
+			// saveNewToFaradayMenuItem
+			// 
+			this.saveNewToFaradayMenuItem.Name = "saveNewToFaradayMenuItem";
+			this.saveNewToFaradayMenuItem.Size = new System.Drawing.Size(187, 22);
+			this.saveNewToFaradayMenuItem.Text = "Save as new";
 			// 
 			// splitContainer
 			// 
@@ -709,7 +717,7 @@ namespace Ginger {
 			this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
 			this.saveToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
-			this.saveToolStripMenuItem.Text = "&Save...";
+			this.saveToolStripMenuItem.Text = "&Save";
 			this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItem_Click);
 			// 
 			// saveasToolStripMenuItem
@@ -1357,11 +1365,11 @@ namespace Ginger {
 			this.statusBarActor.Spring = true;
 			this.statusBarActor.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// exportToFaradayMenuItem
+			// saveToFaradayMenuItem
 			// 
-			this.exportToFaradayMenuItem.Name = "exportToFaradayMenuItem";
-			this.exportToFaradayMenuItem.Size = new System.Drawing.Size(196, 22);
-			this.exportToFaradayMenuItem.Text = "Save as new character";
+			this.saveToFaradayMenuItem.Name = "saveToFaradayMenuItem";
+			this.saveToFaradayMenuItem.Size = new System.Drawing.Size(187, 22);
+			this.saveToFaradayMenuItem.Text = "Save";
 			// 
 			// MainForm
 			// 
@@ -1517,7 +1525,8 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem enableLinkMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem10;
 		private System.Windows.Forms.ToolStripMenuItem importFromFaradayMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem exportToFaradayMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem saveNewToFaradayMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem saveToFaradayMenuItem;
 	}
 }
 

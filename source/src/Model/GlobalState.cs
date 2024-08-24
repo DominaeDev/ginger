@@ -276,6 +276,8 @@ namespace Ginger
 				name = card.data.displayName,
 				userGender = null,
 				portraitImage = ImageRef.FromImage(portrait),
+				creator = card.hubAuthorUsername,
+				comment = card.comment,
 			};
 
 			DateTime creationDate;

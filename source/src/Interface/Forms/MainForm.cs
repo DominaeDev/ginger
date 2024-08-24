@@ -1135,7 +1135,8 @@ namespace Ginger
 			// Link menu
 			enableLinkMenuItem.Checked = FaradayBridge.ConnectionEstablished;
 			importFromFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
-			exportToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
+			saveToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
+			saveNewToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
 		}
 
 		private void PopulateMRUMenu(ToolStripItemCollection items)

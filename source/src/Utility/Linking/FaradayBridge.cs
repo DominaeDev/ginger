@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 
 namespace Ginger
 {
@@ -17,7 +18,8 @@ namespace Ginger
 			public string name;				// CharacterConfigVersion.name
 			public string folderId;			// CharacterConfigVersion.name
 			public DateTime creationDate;	// CharacterConfig.createdAt
-			public DateTime updateDate;		// CharacterConfig.updatedAt
+			public DateTime updateDate;     // CharacterConfig.updatedAt
+			public string creator;			// GroupConfig.hubAuthorUsername
 		}
 
 		public struct FolderInstance
@@ -53,31 +55,47 @@ namespace Ginger
 				throw new FileNotFoundException();
 
 			AppSettings.FaradayLink.Location = dbFilename;
-			return new SQLiteConnection($"Data Source={dbFilename}; Version=3;Foreign Keys=True;Mode=ReadWrite;Pooling=False;");
+			return new SQLiteConnection($"Data Source={dbFilename}; Version=3; Foreign Keys=True; Mode=ReadWrite; Pooling=False;");
 		}
 
+		#region Establish Link
 		private static string[][] s_TableInfo = new string[][] {
-			new string[] {"_AppCharacterLorebookItemToCharacterConfigVersion", 
+			new string[] {
+				"_AppCharacterLorebookItemToCharacterConfigVersion", 
 				"A", "TEXT",
 				"B", "TEXT",
 			},
-			new string[] {"_AppImageToCharacterConfigVersion", 
+			new string[] {
+				"_AppImageToCharacterConfigVersion", 
 				"A", "TEXT",
 				"B", "TEXT", 
 			},
-			new string[] {"_CharacterConfigToGroupConfig", 
+			new string[] {
+				"_CharacterConfigToGroupConfig", 
 				"A", "TEXT",
 				"B", "TEXT",
 			},
-			new string[] {"AppCharacterLorebookItem", 
+			new string[] {
+				"AppCharacterLorebookItem", 
 				"id", "TEXT",
 				"createdAt", "DATETIME",
 				"updatedAt", "DATETIME", 
 				"order", "TEXT",
 				"key", "TEXT",
 				"value", "TEXT",
+			},	
+			new string[] {
+				"AppFolder", 
+				"id", "TEXT",
+				"createdAt", "DATETIME",
+				"updatedAt", "DATETIME", 
+				"name", "TEXT",
+				"url", "TEXT",
+				"parentFolderId", "TEXT",
+				"isRoot", "BOOLEAN",
 			},
-			new string[] {"AppImage", 
+			new string[] {
+				"AppImage", 
 				"id", "TEXT",
 				"createdAt", "DATETIME",
 				"updatedAt", "DATETIME", 
@@ -86,7 +104,8 @@ namespace Ginger
 				"order", "INTEGER",
 				"aspectRatio", "TEXT",
 			},
-			new string[] {"CharacterConfig", 
+			new string[] {
+				"CharacterConfig", 
 				"id", "TEXT",
 				"createdAt", "DATETIME",
 				"updatedAt", "DATETIME", 
@@ -94,7 +113,8 @@ namespace Ginger
 				"isDefaultUserCharacter", "BOOLEAN",
 				"isTemplateChar", "BOOLEAN",
 			},
-			new string[] {"CharacterConfigVersion", 
+			new string[] {
+				"CharacterConfigVersion", 
 				"id", "TEXT",
 				"createdAt", "DATETIME",
 				"updatedAt", "DATETIME", 
@@ -105,7 +125,8 @@ namespace Ginger
 				"ttsSpeed", "REAL",
 				"characterConfigId", "TEXT",
 			},
-			new string[] {"Chat", 
+			new string[] {
+				"Chat", 
 				"id", "TEXT",
 				"createdAt", "DATETIME",
 				"updatedAt", "DATETIME", 
@@ -129,8 +150,10 @@ namespace Ginger
 				"ttsAutoPlay", "BOOLEAN",
 				"ttsInputFilter", "TEXT",
 				"groupConfigId", "TEXT",
+				"greetingDialogue", "TEXT",
 			},
-			new string[] {"GroupConfig", 
+			new string[] { 
+				"GroupConfig", 
 				"id", "TEXT",
 				"createdAt", "DATETIME",
 				"updatedAt", "DATETIME", 
@@ -143,6 +166,24 @@ namespace Ginger
 				"isNSFW", "BOOLEAN",
 				"folderId", "TEXT",
 				"folderSortPosition", "TEXT",
+			},
+			new string[] { 
+				"Message", 
+				"id", "TEXT",
+				"createdAt", "DATETIME",
+				"updatedAt", "DATETIME", 
+				"liked", "BOOLEAN",
+				"chatId", "TEXT",
+				"characterConfigId", "TEXT",
+			},		
+			new string[] { 
+				"RegenSwipe", 
+				"id", "TEXT",
+				"createdAt", "DATETIME",
+				"updatedAt", "DATETIME", 
+				"activeTimestamp", "DATETIME",
+				"text", "TEXT",
+				"messageId", "TEXT",
 			},
 		};
 
@@ -225,6 +266,7 @@ namespace Ginger
 			AppSettings.FaradayLink.Enabled = false;
 			SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
 		}
+		#endregion
 
 		public static Error GetCharacters(out CharacterInstance[] characters, out FolderInstance[] folders)
 		{
@@ -248,13 +290,13 @@ namespace Ginger
 						SELECT 
 							A.id, 
 							B.id, B.displayName, B.name, B.createdAt, B.updatedAt,
-							D.folderId
+							D.folderId, D.hubAuthorUsername
 						FROM CharacterConfig as A
 						INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
 						INNER JOIN _CharacterConfigToGroupConfig AS C ON C.A = A.id
 						INNER JOIN GroupConfig AS D ON D.id = C.B
-						WHERE A.isUserControlled=0";
-
+						WHERE A.isUserControlled=0
+					";
 					var lsCharacters = new List<CharacterInstance>();
 					using (var reader = cmdCharacterData.ExecuteReader())
 					{
@@ -270,6 +312,7 @@ namespace Ginger
 							DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(4));
 							DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(5));
 							string folderId = reader.GetString(6);
+							string hubAuthorUsername = reader[7] as string;
 
 							lsCharacters.Add(new CharacterInstance() {
 									instanceId = instanceId,
@@ -279,6 +322,7 @@ namespace Ginger
 									creationDate = createdAt,
 									updateDate = updatedAt,
 									folderId = folderId,
+									creator = hubAuthorUsername,
 								});
 						}
 					}
@@ -287,10 +331,11 @@ namespace Ginger
 					// Fetch character instance ids
 					var cmdFolderData = connection.CreateCommand();
 					cmdFolderData.CommandText =
-						@"
+					@"
 						SELECT 
 							id, parentFolderId, name, isRoot
-						FROM AppFolder";
+						FROM AppFolder
+					";
 
 					var lsFolders = new List<FolderInstance>();
 					using (var reader = cmdFolderData.ExecuteReader())
@@ -359,26 +404,27 @@ namespace Ginger
 				{
 					connection.Open();
 
-					var result = new List<CharacterInstance>();
-
-					// Fetch character instance ids
 					var cmdCharacterData = connection.CreateCommand();
-					cmdCharacterData.CommandText = @"
+					cmdCharacterData.CommandText = 
+					@"
 						SELECT 
 							A.id, A.createdAt, A.updatedAt,  A.displayName,  A.name,  A.persona, 
-							C.context, C.customDialogue, C.modelInstructions, C.grammar, C.id
+							C.context, C.customDialogue, C.modelInstructions, C.greetingDialogue, C.grammar,
+							D.hubCharId, D.hubAuthorUsername
 						FROM CharacterConfigVersion as A
 						INNER JOIN _CharacterConfigToGroupConfig AS B 
 							ON B.A = $1
 						INNER JOIN Chat AS C 
 							ON C.groupConfigId = B.B
+						INNER JOIN GroupConfig AS D
+							ON D.id = B.B
 						WHERE A.id = $2
-						ORDER BY C.createdAt DESC";
+						ORDER BY C.createdAt DESC
+					";
 					cmdCharacterData.Parameters.AddWithValue("$1", character.instanceId);
 					cmdCharacterData.Parameters.AddWithValue("$2", character.configId);
 
 					card = null;
-					string chatId = null;
 
 					var characterInstanceIds = new HashSet<string>();
 					using (var reader = cmdCharacterData.ExecuteReader())
@@ -398,8 +444,11 @@ namespace Ginger
 						string scenario = reader.GetString(6);
 						string example = reader.GetString(7);
 						string system = reader.GetString(8);
-						string grammar = reader[9] as string;
-						chatId = reader.GetString(10);
+						string greeting = reader.GetString(9);
+						string grammar = reader[10] as string;
+
+						string hubCharId = reader[11] as string;
+						string hubAuthorName = reader[12] as string;
 
 						card = new FaradayCardV4();
 						card.data.displayName = displayName;
@@ -411,31 +460,55 @@ namespace Ginger
 						card.data.grammar = grammar;
 						card.data.creationDate = createdAt.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
 						card.data.updateDate = updatedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+
+						card.hubCharacterId = hubCharId;
+						card.hubAuthorUsername = hubAuthorName;
 					}
 
-					// Find first message
-					if (chatId != null && card != null)
-					{
-						var cmdGreeting = connection.CreateCommand();
-						cmdGreeting.CommandText = @"
+					// Gather lorebook items
+					var cmdLoreItems = connection.CreateCommand();
+					cmdLoreItems.CommandText = 
+					@"
 						SELECT 
-							R.text
-						FROM Message as M
-						INNER JOIN RegenSwipe as R on R.messageId = M.id
-						WHERE M.isFirstMessage = True AND M.chatId = $1 AND M.characterConfigId = $2";
-						cmdGreeting.Parameters.AddWithValue("$1", chatId);
-						cmdGreeting.Parameters.AddWithValue("$2", character.instanceId);
+							key, value, ""order""
+						FROM AppCharacterLorebookItem
+						WHERE id IN (
+							SELECT A
+							FROM _AppCharacterLorebookItemToCharacterConfigVersion
+							WHERE B = $1
+						)
+						ORDER BY ""order"" ASC
+					";
+					cmdLoreItems.Parameters.AddWithValue("$1", character.configId);
 
-						using (var reader = cmdGreeting.ExecuteReader())
+					var entries = new List<KeyValuePair<string, FaradayCardV1.LoreBookEntry>>();
+					using (var reader = cmdLoreItems.ExecuteReader())
+					{
+						while (reader.Read())
 						{
-							if (reader.Read())
-								card.data.greeting = reader.GetString(0);
+							string key = reader.GetString(0);
+							string value = reader.GetString(1);
+							string order = reader.GetString(2);
+
+							entries.Add(new KeyValuePair<string, FaradayCardV1.LoreBookEntry>(order, new FaradayCardV1.LoreBookEntry() {
+								key = key, 
+								value = value,
+							}));
 						}
+					}
+
+					if (entries.Count > 0)
+					{
+						card.data.loreItems = entries
+							.OrderBy(kvp => kvp.Key)
+							.Select(kvp => kvp.Value)
+							.ToArray();
 					}
 
 					// Find portrait image file
 					var cmdImageLookup = connection.CreateCommand();
-					cmdImageLookup.CommandText = @"
+					cmdImageLookup.CommandText = 
+					@"
 						SELECT 
 							imageUrl
 						FROM AppImage
@@ -444,7 +517,8 @@ namespace Ginger
 							FROM _AppImageToCharacterConfigVersion
 							WHERE B = $1
 						)
-						ORDER BY 'order' ASC";
+						ORDER BY ""order"" ASC
+					";
 					cmdImageLookup.Parameters.AddWithValue("$1", character.configId);
 
 					var imageUrls = new List<string>();
