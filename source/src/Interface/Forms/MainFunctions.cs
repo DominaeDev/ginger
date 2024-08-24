@@ -1474,7 +1474,8 @@ namespace Ginger
 			LinkImportDialog dlg = new LinkImportDialog();
 
 			FaradayBridge.CharacterInstance[] characters;
-			if (FaradayBridge.GetCharacters(out characters) != FaradayBridge.Error.NoError)
+			FaradayBridge.FolderInstance[] folders;
+			if (FaradayBridge.GetCharacters(out characters, out folders) != FaradayBridge.Error.NoError)
 			{
 				MessageBox.Show("Failed to establish link with Backyard.ai.", "Link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;

@@ -10,12 +10,21 @@ namespace Ginger
 	{
 		public struct CharacterInstance
 		{
-			public string instanceID;	// CharacterConfig
-			public string configID;		// CharacterConfigVersion
-			public string displayName;
-			public string name;
-			public DateTime creationDate;
-			public DateTime updateDate;
+			public string instanceId;		// CharacterConfig.id
+			public string configId;			// CharacterConfigVersion.id
+			public string displayName;		// CharacterConfigVersion.displayName
+			public string name;				// CharacterConfigVersion.name
+			public string folderId;			// CharacterConfigVersion.name
+			public DateTime creationDate;	// CharacterConfig.createdAt
+			public DateTime updateDate;		// CharacterConfig.updatedAt
+		}
+
+		public struct FolderInstance
+		{
+			public string instanceId;		// AppFolder.id
+			public string parentId;         // AppFolder.parentFolderId
+			public string name;				// AppFolder.name
+			public bool isRoot;
 		}
 
 		public enum Error
@@ -31,7 +40,7 @@ namespace Ginger
 
 		public static bool ConnectionEstablished = false;
 
-		private static SQLiteConnection ConnectToDB()
+		private static SQLiteConnection CreateSQLiteConnection()
 		{
 			string dbFilename = AppSettings.FaradayLink.Location;
 			if (string.IsNullOrWhiteSpace(dbFilename))
@@ -44,91 +53,6 @@ namespace Ginger
 
 			AppSettings.FaradayLink.Location = dbFilename;
 			return new SQLiteConnection($"Data Source={dbFilename}; Version=3;Foreign Keys=True;Mode=ReadWrite;Pooling=False;");
-		}
-
-		public static Error GetCharacters(out CharacterInstance[] characters)
-		{
-			if (ConnectionEstablished == false)
-			{
-				characters = null;
-				return Error.NotConnected;
-			}
-
-			try
-			{
-				using (var connection = ConnectToDB())
-				{
-					connection.Open();
-
-					var result = new List<CharacterInstance>();
-
-					// Fetch character instance ids
-					var cmdReadCharacterIds = connection.CreateCommand();
-					cmdReadCharacterIds.CommandText =
-						@"
-						SELECT 
-							A.id, 
-							B.id, 
-							B.displayName, 
-							B.name, 
-							B.createdAt, 
-							B.updatedAt 
-						FROM CharacterConfig as A
-						INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
-						WHERE isUserControlled=0";
-
-					var characterInstanceIds = new HashSet<string>();
-					using (var reader = cmdReadCharacterIds.ExecuteReader())
-					{
-						while (reader.Read())
-						{
-							string instanceId = reader.GetString(0);
-							string configId = reader.GetString(1);
-							string displayName = reader.GetString(2);
-							string name = reader.GetString(3);
-							DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(4));
-							DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(5));
-							if (string.IsNullOrEmpty(instanceId) || string.IsNullOrEmpty(configId))
-								continue;
-
-							result.Add(new CharacterInstance() {
-									instanceID = instanceId,
-									configID = configId,
-									displayName = displayName,
-									name = name,
-									creationDate = createdAt,
-									updateDate = updatedAt,
-								});
-						}
-					}
-
-					connection.Close();
-					characters = result.ToArray();
-					return Error.NoError;
-				}
-			}
-			catch (FileNotFoundException e)
-			{
-				Disconnect();
-				characters = null;
-				return Error.FileNotFound;
-			}
-			catch (SQLiteException e)
-			{
-				Disconnect();
-				characters = null;
-				return Error.CommandFailed;
-			}
-			catch (Exception e)
-			{
-				Disconnect();
-				characters = null;
-				return Error.Unknown;
-			}
-			finally
-			{
-				SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
-			}
 		}
 
 		private static string[][] s_TableInfo = new string[][] {
@@ -225,7 +149,7 @@ namespace Ginger
 		{
 			try
 			{
-				using (var connection = ConnectToDB())
+				using (var connection = CreateSQLiteConnection())
 				{
 					connection.Open();
 
@@ -301,6 +225,125 @@ namespace Ginger
 			SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
 		}
 
+		public static Error GetCharacters(out CharacterInstance[] characters, out FolderInstance[] folders)
+		{
+			if (ConnectionEstablished == false)
+			{
+				characters = null;
+				folders = null;
+				return Error.NotConnected;
+			}
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					// Fetch character instance ids
+					var cmdCharacterData = connection.CreateCommand();
+					cmdCharacterData.CommandText =
+						@"
+						SELECT 
+							A.id, 
+							B.id, B.displayName, B.name, B.createdAt, B.updatedAt,
+							D.folderId
+						FROM CharacterConfig as A
+						INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
+						INNER JOIN _CharacterConfigToGroupConfig AS C ON C.A = A.id
+						INNER JOIN GroupConfig AS D ON D.id = C.B
+						WHERE A.isUserControlled=0";
+
+					var lsCharacters = new List<CharacterInstance>();
+					using (var reader = cmdCharacterData.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							string instanceId = reader.GetString(0);
+							string configId = reader.GetString(1);
+							if (string.IsNullOrEmpty(instanceId) || string.IsNullOrEmpty(configId))
+								continue;
+
+							string displayName = reader.GetString(2);
+							string name = reader.GetString(3);
+							DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(4));
+							DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(5));
+							string folderId = reader.GetString(6);
+
+							lsCharacters.Add(new CharacterInstance() {
+									instanceId = instanceId,
+									configId = configId,
+									displayName = displayName,
+									name = name,
+									creationDate = createdAt,
+									updateDate = updatedAt,
+									folderId = folderId,
+								});
+						}
+					}
+
+					// App folders
+					// Fetch character instance ids
+					var cmdFolderData = connection.CreateCommand();
+					cmdFolderData.CommandText =
+						@"
+						SELECT 
+							id, parentFolderId, name, isRoot
+						FROM AppFolder";
+
+					var lsFolders = new List<FolderInstance>();
+					using (var reader = cmdFolderData.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							string instanceId = reader.GetString(0);
+							string parentId = reader[1] as string;
+							string name = reader.GetString(2);
+							bool isRoot = reader.GetBoolean(3);
+
+							lsFolders.Add(new FolderInstance() {
+								instanceId = instanceId,
+								parentId = parentId,
+								name = name,
+								isRoot = isRoot,
+							});
+						}
+					}
+
+					connection.Close();
+					characters = lsCharacters.ToArray();
+					folders = lsFolders.ToArray();
+					return Error.NoError;
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Disconnect();
+				characters = null;
+				folders = null;
+				return Error.FileNotFound;
+			}
+			catch (SQLiteException e)
+			{
+				Disconnect();
+				characters = null;
+				folders = null;
+				return Error.CommandFailed;
+			}
+			catch (Exception e)
+			{
+				Disconnect();
+				characters = null;
+				folders = null;
+				return Error.Unknown;
+			}
+			finally
+			{
+				SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
+			}
+		}
+
+
 		public static Error ImportCharacter(CharacterInstance character, out FaradayCardV4 card, out Image portraitImage)
 		{
 			if (ConnectionEstablished == false)
@@ -311,7 +354,7 @@ namespace Ginger
 			}
 			try
 			{
-				using (var connection = ConnectToDB())
+				using (var connection = CreateSQLiteConnection())
 				{
 					connection.Open();
 
@@ -321,26 +364,20 @@ namespace Ginger
 					var cmdCharacterData = connection.CreateCommand();
 					cmdCharacterData.CommandText = @"
 						SELECT 
-							A.id,
-							A.createdAt, 
-							A.updatedAt, 
-							A.displayName, 
-							A.name, 
-							A.persona, 
-							C.context,
-							C.customDialogue,
-							C.modelInstructions,
-							C.grammar
+							A.id, A.createdAt, A.updatedAt,  A.displayName,  A.name,  A.persona, 
+							C.context, C.customDialogue, C.modelInstructions, C.grammar, C.id
 						FROM CharacterConfigVersion as A
 						INNER JOIN _CharacterConfigToGroupConfig AS B 
 							ON B.A = $1
 						INNER JOIN Chat AS C 
 							ON C.groupConfigId = B.B
-						WHERE A.id = $2;";
-					cmdCharacterData.Parameters.AddWithValue("$1", character.instanceID);
-					cmdCharacterData.Parameters.AddWithValue("$2", character.configID);
+						WHERE A.id = $2
+						ORDER BY C.createdAt DESC";
+					cmdCharacterData.Parameters.AddWithValue("$1", character.instanceId);
+					cmdCharacterData.Parameters.AddWithValue("$2", character.configId);
 
 					card = null;
+					string chatId = null;
 
 					var characterInstanceIds = new HashSet<string>();
 					using (var reader = cmdCharacterData.ExecuteReader())
@@ -360,7 +397,8 @@ namespace Ginger
 						string scenario = reader.GetString(6);
 						string example = reader.GetString(7);
 						string system = reader.GetString(8);
-						string grammar = reader.GetString(9);
+						string grammar = reader[9] as string;
+						chatId = reader.GetString(10);
 
 						card = new FaradayCardV4();
 						card.data.displayName = displayName;
@@ -374,7 +412,27 @@ namespace Ginger
 						card.data.updateDate = updatedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
 					}
 
-					// Find image
+					// Find first message
+					if (chatId != null && card != null)
+					{
+						var cmdGreeting = connection.CreateCommand();
+						cmdGreeting.CommandText = @"
+						SELECT 
+							R.text
+						FROM Message as M
+						INNER JOIN RegenSwipe as R on R.messageId = M.id
+						WHERE M.isFirstMessage = True AND M.chatId = $1 AND M.characterConfigId = $2";
+						cmdGreeting.Parameters.AddWithValue("$1", chatId);
+						cmdGreeting.Parameters.AddWithValue("$2", character.instanceId);
+
+						using (var reader = cmdGreeting.ExecuteReader())
+						{
+							if (reader.Read())
+								card.data.greeting = reader.GetString(0);
+						}
+					}
+
+					// Find portrait image file
 					var cmdImageLookup = connection.CreateCommand();
 					cmdImageLookup.CommandText = @"
 						SELECT 
@@ -386,14 +444,13 @@ namespace Ginger
 							WHERE B = $1
 						)
 						ORDER BY 'order' ASC";
-					cmdImageLookup.Parameters.AddWithValue("$1", character.configID);
+					cmdImageLookup.Parameters.AddWithValue("$1", character.configId);
+
 					var imageUrls = new List<string>();
 					using (var reader = cmdImageLookup.ExecuteReader())
 					{
 						while (reader.Read())
-						{
 							imageUrls.Add(reader.GetString(0));
-						}
 					}
 
 					if (imageUrls.Count > 0)
