@@ -32,7 +32,9 @@ namespace Ginger
 			// Initialize link
 			if (AppSettings.FaradayLink.Enabled)
 			{
-				if (FaradayBridge.EstablishLink() != FaradayBridge.Error.NoError)
+				if (FaradayBridge.EstablishLink() == FaradayBridge.Error.NoError)
+					FaradayBridge.RefreshCharacters();
+				else
 					AppSettings.FaradayLink.Enabled = false;
 			}
 

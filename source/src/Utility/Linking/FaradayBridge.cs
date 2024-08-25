@@ -15,6 +15,7 @@ namespace Ginger
 		{
 			public string instanceId;		// CharacterConfig.id
 			public string configId;			// CharacterConfigVersion.id
+			public string groupId;			// GroupConfig.id
 			public string displayName;		// CharacterConfigVersion.displayName
 			public string name;				// CharacterConfigVersion.name
 			public string folderId;			// CharacterConfigVersion.name
@@ -30,6 +31,11 @@ namespace Ginger
 			public string name;				// AppFolder.name
 			public bool isRoot;
 		}
+
+		public static IEnumerable<FolderInstance> Folders { get { return _Folders.Values; } }
+		public static IEnumerable<CharacterInstance> Characters { get { return _Characters.Values; } }
+		private static Dictionary<string, FolderInstance> _Folders = new Dictionary<string, FolderInstance>();	// instanceId, value
+		private static Dictionary<string, CharacterInstance> _Characters = new Dictionary<string, CharacterInstance>(); // instanceId, value
 
 		public class Link : IXmlLoadable, IXmlSaveable
 		{
@@ -62,6 +68,7 @@ namespace Ginger
 			CommandFailed,
 			NoDataFound,
 			Unknown,
+			Cancelled,
 		}
 
 		public static bool ConnectionEstablished = false;
@@ -78,11 +85,11 @@ namespace Ginger
 				throw new FileNotFoundException();
 
 			AppSettings.FaradayLink.Location = dbFilename;
-			return new SQLiteConnection($"Data Source={dbFilename}; Version=3; Foreign Keys=True");
+			return new SQLiteConnection($"Data Source={dbFilename}; Version=3; Foreign Keys=True;");
 		}
 
 		#region Establish Link
-		private static string[][] s_TableInfo = new string[][] {
+		private static string[][] s_TableValidation = new string[][] {
 			new string[] {
 				"_AppCharacterLorebookItemToCharacterConfigVersion", 
 				"A", "TEXT",
@@ -221,9 +228,9 @@ namespace Ginger
 					var result = new List<CharacterInstance>();
 
 					// Check table names and columns
-					for (int i = 0; i < s_TableInfo.Length; ++i)
+					for (int i = 0; i < s_TableValidation.Length; ++i)
 					{
-						string[] table = s_TableInfo[i];
+						string[] table = s_TableValidation[i];
 						string[] expectedNames = new string[(table.Length - 1)/2];
 						string[] expectedTypes = new string[(table.Length - 1)/2];
 						string tableName = table[0];
@@ -279,28 +286,35 @@ namespace Ginger
 				Disconnect();
 				return Error.Unknown;
 			}
-			finally
-			{
-				SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
-			}
 		}
 
 		public static void Disconnect()
 		{
+			_Folders.Clear();
+			_Characters.Clear();
 			ConnectionEstablished = false;
 			AppSettings.FaradayLink.Enabled = false;
 			SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
 		}
 		#endregion
 
-		public static Error GetCharacters(out CharacterInstance[] characters, out FolderInstance[] folders)
+		public static bool GetCharacter(string characterId, out CharacterInstance character)
+		{
+			return _Characters.TryGetValue(characterId, out character);
+		}
+
+		public static bool HasCharacter(string characterId)
+		{
+			return _Characters.ContainsKey(characterId);
+		}
+
+		public static Error RefreshCharacters()
 		{
 			if (ConnectionEstablished == false)
-			{
-				characters = null;
-				folders = null;
 				return Error.NotConnected;
-			}
+
+			_Folders.Clear();
+			_Characters.Clear();
 
 			try
 			{
@@ -309,7 +323,6 @@ namespace Ginger
 					connection.Open();
 
 					// Fetch character instance ids
-					var lsCharacters = new List<CharacterInstance>();
 					using (var cmdCharacterData = connection.CreateCommand())
 					{
 						cmdCharacterData.CommandText =
@@ -341,22 +354,22 @@ namespace Ginger
 								string folderId = reader.GetString(6);
 								string hubAuthorUsername = reader[7] as string;
 
-								lsCharacters.Add(new CharacterInstance() {
-									instanceId = instanceId,
-									configId = configId,
-									displayName = displayName,
-									name = name,
-									creationDate = createdAt,
-									updateDate = updatedAt,
-									folderId = folderId,
-									creator = hubAuthorUsername,
-								});
+								_Characters.TryAdd(instanceId, 
+									new CharacterInstance() {
+										instanceId = instanceId,
+										configId = configId,
+										displayName = displayName,
+										name = name,
+										creationDate = createdAt,
+										updateDate = updatedAt,
+										folderId = folderId,
+										creator = hubAuthorUsername,
+									});
 							}
 						}
 					}
 
 					// Fetch app folders
-					var lsFolders = new List<FolderInstance>();
 					using (var cmdFolderData = connection.CreateCommand())
 					{ 
 						cmdFolderData.CommandText =
@@ -375,46 +388,35 @@ namespace Ginger
 								string name = reader.GetString(2);
 								bool isRoot = reader.GetBoolean(3);
 
-								lsFolders.Add(new FolderInstance() {
-									instanceId = instanceId,
-									parentId = parentId,
-									name = name,
-									isRoot = isRoot,
-								});
+								_Folders.TryAdd(instanceId, 
+									new FolderInstance() {
+										instanceId = instanceId,
+										parentId = parentId,
+										name = name,
+										isRoot = isRoot,
+									});
 							}
 						}
 					}
 
 					connection.Close();
-					characters = lsCharacters.ToArray();
-					folders = lsFolders.OrderBy(f => f.name).ToArray();
 					return Error.NoError;
 				}
 			}
 			catch (FileNotFoundException e)
 			{
 				Disconnect();
-				characters = null;
-				folders = null;
 				return Error.FileNotFound;
 			}
 			catch (SQLiteException e)
 			{
 				Disconnect();
-				characters = null;
-				folders = null;
 				return Error.CommandFailed;
 			}
 			catch (Exception e)
 			{
 				Disconnect();
-				characters = null;
-				folders = null;
 				return Error.Unknown;
-			}
-			finally
-			{
-				SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
 			}
 		}
 
@@ -593,10 +595,6 @@ namespace Ginger
 				portraitImage = null;
 				return Error.Unknown;
 			}
-			finally
-			{
-				SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
-			}
 		}
 
 		public static Error ConfirmSaveCharacter(FaradayCardV4 card, Link linkInfo, out bool newerChangesFound)
@@ -669,10 +667,6 @@ namespace Ginger
 				newerChangesFound = default(bool);
 				return Error.Unknown;
 			}
-			finally
-			{
-				SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
-			}
 		}
 
 		public static Error SaveCharacter(FaradayCardV4 card, Link linkInfo, out DateTime updateDate)
@@ -742,7 +736,6 @@ namespace Ginger
 							using (var cmdUpdate = new SQLiteCommand(connection))
 							{
 								var sbCommand = new StringBuilder();
-								// Update character information
 								sbCommand.AppendLine(
 								@"
 									UPDATE CharacterConfigVersion
@@ -822,10 +815,6 @@ namespace Ginger
 				Disconnect();
 				updateDate = default(DateTime);
 				return Error.Unknown;
-			}
-			finally
-			{
-				SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
 			}
 		}
 	}

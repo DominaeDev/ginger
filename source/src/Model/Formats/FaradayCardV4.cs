@@ -140,7 +140,7 @@ namespace Ginger
 			{ 
 				var sbComment = new StringBuilder();
 				if (string.IsNullOrEmpty(hubAuthorUsername) == false)
-					sbComment.AppendLine(string.Concat("Original character by @", hubAuthorUsername));
+					sbComment.AppendLine(string.Concat("Original character by ", hubAuthorUsername));
 				if (string.IsNullOrEmpty(hubCharacterId) == false)
 					sbComment.AppendLine(string.Concat("https://backyard.ai/hub/character/", hubCharacterId));
 				sbComment.ConvertLinebreaks(Linebreak.LF);

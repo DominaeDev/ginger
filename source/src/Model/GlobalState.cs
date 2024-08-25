@@ -36,6 +36,9 @@ namespace Ginger
 		public static StringBank Strings = new StringBank();
 		public static string Filename;
 		public static FaradayBridge.Link FaradayLink = null;
+		public static bool HasLink { get { return FaradayLink != null; } }
+		public static bool HasActiveLink { get { return FaradayLink != null && FaradayLink.isActive; } }
+		public static bool HasStaleLink { get { return FaradayLink != null && !FaradayLink.isActive && string.IsNullOrEmpty(FaradayLink.characterId) == false; } }
 
 		public static bool IsDirty
 		{

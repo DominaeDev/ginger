@@ -710,7 +710,7 @@ it to leave the context over time.</value>
     <value>Link error</value>
   </data>
   <data name="cap_link_overwrite" xml:space="preserve">
-    <value>Overwrite character data</value>
+    <value>Overwrite Backyard AI character data</value>
   </data>
   <data name="cap_link_save_character" xml:space="preserve">
     <value>Save character to Backyard AI</value>
@@ -729,10 +729,43 @@ it to leave the context over time.</value>
 Continue?</value>
   </data>
   <data name="msg_link_confirm_overwrite" xml:space="preserve">
-    <value>This character has been changed since you opened it.
-Do you want to overwrite these changes?</value>
+    <value>This character has been changed since you last opened it. Do you want to overwrite these changes?</value>
   </data>
   <data name="msg_link_saved" xml:space="preserve">
     <value>Character was successfully saved.</value>
+  </data>
+  <data name="tooltip_link_autosave" xml:space="preserve">
+    <value>If enabled, Ginger will automatically synchronize this character card with Backyard AI when saving the file.</value>
+  </data>
+  <data name="tooltip_link_break" xml:space="preserve">
+    <value>Break the link connecting this character card to Backyard AI.</value>
+  </data>
+  <data name="tooltip_link_connect" xml:space="preserve">
+    <value>Enable Ginger to open and save characters for a local installation of Backyard AI.
+(Backyard AI must be installed on the system.)</value>
+  </data>
+  <data name="tooltip_link_reestablish" xml:space="preserve">
+    <value>Attempt to reestablish the link connecting this character card to Backyard AI.</value>
+  </data>
+  <data name="tooltip_link_save" xml:space="preserve">
+    <value>Save this character to Backyard AI.</value>
+  </data>
+  <data name="tooltip_link_save_as_new" xml:space="preserve">
+    <value>Save this character card as a new Backyard AI character.</value>
+  </data>
+  <data name="tooltip_link_open" xml:space="preserve">
+    <value>Open a Backyard AI character card.</value>
+  </data>
+  <data name="cap_link_reestablish" xml:space="preserve">
+    <value>Reestablish character link</value>
+  </data>
+  <data name="error_link_autosave" xml:space="preserve">
+    <value>Unable to save character to Backyard AI.</value>
+  </data>
+  <data name="error_link_reestablish" xml:space="preserve">
+    <value>Unable to reestablish link. The character may have been removed in Backyard AI. In that case, you can reestablish the link by saving this as a new character.</value>
+  </data>
+  <data name="msg_link_reestablished" xml:space="preserve">
+    <value>Character link reestablished.</value>
   </data>
 </root>

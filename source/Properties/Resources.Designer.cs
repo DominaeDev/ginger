@@ -363,11 +363,20 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Overwrite character data.
+        ///   Looks up a localized string similar to Overwrite Backyard AI character data.
         /// </summary>
         internal static string cap_link_overwrite {
             get {
                 return ResourceManager.GetString("cap_link_overwrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reestablish character link.
+        /// </summary>
+        internal static string cap_link_reestablish {
+            get {
+                return ResourceManager.GetString("cap_link_reestablish", resourceCulture);
             }
         }
         
@@ -697,11 +706,29 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to save character to Backyard AI..
+        /// </summary>
+        internal static string error_link_autosave {
+            get {
+                return ResourceManager.GetString("error_link_autosave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to establish link with Backyard AI..
         /// </summary>
         internal static string error_link_failed {
             get {
                 return ResourceManager.GetString("error_link_failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to reestablish link. The character may have been removed in Backyard AI. In that case, you can reestablish the link by saving this as a new character..
+        /// </summary>
+        internal static string error_link_reestablish {
+            get {
+                return ResourceManager.GetString("error_link_reestablish", resourceCulture);
             }
         }
         
@@ -1357,12 +1384,20 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This character has been changed since you opened it.
-        ///Do you want to overwrite these changes?.
+        ///   Looks up a localized string similar to This character has been changed since you last opened it. Do you want to overwrite these changes?.
         /// </summary>
         internal static string msg_link_confirm_overwrite {
             get {
                 return ResourceManager.GetString("msg_link_confirm_overwrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character link reestablished..
+        /// </summary>
+        internal static string msg_link_reestablished {
+            get {
+                return ResourceManager.GetString("msg_link_reestablished", resourceCulture);
             }
         }
         
@@ -2290,6 +2325,70 @@ namespace Ginger.Properties {
         internal static string tooltip_enable_scenario {
             get {
                 return ResourceManager.GetString("tooltip_enable_scenario", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If enabled, Ginger will automatically synchronize this character card with Backyard AI when saving the file..
+        /// </summary>
+        internal static string tooltip_link_autosave {
+            get {
+                return ResourceManager.GetString("tooltip_link_autosave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Break the link connecting this character card to Backyard AI..
+        /// </summary>
+        internal static string tooltip_link_break {
+            get {
+                return ResourceManager.GetString("tooltip_link_break", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable Ginger to open and save characters for a local installation of Backyard AI.
+        ///(Backyard AI must be installed on the system.).
+        /// </summary>
+        internal static string tooltip_link_connect {
+            get {
+                return ResourceManager.GetString("tooltip_link_connect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open a Backyard AI character card..
+        /// </summary>
+        internal static string tooltip_link_open {
+            get {
+                return ResourceManager.GetString("tooltip_link_open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attempt to reestablish the link connecting this character card to Backyard AI..
+        /// </summary>
+        internal static string tooltip_link_reestablish {
+            get {
+                return ResourceManager.GetString("tooltip_link_reestablish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save this character to Backyard AI..
+        /// </summary>
+        internal static string tooltip_link_save {
+            get {
+                return ResourceManager.GetString("tooltip_link_save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save this character card as a new Backyard AI character..
+        /// </summary>
+        internal static string tooltip_link_save_as_new {
+            get {
+                return ResourceManager.GetString("tooltip_link_save_as_new", resourceCulture);
             }
         }
         

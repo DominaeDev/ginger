@@ -1087,6 +1087,19 @@ namespace Ginger
 			if (Current.ContainsV3Data)
 				formats |= FileUtil.Format.SillyTavernV3;
 
+			// Auto-save to Backyard?
+			bool bShouldAutosave = AppSettings.FaradayLink.Autosave && FaradayBridge.ConnectionEstablished && Current.HasActiveLink;
+			bool bAutoSaved = false;
+			if (bShouldAutosave)
+			{
+				var error = WriteCharacterToFaraday();
+				if (error == FaradayBridge.Error.Cancelled)
+					return false; // User clicked 'cancel'
+				if (error == FaradayBridge.Error.CommandFailed)
+					bShouldAutosave = false; // User clicked 'no'
+				bAutoSaved = error == FaradayBridge.Error.NoError;
+			}
+
 			if (FileUtil.Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, formats))
 			{
 				SaveNotes(filename);
@@ -1099,10 +1112,21 @@ namespace Ginger
 				RefreshTitle();
 
 				MRUList.AddToMRU(filename, Current.Card.name);
+
+				if (bShouldAutosave)
+				{
+					if (bAutoSaved)
+						MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					else
+						MessageBox.Show(Resources.error_link_autosave, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				}
 				return true;
 			}
 			else
 			{
+				if (bAutoSaved) // Notify user the auto save worked
+					MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
+
 				MessageBox.Show(Resources.error_save_character_card, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
@@ -1473,16 +1497,15 @@ namespace Ginger
 		{
 			LinkImportDialog dlg = new LinkImportDialog();
 
-			FaradayBridge.CharacterInstance[] characters;
-			FaradayBridge.FolderInstance[] folders;
-			if (FaradayBridge.GetCharacters(out characters, out folders) != FaradayBridge.Error.NoError)
+			// Refresh character list
+			if (FaradayBridge.RefreshCharacters() != FaradayBridge.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_read_data, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
-			dlg.Characters = characters;
-			dlg.Folders = folders;
+			dlg.Characters = FaradayBridge.Characters.ToArray();
+			dlg.Folders = FaradayBridge.Folders.ToArray();
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return false;
 
@@ -1521,58 +1544,48 @@ namespace Ginger
 			return true;
 		}
 
-		private bool WriteCharacterToFaraday()
+		private FaradayBridge.Error WriteCharacterToFaraday()
 		{
 			if (FaradayBridge.ConnectionEstablished == false)
-			{
-				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				FaradayBridge.Disconnect();
-				return false;
-			}
-			else if (Current.FaradayLink == null)
-			{
-				MessageBox.Show(Resources.error_link_unrecognized_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Current.Unlink();
-				return false;
-			}
+				return FaradayBridge.Error.NotConnected;
+			else if (Current.HasLink == false)
+				return FaradayBridge.Error.NoDataFound;
 
 			FaradayCardV4 card = FaradayCardV4.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.Faraday));
 
 			// Check if character exists, has newer changes
 			bool hasChanges;
-			FaradayBridge.Error error = FaradayBridge.ConfirmSaveCharacter(card, Current.FaradayLink, out hasChanges);
-			if (error == FaradayBridge.Error.NoDataFound)
+			var error = FaradayBridge.ConfirmSaveCharacter(card, Current.FaradayLink, out hasChanges);
+			if (error != FaradayBridge.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_unrecognized_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Current.Unlink();
-				return false;
+				return error;
 			}
-			else if (error != FaradayBridge.Error.NoError)
-			{
-				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return false;
-			}
-			else if (hasChanges)
+
+			if (hasChanges)
 			{
 				// Overwrite prompt
-				var mr = MessageBox.Show(Resources.msg_link_confirm_overwrite, Resources.cap_link_overwrite, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
-				if (mr != DialogResult.Yes)
-					return false;
+				var mr = MessageBox.Show(Resources.msg_link_confirm_overwrite, Resources.cap_link_overwrite, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+				if (mr == DialogResult.Cancel)
+					return FaradayBridge.Error.Cancelled;
+				else if (mr != DialogResult.Yes)
+					return FaradayBridge.Error.CommandFailed;
 			}
 
 			DateTime updateDate;
 			error = FaradayBridge.SaveCharacter(card, Current.FaradayLink, out updateDate);
 			if (error != FaradayBridge.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return false;
+				return error;
 			}
 			else
 			{
 				Current.FaradayLink.updateDate = updateDate;
 				Current.IsFileDirty = true;
-				MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
-				return true;
+
+				// Refresh character information
+				FaradayBridge.RefreshCharacters();
+				return FaradayBridge.Error.NoError;
 			}
 		}
 	}

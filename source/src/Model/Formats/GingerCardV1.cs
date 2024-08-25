@@ -359,6 +359,7 @@ namespace Ginger
 				recipes = new List<Recipe>(c.recipes),
 			}).ToList();
 
+			card.faradayLink = Current.FaradayLink;
 			return card;
 		}
 	}

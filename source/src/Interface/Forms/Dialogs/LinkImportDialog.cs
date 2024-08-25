@@ -41,8 +41,12 @@ namespace Ginger
 			var nodesById = new Dictionary<string, TreeNode>();
 			string rootId = Folders.FirstOrDefault(f => f.isRoot).instanceId;
 			nodesById.Add(rootId, null);
-			foreach (var folder in Folders.Where(f => f.parentId != null))
+			foreach (var folder in Folders
+				.Where(f => f.parentId != null)
+				.OrderBy(c => c.name))
+			{
 				CreateFolderNode(folder, nodesById, Characters.Count(c => c.folderId == folder.instanceId));
+			}
 
 			// Create characters
 			foreach (var character in Characters

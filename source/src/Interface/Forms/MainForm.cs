@@ -219,6 +219,14 @@ namespace Ginger
 			SetToolTip(btnAdd_Snippets, "Snippets");
 			SetToolTip(btnAdd_Lore, "Lorebooks");
 
+			enableLinkMenuItem.ToolTipText = Resources.tooltip_link_connect;
+			enableAutosaveMenuItem.ToolTipText = Resources.tooltip_link_autosave;
+			reestablishLinkMenuItem.ToolTipText = Resources.tooltip_link_reestablish;
+			breakLinkMenuItem.ToolTipText = Resources.tooltip_link_break;
+			importFromFaradayMenuItem.ToolTipText = Resources.tooltip_link_open;
+			saveToFaradayMenuItem.ToolTipText = Resources.tooltip_link_save;
+			saveNewToFaradayMenuItem.ToolTipText = Resources.tooltip_link_save_as_new;
+
 			RegisterIdleHandler(recipeList);
 
 			outputBox.SetTabWidth(4);
@@ -981,23 +989,43 @@ namespace Ginger
 
 		public void RefreshTitle()
 		{
-			// Refresh title
+			// Character name
+			string title = Utility.FirstNonEmpty(Current.Card.name, Current.MainCharacter.spokenName) ?? "";
+			if (title.Length > 0)
+				title = string.Concat(title, " ");
+
 			if (string.IsNullOrEmpty(Current.Filename) == false)
 			{
-				Text = string.Format("{3}{2} {1} - {0}",
+				Text = string.Format("{2} {1} - {0}",
 					AppTitle,
 					string.Concat("[", Path.GetFileName(Current.Filename), "]"),
-					Utility.FirstNonEmpty(Current.Card.name, Current.MainCharacter.spokenName),
-					Current.IsFileDirty ? "*" : "");
+					Utility.FirstNonEmpty(Current.Card.name, Current.MainCharacter.spokenName));
 			}
 			else if (string.IsNullOrEmpty(Current.Card.name) == false || string.IsNullOrEmpty(Current.MainCharacter.spokenName) == false)
 			{
-				Text = string.Format("{2}{1} - {0}", AppTitle, Utility.FirstNonEmpty(Current.Card.name, Current.MainCharacter.spokenName), Current.IsFileDirty ? "*" : "");
+				Text = string.Format("{1} - {0}", 
+					AppTitle, 
+					Utility.FirstNonEmpty(Current.Card.name, Current.MainCharacter.spokenName));
 			}
+
+			// Filename
+			if (string.IsNullOrEmpty(Current.Filename) == false)
+				title = string.Concat(title, "[", Path.GetFileName(Current.Filename), "] ");
+
+			// Is linked?
+			if (FaradayBridge.ConnectionEstablished && Current.HasActiveLink)
+				title = string.Concat(title, "(Linked) ");
+
+			// Is dirty?
+			if (Current.IsFileDirty)
+				title = string.Concat("*", title);
+			
+			// App title
+			if (title.Length > 0)
+				title = string.Concat(title, "- ", AppTitle);
 			else
-			{
-				Text = string.Format("{1}{0}", AppTitle, Current.IsFileDirty ? "*" : "");
-			}
+				title = AppTitle;
+			this.Text = title;
 
 			_bWasFileDirty = Current.IsFileDirty;
 
@@ -1007,9 +1035,12 @@ namespace Ginger
 			else
 				statusBarActor.Text = string.Empty;
 
-#if DEBUG
+#if DEBUG && false // Show form level buffering
 			statusBarActor.Text = statusBarActor.Text + (_bEnableFormLevelDoubleBuffering && AppSettings.Settings.EnableFormLevelBuffering ? " ON" : " OFF");
 #endif
+			// Linked ?
+			if (FaradayBridge.ConnectionEstablished)
+				statusBarActor.Text = string.Concat(statusBarActor.Text, Current.Characters.Count > 1 ? " |" : "", " Connected to Backyard AI");
 
 			// Menu items
 			RefreshMenuItems();
@@ -1135,10 +1166,15 @@ namespace Ginger
 			// Link menu
 			enableLinkMenuItem.Checked = FaradayBridge.ConnectionEstablished;
 			importFromFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
-			saveToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished
-				&& Current.FaradayLink != null
-				&& Current.FaradayLink.isActive;
-			saveNewToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
+			saveToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished && Current.HasActiveLink;
+			saveNewToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished && Current.HasActiveLink == false;
+			enableAutosaveMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
+			enableAutosaveMenuItem.Checked = FaradayBridge.ConnectionEstablished && AppSettings.FaradayLink.Autosave;
+			reestablishLinkSeparator.Visible = FaradayBridge.ConnectionEstablished && (Current.HasActiveLink || Current.HasStaleLink);
+			reestablishLinkMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
+			reestablishLinkMenuItem.Visible = FaradayBridge.ConnectionEstablished && Current.HasStaleLink;
+			breakLinkMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
+			breakLinkMenuItem.Visible = FaradayBridge.ConnectionEstablished && Current.HasActiveLink;
 		}
 
 		private void PopulateMRUMenu(ToolStripItemCollection items)
@@ -1977,14 +2013,17 @@ namespace Ginger
 			{
 				if (FaradayBridge.EstablishLink() == FaradayBridge.Error.NoError)
 				{
+					FaradayBridge.RefreshCharacters();
+
+					if (Current.HasActiveLink && FaradayBridge.HasCharacter(Current.FaradayLink.characterId) == false)
+						Current.Unlink(); // Unrecognized character
+
 					AppSettings.FaradayLink.Enabled = true;
-					return;
 				}
 				else
 				{
 					MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					AppSettings.FaradayLink.Enabled = false;
-					return;
 				}
 			}
 			else
@@ -1992,6 +2031,7 @@ namespace Ginger
 				AppSettings.FaradayLink.Enabled = false;
 				FaradayBridge.Disconnect();
 			}
+			RefreshTitle();
 		}
 
 		private void importFromFaradayMenuItem_Click(object sender, EventArgs e)
@@ -2001,7 +2041,59 @@ namespace Ginger
 
 		private void saveToFaradayMenuItem_Click(object sender, EventArgs e)
 		{
-			WriteCharacterToFaraday();
+			var error = WriteCharacterToFaraday();
+			if (error == FaradayBridge.Error.NotConnected)
+				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			else if (error == FaradayBridge.Error.NoDataFound)
+			{
+				MessageBox.Show(Resources.error_link_unrecognized_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else if (error == FaradayBridge.Error.Cancelled)
+			{
+				return;
+			}
+			else if (error != FaradayBridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+		}
+
+		private void reestablishLinkMenuItem_Click(object sender, EventArgs e)
+		{
+			if (Current.FaradayLink != null)
+			{
+				if (FaradayBridge.HasCharacter(Current.FaradayLink.characterId))
+				{
+					Current.FaradayLink.isActive = true;
+					Current.IsFileDirty = true;
+					RefreshTitle();
+
+					MessageBox.Show(Resources.msg_link_reestablished, Resources.cap_link_reestablish, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				else
+				{
+					MessageBox.Show(Resources.error_link_reestablish, Resources.cap_link_reestablish, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				}
+			}
+		}
+
+		private void breakLinkMenuItem_Click(object sender, EventArgs e)
+		{
+			if (Current.FaradayLink != null)
+			{
+				Current.FaradayLink.isActive = false;
+				Current.IsFileDirty = true;
+				RefreshTitle();
+			}
+		}
+
+		private void enableAutosaveMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.FaradayLink.Autosave = !AppSettings.FaradayLink.Autosave;
 		}
 	}
 
