@@ -68,7 +68,7 @@
 	</System>
 
 	<Example>
-		[user]: "Hi, I'm [user]"
+		[user]: "Hi, I'm [user]."
 		[char]: "Hi there!" *[nocap]smiles[cap]*
 	</Example>
 
