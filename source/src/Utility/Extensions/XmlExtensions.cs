@@ -167,6 +167,11 @@ namespace Ginger
 			return AddAttribute(node, name, value.ToString());
 		}
 
+		public static bool AddAttribute(this XmlNode node, string name, long value)
+		{
+			return AddAttribute(node, name, value.ToString());
+		}
+
 		public static bool AddAttribute(this XmlNode node, string name, float value)
 		{
 			return AddAttribute(node, name, value.ToString("0.000", CultureInfo.InvariantCulture));
@@ -231,6 +236,18 @@ namespace Ginger
 
 			uint outValue;
 			if (uint.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out outValue))
+				return outValue;
+			return default_value;
+		}
+
+		public static long GetAttributeLong(this XmlNode node, string name, long default_value = 0)
+		{
+			string value = GetAttribute(node, name, null);
+			if (value == null)
+				return default_value;
+
+			long outValue;
+			if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out outValue))
 				return outValue;
 			return default_value;
 		}

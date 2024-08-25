@@ -35,6 +35,7 @@ namespace Ginger
 
 		public static StringBank Strings = new StringBank();
 		public static string Filename;
+		public static FaradayBridge.Link FaradayLink = null;
 
 		public static bool IsDirty
 		{
@@ -95,6 +96,7 @@ namespace Ginger
 			Card = new CardData();
 			Character = new CharacterData();
 			SelectedCharacter = 0;
+			FaradayLink = null;
 			Filename = null;
 			IsDirty = false;
 			IsFileDirty = false;
@@ -263,7 +265,8 @@ namespace Ginger
 					Characters.Add(characterData);
 				}
 			}
-			
+
+			FaradayLink = card.faradayLink;
 		}
 
 		public static void ReadFaradayCard(FaradayCardV4 card, Image portrait)
@@ -706,5 +709,23 @@ namespace Ginger
 			return CardData.TextStyle.None;
 		}
 
+		public static void LinkWith(FaradayBridge.CharacterInstance character)
+		{
+			FaradayLink = new FaradayBridge.Link() {
+				characterId = character.instanceId,
+				updateDate = character.updateDate,
+				isActive = true,
+			};
+			IsFileDirty = true;
+		}
+
+		public static void Unlink()
+		{
+			if (FaradayLink != null)
+			{
+				FaradayLink.isActive = false;
+				IsFileDirty = true;
+			}
+		}
 	}
 }

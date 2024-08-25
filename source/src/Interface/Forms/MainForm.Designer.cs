@@ -37,6 +37,7 @@ namespace Ginger {
 			this.enableLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem10 = new System.Windows.Forms.ToolStripSeparator();
 			this.importFromFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveToFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveNewToFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitContainer = new System.Windows.Forms.SplitContainer();
 			this.sidePanel = new Ginger.SidePanel();
@@ -145,7 +146,6 @@ namespace Ginger {
 			this.statusBar = new System.Windows.Forms.StatusStrip();
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusBarActor = new System.Windows.Forms.ToolStripStatusLabel();
-			this.saveToFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -243,6 +243,13 @@ namespace Ginger {
 			this.importFromFaradayMenuItem.Size = new System.Drawing.Size(187, 22);
 			this.importFromFaradayMenuItem.Text = "Open...";
 			this.importFromFaradayMenuItem.Click += new System.EventHandler(this.importFromFaradayMenuItem_Click);
+			// 
+			// saveToFaradayMenuItem
+			// 
+			this.saveToFaradayMenuItem.Name = "saveToFaradayMenuItem";
+			this.saveToFaradayMenuItem.Size = new System.Drawing.Size(187, 22);
+			this.saveToFaradayMenuItem.Text = "Save";
+			this.saveToFaradayMenuItem.Click += new System.EventHandler(this.saveToFaradayMenuItem_Click);
 			// 
 			// saveNewToFaradayMenuItem
 			// 
@@ -1161,7 +1168,7 @@ namespace Ginger {
 			// 
 			this.outputPreviewFaradayMenuItem.Name = "outputPreviewFaradayMenuItem";
 			this.outputPreviewFaradayMenuItem.Size = new System.Drawing.Size(134, 22);
-			this.outputPreviewFaradayMenuItem.Text = "Backyard.ai";
+			this.outputPreviewFaradayMenuItem.Text = "Backyard AI";
 			this.outputPreviewFaradayMenuItem.Click += new System.EventHandler(this.outputPreviewFaradayMenuItem_Click);
 			// 
 			// outputPreviewPlainTextMenuItem
@@ -1364,12 +1371,6 @@ namespace Ginger {
 			this.statusBarActor.Size = new System.Drawing.Size(1231, 17);
 			this.statusBarActor.Spring = true;
 			this.statusBarActor.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
-			// saveToFaradayMenuItem
-			// 
-			this.saveToFaradayMenuItem.Name = "saveToFaradayMenuItem";
-			this.saveToFaradayMenuItem.Size = new System.Drawing.Size(187, 22);
-			this.saveToFaradayMenuItem.Text = "Save";
 			// 
 			// MainForm
 			// 

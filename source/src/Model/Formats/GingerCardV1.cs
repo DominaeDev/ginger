@@ -25,6 +25,7 @@ namespace Ginger
 		public DateTime creationDate = DateTime.UtcNow;
 		public int missingRecipes = 0;
 		public string[] sources = null;
+		public FaradayBridge.Link faradayLink = null;
 
 		public class Character
 		{
@@ -176,6 +177,14 @@ namespace Ginger
 				characterNode = characterNode.GetNextSibling();
 			}
 
+			// Link
+			var linkNode = xmlNode.GetFirstElement("Link");
+			if (linkNode != null)
+			{
+				faradayLink = new FaradayBridge.Link();
+				faradayLink.LoadFromXml(linkNode);
+			}
+
 			return true;
 		}
 
@@ -251,6 +260,13 @@ namespace Ginger
 							parameter.SaveValueToXml(instanceNode);
 					}
 				}
+			}
+
+			// Link
+			if (faradayLink != null)
+			{
+				var linkNode = xmlNode.AddElement("Link");
+				faradayLink.SaveToXml(linkNode);
 			}
 		}
 

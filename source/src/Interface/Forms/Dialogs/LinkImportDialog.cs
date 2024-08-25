@@ -10,7 +10,7 @@ namespace Ginger
 	{
 		public FaradayBridge.CharacterInstance[] Characters;
 		public FaradayBridge.FolderInstance[] Folders;
-		public FaradayBridge.CharacterInstance SelectedCharacter;
+		public FaradayBridge.CharacterInstance SelectedCharacter { get; private set; }
 
 		public LinkImportDialog()
 		{
@@ -22,7 +22,9 @@ namespace Ginger
 		private void OnLoad(object sender, EventArgs e)
 		{
 			PopulateTree();
+
 			treeView.SelectedNode = null;
+			SelectedCharacter = default(FaradayBridge.CharacterInstance);
 
 			btnOk.Enabled = false;
 		}

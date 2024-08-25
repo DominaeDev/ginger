@@ -706,4 +706,33 @@ it to leave the context over time.</value>
   <data name="tooltip_enable_scenario" xml:space="preserve">
     <value>Include scenario in the output.</value>
   </data>
+  <data name="cap_link_error" xml:space="preserve">
+    <value>Link error</value>
+  </data>
+  <data name="cap_link_overwrite" xml:space="preserve">
+    <value>Overwrite character data</value>
+  </data>
+  <data name="cap_link_save_character" xml:space="preserve">
+    <value>Save character to Backyard AI</value>
+  </data>
+  <data name="error_link_failed" xml:space="preserve">
+    <value>Failed to establish link with Backyard AI.</value>
+  </data>
+  <data name="error_link_save_character" xml:space="preserve">
+    <value>Failed to save character to Backyard AI. Operation cancelled.</value>
+  </data>
+  <data name="error_link_unrecognized_character" xml:space="preserve">
+    <value>Failed to save character to Backyard AI. Character not found.</value>
+  </data>
+  <data name="msg_confirm_no_persona" xml:space="preserve">
+    <value>This character does not contain a persona and may not function properly.
+Continue?</value>
+  </data>
+  <data name="msg_link_confirm_overwrite" xml:space="preserve">
+    <value>This character has been changed since you opened it.
+Do you want to overwrite these changes?</value>
+  </data>
+  <data name="msg_link_saved" xml:space="preserve">
+    <value>Character was successfully saved.</value>
+  </data>
 </root>

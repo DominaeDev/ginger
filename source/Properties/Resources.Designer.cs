@@ -354,6 +354,33 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Link error.
+        /// </summary>
+        internal static string cap_link_error {
+            get {
+                return ResourceManager.GetString("cap_link_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overwrite character data.
+        /// </summary>
+        internal static string cap_link_overwrite {
+            get {
+                return ResourceManager.GetString("cap_link_overwrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save character to Backyard AI.
+        /// </summary>
+        internal static string cap_link_save_character {
+            get {
+                return ResourceManager.GetString("cap_link_save_character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to open file.
         /// </summary>
         internal static string cap_load_error {
@@ -666,6 +693,33 @@ namespace Ginger.Properties {
         internal static string error_launch_text_editor {
             get {
                 return ResourceManager.GetString("error_launch_text_editor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to establish link with Backyard AI..
+        /// </summary>
+        internal static string error_link_failed {
+            get {
+                return ResourceManager.GetString("error_link_failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to save character to Backyard AI. Operation cancelled..
+        /// </summary>
+        internal static string error_link_save_character {
+            get {
+                return ResourceManager.GetString("error_link_save_character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to save character to Backyard AI. Character not found..
+        /// </summary>
+        internal static string error_link_unrecognized_character {
+            get {
+                return ResourceManager.GetString("error_link_unrecognized_character", resourceCulture);
             }
         }
         
@@ -1029,7 +1083,7 @@ namespace Ginger.Properties {
         ///	&lt;Name&gt;Other/Grammar&lt;/Name&gt;
         ///	&lt;Description&gt;
         ///		Custom grammar definition.
-        ///		(Only supported in Backyard.ai)
+        ///		(Only supported in Backyard AI)
         ///	&lt;/Description&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
         ///	&lt;Order&gt;3&lt;/Order&gt;
@@ -1238,6 +1292,16 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This character does not contain a persona and may not function properly.
+        ///Continue?.
+        /// </summary>
+        internal static string msg_confirm_no_persona {
+            get {
+                return ResourceManager.GetString("msg_confirm_no_persona", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This will allow &quot;not safe for work&quot; content, which can include mature themes and potentially offensive material. Continue?.
         /// </summary>
         internal static string msg_confirm_nsfw {
@@ -1289,6 +1353,25 @@ namespace Ginger.Properties {
         internal static string msg_incremental_file_exists {
             get {
                 return ResourceManager.GetString("msg_incremental_file_exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This character has been changed since you opened it.
+        ///Do you want to overwrite these changes?.
+        /// </summary>
+        internal static string msg_link_confirm_overwrite {
+            get {
+                return ResourceManager.GetString("msg_link_confirm_overwrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character was successfully saved..
+        /// </summary>
+        internal static string msg_link_saved {
+            get {
+                return ResourceManager.GetString("msg_link_saved", resourceCulture);
             }
         }
         

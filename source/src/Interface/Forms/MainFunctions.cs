@@ -584,7 +584,7 @@ namespace Ginger
 
 			// Save as...
 			exportFileDialog.Title = Resources.cap_export_character;
-			exportFileDialog.Filter = "Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard.ai PNG|*.png|CharX file|*.charx|Text Generation WebUI YAML|*.yaml";
+			exportFileDialog.Filter = "Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard AI PNG|*.png|CharX file|*.charx|Text Generation WebUI YAML|*.yaml";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			exportFileDialog.FilterIndex = AppSettings.User.LastExportCharacterFilter;
@@ -1477,7 +1477,7 @@ namespace Ginger
 			FaradayBridge.FolderInstance[] folders;
 			if (FaradayBridge.GetCharacters(out characters, out folders) != FaradayBridge.Error.NoError)
 			{
-				MessageBox.Show("Failed to establish link with Backyard.ai.", "Link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
@@ -1510,6 +1510,7 @@ namespace Ginger
 
 			// Success
 			Current.ReadFaradayCard(faradayData, image);
+			Current.LinkWith(dlg.SelectedCharacter);
 
 			ClearStatusBarMessage();
 
@@ -1518,6 +1519,61 @@ namespace Ginger
 			Current.IsFileDirty = false;
 			Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
 			return true;
+		}
+
+		private bool WriteCharacterToFaraday()
+		{
+			if (FaradayBridge.ConnectionEstablished == false)
+			{
+				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				FaradayBridge.Disconnect();
+				return false;
+			}
+			else if (Current.FaradayLink == null)
+			{
+				MessageBox.Show(Resources.error_link_unrecognized_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Current.Unlink();
+				return false;
+			}
+
+			FaradayCardV4 card = FaradayCardV4.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.Faraday));
+
+			// Check if character exists, has newer changes
+			bool hasChanges;
+			FaradayBridge.Error error = FaradayBridge.ConfirmSaveCharacter(card, Current.FaradayLink, out hasChanges);
+			if (error == FaradayBridge.Error.NoDataFound)
+			{
+				MessageBox.Show(Resources.error_link_unrecognized_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Current.Unlink();
+				return false;
+			}
+			else if (error != FaradayBridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+			else if (hasChanges)
+			{
+				// Overwrite prompt
+				var mr = MessageBox.Show(Resources.msg_link_confirm_overwrite, Resources.cap_link_overwrite, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+				if (mr != DialogResult.Yes)
+					return false;
+			}
+
+			DateTime updateDate;
+			error = FaradayBridge.SaveCharacter(card, Current.FaradayLink, out updateDate);
+			if (error != FaradayBridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+			else
+			{
+				Current.FaradayLink.updateDate = updateDate;
+				Current.IsFileDirty = true;
+				MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return true;
+			}
 		}
 	}
 }

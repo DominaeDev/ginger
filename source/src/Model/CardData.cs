@@ -37,6 +37,9 @@ namespace Ginger
 		public int permanentTokensSilly { get { return lastTokenCounts[2]; } }
 		public int[] lastTokenCounts = new int[3] { 0, 0, 0 };
 
+		// Link
+		public static FaradayBridge.Link FaradayLink = null;
+
 		public string userPlaceholder
 		{
 			get { return string.IsNullOrWhiteSpace(_userPlaceholder) ? Constants.DefaultUserName : _userPlaceholder.Trim() ?? ""; }

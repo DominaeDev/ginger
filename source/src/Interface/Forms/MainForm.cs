@@ -1135,7 +1135,9 @@ namespace Ginger
 			// Link menu
 			enableLinkMenuItem.Checked = FaradayBridge.ConnectionEstablished;
 			importFromFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
-			saveToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
+			saveToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished
+				&& Current.FaradayLink != null
+				&& Current.FaradayLink.isActive;
 			saveNewToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
 		}
 
@@ -1980,7 +1982,7 @@ namespace Ginger
 				}
 				else
 				{
-					MessageBox.Show("Unable to read from Backyard.ai.", "Link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					AppSettings.FaradayLink.Enabled = false;
 					return;
 				}
@@ -1995,6 +1997,11 @@ namespace Ginger
 		private void importFromFaradayMenuItem_Click(object sender, EventArgs e)
 		{
 			ImportCharacterFromFaraday();
+		}
+
+		private void saveToFaradayMenuItem_Click(object sender, EventArgs e)
+		{
+			WriteCharacterToFaraday();
 		}
 	}
 
