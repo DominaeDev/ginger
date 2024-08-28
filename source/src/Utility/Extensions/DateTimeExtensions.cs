@@ -9,11 +9,11 @@ namespace Ginger
 			try
 			{
 				if (unixTime == 0) // Undefined
-					return DateTime.UtcNow;
+					return DateTime.Now;
 				else if (unixTime > 999999999999) // In milliseconds (probably)
-					return DateTimeOffset.FromUnixTimeMilliseconds(unixTime).DateTime;
+					return DateTimeOffset.FromUnixTimeMilliseconds(unixTime).DateTime.ToLocalTime();
 				else // In seconds
-					return DateTimeOffset.FromUnixTimeSeconds(unixTime).DateTime;
+					return DateTimeOffset.FromUnixTimeSeconds(unixTime).DateTime.ToLocalTime();
 			}
 			catch
 			{

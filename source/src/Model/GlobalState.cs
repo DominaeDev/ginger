@@ -35,19 +35,7 @@ namespace Ginger
 
 		public static StringBank Strings = new StringBank();
 		public static string Filename;
-		public static FaradayBridge.Link FaradayLink = null;
-		public static bool HasLink { get { return FaradayLink != null; } }
-		public static bool HasActiveLink { get { return FaradayLink != null && FaradayLink.isActive; } }
-		public static bool HasStaleLink { get { return FaradayLink != null && !FaradayLink.isActive && string.IsNullOrEmpty(FaradayLink.characterId) == false; } }
-
-		public static bool IsLinkDirty
-		{
-			get { return FaradayLink != null && FaradayLink.isDirty; }
-			set { if (FaradayLink != null) 
-					FaradayLink.isDirty = value;
-			}
-		}
-
+		
 		public static bool IsDirty
 		{
 			get { return _bDirty; }
@@ -58,9 +46,26 @@ namespace Ginger
 		public static bool IsFileDirty 
 		{ 
 			get { return _bFileDirty; }
-			set { _bFileDirty = value; if (value) IsLinkDirty = true; }
+			set { 
+				_bFileDirty = value; 
+				if (value) IsLinkDirty = true; }
 		}
 		private static bool _bFileDirty = false;
+
+		public static FaradayBridge.Link FaradayLink = null;
+		public static bool HasLink { get { return FaradayLink != null; } }
+		public static bool HasActiveLink { get { return FaradayLink != null && FaradayLink.isActive; } }
+		public static bool HasStaleLink { get { return FaradayLink != null && !FaradayLink.isActive && string.IsNullOrEmpty(FaradayLink.characterId) == false; } }
+
+		public static bool IsLinkDirty
+		{
+			get { return FaradayLink != null && FaradayLink.isActive && FaradayLink.isDirty; }
+			set 
+			{ 
+				if (FaradayLink != null) 
+					FaradayLink.isDirty = value;
+			}
+		}
 
 		public static IEnumerable<Recipe> AllRecipes { get { return Characters.SelectMany(c => c.recipes); } }
 		public static IRuleSupplier[] RuleSuppliers { get { return new IRuleSupplier[] { Strings }; } }

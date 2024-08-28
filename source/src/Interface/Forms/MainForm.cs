@@ -123,8 +123,6 @@ namespace Ginger
 
 			Regenerate();
 			Current.IsFileDirty = false;
-			if (Current.HasLink)
-				Current.FaradayLink.RefreshState();
 			RefreshTitle();
 
 #if DEBUG
@@ -933,8 +931,12 @@ namespace Ginger
 			Current.IsLoading = true;
 			Current.IsDirty = false;
 			Current.IsFileDirty = false;
+			if (Current.HasLink)
+				Current.FaradayLink.RefreshState();
 
 			Current.OnLoadCharacter?.Invoke(null, EventArgs.Empty);
+
+
 			Current.IsLoading = false;
 			Cursor = Cursors.Default;
 			ClearStatusBarMessage();
@@ -1036,25 +1038,25 @@ namespace Ginger
 				if (Current.HasActiveLink)
 				{
 					statusConnectionIcon.Image = Resources.link_active;
-					statusConnectionIcon.ToolTipText = "Link is active";
+					statusConnectionIcon.ToolTipText = "Connected; Link active";
 				}
 				else if (Current.HasLink)
 				{
 					if (FaradayBridge.HasCharacter(Current.FaradayLink.characterId))
 					{
 						statusConnectionIcon.Image = Resources.link_inactive;
-						statusConnectionIcon.ToolTipText = "Link inactive";
+						statusConnectionIcon.ToolTipText = "Connected; Link inactive";
 					}
 					else
 					{
 						statusConnectionIcon.Image = Resources.link_broken;
-						statusConnectionIcon.ToolTipText = "Link broken";
+						statusConnectionIcon.ToolTipText = "Connected; Link broken";
 					}
 				}
 				else
 				{
 					statusConnectionIcon.Image = Resources.link_connected;
-					statusConnectionIcon.ToolTipText = "Connected";
+					statusConnectionIcon.ToolTipText = "Connected; No link";
 				}
 			}
 			else
@@ -1195,7 +1197,7 @@ namespace Ginger
 			// Link menu
 			enableLinkMenuItem.Checked = FaradayBridge.ConnectionEstablished;
 			importFromFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
-			saveToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished && Current.HasActiveLink && AppSettings.FaradayLink.Autosave == false;
+			saveToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished && Current.HasActiveLink;
 			saveNewToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished && Current.HasActiveLink == false;
 			enableAutosaveMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
 			enableAutosaveMenuItem.Checked = FaradayBridge.ConnectionEstablished && AppSettings.FaradayLink.Autosave;

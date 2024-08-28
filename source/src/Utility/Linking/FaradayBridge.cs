@@ -62,7 +62,8 @@ namespace Ginger
 				xmlNode.AddAttribute("active", isActive);
 				xmlNode.AddAttribute("id", characterId);
 				xmlNode.AddAttribute("updated", updateDate.ToUnixTimeMilliseconds());
-				xmlNode.AddAttribute("dirty", isDirty);
+				if (isActive)
+					xmlNode.AddAttribute("dirty", isDirty);
 			}
 
 			public void RefreshState()
@@ -189,7 +190,6 @@ namespace Ginger
 				"context", "TEXT",
 				"customDialogue", "TEXT",
 				"canDeleteCustomDialogue", "BOOLEAN",
-				"useForTelemetry", "BOOLEAN",
 				"authorNote", "TEXT",
 				"model", "TEXT",
 				"modelInstructions", "TEXT",
@@ -804,7 +804,7 @@ namespace Ginger
 						}
 					}
 
-					DateTime now = DateTime.UtcNow;
+					DateTime now = DateTime.Now;
 					long updatedAt = now.ToUnixTimeMilliseconds();
 
 					// Write to database
@@ -1111,7 +1111,7 @@ namespace Ginger
 					string groupId		= Cuid.NewCuid();
 					string imageId		= Cuid.NewCuid();
 					string userId		= null;
-					DateTime now = DateTime.UtcNow;
+					DateTime now = DateTime.Now;
 					long createdAt = now.ToUnixTimeMilliseconds();
 					string folderOrder = null;
 

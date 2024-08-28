@@ -354,7 +354,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Link character.
+        ///   Looks up a localized string similar to Create link.
         /// </summary>
         internal static string cap_link_character {
             get {
@@ -363,7 +363,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Link error.
+        ///   Looks up a localized string similar to Linking error.
         /// </summary>
         internal static string cap_link_error {
             get {
@@ -372,7 +372,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Overwrite Backyard AI character data.
+        ///   Looks up a localized string similar to Overwrite Backyard AI character.
         /// </summary>
         internal static string cap_link_overwrite {
             get {
@@ -381,7 +381,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reestablish character link.
+        ///   Looks up a localized string similar to Reestablish link to character.
         /// </summary>
         internal static string cap_link_reestablish {
             get {
@@ -751,7 +751,9 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to reestablish link. The character may have been removed. Would you like to clear the link?.
+        ///   Looks up a localized string similar to Unable to reestablish link. Character not found.
+        ///
+        ///Do you want to remove the link from this file?.
         /// </summary>
         internal static string error_link_reestablish {
             get {
@@ -1470,7 +1472,9 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This character has been modified in Backyard AI. Do you want to continue and overwrite those changes?.
+        ///   Looks up a localized string similar to This character has been modified in Backyard AI.
+        ///
+        ///Do you want to continue and overwrite those changes?.
         /// </summary>
         internal static string msg_link_confirm_overwrite {
             get {
@@ -1479,7 +1483,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Would you like to create a link between Backyard AI and the currently opened file?.
+        ///   Looks up a localized string similar to Do you want to create a link between Ginger and Backyard AI for the currently open file?.
         /// </summary>
         internal static string msg_link_new {
             get {
@@ -1497,7 +1501,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Character successfully saved to Backyard AI.
+        ///   Looks up a localized string similar to Successfully saved character to Backyard AI.
         /// </summary>
         internal static string msg_link_saved {
             get {
@@ -2433,7 +2437,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Break the link connecting this character card to Backyard AI..
+        ///   Looks up a localized string similar to Break the link connecting this file to a Backyard AI character..
         /// </summary>
         internal static string tooltip_link_break {
             get {
@@ -2442,8 +2446,8 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable Ginger to open and save characters for a local installation of Backyard AI.
-        ///(Backyard AI must be installed on the system.).
+        ///   Looks up a localized string similar to Attempt to connect to a local installation of Backyard AI.
+        ///(Backyard AI must be installed on this system.).
         /// </summary>
         internal static string tooltip_link_connect {
             get {
@@ -2452,7 +2456,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open a Backyard AI character card..
+        ///   Looks up a localized string similar to Open a Backyard AI character..
         /// </summary>
         internal static string tooltip_link_open {
             get {
@@ -2461,7 +2465,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attempt to reestablish the link connecting this character card to Backyard AI..
+        ///   Looks up a localized string similar to Attempt to reestablish the link connecting this file to a Backyard AI character..
         /// </summary>
         internal static string tooltip_link_reestablish {
             get {
@@ -2470,7 +2474,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save changes to Backyard AI..
+        ///   Looks up a localized string similar to Save changes to the linked Backyard AI character..
         /// </summary>
         internal static string tooltip_link_save {
             get {
@@ -2479,7 +2483,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save as a new character in Backyard AI..
+        ///   Looks up a localized string similar to Save as a new Backyard AI character..
         /// </summary>
         internal static string tooltip_link_save_as_new {
             get {

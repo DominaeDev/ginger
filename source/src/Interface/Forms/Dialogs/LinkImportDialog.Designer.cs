@@ -87,7 +87,7 @@ namespace Ginger
 			// 
 			this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
 			this.imageList.TransparentColor = System.Drawing.Color.Transparent;
-			this.imageList.Images.SetKeyName(0, "folder.png");
+			this.imageList.Images.SetKeyName(0, "tree_folder.png");
 			this.imageList.Images.SetKeyName(1, "character_small.png");
 			// 
 			// buttonLayout
@@ -147,7 +147,7 @@ namespace Ginger
 			this.Name = "LinkImportDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Open character from Backyard AI";
+			this.Text = "Open Backyard AI character";
 			listPanel.ResumeLayout(false);
 			buttonLayout.ResumeLayout(false);
 			this.ResumeLayout(false);

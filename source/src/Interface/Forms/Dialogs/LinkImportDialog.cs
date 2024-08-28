@@ -41,11 +41,22 @@ namespace Ginger
 			var nodesById = new Dictionary<string, TreeNode>();
 			string rootId = Folders.FirstOrDefault(f => f.isRoot).instanceId;
 			nodesById.Add(rootId, null);
-			foreach (var folder in Folders
-				.Where(f => f.parentId != null)
-				.OrderBy(c => c.name))
+
+			var openList = new List<string>(Folders
+				.Select(f => f.instanceId)
+				.Distinct());
+
+			while (openList.Count > 0)
 			{
-				CreateFolderNode(folder, nodesById, Characters.Count(c => c.folderId == folder.instanceId));
+				string parentId = openList[0];
+				var subfolders = Folders
+					.Where(f => f.parentId == parentId)
+					.OrderBy(c => c.name);
+
+				foreach (var folder in subfolders)
+					CreateFolderNode(folder, nodesById, Characters.Count(c => c.folderId == folder.instanceId));
+				
+				openList.Remove(parentId);
 			}
 
 			// Create characters

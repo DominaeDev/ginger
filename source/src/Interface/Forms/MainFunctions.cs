@@ -1103,7 +1103,11 @@ namespace Ginger
 					return false; // User clicked 'cancel'
 				else if (autosaveError == FaradayBridge.Error.Dismissed)
 					bShouldAutosave = false; // User clicked 'no'
-				bAutoSaved = autosaveError == FaradayBridge.Error.NoError;
+				else if (autosaveError == FaradayBridge.Error.NoError)
+				{
+					bAutoSaved = true;
+					Current.IsLinkDirty = false;
+				}
 			}
 
 			if (FileUtil.Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, formats))
@@ -1671,8 +1675,9 @@ namespace Ginger
 				if (FaradayBridge.GetCharacter(Current.FaradayLink.characterId, out characterInstance))
 				{
 					Current.FaradayLink.isActive = true;
-					Current.FaradayLink.RefreshState();
 					Current.IsFileDirty = true;
+					Current.IsLinkDirty = false;
+					Current.FaradayLink.RefreshState();
 					RefreshTitle();
 
 					SetStatusBarMessage(string.Format(Resources.msg_link_reestablished, characterInstance.displayName), 1500);
@@ -1694,8 +1699,8 @@ namespace Ginger
 			if (Current.FaradayLink != null)
 			{
 				SetStatusBarMessage(Resources.msg_link_break, 1500);
-				Current.FaradayLink.isActive = false;
 				Current.IsFileDirty = true;
+				Current.FaradayLink.isActive = false;
 				RefreshTitle();
 			}
 		}
