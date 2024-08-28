@@ -215,17 +215,8 @@ namespace Ginger
 			card.data.topP = AppSettings.Faraday.TopP;
 			card.data.minPEnabled = AppSettings.Faraday.MinPEnabled;
 			card.data.minP = AppSettings.Faraday.MinP;
-			switch (AppSettings.Faraday.PromptTemplate)
-			{
-			case 1: card.data.promptTemplate = "general"; break;
-			case 2: card.data.promptTemplate = "ChatML"; break;
-			case 3: card.data.promptTemplate = "Llama3"; break;
-			case 4: card.data.promptTemplate = "Gemma2"; break;
-			case 5: card.data.promptTemplate = "CommandR"; break;
-			case 6: card.data.promptTemplate = "MistralInstruct"; break;
-			default: card.data.promptTemplate = null; break;
-			}
 			card.data.pruneExampleChat = AppSettings.Faraday.PruneExampleChat;
+			card.data.promptTemplate = AppSettings.Faraday.GetPromptTemplateName();
 
 			return card;
 		}

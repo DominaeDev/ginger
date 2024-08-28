@@ -34,6 +34,9 @@ namespace Ginger
 
 		public static IEnumerable<FolderInstance> Folders { get { return _Folders.Values; } }
 		public static IEnumerable<CharacterInstance> Characters { get { return _Characters.Values; } }
+		public static string DefaultModel = null;
+		public static string DefaultUserConfigId = null;
+
 		private static Dictionary<string, FolderInstance> _Folders = new Dictionary<string, FolderInstance>();	// instanceId, value
 		private static Dictionary<string, CharacterInstance> _Characters = new Dictionary<string, CharacterInstance>(); // instanceId, value
 
@@ -42,12 +45,14 @@ namespace Ginger
 			public bool isActive;
 			public string characterId;
 			public DateTime updateDate;
+			public bool isDirty;
 
 			public bool LoadFromXml(XmlNode xmlNode)
 			{
 				characterId = xmlNode.GetAttribute("id", null);
 				isActive = xmlNode.GetAttributeBool("active") && string.IsNullOrEmpty(characterId) == false;
 				updateDate = DateTimeExtensions.FromUnixTime(xmlNode.GetAttributeLong("updated"));
+				isDirty = xmlNode.GetAttributeBool("dirty");
 				return true;
 			}
 
@@ -56,6 +61,7 @@ namespace Ginger
 				xmlNode.AddAttribute("active", isActive);
 				xmlNode.AddAttribute("id", characterId);
 				xmlNode.AddAttribute("updated", updateDate.ToUnixTimeMilliseconds());
+				xmlNode.AddAttribute("dirty", isDirty);
 			}
 		}
 
@@ -75,17 +81,16 @@ namespace Ginger
 
 		private static SQLiteConnection CreateSQLiteConnection()
 		{
-			string dbFilename = AppSettings.FaradayLink.Location;
-			if (string.IsNullOrWhiteSpace(dbFilename))
-				dbFilename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
-				"faraday-canary", 
-				"db.sqlite"); // Fake database during testing
-
-			if (File.Exists(dbFilename) == false)
+			string faradayPath = AppSettings.FaradayLink.Location;
+			if (string.IsNullOrWhiteSpace(faradayPath))
+				faradayPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
+				"faraday-canary"); // Fake database during testing
+			string faradayDatabase = Path.Combine(faradayPath, "db.sqlite");
+			if (File.Exists(faradayDatabase) == false)
 				throw new FileNotFoundException();
 
-			AppSettings.FaradayLink.Location = dbFilename;
-			return new SQLiteConnection($"Data Source={dbFilename}; Version=3; Foreign Keys=True;");
+			AppSettings.FaradayLink.Location = faradayPath;
+			return new SQLiteConnection($"Data Source={faradayDatabase}; Version=3; Foreign Keys=True; Pooled=True;");
 		}
 
 		#region Establish Link
@@ -263,6 +268,24 @@ namespace Ginger
 						{
 							if (foundColumns.FindIndex(kvp => kvp.Key == expectedNames[j] && kvp.Value == expectedTypes[j]) == -1)
 								return Error.UnrecognizedStructure;
+						}
+					}
+
+					// Read settings
+					using (var cmdSettings = connection.CreateCommand())
+					{
+						cmdSettings.CommandText = @"SELECT model FROM AppSettings";
+
+						using (var reader = cmdSettings.ExecuteReader())
+						{
+							if (reader.Read())
+							{
+								DefaultModel = reader[0] as string;
+							}
+							else
+							{
+								DefaultModel = null;
+							}
 						}
 					}
 
@@ -669,7 +692,7 @@ namespace Ginger
 			}
 		}
 
-		public static Error SaveCharacter(FaradayCardV4 card, Link linkInfo, out DateTime updateDate)
+		public static Error UpdateCharacter(FaradayCardV4 card, Link linkInfo, out DateTime updateDate)
 		{
 			if (card == null || linkInfo == null || string.IsNullOrEmpty(linkInfo.characterId))
 			{
@@ -684,20 +707,21 @@ namespace Ginger
 			}
 
 			string characterId = linkInfo.characterId;
+			int hash = characterId.GetHashCode();
 			try
 			{
 				using (var connection = CreateSQLiteConnection())
 				{
 					connection.Open();
 
-					string configId = null; // "cm08fot680013bi9m9bo2y9np";
-					string groupId = null; // "cm08fot670010bi9mris37puk";
-					string chatId = null; // "cm08fot680011bi9myeboe02u";
+					string configId = null;
+					string groupId = null;
+					string chatId = null;
 
 					// Get row ids
-					using (var cmdRowIds = connection.CreateCommand())
+					using (var cmdGetIds = connection.CreateCommand())
 					{
-						cmdRowIds.CommandText =
+						cmdGetIds.CommandText =
 							@"
 							SELECT 
 								A.id, B.B, C.id
@@ -708,9 +732,9 @@ namespace Ginger
 								ON C.groupConfigId = B.B
 							WHERE A.characterConfigId = $1
 						";
-						cmdRowIds.Parameters.AddWithValue("$1", characterId);
+						cmdGetIds.Parameters.AddWithValue("$1", characterId);
 
-						using (var reader = cmdRowIds.ExecuteReader())
+						using (var reader = cmdGetIds.ExecuteReader())
 						{
 							if (reader.Read() == false)
 							{
@@ -724,6 +748,30 @@ namespace Ginger
 						}
 					}
 
+					// Get lore items
+					List<string> existingLoreItems = new List<string>();
+					using (var cmdLore = connection.CreateCommand())
+					{
+						cmdLore.CommandText =
+						@"
+							SELECT 
+								id
+							FROM AppCharacterLorebookItem AS A
+							WHERE A.id IN (
+								SELECT A
+								FROM _AppCharacterLorebookItemToCharacterConfigVersion
+								WHERE B = $1
+							);
+						";
+						cmdLore.Parameters.AddWithValue("$1", configId);
+
+						using (var reader = cmdLore.ExecuteReader())
+						{
+							while (reader.Read())
+								existingLoreItems.Add(reader.GetString(0));
+						}
+					}
+
 					DateTime now = DateTime.UtcNow;
 					long updatedAt = now.ToUnixTimeMilliseconds();
 
@@ -733,6 +781,10 @@ namespace Ginger
 						try
 						{
 							int updates = 0;
+							int expectedUpdates = 0;
+							
+							// Update character data
+
 							using (var cmdUpdate = new SQLiteCommand(connection))
 							{
 								var sbCommand = new StringBuilder();
@@ -772,12 +824,141 @@ namespace Ginger
 								cmdUpdate.Parameters.AddWithValue("$grammar", card.data.grammar);
 								cmdUpdate.Parameters.AddWithValue("$timestamp", updatedAt);
 
-								// (lore here)
+								expectedUpdates += 2;
 
-								updates = cmdUpdate.ExecuteNonQuery();
+								updates += cmdUpdate.ExecuteNonQuery();
 							}
 
-							if (updates != 2) // Expect exactly 2 changes
+							// Lorebook
+							if (card.data.loreItems.Length > 0 && card.data.loreItems.Length == existingLoreItems.Count)
+							{
+								// If there's an identical number of lore items in the DB already, only update the values
+								using (var cmdLore = new SQLiteCommand(connection))
+								{
+									var sbCommand = new StringBuilder();
+									for (int i = 0; i < card.data.loreItems.Length; ++i)
+									{
+										sbCommand.AppendFormat(
+										@"
+											UPDATE AppCharacterLorebookItem
+											SET 
+												createdAt = $timestamp,
+												updatedAt = $timestamp,
+												""order"" = $order{0:000},
+												key = $key{0:000},
+												value = $value{0:000}
+											WHERE id = $id{0:000};
+										", i);
+										cmdLore.Parameters.AddWithValue(string.Format("$key{0:000}", i), card.data.loreItems[i].key);
+										cmdLore.Parameters.AddWithValue(string.Format("$value{0:000}", i), card.data.loreItems[i].value);
+										cmdLore.Parameters.AddWithValue(string.Format("$id{0:000}", i), existingLoreItems[i]);
+										cmdLore.Parameters.AddWithValue(string.Format("$order{0:000}", i), MakeLoreSortPosition(i, card.data.loreItems.Length - 1, hash));
+									}
+									cmdLore.CommandText = sbCommand.ToString();
+									cmdLore.Parameters.AddWithValue("$timestamp", updatedAt);
+
+									expectedUpdates += card.data.loreItems.Length;
+									updates += cmdLore.ExecuteNonQuery();
+								}
+							}
+							else // Otherwise, if the count between existing and new lore items differs, do a full rewrite
+							{
+								// Delete old lore
+								if (existingLoreItems.Count > 0)
+								{
+									using (var cmdDeleteLore = new SQLiteCommand(connection))
+									{
+										var sbCommand = new StringBuilder();
+										sbCommand.AppendLine(
+										@"
+											DELETE FROM _AppCharacterLorebookItemToCharacterConfigVersion
+											WHERE B = $1;
+										");
+										sbCommand.AppendLine(
+										@"
+											DELETE FROM AppCharacterLorebookItem
+											WHERE id IN (
+										");
+										for (int i = 0; i < existingLoreItems.Count; ++i)
+										{
+											if (i > 0)
+												sbCommand.Append(", ");
+											sbCommand.AppendFormat("'{0}'", existingLoreItems[i]);
+										}
+										sbCommand.AppendLine(");");
+										
+										cmdDeleteLore.CommandText = sbCommand.ToString();
+										cmdDeleteLore.Parameters.AddWithValue("$1", configId);
+
+										expectedUpdates += existingLoreItems.Count * 2;
+										updates += cmdDeleteLore.ExecuteNonQuery();
+									}
+								}
+
+								// Insert new lore
+								if (card.data.loreItems.Length > 0)
+								{
+									// Generate unique IDs
+									var uids = new string[card.data.loreItems.Length];
+									for (int i = 0; i < uids.Length; ++i)
+										uids[i] = Cuid.NewCuid();
+
+									using (var cmdInsertLore = new SQLiteCommand(connection))
+									{
+										var sbCommand = new StringBuilder();
+										sbCommand.AppendLine(
+										@"
+											INSERT into AppCharacterLorebookItem (id, createdAt, updatedAt, ""order"", key, value)
+											VALUES ");
+										
+										for (int i = 0; i < card.data.loreItems.Length; ++i)
+										{
+											if (i > 0)
+												sbCommand.Append(",\n");
+											sbCommand.AppendFormat("($id{0:000}, $timestamp, $timestamp, $order{0:000}, $key{0:000}, $value{0:000})", i);
+
+											cmdInsertLore.Parameters.AddWithValue(string.Format("$id{0:000}", i), uids[i]);
+											cmdInsertLore.Parameters.AddWithValue(string.Format("$key{0:000}", i), card.data.loreItems[i].key);
+											cmdInsertLore.Parameters.AddWithValue(string.Format("$value{0:000}", i), card.data.loreItems[i].value);
+											cmdInsertLore.Parameters.AddWithValue(string.Format("$order{0:000}", i), MakeLoreSortPosition(i, card.data.loreItems.Length - 1, hash));
+										}
+										sbCommand.Append(";");
+										cmdInsertLore.CommandText = sbCommand.ToString();
+										cmdInsertLore.Parameters.AddWithValue("$timestamp", updatedAt);
+
+										expectedUpdates += card.data.loreItems.Length;
+										updates += cmdInsertLore.ExecuteNonQuery();
+									}
+
+									using (var cmdLoreRef = new SQLiteCommand(connection))
+									{
+										var sbCommand = new StringBuilder();
+										sbCommand.AppendLine(
+										@"
+											INSERT into _AppCharacterLorebookItemToCharacterConfigVersion (A, B)
+											VALUES ");
+										
+										for (int i = 0; i < uids.Length; ++i)
+										{
+											if (i > 0)
+												sbCommand.Append(",\n");
+											sbCommand.AppendFormat("($id{0:000}, $configId)", i);
+
+											cmdLoreRef.Parameters.AddWithValue(string.Format("$id{0:000}", i), uids[i]);
+										}
+										sbCommand.Append(";");
+										cmdLoreRef.CommandText = sbCommand.ToString();
+										cmdLoreRef.Parameters.AddWithValue("$configId", configId);
+										cmdLoreRef.Parameters.AddWithValue("$timestamp", updatedAt);
+
+										expectedUpdates += uids.Length;
+										updates += cmdLoreRef.ExecuteNonQuery();
+									}
+
+								}
+							}
+
+							if (updates != expectedUpdates)
 							{
 								transaction.Rollback();
 								updateDate = default(DateTime);
@@ -815,6 +996,415 @@ namespace Ginger
 				Disconnect();
 				updateDate = default(DateTime);
 				return Error.Unknown;
+			}
+		}
+
+		public static Error CreateNewCharacter(FaradayCardV4 card, out CharacterInstance character)
+		{
+			if (card == null)
+			{
+				character = default(CharacterInstance);
+				return Error.NoDataFound;
+			}
+
+			if (ConnectionEstablished == false)
+			{
+				character = default(CharacterInstance);
+				return Error.NotConnected;
+			}
+
+			// Get root folder
+			var rootFolder = _Folders.Values.FirstOrDefault(f => f.isRoot);
+			if (rootFolder.isRoot == false || string.IsNullOrEmpty(rootFolder.instanceId))
+			{
+				character = default(CharacterInstance);
+				return Error.Unknown;
+			}
+
+			// Prepare image information
+			bool bCanSaveImage = Current.Card.portraitImage != null;
+			int portraitWidth = 0;
+			int portraitHeight = 0;
+			byte[] imageBytes = null;
+			string imagePath = null;
+
+			// Ensure images folder exists
+			if (bCanSaveImage)
+			{
+				if (Directory.Exists(AppSettings.FaradayLink.Location) == false)
+					bCanSaveImage = false; // Error
+				else if (Directory.Exists(Path.Combine(AppSettings.FaradayLink.Location, "images")) == false)
+				{
+					try
+					{
+						Directory.CreateDirectory(Path.Combine(AppSettings.FaradayLink.Location, "images"));
+					}
+					catch (Exception e)
+					{
+						bCanSaveImage = false;
+					}
+				}
+
+				if (bCanSaveImage)
+				{
+					Image image = (Image)Current.Card.portraitImage;
+					portraitWidth = image.Width;
+					portraitHeight = image.Height;
+					imageBytes = Utility.ImageToMemory(image);
+					imagePath = Path.Combine(AppSettings.FaradayLink.Location, "images", string.Concat(Guid.NewGuid().ToString().ToLowerInvariant(), ".png")); // Random filename
+				}
+			}
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					string characterId	= Cuid.NewCuid();
+					string configId		= Cuid.NewCuid();
+					string chatId		= Cuid.NewCuid();
+					string groupId		= Cuid.NewCuid();
+					string imageId		= Cuid.NewCuid();
+					string userId		= null;
+					DateTime now = DateTime.UtcNow;
+					long createdAt = now.ToUnixTimeMilliseconds();
+					string folderOrder = null;
+
+					// Fetch default user
+					using (var cmdUser = connection.CreateCommand())
+					{ 
+						cmdUser.CommandText =
+						@"
+							SELECT id
+							FROM CharacterConfig
+							WHERE isDefaultUserCharacter = 1;
+						";
+
+						userId = cmdUser.ExecuteScalar() as string;
+						if (userId == null)
+						{
+							character = default(CharacterInstance);
+							return Error.CommandFailed; // Requires default user
+						}
+					}
+
+					// Fetch folder sort position
+					using (var cmdFolderOrder = connection.CreateCommand())
+					{ 
+						cmdFolderOrder.CommandText =
+						@"
+							SELECT folderSortPosition
+							FROM GroupConfig
+							WHERE folderId = $folderId
+							ORDER BY folderSortPosition ASC;
+						";
+						cmdFolderOrder.Parameters.AddWithValue("$folderId", rootFolder.instanceId);
+						folderOrder = cmdFolderOrder.ExecuteScalar() as string;
+					}
+
+					// Write to database
+					using (var transaction = connection.BeginTransaction())
+					{
+						try
+						{
+							int updates = 0;
+							int expectedUpdates = 0;
+							
+							using (var cmdCreate = new SQLiteCommand(connection))
+							{
+								var sbCommand = new StringBuilder();
+
+								// CharacterConfig
+								sbCommand.AppendLine(
+								@"
+									INSERT INTO CharacterConfig 
+										(id, createdAt, updatedAt, 
+											isUserControlled, isDefaultUserCharacter, isTemplateChar)
+									VALUES 
+										($charId, $timestamp, $timestamp, 
+											0, 0, 0);
+								");
+
+								// CharacterConfigVersion
+								sbCommand.AppendLine(
+								@"
+									INSERT INTO CharacterConfigVersion
+										(id, createdAt, updatedAt, displayName, name, persona, characterConfigId)
+									VALUES 
+										($configId, $timestamp, $timestamp, $displayName, $name, $persona, $charId);
+								");
+								
+								// GroupConfig
+								sbCommand.AppendLine(
+								@"
+									INSERT INTO GroupConfig
+										(id, createdAt, updatedAt, isNSFW, folderId, folderSortPosition,
+											name)
+									VALUES 
+										($groupId, $timestamp, $timestamp, $isNSFW, $folderId, $folderSortPosition,
+											''
+										);
+								");
+
+								// _CharacterConfigToGroupConfig
+								sbCommand.AppendLine(
+								@"
+									INSERT INTO _CharacterConfigToGroupConfig
+										(A, B)
+									VALUES 
+										($charId, $groupId),
+										($userId, $groupId);
+								");
+
+								// Chat
+								sbCommand.AppendLine(
+								@"
+									INSERT INTO Chat
+										(id, createdAt, updatedAt, context, customDialogue, canDeleteCustomDialogue, 
+											modelInstructions, greetingDialogue, grammar, groupConfigId, 
+											model, temperature, topP, minP, minPEnabled, topK, repeatPenalty, repeatLastN, promptTemplate,
+											name, authorNote)
+									VALUES 
+										($chatId, $timestamp, $timestamp, $scenario, $example, $pruneExample, 
+											$system, $greeting, $grammar, $groupId, 
+											$model, $temperature, $topP, $minP, $minPEnabled, $topK, $repeatPenalty, $repeatLastN, $promptTemplate,
+											'', '');
+								");
+
+								expectedUpdates += 6;
+
+								// AppImage
+								if (bCanSaveImage)
+								{
+									sbCommand.AppendLine(
+									@"
+										INSERT INTO AppImage
+											(id, createdAt, updatedAt, imageUrl, label, ""order"", aspectRatio)
+										VALUES 
+											($imageId, $timestamp, $timestamp, $imageUrl, '', 0, $aspectRatio);
+									");
+
+										// _AppImageToCharacterConfigVersion
+										sbCommand.AppendLine(
+										@"
+										INSERT INTO _AppImageToCharacterConfigVersion
+											(A, B)
+										VALUES 
+											($imageId, $configId);
+									");
+
+									cmdCreate.Parameters.AddWithValue("$imageUrl", imagePath);
+									cmdCreate.Parameters.AddWithValue("$aspectRatio", string.Format("{0}/{1}", portraitWidth, portraitHeight));
+
+									expectedUpdates += 2;
+								}
+
+								cmdCreate.CommandText = sbCommand.ToString();
+								cmdCreate.Parameters.AddWithValue("$charId", characterId);
+								cmdCreate.Parameters.AddWithValue("$userId", userId);
+								cmdCreate.Parameters.AddWithValue("$configId", configId);
+								cmdCreate.Parameters.AddWithValue("$groupId", groupId);
+								cmdCreate.Parameters.AddWithValue("$chatId", chatId);
+								cmdCreate.Parameters.AddWithValue("$imageId", imageId);
+								cmdCreate.Parameters.AddWithValue("$displayName", card.data.displayName);
+								cmdCreate.Parameters.AddWithValue("$name", card.data.name);
+								cmdCreate.Parameters.AddWithValue("$system", card.data.system);
+								cmdCreate.Parameters.AddWithValue("$persona", card.data.persona);
+								cmdCreate.Parameters.AddWithValue("$scenario", card.data.scenario);
+								cmdCreate.Parameters.AddWithValue("$example", card.data.example);
+								cmdCreate.Parameters.AddWithValue("$greeting", card.data.greeting);
+								cmdCreate.Parameters.AddWithValue("$grammar", card.data.grammar ?? "");
+								cmdCreate.Parameters.AddWithValue("$folderId", rootFolder.instanceId);
+								cmdCreate.Parameters.AddWithValue("$folderSortPosition", MakeFolderSortPosition(folderOrder));
+								cmdCreate.Parameters.AddWithValue("$isNSFW", card.data.isNSFW);
+								cmdCreate.Parameters.AddWithValue("$timestamp", createdAt);
+								cmdCreate.Parameters.AddWithValue("$model", DefaultModel);
+								cmdCreate.Parameters.AddWithValue("$pruneExample", AppSettings.Faraday.PruneExampleChat);
+								cmdCreate.Parameters.AddWithValue("$temperature", AppSettings.Faraday.Temperature);
+								cmdCreate.Parameters.AddWithValue("$topP", AppSettings.Faraday.TopP);
+								cmdCreate.Parameters.AddWithValue("$minP", AppSettings.Faraday.MinP);
+								cmdCreate.Parameters.AddWithValue("$minPEnabled", AppSettings.Faraday.MinPEnabled);
+								cmdCreate.Parameters.AddWithValue("$topK", AppSettings.Faraday.TopK);
+								cmdCreate.Parameters.AddWithValue("$repeatPenalty", AppSettings.Faraday.RepeatPenalty);
+								cmdCreate.Parameters.AddWithValue("$repeatLastN", AppSettings.Faraday.RepeatPenaltyTokens);
+								cmdCreate.Parameters.AddWithValue("$promptTemplate", AppSettings.Faraday.GetPromptTemplateName());
+
+								updates += cmdCreate.ExecuteNonQuery();
+							}
+
+							if (card.data.loreItems.Length > 0)
+							{
+								// Generate unique IDs
+								var uids = new string[card.data.loreItems.Length];
+								for (int i = 0; i < uids.Length; ++i)
+									uids[i] = Cuid.NewCuid();
+
+								int hash = characterId.GetHashCode();
+								using (var cmdInsertLore = new SQLiteCommand(connection))
+								{
+									var sbCommand = new StringBuilder();
+									sbCommand.AppendLine(
+									@"
+										INSERT into AppCharacterLorebookItem (id, createdAt, updatedAt, ""order"", key, value)
+										VALUES ");
+										
+									for (int i = 0; i < card.data.loreItems.Length; ++i)
+									{
+										if (i > 0)
+											sbCommand.Append(",\n");
+										sbCommand.AppendFormat("($id{0:000}, $timestamp, $timestamp, $order{0:000}, $key{0:000}, $value{0:000})", i);
+
+										cmdInsertLore.Parameters.AddWithValue(string.Format("$id{0:000}", i), uids[i]);
+										cmdInsertLore.Parameters.AddWithValue(string.Format("$key{0:000}", i), card.data.loreItems[i].key);
+										cmdInsertLore.Parameters.AddWithValue(string.Format("$value{0:000}", i), card.data.loreItems[i].value);
+										cmdInsertLore.Parameters.AddWithValue(string.Format("$order{0:000}", i), MakeLoreSortPosition(i, card.data.loreItems.Length - 1, hash));
+									}
+									sbCommand.Append(";");
+									cmdInsertLore.CommandText = sbCommand.ToString();
+									cmdInsertLore.Parameters.AddWithValue("$timestamp", createdAt);
+
+									expectedUpdates += card.data.loreItems.Length;
+									updates += cmdInsertLore.ExecuteNonQuery();
+								}
+
+								using (var cmdLoreRef = new SQLiteCommand(connection))
+								{
+									var sbCommand = new StringBuilder();
+									sbCommand.AppendLine(
+									@"
+										INSERT into _AppCharacterLorebookItemToCharacterConfigVersion (A, B)
+										VALUES ");
+										
+									for (int i = 0; i < uids.Length; ++i)
+									{
+										if (i > 0)
+											sbCommand.Append(",\n");
+										sbCommand.AppendFormat("($id{0:000}, $configId)", i);
+
+										cmdLoreRef.Parameters.AddWithValue(string.Format("$id{0:000}", i), uids[i]);
+									}
+									sbCommand.Append(";");
+									cmdLoreRef.CommandText = sbCommand.ToString();
+									cmdLoreRef.Parameters.AddWithValue("$configId", configId);
+									cmdLoreRef.Parameters.AddWithValue("$timestamp", createdAt);
+
+									expectedUpdates += uids.Length;
+									updates += cmdLoreRef.ExecuteNonQuery();
+								}
+
+							}
+							
+							if (updates != expectedUpdates)
+							{
+								transaction.Rollback();
+								character = default(CharacterInstance);
+								return Error.CommandFailed;
+							}
+
+							// Write image to file
+							if (bCanSaveImage)
+							{
+								try
+								{
+									using (FileStream fs = File.Open(imagePath, FileMode.CreateNew, FileAccess.Write))
+									{
+										fs.Write(imageBytes, 0, imageBytes.Length);
+									}
+								}
+								catch
+								{
+									// Do nothing
+								}
+							}
+
+							character = new CharacterInstance() {
+								instanceId = characterId,
+								configId = configId,
+								groupId = groupId,
+								displayName = card.data.displayName,
+								name = card.data.name,
+								creationDate = now,
+								updateDate = now,
+								folderId = rootFolder.instanceId,
+							};
+
+							transaction.Commit();
+							return Error.NoError;
+						}
+						catch (Exception e)
+						{
+							transaction.Rollback();
+
+							character = default(CharacterInstance);
+							return Error.CommandFailed;
+						}
+					}
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Disconnect();
+				character = default(CharacterInstance);
+				return Error.FileNotFound;
+			}
+			catch (SQLiteException e)
+			{
+				Disconnect();
+				character = default(CharacterInstance);
+				return Error.CommandFailed;
+			}
+			catch (Exception e)
+			{
+				Disconnect();
+				character = default(CharacterInstance);
+				return Error.Unknown;
+			}
+		}
+
+		private static string MakeLoreSortPosition(int index, int maxIndex, int hash)
+		{
+			RandomNoise rng = new RandomNoise(hash, 0);
+			const string key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+			char[] p = new char[6];
+			for (int i = 0; i < p.Length; ++i)
+				p[i] = key[rng.Int(52)];
+			string prefix = new string(p);
+
+			const int @base = 26;
+			int digits = (int)Math.Ceiling(Math.Log((maxIndex * 2) + 1, @base)); // Allocate as many digits as we need
+			char[] n = new char[digits];
+			for (int i = 0; i < digits; ++i)
+				n[i] = key[0];
+
+			int quotient = (index * 2) + 1; // Required for reordering to work
+			for (int i = 0; quotient != 0 && i < digits; ++i)
+			{
+				n[digits - i - 1] = key[Math.Abs(quotient % @base)];
+				quotient /= @base;
+			}
+
+			return string.Concat(prefix, ".", new string(n));
+		}
+
+		private static string MakeFolderSortPosition(string lastOrderKey)
+		{
+			RandomNoise rng = new RandomNoise();
+			const string key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+			char[] p = new char[6];
+			for (int i = 0; i < p.Length; ++i)
+				p[i] = key[rng.Int(52)];
+			string prefix = new string(p);
+
+			if (string.IsNullOrEmpty(lastOrderKey) == false)
+			{
+				// Decrement last character
+				lastOrderKey = string.Concat(lastOrderKey.Substring(0, lastOrderKey.Length - 1), (char)(lastOrderKey[lastOrderKey.Length - 1] - 1));
+				return string.Concat(lastOrderKey, ",", prefix, ".B");
+			}
+			else
+			{
+				return string.Concat(prefix, ".B");
 			}
 		}
 	}

@@ -40,13 +40,27 @@ namespace Ginger
 		public static bool HasActiveLink { get { return FaradayLink != null && FaradayLink.isActive; } }
 		public static bool HasStaleLink { get { return FaradayLink != null && !FaradayLink.isActive && string.IsNullOrEmpty(FaradayLink.characterId) == false; } }
 
+		public static bool IsLinkDirty
+		{
+			get { return FaradayLink != null && FaradayLink.isDirty; }
+			set { if (FaradayLink != null) 
+					FaradayLink.isDirty = value;
+			}
+		}
+
 		public static bool IsDirty
 		{
 			get { return _bDirty; }
-			set { _bDirty = value; IsFileDirty |= value; }
+			set { _bDirty = value; if (value) IsFileDirty = true; }
 		}
-		public static bool IsFileDirty { get; set; }
 		private static bool _bDirty = false;
+
+		public static bool IsFileDirty 
+		{ 
+			get { return _bFileDirty; }
+			set { _bFileDirty = value; if (value) IsLinkDirty = true; }
+		}
+		private static bool _bFileDirty = false;
 
 		public static IEnumerable<Recipe> AllRecipes { get { return Characters.SelectMany(c => c.recipes); } }
 		public static IRuleSupplier[] RuleSuppliers { get { return new IRuleSupplier[] { Strings }; } }
@@ -484,7 +498,7 @@ namespace Ginger
 			Card.textStyle = DetectTextStyle(card.example, card.greeting);
 
 			if (string.IsNullOrEmpty(card.avatar) == false)
-				Card.portraitImage = ImageRef.FromImage(FileUtil.ImageFromBase64(card.avatar));
+				Card.portraitImage = ImageRef.FromImage(Utility.ImageFromBase64(card.avatar));
 
 			AddChannel(GingerString.FromTavern(card.system_prompt).ToParameter(), Resources.system_recipe);
 			AddChannel(GingerString.FromTavern(card.postHistoryInstructions).ToParameter(), Resources.post_history_recipe);

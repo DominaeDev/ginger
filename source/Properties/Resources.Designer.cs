@@ -724,6 +724,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to load character data..
+        /// </summary>
+        internal static string error_link_open_character {
+            get {
+                return ResourceManager.GetString("error_link_open_character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to reestablish link. The character may have been removed in Backyard AI. In that case, you can reestablish the link by saving this as a new character..
         /// </summary>
         internal static string error_link_reestablish {
@@ -1384,6 +1393,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Character link broken.
+        /// </summary>
+        internal static string msg_link_break {
+            get {
+                return ResourceManager.GetString("msg_link_break", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This character has been changed since you last opened it. Do you want to overwrite these changes?.
         /// </summary>
         internal static string msg_link_confirm_overwrite {
@@ -1393,7 +1411,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Character link reestablished..
+        ///   Looks up a localized string similar to Link reestablished to &quot;{0}&quot;.
         /// </summary>
         internal static string msg_link_reestablished {
             get {
@@ -1402,7 +1420,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Character was successfully saved..
+        ///   Looks up a localized string similar to Character successfully saved to Backyard AI.
         /// </summary>
         internal static string msg_link_saved {
             get {
@@ -2329,7 +2347,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If enabled, Ginger will automatically synchronize this character card with Backyard AI when saving the file..
+        ///   Looks up a localized string similar to If this option is enabled, Ginger will automatically update this character in BackyardAI when saving..
         /// </summary>
         internal static string tooltip_link_autosave {
             get {

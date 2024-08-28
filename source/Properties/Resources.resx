@@ -732,10 +732,10 @@ Continue?</value>
     <value>This character has been changed since you last opened it. Do you want to overwrite these changes?</value>
   </data>
   <data name="msg_link_saved" xml:space="preserve">
-    <value>Character was successfully saved.</value>
+    <value>Character successfully saved to Backyard AI</value>
   </data>
   <data name="tooltip_link_autosave" xml:space="preserve">
-    <value>If enabled, Ginger will automatically synchronize this character card with Backyard AI when saving the file.</value>
+    <value>If this option is enabled, Ginger will automatically update this character in BackyardAI when saving.</value>
   </data>
   <data name="tooltip_link_break" xml:space="preserve">
     <value>Break the link connecting this character card to Backyard AI.</value>
@@ -766,6 +766,12 @@ Continue?</value>
     <value>Unable to reestablish link. The character may have been removed in Backyard AI. In that case, you can reestablish the link by saving this as a new character.</value>
   </data>
   <data name="msg_link_reestablished" xml:space="preserve">
-    <value>Character link reestablished.</value>
+    <value>Link reestablished to "{0}"</value>
+  </data>
+  <data name="error_link_open_character" xml:space="preserve">
+    <value>Failed to load character data.</value>
+  </data>
+  <data name="msg_link_break" xml:space="preserve">
+    <value>Character link broken</value>
   </data>
 </root>

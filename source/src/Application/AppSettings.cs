@@ -147,6 +147,21 @@ namespace Ginger
 			public static decimal TopP = 0.9m;
 			public static int PromptTemplate = 0;
 			public static bool PruneExampleChat = true;
+
+			public static string GetPromptTemplateName()
+			{
+				switch (PromptTemplate)
+				{
+				case 1: return "general";
+				case 2: return "ChatML";
+				case 3: return "Llama3";
+				case 4: return "Gemma2";
+				case 5: return "CommandR";
+				case 6: return "MistralInstruct";
+				default: 
+					return null;
+				}
+			}
 		}
 
 		public static class FaradayLink

@@ -35,6 +35,8 @@ namespace Ginger
 		private Dictionary<string, ToolStripMenuItem> _changeLanguageMenuItems = new Dictionary<string, ToolStripMenuItem>();
 		private List<IIdleHandler> _idleHandlers = new List<IIdleHandler>();
 
+		private System.Timers.Timer _statusbarTimer = new System.Timers.Timer();
+
 		public MainForm()
 		{
 			instance = this;
@@ -79,6 +81,11 @@ namespace Ginger
 			// Undo history
 			Undo.Initialize();
 			Undo.OnUndoRedo += OnUndoState;
+
+			_statusbarTimer.Interval = 1000;
+			_statusbarTimer.Elapsed += OnStatusBarTimerElapsed;
+			_statusbarTimer.AutoReset = false;
+			_statusbarTimer.SynchronizingObject = this;
 		}
 
 		public void SetFirstLoad(string filename)
@@ -1014,7 +1021,12 @@ namespace Ginger
 
 			// Is linked?
 			if (FaradayBridge.ConnectionEstablished && Current.HasActiveLink)
-				title = string.Concat(title, "(Linked) ");
+			{
+				if (Current.IsLinkDirty)
+					title = string.Concat(title, "<*Linked> ");
+				else
+					title = string.Concat(title, "<Linked> ");
+			}
 
 			// Is dirty?
 			if (Current.IsFileDirty)
@@ -1038,9 +1050,6 @@ namespace Ginger
 #if DEBUG && false // Show form level buffering
 			statusBarActor.Text = statusBarActor.Text + (_bEnableFormLevelDoubleBuffering && AppSettings.Settings.EnableFormLevelBuffering ? " ON" : " OFF");
 #endif
-			// Linked ?
-			if (FaradayBridge.ConnectionEstablished)
-				statusBarActor.Text = string.Concat(statusBarActor.Text, Current.Characters.Count > 1 ? " |" : "", " Connected to Backyard AI");
 
 			// Menu items
 			RefreshMenuItems();
@@ -1166,7 +1175,7 @@ namespace Ginger
 			// Link menu
 			enableLinkMenuItem.Checked = FaradayBridge.ConnectionEstablished;
 			importFromFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
-			saveToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished && Current.HasActiveLink;
+			saveToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished && Current.HasActiveLink && AppSettings.FaradayLink.Autosave == false;
 			saveNewToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished && Current.HasActiveLink == false;
 			enableAutosaveMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
 			enableAutosaveMenuItem.Checked = FaradayBridge.ConnectionEstablished && AppSettings.FaradayLink.Autosave;
@@ -2018,6 +2027,7 @@ namespace Ginger
 					if (Current.HasActiveLink && FaradayBridge.HasCharacter(Current.FaradayLink.characterId) == false)
 						Current.Unlink(); // Unrecognized character
 
+					SetStatusBarMessage("Connected to Backyard AI", 1500);
 					AppSettings.FaradayLink.Enabled = true;
 				}
 				else
@@ -2028,6 +2038,7 @@ namespace Ginger
 			}
 			else
 			{
+				SetStatusBarMessage("Disconnected from Backyard AI", 1500);
 				AppSettings.FaradayLink.Enabled = false;
 				FaradayBridge.Disconnect();
 			}
@@ -2041,7 +2052,7 @@ namespace Ginger
 
 		private void saveToFaradayMenuItem_Click(object sender, EventArgs e)
 		{
-			var error = WriteCharacterToFaraday();
+			var error = UpdateCharacterInFaraday();
 			if (error == FaradayBridge.Error.NotConnected)
 				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			else if (error == FaradayBridge.Error.NoDataFound)
@@ -2058,43 +2069,40 @@ namespace Ginger
 			}
 			else
 			{
+				SetStatusBarMessage(Resources.msg_link_saved, 1500);
+			}
+		}
+		
+		private void saveNewToFaradayMenuItem_Click(object sender, EventArgs e)
+		{
+			var error = CreateNewCharacterInFaraday();
+			if (error == FaradayBridge.Error.NotConnected)
+				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			else if (error == FaradayBridge.Error.NoDataFound)
+				MessageBox.Show(Resources.error_link_unrecognized_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			else if (error != FaradayBridge.Error.NoError)
+				MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			else
+			{
 				MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 		}
 
 		private void reestablishLinkMenuItem_Click(object sender, EventArgs e)
 		{
-			if (Current.FaradayLink != null)
-			{
-				if (FaradayBridge.HasCharacter(Current.FaradayLink.characterId))
-				{
-					Current.FaradayLink.isActive = true;
-					Current.IsFileDirty = true;
-					RefreshTitle();
-
-					MessageBox.Show(Resources.msg_link_reestablished, Resources.cap_link_reestablish, MessageBoxButtons.OK, MessageBoxIcon.Information);
-				}
-				else
-				{
-					MessageBox.Show(Resources.error_link_reestablish, Resources.cap_link_reestablish, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-				}
-			}
+			ReestablishFaradayLink();
 		}
 
 		private void breakLinkMenuItem_Click(object sender, EventArgs e)
 		{
-			if (Current.FaradayLink != null)
-			{
-				Current.FaradayLink.isActive = false;
-				Current.IsFileDirty = true;
-				RefreshTitle();
-			}
+			BreakFaradayLink();
 		}
 
 		private void enableAutosaveMenuItem_Click(object sender, EventArgs e)
 		{
 			AppSettings.FaradayLink.Autosave = !AppSettings.FaradayLink.Autosave;
 		}
+
 	}
 
 	public interface IIdleHandler

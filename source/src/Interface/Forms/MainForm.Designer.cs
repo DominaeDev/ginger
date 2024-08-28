@@ -36,10 +36,10 @@ namespace Ginger {
 			System.Windows.Forms.ToolStripMenuItem linkMenuItem;
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem10;
 			this.enableLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importFromFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveToFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveNewToFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.reestablishLinkSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.reestablishLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.breakLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -220,11 +220,11 @@ namespace Ginger {
 			// 
 			linkMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.enableLinkMenuItem,
-            this.enableAutosaveMenuItem,
             toolStripMenuItem10,
             this.importFromFaradayMenuItem,
             this.saveToFaradayMenuItem,
             this.saveNewToFaradayMenuItem,
+            this.enableAutosaveMenuItem,
             this.reestablishLinkSeparator,
             this.reestablishLinkMenuItem,
             this.breakLinkMenuItem});
@@ -235,59 +235,60 @@ namespace Ginger {
 			// enableLinkMenuItem
 			// 
 			this.enableLinkMenuItem.Name = "enableLinkMenuItem";
-			this.enableLinkMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.enableLinkMenuItem.Size = new System.Drawing.Size(221, 22);
 			this.enableLinkMenuItem.Text = "Connect to Backyard AI";
 			this.enableLinkMenuItem.Click += new System.EventHandler(this.enableLinkMenuItem_Click);
-			// 
-			// enableAutosaveMenuItem
-			// 
-			this.enableAutosaveMenuItem.Name = "enableAutosaveMenuItem";
-			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(198, 22);
-			this.enableAutosaveMenuItem.Text = "Enable autosave";
-			this.enableAutosaveMenuItem.Click += new System.EventHandler(this.enableAutosaveMenuItem_Click);
 			// 
 			// toolStripMenuItem10
 			// 
 			toolStripMenuItem10.Name = "toolStripMenuItem10";
-			toolStripMenuItem10.Size = new System.Drawing.Size(195, 6);
+			toolStripMenuItem10.Size = new System.Drawing.Size(218, 6);
 			// 
 			// importFromFaradayMenuItem
 			// 
 			this.importFromFaradayMenuItem.Name = "importFromFaradayMenuItem";
-			this.importFromFaradayMenuItem.Size = new System.Drawing.Size(198, 22);
-			this.importFromFaradayMenuItem.Text = "Open...";
+			this.importFromFaradayMenuItem.Size = new System.Drawing.Size(221, 22);
+			this.importFromFaradayMenuItem.Text = "Import...";
 			this.importFromFaradayMenuItem.Click += new System.EventHandler(this.importFromFaradayMenuItem_Click);
 			// 
 			// saveToFaradayMenuItem
 			// 
 			this.saveToFaradayMenuItem.Name = "saveToFaradayMenuItem";
-			this.saveToFaradayMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.saveToFaradayMenuItem.Size = new System.Drawing.Size(221, 22);
 			this.saveToFaradayMenuItem.Text = "Save";
 			this.saveToFaradayMenuItem.Click += new System.EventHandler(this.saveToFaradayMenuItem_Click);
 			// 
 			// saveNewToFaradayMenuItem
 			// 
 			this.saveNewToFaradayMenuItem.Name = "saveNewToFaradayMenuItem";
-			this.saveNewToFaradayMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.saveNewToFaradayMenuItem.Size = new System.Drawing.Size(221, 22);
 			this.saveNewToFaradayMenuItem.Text = "Save as new";
+			this.saveNewToFaradayMenuItem.Click += new System.EventHandler(this.saveNewToFaradayMenuItem_Click);
+			// 
+			// enableAutosaveMenuItem
+			// 
+			this.enableAutosaveMenuItem.Name = "enableAutosaveMenuItem";
+			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(221, 22);
+			this.enableAutosaveMenuItem.Text = "Synchronized saving";
+			this.enableAutosaveMenuItem.Click += new System.EventHandler(this.enableAutosaveMenuItem_Click);
 			// 
 			// reestablishLinkSeparator
 			// 
 			this.reestablishLinkSeparator.Name = "reestablishLinkSeparator";
-			this.reestablishLinkSeparator.Size = new System.Drawing.Size(195, 6);
+			this.reestablishLinkSeparator.Size = new System.Drawing.Size(218, 6);
 			// 
 			// reestablishLinkMenuItem
 			// 
 			this.reestablishLinkMenuItem.Name = "reestablishLinkMenuItem";
-			this.reestablishLinkMenuItem.Size = new System.Drawing.Size(198, 22);
-			this.reestablishLinkMenuItem.Text = "Reestablish link";
+			this.reestablishLinkMenuItem.Size = new System.Drawing.Size(221, 22);
+			this.reestablishLinkMenuItem.Text = "Reestablish character link";
 			this.reestablishLinkMenuItem.Click += new System.EventHandler(this.reestablishLinkMenuItem_Click);
 			// 
 			// breakLinkMenuItem
 			// 
 			this.breakLinkMenuItem.Name = "breakLinkMenuItem";
-			this.breakLinkMenuItem.Size = new System.Drawing.Size(198, 22);
-			this.breakLinkMenuItem.Text = "Break link";
+			this.breakLinkMenuItem.Size = new System.Drawing.Size(221, 22);
+			this.breakLinkMenuItem.Text = "Break character link";
 			this.breakLinkMenuItem.Click += new System.EventHandler(this.breakLinkMenuItem_Click);
 			// 
 			// splitContainer

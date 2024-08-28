@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -1281,6 +1282,91 @@ namespace Ginger
 			return sb.ToString();
 		}
 
+		public static byte[] ImageToMemory(Image image)
+		{
+			if (image == null)
+				return null;
+
+			try
+			{
+				using (var stream = new MemoryStream())
+				{
+					if (image.RawFormat.Equals(ImageFormat.Png) == false)
+					{
+						using (Image bmpNewImage = new Bitmap(image.Width, image.Height))
+						{
+							Graphics gfxNewImage = Graphics.FromImage(bmpNewImage);
+							gfxNewImage.DrawImage(image, new Rectangle(0, 0, bmpNewImage.Width, bmpNewImage.Height),
+												  0, 0,
+												  image.Width, image.Height,
+												  GraphicsUnit.Pixel);
+							gfxNewImage.Dispose();
+							bmpNewImage.Save(stream, ImageFormat.Png);
+						}
+					}
+					else
+					{
+						image.Save(stream, ImageFormat.Png);
+					}
+
+					return stream.ToArray();
+				}
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
+		public static string ImageToBase64(Image image)
+		{
+			if (image == null)
+				return null;
+
+			var bytes = ImageToMemory(image);
+			if (bytes == null)
+				return null;
+
+			var imageBase64 = Convert.ToBase64String(bytes);
+			return string.Concat("data:image/png;base64,", imageBase64);
+		}
+
+		public static Image ImageFromBase64(string base64)
+		{
+			if (string.IsNullOrEmpty(base64))
+				return null;
+
+			try
+			{
+				if (base64.BeginsWith("data:") == false)
+					return null; // Not a valid string
+				int pos_mime_end = base64.IndexOf(";base64,");
+				if (pos_mime_end == -1)
+					return null; // Not a valid string
+
+				base64 = base64.Substring(pos_mime_end + 8); // Ignore mime type. Will fail downstream if unsupported.
+
+				// Load image first
+				Image image;
+				try
+				{
+					byte[] bytes = Convert.FromBase64String(base64);
+					using (var stream = new MemoryStream(bytes))
+					{
+						image = Image.FromStream(stream);
+						return image;
+					}
+				}
+				catch
+				{
+					return null;
+				}
+			}
+			catch
+			{
+				return null;
+			}
+		}
 	}
 
 }
