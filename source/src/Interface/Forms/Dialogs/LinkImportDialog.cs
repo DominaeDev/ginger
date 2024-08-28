@@ -34,7 +34,7 @@ namespace Ginger
 			treeView.Suspend();
 			treeView.Nodes.Clear();
 
-			if (Folders == null || Folders.Length == 0 || Characters == null || Characters.Length == 0)
+			if (Folders == null || Characters == null)
 				return; // Nothing to show
 
 			// Create folders

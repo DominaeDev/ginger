@@ -354,6 +354,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Link character.
+        /// </summary>
+        internal static string cap_link_character {
+            get {
+                return ResourceManager.GetString("cap_link_character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Link error.
         /// </summary>
         internal static string cap_link_error {
@@ -706,7 +715,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to save character to Backyard AI..
+        ///   Looks up a localized string similar to File was saved, however synchronization with Backyard AI failed..
         /// </summary>
         internal static string error_link_autosave {
             get {
@@ -715,7 +724,16 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to establish link with Backyard AI..
+        ///   Looks up a localized string similar to File was saved, however synchronization with Backyard AI failed. Character not found..
+        /// </summary>
+        internal static string error_link_autosave_not_found {
+            get {
+                return ResourceManager.GetString("error_link_autosave_not_found", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to connect to Backyard AI..
         /// </summary>
         internal static string error_link_failed {
             get {
@@ -733,7 +751,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to reestablish link. The character may have been removed in Backyard AI. In that case, you can reestablish the link by saving this as a new character..
+        ///   Looks up a localized string similar to Failed to reestablish link. The character may have been removed. Would you like to clear the link?.
         /// </summary>
         internal static string error_link_reestablish {
             get {
@@ -1241,6 +1259,56 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap link_active {
+            get {
+                object obj = ResourceManager.GetObject("link_active", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap link_broken {
+            get {
+                object obj = ResourceManager.GetObject("link_broken", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap link_connected {
+            get {
+                object obj = ResourceManager.GetObject("link_connected", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap link_disconnected {
+            get {
+                object obj = ResourceManager.GetObject("link_disconnected", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap link_inactive {
+            get {
+                object obj = ResourceManager.GetObject("link_inactive", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap lore {
             get {
                 object obj = ResourceManager.GetObject("lore", resourceCulture);
@@ -1402,11 +1470,20 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This character has been changed since you last opened it. Do you want to overwrite these changes?.
+        ///   Looks up a localized string similar to This character has been modified in Backyard AI. Do you want to continue and overwrite those changes?.
         /// </summary>
         internal static string msg_link_confirm_overwrite {
             get {
                 return ResourceManager.GetString("msg_link_confirm_overwrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Would you like to create a link between Backyard AI and the currently opened file?.
+        /// </summary>
+        internal static string msg_link_new {
+            get {
+                return ResourceManager.GetString("msg_link_new", resourceCulture);
             }
         }
         
@@ -2347,7 +2424,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If this option is enabled, Ginger will automatically update this character in BackyardAI when saving..
+        ///   Looks up a localized string similar to If enabled, Ginger will automatically update Backyard AI when this file is saved..
         /// </summary>
         internal static string tooltip_link_autosave {
             get {
@@ -2393,7 +2470,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save this character to Backyard AI..
+        ///   Looks up a localized string similar to Save changes to Backyard AI..
         /// </summary>
         internal static string tooltip_link_save {
             get {
@@ -2402,7 +2479,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save this character card as a new Backyard AI character..
+        ///   Looks up a localized string similar to Save as a new character in Backyard AI..
         /// </summary>
         internal static string tooltip_link_save_as_new {
             get {

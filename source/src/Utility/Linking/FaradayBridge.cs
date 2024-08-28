@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Xml;
 using System.Text;
+using Ginger.Properties;
 
 namespace Ginger
 {
@@ -63,6 +64,23 @@ namespace Ginger
 				xmlNode.AddAttribute("updated", updateDate.ToUnixTimeMilliseconds());
 				xmlNode.AddAttribute("dirty", isDirty);
 			}
+
+			public void RefreshState()
+			{
+				if (FaradayBridge.ConnectionEstablished)
+				{
+					CharacterInstance character;
+					if (GetCharacter(characterId, out character))
+					{
+						if (character.updateDate > updateDate)
+							isDirty = true; // Outdated
+					}
+					else // Unrecognized character
+					{
+						isActive = false; 
+					}
+				}
+			}
 		}
 
 		public enum Error
@@ -74,6 +92,7 @@ namespace Ginger
 			CommandFailed,
 			NoDataFound,
 			Unknown,
+			Dismissed,
 			Cancelled,
 		}
 
@@ -84,7 +103,7 @@ namespace Ginger
 			string faradayPath = AppSettings.FaradayLink.Location;
 			if (string.IsNullOrWhiteSpace(faradayPath))
 				faradayPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
-				"faraday-canary"); // Fake database during testing
+				"faraday-canary"); // Use canary database during development and testing
 			string faradayDatabase = Path.Combine(faradayPath, "db.sqlite");
 			if (File.Exists(faradayDatabase) == false)
 				throw new FileNotFoundException();
@@ -94,6 +113,7 @@ namespace Ginger
 		}
 
 		#region Establish Link
+		// Validation table
 		private static string[][] s_TableValidation = new string[][] {
 			new string[] {
 				"_AppCharacterLorebookItemToCharacterConfigVersion", 
@@ -222,7 +242,7 @@ namespace Ginger
 			},
 		};
 
-		public static Error EstablishLink()
+		public static Error EstablishConnection()
 		{
 			try
 			{
@@ -321,6 +341,7 @@ namespace Ginger
 		}
 		#endregion
 
+		#region Character information
 		public static bool GetCharacter(string characterId, out CharacterInstance character)
 		{
 			return _Characters.TryGetValue(characterId, out character);
@@ -442,7 +463,9 @@ namespace Ginger
 				return Error.Unknown;
 			}
 		}
+		#endregion
 
+		#region Import character
 
 		public static Error ImportCharacter(CharacterInstance character, out FaradayCardV4 card, out Image portraitImage)
 		{
@@ -589,7 +612,13 @@ namespace Ginger
 					}
 
 					if (imageUrls.Count > 0)
-						Utility.LoadImageFile(imageUrls[0], out portraitImage);
+					{
+						var filename = imageUrls[0];
+						if (filename.BeginsWith("http")) // Remote URL
+							filename = Path.Combine(AppSettings.FaradayLink.Location, "images", Path.GetFileName(imageUrls[0]));
+
+						Utility.LoadImageFile(filename, out portraitImage);
+					}
 					else
 						portraitImage = null;
 
@@ -620,6 +649,9 @@ namespace Ginger
 			}
 		}
 
+		#endregion
+
+		#region Update character
 		public static Error ConfirmSaveCharacter(FaradayCardV4 card, Link linkInfo, out bool newerChangesFound)
 		{
 			if (ConnectionEstablished == false)
@@ -998,7 +1030,9 @@ namespace Ginger
 				return Error.Unknown;
 			}
 		}
+		#endregion
 
+		#region Save new character
 		public static Error CreateNewCharacter(FaradayCardV4 card, out CharacterInstance character)
 		{
 			if (card == null)
@@ -1022,7 +1056,7 @@ namespace Ginger
 			}
 
 			// Prepare image information
-			bool bCanSaveImage = Current.Card.portraitImage != null;
+			bool bCanSaveImage = true;
 			int portraitWidth = 0;
 			int portraitHeight = 0;
 			byte[] imageBytes = null;
@@ -1047,10 +1081,20 @@ namespace Ginger
 
 				if (bCanSaveImage)
 				{
-					Image image = (Image)Current.Card.portraitImage;
-					portraitWidth = image.Width;
-					portraitHeight = image.Height;
-					imageBytes = Utility.ImageToMemory(image);
+					if (Current.Card.portraitImage != null && Current.Card.portraitImage.Width > 0 && Current.Card.portraitImage.Height > 0)
+					{
+						Image image = Current.Card.portraitImage;
+						portraitWidth = image.Width;
+						portraitHeight = image.Height;
+						imageBytes = Utility.ImageToMemory(image);
+					}
+					else
+					{
+						portraitWidth = 256;
+						portraitHeight = 256;
+						imageBytes = Resources.default_portrait;
+					}
+					
 					imagePath = Path.Combine(AppSettings.FaradayLink.Location, "images", string.Concat(Guid.NewGuid().ToString().ToLowerInvariant(), ".png")); // Random filename
 				}
 			}
@@ -1361,7 +1405,9 @@ namespace Ginger
 				return Error.Unknown;
 			}
 		}
+		#endregion
 
+		#region Utility
 		private static string MakeLoreSortPosition(int index, int maxIndex, int hash)
 		{
 			RandomNoise rng = new RandomNoise(hash, 0);
@@ -1407,5 +1453,6 @@ namespace Ginger
 				return string.Concat(prefix, ".B");
 			}
 		}
+		#endregion
 	}
 }

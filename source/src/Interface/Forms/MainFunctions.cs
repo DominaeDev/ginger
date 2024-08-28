@@ -1095,14 +1095,15 @@ namespace Ginger
 				&& Current.IsLinkDirty;
 			
 			bool bAutoSaved = false;
+			FaradayBridge.Error autosaveError = FaradayBridge.Error.Unknown;
 			if (bShouldAutosave)
 			{
-				var error = UpdateCharacterInFaraday();
-				if (error == FaradayBridge.Error.Cancelled)
+				autosaveError = UpdateCharacterInFaraday();
+				if (autosaveError == FaradayBridge.Error.Cancelled)
 					return false; // User clicked 'cancel'
-				if (error == FaradayBridge.Error.CommandFailed)
+				else if (autosaveError == FaradayBridge.Error.Dismissed)
 					bShouldAutosave = false; // User clicked 'no'
-				bAutoSaved = error == FaradayBridge.Error.NoError;
+				bAutoSaved = autosaveError == FaradayBridge.Error.NoError;
 			}
 
 			if (FileUtil.Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, formats))
@@ -1122,9 +1123,19 @@ namespace Ginger
 				{
 					if (bAutoSaved)
 						SetStatusBarMessage(Resources.msg_link_saved, 1500);
+					else if (autosaveError == FaradayBridge.Error.NoDataFound)
+					{
+						MessageBox.Show(Resources.error_link_autosave_not_found, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+						// Something went wrong. Refresh the character list
+						FaradayBridge.RefreshCharacters();
+						Current.FaradayLink.RefreshState();
+						RefreshTitle();
+					}
 					else
-						SetStatusBarMessage(Resources.error_link_autosave, 1500);
-//						MessageBox.Show(Resources.error_link_autosave, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					{
+						MessageBox.Show(Resources.error_link_autosave, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);						
+					}
 				}
 				return true;
 			}
@@ -1551,7 +1562,6 @@ namespace Ginger
 
 			// Success
 			Current.ReadFaradayCard(faradayData, image);
-			Current.LinkWith(dlg.SelectedCharacter);
 
 			ClearStatusBarMessage();
 
@@ -1562,6 +1572,13 @@ namespace Ginger
 			Current.IsFileDirty = false;
 			Current.IsLinkDirty = false;
 			Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
+
+			if (MessageBox.Show(Resources.msg_link_new, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+			{
+				Current.LinkWith(dlg.SelectedCharacter);
+				Current.IsLinkDirty = false;
+				SetStatusBarMessage("Character link created", 1500);
+			}
 			return true;
 		}
 
@@ -1589,8 +1606,8 @@ namespace Ginger
 				var mr = MessageBox.Show(Resources.msg_link_confirm_overwrite, Resources.cap_link_overwrite, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
 				if (mr == DialogResult.Cancel)
 					return FaradayBridge.Error.Cancelled;
-				else if (mr != DialogResult.Yes)
-					return FaradayBridge.Error.CommandFailed;
+				else if (mr == DialogResult.No)
+					return FaradayBridge.Error.Dismissed;
 			}
 
 			DateTime updateDate;
@@ -1612,22 +1629,23 @@ namespace Ginger
 			}
 		}
 
-		private FaradayBridge.Error CreateNewCharacterInFaraday()
+		private FaradayBridge.Error CreateNewCharacterInFaraday(out FaradayBridge.CharacterInstance createdCharacter)
 		{
 			if (FaradayBridge.ConnectionEstablished == false)
+			{
+				createdCharacter = default(FaradayBridge.CharacterInstance);
 				return FaradayBridge.Error.NotConnected;
+			}
 			
 			FaradayCardV4 card = FaradayCardV4.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.Faraday));
 
-			FaradayBridge.CharacterInstance character;
-			var error = FaradayBridge.CreateNewCharacter(card, out character);
+			var error = FaradayBridge.CreateNewCharacter(card, out createdCharacter);
 			if (error != FaradayBridge.Error.NoError)
 			{
 				return error;
 			}
 			else
 			{
-				Current.LinkWith(character);
 				Current.IsFileDirty = true;
 				Current.IsLinkDirty = false;
 				RefreshTitle();
@@ -1640,12 +1658,20 @@ namespace Ginger
 
 		private void ReestablishFaradayLink()
 		{
+			// Refresh character information
+			if (FaradayBridge.RefreshCharacters() != FaradayBridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
 			if (Current.FaradayLink != null)
 			{
 				FaradayBridge.CharacterInstance characterInstance;
 				if (FaradayBridge.GetCharacter(Current.FaradayLink.characterId, out characterInstance))
 				{
 					Current.FaradayLink.isActive = true;
+					Current.FaradayLink.RefreshState();
 					Current.IsFileDirty = true;
 					RefreshTitle();
 
@@ -1653,7 +1679,12 @@ namespace Ginger
 				}
 				else
 				{
-					MessageBox.Show(Resources.error_link_reestablish, Resources.cap_link_reestablish, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					if (MessageBox.Show(Resources.error_link_reestablish, Resources.cap_link_reestablish, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+					{
+						Current.FaradayLink = null;
+						Current.IsFileDirty = true;
+						RefreshTitle();
+					}
 				}
 			}
 		}

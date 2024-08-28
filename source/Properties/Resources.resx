@@ -716,7 +716,7 @@ it to leave the context over time.</value>
     <value>Save character to Backyard AI</value>
   </data>
   <data name="error_link_failed" xml:space="preserve">
-    <value>Failed to establish link with Backyard AI.</value>
+    <value>Failed to connect to Backyard AI.</value>
   </data>
   <data name="error_link_save_character" xml:space="preserve">
     <value>Failed to save character to Backyard AI. Operation cancelled.</value>
@@ -729,13 +729,13 @@ it to leave the context over time.</value>
 Continue?</value>
   </data>
   <data name="msg_link_confirm_overwrite" xml:space="preserve">
-    <value>This character has been changed since you last opened it. Do you want to overwrite these changes?</value>
+    <value>This character has been modified in Backyard AI. Do you want to continue and overwrite those changes?</value>
   </data>
   <data name="msg_link_saved" xml:space="preserve">
     <value>Character successfully saved to Backyard AI</value>
   </data>
   <data name="tooltip_link_autosave" xml:space="preserve">
-    <value>If this option is enabled, Ginger will automatically update this character in BackyardAI when saving.</value>
+    <value>If enabled, Ginger will automatically update Backyard AI when this file is saved.</value>
   </data>
   <data name="tooltip_link_break" xml:space="preserve">
     <value>Break the link connecting this character card to Backyard AI.</value>
@@ -747,11 +747,8 @@ Continue?</value>
   <data name="tooltip_link_reestablish" xml:space="preserve">
     <value>Attempt to reestablish the link connecting this character card to Backyard AI.</value>
   </data>
-  <data name="tooltip_link_save" xml:space="preserve">
-    <value>Save this character to Backyard AI.</value>
-  </data>
   <data name="tooltip_link_save_as_new" xml:space="preserve">
-    <value>Save this character card as a new Backyard AI character.</value>
+    <value>Save as a new character in Backyard AI.</value>
   </data>
   <data name="tooltip_link_open" xml:space="preserve">
     <value>Open a Backyard AI character card.</value>
@@ -760,10 +757,10 @@ Continue?</value>
     <value>Reestablish character link</value>
   </data>
   <data name="error_link_autosave" xml:space="preserve">
-    <value>Unable to save character to Backyard AI.</value>
+    <value>File was saved, however synchronization with Backyard AI failed.</value>
   </data>
   <data name="error_link_reestablish" xml:space="preserve">
-    <value>Unable to reestablish link. The character may have been removed in Backyard AI. In that case, you can reestablish the link by saving this as a new character.</value>
+    <value>Failed to reestablish link. The character may have been removed. Would you like to clear the link?</value>
   </data>
   <data name="msg_link_reestablished" xml:space="preserve">
     <value>Link reestablished to "{0}"</value>
@@ -773,5 +770,32 @@ Continue?</value>
   </data>
   <data name="msg_link_break" xml:space="preserve">
     <value>Character link broken</value>
+  </data>
+  <data name="cap_link_character" xml:space="preserve">
+    <value>Link character</value>
+  </data>
+  <data name="link_active" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\link_active.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="link_broken" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\link_broken.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="link_connected" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\link_connected.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="link_disconnected" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\link_disconnected.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="link_inactive" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\link_inactive.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="msg_link_new" xml:space="preserve">
+    <value>Would you like to create a link between Backyard AI and the currently opened file?</value>
+  </data>
+  <data name="tooltip_link_save" xml:space="preserve">
+    <value>Save changes to Backyard AI.</value>
+  </data>
+  <data name="error_link_autosave_not_found" xml:space="preserve">
+    <value>File was saved, however synchronization with Backyard AI failed. Character not found.</value>
   </data>
 </root>

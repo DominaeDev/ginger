@@ -123,6 +123,8 @@ namespace Ginger
 
 			Regenerate();
 			Current.IsFileDirty = false;
+			if (Current.HasLink)
+				Current.FaradayLink.RefreshState();
 			RefreshTitle();
 
 #if DEBUG
@@ -1001,42 +1003,20 @@ namespace Ginger
 			if (title.Length > 0)
 				title = string.Concat(title, " ");
 
-			if (string.IsNullOrEmpty(Current.Filename) == false)
-			{
-				Text = string.Format("{2} {1} - {0}",
-					AppTitle,
-					string.Concat("[", Path.GetFileName(Current.Filename), "]"),
-					Utility.FirstNonEmpty(Current.Card.name, Current.MainCharacter.spokenName));
-			}
-			else if (string.IsNullOrEmpty(Current.Card.name) == false || string.IsNullOrEmpty(Current.MainCharacter.spokenName) == false)
-			{
-				Text = string.Format("{1} - {0}", 
-					AppTitle, 
-					Utility.FirstNonEmpty(Current.Card.name, Current.MainCharacter.spokenName));
-			}
-
 			// Filename
 			if (string.IsNullOrEmpty(Current.Filename) == false)
 				title = string.Concat(title, "[", Path.GetFileName(Current.Filename), "] ");
 
-			// Is linked?
-			if (FaradayBridge.ConnectionEstablished && Current.HasActiveLink)
-			{
-				if (Current.IsLinkDirty)
-					title = string.Concat(title, "<*Linked> ");
-				else
-					title = string.Concat(title, "<Linked> ");
-			}
-
-			// Is dirty?
-			if (Current.IsFileDirty)
-				title = string.Concat("*", title);
-			
 			// App title
 			if (title.Length > 0)
 				title = string.Concat(title, "- ", AppTitle);
 			else
 				title = AppTitle;
+
+			// Is dirty?
+			if (Current.IsFileDirty || Current.IsLinkDirty)
+				title = string.Concat("*", title);
+
 			this.Text = title;
 
 			_bWasFileDirty = Current.IsFileDirty;
@@ -1050,6 +1030,46 @@ namespace Ginger
 #if DEBUG && false // Show form level buffering
 			statusBarActor.Text = statusBarActor.Text + (_bEnableFormLevelDoubleBuffering && AppSettings.Settings.EnableFormLevelBuffering ? " ON" : " OFF");
 #endif
+			// Connection status icon
+			if (FaradayBridge.ConnectionEstablished)
+			{
+				if (Current.HasActiveLink)
+				{
+					statusConnectionIcon.Image = Resources.link_active;
+					statusConnectionIcon.ToolTipText = "Link is active";
+				}
+				else if (Current.HasLink)
+				{
+					if (FaradayBridge.HasCharacter(Current.FaradayLink.characterId))
+					{
+						statusConnectionIcon.Image = Resources.link_inactive;
+						statusConnectionIcon.ToolTipText = "Link inactive";
+					}
+					else
+					{
+						statusConnectionIcon.Image = Resources.link_broken;
+						statusConnectionIcon.ToolTipText = "Link broken";
+					}
+				}
+				else
+				{
+					statusConnectionIcon.Image = Resources.link_connected;
+					statusConnectionIcon.ToolTipText = "Connected";
+				}
+			}
+			else
+			{
+				if (Current.HasLink)
+				{
+					statusConnectionIcon.Image = Resources.link_disconnected;
+					statusConnectionIcon.ToolTipText = "Not connected";
+				}
+				else
+				{
+					statusConnectionIcon.Image = null;
+					statusConnectionIcon.ToolTipText = null;
+				}
+			}
 
 			// Menu items
 			RefreshMenuItems();
@@ -2020,12 +2040,12 @@ namespace Ginger
 		{
 			if (FaradayBridge.ConnectionEstablished == false)
 			{
-				if (FaradayBridge.EstablishLink() == FaradayBridge.Error.NoError)
+				if (FaradayBridge.EstablishConnection() == FaradayBridge.Error.NoError)
 				{
 					FaradayBridge.RefreshCharacters();
 
-					if (Current.HasActiveLink && FaradayBridge.HasCharacter(Current.FaradayLink.characterId) == false)
-						Current.Unlink(); // Unrecognized character
+					if (Current.HasLink)
+						Current.FaradayLink.RefreshState();
 
 					SetStatusBarMessage("Connected to Backyard AI", 1500);
 					AppSettings.FaradayLink.Enabled = true;
@@ -2059,8 +2079,9 @@ namespace Ginger
 			{
 				MessageBox.Show(Resources.error_link_unrecognized_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-			else if (error == FaradayBridge.Error.Cancelled)
+			else if (error == FaradayBridge.Error.Cancelled || error == FaradayBridge.Error.Dismissed)
 			{
+				// User clicked cancel
 				return;
 			}
 			else if (error != FaradayBridge.Error.NoError)
@@ -2069,13 +2090,15 @@ namespace Ginger
 			}
 			else
 			{
-				SetStatusBarMessage(Resources.msg_link_saved, 1500);
+				MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				//SetStatusBarMessage(Resources.msg_link_saved, 1500);
 			}
 		}
 		
 		private void saveNewToFaradayMenuItem_Click(object sender, EventArgs e)
 		{
-			var error = CreateNewCharacterInFaraday();
+			FaradayBridge.CharacterInstance createdCharacter;
+			var error = CreateNewCharacterInFaraday(out createdCharacter);
 			if (error == FaradayBridge.Error.NotConnected)
 				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			else if (error == FaradayBridge.Error.NoDataFound)
@@ -2085,6 +2108,14 @@ namespace Ginger
 			else
 			{
 				MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+				if (MessageBox.Show(Resources.msg_link_new, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+				{
+					Current.LinkWith(createdCharacter);
+					Current.IsLinkDirty = false;
+					SetStatusBarMessage("Character link created", 1500);
+					RefreshTitle();
+				}
 			}
 		}
 
