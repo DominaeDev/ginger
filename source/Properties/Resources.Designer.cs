@@ -381,11 +381,20 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reestablish link to character.
+        ///   Looks up a localized string similar to Restore link to character.
         /// </summary>
         internal static string cap_link_reestablish {
             get {
                 return ResourceManager.GetString("cap_link_reestablish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reimport character.
+        /// </summary>
+        internal static string cap_link_revert {
+            get {
+                return ResourceManager.GetString("cap_link_revert", resourceCulture);
             }
         }
         
@@ -742,7 +751,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to load character data..
+        ///   Looks up a localized string similar to Failed to get character data..
         /// </summary>
         internal static string error_link_open_character {
             get {
@@ -751,7 +760,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to reestablish link. Character not found.
+        ///   Looks up a localized string similar to Unable to restore link. Character not found.
         ///
         ///Do you want to remove the link from this file?.
         /// </summary>
@@ -1473,15 +1482,6 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Character link broken.
-        /// </summary>
-        internal static string msg_link_break {
-            get {
-                return ResourceManager.GetString("msg_link_break", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This character has been modified in Backyard AI.
         ///
         ///Do you want to continue and overwrite those changes?.
@@ -1502,11 +1502,13 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Link reestablished to &quot;{0}&quot;.
+        ///   Looks up a localized string similar to This will reimport the character from Backyard AI, replacing any recipes or changes in the file. This action can be undone.
+        ///
+        ///Do you want to continue?.
         /// </summary>
-        internal static string msg_link_reestablished {
+        internal static string msg_link_revert {
             get {
-                return ResourceManager.GetString("msg_link_reestablished", resourceCulture);
+                return ResourceManager.GetString("msg_link_revert", resourceCulture);
             }
         }
         
@@ -2018,6 +2020,87 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Character link broken.
+        /// </summary>
+        internal static string status_link_break {
+            get {
+                return ResourceManager.GetString("status_link_break", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connected to Backyard AI.
+        /// </summary>
+        internal static string status_link_connect {
+            get {
+                return ResourceManager.GetString("status_link_connect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Link created.
+        /// </summary>
+        internal static string status_link_create {
+            get {
+                return ResourceManager.GetString("status_link_create", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disconnected from Backyard AI.
+        /// </summary>
+        internal static string status_link_disconnect {
+            get {
+                return ResourceManager.GetString("status_link_disconnect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character link restored.
+        /// </summary>
+        internal static string status_link_reestablished {
+            get {
+                return ResourceManager.GetString("status_link_reestablished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reimported character from Backyard AI.
+        /// </summary>
+        internal static string status_link_reverted {
+            get {
+                return ResourceManager.GetString("status_link_reverted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Changes saved to Backyard AI.
+        /// </summary>
+        internal static string status_link_saved {
+            get {
+                return ResourceManager.GetString("status_link_saved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reading character card....
+        /// </summary>
+        internal static string status_open_character {
+            get {
+                return ResourceManager.GetString("status_open_character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refreshing recipe list....
+        /// </summary>
+        internal static string status_refreshing_list {
+            get {
+                return ResourceManager.GetString("status_refreshing_list", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap story {
@@ -2438,7 +2521,16 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If enabled, Ginger will automatically update Backyard AI when this file is saved..
+        ///   Looks up a localized string similar to Linking allows changes made in Ginger to be saved back to Backyard AI..
+        /// </summary>
+        internal static string tooltip_link_about_linking {
+            get {
+                return ResourceManager.GetString("tooltip_link_about_linking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If enabled, when you save your changes, Ginger will automatically save them to Backyard AI as well..
         /// </summary>
         internal static string tooltip_link_autosave {
             get {
@@ -2447,7 +2539,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Break the link connecting this file to a Backyard AI character..
+        ///   Looks up a localized string similar to Break the link connecting this file to Backyard AI..
         /// </summary>
         internal static string tooltip_link_break {
             get {
@@ -2475,11 +2567,20 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attempt to reestablish the link connecting this file to a Backyard AI character..
+        ///   Looks up a localized string similar to Attempt to restore the link connecting this file to Backyard AI..
         /// </summary>
         internal static string tooltip_link_reestablish {
             get {
                 return ResourceManager.GetString("tooltip_link_reestablish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reimport the linked character from Backyard AI.
+        /// </summary>
+        internal static string tooltip_link_revert {
+            get {
+                return ResourceManager.GetString("tooltip_link_revert", resourceCulture);
             }
         }
         

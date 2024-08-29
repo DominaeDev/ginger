@@ -44,6 +44,8 @@ namespace Ginger
 			this.btnOk = new System.Windows.Forms.Button();
 			this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
+			this.cbCreateLink = new System.Windows.Forms.CheckBox();
+			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			listPanel = new System.Windows.Forms.Panel();
 			buttonLayout = new System.Windows.Forms.FlowLayoutPanel();
 			listPanel.SuspendLayout();
@@ -141,11 +143,32 @@ namespace Ginger
 			// 
 			this.importFileDialog.Multiselect = true;
 			// 
+			// cbCreateLink
+			// 
+			this.cbCreateLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.cbCreateLink.AutoSize = true;
+			this.cbCreateLink.Location = new System.Drawing.Point(11, 334);
+			this.cbCreateLink.Name = "cbCreateLink";
+			this.cbCreateLink.Size = new System.Drawing.Size(148, 19);
+			this.cbCreateLink.TabIndex = 3;
+			this.cbCreateLink.Text = "Create link to character";
+			this.cbCreateLink.UseVisualStyleBackColor = true;
+			// 
+			// toolTip
+			// 
+			this.toolTip.AutomaticDelay = 250;
+			this.toolTip.AutoPopDelay = 3500;
+			this.toolTip.InitialDelay = 250;
+			this.toolTip.ReshowDelay = 50;
+			this.toolTip.UseAnimation = false;
+			this.toolTip.UseFading = false;
+			// 
 			// LinkImportDialog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(484, 361);
+			this.Controls.Add(this.cbCreateLink);
 			this.Controls.Add(listPanel);
 			this.Controls.Add(buttonLayout);
 			this.DoubleBuffered = true;
@@ -153,6 +176,7 @@ namespace Ginger
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
+			this.MinimumSize = new System.Drawing.Size(450, 300);
 			this.Name = "LinkImportDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -160,6 +184,7 @@ namespace Ginger
 			listPanel.ResumeLayout(false);
 			buttonLayout.ResumeLayout(false);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -170,5 +195,7 @@ namespace Ginger
 		private System.Windows.Forms.Button btnOk;
 		private System.Windows.Forms.TreeView treeView;
 		private System.Windows.Forms.ImageList imageList;
+		private System.Windows.Forms.CheckBox cbCreateLink;
+		private System.Windows.Forms.ToolTip toolTip;
 	}
 }

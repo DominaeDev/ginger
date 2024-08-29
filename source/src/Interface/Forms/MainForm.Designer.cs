@@ -36,10 +36,11 @@ namespace Ginger {
 			System.Windows.Forms.ToolStripMenuItem linkMenuItem;
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem10;
 			this.enableLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importFromFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveToFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveNewToFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.revertFromFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.reestablishLinkSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.reestablishLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.breakLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -226,6 +227,7 @@ namespace Ginger {
             this.importFromFaradayMenuItem,
             this.saveToFaradayMenuItem,
             this.saveNewToFaradayMenuItem,
+            this.revertFromFaradayMenuItem,
             this.reestablishLinkSeparator,
             this.reestablishLinkMenuItem,
             this.breakLinkMenuItem});
@@ -239,6 +241,13 @@ namespace Ginger {
 			this.enableLinkMenuItem.Size = new System.Drawing.Size(198, 22);
 			this.enableLinkMenuItem.Text = "Connect to Backyard AI";
 			this.enableLinkMenuItem.Click += new System.EventHandler(this.enableLinkMenuItem_Click);
+			// 
+			// enableAutosaveMenuItem
+			// 
+			this.enableAutosaveMenuItem.Name = "enableAutosaveMenuItem";
+			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.enableAutosaveMenuItem.Text = "Synchronized saving";
+			this.enableAutosaveMenuItem.Click += new System.EventHandler(this.enableAutosaveMenuItem_Click);
 			// 
 			// toolStripMenuItem10
 			// 
@@ -256,7 +265,7 @@ namespace Ginger {
 			// 
 			this.saveToFaradayMenuItem.Name = "saveToFaradayMenuItem";
 			this.saveToFaradayMenuItem.Size = new System.Drawing.Size(198, 22);
-			this.saveToFaradayMenuItem.Text = "Save changes";
+			this.saveToFaradayMenuItem.Text = "Save and update";
 			this.saveToFaradayMenuItem.Click += new System.EventHandler(this.saveToFaradayMenuItem_Click);
 			// 
 			// saveNewToFaradayMenuItem
@@ -266,12 +275,12 @@ namespace Ginger {
 			this.saveNewToFaradayMenuItem.Text = "Save as new";
 			this.saveNewToFaradayMenuItem.Click += new System.EventHandler(this.saveNewToFaradayMenuItem_Click);
 			// 
-			// enableAutosaveMenuItem
+			// revertFromFaradayMenuItem
 			// 
-			this.enableAutosaveMenuItem.Name = "enableAutosaveMenuItem";
-			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(198, 22);
-			this.enableAutosaveMenuItem.Text = "Synchronized saving";
-			this.enableAutosaveMenuItem.Click += new System.EventHandler(this.enableAutosaveMenuItem_Click);
+			this.revertFromFaradayMenuItem.Name = "revertFromFaradayMenuItem";
+			this.revertFromFaradayMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.revertFromFaradayMenuItem.Text = "Reimport...";
+			this.revertFromFaradayMenuItem.Click += new System.EventHandler(this.revertFromFaradayMenuItem_Click);
 			// 
 			// reestablishLinkSeparator
 			// 
@@ -282,7 +291,7 @@ namespace Ginger {
 			// 
 			this.reestablishLinkMenuItem.Name = "reestablishLinkMenuItem";
 			this.reestablishLinkMenuItem.Size = new System.Drawing.Size(198, 22);
-			this.reestablishLinkMenuItem.Text = "Reestablish link";
+			this.reestablishLinkMenuItem.Text = "Restore link";
 			this.reestablishLinkMenuItem.Click += new System.EventHandler(this.reestablishLinkMenuItem_Click);
 			// 
 			// breakLinkMenuItem
@@ -1573,6 +1582,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem breakLinkMenuItem;
 		private System.Windows.Forms.ToolStripSeparator reestablishLinkSeparator;
 		private System.Windows.Forms.ToolStripStatusLabel statusConnectionIcon;
+		private System.Windows.Forms.ToolStripMenuItem revertFromFaradayMenuItem;
 	}
 }
 

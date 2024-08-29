@@ -339,7 +339,7 @@ namespace Ginger
 				MainForm.StealFocus();
 
 			if (!bScrollToTop)
-				MainForm.SetStatusBarMessage("Refreshing recipe list...");
+				MainForm.SetStatusBarMessage(Resources.status_refreshing_list);
 
 			this.Suspend();
 			this.DisableRedrawAndDo(() => {
@@ -1382,7 +1382,7 @@ namespace Ginger
 				return;
 
 			MainForm.instance.Cursor = Cursors.WaitCursor;
-			MainForm.SetStatusBarMessage("Refreshing recipe list...");
+			MainForm.SetStatusBarMessage(Resources.status_refreshing_list);
 
 			this.Suspend();
 			var instance = Current.AddLorebook(lorebook);

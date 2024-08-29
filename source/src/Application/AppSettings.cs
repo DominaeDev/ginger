@@ -169,6 +169,7 @@ namespace Ginger
 			public static bool Enabled = false;
 			public static string Location = null;
 			public static bool Autosave = true;
+			public static bool LinkOnImport = true;
 		}
 
 		public static bool LoadFromIni(string filePath)
@@ -296,6 +297,7 @@ namespace Ginger
 			{
 				ReadBool(ref FaradayLink.Enabled, linkSection, "Enabled");
 				ReadBool(ref FaradayLink.Autosave, linkSection, "Autosave");
+				ReadBool(ref FaradayLink.LinkOnImport, linkSection, "LinkOnImport");
 				ReadString(ref FaradayLink.Location, linkSection, "Location");
 			}
 
@@ -404,9 +406,10 @@ namespace Ginger
 					
 					// Faraday link
 					WriteSection(outputFile, "BackyardAI.Link");
+					Write(outputFile, "Location", FaradayLink.Location);
 					Write(outputFile, "Enabled", FaradayLink.Enabled);
 					Write(outputFile, "Autosave", FaradayLink.Autosave);
-					Write(outputFile, "Location", FaradayLink.Location);
+					Write(outputFile, "LinkOnImport", FaradayLink.LinkOnImport);
 
 					// MRU list
 					WriteSection(outputFile, "MRU");

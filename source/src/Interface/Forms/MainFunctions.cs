@@ -539,7 +539,7 @@ namespace Ginger
 			}
 
 			Cursor = Cursors.WaitCursor;
-			SetStatusBarMessage("Refreshing recipe list...");
+			SetStatusBarMessage(Resources.status_refreshing_list);
 
 			// Add to recipe list
 			var instance = Current.AddLorebook(lorebook);
@@ -1126,7 +1126,7 @@ namespace Ginger
 				if (bShouldAutosave)
 				{
 					if (bAutoSaved)
-						SetStatusBarMessage(Resources.msg_link_saved, 1500);
+						SetStatusBarMessage(Resources.status_link_saved, Constants.StatusBarMessageInterval);
 					else if (autosaveError == FaradayBridge.Error.NoDataFound)
 					{
 						MessageBox.Show(Resources.error_link_autosave_not_found, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1146,7 +1146,7 @@ namespace Ginger
 			else
 			{
 				if (bAutoSaved) // Notify user the auto save worked
-					SetStatusBarMessage(Resources.msg_link_saved, 1500);
+					SetStatusBarMessage(Resources.status_link_saved, Constants.StatusBarMessageInterval);
 
 				MessageBox.Show(Resources.error_save_character_card, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
@@ -1528,7 +1528,7 @@ namespace Ginger
 
 		private bool ImportCharacterFromFaraday()
 		{
-			LinkImportDialog dlg = new LinkImportDialog();
+			var dlg = new LinkImportDialog();
 
 			// Refresh character list
 			if (FaradayBridge.RefreshCharacters() != FaradayBridge.Error.NoError)
@@ -1545,7 +1545,7 @@ namespace Ginger
 			if (ConfirmSave(Resources.cap_import_character) == false)
 				return false;
 
-			SetStatusBarMessage("Importing character data...");
+			SetStatusBarMessage(Resources.status_open_character);
 
 			// Import...
 			FaradayCardV4 faradayData;
@@ -1577,11 +1577,11 @@ namespace Ginger
 			Current.IsLinkDirty = false;
 			Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
 
-			if (MessageBox.Show(Resources.msg_link_new, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+			if (dlg.ShouldLink)
 			{
 				Current.LinkWith(dlg.SelectedCharacter);
 				Current.IsLinkDirty = false;
-				SetStatusBarMessage("Character link created", 1500);
+				SetStatusBarMessage(Resources.status_link_create, Constants.StatusBarMessageInterval);
 			}
 			return true;
 		}
@@ -1680,7 +1680,7 @@ namespace Ginger
 					Current.FaradayLink.RefreshState();
 					RefreshTitle();
 
-					SetStatusBarMessage(string.Format(Resources.msg_link_reestablished, characterInstance.displayName), 1500);
+					SetStatusBarMessage(Resources.status_link_reestablished, Constants.StatusBarMessageInterval);
 				}
 				else
 				{
@@ -1698,11 +1698,65 @@ namespace Ginger
 		{
 			if (Current.FaradayLink != null)
 			{
-				SetStatusBarMessage(Resources.msg_link_break, 1500);
+				SetStatusBarMessage(Resources.status_link_break, Constants.StatusBarMessageInterval);
 				Current.IsFileDirty = true;
 				Current.FaradayLink.isActive = false;
 				RefreshTitle();
 			}
+		}
+
+		private FaradayBridge.Error RevertCharacterFromFaraday()
+		{
+			if (FaradayBridge.ConnectionEstablished == false)
+				return FaradayBridge.Error.NotConnected;
+			else if (Current.HasLink == false)
+				return FaradayBridge.Error.NoDataFound;
+
+			// Refresh character list
+			var refreshError = FaradayBridge.RefreshCharacters();
+			if (refreshError != FaradayBridge.Error.NoError)
+				return refreshError;
+
+			// Get character instance
+			FaradayBridge.CharacterInstance characterInstance;
+			if (FaradayBridge.GetCharacter(Current.FaradayLink.characterId, out characterInstance) == false)
+				return FaradayBridge.Error.NoDataFound;
+
+			// Import data
+			FaradayCardV4 faradayData;
+			Image image;
+			var importError = FaradayBridge.ImportCharacter(characterInstance, out faradayData, out image);
+			if (importError != FaradayBridge.Error.NoError)
+				return importError;
+
+			// Success
+			Current.ReadFaradayCard(faradayData, image);
+			Current.LinkWith(characterInstance);
+			Current.IsDirty = true;
+			Current.IsLinkDirty = false;
+			
+			// Refresh sidepanel and recipe list
+			this.Suspend();
+			sidePanel.Reset();
+			sidePanel.SetLoreCount(0, false);
+			sidePanel.RefreshValues();
+			sidePanel.Refresh();
+			recipeList.RemoveAllPanels();
+			this.Resume();
+			recipeList.Refresh();
+
+			this.Suspend();
+			recipeList.RecreatePanels(true);
+			recipeList.RefreshScrollbar();
+			RefreshSpellChecking();
+
+			Regenerate();
+			RefreshTitle();
+			this.Resume();
+
+			Undo.Push(Undo.Kind.RecipeList, "Reimport character");
+			
+			return FaradayBridge.Error.NoError;
 		}
 	}
 }

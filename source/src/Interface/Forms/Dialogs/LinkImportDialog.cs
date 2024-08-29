@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ginger.Properties;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,8 @@ namespace Ginger
 		public FaradayBridge.CharacterInstance[] Characters;
 		public FaradayBridge.FolderInstance[] Folders;
 		public FaradayBridge.CharacterInstance SelectedCharacter { get; private set; }
+
+		public bool ShouldLink { get { return cbCreateLink.Checked; } }
 
 		public LinkImportDialog()
 		{
@@ -27,6 +30,10 @@ namespace Ginger
 			SelectedCharacter = default(FaradayBridge.CharacterInstance);
 
 			btnOk.Enabled = false;
+			cbCreateLink.Checked = AppSettings.FaradayLink.LinkOnImport;
+			
+			// Tooltips
+			toolTip.SetToolTip(cbCreateLink, Resources.tooltip_link_about_linking);
 		}
 
 		private void PopulateTree()
@@ -123,6 +130,7 @@ namespace Ginger
 
 		private void BtnOk_Click(object sender, EventArgs e)
 		{
+			AppSettings.FaradayLink.LinkOnImport = cbCreateLink.Checked;
 			DialogResult = DialogResult.OK;
 			Close();
 		}

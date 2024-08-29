@@ -122,8 +122,8 @@ namespace Ginger
 			RefreshSpellChecking();
 
 			Regenerate();
-			Current.IsFileDirty = false;
-			RefreshTitle();
+//			Current.IsFileDirty = false;
+//			RefreshTitle();
 
 #if DEBUG
 			stopWatch.Stop();
@@ -233,6 +233,7 @@ namespace Ginger
 			importFromFaradayMenuItem.ToolTipText = Resources.tooltip_link_open;
 			saveToFaradayMenuItem.ToolTipText = Resources.tooltip_link_save;
 			saveNewToFaradayMenuItem.ToolTipText = Resources.tooltip_link_save_as_new;
+			revertFromFaradayMenuItem.ToolTipText = Resources.tooltip_link_revert;
 
 			RegisterIdleHandler(recipeList);
 
@@ -344,7 +345,7 @@ namespace Ginger
 				if (lorebook != null)
 				{
 					Cursor = Cursors.WaitCursor;
-					SetStatusBarMessage("Refreshing recipe list...");
+					SetStatusBarMessage(Resources.status_refreshing_list);
 
 					// Add to recipe list
 					var instance = Current.AddLorebook(lorebook);
@@ -865,7 +866,7 @@ namespace Ginger
 				return false;
 			}
 
-			SetStatusBarMessage("Reading character card..."); 
+			SetStatusBarMessage(Resources.status_open_character); 
 
 			string ext = Path.GetExtension(filename).ToLowerInvariant();
 			if (ext == ".json" || ext == ".yaml" || ext == ".charx")
@@ -922,7 +923,7 @@ namespace Ginger
 
 			Cursor = Cursors.WaitCursor;
 
-			SetStatusBarMessage("Refreshing recipe list...");
+			SetStatusBarMessage(Resources.status_refreshing_list);
 
 			sidePanel.Enabled = true;
 			userNotes.Clear();
@@ -1056,7 +1057,7 @@ namespace Ginger
 				else
 				{
 					statusConnectionIcon.Image = Resources.link_connected;
-					statusConnectionIcon.ToolTipText = "Connected; No link";
+					statusConnectionIcon.ToolTipText = "Connected; Not linked";
 				}
 			}
 			else
@@ -1199,6 +1200,7 @@ namespace Ginger
 			importFromFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
 			saveToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished && Current.HasActiveLink;
 			saveNewToFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished && Current.HasActiveLink == false;
+			revertFromFaradayMenuItem.Enabled = FaradayBridge.ConnectionEstablished && Current.HasActiveLink;
 			enableAutosaveMenuItem.Enabled = FaradayBridge.ConnectionEstablished;
 			enableAutosaveMenuItem.Checked = FaradayBridge.ConnectionEstablished && AppSettings.FaradayLink.Autosave;
 			reestablishLinkSeparator.Visible = FaradayBridge.ConnectionEstablished && (Current.HasActiveLink || Current.HasStaleLink);
@@ -2049,7 +2051,7 @@ namespace Ginger
 					if (Current.HasLink)
 						Current.FaradayLink.RefreshState();
 
-					SetStatusBarMessage("Connected to Backyard AI", 1500);
+					SetStatusBarMessage(Resources.status_link_connect, Constants.StatusBarMessageInterval);
 					AppSettings.FaradayLink.Enabled = true;
 				}
 				else
@@ -2060,7 +2062,7 @@ namespace Ginger
 			}
 			else
 			{
-				SetStatusBarMessage("Disconnected from Backyard AI", 1500);
+				SetStatusBarMessage(Resources.status_link_disconnect, Constants.StatusBarMessageInterval);
 				AppSettings.FaradayLink.Enabled = false;
 				FaradayBridge.Disconnect();
 			}
@@ -2093,7 +2095,7 @@ namespace Ginger
 			else
 			{
 				MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
-				//SetStatusBarMessage(Resources.msg_link_saved, 1500);
+				//SetStatusBarMessage(Resources.msg_link_saved, Constants.StatusBarMessageInterval);
 			}
 		}
 		
@@ -2115,7 +2117,7 @@ namespace Ginger
 				{
 					Current.LinkWith(createdCharacter);
 					Current.IsLinkDirty = false;
-					SetStatusBarMessage("Character link created", 1500);
+					SetStatusBarMessage(Resources.status_link_create, Constants.StatusBarMessageInterval);
 					RefreshTitle();
 				}
 			}
@@ -2136,6 +2138,23 @@ namespace Ginger
 			AppSettings.FaradayLink.Autosave = !AppSettings.FaradayLink.Autosave;
 		}
 
+		private void revertFromFaradayMenuItem_Click(object sender, EventArgs e)
+		{
+			if (MessageBox.Show(Resources.msg_link_revert, Resources.cap_link_revert, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+				return;
+
+			var error = RevertCharacterFromFaraday();
+			if (error == FaradayBridge.Error.NotConnected)
+				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			else if (error != FaradayBridge.Error.NoError)
+				MessageBox.Show(Resources.error_link_open_character, Resources.cap_link_revert, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			else
+			{
+				Current.IsLinkDirty = false;
+				SetStatusBarMessage(Resources.status_link_reverted, Constants.StatusBarMessageInterval);
+				RefreshTitle();
+			}
+		}
 	}
 
 	public interface IIdleHandler

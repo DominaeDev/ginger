@@ -737,14 +737,14 @@ Do you want to continue and overwrite those changes?</value>
     <value>Successfully saved character to Backyard AI</value>
   </data>
   <data name="tooltip_link_autosave" xml:space="preserve">
-    <value>If enabled, Ginger will automatically update Backyard AI when this file is saved.</value>
+    <value>If enabled, when you save your changes, Ginger will automatically save them to Backyard AI as well.</value>
   </data>
   <data name="tooltip_link_connect" xml:space="preserve">
     <value>Attempt to connect to a local installation of Backyard AI.
 (Backyard AI must be installed on this system.)</value>
   </data>
   <data name="tooltip_link_reestablish" xml:space="preserve">
-    <value>Attempt to reestablish the link connecting this file to a Backyard AI character.</value>
+    <value>Attempt to restore the link connecting this file to Backyard AI.</value>
   </data>
   <data name="tooltip_link_save_as_new" xml:space="preserve">
     <value>Save as a new Backyard AI character.</value>
@@ -753,23 +753,23 @@ Do you want to continue and overwrite those changes?</value>
     <value>Open a Backyard AI character.</value>
   </data>
   <data name="cap_link_reestablish" xml:space="preserve">
-    <value>Reestablish link to character</value>
+    <value>Restore link to character</value>
   </data>
   <data name="error_link_autosave" xml:space="preserve">
     <value>File was saved, however synchronization with Backyard AI failed.</value>
   </data>
   <data name="error_link_reestablish" xml:space="preserve">
-    <value>Unable to reestablish link. Character not found.
+    <value>Unable to restore link. Character not found.
 
 Do you want to remove the link from this file?</value>
   </data>
-  <data name="msg_link_reestablished" xml:space="preserve">
-    <value>Link reestablished to "{0}"</value>
+  <data name="status_link_reestablished" xml:space="preserve">
+    <value>Character link restored</value>
   </data>
   <data name="error_link_open_character" xml:space="preserve">
-    <value>Failed to load character data.</value>
+    <value>Failed to get character data.</value>
   </data>
-  <data name="msg_link_break" xml:space="preserve">
+  <data name="status_link_break" xml:space="preserve">
     <value>Character link broken</value>
   </data>
   <data name="cap_link_character" xml:space="preserve">
@@ -800,9 +800,44 @@ Do you want to remove the link from this file?</value>
     <value>File was saved, however synchronization with Backyard AI failed. Character not found.</value>
   </data>
   <data name="tooltip_link_break" xml:space="preserve">
-    <value>Break the link connecting this file to a Backyard AI character.</value>
+    <value>Break the link connecting this file to Backyard AI.</value>
   </data>
   <data name="group_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\group_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cap_link_revert" xml:space="preserve">
+    <value>Reimport character</value>
+  </data>
+  <data name="msg_link_revert" xml:space="preserve">
+    <value>This will reimport the character from Backyard AI, replacing any recipes or changes in the file. This action can be undone.
+
+Do you want to continue?</value>
+  </data>
+  <data name="status_link_connect" xml:space="preserve">
+    <value>Connected to Backyard AI</value>
+  </data>
+  <data name="status_link_create" xml:space="preserve">
+    <value>Link created</value>
+  </data>
+  <data name="status_link_disconnect" xml:space="preserve">
+    <value>Disconnected from Backyard AI</value>
+  </data>
+  <data name="status_link_reverted" xml:space="preserve">
+    <value>Reimported character from Backyard AI</value>
+  </data>
+  <data name="status_link_saved" xml:space="preserve">
+    <value>Changes saved to Backyard AI</value>
+  </data>
+  <data name="status_open_character" xml:space="preserve">
+    <value>Reading character card...</value>
+  </data>
+  <data name="status_refreshing_list" xml:space="preserve">
+    <value>Refreshing recipe list...</value>
+  </data>
+  <data name="tooltip_link_revert" xml:space="preserve">
+    <value>Reimport the linked character from Backyard AI</value>
+  </data>
+  <data name="tooltip_link_about_linking" xml:space="preserve">
+    <value>Linking allows changes made in Ginger to be saved back to Backyard AI.</value>
   </data>
 </root>
