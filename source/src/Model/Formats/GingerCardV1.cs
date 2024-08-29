@@ -182,7 +182,8 @@ namespace Ginger
 			if (linkNode != null)
 			{
 				faradayLink = new FaradayBridge.Link();
-				faradayLink.LoadFromXml(linkNode);
+				if (faradayLink.LoadFromXml(linkNode) == false)
+					faradayLink = null;
 			}
 
 			return true;

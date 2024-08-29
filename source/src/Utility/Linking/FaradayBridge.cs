@@ -54,13 +54,13 @@ namespace Ginger
 				isActive = xmlNode.GetAttributeBool("active") && string.IsNullOrEmpty(characterId) == false;
 				updateDate = DateTimeExtensions.FromUnixTime(xmlNode.GetAttributeLong("updated"));
 				isDirty = xmlNode.GetAttributeBool("dirty");
-				return true;
+				return characterId != null;
 			}
 
 			public void SaveToXml(XmlNode xmlNode)
 			{
-				xmlNode.AddAttribute("active", isActive);
 				xmlNode.AddAttribute("id", characterId);
+				xmlNode.AddAttribute("active", isActive);
 				xmlNode.AddAttribute("updated", updateDate.ToUnixTimeMilliseconds());
 				if (isActive)
 					xmlNode.AddAttribute("dirty", isDirty);
@@ -748,7 +748,6 @@ namespace Ginger
 
 					string configId = null;
 					string groupId = null;
-					string chatId = null;
 
 					// Get row ids
 					using (var cmdGetIds = connection.CreateCommand())
@@ -756,12 +755,10 @@ namespace Ginger
 						cmdGetIds.CommandText =
 							@"
 							SELECT 
-								A.id, B.B, C.id
+								A.id, B.B
 							FROM CharacterConfigVersion AS A
 							INNER JOIN _CharacterConfigToGroupConfig AS B 
 								ON B.A = $1
-							INNER JOIN Chat AS C
-								ON C.groupConfigId = B.B
 							WHERE A.characterConfigId = $1
 						";
 						cmdGetIds.Parameters.AddWithValue("$1", characterId);
@@ -775,8 +772,7 @@ namespace Ginger
 							}
 
 							configId = reader.GetString(0);
-							groupId = reader.GetString(1);
-							chatId = reader.GetString(2);
+							groupId = reader.GetString(1);	// Primary group
 						}
 					}
 
@@ -815,8 +811,7 @@ namespace Ginger
 							int updates = 0;
 							int expectedUpdates = 0;
 							
-							// Update character data
-
+							// Update character persona
 							using (var cmdUpdate = new SQLiteCommand(connection))
 							{
 								var sbCommand = new StringBuilder();
@@ -830,6 +825,22 @@ namespace Ginger
 										persona = $persona
 									WHERE id = $configId;
 								");
+								cmdUpdate.CommandText = sbCommand.ToString();
+								cmdUpdate.Parameters.AddWithValue("$configId", configId);
+								cmdUpdate.Parameters.AddWithValue("$displayName", card.data.displayName);
+								cmdUpdate.Parameters.AddWithValue("$name", card.data.name);
+								cmdUpdate.Parameters.AddWithValue("$persona", card.data.persona);
+								cmdUpdate.Parameters.AddWithValue("$timestamp", updatedAt);
+
+								expectedUpdates += 1;
+
+								updates += cmdUpdate.ExecuteNonQuery();
+							}
+
+							// Update chat data
+							using (var cmdChat = new SQLiteCommand(connection))
+							{
+								var sbCommand = new StringBuilder();
 								sbCommand.AppendLine(
 								@"
 									UPDATE Chat
@@ -840,25 +851,20 @@ namespace Ginger
 										modelInstructions = $system,
 										grammar = $grammar,
 										greetingDialogue = $greeting
-									WHERE id = $chatId;
+									WHERE groupConfigId = $groupId;
 								");
-								cmdUpdate.CommandText = sbCommand.ToString();
-								cmdUpdate.Parameters.AddWithValue("$configId", configId);
-								cmdUpdate.Parameters.AddWithValue("$groupId", groupId);
-								cmdUpdate.Parameters.AddWithValue("$chatId", chatId);
-								cmdUpdate.Parameters.AddWithValue("$displayName", card.data.displayName);
-								cmdUpdate.Parameters.AddWithValue("$name", card.data.name);
-								cmdUpdate.Parameters.AddWithValue("$system", card.data.system);
-								cmdUpdate.Parameters.AddWithValue("$persona", card.data.persona);
-								cmdUpdate.Parameters.AddWithValue("$scenario", card.data.scenario);
-								cmdUpdate.Parameters.AddWithValue("$example", card.data.example);
-								cmdUpdate.Parameters.AddWithValue("$greeting", card.data.greeting);
-								cmdUpdate.Parameters.AddWithValue("$grammar", card.data.grammar);
-								cmdUpdate.Parameters.AddWithValue("$timestamp", updatedAt);
+								cmdChat.CommandText = sbCommand.ToString();
+								cmdChat.Parameters.AddWithValue("$groupId", groupId);
+								cmdChat.Parameters.AddWithValue("$system", card.data.system);
+								cmdChat.Parameters.AddWithValue("$scenario", card.data.scenario);
+								cmdChat.Parameters.AddWithValue("$example", card.data.example);
+								cmdChat.Parameters.AddWithValue("$greeting", card.data.greeting);
+								cmdChat.Parameters.AddWithValue("$grammar", card.data.grammar);
+								cmdChat.Parameters.AddWithValue("$timestamp", updatedAt);
 
-								expectedUpdates += 2;
-
-								updates += cmdUpdate.ExecuteNonQuery();
+								int nChats = cmdChat.ExecuteNonQuery();
+								expectedUpdates += Math.Max(nChats, 1); // Expect at least one
+								updates += nChats;
 							}
 
 							// Lorebook

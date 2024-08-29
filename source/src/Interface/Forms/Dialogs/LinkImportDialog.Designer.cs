@@ -32,8 +32,10 @@ namespace Ginger
 			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.Panel listPanel;
 			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Character", 1, 1);
-			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
+			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Group", 2, 2, new System.Windows.Forms.TreeNode[] {
             treeNode1});
+			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
+            treeNode2});
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkImportDialog));
 			System.Windows.Forms.FlowLayoutPanel buttonLayout;
 			this.treeView = new System.Windows.Forms.TreeView();
@@ -50,35 +52,41 @@ namespace Ginger
 			// 
 			// listPanel
 			// 
+			listPanel.BackColor = System.Drawing.SystemColors.Window;
 			listPanel.Controls.Add(this.treeView);
 			listPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			listPanel.Location = new System.Drawing.Point(0, 0);
 			listPanel.Name = "listPanel";
-			listPanel.Padding = new System.Windows.Forms.Padding(4, 4, 0, 4);
-			listPanel.Size = new System.Drawing.Size(484, 319);
+			listPanel.Padding = new System.Windows.Forms.Padding(2, 4, 2, 2);
+			listPanel.Size = new System.Drawing.Size(484, 326);
 			listPanel.TabIndex = 0;
 			// 
 			// treeView
 			// 
+			this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.treeView.CausesValidation = false;
 			this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.treeView.HideSelection = false;
 			this.treeView.ImageIndex = 0;
 			this.treeView.ImageList = this.imageList;
-			this.treeView.Location = new System.Drawing.Point(4, 4);
+			this.treeView.Location = new System.Drawing.Point(2, 4);
 			this.treeView.Name = "treeView";
 			treeNode1.ImageIndex = 1;
-			treeNode1.Name = "tmpNode1";
+			treeNode1.Name = "Node1";
 			treeNode1.SelectedImageIndex = 1;
 			treeNode1.Text = "Character";
+			treeNode2.ImageIndex = 2;
 			treeNode2.Name = "tmpNode1";
-			treeNode2.SelectedImageIndex = 0;
-			treeNode2.Text = "Folder";
+			treeNode2.SelectedImageIndex = 2;
+			treeNode2.Text = "Group";
+			treeNode3.Name = "tmpNode1";
+			treeNode3.SelectedImageIndex = 0;
+			treeNode3.Text = "Folder";
 			this.treeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode2});
+            treeNode3});
 			this.treeView.SelectedImageIndex = 0;
 			this.treeView.ShowNodeToolTips = true;
-			this.treeView.Size = new System.Drawing.Size(480, 311);
+			this.treeView.Size = new System.Drawing.Size(480, 320);
 			this.treeView.TabIndex = 0;
 			this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
 			this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseDoubleClick);
@@ -89,6 +97,7 @@ namespace Ginger
 			this.imageList.TransparentColor = System.Drawing.Color.Transparent;
 			this.imageList.Images.SetKeyName(0, "tree_folder.png");
 			this.imageList.Images.SetKeyName(1, "character_small.png");
+			this.imageList.Images.SetKeyName(2, "group_small.png");
 			// 
 			// buttonLayout
 			// 
@@ -97,18 +106,18 @@ namespace Ginger
 			buttonLayout.Controls.Add(this.btnOk);
 			buttonLayout.Dock = System.Windows.Forms.DockStyle.Bottom;
 			buttonLayout.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-			buttonLayout.Location = new System.Drawing.Point(0, 319);
+			buttonLayout.Location = new System.Drawing.Point(0, 326);
 			buttonLayout.Margin = new System.Windows.Forms.Padding(0);
 			buttonLayout.Name = "buttonLayout";
-			buttonLayout.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-			buttonLayout.Size = new System.Drawing.Size(484, 42);
+			buttonLayout.Padding = new System.Windows.Forms.Padding(0, 2, 4, 0);
+			buttonLayout.Size = new System.Drawing.Size(484, 35);
 			buttonLayout.TabIndex = 7;
 			// 
 			// btnCancel
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnCancel.Location = new System.Drawing.Point(364, 9);
-			this.btnCancel.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+			this.btnCancel.Location = new System.Drawing.Point(363, 2);
+			this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 0, 0, 0);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(117, 30);
 			this.btnCancel.TabIndex = 2;
@@ -119,8 +128,8 @@ namespace Ginger
 			// btnOk
 			// 
 			this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnOk.Location = new System.Drawing.Point(241, 9);
-			this.btnOk.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+			this.btnOk.Location = new System.Drawing.Point(242, 2);
+			this.btnOk.Margin = new System.Windows.Forms.Padding(0);
 			this.btnOk.Name = "btnOk";
 			this.btnOk.Size = new System.Drawing.Size(117, 30);
 			this.btnOk.TabIndex = 1;
