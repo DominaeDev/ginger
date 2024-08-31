@@ -1551,6 +1551,8 @@ namespace Ginger
 
 			// Success
 			Current.ReadFaradayCard(faradayData, null);
+			if (dlg.ShouldLink)
+				Current.LinkWith(dlg.SelectedCharacter, null);
 			Current.ImportImages(images);
 
 			ClearStatusBarMessage();
@@ -1564,11 +1566,7 @@ namespace Ginger
 			Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
 
 			if (dlg.ShouldLink)
-			{
-				Current.LinkWith(dlg.SelectedCharacter, null);
-				Current.IsLinkDirty = false;
 				SetStatusBarMessage(Resources.status_link_create, Constants.StatusBarMessageInterval);
-			}
 			return true;
 		}
 
