@@ -731,11 +731,12 @@ namespace Ginger
 			return CardData.TextStyle.None;
 		}
 
-		public static void LinkWith(FaradayBridge.CharacterInstance character)
+		public static void LinkWith(FaradayBridge.CharacterInstance characterInstance, FaradayBridge.ImageLink[] images)
 		{
 			FaradayLink = new FaradayBridge.Link() {
-				characterId = character.instanceId,
-				updateDate = character.updateDate,
+				characterId = characterInstance.instanceId,
+				updateDate = characterInstance.updateDate,
+				images = images,
 				isActive = true,
 			};
 			IsFileDirty = true;
@@ -747,6 +748,42 @@ namespace Ginger
 			{
 				FaradayLink.isActive = false;
 				IsFileDirty = true;
+			}
+		}
+
+		public static void ImportImages(string[] images)
+		{
+			if (images != null && images.Length > 0)
+			{
+				Image image;
+				if (Utility.LoadImageFromFile(images[0], out image))
+					Card.portraitImage = ImageRef.FromImage(image);
+
+				for (int i = 1; i < images.Length; ++i)
+				{
+					string name = Path.GetFileNameWithoutExtension(images[i]);
+					string ext = Path.GetExtension(images[i]);
+					if (ext.BeginsWith("."))
+						ext = ext.Substring(1);
+
+					var bytes = Utility.LoadFile(images[i]);
+					if (bytes != null)
+					{
+						var asset = new AssetFile() {
+							name = name,
+							assetType = AssetFile.AssetType.Icon,
+							data = AssetData.FromBytes(bytes),
+							ext = ext,
+							uriType = AssetFile.UriType.Embedded,
+						};
+						Card.assets.Add(asset);
+					}
+					else
+					{
+						// Add file reference
+						Card.assets.Add(AssetFile.MakeRemote(AssetFile.AssetType.Icon, string.Concat("file:///", images[i].Replace('\\', '/'))));
+					}
+				}
 			}
 		}
 	}

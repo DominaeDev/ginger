@@ -396,6 +396,8 @@ namespace Ginger
 		public string hash { get { return _hash; } }
 		private string _hash;
 
+		public bool isEmpty { get { return bytes == null || bytes.Length == 0; } }
+
 		public static AssetData FromBytes(byte[] bytes)
 		{
 			string hash;

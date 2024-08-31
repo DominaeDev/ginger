@@ -39,7 +39,7 @@ namespace Ginger
 			return bytes;
 		}
 
-		
+
 		public static string LoadTextFile(string filename)
 		{
 			byte[] bytes = LoadFile(filename);
@@ -57,7 +57,7 @@ namespace Ginger
 			return null;
 		}
 
-		public static bool LoadImageFile(string filename, out Image image)
+		public static bool LoadImageFromFile(string filename, out Image image)
 		{
 			if (string.IsNullOrEmpty(filename) || File.Exists(filename) == false)
 			{
@@ -78,6 +78,58 @@ namespace Ginger
 			catch
 			{
 				image = default(Image);
+				return false;
+			}
+		}		
+		
+		public static bool LoadImageFromMemory(byte[] bytes, out Image image)
+		{
+			if (bytes == null || bytes.Length == 0)
+			{
+				image = default(Image);
+				return false;
+			}
+
+			// Load image first
+			try
+			{
+				using (var stream = new MemoryStream(bytes))
+				{
+					image = Image.FromStream(stream);
+					return true;
+				}
+			}
+			catch
+			{
+				image = default(Image);
+				return false;
+			}
+		}
+
+		public static bool GetImageDimensions(byte[] bytes, out int width, out int height)
+		{
+			if (bytes == null || bytes.Length == 0)
+			{
+				width = default(int);
+				height = default(int);
+				return false;
+			}
+
+			// Load image first
+			try
+			{
+				using (var stream = new MemoryStream(bytes))
+				{
+					var image = Image.FromStream(stream, false, false);
+					width = image.Width;
+					height = image.Height;
+					return true;
+				}
+			}
+			catch
+			{
+				width = default(int);
+				height = default(int);
 				return false;
 			}
 		}
@@ -277,7 +329,7 @@ namespace Ginger
 				return null;
 			}
 		}
-		
+
 		public static string[] FindFilesInFolder(string path, string searchPattern = "*", bool includeSubFolders = false)
 		{
 			try
@@ -505,10 +557,10 @@ namespace Ginger
 				return;
 
 			for (int i = index; i < array.Length - 1; ++i)
-				array[i] = array[i+1];
+				array[i] = array[i + 1];
 
 			Array.Resize(ref array, array.Length - 1);
-		}	
+		}
 
 		public static string CleanExpression(string s)
 		{
@@ -532,7 +584,7 @@ namespace Ginger
 			}
 
 			var tokens = sbWhitespace.ToString().Split(new char[] { ' ', '\t', '\n', '\r', '\u00a0', '\u3000' }, StringSplitOptions.RemoveEmptyEntries);
-			
+
 			return string.Join(" ", tokens).TrimEnd().ToLowerInvariant();
 		}
 
@@ -582,7 +634,7 @@ namespace Ginger
 				return -1;
 
 			int currScope = 0;
-			
+
 			if (to < 0)
 				to = text.Length - 1;
 
@@ -646,14 +698,14 @@ namespace Ginger
 			}
 			return true;
 		}
-		
+
 		public static int ScopedIndexOf(string source, string match, int from, string sOpen, string sClose, int to = -1, char escape = '\\')
 		{
 			if (string.IsNullOrEmpty(source))
 				return -1;
 
 			int currScope = -1;
-			
+
 			if (to < 0)
 				to = source.Length - 1;
 
@@ -673,14 +725,14 @@ namespace Ginger
 			}
 			return -1;
 		}
-		
+
 		public static int ScopedIndexOf(StringBuilder source, string match, int from, string sOpen, string sClose, int to = -1, char escape = '\\')
 		{
 			if (source == null)
 				return -1;
 
 			int currScope = -1;
-			
+
 			if (to < 0)
 				to = source.Length - 1;
 
@@ -721,8 +773,7 @@ namespace Ginger
 			if (string.IsNullOrEmpty(command))
 				return new string[0];
 
-			Func<int, string, int> fnFindQuoteEnd = (index, s) =>
-			{
+			Func<int, string, int> fnFindQuoteEnd = (index, s) => {
 				int quote_end = -1;
 				for (int i = index + 1; i < s.Length; ++i)
 				{
@@ -738,8 +789,7 @@ namespace Ginger
 				}
 				return quote_end;
 			};
-			Func<int, string, int> fnFindNextWord = (index, s) =>
-			{
+			Func<int, string, int> fnFindNextWord = (index, s) => {
 				for (int i = index; i < s.Length; ++i)
 				{
 					if (char.IsWhiteSpace(s[i]) == false)
@@ -747,8 +797,7 @@ namespace Ginger
 				}
 				return -1;
 			};
-			Func<int, string, int> fnFindEndOfWord = (index, s) =>
-			{
+			Func<int, string, int> fnFindEndOfWord = (index, s) => {
 				for (int i = index; i < s.Length; ++i)
 				{
 					if (char.IsWhiteSpace(s[i]))
@@ -783,7 +832,7 @@ namespace Ginger
 						break;
 					}
 				}
-				else 
+				else
 				{
 					int word_end = fnFindEndOfWord(cursor, command);
 					words.Add(command.Substring(pos_word, word_end - pos_word)); // To end
@@ -796,7 +845,7 @@ namespace Ginger
 				return words.Where(w => string.IsNullOrEmpty(w) == false).ToArray();
 			return words.ToArray();
 		}
-		
+
 		public static string RemoveBrackets(string text, string open, string close, bool allowEscaping = true)
 		{
 			if (string.IsNullOrEmpty(open) || string.IsNullOrEmpty(close) || string.IsNullOrEmpty(text))
@@ -855,8 +904,8 @@ namespace Ginger
 			public Color ToColor()
 			{
 				return Color.FromArgb(
-					Convert.ToByte(Clamp01(r) * 255), 
-					Convert.ToByte(Clamp01(g) * 255), 
+					Convert.ToByte(Clamp01(r) * 255),
+					Convert.ToByte(Clamp01(g) * 255),
 					Convert.ToByte(Clamp01(b) * 255));
 			}
 		}
@@ -980,13 +1029,13 @@ namespace Ginger
 			var leftCharSet = left.HasValue ? CharUtil.GetCharacterSet(left.Value) : CharUtil.CharacterSet.Undefined;
 			var rightCharSet = right.HasValue ? CharUtil.GetCharacterSet(right.Value) : CharUtil.CharacterSet.Undefined;
 
-			bool bTermLeft = !left.HasValue 
-				|| char.IsWhiteSpace(left.Value) 
+			bool bTermLeft = !left.HasValue
+				|| char.IsWhiteSpace(left.Value)
 				|| charSet == CharUtil.CharacterSet.CJK
 				|| (charSet == CharUtil.CharacterSet.Default && !char.IsLetter(left.Value))
 				|| charSet != leftCharSet;
-			bool bTermRight = !right.HasValue 
-				|| char.IsWhiteSpace(right.Value) 
+			bool bTermRight = !right.HasValue
+				|| char.IsWhiteSpace(right.Value)
 				|| charSet == CharUtil.CharacterSet.CJK
 				|| (charSet == CharUtil.CharacterSet.Default && !char.IsLetter(right.Value))
 				|| charSet != rightCharSet;
@@ -1054,7 +1103,7 @@ namespace Ginger
 			while (pos != -1)
 			{
 				bool whole = IsWhole(text, word, pos);
-				
+
 				if (whole)
 					return pos;
 				pos = text.IndexOf(word, pos + 1, ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture);
@@ -1156,7 +1205,7 @@ namespace Ginger
 		{
 			return MakeHashCode(HashOption.Default, objects);
 		}
-		
+
 		public static int MakeHashCode(HashOption option, params object[] objects)
 		{
 			if (objects == null || objects.Length == 0)
@@ -1281,38 +1330,56 @@ namespace Ginger
 			sb.TrimEnd();
 			return sb.ToString();
 		}
-
-		public static byte[] ImageToMemory(Image image)
+		
+		public enum ImageFormat { Png, Jpeg, Gif };
+		public static byte[] ImageToMemory(Image image, ImageFormat format = ImageFormat.Png)
 		{
 			if (image == null)
 				return null;
 
 			try
 			{
+				System.Drawing.Imaging.ImageFormat imageFormat;
+				switch (format)
+				{
+				default:
+				case ImageFormat.Png:
+					imageFormat = System.Drawing.Imaging.ImageFormat.Png;
+					break;
+				case ImageFormat.Jpeg:
+					imageFormat = System.Drawing.Imaging.ImageFormat.Jpeg;
+					break;
+				case ImageFormat.Gif:
+					imageFormat = System.Drawing.Imaging.ImageFormat.Gif;
+					break;
+				}
+
 				using (var stream = new MemoryStream())
 				{
-					if (image.RawFormat.Equals(ImageFormat.Png) == false)
+					if (image.RawFormat.Equals(imageFormat) 
+						&& format != ImageFormat.Jpeg) // Jpeg throws
+					{
+						image.Save(stream, imageFormat);
+					}
+					else
 					{
 						using (Image bmpNewImage = new Bitmap(image.Width, image.Height))
 						{
 							Graphics gfxNewImage = Graphics.FromImage(bmpNewImage);
 							gfxNewImage.DrawImage(image, new Rectangle(0, 0, bmpNewImage.Width, bmpNewImage.Height),
-												  0, 0,
-												  image.Width, image.Height,
-												  GraphicsUnit.Pixel);
+													0, 0,
+													image.Width, image.Height,
+													GraphicsUnit.Pixel);
 							gfxNewImage.Dispose();
-							bmpNewImage.Save(stream, ImageFormat.Png);
+
+							bmpNewImage.Save(stream, imageFormat);
 						}
-					}
-					else
-					{
-						image.Save(stream, ImageFormat.Png);
 					}
 
 					return stream.ToArray();
 				}
 			}
-			catch
+			catch (Exception e)
 			{
 				return null;
 			}

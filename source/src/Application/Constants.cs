@@ -124,6 +124,8 @@ namespace Ginger
 		public static readonly string DefaultCharacterName = "Unnamed";
 		public static readonly string DefaultUserName = "User";
 		public static readonly float AutoWrapWidth = 54;
+		public static readonly int DefaultPortraitWidth = 256;
+		public static readonly int DefaultPortraitHeight = 256;
 
 		public static readonly string DefaultFontFace = "Segoe UI";
 		public static readonly float DefaultFontSize = 9.75f;

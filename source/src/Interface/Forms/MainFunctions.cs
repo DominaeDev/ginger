@@ -341,24 +341,9 @@ namespace Ginger
 				{
 					var pngFilename = Path.Combine(Path.GetDirectoryName(filename), string.Concat(Path.GetFileNameWithoutExtension(filename), ".png"));
 
-					if (File.Exists(pngFilename))
-					{
-						Image image;
-						try
-						{
-							byte[] bytes = File.ReadAllBytes(pngFilename);
-							using (var stream = new MemoryStream(bytes))
-							{
-								image = Image.FromStream(stream);
-							}
-						}
-						catch
-						{
-							image = null;
-						}
-
+					Image image;
+					if (Utility.LoadImageFromFile(pngFilename, out image))
 						Current.Card.portraitImage = ImageRef.FromImage(image);
-					}
 				}
 			}
 			else
@@ -1549,8 +1534,8 @@ namespace Ginger
 
 			// Import...
 			FaradayCardV4 faradayData;
-			Image image;
-			var importError = FaradayBridge.ImportCharacter(dlg.SelectedCharacter, out faradayData, out image);
+			string[] images;
+			var importError = FaradayBridge.ImportCharacter(dlg.SelectedCharacter, out faradayData, out images);
 			if (importError == FaradayBridge.Error.NoDataFound)
 			{
 				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1565,7 +1550,8 @@ namespace Ginger
 			}
 
 			// Success
-			Current.ReadFaradayCard(faradayData, image);
+			Current.ReadFaradayCard(faradayData, null);
+			Current.ImportImages(images);
 
 			ClearStatusBarMessage();
 
@@ -1579,7 +1565,7 @@ namespace Ginger
 
 			if (dlg.ShouldLink)
 			{
-				Current.LinkWith(dlg.SelectedCharacter);
+				Current.LinkWith(dlg.SelectedCharacter, null);
 				Current.IsLinkDirty = false;
 				SetStatusBarMessage(Resources.status_link_create, Constants.StatusBarMessageInterval);
 			}
@@ -1633,17 +1619,18 @@ namespace Ginger
 			}
 		}
 
-		private FaradayBridge.Error CreateNewCharacterInFaraday(out FaradayBridge.CharacterInstance createdCharacter)
+		private FaradayBridge.Error CreateNewCharacterInFaraday(out FaradayBridge.CharacterInstance createdCharacter, out FaradayBridge.ImageLink[] images)
 		{
 			if (FaradayBridge.ConnectionEstablished == false)
 			{
 				createdCharacter = default(FaradayBridge.CharacterInstance);
+				images = null;
 				return FaradayBridge.Error.NotConnected;
 			}
 			
 			FaradayCardV4 card = FaradayCardV4.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.Faraday));
 
-			var error = FaradayBridge.CreateNewCharacter(card, out createdCharacter);
+			var error = FaradayBridge.CreateNewCharacter(card, out createdCharacter, out images);
 			if (error != FaradayBridge.Error.NoError)
 			{
 				return error;
@@ -1724,14 +1711,15 @@ namespace Ginger
 
 			// Import data
 			FaradayCardV4 faradayData;
-			Image image;
-			var importError = FaradayBridge.ImportCharacter(characterInstance, out faradayData, out image);
+			string[] images;
+			var importError = FaradayBridge.ImportCharacter(characterInstance, out faradayData, out images);
 			if (importError != FaradayBridge.Error.NoError)
 				return importError;
 
 			// Success
-			Current.ReadFaradayCard(faradayData, image);
-			Current.LinkWith(characterInstance);
+			Current.ReadFaradayCard(faradayData, null);
+			Current.LinkWith(characterInstance, null);
+			Current.ImportImages(images);
 			Current.IsDirty = true;
 			Current.IsLinkDirty = false;
 			

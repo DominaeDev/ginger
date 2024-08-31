@@ -22,7 +22,7 @@ namespace Ginger
 			public string folderId;			// CharacterConfigVersion.name
 			public DateTime creationDate;	// CharacterConfig.createdAt
 			public DateTime updateDate;     // CharacterConfig.updatedAt
-			public string creator;			// GroupConfig.hubAuthorUsername
+			public string creator;          // GroupConfig.hubAuthorUsername
 		}
 
 		public struct FolderInstance
@@ -33,6 +33,15 @@ namespace Ginger
 			public bool isRoot;
 		}
 
+		public class ImageInstance
+		{
+			public string instanceId;		// AppImage.id
+			public string imageUrl;			// AppImage.imageUrl
+			public string label;			// AppImage.label
+			public int width;				// AppImage.aspectRatio
+			public int height;				// AppImage.aspectRatio
+		}
+
 		public static IEnumerable<FolderInstance> Folders { get { return _Folders.Values; } }
 		public static IEnumerable<CharacterInstance> Characters { get { return _Characters.Values; } }
 		public static string DefaultModel = null;
@@ -41,6 +50,13 @@ namespace Ginger
 		private static Dictionary<string, FolderInstance> _Folders = new Dictionary<string, FolderInstance>();	// instanceId, value
 		private static Dictionary<string, CharacterInstance> _Characters = new Dictionary<string, CharacterInstance>(); // instanceId, value
 
+		public struct ImageLink
+		{
+			public string filename;
+			public string assetName;
+			public string assetType;
+		}
+
 		public class Link : IXmlLoadable, IXmlSaveable
 		{
 			public bool isActive;
@@ -48,12 +64,37 @@ namespace Ginger
 			public DateTime updateDate;
 			public bool isDirty;
 
+			public ImageLink[] images;
+
 			public bool LoadFromXml(XmlNode xmlNode)
 			{
 				characterId = xmlNode.GetAttribute("id", null);
 				isActive = xmlNode.GetAttributeBool("active") && string.IsNullOrEmpty(characterId) == false;
 				updateDate = DateTimeExtensions.FromUnixTime(xmlNode.GetAttributeLong("updated"));
 				isDirty = xmlNode.GetAttributeBool("dirty");
+
+				var imageNode = xmlNode.GetFirstElement("Image");
+				if (imageNode != null)
+				{
+					var lsImages = new List<ImageLink>();
+
+					while (imageNode != null)
+					{
+						string assetName = imageNode.GetAttribute("name");
+						string assetType = imageNode.GetAttribute("type");
+						string imageUrl = imageNode.GetTextValue();
+						if (string.IsNullOrEmpty(assetName) == false && string.IsNullOrEmpty(imageUrl) == false)
+						{
+							lsImages.Add(new ImageLink() {
+								assetName = assetName,
+								assetType = assetType,
+								filename = imageUrl,
+							});
+						}
+						imageNode = imageNode.GetNextSibling();
+					}
+					images = lsImages.ToArray();
+				}
 				return characterId != null;
 			}
 
@@ -64,6 +105,18 @@ namespace Ginger
 				xmlNode.AddAttribute("updated", updateDate.ToUnixTimeMilliseconds());
 				if (isActive)
 					xmlNode.AddAttribute("dirty", isDirty);
+
+				if (images != null)
+				{
+					foreach (var image in images)
+					{
+						var imageNode = xmlNode.AddElement("Image");
+						imageNode.AddAttribute("name", image.assetName);
+						imageNode.AddAttribute("type", image.assetType);
+						imageNode.AddTextValue(image.filename);
+					}
+				}
+
 			}
 
 			public void RefreshState()
@@ -366,6 +419,82 @@ namespace Ginger
 				{
 					connection.Open();
 
+					// Fetch character images
+					var characterImages = new Dictionary<string, ImageInstance>();
+					using (var cmdImageData = connection.CreateCommand())
+					{
+						cmdImageData.CommandText =
+						@"
+							SELECT 
+								id, imageUrl, label, aspectRatio
+							FROM AppImage
+							ORDER BY ""order"" ASC;
+						";
+						using (var reader = cmdImageData.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string instanceId = reader.GetString(0);
+								string imageUrl = reader.GetString(1);
+								string label = reader[2] as string;
+								string aspectRatio = reader[3] as string;
+								int width, height;
+
+								if (string.IsNullOrEmpty(aspectRatio) == false)
+								{
+									int pos_slash = aspectRatio.IndexOf('/');
+									if (pos_slash != -1)
+									{
+										int.TryParse(aspectRatio.Substring(0, pos_slash), out width);
+										int.TryParse(aspectRatio.Substring(pos_slash + 1), out height);
+									}
+									else
+									{
+										width = 0;
+										height = 0;
+									}
+								}
+								else
+								{
+									width = 0;
+									height = 0;
+								}
+
+								characterImages.TryAdd(instanceId,
+									new ImageInstance() {
+										instanceId = instanceId,
+										label = label,
+										imageUrl = imageUrl,
+										width = width,
+										height = height,
+									});
+							}
+						}
+					}
+
+					var imagesByConfigId = new Dictionary<string, List<string>>();
+					using (var cmdImageRef = connection.CreateCommand())
+					{
+						cmdImageRef.CommandText =
+						@"
+							SELECT A, B
+							FROM _AppImageToCharacterConfigVersion
+						";
+						using (var reader = cmdImageRef.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string imageId = reader.GetString(0);
+								string configId = reader.GetString(1);
+
+								if (imagesByConfigId.ContainsKey(configId) == false)
+									imagesByConfigId.Add(configId, new List<string>());
+
+								imagesByConfigId[configId].Add(imageId);
+							}
+						}
+					}
+
 					// Fetch character instance ids
 					using (var cmdCharacterData = connection.CreateCommand())
 					{
@@ -397,6 +526,19 @@ namespace Ginger
 								DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(5));
 								string folderId = reader.GetString(6);
 								string hubAuthorUsername = reader[7] as string;
+
+								ImageInstance[] images = null;
+								if (imagesByConfigId.ContainsKey(configId))
+								{
+									var lsImages = new List<ImageInstance>();
+									foreach (var id in imagesByConfigId[configId])
+									{
+										ImageInstance imageInstance;
+										if (characterImages.TryGetValue(id, out imageInstance))
+											lsImages.Add(imageInstance);
+									}
+									images = lsImages.ToArray();
+								}
 
 								_Characters.TryAdd(instanceId, 
 									new CharacterInstance() {
@@ -467,12 +609,12 @@ namespace Ginger
 
 		#region Import character
 
-		public static Error ImportCharacter(CharacterInstance character, out FaradayCardV4 card, out Image portraitImage)
+		public static Error ImportCharacter(CharacterInstance character, out FaradayCardV4 card, out string[] imageUrls)
 		{
 			if (ConnectionEstablished == false)
 			{
 				card = null;
-				portraitImage = null;
+				imageUrls = null;
 				return Error.NotConnected;
 			}
 			try
@@ -491,16 +633,16 @@ namespace Ginger
 								D.hubCharId, D.hubAuthorUsername
 							FROM CharacterConfigVersion as A
 							INNER JOIN _CharacterConfigToGroupConfig AS B 
-								ON B.A = $1
+								ON B.A = $charId
 							INNER JOIN Chat AS C 
 								ON C.groupConfigId = B.B
 							INNER JOIN GroupConfig AS D
 								ON D.id = B.B
-							WHERE A.id = $2
+							WHERE A.id = $configId
 							ORDER BY C.createdAt DESC
 						";
-						cmdCharacterData.Parameters.AddWithValue("$1", character.instanceId);
-						cmdCharacterData.Parameters.AddWithValue("$2", character.configId);
+						cmdCharacterData.Parameters.AddWithValue("$charId", character.instanceId);
+						cmdCharacterData.Parameters.AddWithValue("$configId", character.configId);
 
 						card = null;
 
@@ -509,8 +651,8 @@ namespace Ginger
 						{
 							if (!reader.Read())
 							{
-								portraitImage = null;
-								return Error.NoDataFound;
+								imageUrls = null;
+								return Error.NoDataFound; // No character
 							}
 
 							string instanceId = reader.GetString(0);
@@ -555,11 +697,11 @@ namespace Ginger
 							WHERE id IN (
 								SELECT A
 								FROM _AppCharacterLorebookItemToCharacterConfigVersion
-								WHERE B = $1
+								WHERE B = $configId
 							)
 							ORDER BY ""order"" ASC
 						";
-						cmdLoreItems.Parameters.AddWithValue("$1", character.configId);
+						cmdLoreItems.Parameters.AddWithValue("$configId", character.configId);
 
 						var entries = new List<KeyValuePair<string, FaradayCardV1.LoreBookEntry>>();
 						using (var reader = cmdLoreItems.ExecuteReader())
@@ -587,7 +729,7 @@ namespace Ginger
 					}
 
 					// Find portrait image file
-					var imageUrls = new List<string>();
+					var lsImageUrls = new List<string>();
 					using (var cmdImageLookup = connection.CreateCommand())
 					{ 
 						cmdImageLookup.CommandText = 
@@ -598,29 +740,25 @@ namespace Ginger
 							WHERE id IN (
 								SELECT A
 								FROM _AppImageToCharacterConfigVersion
-								WHERE B = $1
+								WHERE B = $configId
 							)
 							ORDER BY ""order"" ASC
 						";
-						cmdImageLookup.Parameters.AddWithValue("$1", character.configId);
+						cmdImageLookup.Parameters.AddWithValue("$configId", character.configId);
 
 						using (var reader = cmdImageLookup.ExecuteReader())
 						{
 							while (reader.Read())
-								imageUrls.Add(reader.GetString(0));
+							{
+								string filename = reader.GetString(0);
+								if (filename.BeginsWith("http")) // Remote URL -> Local filename
+									filename = Path.Combine(AppSettings.FaradayLink.Location, "images", Path.GetFileName(filename));
+								lsImageUrls.Add(filename);
+							}
 						}
 					}
 
-					if (imageUrls.Count > 0)
-					{
-						var filename = imageUrls[0];
-						if (filename.BeginsWith("http")) // Remote URL
-							filename = Path.Combine(AppSettings.FaradayLink.Location, "images", Path.GetFileName(imageUrls[0]));
-
-						Utility.LoadImageFile(filename, out portraitImage);
-					}
-					else
-						portraitImage = null;
+					imageUrls = lsImageUrls.ToArray();
 
 					connection.Close();
 					return card == null ? Error.NoDataFound : Error.NoError;
@@ -630,21 +768,21 @@ namespace Ginger
 			{
 				Disconnect();
 				card = null;
-				portraitImage = null;
+				imageUrls = null;
 				return Error.FileNotFound;
 			}
 			catch (SQLiteException e)
 			{
 				Disconnect();
 				card = null;
-				portraitImage = null;
+				imageUrls = null;
 				return Error.CommandFailed;
 			}
 			catch (Exception e)
 			{
 				Disconnect();
 				card = null;
-				portraitImage = null;
+				imageUrls = null;
 				return Error.Unknown;
 			}
 		}
@@ -681,12 +819,12 @@ namespace Ginger
 								A.id, B.B, C.updatedAt
 							FROM CharacterConfigVersion AS A
 							INNER JOIN _CharacterConfigToGroupConfig AS B 
-								ON B.A = $1
+								ON B.A = $charId
 							INNER JOIN Chat AS C
 								ON C.groupConfigId = B.B
-							WHERE A.characterConfigId = $1
+							WHERE A.characterConfigId = $charId
 						";
-						cmdCharacterData.Parameters.AddWithValue("$1", linkInfo.characterId);
+						cmdCharacterData.Parameters.AddWithValue("$charId", linkInfo.characterId);
 
 						using (var reader = cmdCharacterData.ExecuteReader())
 						{
@@ -753,15 +891,15 @@ namespace Ginger
 					using (var cmdGetIds = connection.CreateCommand())
 					{
 						cmdGetIds.CommandText =
-							@"
+						@"
 							SELECT 
 								A.id, B.B
 							FROM CharacterConfigVersion AS A
 							INNER JOIN _CharacterConfigToGroupConfig AS B 
-								ON B.A = $1
-							WHERE A.characterConfigId = $1
+								ON B.A = $charId
+							WHERE A.characterConfigId = $charId
 						";
-						cmdGetIds.Parameters.AddWithValue("$1", characterId);
+						cmdGetIds.Parameters.AddWithValue("$charId", characterId);
 
 						using (var reader = cmdGetIds.ExecuteReader())
 						{
@@ -788,10 +926,10 @@ namespace Ginger
 							WHERE A.id IN (
 								SELECT A
 								FROM _AppCharacterLorebookItemToCharacterConfigVersion
-								WHERE B = $1
+								WHERE B = $configId
 							);
 						";
-						cmdLore.Parameters.AddWithValue("$1", configId);
+						cmdLore.Parameters.AddWithValue("$configId", configId);
 
 						using (var reader = cmdLore.ExecuteReader())
 						{
@@ -799,6 +937,68 @@ namespace Ginger
 								existingLoreItems.Add(reader.GetString(0));
 						}
 					}
+
+					// Get image ids
+					List<ImageInstance> imageInstances = new List<ImageInstance>();
+					using (var cmdImages = connection.CreateCommand())
+					{
+						cmdImages.CommandText =
+						@"
+							SELECT A.id, A.imageUrl, A.label, A.aspectRatio
+							FROM AppImage AS A
+							WHERE A.id IN (
+								SELECT B.A
+								FROM _AppImageToCharacterConfigVersion AS B
+								WHERE B.B = $configId
+							)
+							ORDER BY ""order"" ASC;
+						";
+						cmdImages.Parameters.AddWithValue("$configId", configId);
+
+						using (var reader = cmdImages.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string instanceId = reader.GetString(0);
+								string imageUrl = reader.GetString(1);
+								string label = reader[2] as string;
+								string aspectRatio = reader[3] as string;
+								int width, height;
+
+								if (string.IsNullOrEmpty(aspectRatio) == false)
+								{
+									int pos_slash = aspectRatio.IndexOf('/');
+									if (pos_slash != -1)
+									{
+										int.TryParse(aspectRatio.Substring(0, pos_slash), out width);
+										int.TryParse(aspectRatio.Substring(pos_slash + 1), out height);
+									}
+									else
+									{
+										width = 0;
+										height = 0;
+									}
+								}
+								else
+								{
+									width = 0;
+									height = 0;
+								}
+								imageInstances.Add(new ImageInstance() {
+									instanceId = instanceId,
+									imageUrl = imageUrl,
+									label = label,
+									width = width,
+									height = height,
+								});
+							}
+						}
+					}
+
+					// Compile list of images to update / insert
+					ImageOutput[] images;
+					ImageLink[] imageLinks;
+					GetImageUpdates(imageInstances, linkInfo.images, out images, out imageLinks);
 
 					DateTime now = DateTime.Now;
 					long updatedAt = now.ToUnixTimeMilliseconds();
@@ -867,6 +1067,82 @@ namespace Ginger
 								updates += nChats;
 							}
 
+							// Add images
+							if (images != null)
+							{
+								using (var cmdImage = new SQLiteCommand(connection))
+								{
+									var sbCommand = new StringBuilder();
+									for (int i = 0; i < images.Length; ++i)
+									{
+										// AppImage
+										sbCommand.AppendLine(
+										$@"
+											UPDATE AppImage
+											SET
+												createdAt = $timestamp,
+												updatedAt = $timestamp,
+												imageUrl = $imageUrl{i:000},
+												label = $label{i:000},
+												""order"" = $order{i:000},
+												aspectRatio = $aspectRatio{i:000}
+											WHERE id = $imageId{i:000};
+										");
+
+										sbCommand.AppendLine(
+										$@"
+											INSERT INTO AppImage
+												(id, createdAt, updatedAt, imageUrl, label, ""order"", aspectRatio)
+											SELECT 
+												$imageId{i:000}, $timestamp, $timestamp, $imageUrl{i:000}, $label{i:000}, $order{i:000}, $aspectRatio{i:000}
+											WHERE NOT EXISTS(
+												SELECT 1 
+												FROM AppImage
+												WHERE id = $imageId{i:000}
+											);
+										");
+
+										// _AppImageToCharacterConfigVersion
+										sbCommand.AppendLine(
+										$@"
+											UPDATE _AppImageToCharacterConfigVersion
+											SET
+												B = $configId
+											WHERE A = $imageId{i:000};
+										");
+
+										sbCommand.AppendLine(
+										$@"
+											INSERT INTO _AppImageToCharacterConfigVersion
+												(A, B)
+											SELECT 
+												$imageId{i:000}, $configId
+											WHERE NOT EXISTS(
+												SELECT 1 
+												FROM _AppImageToCharacterConfigVersion
+												WHERE A = $imageId{i:000}
+											);
+										");
+
+										cmdImage.Parameters.AddWithValue(string.Format("$imageId{0:000}", i), images[i].imageId);
+										cmdImage.Parameters.AddWithValue(string.Format("$imageUrl{0:000}", i), images[i].filename);
+										cmdImage.Parameters.AddWithValue(string.Format("$label{0:000}", i), images[i].label ?? "");
+										cmdImage.Parameters.AddWithValue(string.Format("$order{0:000}", i), i);
+										if (images[i].width > 0 && images[i].height > 0)
+											cmdImage.Parameters.AddWithValue(string.Format("$aspectRatio{0:000}", i), string.Format("{0}/{1}", images[i].width, images[i].height));
+										else 
+											cmdImage.Parameters.AddWithValue(string.Format("$aspectRatio{0:000}", i), "");
+										expectedUpdates += 2;
+									}
+
+									cmdImage.CommandText = sbCommand.ToString();
+									cmdImage.Parameters.AddWithValue("$configId", configId);										
+									cmdImage.Parameters.AddWithValue("$timestamp", updatedAt);
+
+									updates += cmdImage.ExecuteNonQuery();
+								}
+							}
+
 							// Lorebook
 							if (card.data.loreItems.Length > 0 && card.data.loreItems.Length == existingLoreItems.Count)
 							{
@@ -910,7 +1186,7 @@ namespace Ginger
 										sbCommand.AppendLine(
 										@"
 											DELETE FROM _AppCharacterLorebookItemToCharacterConfigVersion
-											WHERE B = $1;
+											WHERE B = $configId;
 										");
 										sbCommand.AppendLine(
 										@"
@@ -926,7 +1202,7 @@ namespace Ginger
 										sbCommand.AppendLine(");");
 										
 										cmdDeleteLore.CommandText = sbCommand.ToString();
-										cmdDeleteLore.Parameters.AddWithValue("$1", configId);
+										cmdDeleteLore.Parameters.AddWithValue("$configId", configId);
 
 										expectedUpdates += existingLoreItems.Count * 2;
 										updates += cmdDeleteLore.ExecuteNonQuery();
@@ -1039,17 +1315,20 @@ namespace Ginger
 		#endregion
 
 		#region Save new character
-		public static Error CreateNewCharacter(FaradayCardV4 card, out CharacterInstance character)
+
+		public static Error CreateNewCharacter(FaradayCardV4 card, out CharacterInstance characterInstance, out ImageLink[] imageLinks)
 		{
 			if (card == null)
 			{
-				character = default(CharacterInstance);
+				characterInstance = default(CharacterInstance);
+				imageLinks = null;
 				return Error.NoDataFound;
 			}
 
 			if (ConnectionEstablished == false)
 			{
-				character = default(CharacterInstance);
+				characterInstance = default(CharacterInstance);
+				imageLinks = null;
 				return Error.NotConnected;
 			}
 
@@ -1057,54 +1336,15 @@ namespace Ginger
 			var rootFolder = _Folders.Values.FirstOrDefault(f => f.isRoot);
 			if (rootFolder.isRoot == false || string.IsNullOrEmpty(rootFolder.instanceId))
 			{
-				character = default(CharacterInstance);
+				characterInstance = default(CharacterInstance);
+				imageLinks = null;
 				return Error.Unknown;
 			}
 
 			// Prepare image information
-			bool bCanSaveImage = true;
-			int portraitWidth = 0;
-			int portraitHeight = 0;
-			byte[] imageBytes = null;
-			string imagePath = null;
-
-			// Ensure images folder exists
-			if (bCanSaveImage)
-			{
-				if (Directory.Exists(AppSettings.FaradayLink.Location) == false)
-					bCanSaveImage = false; // Error
-				else if (Directory.Exists(Path.Combine(AppSettings.FaradayLink.Location, "images")) == false)
-				{
-					try
-					{
-						Directory.CreateDirectory(Path.Combine(AppSettings.FaradayLink.Location, "images"));
-					}
-					catch (Exception e)
-					{
-						bCanSaveImage = false;
-					}
-				}
-
-				if (bCanSaveImage)
-				{
-					if (Current.Card.portraitImage != null && Current.Card.portraitImage.Width > 0 && Current.Card.portraitImage.Height > 0)
-					{
-						Image image = Current.Card.portraitImage;
-						portraitWidth = image.Width;
-						portraitHeight = image.Height;
-						imageBytes = Utility.ImageToMemory(image);
-					}
-					else
-					{
-						portraitWidth = 256;
-						portraitHeight = 256;
-						imageBytes = Resources.default_portrait;
-					}
-					
-					imagePath = Path.Combine(AppSettings.FaradayLink.Location, "images", string.Concat(Guid.NewGuid().ToString().ToLowerInvariant(), ".png")); // Random filename
-				}
-			}
-
+			ImageOutput[] images;
+			GetImageUpdates(null, null, out images, out imageLinks);
+						
 			try
 			{
 				using (var connection = CreateSQLiteConnection())
@@ -1115,7 +1355,6 @@ namespace Ginger
 					string configId		= Cuid.NewCuid();
 					string chatId		= Cuid.NewCuid();
 					string groupId		= Cuid.NewCuid();
-					string imageId		= Cuid.NewCuid();
 					string userId		= null;
 					DateTime now = DateTime.Now;
 					long createdAt = now.ToUnixTimeMilliseconds();
@@ -1134,7 +1373,8 @@ namespace Ginger
 						userId = cmdUser.ExecuteScalar() as string;
 						if (userId == null)
 						{
-							character = default(CharacterInstance);
+							characterInstance = default(CharacterInstance);
+							imageLinks = null;
 							return Error.CommandFailed; // Requires default user
 						}
 					}
@@ -1224,30 +1464,40 @@ namespace Ginger
 
 								expectedUpdates += 6;
 
-								// AppImage
-								if (bCanSaveImage)
+								// Add images
+								if (images != null)
 								{
-									sbCommand.AppendLine(
-									@"
-										INSERT INTO AppImage
-											(id, createdAt, updatedAt, imageUrl, label, ""order"", aspectRatio)
-										VALUES 
-											($imageId, $timestamp, $timestamp, $imageUrl, '', 0, $aspectRatio);
-									");
+									for (int i = 0; i < images.Length; ++i)
+									{
+										// AppImage
+										sbCommand.AppendLine(
+										$@"
+											INSERT INTO AppImage
+												(id, createdAt, updatedAt, imageUrl, label, ""order"", aspectRatio)
+											VALUES 
+												($imageId{i:000}, $timestamp, $timestamp, $imageUrl{i:000}, $label{i:000}, $order{i:000}, $aspectRatio{i:000});
+										");
 
 										// _AppImageToCharacterConfigVersion
 										sbCommand.AppendLine(
-										@"
-										INSERT INTO _AppImageToCharacterConfigVersion
-											(A, B)
-										VALUES 
-											($imageId, $configId);
-									");
+										$@"
+											INSERT INTO _AppImageToCharacterConfigVersion
+												(A, B)
+											VALUES 
+												($imageId{i:000}, $configId);
+										");
 
-									cmdCreate.Parameters.AddWithValue("$imageUrl", imagePath);
-									cmdCreate.Parameters.AddWithValue("$aspectRatio", string.Format("{0}/{1}", portraitWidth, portraitHeight));
+										cmdCreate.Parameters.AddWithValue(string.Format("$imageId{0:000}", i), images[i].imageId);
+										cmdCreate.Parameters.AddWithValue(string.Format("$imageUrl{0:000}", i), images[i].filename);
+										cmdCreate.Parameters.AddWithValue(string.Format("$label{0:000}", i), images[i].label ?? "");
+										cmdCreate.Parameters.AddWithValue(string.Format("$order{0:000}", i), i);
+										if (images[i].width > 0 && images[i].height > 0)
+											cmdCreate.Parameters.AddWithValue(string.Format("$aspectRatio{0:000}", i), string.Format("{0}/{1}", images[i].width, images[i].height));
+										else 
+											cmdCreate.Parameters.AddWithValue(string.Format("$aspectRatio{0:000}", i), "");
 
-									expectedUpdates += 2;
+										expectedUpdates += 2;
+									}
 								}
 
 								cmdCreate.CommandText = sbCommand.ToString();
@@ -1256,7 +1506,6 @@ namespace Ginger
 								cmdCreate.Parameters.AddWithValue("$configId", configId);
 								cmdCreate.Parameters.AddWithValue("$groupId", groupId);
 								cmdCreate.Parameters.AddWithValue("$chatId", chatId);
-								cmdCreate.Parameters.AddWithValue("$imageId", imageId);
 								cmdCreate.Parameters.AddWithValue("$displayName", card.data.displayName);
 								cmdCreate.Parameters.AddWithValue("$name", card.data.name);
 								cmdCreate.Parameters.AddWithValue("$system", card.data.system);
@@ -1348,27 +1597,31 @@ namespace Ginger
 							if (updates != expectedUpdates)
 							{
 								transaction.Rollback();
-								character = default(CharacterInstance);
+								characterInstance = default(CharacterInstance);
+								imageLinks = null;
 								return Error.CommandFailed;
 							}
 
 							// Write image to file
-							if (bCanSaveImage)
+							if (images != null)
 							{
-								try
+								foreach (var image in images.Where(i => i.data.isEmpty == false))
 								{
-									using (FileStream fs = File.Open(imagePath, FileMode.CreateNew, FileAccess.Write))
+									try
 									{
-										fs.Write(imageBytes, 0, imageBytes.Length);
+										using (FileStream fs = File.Open(image.filename, FileMode.CreateNew, FileAccess.Write))
+										{
+											fs.Write(image.data.bytes, 0, image.data.bytes.Length);
+										}
 									}
-								}
-								catch
-								{
-									// Do nothing
+									catch
+									{
+										// Do nothing
+									}
 								}
 							}
 
-							character = new CharacterInstance() {
+							characterInstance = new CharacterInstance() {
 								instanceId = characterId,
 								configId = configId,
 								groupId = groupId,
@@ -1386,7 +1639,7 @@ namespace Ginger
 						{
 							transaction.Rollback();
 
-							character = default(CharacterInstance);
+							characterInstance = default(CharacterInstance);
 							return Error.CommandFailed;
 						}
 					}
@@ -1395,19 +1648,19 @@ namespace Ginger
 			catch (FileNotFoundException e)
 			{
 				Disconnect();
-				character = default(CharacterInstance);
+				characterInstance = default(CharacterInstance);
 				return Error.FileNotFound;
 			}
 			catch (SQLiteException e)
 			{
 				Disconnect();
-				character = default(CharacterInstance);
+				characterInstance = default(CharacterInstance);
 				return Error.CommandFailed;
 			}
 			catch (Exception e)
 			{
 				Disconnect();
-				character = default(CharacterInstance);
+				characterInstance = default(CharacterInstance);
 				return Error.Unknown;
 			}
 		}
@@ -1459,6 +1712,171 @@ namespace Ginger
 				return string.Concat(prefix, ".B");
 			}
 		}
+
+		private struct ImageOutput
+		{
+			public string imageId;
+			public string filename;
+			public string label;
+			public int width;
+			public int height;
+			public AssetData data;
+		}
+
+		private static bool GetImageUpdates(List<ImageInstance> imageInstances, ImageLink[] imageLinks, out ImageOutput[] imagesToSave, out ImageLink[] newImageLinks)
+		{
+			// Prepare image information
+			string destPath = Path.Combine(AppSettings.FaradayLink.Location, "images");
+
+			// Ensure images folder exists
+			if (Directory.Exists(AppSettings.FaradayLink.Location) == false)
+			{
+				imagesToSave = null;
+				newImageLinks = null;
+				return false; // App folder doesn't exist
+			}
+			else if (Directory.Exists(destPath) == false)
+			{
+				try
+				{
+					Directory.CreateDirectory(destPath);
+				}
+				catch (Exception e)
+				{
+					imagesToSave = null;
+					newImageLinks = null;
+					return false;
+				}
+			}
+
+			List<ImageOutput> results = new List<ImageOutput>();
+			List<ImageLink> lsImageLinks = new List<ImageLink>();
+			if (imageLinks != null)
+				lsImageLinks.AddRange(imageLinks);
+
+			if (Current.Card.portraitImage != null && Current.Card.portraitImage.Width > 0 && Current.Card.portraitImage.Height > 0)
+			{
+				var image = Current.Card.portraitImage;
+				results.Add(new ImageOutput() {
+					imageId = Cuid.NewCuid(),
+					filename = Path.Combine(destPath, string.Concat(Guid.NewGuid().ToString().ToLowerInvariant(), ".png")), // Random filename
+					data = AssetData.FromBytes(Utility.ImageToMemory(image)),
+					width = image.Width,
+					height = image.Height,
+				});
+			}
+			else
+			{
+				results.Add(new ImageOutput() {
+					imageId = Cuid.NewCuid(),
+					filename = Path.Combine(destPath, string.Concat(Guid.NewGuid().ToString().ToLowerInvariant(), ".png")), // Random filename
+					data = AssetData.FromBytes(Resources.default_portrait),
+					width = Constants.DefaultPortraitWidth,
+					height = Constants.DefaultPortraitHeight,
+				});
+			}
+
+			// Embedded assets
+			if (Current.Card.assets != null)
+			{
+				foreach (var asset in Current.Card.assets
+					.Where(a => a.isEmbeddedAsset 
+						&& a.data.length > 0
+						&& (a.assetType == AssetFile.AssetType.Icon || a.assetType == AssetFile.AssetType.Expression)))
+				{
+					int idxOld = -1;
+					if (imageInstances != null)
+					{
+						idxOld = imageInstances.FindIndex(kvp => string.Compare(kvp.imageUrl, Path.Combine(destPath, string.Concat(asset.name, ".", asset.ext)), StringComparison.InvariantCultureIgnoreCase) == 0);
+					}
+					if (imageLinks != null && idxOld == -1)
+					{
+						int idxLink = Array.FindIndex(imageLinks, l => asset.type == l.assetType 
+							&& string.Concat(asset.name, ".", asset.ext) == l.assetName);
+						if (idxLink != -1)
+						{
+							idxOld = imageInstances.FindIndex(kvp => string.Compare(Path.GetFileName(kvp.imageUrl), imageLinks[idxLink].filename, StringComparison.InvariantCultureIgnoreCase) == 0);
+						}
+					}
+
+					if (idxOld != -1)
+					{
+						// No change
+						var imageInstance = imageInstances[idxOld];
+						results.Add(new ImageOutput() {
+							imageId = imageInstance.instanceId,
+							filename = imageInstance.imageUrl,
+							label = imageInstance.label,
+							width = imageInstance.width,
+							height = imageInstance.height,
+						});
+						continue;
+					}
+
+					int imageWidth;
+					int imageHeight;
+					if (Utility.GetImageDimensions(asset.data.bytes, out imageWidth, out imageHeight))
+					{
+						ImageOutput output;
+						if (asset.ext == "jpeg" || asset.ext == "jpg") // Jpeg
+						{
+							output = new ImageOutput() {
+								imageId = Cuid.NewCuid(),
+								filename = Path.Combine(destPath, string.Concat(Guid.NewGuid().ToString().ToLowerInvariant(), ".jpeg")), // Random filename
+								data = asset.data,
+								width = imageWidth,
+								height = imageHeight,
+							};
+						}
+						else // Png
+						{
+							output = new ImageOutput() {
+								imageId = Cuid.NewCuid(),
+								filename = Path.Combine(destPath, string.Concat(Guid.NewGuid().ToString().ToLowerInvariant(), ".png")), // Random filename
+								data = asset.data,
+								width = imageWidth,
+								height = imageHeight,
+							};
+						}
+						
+						results.Add(output);
+						lsImageLinks.Add(new ImageLink() {
+							assetName = string.Concat(asset.name, ".", asset.ext),
+							assetType = asset.type,
+							filename = Path.GetFileName(output.filename),
+						});
+					}
+				}
+			}
+
+			// Find main portrait
+			if (imageInstances != null)
+			{
+				foreach (var imageInstance in imageInstances.Where(i => results.ContainsNoneOf(ii => i.instanceId == ii.imageId)))
+				{
+					string imageUrl = imageInstance.imageUrl;
+
+					var imageData = AssetData.FromBytes(Utility.LoadFile(imageUrl));
+					if (imageData.hash == results[0].data.hash)
+					{
+						// Use same
+						results[0] = new ImageOutput() {
+							imageId = imageInstance.instanceId,
+							filename = imageInstance.imageUrl,
+							label = imageInstance.label,
+							width = imageInstance.width,
+							height = imageInstance.height,
+						};
+					}
+				}
+			}
+
+			imagesToSave = results.ToArray();
+			newImageLinks = lsImageLinks.Count > 0 ? lsImageLinks.DistinctBy(l => string.Concat(l.assetType, "|", l.assetName)).ToArray() : null;
+			return true;
+		}
+
 		#endregion
+
 	}
 }

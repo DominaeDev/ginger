@@ -134,6 +134,14 @@ namespace Ginger
 			return imageRef._image;
 		}
 
+		public static implicit operator ImageRef(Image image)
+		{
+			if (ReferenceEquals(image, null))
+				return null;
+
+			return FromImage(image);
+		}
+
 		public int Width { get { return _image.Width; } }
 		public int Height { get { return _image.Height; } }
 

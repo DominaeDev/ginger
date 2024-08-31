@@ -402,7 +402,7 @@ namespace Ginger
 			}
 
 			Image image;
-			if (Utility.LoadImageFile(filename, out image) == false)
+			if (Utility.LoadImageFromFile(filename, out image) == false)
 			{
 				MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				return;
@@ -2102,7 +2102,9 @@ namespace Ginger
 		private void saveNewToFaradayMenuItem_Click(object sender, EventArgs e)
 		{
 			FaradayBridge.CharacterInstance createdCharacter;
-			var error = CreateNewCharacterInFaraday(out createdCharacter);
+			FaradayBridge.ImageLink[] images;
+
+			var error = CreateNewCharacterInFaraday(out createdCharacter, out images);
 			if (error == FaradayBridge.Error.NotConnected)
 				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			else if (error == FaradayBridge.Error.NoDataFound)
@@ -2115,7 +2117,7 @@ namespace Ginger
 
 				if (MessageBox.Show(Resources.msg_link_new, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
 				{
-					Current.LinkWith(createdCharacter);
+					Current.LinkWith(createdCharacter, images);
 					Current.IsLinkDirty = false;
 					SetStatusBarMessage(Resources.status_link_create, Constants.StatusBarMessageInterval);
 					RefreshTitle();
