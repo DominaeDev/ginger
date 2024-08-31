@@ -164,7 +164,7 @@ namespace Ginger
 			}
 		}
 
-		public static class FaradayLink
+		public static class BackyardLink
 		{
 			public static bool Enabled = false;
 			public static string Location = null;
@@ -295,10 +295,10 @@ namespace Ginger
 			var linkSection = iniData.Sections["BackyardAI.Link"];
 			if (linkSection != null)
 			{
-				ReadBool(ref FaradayLink.Enabled, linkSection, "Enabled");
-				ReadBool(ref FaradayLink.Autosave, linkSection, "Autosave");
-				ReadBool(ref FaradayLink.LinkOnImport, linkSection, "LinkOnImport");
-				ReadString(ref FaradayLink.Location, linkSection, "Location");
+				ReadBool(ref BackyardLink.Enabled, linkSection, "Enabled");
+				ReadBool(ref BackyardLink.Autosave, linkSection, "Autosave");
+				ReadBool(ref BackyardLink.LinkOnImport, linkSection, "LinkOnImport");
+				ReadString(ref BackyardLink.Location, linkSection, "Location");
 			}
 
 			var mruSection = iniData.Sections["MRU"];
@@ -404,12 +404,12 @@ namespace Ginger
 					Write(outputFile, "PromptTemplate", Faraday.PromptTemplate);
 					Write(outputFile, "PruneExampleChat", Faraday.PruneExampleChat);
 					
-					// Faraday link
+					// Backyard link
 					WriteSection(outputFile, "BackyardAI.Link");
-					Write(outputFile, "Location", FaradayLink.Location);
-					Write(outputFile, "Enabled", FaradayLink.Enabled);
-					Write(outputFile, "Autosave", FaradayLink.Autosave);
-					Write(outputFile, "LinkOnImport", FaradayLink.LinkOnImport);
+					Write(outputFile, "Location", BackyardLink.Location);
+					Write(outputFile, "Enabled", BackyardLink.Enabled);
+					Write(outputFile, "Autosave", BackyardLink.Autosave);
+					Write(outputFile, "LinkOnImport", BackyardLink.LinkOnImport);
 
 					// MRU list
 					WriteSection(outputFile, "MRU");

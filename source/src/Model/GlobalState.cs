@@ -52,18 +52,18 @@ namespace Ginger
 		}
 		private static bool _bFileDirty = false;
 
-		public static FaradayBridge.Link FaradayLink = null;
-		public static bool HasLink { get { return FaradayLink != null; } }
-		public static bool HasActiveLink { get { return FaradayLink != null && FaradayLink.isActive; } }
-		public static bool HasStaleLink { get { return FaradayLink != null && !FaradayLink.isActive && string.IsNullOrEmpty(FaradayLink.characterId) == false; } }
+		public static BackyardBridge.Link Link = null;
+		public static bool HasLink { get { return Link != null; } }
+		public static bool HasActiveLink { get { return Link != null && Link.isActive; } }
+		public static bool HasStaleLink { get { return Link != null && !Link.isActive && string.IsNullOrEmpty(Link.characterId) == false; } }
 
 		public static bool IsLinkDirty
 		{
-			get { return FaradayLink != null && FaradayLink.isActive && FaradayLink.isDirty; }
+			get { return Link != null && Link.isActive && Link.isDirty; }
 			set 
 			{ 
-				if (FaradayLink != null) 
-					FaradayLink.isDirty = value;
+				if (Link != null) 
+					Link.isDirty = value;
 			}
 		}
 
@@ -118,7 +118,7 @@ namespace Ginger
 			Card = new CardData();
 			Character = new CharacterData();
 			SelectedCharacter = 0;
-			FaradayLink = null;
+			Link = null;
 			Filename = null;
 			IsDirty = false;
 			IsFileDirty = false;
@@ -288,7 +288,10 @@ namespace Ginger
 				}
 			}
 
-			FaradayLink = card.faradayLink;
+			if (Card.portraitImage != null && string.IsNullOrEmpty(card.portraitUID) == false)
+				Card.portraitImage.uid = card.portraitUID;
+
+			Link = card.backyardLinkInfo;
 		}
 
 		public static void ReadFaradayCard(FaradayCardV4 card, Image portrait)
@@ -731,12 +734,12 @@ namespace Ginger
 			return CardData.TextStyle.None;
 		}
 
-		public static void LinkWith(FaradayBridge.CharacterInstance characterInstance, FaradayBridge.ImageLink[] images)
+		public static void LinkWith(BackyardBridge.CharacterInstance characterInstance, BackyardBridge.Link.Image[] images)
 		{
-			FaradayLink = new FaradayBridge.Link() {
+			Link = new BackyardBridge.Link() {
 				characterId = characterInstance.instanceId,
 				updateDate = characterInstance.updateDate,
-				images = images,
+				imageLinks = images,
 				isActive = true,
 			};
 			IsFileDirty = true;
@@ -744,47 +747,57 @@ namespace Ginger
 
 		public static void Unlink()
 		{
-			if (FaradayLink != null)
+			if (Link != null)
 			{
-				FaradayLink.isActive = false;
+				Link.isActive = false;
 				IsFileDirty = true;
 			}
 		}
 
-		public static void ImportImages(string[] images)
+		public static void ImportImages(string[] images) // Backyard import
 		{
-			if (images != null && images.Length > 0)
+			if (images == null || images.Length == 0)
+				return;
+
+			var imageLinks = new List<BackyardBridge.Link.Image>();
+
+			Image image;
+			if (Utility.LoadImageFromFile(images[0], out image))
 			{
-				Image image;
-				if (Utility.LoadImageFromFile(images[0], out image))
-					Card.portraitImage = ImageRef.FromImage(image);
+				Card.portraitImage = ImageRef.FromImage(image);
+				imageLinks.Add(new BackyardBridge.Link.Image() {
+					filename = Path.GetFileName(images[0]),
+					uid = Card.portraitImage.uid,
+				});
+			}
 
-				for (int i = 1; i < images.Length; ++i)
+			for (int i = 1; i < images.Length; ++i)
+			{
+				string name = Path.GetFileNameWithoutExtension(images[i]);
+				string ext = Path.GetExtension(images[i]);
+				if (ext.BeginsWith("."))
+					ext = ext.Substring(1);
+
+				var bytes = Utility.LoadFile(images[i]);
+				if (bytes != null)
 				{
-					string name = Path.GetFileNameWithoutExtension(images[i]);
-					string ext = Path.GetExtension(images[i]);
-					if (ext.BeginsWith("."))
-						ext = ext.Substring(1);
-
-					var bytes = Utility.LoadFile(images[i]);
-					if (bytes != null)
-					{
-						var asset = new AssetFile() {
-							name = name,
-							assetType = AssetFile.AssetType.Icon,
-							data = AssetData.FromBytes(bytes),
-							ext = ext,
-							uriType = AssetFile.UriType.Embedded,
-						};
-						Card.assets.Add(asset);
-					}
-					else
-					{
-						// Add file reference
-						Card.assets.Add(AssetFile.MakeRemote(AssetFile.AssetType.Icon, string.Concat("file:///", images[i].Replace('\\', '/'))));
-					}
+					var asset = new AssetFile() {
+						name = name,
+						assetType = AssetFile.AssetType.Icon,
+						data = AssetData.FromBytes(bytes),
+						ext = ext,
+						uriType = AssetFile.UriType.Embedded,
+					};
+					Card.assets.Add(asset);
+					imageLinks.Add(new BackyardBridge.Link.Image() {
+						filename = Path.GetFileName(images[i]),
+						uid = asset.uid,
+					});
 				}
 			}
+
+			if (Link != null)
+				Link.imageLinks = imageLinks.ToArray();
 		}
 	}
 }

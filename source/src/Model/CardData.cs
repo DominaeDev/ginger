@@ -37,9 +37,6 @@ namespace Ginger
 		public int permanentTokensSilly { get { return lastTokenCounts[2]; } }
 		public int[] lastTokenCounts = new int[3] { 0, 0, 0 };
 
-		// Link
-		public static FaradayBridge.Link FaradayLink = null;
-
 		public string userPlaceholder
 		{
 			get { return string.IsNullOrWhiteSpace(_userPlaceholder) ? Constants.DefaultUserName : _userPlaceholder.Trim() ?? ""; }
@@ -144,6 +141,18 @@ namespace Ginger
 
 		public int Width { get { return _image.Width; } }
 		public int Height { get { return _image.Height; } }
+
+		public string uid
+		{ 
+			get
+			{
+				if (string.IsNullOrEmpty(_uid))
+					_uid = Guid.NewGuid().ToString();
+				return _uid;
+			}
+			set { _uid = value; }
+		}
+		private string _uid;
 
 		public Image Clone()
 		{

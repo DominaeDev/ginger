@@ -4,10 +4,11 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Xml;
 
 namespace Ginger
 {
-	public class AssetFile : ICloneable
+	public class AssetFile : ICloneable, IXmlLoadable, IXmlSaveable
 	{
 		public string name;
 		public AssetType assetType
@@ -41,6 +42,32 @@ namespace Ginger
 		public string type;
 		public string ext;
 		public AssetData data;
+
+		// Meta
+		public string uid
+		{ 
+			get
+			{
+				if (string.IsNullOrEmpty(_uid))
+					_uid = Guid.NewGuid().ToString();
+				return _uid;
+			}
+			set { _uid = value; }
+		}
+		private string _uid;
+		public string hash
+		{ 
+			get
+			{
+				if (string.IsNullOrEmpty(_hash))
+					_hash = data.hash;
+				return _hash;
+			}
+			set { _hash = value; }
+		}
+		private string _hash;
+		public int knownWidth;	// For image assets
+		public int knownHeight;	// For image assets
 
 		// Uri
 		public UriType uriType = UriType.Undefined;
@@ -386,6 +413,50 @@ namespace Ginger
 		public object Clone()
 		{
 			return this.MemberwiseClone();
+		}
+
+		public bool LoadFromXml(XmlNode xmlNode)
+		{
+			name = xmlNode.GetValueElement("Name", null);
+			type = xmlNode.GetValueElement("Type", null);
+
+			var uriNode = xmlNode.GetFirstElement("Uri");
+			if (uriNode == null)
+				return false;
+			fullUri = uriNode.GetTextValue();
+			uriType = uriNode.GetAttributeEnum("type", UriType.Undefined);
+
+			var metaNode = xmlNode.GetFirstElement("Meta");
+			if (metaNode != null)
+			{
+				uid = metaNode.GetAttribute("uid", null);
+				hash = metaNode.GetAttribute("hash", null);
+				knownWidth = metaNode.GetAttributeInt("width");
+				knownHeight = metaNode.GetAttributeInt("height");
+			}
+
+			return name != null && type != null && fullUri.Length > 0 && uriType != UriType.Undefined;
+		}
+
+		public void SaveToXml(XmlNode xmlNode)
+		{
+			xmlNode.AddValueElement("Name", name);
+			xmlNode.AddValueElement("Type", type);
+			var uriNode = xmlNode.AddValueElement("Uri", fullUri);
+			uriNode.AddAttribute("type", EnumHelper.ToString(uriType));
+
+			if (uid != null)
+			{
+				var metaNode = xmlNode.AddElement("Meta");
+				metaNode.AddAttribute("uid", uid);
+				if (hash != null)
+					metaNode.AddAttribute("hash", hash);
+				if (knownWidth > 0 && knownHeight > 0)
+				{
+					metaNode.AddAttribute("width", knownWidth);
+					metaNode.AddAttribute("height", knownHeight);
+				}
+			}
 		}
 	}
 

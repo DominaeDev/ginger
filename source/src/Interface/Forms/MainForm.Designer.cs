@@ -37,10 +37,10 @@ namespace Ginger {
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem10;
 			this.enableLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.importFromFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveToFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveNewToFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.revertFromFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.importLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveNewLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.revertLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.reestablishLinkSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.reestablishLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.breakLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -224,10 +224,10 @@ namespace Ginger {
             this.enableLinkMenuItem,
             this.enableAutosaveMenuItem,
             toolStripMenuItem10,
-            this.importFromFaradayMenuItem,
-            this.saveToFaradayMenuItem,
-            this.saveNewToFaradayMenuItem,
-            this.revertFromFaradayMenuItem,
+            this.importLinkedMenuItem,
+            this.saveLinkedMenuItem,
+            this.saveNewLinkedMenuItem,
+            this.revertLinkedMenuItem,
             this.reestablishLinkSeparator,
             this.reestablishLinkMenuItem,
             this.breakLinkMenuItem});
@@ -254,33 +254,33 @@ namespace Ginger {
 			toolStripMenuItem10.Name = "toolStripMenuItem10";
 			toolStripMenuItem10.Size = new System.Drawing.Size(195, 6);
 			// 
-			// importFromFaradayMenuItem
+			// importLinkedMenuItem
 			// 
-			this.importFromFaradayMenuItem.Name = "importFromFaradayMenuItem";
-			this.importFromFaradayMenuItem.Size = new System.Drawing.Size(198, 22);
-			this.importFromFaradayMenuItem.Text = "Open character...";
-			this.importFromFaradayMenuItem.Click += new System.EventHandler(this.importFromFaradayMenuItem_Click);
+			this.importLinkedMenuItem.Name = "importLinkedMenuItem";
+			this.importLinkedMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.importLinkedMenuItem.Text = "Open character...";
+			this.importLinkedMenuItem.Click += new System.EventHandler(this.importLinkedMenuItem_Click);
 			// 
-			// saveToFaradayMenuItem
+			// saveLinkedMenuItem
 			// 
-			this.saveToFaradayMenuItem.Name = "saveToFaradayMenuItem";
-			this.saveToFaradayMenuItem.Size = new System.Drawing.Size(198, 22);
-			this.saveToFaradayMenuItem.Text = "Save and update";
-			this.saveToFaradayMenuItem.Click += new System.EventHandler(this.saveToFaradayMenuItem_Click);
+			this.saveLinkedMenuItem.Name = "saveLinkedMenuItem";
+			this.saveLinkedMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.saveLinkedMenuItem.Text = "Save and update";
+			this.saveLinkedMenuItem.Click += new System.EventHandler(this.saveLinkedMenuItem_Click);
 			// 
-			// saveNewToFaradayMenuItem
+			// saveNewLinkedMenuItem
 			// 
-			this.saveNewToFaradayMenuItem.Name = "saveNewToFaradayMenuItem";
-			this.saveNewToFaradayMenuItem.Size = new System.Drawing.Size(198, 22);
-			this.saveNewToFaradayMenuItem.Text = "Save as new";
-			this.saveNewToFaradayMenuItem.Click += new System.EventHandler(this.saveNewToFaradayMenuItem_Click);
+			this.saveNewLinkedMenuItem.Name = "saveNewLinkedMenuItem";
+			this.saveNewLinkedMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.saveNewLinkedMenuItem.Text = "Save as new";
+			this.saveNewLinkedMenuItem.Click += new System.EventHandler(this.saveNewLinkedMenuItem_Click);
 			// 
-			// revertFromFaradayMenuItem
+			// revertLinkedMenuItem
 			// 
-			this.revertFromFaradayMenuItem.Name = "revertFromFaradayMenuItem";
-			this.revertFromFaradayMenuItem.Size = new System.Drawing.Size(198, 22);
-			this.revertFromFaradayMenuItem.Text = "Reimport...";
-			this.revertFromFaradayMenuItem.Click += new System.EventHandler(this.revertFromFaradayMenuItem_Click);
+			this.revertLinkedMenuItem.Name = "revertLinkedMenuItem";
+			this.revertLinkedMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.revertLinkedMenuItem.Text = "Reimport...";
+			this.revertLinkedMenuItem.Click += new System.EventHandler(this.revertLinkedMenuItem_Click);
 			// 
 			// reestablishLinkSeparator
 			// 
@@ -1574,15 +1574,15 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem tokenBudget10K;
 		private System.Windows.Forms.ToolStripMenuItem embeddedAssetsMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem enableLinkMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem importFromFaradayMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem saveNewToFaradayMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem saveToFaradayMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem importLinkedMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem saveNewLinkedMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem saveLinkedMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem enableAutosaveMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem reestablishLinkMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem breakLinkMenuItem;
 		private System.Windows.Forms.ToolStripSeparator reestablishLinkSeparator;
 		private System.Windows.Forms.ToolStripStatusLabel statusConnectionIcon;
-		private System.Windows.Forms.ToolStripMenuItem revertFromFaradayMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem revertLinkedMenuItem;
 	}
 }
 

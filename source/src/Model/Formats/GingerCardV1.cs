@@ -25,7 +25,6 @@ namespace Ginger
 		public DateTime creationDate = DateTime.UtcNow;
 		public int missingRecipes = 0;
 		public string[] sources = null;
-		public FaradayBridge.Link faradayLink = null;
 
 		public class Character
 		{
@@ -34,6 +33,10 @@ namespace Ginger
 			public List<Recipe> recipes = new List<Recipe>();
 		}
 		public List<Character> characters = new List<Character>();
+		
+		public string portraitUID = null;
+		public BackyardBridge.Link backyardLinkInfo = null;
+		public List<AssetFile> assets = new List<AssetFile>(); // Meta only. Actual data is stored in the ccv3 chunk
 
 		public bool LoadFromXml(XmlNode xmlNode)
 		{
@@ -65,6 +68,8 @@ namespace Ginger
 			string sCreationDate = xmlNode.GetValueElement("Created");
 			if (DateTime.TryParse(sCreationDate, out creationDate) == false)
 				creationDate = DateTime.UtcNow;
+
+			portraitUID = xmlNode.GetValueElement("Portrait", null);
 
 			// Read recipes
 			Dictionary<StringHandle, Recipe> recipesByID = new Dictionary<StringHandle, Recipe>();
@@ -177,15 +182,24 @@ namespace Ginger
 				characterNode = characterNode.GetNextSibling();
 			}
 
-			// Link
-			var linkNode = xmlNode.GetFirstElement("Link");
-			if (linkNode != null)
+			// Assets
+			var assetNode = xmlNode.GetFirstElement("Asset");
+			while (assetNode != null)
 			{
-				faradayLink = new FaradayBridge.Link();
-				if (faradayLink.LoadFromXml(linkNode) == false)
-					faradayLink = null;
+				AssetFile asset = new AssetFile();
+				asset.LoadFromXml(assetNode);
+				assets.Add(asset);
+				assetNode = assetNode.GetNextSibling();
 			}
 
+            // Link
+            var linkNode = xmlNode.GetFirstElement("Link");
+			if (linkNode != null)
+			{
+				backyardLinkInfo = new BackyardBridge.Link();
+				if (backyardLinkInfo.LoadFromXml(linkNode) == false)
+					backyardLinkInfo = null;
+			}
 			return true;
 		}
 
@@ -212,6 +226,15 @@ namespace Ginger
 			xmlNode.AddValueElement("Created", creationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK"));
 			if (sources != null && sources.Length > 0)
 				xmlNode.AddValueElement("Sources", Utility.ListToCommaSeparatedString(sources.Where(s => !string.IsNullOrWhiteSpace(s))));
+
+			xmlNode.AddValueElement("Portrait", portraitUID);
+
+			// Link
+			if (backyardLinkInfo != null)
+			{
+				var linkNode = xmlNode.AddElement("Link");
+				backyardLinkInfo.SaveToXml(linkNode);
+			}
 
 			// Recipes
 			var allRecipes = characters.SelectMany(c => c.recipes);
@@ -263,12 +286,16 @@ namespace Ginger
 				}
 			}
 
-			// Link
-			if (faradayLink != null)
+			// Assets
+			if (assets.Count > 0)
 			{
-				var linkNode = xmlNode.AddElement("Link");
-				faradayLink.SaveToXml(linkNode);
+				foreach (var asset in assets)
+				{
+					var assetNode = xmlNode.AddElement("Asset");
+					asset.SaveToXml(assetNode);
+				}
 			}
+
 		}
 
 		public string ToXml()
@@ -360,7 +387,13 @@ namespace Ginger
 				recipes = new List<Recipe>(c.recipes),
 			}).ToList();
 
-			card.faradayLink = Current.FaradayLink;
+			if (Current.Card.portraitImage != null)
+				card.portraitUID = Current.Card.portraitImage.uid;
+
+			if (Current.Card.assets != null)
+				card.assets = Current.Card.assets.ToList();
+
+			card.backyardLinkInfo = Current.Link;
 			return card;
 		}
 	}

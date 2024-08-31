@@ -910,6 +910,7 @@ namespace Ginger
 
 					// Load portrait image
 					Current.Card.portraitImage = ImageRef.FromImage(Current.Card.assets.GetPortraitImage());
+
 					// Remove portrait image (it will be re-added on save/export)
 					Current.Card.assets.RemovePortraitImage();
 
@@ -1014,8 +1015,28 @@ namespace Ginger
 			if (importResult.gingerData != null && formats.Contains(Format.Ginger))
 			{
 				Current.ReadGingerCard(importResult.gingerData, image);
-				if (importResult.tavernDataV3 != null && formats.Contains(Format.SillyTavernV3) )
+				if (importResult.tavernDataV3 != null && formats.Contains(Format.SillyTavernV3))
+				{
 					ExtractAssetsFromPNG(filename, importResult.tavernDataV3, out Current.Card.assets);
+					
+					// Copy over asset meta info
+					if (importResult.gingerData.assets.Count == Current.Card.assets.Count)
+					{
+						for (int i = 0; i < importResult.gingerData.assets.Count; ++i)
+						{
+							var fromAsset = importResult.gingerData.assets[i];
+							var toAsset = Current.Card.assets[i];
+
+							if (fromAsset.name == toAsset.name && fromAsset.type == toAsset.type)
+							{
+								toAsset.uid = fromAsset.uid;
+								toAsset.hash = fromAsset.hash;
+								toAsset.knownWidth = fromAsset.knownWidth;
+								toAsset.knownHeight = fromAsset.knownHeight;
+							}
+						}
+					}
+				}
 			}
 			else if (importResult.faradayData != null && formats.Contains(Format.Faraday))
 				Current.ReadFaradayCard(importResult.faradayData, image);
@@ -1108,7 +1129,7 @@ namespace Ginger
 			}
 			catch
 			{
-				assets = null;
+				assets = new AssetCollection();
 				return Error.FileReadError;
 			}
 		}

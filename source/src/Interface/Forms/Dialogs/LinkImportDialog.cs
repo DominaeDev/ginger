@@ -9,9 +9,9 @@ namespace Ginger
 {
 	public partial class LinkImportDialog : Form
 	{
-		public FaradayBridge.CharacterInstance[] Characters;
-		public FaradayBridge.FolderInstance[] Folders;
-		public FaradayBridge.CharacterInstance SelectedCharacter { get; private set; }
+		public BackyardBridge.CharacterInstance[] Characters;
+		public BackyardBridge.FolderInstance[] Folders;
+		public BackyardBridge.CharacterInstance SelectedCharacter { get; private set; }
 
 		public bool ShouldLink { get { return cbCreateLink.Checked; } }
 
@@ -27,10 +27,10 @@ namespace Ginger
 			PopulateTree();
 
 			treeView.SelectedNode = null;
-			SelectedCharacter = default(FaradayBridge.CharacterInstance);
+			SelectedCharacter = default(BackyardBridge.CharacterInstance);
 
 			btnOk.Enabled = false;
-			cbCreateLink.Checked = AppSettings.FaradayLink.LinkOnImport;
+			cbCreateLink.Checked = AppSettings.BackyardLink.LinkOnImport;
 			
 			// Tooltips
 			toolTip.SetToolTip(cbCreateLink, Resources.tooltip_link_about_linking);
@@ -77,7 +77,7 @@ namespace Ginger
 			treeView.Resume();
 		}
 
-		private TreeNode CreateFolderNode(FaradayBridge.FolderInstance folder, Dictionary<string, TreeNode> nodes, int count)
+		private TreeNode CreateFolderNode(BackyardBridge.FolderInstance folder, Dictionary<string, TreeNode> nodes, int count)
 		{
 			TreeNode parentNode;
 			nodes.TryGetValue(folder.parentId, out parentNode);
@@ -91,7 +91,7 @@ namespace Ginger
 			return node;
 		}
 
-		private TreeNode CreateCharacterNode(FaradayBridge.CharacterInstance character, Dictionary<string, TreeNode> nodes, bool showTimeStamp)
+		private TreeNode CreateCharacterNode(BackyardBridge.CharacterInstance character, Dictionary<string, TreeNode> nodes, bool showTimeStamp)
 		{
 			TreeNode parentNode;
 			nodes.TryGetValue(character.folderId, out parentNode);
@@ -130,7 +130,7 @@ namespace Ginger
 
 		private void BtnOk_Click(object sender, EventArgs e)
 		{
-			AppSettings.FaradayLink.LinkOnImport = cbCreateLink.Checked;
+			AppSettings.BackyardLink.LinkOnImport = cbCreateLink.Checked;
 			DialogResult = DialogResult.OK;
 			Close();
 		}
@@ -145,12 +145,12 @@ namespace Ginger
 		{
 			if (e.Node == null || e.Node.Tag == null)
 			{
-				SelectedCharacter = default(FaradayBridge.CharacterInstance);
+				SelectedCharacter = default(BackyardBridge.CharacterInstance);
 				btnOk.Enabled = false;
 			}
 			else
 			{
-				SelectedCharacter = (FaradayBridge.CharacterInstance)e.Node.Tag;
+				SelectedCharacter = (BackyardBridge.CharacterInstance)e.Node.Tag;
 				btnOk.Enabled = true;
 			}
 		}
@@ -163,7 +163,7 @@ namespace Ginger
 			}
 			else
 			{
-				SelectedCharacter = (FaradayBridge.CharacterInstance)e.Node.Tag;
+				SelectedCharacter = (BackyardBridge.CharacterInstance)e.Node.Tag;
 				BtnOk_Click(this, EventArgs.Empty);
 			}
 		}

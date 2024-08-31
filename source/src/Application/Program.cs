@@ -30,12 +30,12 @@ namespace Ginger
 				MainForm.instance.SetFirstLoad(args[0]);
 
 			// Initialize link
-			if (AppSettings.FaradayLink.Enabled)
+			if (AppSettings.BackyardLink.Enabled)
 			{
-				if (FaradayBridge.EstablishConnection() == FaradayBridge.Error.NoError)
-					FaradayBridge.RefreshCharacters();
+				if (BackyardBridge.EstablishConnection() == BackyardBridge.Error.NoError)
+					BackyardBridge.RefreshCharacters();
 				else
-					AppSettings.FaradayLink.Enabled = false;
+					AppSettings.BackyardLink.Enabled = false;
 			}
 
 			Application.Run(mainForm);
