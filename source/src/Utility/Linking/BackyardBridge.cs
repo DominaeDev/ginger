@@ -14,14 +14,25 @@ namespace Ginger
 		public struct CharacterInstance
 		{
 			public string instanceId;		// CharacterConfig.id
-			public string configId;			// CharacterConfigVersion.id
-			public string groupId;			// GroupConfig.id
-			public string displayName;		// CharacterConfigVersion.displayName
-			public string name;				// CharacterConfigVersion.name
-			public string folderId;			// CharacterConfigVersion.name
 			public DateTime creationDate;	// CharacterConfig.createdAt
 			public DateTime updateDate;     // CharacterConfig.updatedAt
+			public bool isUser;				// CharacterConfig.isUserControlled
+			public string configId;			// CharacterConfigVersion.id
+			public string displayName;		// CharacterConfigVersion.displayName
+			public string name;				// CharacterConfigVersion.name
+			public string groupId;			// GroupConfig.id (Primary group)
+			public string folderId;			// GroupConfig.folderId (Primary group)
 			public string creator;          // GroupConfig.hubAuthorUsername
+		}
+
+		public struct GroupInstance
+		{
+			public string instanceId;		// GroupConfig.id
+			public string name;				// GroupConfig.name
+			public string folderId;			// GroupConfig.folderId
+			public DateTime creationDate;	// CharacterConfig.createdAt
+			public DateTime updateDate;     // CharacterConfig.updatedAt
+			public string[] members;	// CharacterConfigVersion.id...
 		}
 
 		public struct FolderInstance
@@ -43,11 +54,13 @@ namespace Ginger
 
 		public static IEnumerable<FolderInstance> Folders { get { return _Folders.Values; } }
 		public static IEnumerable<CharacterInstance> Characters { get { return _Characters.Values; } }
+		public static IEnumerable<GroupInstance> Groups { get { return _Groups.Values; } }
 		public static string DefaultModel = null;
 		public static string DefaultUserConfigId = null;
 
-		private static Dictionary<string, FolderInstance> _Folders = new Dictionary<string, FolderInstance>();	// instanceId, value
-		private static Dictionary<string, CharacterInstance> _Characters = new Dictionary<string, CharacterInstance>(); // instanceId, value
+		private static Dictionary<string, FolderInstance> _Folders = new Dictionary<string, FolderInstance>();
+		private static Dictionary<string, CharacterInstance> _Characters = new Dictionary<string, CharacterInstance>();
+		private static Dictionary<string, GroupInstance> _Groups = new Dictionary<string, GroupInstance>();
 
 		public class Link : IXmlLoadable, IXmlSaveable
 		{
@@ -261,6 +274,7 @@ namespace Ginger
 		{
 			_Folders.Clear();
 			_Characters.Clear();
+			_Groups.Clear();
 			ConnectionEstablished = false;
 			AppSettings.BackyardLink.Enabled = false;
 			SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
@@ -285,6 +299,7 @@ namespace Ginger
 
 			_Folders.Clear();
 			_Characters.Clear();
+			_Groups.Clear();
 
 			try
 			{
@@ -345,44 +360,15 @@ namespace Ginger
 						}
 					}
 
-					var imagesByConfigId = new Dictionary<string, List<string>>();
-					using (var cmdImageRef = connection.CreateCommand())
-					{
-						cmdImageRef.CommandText =
-						@"
-							SELECT A, B
-							FROM _AppImageToCharacterConfigVersion
-						";
-						using (var reader = cmdImageRef.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string imageId = reader.GetString(0);
-								string configId = reader.GetString(1);
-
-								if (imagesByConfigId.ContainsKey(configId) == false)
-									imagesByConfigId.Add(configId, new List<string>());
-
-								imagesByConfigId[configId].Add(imageId);
-							}
-						}
-					}
-
-					// Fetch character instance ids
+					// Fetch character instance ids (including user controlled characters)
 					using (var cmdCharacterData = connection.CreateCommand())
 					{
 						cmdCharacterData.CommandText =
 						@"
 							SELECT 
-								A.id, 
-								B.id, B.displayName, B.name, A.createdAt, E.updatedAt,
-								D.folderId, D.hubAuthorUsername
+								A.id, B.id, B.displayName, B.name, A.createdAt, B.updatedAt, A.isUserControlled
 							FROM CharacterConfig as A
-							INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
-							INNER JOIN _CharacterConfigToGroupConfig AS C ON C.A = A.id
-							INNER JOIN GroupConfig AS D ON D.id = C.B
-							INNER JOIN Chat AS E ON E.groupConfigId = D.id
-							WHERE A.isUserControlled=0
+							INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id;
 						";
 						using (var reader = cmdCharacterData.ExecuteReader())
 						{
@@ -397,21 +383,7 @@ namespace Ginger
 								string name = reader.GetString(3);
 								DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(4));
 								DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(5));
-								string folderId = reader.GetString(6);
-								string hubAuthorUsername = reader[7] as string;
-
-								ImageInstance[] images = null;
-								if (imagesByConfigId.ContainsKey(configId))
-								{
-									var lsImages = new List<ImageInstance>();
-									foreach (var id in imagesByConfigId[configId])
-									{
-										ImageInstance imageInstance;
-										if (characterImages.TryGetValue(id, out imageInstance))
-											lsImages.Add(imageInstance);
-									}
-									images = lsImages.ToArray();
-								}
+								bool isUser = reader.GetBoolean(6);
 
 								_Characters.TryAdd(instanceId, 
 									new CharacterInstance() {
@@ -421,9 +393,53 @@ namespace Ginger
 										name = name,
 										creationDate = createdAt,
 										updateDate = updatedAt,
+										isUser = isUser,
+									});
+							}
+						}
+					}
+
+					// Fetch complementary character info (excluding user controlled characters)
+					using (var cmdCharacterGroupData = connection.CreateCommand())
+					{
+						cmdCharacterGroupData.CommandText =
+						@"
+							SELECT 
+								A.id, D.id, D.folderId, D.hubAuthorUsername, E.updatedAt
+							FROM CharacterConfig as A
+							INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
+							INNER JOIN _CharacterConfigToGroupConfig AS C ON C.A = A.id
+							INNER JOIN GroupConfig AS D ON D.id = C.B
+							INNER JOIN Chat AS E ON E.groupConfigId = D.id
+							WHERE A.isUserControlled=0;
+						";
+						using (var reader = cmdCharacterGroupData.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string instanceId = reader.GetString(0);
+								string groupId = reader.GetString(1);
+								string folderId = reader.GetString(2);
+								string hubAuthorUsername = reader[3] as string;
+								DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(4)); // Should be very latest
+
+								CharacterInstance character;
+								if (_Characters.TryGetValue(instanceId, out character))
+								{
+									_Characters[instanceId] = new CharacterInstance() {
+										instanceId = character.instanceId,
+										creationDate = character.creationDate,
+										isUser = character.isUser,
+										configId = character.configId,
+										displayName = character.displayName,
+										name = character.name,
+
+										groupId = groupId,
 										folderId = folderId,
 										creator = hubAuthorUsername,
-									});
+										updateDate = updatedAt,
+									};
+								}
 							}
 						}
 					}
@@ -453,6 +469,69 @@ namespace Ginger
 										parentId = parentId,
 										name = name,
 										isRoot = isRoot,
+									});
+							}
+						}
+					}
+
+					// Fetch character-group memberships
+					var groupMembers = new Dictionary<string, HashSet<string>>();
+					using (var cmdGroup = connection.CreateCommand())
+					{
+						cmdGroup.CommandText =
+						@"
+							SELECT 
+								A, B
+							FROM _CharacterConfigToGroupConfig
+						";
+
+						using (var reader = cmdGroup.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string configId = reader.GetString(0);
+								string groupId = reader.GetString(1);
+
+								if (groupMembers.ContainsKey(groupId) == false)
+									groupMembers.Add(groupId, new HashSet<string>());
+
+								groupMembers[groupId].Add(configId);
+							}
+						}
+					}
+
+					// Fetch chat groups
+					using (var cmdGroupData = connection.CreateCommand())
+					{ 
+						cmdGroupData.CommandText =
+						@"
+							SELECT 
+								id, createdAt, updatedAt, name, folderId
+							FROM GroupConfig
+						";
+
+						using (var reader = cmdGroupData.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string instanceId = reader.GetString(0);
+								DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(1));
+								DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(2));
+								string name = reader.GetString(3);
+								string folderId = reader.GetString(4);
+
+								HashSet<string> members;
+								if (groupMembers.TryGetValue(instanceId, out members) == false)
+									continue; // No members?
+
+								_Groups.TryAdd(instanceId, 
+									new GroupInstance() {
+										instanceId = instanceId,
+										name = name,
+										creationDate = createdAt,
+										updateDate = updatedAt,
+										folderId = folderId,
+										members = members.ToArray(),
 									});
 							}
 						}

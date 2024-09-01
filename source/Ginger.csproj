@@ -187,6 +187,12 @@
     <Compile Include="src\Interface\Controls\UserNotes.Designer.cs">
       <DependentUpon>UserNotes.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectChatGroupDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectChatGroupDialog.Designer.cs">
+      <DependentUpon>LinkSelectChatGroupDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\LinkImportDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -604,6 +610,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Controls\UserNotes.resx">
       <DependentUpon>UserNotes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectChatGroupDialog.resx">
+      <DependentUpon>LinkSelectChatGroupDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkImportDialog.resx">
       <DependentUpon>LinkImportDialog.cs</DependentUpon>

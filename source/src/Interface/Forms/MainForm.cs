@@ -2187,6 +2187,11 @@ namespace Ginger
 			AppSettings.Settings.EnableRearrangeLoreMode = !AppSettings.Settings.EnableRearrangeLoreMode;
 			recipeList.RefreshAllParameters();
 		}
+
+		private void chatEditorMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenChatEditor();
+		}
 	}
 
 	public interface IIdleHandler

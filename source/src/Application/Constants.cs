@@ -132,7 +132,7 @@ namespace Ginger
 		public static readonly float ReferenceFontSize = 8.25f;
 		public static readonly float LineHeight = 1.15f;
 
-		public static readonly int StatusBarMessageInterval = 2000;
+		public static readonly int StatusBarMessageInterval = 3500;
 
 		public static class ParameterPanel
 		{

@@ -1746,5 +1746,24 @@ namespace Ginger
 			
 			return BackyardBridge.Error.NoError;
 		}
+
+		private bool OpenChatEditor()
+		{
+			// Refresh character list
+			if (BackyardBridge.RefreshCharacters() != BackyardBridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_read_data, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			var dlg = new LinkSelectChatGroupDialog();
+			dlg.Characters = BackyardBridge.Characters.ToArray();
+			dlg.Groups = BackyardBridge.Groups.ToArray();
+			dlg.Folders = BackyardBridge.Folders.ToArray();
+			if (dlg.ShowDialog() != DialogResult.OK)
+				return false;
+
+			return true;
+		}
 	}
 }

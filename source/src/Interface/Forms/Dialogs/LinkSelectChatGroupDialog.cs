@@ -1,23 +1,24 @@
-﻿using Ginger.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using Bridge = Ginger.BackyardBridge;
+
 namespace Ginger
 {
-	public partial class LinkImportDialog : Form
+	public partial class LinkSelectChatGroupDialog : Form
 	{
-		public BackyardBridge.CharacterInstance[] Characters;
-		public BackyardBridge.FolderInstance[] Folders;
-		public BackyardBridge.CharacterInstance SelectedCharacter { get; private set; }
+		public Bridge.CharacterInstance[] Characters;
+		public Bridge.GroupInstance[] Groups;
+		public Bridge.FolderInstance[] Folders;
+		public Bridge.GroupInstance SelectedGroup { get; private set; }
 
+		private Dictionary<string, Bridge.CharacterInstance> _charactersById;
 		public Dictionary<string, int> _folderCounts = new Dictionary<string, int>();
 
-		public bool ShouldLink { get { return cbCreateLink.Checked; } }
-
-		public LinkImportDialog()
+		public LinkSelectChatGroupDialog()
 		{
 			InitializeComponent();
 
@@ -26,16 +27,32 @@ namespace Ginger
 
 		private void OnLoad(object sender, EventArgs e)
 		{
+			_charactersById = Characters.ToDictionary(c => c.instanceId, c => c);
+
 			PopulateTree();
 
 			treeView.SelectedNode = null;
-			SelectedCharacter = default(BackyardBridge.CharacterInstance);
+			SelectedGroup = default(Bridge.GroupInstance);
 
 			btnOk.Enabled = false;
-			cbCreateLink.Checked = AppSettings.BackyardLink.LinkOnImport;
-			
-			// Tooltips
-			toolTip.SetToolTip(cbCreateLink, Resources.tooltip_link_about_linking);
+		}
+
+		private string GetGroupTitle(Bridge.GroupInstance group)
+		{
+			if (string.IsNullOrEmpty(group.name) == false)
+				return group.name;
+			else
+			{
+				string[] memberNames = group.members
+					.Select(id => _charactersById.GetOrDefault(id))
+					.Where(c => c.isUser == false)
+					.Select(c => c.name ?? "Unnamed")
+					.ToArray();
+				string groupTitle = string.Join(", ", memberNames.Take(2));
+				if (memberNames.Length > 2)
+					groupTitle += ", ...";
+				return groupTitle;
+			}
 		}
 
 		private void PopulateTree()
@@ -43,19 +60,19 @@ namespace Ginger
 			treeView.Suspend();
 			treeView.Nodes.Clear();
 
-			if (Folders == null || Characters == null)
+			if (Folders == null || Groups == null)
 				return; // Nothing to show
 
 			// Sum character counts
 			for (int i = 0; i < Folders.Length; ++i)
-				_folderCounts.Add(Folders[i].instanceId, Characters.Count(c => c.folderId == Folders[i].instanceId));
+				_folderCounts.Add(Folders[i].instanceId, Groups.Count(c => c.folderId == Folders[i].instanceId));
 			for (int i = Folders.Length - 1; i >= 0; --i)
 			{
 				if (string.IsNullOrEmpty(Folders[i].parentId) == false)
 					_folderCounts[Folders[i].parentId] += _folderCounts[Folders[i].instanceId];
 			}
 
-			// Create folders
+			// Create folder nodes
 			var nodesById = new Dictionary<string, TreeNode>();
 			string rootId = Folders.FirstOrDefault(f => f.isRoot).instanceId;
 			nodesById.Add(rootId, null);
@@ -69,7 +86,7 @@ namespace Ginger
 				string parentId = openList[0];
 				var subfolders = Folders
 					.Where(f => f.parentId == parentId)
-					.OrderBy(c => c.name);
+					.OrderBy(f => f.name);
 
 				foreach (var folder in subfolders)
 					CreateFolderNode(folder, nodesById, _folderCounts[folder.instanceId]);
@@ -77,18 +94,17 @@ namespace Ginger
 				openList.Remove(parentId);
 			}
 
-			// Create characters
-			foreach (var character in Characters
-				.Where(c => c.isUser == false)
-				.OrderBy(c => c.displayName)
+			// Create group nodes
+			foreach (var group in Groups
+				.OrderBy(g => GetGroupTitle(g))
 				.ThenByDescending(c => c.creationDate))
 			{
-				CreateCharacterNode(character, nodesById);
+				CreateGroupNode(group, nodesById);
 			}
 			treeView.Resume();
 		}
 
-		private TreeNode CreateFolderNode(BackyardBridge.FolderInstance folder, Dictionary<string, TreeNode> nodes, int count)
+		private TreeNode CreateFolderNode(Bridge.FolderInstance folder, Dictionary<string, TreeNode> nodes, int count)
 		{
 			TreeNode parentNode;
 			nodes.TryGetValue(folder.parentId, out parentNode);
@@ -102,38 +118,40 @@ namespace Ginger
 			return node;
 		}
 
-		private TreeNode CreateCharacterNode(BackyardBridge.CharacterInstance character, Dictionary<string, TreeNode> nodes)
+		private TreeNode CreateGroupNode(Bridge.GroupInstance group, Dictionary<string, TreeNode> nodes)
 		{
+			if (group.members.Length < 2)
+				return null;
+
 			TreeNode parentNode;
-			if (character.folderId != null)
-				nodes.TryGetValue(character.folderId, out parentNode);
-			else
-				parentNode = default(TreeNode);
+			nodes.TryGetValue(group.folderId, out parentNode);
 
-			string label = character.displayName;
-			if (string.Compare(character.name, label, StringComparison.OrdinalIgnoreCase) != 0)
-				label = string.Concat(label, " (", character.name, ")");
-
+			string groupLabel = GetGroupTitle(group);
 			var sbTooltip = new StringBuilder();
-			sbTooltip.Append(character.displayName);
-			if (string.Compare(character.name, label, StringComparison.OrdinalIgnoreCase) != 0)
-			{
-				sbTooltip.Append(" (aka ");
-				sbTooltip.Append(character.name);
-				sbTooltip.Append(")");
-			}
-			sbTooltip.NewParagraph();
-			if (character.creator != null)
-			{
-				sbTooltip.Append("By: ");
-				sbTooltip.Append(character.creator);
-				sbTooltip.AppendLine();
-			}
-			sbTooltip.AppendLine($"Created: {character.creationDate.ToShortDateString()}");
-			sbTooltip.AppendLine($"Last modified: {character.updateDate.ToShortDateString()}");
 
-			var node = new TreeNode(label, 1, 1);
-			node.Tag = character;
+			string userName = group.members
+				.Select(id => _charactersById.GetOrDefault(id))
+				.Where(c => c.isUser)
+				.Select(c => c.name ?? "User")
+				.FirstOrDefault();
+			string[] memberNames = group.members
+				.Select(id => _charactersById.GetOrDefault(id))
+				.Where(c => c.isUser == false)
+				.Select(c => c.name ?? "Unnamed")
+				.ToArray();
+
+			sbTooltip.Append("Chat between ");
+			sbTooltip.Append(Utility.ListToCommaSeparatedString(memberNames));
+			sbTooltip.Append(", and ");
+			sbTooltip.Append(userName);
+
+			sbTooltip.NewParagraph();
+			sbTooltip.AppendLine($"Created: {group.creationDate.ToShortDateString()}");
+			sbTooltip.AppendLine($"Last modified: {group.updateDate.ToShortDateString()}");
+
+			int icon = group.members.Length > 2 ? 2 : 1;
+			var node = new TreeNode(groupLabel, icon, icon);
+			node.Tag = group;
 			node.ToolTipText = sbTooltip.ToString();
 			if (parentNode != null)
 				parentNode.Nodes.Add(node);
@@ -144,7 +162,6 @@ namespace Ginger
 
 		private void BtnOk_Click(object sender, EventArgs e)
 		{
-			AppSettings.BackyardLink.LinkOnImport = cbCreateLink.Checked;
 			DialogResult = DialogResult.OK;
 			Close();
 		}
@@ -159,12 +176,12 @@ namespace Ginger
 		{
 			if (e.Node == null || e.Node.Tag == null)
 			{
-				SelectedCharacter = default(BackyardBridge.CharacterInstance);
+				SelectedGroup = default(Bridge.GroupInstance);
 				btnOk.Enabled = false;
 			}
 			else
 			{
-				SelectedCharacter = (BackyardBridge.CharacterInstance)e.Node.Tag;
+				SelectedGroup = (Bridge.GroupInstance)e.Node.Tag;
 				btnOk.Enabled = true;
 			}
 		}
@@ -177,7 +194,7 @@ namespace Ginger
 			}
 			else
 			{
-				SelectedCharacter = (BackyardBridge.CharacterInstance)e.Node.Tag;
+				SelectedGroup = (Bridge.GroupInstance)e.Node.Tag;
 				BtnOk_Click(this, EventArgs.Empty);
 			}
 		}
