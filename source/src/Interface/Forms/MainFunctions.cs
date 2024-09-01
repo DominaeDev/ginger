@@ -1084,9 +1084,9 @@ namespace Ginger
 			if (bShouldAutosave)
 			{
 				autosaveError = UpdateCharacterInBackyard();
-				if (autosaveError == BackyardBridge.Error.Cancelled)
+				if (autosaveError == BackyardBridge.Error.CancelledByUser)
 					return false; // User clicked 'cancel'
-				else if (autosaveError == BackyardBridge.Error.Dismissed)
+				else if (autosaveError == BackyardBridge.Error.DismissedByUser)
 					bShouldAutosave = false; // User clicked 'no'
 				else if (autosaveError == BackyardBridge.Error.NoError)
 				{
@@ -1112,7 +1112,7 @@ namespace Ginger
 				{
 					if (bAutoSaved)
 						SetStatusBarMessage(Resources.status_link_saved, Constants.StatusBarMessageInterval);
-					else if (autosaveError == BackyardBridge.Error.NoDataFound)
+					else if (autosaveError == BackyardBridge.Error.NotFound)
 					{
 						MessageBox.Show(Resources.error_link_autosave_not_found, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -1536,7 +1536,7 @@ namespace Ginger
 			FaradayCardV4 faradayData;
 			string[] images;
 			var importError = BackyardBridge.ImportCharacter(dlg.SelectedCharacter, out faradayData, out images);
-			if (importError == BackyardBridge.Error.NoDataFound)
+			if (importError == BackyardBridge.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				ClearStatusBarMessage();
@@ -1575,7 +1575,7 @@ namespace Ginger
 			if (BackyardBridge.ConnectionEstablished == false)
 				return BackyardBridge.Error.NotConnected;
 			else if (Current.HasLink == false)
-				return BackyardBridge.Error.NoDataFound;
+				return BackyardBridge.Error.NotFound;
 
 			FaradayCardV4 card = FaradayCardV4.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.Faraday));
 
@@ -1593,9 +1593,9 @@ namespace Ginger
 				// Overwrite prompt
 				var mr = MessageBox.Show(Resources.msg_link_confirm_overwrite, Resources.cap_link_overwrite, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
 				if (mr == DialogResult.Cancel)
-					return BackyardBridge.Error.Cancelled;
+					return BackyardBridge.Error.CancelledByUser;
 				else if (mr == DialogResult.No)
-					return BackyardBridge.Error.Dismissed;
+					return BackyardBridge.Error.DismissedByUser;
 			}
 
 			DateTime updateDate;
@@ -1697,7 +1697,7 @@ namespace Ginger
 			if (BackyardBridge.ConnectionEstablished == false)
 				return BackyardBridge.Error.NotConnected;
 			else if (Current.HasLink == false)
-				return BackyardBridge.Error.NoDataFound;
+				return BackyardBridge.Error.NotFound;
 
 			// Refresh character list
 			var refreshError = BackyardBridge.RefreshCharacters();
@@ -1707,7 +1707,7 @@ namespace Ginger
 			// Get character instance
 			BackyardBridge.CharacterInstance characterInstance;
 			if (BackyardBridge.GetCharacter(Current.Link.characterId, out characterInstance) == false)
-				return BackyardBridge.Error.NoDataFound;
+				return BackyardBridge.Error.NotFound;
 
 			// Import data
 			FaradayCardV4 faradayData;

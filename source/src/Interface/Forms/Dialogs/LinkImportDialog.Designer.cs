@@ -68,6 +68,8 @@ namespace Ginger
 			this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.treeView.CausesValidation = false;
 			this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.treeView.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.treeView.FullRowSelect = true;
 			this.treeView.HideSelection = false;
 			this.treeView.ImageIndex = 0;
 			this.treeView.ImageList = this.imageList;
@@ -87,6 +89,7 @@ namespace Ginger
 			this.treeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode3});
 			this.treeView.SelectedImageIndex = 0;
+			this.treeView.ShowLines = false;
 			this.treeView.ShowNodeToolTips = true;
 			this.treeView.Size = new System.Drawing.Size(480, 320);
 			this.treeView.TabIndex = 0;
@@ -118,6 +121,7 @@ namespace Ginger
 			// btnCancel
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.btnCancel.Location = new System.Drawing.Point(363, 2);
 			this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 0, 0, 0);
 			this.btnCancel.Name = "btnCancel";
@@ -165,8 +169,10 @@ namespace Ginger
 			// 
 			// LinkImportDialog
 			// 
+			this.AcceptButton = this.btnOk;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.CancelButton = this.btnCancel;
 			this.ClientSize = new System.Drawing.Size(484, 361);
 			this.Controls.Add(this.cbCreateLink);
 			this.Controls.Add(listPanel);

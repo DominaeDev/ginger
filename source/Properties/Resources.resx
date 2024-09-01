@@ -840,4 +840,7 @@ Do you want to continue?</value>
   <data name="tooltip_link_about_linking" xml:space="preserve">
     <value>Linking allows changes made in Ginger to be saved back to Backyard AI.</value>
   </data>
+  <data name="error_link_unsupported" xml:space="preserve">
+    <value>Failed to connect to Backyard AI. Unsupported version.</value>
+  </data>
 </root>

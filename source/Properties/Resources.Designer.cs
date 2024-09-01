@@ -789,6 +789,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to connect to Backyard AI. Unsupported version..
+        /// </summary>
+        internal static string error_link_unsupported {
+            get {
+                return ResourceManager.GetString("error_link_unsupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to load dictionary..
         /// </summary>
         internal static string error_load_dictionary {

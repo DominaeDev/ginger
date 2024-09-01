@@ -135,161 +135,39 @@ namespace Ginger
 		public enum Error
 		{
 			NoError,
-			UnrecognizedStructure,
 			NotConnected,
 			FileNotFound,
-			CommandFailed,
-			NoDataFound,
+			ValidationFailed,
+			SQLCommandFailed,
+			NotFound,
+			DismissedByUser,
+			CancelledByUser,
 			Unknown,
-			Dismissed,
-			Cancelled,
 		}
 
 		public static bool ConnectionEstablished = false;
 
 		private static SQLiteConnection CreateSQLiteConnection()
 		{
-			string faradayPath = AppSettings.BackyardLink.Location;
-			if (string.IsNullOrWhiteSpace(faradayPath))
-				faradayPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
-				"faraday-canary"); // Use canary database during development and testing
-			string faradayDatabase = Path.Combine(faradayPath, "db.sqlite");
-			if (File.Exists(faradayDatabase) == false)
+			string backyardPath = AppSettings.BackyardLink.Location;
+			if (string.IsNullOrWhiteSpace(backyardPath))
+			{
+#if DEBUG
+				string appPath = "faraday-canary"; // Use canary database during development and testing
+#else
+				string appPath = "faraday"; // User production database 
+#endif
+				backyardPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), appPath);
+			}
+			string dbFilePath = Path.Combine(backyardPath, "db.sqlite");
+			if (File.Exists(dbFilePath) == false)
 				throw new FileNotFoundException();
 
-			AppSettings.BackyardLink.Location = faradayPath;
-			return new SQLiteConnection($"Data Source={faradayDatabase}; Version=3; Foreign Keys=True; Pooled=True;");
+			AppSettings.BackyardLink.Location = backyardPath;
+			return new SQLiteConnection($"Data Source={dbFilePath}; Version=3; Foreign Keys=True; Pooled=True;");
 		}
 
-		#region Establish Link
-		// Validation table
-		private static string[][] s_TableValidation = new string[][] {
-			new string[] {
-				"_AppCharacterLorebookItemToCharacterConfigVersion", 
-				"A", "TEXT",
-				"B", "TEXT",
-			},
-			new string[] {
-				"_AppImageToCharacterConfigVersion", 
-				"A", "TEXT",
-				"B", "TEXT", 
-			},
-			new string[] {
-				"_CharacterConfigToGroupConfig", 
-				"A", "TEXT",
-				"B", "TEXT",
-			},
-			new string[] {
-				"AppCharacterLorebookItem", 
-				"id", "TEXT",
-				"createdAt", "DATETIME",
-				"updatedAt", "DATETIME", 
-				"order", "TEXT",
-				"key", "TEXT",
-				"value", "TEXT",
-			},	
-			new string[] {
-				"AppFolder", 
-				"id", "TEXT",
-				"createdAt", "DATETIME",
-				"updatedAt", "DATETIME", 
-				"name", "TEXT",
-				"url", "TEXT",
-				"parentFolderId", "TEXT",
-				"isRoot", "BOOLEAN",
-			},
-			new string[] {
-				"AppImage", 
-				"id", "TEXT",
-				"createdAt", "DATETIME",
-				"updatedAt", "DATETIME", 
-				"imageUrl", "TEXT",
-				"label", "TEXT",
-				"order", "INTEGER",
-				"aspectRatio", "TEXT",
-			},
-			new string[] {
-				"CharacterConfig", 
-				"id", "TEXT",
-				"createdAt", "DATETIME",
-				"updatedAt", "DATETIME", 
-				"isUserControlled", "BOOLEAN",
-				"isDefaultUserCharacter", "BOOLEAN",
-				"isTemplateChar", "BOOLEAN",
-			},
-			new string[] {
-				"CharacterConfigVersion", 
-				"id", "TEXT",
-				"createdAt", "DATETIME",
-				"updatedAt", "DATETIME", 
-				"displayName", "TEXT",
-				"name", "TEXT",
-				"persona", "TEXT",
-				"ttsVoice", "TEXT",
-				"ttsSpeed", "REAL",
-				"characterConfigId", "TEXT",
-			},
-			new string[] {
-				"Chat", 
-				"id", "TEXT",
-				"createdAt", "DATETIME",
-				"updatedAt", "DATETIME", 
-				"name", "TEXT",
-				"context", "TEXT",
-				"customDialogue", "TEXT",
-				"canDeleteCustomDialogue", "BOOLEAN",
-				"authorNote", "TEXT",
-				"model", "TEXT",
-				"modelInstructions", "TEXT",
-				"temperature", "REAL",
-				"topP", "REAL",
-				"minP", "REAL",
-				"minPEnabled", "BOOLEAN",
-				"topK", "INTEGER",
-				"repeatPenalty", "REAL",
-				"repeatLastN", "INTEGER",
-				"grammar", "TEXT",
-				"promptTemplate", "TEXT",
-				"ttsAutoPlay", "BOOLEAN",
-				"ttsInputFilter", "TEXT",
-				"groupConfigId", "TEXT",
-				"greetingDialogue", "TEXT",
-			},
-			new string[] { 
-				"GroupConfig", 
-				"id", "TEXT",
-				"createdAt", "DATETIME",
-				"updatedAt", "DATETIME", 
-				"hubCharId", "TEXT",
-				"hubAuthorId", "TEXT",
-				"hubAuthorUsername", "TEXT",
-				"hubCharIdAnalytics", "TEXT",
-				"forkedFromLocalId", "TEXT",
-				"name", "TEXT",
-				"isNSFW", "BOOLEAN",
-				"folderId", "TEXT",
-				"folderSortPosition", "TEXT",
-			},
-			new string[] { 
-				"Message", 
-				"id", "TEXT",
-				"createdAt", "DATETIME",
-				"updatedAt", "DATETIME", 
-				"liked", "BOOLEAN",
-				"chatId", "TEXT",
-				"characterConfigId", "TEXT",
-			},		
-			new string[] { 
-				"RegenSwipe", 
-				"id", "TEXT",
-				"createdAt", "DATETIME",
-				"updatedAt", "DATETIME", 
-				"activeTimestamp", "DATETIME",
-				"text", "TEXT",
-				"messageId", "TEXT",
-			},
-		};
-
+#region Establish Link
 		public static Error EstablishConnection()
 		{
 			try
@@ -330,12 +208,12 @@ namespace Ginger
 						}
 
 						if (foundColumns.Count < expectedNames.Length)
-							return Error.UnrecognizedStructure;
+							return Error.ValidationFailed;
 
 						for (int j = 0; j < expectedNames.Length; ++j)
 						{
 							if (foundColumns.FindIndex(kvp => kvp.Key == expectedNames[j] && kvp.Value == expectedTypes[j]) == -1)
-								return Error.UnrecognizedStructure;
+								return Error.ValidationFailed;
 						}
 					}
 
@@ -370,7 +248,7 @@ namespace Ginger
 			catch (SQLiteException e)
 			{
 				Disconnect();
-				return Error.CommandFailed;
+				return Error.SQLCommandFailed;
 			}
 			catch (Exception e)
 			{
@@ -387,9 +265,9 @@ namespace Ginger
 			AppSettings.BackyardLink.Enabled = false;
 			SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
 		}
-		#endregion
+#endregion
 
-		#region Character information
+#region Character information
 		public static bool GetCharacter(string characterId, out CharacterInstance character)
 		{
 			return _Characters.TryGetValue(characterId, out character);
@@ -592,7 +470,7 @@ namespace Ginger
 			catch (SQLiteException e)
 			{
 				Disconnect();
-				return Error.CommandFailed;
+				return Error.SQLCommandFailed;
 			}
 			catch (Exception e)
 			{
@@ -600,9 +478,9 @@ namespace Ginger
 				return Error.Unknown;
 			}
 		}
-		#endregion
+#endregion
 
-		#region Import character
+#region Import character
 
 		public static Error ImportCharacter(CharacterInstance character, out FaradayCardV4 card, out string[] imageUrls)
 		{
@@ -647,7 +525,7 @@ namespace Ginger
 							if (!reader.Read())
 							{
 								imageUrls = null;
-								return Error.NoDataFound; // No character
+								return Error.NotFound; // No character
 							}
 
 							string instanceId = reader.GetString(0);
@@ -756,7 +634,7 @@ namespace Ginger
 					imageUrls = lsImageUrls.ToArray();
 
 					connection.Close();
-					return card == null ? Error.NoDataFound : Error.NoError;
+					return card == null ? Error.NotFound : Error.NoError;
 				}
 			}
 			catch (FileNotFoundException e)
@@ -771,7 +649,7 @@ namespace Ginger
 				Disconnect();
 				card = null;
 				imageUrls = null;
-				return Error.CommandFailed;
+				return Error.SQLCommandFailed;
 			}
 			catch (Exception e)
 			{
@@ -782,9 +660,9 @@ namespace Ginger
 			}
 		}
 
-		#endregion
+#endregion
 
-		#region Update character
+#region Update character
 		public static Error ConfirmSaveCharacter(FaradayCardV4 card, Link linkInfo, out bool newerChangesFound)
 		{
 			if (ConnectionEstablished == false)
@@ -796,7 +674,7 @@ namespace Ginger
 			if (card == null || linkInfo == null || string.IsNullOrEmpty(linkInfo.characterId))
 			{
 				newerChangesFound = default(bool);
-				return Error.NoDataFound;
+				return Error.NotFound;
 			}
 
 			try
@@ -826,7 +704,7 @@ namespace Ginger
 							if (reader.Read() == false)
 							{
 								newerChangesFound = default(bool);
-								return Error.NoDataFound;
+								return Error.NotFound;
 							}
 
 							string configId = reader.GetString(0);
@@ -848,7 +726,7 @@ namespace Ginger
 			catch (SQLiteException e)
 			{
 				newerChangesFound = default(bool);
-				return Error.CommandFailed;
+				return Error.SQLCommandFailed;
 			}
 			catch (Exception e)
 			{
@@ -863,7 +741,7 @@ namespace Ginger
 			{
 				updateDate = default(DateTime);
 				updatedImageLinks = null;
-				return Error.NoDataFound;
+				return Error.NotFound;
 			}
 
 			if (ConnectionEstablished == false)
@@ -904,7 +782,7 @@ namespace Ginger
 							{
 								updateDate = default(DateTime);
 								updatedImageLinks = null;
-								return Error.NoDataFound;
+								return Error.NotFound;
 							}
 
 							configId = reader.GetString(0);
@@ -1287,7 +1165,7 @@ namespace Ginger
 								transaction.Rollback();
 								updateDate = default(DateTime);
 								updatedImageLinks = null;
-								return Error.CommandFailed;
+								return Error.SQLCommandFailed;
 							}
 
 							// Write images to disk
@@ -1344,7 +1222,7 @@ namespace Ginger
 				Disconnect();
 				updateDate = default(DateTime);
 				updatedImageLinks = null;
-				return Error.CommandFailed;
+				return Error.SQLCommandFailed;
 			}
 			catch (Exception e)
 			{
@@ -1354,9 +1232,9 @@ namespace Ginger
 				return Error.Unknown;
 			}
 		}
-		#endregion
+#endregion
 
-		#region Save new character
+#region Save new character
 
 		public static Error CreateNewCharacter(FaradayCardV4 card, out CharacterInstance characterInstance, out Link.Image[] imageLinks)
 		{
@@ -1364,7 +1242,7 @@ namespace Ginger
 			{
 				characterInstance = default(CharacterInstance);
 				imageLinks = null;
-				return Error.NoDataFound;
+				return Error.NotFound;
 			}
 
 			if (ConnectionEstablished == false)
@@ -1417,7 +1295,7 @@ namespace Ginger
 						{
 							characterInstance = default(CharacterInstance);
 							imageLinks = null;
-							return Error.CommandFailed; // Requires default user
+							return Error.SQLCommandFailed; // Requires default user
 						}
 					}
 
@@ -1640,7 +1518,7 @@ namespace Ginger
 								transaction.Rollback();
 								characterInstance = default(CharacterInstance);
 								imageLinks = null;
-								return Error.CommandFailed;
+								return Error.SQLCommandFailed;
 							}
 
 							// Write images to disk
@@ -1686,7 +1564,7 @@ namespace Ginger
 							transaction.Rollback();
 
 							characterInstance = default(CharacterInstance);
-							return Error.CommandFailed;
+							return Error.SQLCommandFailed;
 						}
 					}
 				}
@@ -1701,7 +1579,7 @@ namespace Ginger
 			{
 				Disconnect();
 				characterInstance = default(CharacterInstance);
-				return Error.CommandFailed;
+				return Error.SQLCommandFailed;
 			}
 			catch (Exception e)
 			{
@@ -1710,9 +1588,9 @@ namespace Ginger
 				return Error.Unknown;
 			}
 		}
-		#endregion
+#endregion
 
-		#region Utility
+#region Utility
 		private static string MakeLoreSortPosition(int index, int maxIndex, int hash)
 		{
 			RandomNoise rng = new RandomNoise(hash, 0);
@@ -1938,6 +1816,136 @@ namespace Ginger
 			return imagesToSave.ContainsAny(i => i.data.isEmpty == false);
 		}
 
+		#endregion
+
+		#region Validation
+				// Validation table
+		private static string[][] s_TableValidation = new string[][] {
+			new string[] {
+				"_AppCharacterLorebookItemToCharacterConfigVersion", 
+				"A", "TEXT",
+				"B", "TEXT",
+			},
+			new string[] {
+				"_AppImageToCharacterConfigVersion", 
+				"A", "TEXT",
+				"B", "TEXT", 
+			},
+			new string[] {
+				"_CharacterConfigToGroupConfig", 
+				"A", "TEXT",
+				"B", "TEXT",
+			},
+			new string[] {
+				"AppCharacterLorebookItem", 
+				"id", "TEXT",
+				"createdAt", "DATETIME",
+				"updatedAt", "DATETIME", 
+				"order", "TEXT",
+				"key", "TEXT",
+				"value", "TEXT",
+			},	
+			new string[] {
+				"AppFolder", 
+				"id", "TEXT",
+				"createdAt", "DATETIME",
+				"updatedAt", "DATETIME", 
+				"name", "TEXT",
+				"url", "TEXT",
+				"parentFolderId", "TEXT",
+				"isRoot", "BOOLEAN",
+			},
+			new string[] {
+				"AppImage", 
+				"id", "TEXT",
+				"createdAt", "DATETIME",
+				"updatedAt", "DATETIME", 
+				"imageUrl", "TEXT",
+				"label", "TEXT",
+				"order", "INTEGER",
+				"aspectRatio", "TEXT",
+			},
+			new string[] {
+				"CharacterConfig", 
+				"id", "TEXT",
+				"createdAt", "DATETIME",
+				"updatedAt", "DATETIME", 
+				"isUserControlled", "BOOLEAN",
+				"isDefaultUserCharacter", "BOOLEAN",
+				"isTemplateChar", "BOOLEAN",
+			},
+			new string[] {
+				"CharacterConfigVersion", 
+				"id", "TEXT",
+				"createdAt", "DATETIME",
+				"updatedAt", "DATETIME", 
+				"displayName", "TEXT",
+				"name", "TEXT",
+				"persona", "TEXT",
+				"ttsVoice", "TEXT",
+				"ttsSpeed", "REAL",
+				"characterConfigId", "TEXT", 
+			},
+			new string[] {
+				"Chat", 
+				"id", "TEXT",
+				"createdAt", "DATETIME",
+				"updatedAt", "DATETIME", 
+				"name", "TEXT",
+				"context", "TEXT",
+				"customDialogue", "TEXT",
+				"canDeleteCustomDialogue", "BOOLEAN",
+				"authorNote", "TEXT",
+				"model", "TEXT",
+				"modelInstructions", "TEXT",
+				"temperature", "REAL",
+				"topP", "REAL",
+				"minP", "REAL",
+				"minPEnabled", "BOOLEAN",
+				"topK", "INTEGER",
+				"repeatPenalty", "REAL",
+				"repeatLastN", "INTEGER",
+				"grammar", "TEXT",
+				"promptTemplate", "TEXT",
+				"ttsAutoPlay", "BOOLEAN",
+				"ttsInputFilter", "TEXT",
+				"groupConfigId", "TEXT",
+				"greetingDialogue", "TEXT",
+			},
+			new string[] { 
+				"GroupConfig", 
+				"id", "TEXT",
+				"createdAt", "DATETIME",
+				"updatedAt", "DATETIME", 
+				"hubCharId", "TEXT",
+				"hubAuthorId", "TEXT",
+				"hubAuthorUsername", "TEXT",
+				"hubCharIdAnalytics", "TEXT",
+				"forkedFromLocalId", "TEXT",
+				"name", "TEXT",
+				"isNSFW", "BOOLEAN",
+				"folderId", "TEXT",
+				"folderSortPosition", "TEXT",
+			},
+			new string[] { 
+				"Message", 
+				"id", "TEXT",
+				"createdAt", "DATETIME",
+				"updatedAt", "DATETIME", 
+				"liked", "BOOLEAN",
+				"chatId", "TEXT",
+				"characterConfigId", "TEXT",
+			},		
+			new string[] { 
+				"RegenSwipe", 
+				"id", "TEXT",
+				"createdAt", "DATETIME",
+				"updatedAt", "DATETIME", 
+				"activeTimestamp", "DATETIME",
+				"text", "TEXT",
+				"messageId", "TEXT",
+			},
+		};
 		#endregion
 
 	}

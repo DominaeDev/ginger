@@ -238,66 +238,69 @@ namespace Ginger {
 			// enableLinkMenuItem
 			// 
 			this.enableLinkMenuItem.Name = "enableLinkMenuItem";
-			this.enableLinkMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.enableLinkMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.enableLinkMenuItem.Text = "Connect to Backyard AI";
 			this.enableLinkMenuItem.Click += new System.EventHandler(this.enableLinkMenuItem_Click);
 			// 
 			// enableAutosaveMenuItem
 			// 
 			this.enableAutosaveMenuItem.Name = "enableAutosaveMenuItem";
-			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.enableAutosaveMenuItem.Text = "Synchronized saving";
 			this.enableAutosaveMenuItem.Click += new System.EventHandler(this.enableAutosaveMenuItem_Click);
 			// 
 			// toolStripMenuItem10
 			// 
 			toolStripMenuItem10.Name = "toolStripMenuItem10";
-			toolStripMenuItem10.Size = new System.Drawing.Size(195, 6);
+			toolStripMenuItem10.Size = new System.Drawing.Size(236, 6);
 			// 
 			// importLinkedMenuItem
 			// 
 			this.importLinkedMenuItem.Name = "importLinkedMenuItem";
-			this.importLinkedMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.importLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+O";
+			this.importLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.importLinkedMenuItem.Text = "Open character...";
 			this.importLinkedMenuItem.Click += new System.EventHandler(this.importLinkedMenuItem_Click);
 			// 
 			// saveLinkedMenuItem
 			// 
 			this.saveLinkedMenuItem.Name = "saveLinkedMenuItem";
-			this.saveLinkedMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.saveLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+U";
+			this.saveLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.saveLinkedMenuItem.Text = "Save and update";
 			this.saveLinkedMenuItem.Click += new System.EventHandler(this.saveLinkedMenuItem_Click);
 			// 
 			// saveNewLinkedMenuItem
 			// 
 			this.saveNewLinkedMenuItem.Name = "saveNewLinkedMenuItem";
-			this.saveNewLinkedMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.saveNewLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+U";
+			this.saveNewLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.saveNewLinkedMenuItem.Text = "Save as new";
 			this.saveNewLinkedMenuItem.Click += new System.EventHandler(this.saveNewLinkedMenuItem_Click);
 			// 
 			// revertLinkedMenuItem
 			// 
 			this.revertLinkedMenuItem.Name = "revertLinkedMenuItem";
-			this.revertLinkedMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.revertLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.revertLinkedMenuItem.Text = "Reimport...";
 			this.revertLinkedMenuItem.Click += new System.EventHandler(this.revertLinkedMenuItem_Click);
 			// 
 			// reestablishLinkSeparator
 			// 
 			this.reestablishLinkSeparator.Name = "reestablishLinkSeparator";
-			this.reestablishLinkSeparator.Size = new System.Drawing.Size(195, 6);
+			this.reestablishLinkSeparator.Size = new System.Drawing.Size(236, 6);
 			// 
 			// reestablishLinkMenuItem
 			// 
 			this.reestablishLinkMenuItem.Name = "reestablishLinkMenuItem";
-			this.reestablishLinkMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.reestablishLinkMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.reestablishLinkMenuItem.Text = "Restore link";
 			this.reestablishLinkMenuItem.Click += new System.EventHandler(this.reestablishLinkMenuItem_Click);
 			// 
 			// breakLinkMenuItem
 			// 
 			this.breakLinkMenuItem.Name = "breakLinkMenuItem";
-			this.breakLinkMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.breakLinkMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.breakLinkMenuItem.Text = "Break link";
 			this.breakLinkMenuItem.Click += new System.EventHandler(this.breakLinkMenuItem_Click);
 			// 

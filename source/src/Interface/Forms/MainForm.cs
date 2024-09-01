@@ -1203,7 +1203,7 @@ namespace Ginger
 			revertLinkedMenuItem.Enabled = BackyardBridge.ConnectionEstablished && Current.HasActiveLink;
 			enableAutosaveMenuItem.Enabled = BackyardBridge.ConnectionEstablished;
 			enableAutosaveMenuItem.Checked = BackyardBridge.ConnectionEstablished && AppSettings.BackyardLink.Autosave;
-			reestablishLinkSeparator.Visible = BackyardBridge.ConnectionEstablished && (Current.HasActiveLink || Current.HasStaleLink);
+			reestablishLinkSeparator.Visible = BackyardBridge.ConnectionEstablished && Current.HasLink;
 			reestablishLinkMenuItem.Enabled = BackyardBridge.ConnectionEstablished;
 			reestablishLinkMenuItem.Visible = BackyardBridge.ConnectionEstablished && Current.HasStaleLink;
 			breakLinkMenuItem.Enabled = BackyardBridge.ConnectionEstablished;
@@ -1537,6 +1537,22 @@ namespace Ginger
 				SaveIncremental();
 				return true;
 			}
+			else if (keyData == ShortcutKeys.LinkedOpen && BackyardBridge.ConnectionEstablished)
+			{
+				importLinkedMenuItem_Click(this, EventArgs.Empty);
+				return true;
+			}
+			else if (keyData == ShortcutKeys.LinkedSave && BackyardBridge.ConnectionEstablished && Current.HasActiveLink)
+			{
+				saveLinkedMenuItem_Click(this, EventArgs.Empty);
+				return true;
+			}
+			else if (keyData == ShortcutKeys.LinkedSaveAsNew && BackyardBridge.ConnectionEstablished && Current.HasActiveLink == false)
+			{
+				saveNewLinkedMenuItem_Click(this, EventArgs.Empty);
+				return true;
+			}
+
 			else if (keyData == (Keys.Alt | Keys.D1))
 			{
 				SelectCharacter(0);
@@ -2044,7 +2060,18 @@ namespace Ginger
 		{
 			if (BackyardBridge.ConnectionEstablished == false)
 			{
-				if (BackyardBridge.EstablishConnection() == BackyardBridge.Error.NoError)
+				var error = BackyardBridge.EstablishConnection();
+				if (error == BackyardBridge.Error.ValidationFailed)
+				{
+					MessageBox.Show(Resources.error_link_unsupported, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					AppSettings.BackyardLink.Enabled = false;
+				}
+				else if (error != BackyardBridge.Error.NoError)
+				{
+					MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					AppSettings.BackyardLink.Enabled = false;
+				}
+				else
 				{
 					BackyardBridge.RefreshCharacters();
 
@@ -2053,11 +2080,6 @@ namespace Ginger
 
 					SetStatusBarMessage(Resources.status_link_connect, Constants.StatusBarMessageInterval);
 					AppSettings.BackyardLink.Enabled = true;
-				}
-				else
-				{
-					MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					AppSettings.BackyardLink.Enabled = false;
 				}
 			}
 			else
@@ -2079,11 +2101,11 @@ namespace Ginger
 			var error = UpdateCharacterInBackyard();
 			if (error == BackyardBridge.Error.NotConnected)
 				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			else if (error == BackyardBridge.Error.NoDataFound)
+			else if (error == BackyardBridge.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_unrecognized_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-			else if (error == BackyardBridge.Error.Cancelled || error == BackyardBridge.Error.Dismissed)
+			else if (error == BackyardBridge.Error.CancelledByUser || error == BackyardBridge.Error.DismissedByUser)
 			{
 				// User clicked cancel
 				return;
@@ -2107,7 +2129,7 @@ namespace Ginger
 			var error = CreateNewCharacterInBackyard(out createdCharacter, out images);
 			if (error == BackyardBridge.Error.NotConnected)
 				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			else if (error == BackyardBridge.Error.NoDataFound)
+			else if (error == BackyardBridge.Error.NotFound)
 				MessageBox.Show(Resources.error_link_unrecognized_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			else if (error != BackyardBridge.Error.NoError)
 				MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);

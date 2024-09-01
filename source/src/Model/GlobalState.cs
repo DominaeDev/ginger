@@ -55,7 +55,7 @@ namespace Ginger
 		public static BackyardBridge.Link Link = null;
 		public static bool HasLink { get { return Link != null; } }
 		public static bool HasActiveLink { get { return Link != null && Link.isActive; } }
-		public static bool HasStaleLink { get { return Link != null && !Link.isActive && string.IsNullOrEmpty(Link.characterId) == false; } }
+		public static bool HasStaleLink { get { return Link != null && !Link.isActive; } }
 
 		public static bool IsLinkDirty
 		{
