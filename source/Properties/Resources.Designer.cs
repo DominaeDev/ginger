@@ -2733,6 +2733,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allows lorebook entries to be moved on a row-by-row basis..
+        /// </summary>
+        internal static string tooltip_rearrange_lore {
+            get {
+                return ResourceManager.GetString("tooltip_rearrange_lore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Bake this recipe to editable text..
         /// </summary>
         internal static string tooltip_recipe_bake {

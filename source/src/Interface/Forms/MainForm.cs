@@ -234,6 +234,7 @@ namespace Ginger
 			saveLinkedMenuItem.ToolTipText = Resources.tooltip_link_save;
 			saveNewLinkedMenuItem.ToolTipText = Resources.tooltip_link_save_as_new;
 			revertLinkedMenuItem.ToolTipText = Resources.tooltip_link_revert;
+			rearrangeLoreMenuItem.ToolTipText = Resources.tooltip_rearrange_lore;
 
 			RegisterIdleHandler(recipeList);
 
@@ -1162,6 +1163,7 @@ namespace Ginger
 			showNSFWRecipesMenuItem.Checked = AppSettings.Settings.AllowNSFW;
 			autoBreakMenuItem.Checked = AppSettings.Settings.AutoBreakLine;
 			enableSpellCheckingMenuItem.Checked = AppSettings.Settings.SpellChecking;
+			rearrangeLoreMenuItem.Checked = AppSettings.Settings.EnableRearrangeLoreMode;
 
 			// Spell checking
 			foreach (var kvp in _spellCheckLangMenuItems)
@@ -2178,6 +2180,12 @@ namespace Ginger
 				SetStatusBarMessage(Resources.status_link_reverted, Constants.StatusBarMessageInterval);
 				RefreshTitle();
 			}
+		}
+
+		public void rearrangeLoreMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.Settings.EnableRearrangeLoreMode = !AppSettings.Settings.EnableRearrangeLoreMode;
+			recipeList.RefreshAllParameters();
 		}
 	}
 

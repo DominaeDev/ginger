@@ -113,9 +113,8 @@
 			// 
 			// btnMoveUp
 			// 
-			this.btnMoveUp.Enabled = false;
 			this.btnMoveUp.Image = global::Ginger.Properties.Resources.lore_up;
-			this.btnMoveUp.Location = new System.Drawing.Point(4, 46);
+			this.btnMoveUp.Location = new System.Drawing.Point(4, 26);
 			this.btnMoveUp.Margin = new System.Windows.Forms.Padding(0);
 			this.btnMoveUp.Name = "btnMoveUp";
 			this.btnMoveUp.Size = new System.Drawing.Size(20, 20);
@@ -126,9 +125,8 @@
 			// 
 			// btnMoveDown
 			// 
-			this.btnMoveDown.Enabled = false;
 			this.btnMoveDown.Image = global::Ginger.Properties.Resources.lore_down;
-			this.btnMoveDown.Location = new System.Drawing.Point(4, 66);
+			this.btnMoveDown.Location = new System.Drawing.Point(4, 46);
 			this.btnMoveDown.Margin = new System.Windows.Forms.Padding(0);
 			this.btnMoveDown.Name = "btnMoveDown";
 			this.btnMoveDown.Size = new System.Drawing.Size(20, 20);
@@ -258,6 +256,6 @@
 		private System.Windows.Forms.CheckBox cbEnabled;
 		private System.Windows.Forms.Panel rightPanel;
 		private System.Windows.Forms.Label labelIndex;
-		private TextBoxEx textBox_Index;
+		public TextBoxEx textBox_Index;
 	}
 }

@@ -414,8 +414,39 @@ namespace Ginger
 						lorebookPanel.Sort(Lorebook.Sorting.ByIndex);
 					}) { Enabled = !isEmpty });
 					menu.Items.Add(sortMenu);
-					menu.Items.Add(new ToolStripMenuItem("Reset order (all)", null, (s, e) => { CommitChange(); lorebookPanel.OnResetOrder(s, e); }) {
+
+					var resetOrderMenu = new ToolStripMenuItem("Set order (all)");
+					menu.Items.Add(resetOrderMenu);
+					resetOrderMenu.DropDownItems.Add(new ToolStripMenuItem("Default", null, (s, e) => { 
+						CommitChange(); 
+						lorebookPanel.OnResetOrder(s, new LorebookEntryPanel.ResetOrderEventArgs() { Ordering = LorebookEntryPanel.ResetOrderEventArgs.Order.Default }); 
+					}) {
 						Enabled = lorebookPanel.lorebook.entries.Count > 0,
+					});
+					resetOrderMenu.DropDownItems.Add(new ToolStripMenuItem("Zero", null, (s, e) => { 
+						CommitChange(); 
+						lorebookPanel.OnResetOrder(s, new LorebookEntryPanel.ResetOrderEventArgs() { Ordering = LorebookEntryPanel.ResetOrderEventArgs.Order.Zero }); 
+					}) {
+						Enabled = lorebookPanel.lorebook.entries.Count > 0,
+					});
+					resetOrderMenu.DropDownItems.Add(new ToolStripMenuItem("One hundred", null, (s, e) => { 
+						CommitChange(); 
+						lorebookPanel.OnResetOrder(s, new LorebookEntryPanel.ResetOrderEventArgs() { Ordering = LorebookEntryPanel.ResetOrderEventArgs.Order.OneHundred }); 
+					}) {
+						Enabled = lorebookPanel.lorebook.entries.Count > 0,
+					});
+					resetOrderMenu.DropDownItems.Add(new ToolStripMenuItem("By row", null, (s, e) => { 
+						CommitChange(); 
+						lorebookPanel.OnResetOrder(s, new LorebookEntryPanel.ResetOrderEventArgs() { Ordering = LorebookEntryPanel.ResetOrderEventArgs.Order.ByRow }); 
+					}) {
+						Enabled = lorebookPanel.lorebook.entries.Count > 0,
+					});
+					menu.Items.Add(new ToolStripMenuItem("Rearrange lore", null, (s, e) => {
+						CommitChange();
+						MainForm.instance.rearrangeLoreMenuItem_Click(s, e);
+					}) {
+						Checked = AppSettings.Settings.EnableRearrangeLoreMode,
+						ToolTipText = Resources.tooltip_rearrange_lore,
 					});
 
 					int numEntries = lorebookPanel.lorebook.entries.Count;

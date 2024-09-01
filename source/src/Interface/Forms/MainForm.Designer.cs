@@ -132,6 +132,7 @@ namespace Ginger {
 			this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
 			this.autoConvertNameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoBreakMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.rearrangeLoreMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.showNSFWRecipesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.createRecipeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1055,6 +1056,7 @@ namespace Ginger {
             toolStripMenuItem9,
             this.autoConvertNameMenuItem,
             this.autoBreakMenuItem,
+            this.rearrangeLoreMenuItem,
             this.showNSFWRecipesMenuItem});
 			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
 			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
@@ -1263,6 +1265,13 @@ namespace Ginger {
 			this.autoBreakMenuItem.Size = new System.Drawing.Size(183, 22);
 			this.autoBreakMenuItem.Text = "Limit line width";
 			this.autoBreakMenuItem.Click += new System.EventHandler(this.AutoBreakMenuItem_Click);
+			// 
+			// rearrangeLoreMenuItem
+			// 
+			this.rearrangeLoreMenuItem.Name = "rearrangeLoreMenuItem";
+			this.rearrangeLoreMenuItem.Size = new System.Drawing.Size(183, 22);
+			this.rearrangeLoreMenuItem.Text = "Rearrange lore";
+			this.rearrangeLoreMenuItem.Click += new System.EventHandler(this.rearrangeLoreMenuItem_Click);
 			// 
 			// showNSFWRecipesMenuItem
 			// 
@@ -1586,6 +1595,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripSeparator reestablishLinkSeparator;
 		private System.Windows.Forms.ToolStripStatusLabel statusConnectionIcon;
 		private System.Windows.Forms.ToolStripMenuItem revertLinkedMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem rearrangeLoreMenuItem;
 	}
 }
 

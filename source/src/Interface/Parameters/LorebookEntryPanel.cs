@@ -19,19 +19,35 @@ namespace Ginger
 			public int? SortOrder { get; set; }
 			public bool Enabled { get; set; }
 		}
-		public event EventHandler<LorebookChangedEventArgs> Changed;
+
+		public class MoveToIndexEventArgs : EventArgs
+		{
+			public int Index { get; set; }
+			public bool Focus { get; set; }
+		}
 
 		public class LorebookSortEventArgs : EventArgs
 		{
 			public Lorebook.Sorting Sorting { get; set; }
 		}
-		public event EventHandler<LorebookSortEventArgs> OnSortEntries;
+
+		public class ResetOrderEventArgs : EventArgs
+		{
+			public enum Order {
+				Default,
+				Zero,
+				OneHundred,
+				ByRow,
+			}
+			public Order Ordering { get; set; }
+		}
 
 		public event EventHandler OnRemove;
 		public event EventHandler OnMoveUp;
 		public event EventHandler OnMoveDown;
 		public event EventHandler OnMoveToTop;
 		public event EventHandler OnMoveToBottom;
+		public event EventHandler<MoveToIndexEventArgs> OnMoveToIndex;
 		public event EventHandler OnCopy;
 		public event EventHandler OnPaste;
 		public event EventHandler OnInsert;
@@ -39,8 +55,10 @@ namespace Ginger
 		public event EventHandler OnAddEntry;
 		public event EventHandler OnNextPage;
 		public event EventHandler OnPreviousPage;
-		public event EventHandler OnResetOrder;
+		public event EventHandler<ResetOrderEventArgs> OnResetOrder;
 		public event EventHandler TextSizeChanged;
+		public event EventHandler<LorebookChangedEventArgs> Changed;
+		public event EventHandler<LorebookSortEventArgs> OnSortEntries;
 
 		public Lorebook lorebook { get; private set; }
 		public Lorebook.Entry lorebookEntry { get; private set; }
@@ -48,6 +66,8 @@ namespace Ginger
 		public bool isEmpty { get { return (lorebookEntry.keys.Length == 0) && string.IsNullOrWhiteSpace(lorebookEntry.value); } }
 
 		public static bool AllowFlexibleHeight = true;
+		private bool _isPressingKey = false;
+
 
 		public LorebookEntryPanel()
 		{
@@ -186,6 +206,8 @@ namespace Ginger
 			this.lorebookEntry = entry;
 			this.lorebook = lorebook;
 
+			bool bRearranging = AppSettings.Settings.EnableRearrangeLoreMode;
+
 			_bIgnoreEvents = true;
 
 			// Label
@@ -198,11 +220,13 @@ namespace Ginger
 			textBox_Text.InitUndo();
 			textBox_Text.Enabled = entry.isEnabled;
 
-			// Index
-			textBox_Index.SetText(entry.sortOrder.ToString());
+			// Order / Row
+			if (bRearranging)
+				textBox_Index.SetText((lorebook.entries.IndexOf(entry) + 1).ToString()); // One-based
+			else
+				textBox_Index.SetText(entry.sortOrder.ToString());
 			textBox_Index.InitUndo();
 			textBox_Index.Enabled = entry.isEnabled;
-
 
 			// Enabled checkbox
 			cbEnabled.Checked = entry.isEnabled;
@@ -211,6 +235,14 @@ namespace Ginger
 			_contentHash = textBox_Text.Text.GetHashCode();
 
 			RefreshTokenCount();
+
+			// Rearrange buttons
+			btnWrite.Visible = !bRearranging;
+			btnMoveUp.Visible = bRearranging;
+			btnMoveDown.Visible = bRearranging;
+			var scaleFactor = this.Font.SizeInPoints / Constants.ReferenceFontSize;
+			btnRemove.Top = (int)((bRearranging ? 76 : 56) * scaleFactor);
+			labelIndex.Text = bRearranging ? "Row #" : "Order:";
 
 			_bIgnoreEvents = false;
 		}
@@ -404,9 +436,40 @@ namespace Ginger
 					});
 				}) { Enabled = lorebook.entries.Count > 1 });
 				menu.Items.Add(sortMenu);
-				menu.Items.Add(new ToolStripMenuItem("Reset order (all)", null, (s, e) => { CommitChange(); OnResetOrder?.Invoke(this, e); }) {
+				var resetOrderMenu = new ToolStripMenuItem("Set order (all)");
+					menu.Items.Add(resetOrderMenu);
+				resetOrderMenu.DropDownItems.Add(new ToolStripMenuItem("Default", null, (s, e) => { 
+					CommitChange(); 
+					OnResetOrder?.Invoke(s, new ResetOrderEventArgs() { Ordering = ResetOrderEventArgs.Order.Default });
+				}) {
 					Enabled = lorebook.entries.Count > 0,
 				});
+				resetOrderMenu.DropDownItems.Add(new ToolStripMenuItem("Zero", null, (s, e) => { 
+					CommitChange();
+					OnResetOrder?.Invoke(s, new ResetOrderEventArgs() { Ordering = ResetOrderEventArgs.Order.Zero });
+				}) {
+					Enabled = lorebook.entries.Count > 0,
+				});
+				resetOrderMenu.DropDownItems.Add(new ToolStripMenuItem("One hundred", null, (s, e) => { 
+					CommitChange();
+					OnResetOrder?.Invoke(s, new ResetOrderEventArgs() { Ordering = ResetOrderEventArgs.Order.OneHundred });
+				}) {
+					Enabled = lorebook.entries.Count > 0,
+				});
+				resetOrderMenu.DropDownItems.Add(new ToolStripMenuItem("By row", null, (s, e) => {
+					CommitChange();
+					OnResetOrder?.Invoke(s, new ResetOrderEventArgs() { Ordering = ResetOrderEventArgs.Order.ByRow });
+				}) {
+					Enabled = lorebook.entries.Count > 0,
+				});
+				menu.Items.Add(new ToolStripMenuItem("Rearrange lore", null, (s, e) => {
+					CommitChange();
+					MainForm.instance.rearrangeLoreMenuItem_Click(s, e);
+				}) {
+					Checked = AppSettings.Settings.EnableRearrangeLoreMode,
+					ToolTipText = Resources.tooltip_rearrange_lore,
+				});
+
 				int numEntries = lorebook.entries.Count;
 				if (numEntries > AppSettings.Settings.LoreEntriesPerPage)
 				{
@@ -539,7 +602,11 @@ namespace Ginger
 		private void TextBox_Index_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{
 			if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
+			{
+				_isPressingKey = true;
 				textBox_Index.KillFocus();
+				_isPressingKey = false;
+			}
 		}
 
 		private void TextBox_Index_GotFocus(object sender, EventArgs e)
@@ -549,22 +616,48 @@ namespace Ginger
 
 		private void TextBox_Index_LostFocus(object sender, EventArgs e)
 		{
+			if (_bIgnoreEvents)
+				return;
+
+			bool bRearranging = AppSettings.Settings.EnableRearrangeLoreMode;
+
 			int sortOrder;
 			if (int.TryParse(textBox_Index.Text, out sortOrder) == false)
 				sortOrder = 0;
-			sortOrder = Math.Max(sortOrder, 0);
+			
+			if (bRearranging)
+				sortOrder = Math.Min(Math.Max(sortOrder, 1), lorebook.entries.Count);
+			else
+				sortOrder = Math.Max(sortOrder, 0);
 
 			_bIgnoreEvents = true;
 			textBox_Index.SetText(sortOrder.ToString());
 			textBox_Index.InitUndo();
 			_bIgnoreEvents = false;
 
-			Changed?.Invoke(this, new LorebookChangedEventArgs() {
-				Keys = null,
-				Text = textBox_Text.Text,
-				SortOrder = sortOrder,
-				Enabled = lorebookEntry.isEnabled,
-			});
+			if (bRearranging)
+			{
+				sortOrder -= 1; // One-based
+				int currentIndex = lorebook.entries.IndexOf(lorebookEntry);
+				if (currentIndex == sortOrder)
+					return; // No move
+
+				_bIgnoreEvents = true;
+				OnMoveToIndex?.Invoke(this, new MoveToIndexEventArgs() {
+					Index = sortOrder,
+					Focus = _isPressingKey,
+				});
+				_bIgnoreEvents = false;
+			}
+			else
+			{
+				Changed?.Invoke(this, new LorebookChangedEventArgs() {
+					Keys = null,
+					Text = textBox_Text.Text,
+					SortOrder = sortOrder,
+					Enabled = lorebookEntry.isEnabled,
+				});
+			}
 		}
 
 		public void CommitChange()

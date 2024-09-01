@@ -34,6 +34,8 @@ namespace Ginger
 				}
 			}
 			private static int _loreEntriesPerPage = 10;
+			public static bool EnableRearrangeLoreMode = false;
+
 
 			public static string FontFace = null;
 			private static Font _font = new Font(Constants.DefaultFontFace, Constants.DefaultFontSize, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -216,6 +218,7 @@ namespace Ginger
 				ReadBool(ref Settings.ShowRecipeCategory, settingsSection, "ShowRecipeCategory");
 				ReadBool(ref Settings.EnableFormLevelBuffering, settingsSection, "FormBuffering");
 				Settings.LoreEntriesPerPageSerialize = settingsSection["LoreEntriesPerPage"];
+				ReadBool(ref Settings.EnableRearrangeLoreMode, settingsSection, "EnableRearrangeLoreMode");
 				
 				try
 				{
@@ -357,6 +360,7 @@ namespace Ginger
 					Write(outputFile, "Locale", Settings.Locale);
 					Write(outputFile, "ShowRecipeCategory", Settings.ShowRecipeCategory);
 					Write(outputFile, "LoreEntriesPerPage", Settings.LoreEntriesPerPageSerialize);
+					Write(outputFile, "EnableRearrangeLoreMode", Settings.EnableRearrangeLoreMode);
 
 					// User
 					WriteSection(outputFile, "User");

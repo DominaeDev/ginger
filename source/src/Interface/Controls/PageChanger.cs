@@ -35,7 +35,10 @@ namespace Ginger
 
 			if (currentPage > 0)
 			{
-				SetPage(currentPage - 1, maxPages);
+				if (ModifierKeys == Keys.Shift)
+					SetPage(0, maxPages);
+				else
+					SetPage(currentPage - 1, maxPages);
 
 				PageChanged?.Invoke(this, new PageChangedEventArgs() {
 					page = currentPage,
@@ -50,7 +53,10 @@ namespace Ginger
 
 			if (currentPage < maxPages - 1)
 			{
-				SetPage(currentPage + 1, maxPages);
+				if (ModifierKeys == Keys.Shift)
+					SetPage(maxPages - 1, maxPages);
+				else
+					SetPage(currentPage + 1, maxPages);
 
 				PageChanged?.Invoke(this, new PageChangedEventArgs() {
 					page = currentPage,
@@ -104,7 +110,7 @@ namespace Ginger
 
 		public void SetPage(int page, int maxPages)
 		{
-			this.currentPage = Math.Min(Math.Max(page, 0), maxPages);
+			this.currentPage = Math.Min(Math.Max(page, 0), maxPages - 1);
 			this.maxPages = maxPages;
 
 			_bIgnoreEvents = true;

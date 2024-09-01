@@ -54,6 +54,7 @@ namespace Ginger
 			entryPanel.OnMoveDown += OnMoveDownEntry;
 			entryPanel.OnMoveToTop += OnMoveToTop;
 			entryPanel.OnMoveToBottom += OnMoveToBottom;
+			entryPanel.OnMoveToIndex += OnMoveToIndex;
 			entryPanel.Changed += OnChangedEntry;
 			entryPanel.OnCopy += OnCopy;
 			entryPanel.OnPaste += OnPaste;
@@ -75,12 +76,18 @@ namespace Ginger
 
 		public void OnNextPage(object sender, EventArgs e)
 		{
-			ChangePage(parameter.pageIndex + 1);
+			if (ModifierKeys == Keys.Shift)
+				ChangePage(numPages - 1);
+			else
+				ChangePage(parameter.pageIndex + 1);
 		}
 
 		public void OnPreviousPage(object sender, EventArgs e)
 		{
-			ChangePage(parameter.pageIndex - 1);
+			if (ModifierKeys == Keys.Shift)
+				ChangePage(0);
+			else
+				ChangePage(parameter.pageIndex - 1);
 		}
 
 		private void OnAddEntry(object sender, EventArgs e)
@@ -231,6 +238,34 @@ namespace Ginger
 
 			if (MoveEntry(index, numEntries - 1))
 				Undo.Push(Undo.Kind.Parameter, "Move lore entry");
+		}
+
+		private void OnMoveToIndex(object sender, LorebookEntryPanel.MoveToIndexEventArgs e)
+		{
+			LorebookEntryPanel panel = (LorebookEntryPanel)sender;
+			Lorebook.Entry entry = panel.lorebookEntry;
+			int currIndex = lorebook.entries.IndexOf(entry);
+			if (currIndex == -1)
+				return;
+
+			int newIndex = e.Index;
+
+			if (MoveEntry(currIndex, newIndex))
+			{
+				Undo.Push(Undo.Kind.Parameter, "Move lore entry");
+
+				if (e.Focus)
+				{
+					newIndex = lorebook.entries.IndexOf(entry); // jic
+					int page = newIndex / AppSettings.Settings.LoreEntriesPerPage;
+					if (page != parameter.pageIndex)
+						ChangePage(page);
+
+					var entryPanel = _entryPanels.FirstOrDefault(p => p.lorebookEntry == entry);
+					if (entryPanel != null)
+						entryPanel.textBox_Index.Focus();
+				}
+			}
 		}
 
 		private bool MoveEntry(int index, int newIndex)
@@ -559,10 +594,28 @@ namespace Ginger
 			});
 		}
 
-		public void OnResetOrder(object sender, EventArgs e)
+		public void OnResetOrder(object sender, LorebookEntryPanel.ResetOrderEventArgs e)
 		{
-			for (int i = 0; i < lorebook.entries.Count; ++i)
-				lorebook.entries[i].sortOrder = Lorebook.Entry.DefaultSortOrder;
+			if (e.Ordering == LorebookEntryPanel.ResetOrderEventArgs.Order.Default)
+			{
+				for (int i = 0; i < lorebook.entries.Count; ++i)
+					lorebook.entries[i].sortOrder = Lorebook.Entry.DefaultSortOrder;
+			}
+			else if (e.Ordering == LorebookEntryPanel.ResetOrderEventArgs.Order.Zero)
+			{
+				for (int i = 0; i < lorebook.entries.Count; ++i)
+					lorebook.entries[i].sortOrder = 0;
+			}
+			else if (e.Ordering == LorebookEntryPanel.ResetOrderEventArgs.Order.OneHundred)
+			{
+				for (int i = 0; i < lorebook.entries.Count; ++i)
+					lorebook.entries[i].sortOrder = 100;
+			}
+			else if (e.Ordering == LorebookEntryPanel.ResetOrderEventArgs.Order.ByRow)
+			{
+				for (int i = 0; i < lorebook.entries.Count; ++i)
+					lorebook.entries[i].sortOrder = i * 10;
+			}
 
 			foreach (var panel in _entryPanels)
 			{
