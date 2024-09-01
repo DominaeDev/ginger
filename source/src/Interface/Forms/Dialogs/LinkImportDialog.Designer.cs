@@ -42,8 +42,6 @@ namespace Ginger
 			this.imageList = new System.Windows.Forms.ImageList(this.components);
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.btnOk = new System.Windows.Forms.Button();
-			this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
-			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
 			this.cbCreateLink = new System.Windows.Forms.CheckBox();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			listPanel = new System.Windows.Forms.Panel();
@@ -143,10 +141,6 @@ namespace Ginger
 			this.btnOk.UseVisualStyleBackColor = true;
 			this.btnOk.Click += new System.EventHandler(this.BtnOk_Click);
 			// 
-			// importFileDialog
-			// 
-			this.importFileDialog.Multiselect = true;
-			// 
 			// cbCreateLink
 			// 
 			this.cbCreateLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -195,8 +189,6 @@ namespace Ginger
 		}
 
 		#endregion
-		private System.Windows.Forms.SaveFileDialog exportFileDialog;
-		private System.Windows.Forms.OpenFileDialog importFileDialog;
 		private System.Windows.Forms.Button btnCancel;
 		private System.Windows.Forms.Button btnOk;
 		private System.Windows.Forms.TreeView treeView;

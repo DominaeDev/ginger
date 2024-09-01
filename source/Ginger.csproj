@@ -147,6 +147,12 @@
     <Compile Include="src\Application\MRUList.cs" />
     <Compile Include="src\Application\PostInstall.cs" />
     <Compile Include="src\Interface\Controls\AsyncSyntaxHighlighter.cs" />
+    <Compile Include="src\Interface\Controls\ChatListBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\ChatListBox.Designer.cs">
+      <DependentUpon>ChatListBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\Interface\Controls\CollectionTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -186,6 +192,12 @@
     </Compile>
     <Compile Include="src\Interface\Controls\UserNotes.Designer.cs">
       <DependentUpon>UserNotes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.Designer.cs">
+      <DependentUpon>LinkEditChatDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\LinkSelectChatGroupDialog.cs">
       <SubType>Form</SubType>
@@ -593,6 +605,9 @@
     <Compile Include="src\Utility\ContextString\Text.cs" />
     <Compile Include="src\Utility\Utility.cs" />
     <Compile Include="src\Utility\VersionNumber.cs" />
+    <EmbeddedResource Include="src\Interface\Controls\ChatListBox.resx">
+      <DependentUpon>ChatListBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Controls\FlatRichTextBox.resx">
       <DependentUpon>FlatRichTextBox.cs</DependentUpon>
     </EmbeddedResource>
@@ -610,6 +625,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Controls\UserNotes.resx">
       <DependentUpon>UserNotes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.resx">
+      <DependentUpon>LinkEditChatDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectChatGroupDialog.resx">
       <DependentUpon>LinkSelectChatGroupDialog.cs</DependentUpon>

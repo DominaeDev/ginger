@@ -48,8 +48,8 @@ namespace Ginger
 					.Where(c => c.isUser == false)
 					.Select(c => c.name ?? "Unnamed")
 					.ToArray();
-				string groupTitle = string.Join(", ", memberNames.Take(2));
-				if (memberNames.Length > 2)
+				string groupTitle = string.Join(", ", memberNames.Take(3));
+				if (memberNames.Length > 3)
 					groupTitle += ", ...";
 				return groupTitle;
 			}

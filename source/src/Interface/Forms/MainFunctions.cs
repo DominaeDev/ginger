@@ -1756,13 +1756,19 @@ namespace Ginger
 				return false;
 			}
 
-			var dlg = new LinkSelectChatGroupDialog();
-			dlg.Characters = BackyardBridge.Characters.ToArray();
-			dlg.Groups = BackyardBridge.Groups.ToArray();
-			dlg.Folders = BackyardBridge.Folders.ToArray();
-			if (dlg.ShowDialog() != DialogResult.OK)
+			var groupDlg = new LinkSelectChatGroupDialog();
+			groupDlg.Characters = BackyardBridge.Characters.ToArray();
+			groupDlg.Groups = BackyardBridge.Groups.ToArray();
+			groupDlg.Folders = BackyardBridge.Folders.ToArray();
+			if (groupDlg.ShowDialog() != DialogResult.OK)
 				return false;
 
+			if (_editChatDialog != null && !_editChatDialog.IsDisposed)
+				_editChatDialog.Close(); // Close existing
+
+			_editChatDialog = new LinkEditChatDialog();
+			_editChatDialog.Group = groupDlg.SelectedGroup;
+			_editChatDialog.Show(this);
 			return true;
 		}
 	}

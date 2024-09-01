@@ -30,6 +30,7 @@ namespace Ginger
 
 		private string _shouldLoadFilename = null;
 		private FindDialog _findDialog;
+		private LinkEditChatDialog _editChatDialog;
 
 		private Dictionary<string, ToolStripMenuItem> _spellCheckLangMenuItems = new Dictionary<string, ToolStripMenuItem>();
 		private Dictionary<string, ToolStripMenuItem> _changeLanguageMenuItems = new Dictionary<string, ToolStripMenuItem>();
