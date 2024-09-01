@@ -43,21 +43,33 @@ namespace Ginger
 				return group.name;
 			else
 			{
-				string[] memberNames = group.members
+				var characters = group.members
 					.Select(id => _charactersById.GetOrDefault(id))
-					.Where(c => c.isUser == false)
-					.Select(c => c.name ?? "Unnamed")
-					.ToArray();
-				string groupTitle = string.Join(", ", memberNames.Take(3));
-				if (memberNames.Length > 3)
-					groupTitle += ", ...";
-				return groupTitle;
+					.Where(c => c.isUser == false);
+
+				if (characters.Count() > 1)
+				{
+					string[] memberNames = characters
+						.Select(c => c.name ?? "Unnamed")
+						.OrderBy(c => c)
+						.ToArray();
+					string groupTitle = string.Join(", ", memberNames.Take(3));
+					if (memberNames.Length > 3)
+						groupTitle += ", ...";
+					return groupTitle;
+				}
+				else
+				{
+					return characters
+						.Select(c => c.displayName)
+						.FirstOrDefault() ?? "Unnamed";
+				}
 			}
 		}
 
 		private void PopulateTree()
 		{
-			treeView.Suspend();
+			treeView.BeginUpdate();
 			treeView.Nodes.Clear();
 
 			if (Folders == null || Groups == null)
@@ -95,13 +107,23 @@ namespace Ginger
 			}
 
 			// Create group nodes
+
+			// First group chats...
 			foreach (var group in Groups
+				.Where(g => g.members.Length > 2)
+				.OrderByDescending(c => c.creationDate))
+			{
+				CreateGroupNode(group, nodesById);
+			}
+			// Then one-on-ones
+			foreach (var group in Groups
+				.Where(g => g.members.Length <= 2)
 				.OrderBy(g => GetGroupTitle(g))
 				.ThenByDescending(c => c.creationDate))
 			{
 				CreateGroupNode(group, nodesById);
 			}
-			treeView.Resume();
+			treeView.EndUpdate();
 		}
 
 		private TreeNode CreateFolderNode(Bridge.FolderInstance folder, Dictionary<string, TreeNode> nodes, int count)

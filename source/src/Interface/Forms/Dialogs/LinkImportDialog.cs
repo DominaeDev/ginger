@@ -40,7 +40,7 @@ namespace Ginger
 
 		private void PopulateTree()
 		{
-			treeView.Suspend();
+			treeView.BeginUpdate();
 			treeView.Nodes.Clear();
 
 			if (Folders == null || Characters == null)
@@ -85,7 +85,7 @@ namespace Ginger
 			{
 				CreateCharacterNode(character, nodesById);
 			}
-			treeView.Resume();
+			treeView.EndUpdate();
 		}
 
 		private TreeNode CreateFolderNode(BackyardBridge.FolderInstance folder, Dictionary<string, TreeNode> nodes, int count)

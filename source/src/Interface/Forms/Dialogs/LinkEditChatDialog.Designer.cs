@@ -31,21 +31,15 @@ namespace Ginger
 		{
 			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.Panel leftPanel;
-			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
-            "Untitled chat #1",
-            "2024-09-01"}, -1);
-			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem(new string[] {
-            "Untitled chat #2",
-            "2024-09-01"}, -1);
 			System.Windows.Forms.ColumnHeader columnTitle;
 			System.Windows.Forms.ColumnHeader columnDate;
 			System.Windows.Forms.Panel centerPanel;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkEditChatDialog));
-			this.chatList = new System.Windows.Forms.ListView();
+			this.chatInstanceList = new System.Windows.Forms.ListView();
 			this.btnOk = new System.Windows.Forms.Button();
 			this.btnCancel = new System.Windows.Forms.Button();
-			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.chatListBox = new Ginger.src.Interface.Controls.ChatListBox();
+			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			leftPanel = new System.Windows.Forms.Panel();
 			columnTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			columnDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -56,7 +50,7 @@ namespace Ginger
 			// 
 			// leftPanel
 			// 
-			leftPanel.Controls.Add(this.chatList);
+			leftPanel.Controls.Add(this.chatInstanceList);
 			leftPanel.Controls.Add(this.btnOk);
 			leftPanel.Controls.Add(this.btnCancel);
 			leftPanel.Dock = System.Windows.Forms.DockStyle.Left;
@@ -66,27 +60,26 @@ namespace Ginger
 			leftPanel.Size = new System.Drawing.Size(260, 641);
 			leftPanel.TabIndex = 0;
 			// 
-			// chatList
+			// chatInstanceList
 			// 
-			this.chatList.AutoArrange = false;
-			this.chatList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+			this.chatInstanceList.Activation = System.Windows.Forms.ItemActivation.OneClick;
+			this.chatInstanceList.AutoArrange = false;
+			this.chatInstanceList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             columnTitle,
             columnDate});
-			this.chatList.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.chatList.FullRowSelect = true;
-			this.chatList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			this.chatList.HideSelection = false;
-			this.chatList.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2});
-			this.chatList.Location = new System.Drawing.Point(3, 2);
-			this.chatList.MultiSelect = false;
-			this.chatList.Name = "chatList";
-			this.chatList.Size = new System.Drawing.Size(254, 577);
-			this.chatList.TabIndex = 1;
-			this.chatList.UseCompatibleStateImageBehavior = false;
-			this.chatList.View = System.Windows.Forms.View.Details;
-			this.chatList.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.chatList_ColumnWidthChanging);
+			this.chatInstanceList.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.chatInstanceList.FullRowSelect = true;
+			this.chatInstanceList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.chatInstanceList.HideSelection = false;
+			this.chatInstanceList.Location = new System.Drawing.Point(3, 2);
+			this.chatInstanceList.MultiSelect = false;
+			this.chatInstanceList.Name = "chatInstanceList";
+			this.chatInstanceList.ShowItemToolTips = true;
+			this.chatInstanceList.Size = new System.Drawing.Size(254, 577);
+			this.chatInstanceList.TabIndex = 1;
+			this.chatInstanceList.UseCompatibleStateImageBehavior = false;
+			this.chatInstanceList.View = System.Windows.Forms.View.Details;
+			this.chatInstanceList.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.chatList_ColumnWidthChanging);
 			// 
 			// columnTitle
 			// 
@@ -97,7 +90,7 @@ namespace Ginger
 			// 
 			columnDate.Text = "Last messaged";
 			columnDate.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			columnDate.Width = 90;
+			columnDate.Width = 100;
 			// 
 			// btnOk
 			// 
@@ -131,6 +124,16 @@ namespace Ginger
 			centerPanel.Size = new System.Drawing.Size(674, 641);
 			centerPanel.TabIndex = 1;
 			// 
+			// chatListBox
+			// 
+			this.chatListBox.BackColor = System.Drawing.SystemColors.Window;
+			this.chatListBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.chatListBox.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.chatListBox.Location = new System.Drawing.Point(3, 2);
+			this.chatListBox.Name = "chatListBox";
+			this.chatListBox.Size = new System.Drawing.Size(668, 637);
+			this.chatListBox.TabIndex = 0;
+			// 
 			// toolTip
 			// 
 			this.toolTip.AutomaticDelay = 250;
@@ -139,14 +142,6 @@ namespace Ginger
 			this.toolTip.ReshowDelay = 50;
 			this.toolTip.UseAnimation = false;
 			this.toolTip.UseFading = false;
-			// 
-			// chatListBox
-			// 
-			this.chatListBox.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.chatListBox.Location = new System.Drawing.Point(3, 2);
-			this.chatListBox.Name = "chatListBox";
-			this.chatListBox.Size = new System.Drawing.Size(668, 637);
-			this.chatListBox.TabIndex = 0;
 			// 
 			// LinkEditChatDialog
 			// 
@@ -158,7 +153,6 @@ namespace Ginger
 			this.DoubleBuffered = true;
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(450, 300);
 			this.Name = "LinkEditChatDialog";
@@ -173,7 +167,7 @@ namespace Ginger
 
 		#endregion
 		private System.Windows.Forms.ToolTip toolTip;
-		private System.Windows.Forms.ListView chatList;
+		private System.Windows.Forms.ListView chatInstanceList;
 		private System.Windows.Forms.Button btnOk;
 		private System.Windows.Forms.Button btnCancel;
 		private src.Interface.Controls.ChatListBox chatListBox;

@@ -52,6 +52,23 @@ namespace Ginger
 			public int height;				// AppImage.aspectRatio
 		}
 
+		public class ChatInstance
+		{
+			public string instanceId;       // Chat.id
+			public string name;				// Chat.name
+			public DateTime creationDate;	// Chat.createdAt
+			public DateTime updateDate;     // Chat.updatedAt
+			public string[] participants;	// CharacterGroupVersion.id
+			public ChatEntry[] entries;
+			public class ChatEntry
+			{
+				public string configId;
+				public int activeSwipe;
+				public string[] swipes;
+				public string message { get { return swipes[activeSwipe]; } }
+			}
+		}
+
 		public static IEnumerable<FolderInstance> Folders { get { return _Folders.Values; } }
 		public static IEnumerable<CharacterInstance> Characters { get { return _Characters.Values; } }
 		public static IEnumerable<GroupInstance> Groups { get { return _Groups.Values; } }
@@ -285,6 +302,14 @@ namespace Ginger
 		public static bool GetCharacter(string characterId, out CharacterInstance character)
 		{
 			return _Characters.TryGetValue(characterId, out character);
+		}
+
+		public static CharacterInstance GetCharacter(string characterId)
+		{
+			CharacterInstance character;
+			if (_Characters.TryGetValue(characterId, out character))
+				return character;
+			return default(CharacterInstance);
 		}
 
 		public static bool HasCharacter(string characterId)
@@ -1317,18 +1342,18 @@ namespace Ginger
 
 		public static Error CreateNewCharacter(FaradayCardV4 card, out CharacterInstance characterInstance, out Link.Image[] imageLinks)
 		{
-			if (card == null)
-			{
-				characterInstance = default(CharacterInstance);
-				imageLinks = null;
-				return Error.NotFound;
-			}
-
 			if (ConnectionEstablished == false)
 			{
 				characterInstance = default(CharacterInstance);
 				imageLinks = null;
 				return Error.NotConnected;
+			}
+
+			if (card == null)
+			{
+				characterInstance = default(CharacterInstance);
+				imageLinks = null;
+				return Error.NotFound;
 			}
 
 			// Get root folder
@@ -1667,9 +1692,178 @@ namespace Ginger
 				return Error.Unknown;
 			}
 		}
-#endregion
+		#endregion
 
-#region Utility
+		#region Chat
+
+		private struct _Message
+		{
+			public string messageId;
+			public string configId;
+			public string text;
+			public DateTime createdAt;
+			public DateTime activeAt;
+		}
+
+		public static Error GetChats(GroupInstance groupInstance, out ChatInstance[] chats)
+		{
+			if (ConnectionEstablished == false)
+			{
+				chats = null;
+				return Error.NotConnected;
+			}
+
+			string groupId = groupInstance.instanceId;
+			if (string.IsNullOrEmpty(groupId))
+			{
+				chats = null;
+				return Error.NotFound;
+			}
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+					
+					var lsChats = new List<ChatInstance>();
+					using (var cmdChat = connection.CreateCommand())
+					{ 
+						cmdChat.CommandText =
+						@"
+							SELECT 
+								id, name, createdAt, updatedAt
+							FROM Chat
+							WHERE groupConfigId = $groupId
+							ORDER BY createdAt;
+						";
+						cmdChat.Parameters.AddWithValue("$groupId", groupId);
+
+						using (var reader = cmdChat.ExecuteReader())
+						{
+							int untitledCounter = 0;
+							while (reader.Read())
+							{
+								string chatId = reader.GetString(0);
+								string name = reader.GetString(1);
+								DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(2));
+								DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(3));
+
+								if (string.IsNullOrWhiteSpace(name))
+								{
+									if (++untitledCounter > 1)
+										name = string.Format("Untitled Chat #{0}", untitledCounter);
+									else
+										name = "Untitled Chat";
+								}
+
+								lsChats.Add(new ChatInstance() {
+									instanceId = chatId,
+									creationDate = createdAt,
+									updateDate = updatedAt,
+									name = name,
+								});
+							}							
+						}
+					}
+
+					// Collect messages
+					for (int i = 0; i < lsChats.Count; ++i)
+					{
+						string chatId = lsChats[i].instanceId;
+
+						using (var cmdMessages = connection.CreateCommand())
+						{ 
+							cmdMessages.CommandText =
+							@"
+								SELECT 
+									A.messageId, B.createdAt, A.activeTimestamp, B.characterConfigId, A.text 
+								FROM RegenSwipe As A
+								INNER JOIN Message AS B ON B.id = A.messageId
+								WHERE A.messageId IN (
+									SELECT id
+									FROM Message
+									WHERE chatId = $chatId
+								)
+								ORDER BY A.createdAt ASC;
+							";
+							cmdMessages.Parameters.AddWithValue("$chatId", chatId);
+
+							var messages = new List<_Message>(64);
+							using (var reader = cmdMessages.ExecuteReader())
+							{
+								while (reader.Read())
+								{
+									string messageId = reader.GetString(0);
+									DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(1));
+									DateTime activeAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(2));
+									string configId = reader.GetString(3);
+									string text = reader.GetString(4);
+
+									messages.Add(new _Message() {
+										messageId = messageId,
+										createdAt = createdAt,
+										activeAt = activeAt,
+										configId = configId,
+										text = text,
+									});
+								}							
+							}
+
+							// Create entries
+							lsChats[i].entries = messages
+								.GroupBy(m => m.messageId)
+								.Select(g => {
+									int counter = 0;
+									var swipes = g.Select(m => new {
+										index = counter++,
+										text = m.text,
+										active = m.activeAt,
+									});
+
+									return new ChatInstance.ChatEntry() {
+										configId = g.First().configId,
+										activeSwipe = swipes.OrderByDescending(x => x.active).Select(x => x.index).First(),
+										swipes = swipes.Select(x => x.text).ToArray(),
+									};
+								})
+								.ToArray();
+							
+							lsChats[i].participants = lsChats[i].entries
+								.Select(e => e.configId)
+								.Distinct()
+								.ToArray();
+	
+							if (messages.Count > 0)
+								lsChats[i].updateDate = messages.Max(m => m.createdAt); // Latest message
+						}
+					}
+
+					chats = lsChats
+						.OrderByDescending(c => c.updateDate)
+						.ToArray();
+					return Error.NoError;
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				chats = null;
+				return Error.FileNotFound;
+			}
+			catch (SQLiteException e)
+			{
+				chats = null;
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				chats = null;
+				return Error.Unknown;
+			}
+		}
+		#endregion
+
+		#region Utilities
 		private static string MakeLoreSortPosition(int index, int maxIndex, int hash)
 		{
 			RandomNoise rng = new RandomNoise(hash, 0);
@@ -1897,8 +2091,9 @@ namespace Ginger
 
 		#endregion
 
+
 		#region Validation
-				// Validation table
+		// Validation table
 		private static string[][] s_TableValidation = new string[][] {
 			new string[] {
 				"_AppCharacterLorebookItemToCharacterConfigVersion", 

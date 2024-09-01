@@ -40,6 +40,7 @@ namespace Ginger.src.Interface.Controls
 			this.listBox.Location = new System.Drawing.Point(3, 0);
 			this.listBox.Name = "listBox";
 			this.listBox.ScrollAlwaysVisible = true;
+			this.listBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.listBox.Size = new System.Drawing.Size(144, 147);
 			this.listBox.TabIndex = 0;
 			this.listBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBox_DrawItem);
@@ -48,6 +49,7 @@ namespace Ginger.src.Interface.Controls
 			// ChatListBox
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+			this.BackColor = System.Drawing.SystemColors.Window;
 			this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.Controls.Add(this.listBox);
 			this.Name = "ChatListBox";
