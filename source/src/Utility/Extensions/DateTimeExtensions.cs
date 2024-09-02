@@ -30,5 +30,10 @@ namespace Ginger
 		{
 			return ((DateTimeOffset)dateTime).ToUnixTimeMilliseconds() / 1000L;
 		}
+
+		public static DateTime Max(DateTime a, DateTime b)
+		{
+			return a > b ? a : b;
+		}
 	}
 }

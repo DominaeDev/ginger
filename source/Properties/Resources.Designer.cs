@@ -806,6 +806,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to import chat. Operation cancelled..
+        /// </summary>
+        internal static string error_link_import_chat {
+            get {
+                return ResourceManager.GetString("error_link_import_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to get character data..
         /// </summary>
         internal static string error_link_open_character {

@@ -2103,7 +2103,9 @@ namespace Ginger
 		{
 			var error = UpdateCharacterInBackyard();
 			if (error == BackyardBridge.Error.NotConnected)
+			{
 				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 			else if (error == BackyardBridge.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_unrecognized_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);

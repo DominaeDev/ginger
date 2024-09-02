@@ -1177,7 +1177,7 @@ namespace Ginger
 			}
 		}
 
-		public static bool ExportCaiChat(BackyardBridge.ChatInstance chat, string filename)
+		public static bool ExportCaiChat(ChatHistory chat, string filename)
 		{
 			if (chat == null)
 				return false;

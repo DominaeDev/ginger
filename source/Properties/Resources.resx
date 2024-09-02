@@ -855,6 +855,9 @@ Do you want to continue?</value>
   <data name="error_empty_chat" xml:space="preserve">
     <value>The chat contains no messages.</value>
   </data>
+  <data name="error_link_import_chat" xml:space="preserve">
+    <value>Failed to import chat. Operation cancelled.</value>
+  </data>
   <data name="error_unrecognized_chat_format" xml:space="preserve">
     <value>Unrecognized chat format.</value>
   </data>

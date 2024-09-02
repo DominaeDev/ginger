@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bridge = Ginger.BackyardBridge;
@@ -56,14 +57,12 @@ namespace Ginger
 			return null;
 		}
 
-		public static CAIChat FromChat(Bridge.ChatInstance chat)
+		public static CAIChat FromChat(ChatHistory chat)
 		{
 			CAIChat caiChatV2 = new CAIChat();
-			var lsItems = new List<ChatItem>(chat.messages.Length / 2 + 1);
-			IEnumerable<Bridge.ChatInstance.Message> messages = chat.messages;
-			if (string.IsNullOrEmpty(chat.greeting) == false)
-				messages = messages.Skip(1);
-			foreach (var pair in messages.Pairwise())
+			var lsItems = new List<ChatItem>(chat.Count / 2 + 1);
+
+			foreach (var pair in chat.MessagesWithoutGreeting.Pairwise())
 			{
 				lsItems.Add(new ChatItem() {
 					input = pair.Item1.message ?? "",
@@ -74,6 +73,41 @@ namespace Ginger
 
 			caiChatV2.data.items = lsItems.ToArray();
 			return caiChatV2;
+		}
+
+		public ChatHistory ToChat()
+		{
+			var messages = new List<ChatHistory.Message>();
+			foreach (var item in data.items)
+			{
+				DateTime inputTime = DateTimeExtensions.FromUnixTime(item.timestamp);
+				DateTime outputTime = DateTimeExtensions.FromUnixTime(item.timestamp) + TimeSpan.FromMilliseconds(10);
+				if (string.IsNullOrEmpty(item.input) == false)
+				{
+					messages.Add(new ChatHistory.Message() {
+						speaker = 0,
+						creationDate = inputTime,
+						updateDate = inputTime,
+						activeSwipe = 0,
+						swipes = new string[1] { item.input },
+					});
+				}
+				if (string.IsNullOrEmpty(item.output) == false)
+				{
+					messages.Add(new ChatHistory.Message() {
+						speaker = 1,
+						creationDate = outputTime,
+						updateDate = outputTime,
+						activeSwipe = 0,
+						swipes = new string[1] { item.output },
+					});
+				}
+			}
+
+			return new ChatHistory() {
+				greeting = "",
+				messages = messages.ToArray(),
+			};
 		}
 
 		public string ToJson()

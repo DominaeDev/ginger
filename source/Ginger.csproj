@@ -358,6 +358,7 @@
     <Compile Include="src\Model\Formats\CaiChat.cs" />
     <Compile Include="src\Model\Formats\FaradayCardV4.cs" />
     <Compile Include="src\Model\Formats\FaradayCardV3.cs" />
+    <Compile Include="src\Model\Formats\ChatHistory.cs" />
     <Compile Include="src\Model\Formats\TavernCardV3.cs" />
     <Compile Include="src\Model\Formats\TextGenWebUICard.cs" />
     <Compile Include="src\Model\Formats\ZipUtil.cs" />
