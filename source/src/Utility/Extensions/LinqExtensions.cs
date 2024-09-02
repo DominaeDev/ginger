@@ -102,5 +102,25 @@ namespace Ginger
 			return source.GetEnumerator().MoveNext() == false;
 		}
 
+		
+		public static IEnumerable<Tuple<T, T>> Pairwise<T>(this IEnumerable<T> source)
+		{
+			T a;
+			T b = default(T);
+			
+			int index = 0;
+			foreach (T element in source)
+			{
+				a = b;
+				b = element;
+				if (++index == 2)
+				{
+					yield return Tuple.Create(a, b);
+					index = 0;
+				}
+			}
+			if (index % 2 != 0)
+				yield return Tuple.Create(b, default(T));
+		}
 	}
 }

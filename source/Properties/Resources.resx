@@ -846,4 +846,16 @@ Do you want to continue?</value>
   <data name="tooltip_rearrange_lore" xml:space="preserve">
     <value>Allows lorebook entries to be moved on a row-by-row basis.</value>
   </data>
+  <data name="cai_chat_v2_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\cai_chat_v2_schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="cap_import_chat" xml:space="preserve">
+    <value>Import chat</value>
+  </data>
+  <data name="error_empty_chat" xml:space="preserve">
+    <value>The chat contains no messages.</value>
+  </data>
+  <data name="error_unrecognized_chat_format" xml:space="preserve">
+    <value>Unrecognized chat format.</value>
+  </data>
 </root>

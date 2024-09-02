@@ -43,8 +43,8 @@ namespace Ginger
 		{
 			if (_lockedControl == IntPtr.Zero || _lockedControl == control.Handle)
 			{
-				if (LockWindowUpdate(IntPtr.Zero))
-					_lockedControl = IntPtr.Zero;
+				LockWindowUpdate(IntPtr.Zero);
+				_lockedControl = IntPtr.Zero;
 			}
 		}
 
@@ -63,7 +63,6 @@ namespace Ginger
 			SendMessage(handle, WM_SETREDRAW, 0, IntPtr.Zero);
 			// Stop sending of events:  
 			stateLocked = SendMessage(handle, EM_GETEVENTMASK, 0, IntPtr.Zero);
-			// change colors and stuff in the RichTextBox 
 		}
 
 		private static void Unlock(IntPtr handle, ref IntPtr stateLocked)
@@ -73,6 +72,28 @@ namespace Ginger
 			// turn on redrawing  
 			SendMessage(handle, WM_SETREDRAW, 1, IntPtr.Zero);
 			stateLocked = IntPtr.Zero;
+		}
+
+		public static void SuspendRedraw(this Control control)
+		{
+			_SuspendRedraw(control.Handle);
+		}
+
+		public static void ResumeRedraw(this Control control)
+		{
+			_ResumeRedraw(control.Handle);
+		}
+
+		private static void _SuspendRedraw(IntPtr handle)
+		{
+			// Stop redrawing:  
+			SendMessage(handle, WM_SETREDRAW, 0, IntPtr.Zero);
+		}
+
+		private static void _ResumeRedraw(IntPtr handle)
+		{
+			// turn on redrawing  
+			SendMessage(handle, WM_SETREDRAW, 1, IntPtr.Zero);
 		}
 
 		public static int Find(this TextBoxBase textBox, string match, bool matchCase, bool matchWord, bool reverse, int startIndex = -1)

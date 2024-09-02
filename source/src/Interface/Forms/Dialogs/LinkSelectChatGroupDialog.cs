@@ -17,6 +17,7 @@ namespace Ginger
 
 		private Dictionary<string, Bridge.CharacterInstance> _charactersById;
 		public Dictionary<string, int> _folderCounts = new Dictionary<string, int>();
+		public Dictionary<string, int> _chatCounts;
 
 		public LinkSelectChatGroupDialog()
 		{
@@ -28,6 +29,8 @@ namespace Ginger
 		private void OnLoad(object sender, EventArgs e)
 		{
 			_charactersById = Characters.ToDictionary(c => c.instanceId, c => c);
+			if (Bridge.GetChatCounts(out _chatCounts) != Bridge.Error.NoError)
+				_chatCounts = new Dictionary<string, int>(); // Empty
 
 			PopulateTree();
 
@@ -151,21 +154,25 @@ namespace Ginger
 			string groupLabel = GetGroupTitle(group);
 			var sbTooltip = new StringBuilder();
 
-			string userName = group.members
-				.Select(id => _charactersById.GetOrDefault(id))
-				.Where(c => c.isUser)
-				.Select(c => c.name ?? "User")
-				.FirstOrDefault();
-			string[] memberNames = group.members
+			string[] characterNames = group.members
 				.Select(id => _charactersById.GetOrDefault(id))
 				.Where(c => c.isUser == false)
 				.Select(c => c.name ?? "Unnamed")
 				.ToArray();
 
-			sbTooltip.Append("Chat between ");
-			sbTooltip.Append(Utility.ListToCommaSeparatedString(memberNames));
-			sbTooltip.Append(", and ");
-			sbTooltip.Append(userName);
+			if (characterNames.Length >= 2)
+			{
+				sbTooltip.Append("Group including ");
+				sbTooltip.Append(Utility.CommaSeparatedList(characterNames));
+			}
+			else if (characterNames.Length == 1)
+			{
+				sbTooltip.Append(characterNames[0]);
+			}
+
+			int chatCount;
+			if (_chatCounts.TryGetValue(group.instanceId, out chatCount))
+				sbTooltip.AppendFormat(" ({0} {1})", chatCount, chatCount == 1 ? "chat" : "chats");
 
 			sbTooltip.NewParagraph();
 			sbTooltip.AppendLine($"Created: {group.creationDate.ToShortDateString()}");

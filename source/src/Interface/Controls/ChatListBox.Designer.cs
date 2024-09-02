@@ -1,5 +1,5 @@
 ﻿
-namespace Ginger.src.Interface.Controls
+namespace Ginger
 {
 	partial class ChatListBox
 	{
@@ -61,6 +61,6 @@ namespace Ginger.src.Interface.Controls
 
 		#endregion
 
-		private System.Windows.Forms.ListBox listBox;
+		public System.Windows.Forms.ListBox listBox;
 	}
 }

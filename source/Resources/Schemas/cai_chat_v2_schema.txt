@@ -1,0 +1,42 @@
+{
+	"type": "object",
+	"properties": {
+		"version": {
+			"required": true,
+			"type": "integer"
+		},
+		"chat": {
+			"required": true,
+			"type": "object",
+			"properties": {
+				"ChatItems": {
+					"required": true,
+					"type": [
+						"array",
+						"null"
+					],
+					"items": {
+						"type": [
+							"object",
+							"null"
+						],
+						"properties": {
+							"input": {
+								"required": true,
+								"type": "string"
+							},
+							"output": {
+								"required": true,
+								"type": "string"
+							},
+							"createdAt": {
+								"required": true,
+								"type": "integer"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

@@ -355,6 +355,7 @@
     </Compile>
     <Compile Include="src\Model\CardData.cs" />
     <Compile Include="src\Model\Formats\AssetFile.cs" />
+    <Compile Include="src\Model\Formats\CaiChat.cs" />
     <Compile Include="src\Model\Formats\FaradayCardV4.cs" />
     <Compile Include="src\Model\Formats\FaradayCardV3.cs" />
     <Compile Include="src\Model\Formats\TavernCardV3.cs" />
@@ -907,6 +908,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Icons\link_inactive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\cai_chat_v2_schema.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

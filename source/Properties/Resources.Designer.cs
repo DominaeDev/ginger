@@ -219,6 +219,43 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;version&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;integer&quot;
+        ///		},
+        ///		&quot;chat&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;object&quot;,
+        ///			&quot;properties&quot;: {
+        ///				&quot;ChatItems&quot;: {
+        ///					&quot;required&quot;: true,
+        ///					&quot;type&quot;: [
+        ///						&quot;array&quot;,
+        ///						&quot;null&quot;
+        ///					],
+        ///					&quot;items&quot;: {
+        ///						&quot;type&quot;: [
+        ///							&quot;object&quot;,
+        ///							&quot;null&quot;
+        ///						],
+        ///						&quot;properties&quot;: {
+        ///							&quot;input&quot;: {
+        ///								&quot;required&quot;: true,
+        ///								&quot;type&quot;: &quot;string&quot;
+        ///							},
+        ///							&quot;output&quot;: {
+        ///								&quot;required&quot;: true,        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string cai_chat_v2_schema {
+            get {
+                return ResourceManager.GetString("cai_chat_v2_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add recipe(s)....
         /// </summary>
         internal static string cap_add_recipe {
@@ -323,6 +360,15 @@ namespace Ginger.Properties {
         internal static string cap_import_character {
             get {
                 return ResourceManager.GetString("cap_import_character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import chat.
+        /// </summary>
+        internal static string cap_import_chat {
+            get {
+                return ResourceManager.GetString("cap_import_chat", resourceCulture);
             }
         }
         
@@ -661,6 +707,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The chat contains no messages..
+        /// </summary>
+        internal static string error_empty_chat {
+            get {
+                return ResourceManager.GetString("error_empty_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is no lore to export..
         /// </summary>
         internal static string error_empty_lore {
@@ -938,6 +993,15 @@ namespace Ginger.Properties {
         internal static string error_unrecognized_character_format {
             get {
                 return ResourceManager.GetString("error_unrecognized_character_format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unrecognized chat format..
+        /// </summary>
+        internal static string error_unrecognized_chat_format {
+            get {
+                return ResourceManager.GetString("error_unrecognized_chat_format", resourceCulture);
             }
         }
         

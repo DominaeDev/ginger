@@ -77,9 +77,11 @@ namespace Ginger
 		{
 			public static int LastImportCharacterFilter = 0;
 			public static int LastImportLorebookFilter = 0;
+			public static int LastImportChatFilter = 0;
 
 			public static int LastExportCharacterFilter = 0;
 			public static int LastExportLorebookFilter = 0;
+			public static int LastExportChatFilter = 0;
 
 			public static bool LaunchTextEditor = true;
 
@@ -101,7 +103,7 @@ namespace Ginger
 		{
 			public static string LastCharacterPath = null;
 			public static string LastImagePath = null;
-			public static string LastImportPath = null;
+			public static string LastImportExportPath = null;
 		}
 
 		public static class WriteDialog
@@ -236,8 +238,10 @@ namespace Ginger
 			{
 				ReadInt(ref User.LastImportCharacterFilter, userSection, "LastImportCharacterFilter");
 				ReadInt(ref User.LastImportLorebookFilter, userSection, "LastImportLorebookFilter");
+				ReadInt(ref User.LastImportChatFilter, userSection, "LastImportChatFilter");
 				ReadInt(ref User.LastExportCharacterFilter, userSection, "LastExportCharacterFilter");
 				ReadInt(ref User.LastExportLorebookFilter, userSection, "LastExportLorebookFilter");
+				ReadInt(ref User.LastExportChatFilter, userSection, "LastExportChatFilter");
 				ReadBool(ref User.LaunchTextEditor, userSection, "LaunchTextEditor");
 				ReadBool(ref User.FindMatchCase, userSection, "FindMatchCase");
 				ReadBool(ref User.FindWholeWords, userSection, "FindWholeWords");
@@ -274,11 +278,11 @@ namespace Ginger
 			{
 				ReadString(ref Paths.LastCharacterPath, pathsSection, "LastCharacterPath");
 				ReadString(ref Paths.LastImagePath, pathsSection, "LastImagePath");
-				ReadString(ref Paths.LastImportPath, pathsSection, "LastImportPath");
+				ReadString(ref Paths.LastImportExportPath, pathsSection, "LastImportPath");
 
 				if (Paths.LastCharacterPath == "") Paths.LastCharacterPath = null;
 				if (Paths.LastImagePath == "") Paths.LastImagePath = null;
-				if (Paths.LastImportPath == "") Paths.LastImportPath = null;
+				if (Paths.LastImportExportPath == "") Paths.LastImportExportPath = null;
 			}
 
 			var faradaySection = iniData.Sections["BackyardAI"];
@@ -366,8 +370,10 @@ namespace Ginger
 					WriteSection(outputFile, "User");
 					Write(outputFile, "LastImportCharacterFilter", User.LastImportCharacterFilter);
 					Write(outputFile, "LastImportLorebookFilter", User.LastImportLorebookFilter);
+					Write(outputFile, "LastImportChatFilter", User.LastImportChatFilter);
 					Write(outputFile, "LastExportCharacterFilter", User.LastExportCharacterFilter);
 					Write(outputFile, "LastExportLorebookFilter", User.LastExportLorebookFilter);
+					Write(outputFile, "LastExportChatFilter", User.LastExportChatFilter);
 					Write(outputFile, "LaunchTextEditor", User.LaunchTextEditor);
 					Write(outputFile, "FindMatchCase", User.FindMatchCase);
 					Write(outputFile, "FindWholeWords", User.FindWholeWords);
@@ -394,7 +400,7 @@ namespace Ginger
 					WriteSection(outputFile, "Paths");
 					Write(outputFile, "LastCharacterPath", Paths.LastCharacterPath);
 					Write(outputFile, "LastImagePath", Paths.LastImagePath);
-					Write(outputFile, "LastImportPath", Paths.LastImportPath);
+					Write(outputFile, "LastImportPath", Paths.LastImportExportPath);
 
 					// Faraday
 					WriteSection(outputFile, "BackyardAI");

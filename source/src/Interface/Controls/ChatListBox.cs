@@ -3,11 +3,32 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace Ginger.src.Interface.Controls
+namespace Ginger
 {
 	public partial class ChatListBox : UserControl
 	{
-		public System.Windows.Forms.ListBox.ObjectCollection Items { get { return listBox.Items; } }
+		public class Entry
+		{
+			public int characterIndex;
+			public Color color;
+			public string name;
+			public string message;
+			public string timestamp;
+		}
+
+		private static readonly int NameLeft = 2;
+		private static readonly int NameTop = 2;
+		private static readonly int MessageLeft = 2;
+		private static readonly int MessageRight = 0;
+		private static readonly int MessageTop = 19;
+		private static readonly int MessageBottom = 6;
+		private static readonly int MinRowHeight = 22;
+
+		public ListBox.ObjectCollection Items { get { return listBox.Items; } }
+
+		private Font _nameFont;
+		private Font _timeFont;
+		private static StringFormat RightAligned = new StringFormat() { Alignment = StringAlignment.Far };
 
 		public ChatListBox()
 		{
@@ -25,20 +46,47 @@ namespace Ginger.src.Interface.Controls
 		private void ChatListBox_FontChanged(object sender, EventArgs e)
 		{
 			listBox.Font = this.Font;
+
+			_nameFont = new Font(this.Font.FontFamily, 8.5F, FontStyle.Bold);
+			_timeFont = new Font(this.Font.FontFamily, 8.5F, FontStyle.Regular);
 		}
 
 		private void listBox_DrawItem(object sender, DrawItemEventArgs e)
 		{
 			if (e.Index >= 0)
 			{
+				var entry = (Entry)listBox.Items[e.Index];
+
+				bool selected = e.State.Contains(DrawItemState.Selected);
 				e.DrawBackground();
 				e.DrawFocusRectangle();
+
 				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+				
+				// Name
 				e.Graphics.DrawString(
-					 (string)listBox.Items[e.Index],
+					 entry.name,
+					 _nameFont,
+					 new SolidBrush(selected ? Color.White : entry.color),
+					 new Point(e.Bounds.Left + NameLeft, e.Bounds.Top + NameTop));
+
+				// Timestamp
+				e.Graphics.DrawString(
+					 entry.timestamp,
+					 _timeFont,
+					 new SolidBrush(Color.DarkGray),
+					 new Rectangle(e.Bounds.Left, e.Bounds.Top + NameTop, e.Bounds.Width - 2, e.Bounds.Height),
+					 RightAligned);
+					
+				// Message
+				e.Graphics.DrawString(
+					 entry.message,
 					 e.Font,
 					 new SolidBrush(e.ForeColor),
-					 e.Bounds);
+					 new Rectangle(
+						 new Point(MessageLeft, e.Bounds.Top + MessageTop),
+						 new Size(listBox.ClientSize.Width - MessageLeft - MessageRight - SystemInformation.VerticalScrollBarWidth, 0))
+					 );
 			}
 		}
 
@@ -46,9 +94,14 @@ namespace Ginger.src.Interface.Controls
 		{
 			if (e.Index >= 0)
 			{
-				string text = (string)listBox.Items[e.Index];
-				Size size = TextRenderer.MeasureText(text, this.Font, new Size(this.Size.Width - 37, 0), TextFormatFlags.WordBreak);
-				e.ItemHeight = size.Height + 8;
+				var entry = (Entry)listBox.Items[e.Index];
+				string text = entry.message;
+
+				using (Graphics g = listBox.CreateGraphics())
+				{
+					SizeF size = g.MeasureString(text, this.Font, listBox.ClientSize.Width - MessageLeft - MessageRight - SystemInformation.VerticalScrollBarWidth);
+					e.ItemHeight = Math.Max((int)Math.Ceiling(size.Height), MinRowHeight) + MessageTop + MessageBottom;
+				}
 			}
 		}
 

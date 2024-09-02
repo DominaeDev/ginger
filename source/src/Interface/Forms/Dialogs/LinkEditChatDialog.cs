@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Ginger.Properties;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -13,33 +16,24 @@ namespace Ginger
 	{
 		public Bridge.GroupInstance Group { get; set; }
 
+		private FormWindowState _lastWindowState;
+
+		#region Win32 stuff
+		public const uint LVM_SETHOTCURSOR = 4158;
+
+		[DllImport("user32.dll")]
+		public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+		#endregion
+
 		public LinkEditChatDialog()
 		{
 			InitializeComponent();
 
 			this.Load += OnLoad;
+			this.Shown += LinkEditChatDialog_Shown;
 			this.ResizeEnd += LinkEditChatDialog_ResizeEnd;
 			chatInstanceList.Resize += ChatInstanceList_Resize;
 			chatInstanceList.ItemSelectionChanged += ChatInstanceList_ItemSelectionChanged;
-		}
-
-		private FormWindowState _lastWindowState;
-
-		protected override void OnClientSizeChanged(EventArgs e)
-		{
-			base.OnClientSizeChanged(e);
-
-			if (WindowState != _lastWindowState)
-			{
-				_lastWindowState = WindowState;
-
-				chatListBox.ResizeItems();
-			}
-		}
-
-		private void LinkEditChatDialog_ResizeEnd(object sender, EventArgs e)
-		{
-			chatListBox.ResizeItems();
 		}
 
 		private void OnLoad(object sender, EventArgs e)
@@ -50,7 +44,47 @@ namespace Ginger
 			// Fix for flickering cursor
 			SendMessage(chatInstanceList.Handle, LVM_SETHOTCURSOR, IntPtr.Zero, Cursors.Arrow.Handle);
 
+			// Refresh character list
+			if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_read_data, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+		}
+
+		private void LinkEditChatDialog_Shown(object sender, EventArgs e)
+		{
+			var groupDlg = new LinkSelectChatGroupDialog();
+			groupDlg.Characters = Bridge.Characters.ToArray();
+			groupDlg.Groups = Bridge.Groups.ToArray();
+			groupDlg.Folders = Bridge.Folders.ToArray();
+			if (groupDlg.ShowDialog() != DialogResult.OK)
+			{
+				Close();
+				return;
+			}
+
+			this.Group = groupDlg.SelectedGroup;
+
 			PopulateChatList();
+		}
+
+		protected override void OnClientSizeChanged(EventArgs e)
+		{
+			base.OnClientSizeChanged(e);
+
+			if (WindowState != _lastWindowState)
+			{
+				_lastWindowState = WindowState;
+
+				chatView.ResizeItems();
+			}
+		}
+
+		private void LinkEditChatDialog_ResizeEnd(object sender, EventArgs e)
+		{
+			chatView.ResizeItems();
 		}
 
 		private void chatList_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
@@ -95,6 +129,11 @@ namespace Ginger
 					var item = chatInstanceList.Items.Add(chats[i].name);
 					item.Tag = chats[i];
 
+					if (chats[i].messages.Length >= 2)
+						item.ImageIndex = 0;	// Chat icon
+					else
+						item.ImageIndex = 1;	// Empty chat icon
+
 					if (chats[i].updateDate.Date == now.Date) // Today
 					{
 						item.SubItems.Add(chats[i].updateDate.ToString("t", CultureInfo.InvariantCulture));
@@ -131,27 +170,225 @@ namespace Ginger
 
 		private void ViewChat(Bridge.ChatInstance chatInstance)
 		{
-			chatListBox.Items.Clear();
+			chatView.Items.Clear();
 
-			var namesByConfigId = chatInstance.participants
-				.Select(id => new {
-					id = id,
-					name = BackyardBridge.GetCharacter(id).name ?? "Unknown",
+			List<Bridge.CharacterInstance> participants = new List<Bridge.CharacterInstance>(4);
+			participants.Add(chatInstance.participants.Select(id => Bridge.GetCharacter(id)).FirstOrDefault(c => c.isUser)); // User first
+			participants.AddRange(chatInstance.participants.Select(id => Bridge.GetCharacter(id)).Where(c => c.isUser == false));
+
+			var namesById = participants
+				.Select(c => new {
+					id = c.instanceId,
+					name = c.name ?? "Unknown",
 				})
-				.ToDictionary(x => x.id, x => x.name);
+				.ToDictionary(x => x.id ?? "_unknown", x => x.name ?? "Unnamed");
 
-			List<string> lines = new List<string>();
-			for (int i = 0; i < chatInstance.entries.Length; ++i)
+			int index = 0;
+			var indexById = participants
+				.Select(c => new {
+					id = c.instanceId,
+					index = index++,
+				})
+				.ToDictionary(x => x.id ?? "_unknown", x => x.index);
+
+			var colors = new Color[] {
+				ColorTranslator.FromHtml("#0185b6"),
+				ColorTranslator.FromHtml("#b68e01"),
+				ColorTranslator.FromHtml("#c837c7"),
+				ColorTranslator.FromHtml("#2c3397"),
+				ColorTranslator.FromHtml("#76d244"),
+				ColorTranslator.FromHtml("#44d2af"),
+				ColorTranslator.FromHtml("#972c2c"),
+				ColorTranslator.FromHtml("#2aa02d"),
+			};
+
+			var lines = new List<ChatListBox.Entry>();
+			DateTime currDate = DateTime.MinValue;
+			for (int i = 0; i < chatInstance.messages.Length; ++i)
 			{
-				var entry = chatInstance.entries[i];
-				lines.Add(string.Format("{0}:\n{1}", namesByConfigId[entry.configId], entry.message));
+				var entry = chatInstance.messages[i];
+
+				string timestamp;
+				if (entry.updateDate.Date > currDate)
+				{
+					currDate = entry.updateDate;
+					timestamp = string.Concat(entry.updateDate.ToString("d"), " ", entry.updateDate.ToString("T"));
+				}
+				else
+				{
+					timestamp = entry.updateDate.ToString("T");
+				}
+
+				index = 0;
+				lines.Add(new ChatListBox.Entry() {
+					characterIndex = indexById[entry.characterId],
+					color = colors[indexById[entry.characterId] % colors.Length],
+//					color = colors[index++ % colors.Length],
+					name = namesById[entry.characterId],
+					message = entry.message,
+					timestamp = timestamp,
+				});
 			}
-			chatListBox.Items.AddRange(lines.ToArray());
+			chatView.Items.AddRange(lines.ToArray());
+			chatView.listBox.TopIndex = chatView.Items.Count - 1;
+
 		}
 
-		public const uint LVM_SETHOTCURSOR = 4158;
+		private void btnExport_Click(object sender, EventArgs e)
+		{
+			ExportChat();
+		}
 
-		[DllImport("user32.dll")]
-		public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+		private void btnImport_Click(object sender, EventArgs e)
+		{
+			ImportChat();
+		}
+
+		private void ExportChat()
+		{
+			if (chatInstanceList.SelectedItems.Count == 0)
+				return; // No selection
+
+			var chatInstance = chatInstanceList.SelectedItems[0].Tag as Bridge.ChatInstance;
+			if (chatInstance == null)
+				return; // Error
+
+			string filename = chatInstance.name;
+//			if (AppSettings.User.LastExportChatFilter == 1) // json
+//				filename = string.Concat(filename, ".csv");
+//			else // json
+				filename = string.Concat(filename, ".json");
+			
+			exportFileDialog.Title = "Export chat";
+			exportFileDialog.Filter = "C.AI JSON|*.json";
+			exportFileDialog.FileName = Utility.ValidFilename(filename);
+			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			exportFileDialog.FilterIndex = AppSettings.User.LastExportChatFilter;
+
+			var result = exportFileDialog.ShowDialog();
+			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
+				return;
+
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
+			AppSettings.User.LastExportChatFilter = exportFileDialog.FilterIndex;
+
+			if (exportFileDialog.FilterIndex == 1) // C.AI
+			{
+				if (FileUtil.ExportCaiChat(chatInstance, exportFileDialog.FileName))
+					return; // Success
+			} 
+			
+			MessageBox.Show(Resources.error_write_json, Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+		}
+
+		private bool ImportChat()
+		{
+			// Open file...
+			importFileDialog.Title = Resources.cap_import_chat;
+			importFileDialog.Filter = "All supported file types|*.json";
+			importFileDialog.FilterIndex = AppSettings.User.LastImportChatFilter;
+			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			var result = importFileDialog.ShowDialog();
+			if (result != DialogResult.OK)
+				return false;
+
+			AppSettings.User.LastImportChatFilter = importFileDialog.FilterIndex;
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
+
+			string ext = (Path.GetExtension(importFileDialog.FileName) ?? "").ToLowerInvariant();
+
+			Bridge.ChatInstance chatInstance = null;
+			if (ext == ".json")
+			{
+				chatInstance = LoadChatFromJson(importFileDialog.FileName, Group);
+				if (chatInstance == null)
+				{
+					MessageBox.Show(Resources.error_unrecognized_chat_format, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
+				}
+			}
+			else
+			{
+				MessageBox.Show(Resources.error_unrecognized_chat_format, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			if (chatInstance == null || chatInstance.isEmpty)
+			{
+				MessageBox.Show(Resources.error_empty_chat, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			// Write to db...
+
+
+			return true;
+		}
+
+		private static Bridge.ChatInstance LoadChatFromJson(string filename, Bridge.GroupInstance group)
+		{
+			string json;
+			if (FileUtil.ReadTextFile(filename, out json) == false)
+				return null;
+
+			DateTime now = DateTime.Now;
+			var character = group.members
+				.Select(id => Bridge.GetCharacter(id))
+				.Where(c => c.isUser == false)
+				.FirstOrDefault();
+			var user = group.members
+				.Select(id => Bridge.GetCharacter(id))
+				.Where(c => c.isUser)
+				.FirstOrDefault();
+
+			// Try to read Tavern format (World book)
+			if (CAIChat.Validate(json))
+			{
+				var caiChat = CAIChat.FromJson(json);
+
+				Bridge.ChatInstance chat = new Bridge.ChatInstance() {
+					instanceId = Cuid.NewCuid(),
+					creationDate = now,
+					updateDate = now,
+					greeting = "",
+					name = string.Format("Imported chat {0:d}", now),
+					participants = new string[] { user.instanceId, character.instanceId },
+				};
+
+				var messages = new List<Bridge.ChatInstance.Message>();
+				foreach (var item in caiChat.data.items)
+				{
+					DateTime messageTime = DateTimeExtensions.FromUnixTime(item.timestamp);
+					if (string.IsNullOrEmpty(item.input) == false)
+					{
+						messages.Add(new Bridge.ChatInstance.Message() {
+							instanceId = Cuid.NewCuid(),
+							characterId = user.instanceId,
+							creationDate = messageTime,
+							updateDate = messageTime,
+							activeSwipe = 0,
+							swipes = new string[1] { item.input },
+						});
+					}
+					if (string.IsNullOrEmpty(item.output) == false)
+					{
+						messages.Add(new Bridge.ChatInstance.Message() {
+							instanceId = Cuid.NewCuid(),
+							characterId = character.instanceId,
+							creationDate = messageTime,
+							updateDate = messageTime,
+							activeSwipe = 0,
+							swipes = new string[1] { item.output },
+						});
+					}
+				}
+
+				chat.messages = messages.ToArray();
+
+				return chat;
+			}
+
+			return null;
+		}
 	}
 }

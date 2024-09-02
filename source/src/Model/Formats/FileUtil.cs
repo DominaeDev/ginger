@@ -1176,5 +1176,26 @@ namespace Ginger
 				return false;
 			}
 		}
+
+		public static bool ExportCaiChat(BackyardBridge.ChatInstance chat, string filename)
+		{
+			if (chat == null)
+				return false;
+
+			try
+			{
+				CAIChat caiChat = CAIChat.FromChat(chat);
+				string json = caiChat.ToJson();
+				if (json == null)
+					return false;
+
+				return ExportTextFile(filename, json);
+			}
+			catch
+			{
+				return false;
+			}
+
+		}
 	}
 }

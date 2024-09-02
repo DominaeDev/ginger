@@ -44,6 +44,8 @@ namespace Ginger {
 			this.reestablishLinkSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.reestablishLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.breakLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
+			this.chatEditorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitContainer = new System.Windows.Forms.SplitContainer();
 			this.sidePanel = new Ginger.SidePanel();
 			this.tabControl = new System.Windows.Forms.CustomTabControl();
@@ -153,8 +155,6 @@ namespace Ginger {
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusBarActor = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
-			this.chatEditorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -308,6 +308,19 @@ namespace Ginger {
 			this.breakLinkMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.breakLinkMenuItem.Text = "Break link";
 			this.breakLinkMenuItem.Click += new System.EventHandler(this.breakLinkMenuItem_Click);
+			// 
+			// toolStripMenuItem11
+			// 
+			this.toolStripMenuItem11.Name = "toolStripMenuItem11";
+			this.toolStripMenuItem11.Size = new System.Drawing.Size(236, 6);
+			// 
+			// chatEditorMenuItem
+			// 
+			this.chatEditorMenuItem.Name = "chatEditorMenuItem";
+			this.chatEditorMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
+			this.chatEditorMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.chatEditorMenuItem.Text = "Chat viewer";
+			this.chatEditorMenuItem.Click += new System.EventHandler(this.chatEditorMenuItem_Click);
 			// 
 			// splitContainer
 			// 
@@ -1437,18 +1450,6 @@ namespace Ginger {
 			// 
 			this.statusConnectionIcon.Name = "statusConnectionIcon";
 			this.statusConnectionIcon.Size = new System.Drawing.Size(0, 17);
-			// 
-			// chatEditorMenuItem
-			// 
-			this.chatEditorMenuItem.Name = "chatEditorMenuItem";
-			this.chatEditorMenuItem.Size = new System.Drawing.Size(239, 22);
-			this.chatEditorMenuItem.Text = "Chat viewer";
-			this.chatEditorMenuItem.Click += new System.EventHandler(this.chatEditorMenuItem_Click);
-			// 
-			// toolStripMenuItem11
-			// 
-			this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-			this.toolStripMenuItem11.Size = new System.Drawing.Size(236, 6);
 			// 
 			// MainForm
 			// 

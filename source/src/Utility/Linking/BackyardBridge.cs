@@ -32,7 +32,7 @@ namespace Ginger
 			public string folderId;			// GroupConfig.folderId
 			public DateTime creationDate;	// CharacterConfig.createdAt
 			public DateTime updateDate;     // CharacterConfig.updatedAt
-			public string[] members;	// CharacterConfigVersion.id...
+			public string[] members;		// CharacterConfigVersion.id...
 		}
 
 		public struct FolderInstance
@@ -58,14 +58,22 @@ namespace Ginger
 			public string name;				// Chat.name
 			public DateTime creationDate;	// Chat.createdAt
 			public DateTime updateDate;     // Chat.updatedAt
-			public string[] participants;	// CharacterGroupVersion.id
-			public ChatEntry[] entries;
-			public class ChatEntry
+			public string[] participants;   // CharacterGroup.id
+			public string greeting;			// Chat.greetingDialogue
+			public Message[] messages;
+
+			public bool isEmpty { get { return messages == null || messages.Length == 0; } }
+
+			public class Message
 			{
-				public string configId;
+				public string instanceId;		// Message.id
+				public string characterId;		// CharacterConfig.id
+				public DateTime creationDate;	// Message.createdAt
+				public DateTime updateDate;     // Message.updatedAt
 				public int activeSwipe;
 				public string[] swipes;
-				public string message { get { return swipes[activeSwipe]; } }
+				
+				public string message { get { return swipes != null && swipes.Length > 0 ? swipes[activeSwipe] : null; } }
 			}
 		}
 
@@ -1696,12 +1704,69 @@ namespace Ginger
 
 		#region Chat
 
+		public static Error GetChatCounts(out Dictionary<string, int> counts)
+		{
+			if (ConnectionEstablished == false)
+			{
+				counts = null;
+				return Error.NotConnected;
+			}
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+					
+					counts = new Dictionary<string, int>();
+					using (var cmdChat = connection.CreateCommand())
+					{ 
+						cmdChat.CommandText =
+						@"
+							SELECT 
+								groupConfigId, COUNT(*)
+							FROM Chat
+							GROUP BY groupConfigId;
+						";
+
+						using (var reader = cmdChat.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string groupId = reader.GetString(0);
+								int count = reader.GetInt32(1);
+
+								counts.Add(groupId, count);
+							}							
+						}
+					}
+					return Error.NoError;
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				counts = null;
+				return Error.FileNotFound;
+			}
+			catch (SQLiteException e)
+			{
+				counts = null;
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				counts = null;
+				return Error.Unknown;
+			}
+		}
+		
 		private struct _Message
 		{
 			public string messageId;
 			public string configId;
 			public string text;
 			public DateTime createdAt;
+			public DateTime updatedAt;
 			public DateTime activeAt;
 		}
 
@@ -1732,7 +1797,7 @@ namespace Ginger
 						cmdChat.CommandText =
 						@"
 							SELECT 
-								id, name, createdAt, updatedAt
+								id, name, createdAt, updatedAt, greetingDialogue
 							FROM Chat
 							WHERE groupConfigId = $groupId
 							ORDER BY createdAt;
@@ -1748,6 +1813,7 @@ namespace Ginger
 								string name = reader.GetString(1);
 								DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(2));
 								DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(3));
+								string greeting = reader.GetString(4);
 
 								if (string.IsNullOrWhiteSpace(name))
 								{
@@ -1762,6 +1828,7 @@ namespace Ginger
 									creationDate = createdAt,
 									updateDate = updatedAt,
 									name = name,
+									greeting = greeting,
 								});
 							}							
 						}
@@ -1772,71 +1839,107 @@ namespace Ginger
 					{
 						string chatId = lsChats[i].instanceId;
 
+						var messages = new List<_Message>(64);
 						using (var cmdMessages = connection.CreateCommand())
-						{ 
+						{
 							cmdMessages.CommandText =
 							@"
 								SELECT 
-									A.messageId, B.createdAt, A.activeTimestamp, B.characterConfigId, A.text 
-								FROM RegenSwipe As A
-								INNER JOIN Message AS B ON B.id = A.messageId
-								WHERE A.messageId IN (
+									R.messageId, M.createdAt, R.updatedAt, R.activeTimestamp, M.characterConfigId, R.text 
+								FROM RegenSwipe As R
+								INNER JOIN Message AS M ON M.id = R.messageId
+								WHERE R.messageId IN (
 									SELECT id
 									FROM Message
 									WHERE chatId = $chatId
 								)
-								ORDER BY A.createdAt ASC;
+								ORDER BY M.createdAt ASC;
 							";
 							cmdMessages.Parameters.AddWithValue("$chatId", chatId);
 
-							var messages = new List<_Message>(64);
 							using (var reader = cmdMessages.ExecuteReader())
 							{
 								while (reader.Read())
 								{
 									string messageId = reader.GetString(0);
 									DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(1));
-									DateTime activeAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(2));
-									string configId = reader.GetString(3);
-									string text = reader.GetString(4);
+									DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(2));
+									DateTime activeAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(3));
+									string configId = reader.GetString(4);
+									string text = reader.GetString(5);
 
 									messages.Add(new _Message() {
 										messageId = messageId,
 										createdAt = createdAt,
+										updatedAt = updatedAt,
 										activeAt = activeAt,
 										configId = configId,
 										text = text,
 									});
-								}							
+								}
 							}
-
-							// Create entries
-							lsChats[i].entries = messages
-								.GroupBy(m => m.messageId)
-								.Select(g => {
-									int counter = 0;
-									var swipes = g.Select(m => new {
-										index = counter++,
-										text = m.text,
-										active = m.activeAt,
-									});
-
-									return new ChatInstance.ChatEntry() {
-										configId = g.First().configId,
-										activeSwipe = swipes.OrderByDescending(x => x.active).Select(x => x.index).First(),
-										swipes = swipes.Select(x => x.text).ToArray(),
-									};
-								})
-								.ToArray();
-							
-							lsChats[i].participants = lsChats[i].entries
-								.Select(e => e.configId)
-								.Distinct()
-								.ToArray();
-	
-							if (messages.Count > 0)
-								lsChats[i].updateDate = messages.Max(m => m.createdAt); // Latest message
 						}
+
+						// Create entries
+						var entries = messages
+							.GroupBy(m => m.messageId)
+							.Select(g => {
+								int counter = 0;
+								var swipes = g.Select(m => new {
+									index = counter++,
+									text = m.text,
+									active = m.activeAt,
+								});
+
+								var message = g.First();
+
+								return new ChatInstance.Message() {
+									instanceId = message.messageId,
+									characterId = message.configId,
+									creationDate = message.createdAt,
+									updateDate = message.updatedAt,
+									activeSwipe = swipes.OrderByDescending(x => x.active).Select(x => x.index).First(),
+									swipes = swipes.Select(x => x.text).ToArray(),
+								};
+							})
+							.ToList();
+
+						// Insert greeting
+						if (string.IsNullOrEmpty(lsChats[i].greeting) == false)
+						{
+							string characterName = groupInstance.members
+								.Select(id => GetCharacter(id))
+								.Where(c => c.isUser == false)
+								.Select(c => c.name)
+								.FirstOrDefault() ?? "Unnamed";
+							string UserName = groupInstance.members
+								.Select(id => GetCharacter(id))
+								.Where(c => c.isUser)
+								.Select(c => c.name)
+								.FirstOrDefault() ?? "User";
+
+							var sb = new StringBuilder(GingerString.FromFaraday(lsChats[i].greeting).ToString());
+							sb.Replace(GingerString.CharacterMarker, characterName, true);
+							sb.Replace(GingerString.UserMarker, UserName, true);
+
+							entries.Insert(0, new ChatInstance.Message() {
+								characterId = groupInstance.members[0],
+								creationDate = lsChats[i].creationDate,
+								updateDate = lsChats[i].updateDate,
+								activeSwipe = 0,
+								swipes = new string[1] { sb.ToString() },
+							});
+						}
+
+						lsChats[i].messages = entries.ToArray();
+							
+						lsChats[i].participants = lsChats[i].messages
+							.Select(e => e.characterId)
+							.Distinct()
+							.ToArray();
+	
+						if (messages.Count > 0)
+							lsChats[i].updateDate = messages.Max(m => m.createdAt); // Latest message
 					}
 
 					chats = lsChats

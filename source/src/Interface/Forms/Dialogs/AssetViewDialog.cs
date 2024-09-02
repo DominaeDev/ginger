@@ -452,13 +452,13 @@ namespace Ginger
 			else
 				exportFileDialog.Filter = "All types|*.*";
 			exportFileDialog.FileName = Utility.ValidFilename(string.Concat(asset.name, ".", asset.ext ?? ""));
-			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastImagePath ?? Utility.AppPath("Characters");
+			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastImagePath ?? Utility.AppPath("Characters");
 
 			var result = exportFileDialog.ShowDialog();
 			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
 				return;
 
-			AppSettings.Paths.LastImportPath = Path.GetDirectoryName(exportFileDialog.FileName);
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
 			string filename = exportFileDialog.FileName;
 
 			try
@@ -515,12 +515,12 @@ namespace Ginger
 			// Open file...
 			importFileDialog.Title = Resources.cap_import_asset;
 			importFileDialog.Filter = "Image files|*.png;*.apng;*.jpg;*.jpeg;*.webp;*.avif;*.gif|Audio files|*.mp3;*.ogg;*.wav;*.aiff|Video files|*.mp4;*.webm;*.wmv;*.mov;*.mkv|Other files|*.*";
-			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastImagePath ?? Utility.AppPath("Characters");
+			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastImagePath ?? Utility.AppPath("Characters");
 			var result = importFileDialog.ShowDialog();
 			if (result != DialogResult.OK)
 				return;
 
-			AppSettings.Paths.LastImportPath = Path.GetDirectoryName(importFileDialog.FileName);
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
 
 			_bIgnoreEvents = true;
 			foreach (var filename in importFileDialog.FileNames)

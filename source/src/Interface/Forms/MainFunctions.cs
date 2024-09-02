@@ -306,12 +306,12 @@ namespace Ginger
 			importFileDialog.Title = Resources.cap_import_character;
 			importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml";
 			importFileDialog.FilterIndex = AppSettings.User.LastImportCharacterFilter;
-			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			var result = importFileDialog.ShowDialog();
 			if (result != DialogResult.OK)
 				return false;
 
-			AppSettings.Paths.LastImportPath = Path.GetDirectoryName(importFileDialog.FileName);
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
 			AppSettings.User.LastImportCharacterFilter = importFileDialog.FilterIndex;
 
 			if (ConfirmSave(Resources.cap_import_character) == false)
@@ -378,13 +378,13 @@ namespace Ginger
 			importFileDialog.Title = Resources.cap_import_lorebook;
 			importFileDialog.Filter = "All supported types|*.json;*.png;*.csv;*.charx|JSON files|*.json|PNG files|*.png|CHARX files|*.charx|CSV files|*.csv";
 			importFileDialog.FilterIndex = AppSettings.User.LastImportLorebookFilter;
-			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.ContentPath("Lorebooks");
+			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.ContentPath("Lorebooks");
 			var result = importFileDialog.ShowDialog();
 			if (result != DialogResult.OK)
 				return false;
 
 			AppSettings.User.LastImportLorebookFilter = importFileDialog.FilterIndex;
-			AppSettings.Paths.LastImportPath = Path.GetDirectoryName(importFileDialog.FileName);
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
 
 			string ext = (Path.GetExtension(importFileDialog.FileName) ?? "").ToLowerInvariant();
 
@@ -571,13 +571,13 @@ namespace Ginger
 			exportFileDialog.Title = Resources.cap_export_character;
 			exportFileDialog.Filter = "Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard AI PNG|*.png|CharX file|*.charx|Text Generation WebUI YAML|*.yaml";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
-			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			exportFileDialog.FilterIndex = AppSettings.User.LastExportCharacterFilter;
 			var result = exportFileDialog.ShowDialog();
 			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
 				return;
 
-			AppSettings.Paths.LastImportPath = Path.GetDirectoryName(exportFileDialog.FileName);
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
 			AppSettings.User.LastExportCharacterFilter = exportFileDialog.FilterIndex;
 
 			var output = Generator.Generate(Generator.Option.Export);
@@ -719,14 +719,14 @@ namespace Ginger
 			if (saveLocal)
 				exportFileDialog.InitialDirectory = Utility.ContentPath("Lorebooks");
 			else
-				exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.ContentPath("Lorebooks");
+				exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.ContentPath("Lorebooks");
 			exportFileDialog.FilterIndex = AppSettings.User.LastExportLorebookFilter;
 
 			var result = exportFileDialog.ShowDialog();
 			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
 				return;
 
-			AppSettings.Paths.LastImportPath = Path.GetDirectoryName(exportFileDialog.FileName);
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
 			AppSettings.User.LastExportLorebookFilter = exportFileDialog.FilterIndex;
 
 			if (string.IsNullOrEmpty(lorebook.name))
@@ -1749,25 +1749,10 @@ namespace Ginger
 
 		private bool OpenChatEditor()
 		{
-			// Refresh character list
-			if (BackyardBridge.RefreshCharacters() != BackyardBridge.Error.NoError)
-			{
-				MessageBox.Show(Resources.error_read_data, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return false;
-			}
-
-			var groupDlg = new LinkSelectChatGroupDialog();
-			groupDlg.Characters = BackyardBridge.Characters.ToArray();
-			groupDlg.Groups = BackyardBridge.Groups.ToArray();
-			groupDlg.Folders = BackyardBridge.Folders.ToArray();
-			if (groupDlg.ShowDialog() != DialogResult.OK)
-				return false;
-
 			if (_editChatDialog != null && !_editChatDialog.IsDisposed)
 				_editChatDialog.Close(); // Close existing
 
 			_editChatDialog = new LinkEditChatDialog();
-			_editChatDialog.Group = groupDlg.SelectedGroup;
 			_editChatDialog.Show(this);
 			return true;
 		}
