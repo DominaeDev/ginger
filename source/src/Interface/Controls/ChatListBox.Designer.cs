@@ -50,10 +50,8 @@ namespace Ginger
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.BackColor = System.Drawing.SystemColors.Window;
-			this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.Controls.Add(this.listBox);
 			this.Name = "ChatListBox";
-			this.Size = new System.Drawing.Size(148, 148);
 			this.Resize += new System.EventHandler(this.ChatListView_Resize);
 			this.ResumeLayout(false);
 

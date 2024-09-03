@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
 
 using Bridge = Ginger.BackyardBridge;
@@ -15,15 +16,9 @@ namespace Ginger
 	public partial class LinkEditChatDialog : Form
 	{
 		public Bridge.GroupInstance Group { get; set; }
-
-		private FormWindowState _lastWindowState;
-
-		#region Win32 stuff
-		public const uint LVM_SETHOTCURSOR = 4158;
-
-		[DllImport("user32.dll")]
-		public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-		#endregion
+		
+		private Dictionary<string, Bridge.CharacterInstance> _charactersById;
+		private Bridge.ChatInstance _selectedChatInstance = null;
 
 		private static readonly Color[] NameColors = new Color[] {
 			ColorTranslator.FromHtml("#0185b6"),
@@ -36,6 +31,16 @@ namespace Ginger
 			ColorTranslator.FromHtml("#2aa02d"),
 		};
 
+		private FormWindowState _lastWindowState;
+		private System.Timers.Timer _statusbarTimer = new System.Timers.Timer();
+
+		#region Win32 stuff
+		public const uint LVM_SETHOTCURSOR = 4158;
+
+		[DllImport("user32.dll")]
+		public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+		#endregion
+
 		public LinkEditChatDialog()
 		{
 			InitializeComponent();
@@ -45,6 +50,13 @@ namespace Ginger
 			this.ResizeEnd += LinkEditChatDialog_ResizeEnd;
 			chatInstanceList.Resize += ChatInstanceList_Resize;
 			chatInstanceList.ItemSelectionChanged += ChatInstanceList_ItemSelectionChanged;
+
+			_charactersById = Bridge.Characters.ToDictionary(c => c.instanceId, c => c);
+
+			_statusbarTimer.Interval = 1000;
+			_statusbarTimer.Elapsed += OnStatusBarTimerElapsed;
+			_statusbarTimer.AutoReset = false;
+			_statusbarTimer.SynchronizingObject = this;
 		}
 
 		private void OnLoad(object sender, EventArgs e)
@@ -55,30 +67,75 @@ namespace Ginger
 			// Fix for flickering cursor
 			SendMessage(chatInstanceList.Handle, LVM_SETHOTCURSOR, IntPtr.Zero, Cursors.Arrow.Handle);
 
-			// Refresh character list
-			if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
+			RefreshTitle();
+		}
+
+		private void RefreshTitle()
+		{
+			if (string.IsNullOrEmpty(Group.instanceId) == false)
+				Text = string.Format("Chat history - {1}{0}", GetGroupTitle(Group), Group.members.Length > 2 ? "[Group] " : "");
+			else
+				Text = "Chat history";
+		}
+
+		private string GetGroupTitle(Bridge.GroupInstance group)
+		{
+			if (string.IsNullOrEmpty(group.name) == false)
 			{
-				MessageBox.Show(Resources.error_read_data, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Close();
-				return;
+				return group.name;
+			}
+			else
+			{
+				var characters = group.members
+					.Select(id => _charactersById.GetOrDefault(id))
+					.Where(c => c.isUser == false);
+
+				if (characters.Count() > 1)
+				{
+					string[] memberNames = characters
+						.Select(c => c.name ?? "Unnamed")
+						.OrderBy(c => c)
+						.ToArray();
+					string groupTitle = string.Join(", ", memberNames.Take(3));
+					if (memberNames.Length > 3)
+						groupTitle += ", ...";
+					
+					return groupTitle;
+				}
+				else
+				{
+					return characters
+						.Select(c => c.displayName)
+						.FirstOrDefault() ?? "Unnamed";
+				}
 			}
 		}
 
 		private void LinkEditChatDialog_Shown(object sender, EventArgs e)
 		{
-			var groupDlg = new LinkSelectGroupDialog();
-			groupDlg.Characters = Bridge.Characters.ToArray();
-			groupDlg.Groups = Bridge.Groups.ToArray();
-			groupDlg.Folders = Bridge.Folders.ToArray();
-			if (groupDlg.ShowDialog() != DialogResult.OK)
+			// Refresh character list
+			if (string.IsNullOrEmpty(Group.instanceId))
 			{
-				Close();
-				return;
+				if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
+				{
+					MessageBox.Show(Resources.error_read_data, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					Close();
+					return;
+				}
+
+				var groupDlg = new LinkSelectGroupDialog();
+				groupDlg.Characters = Bridge.Characters.ToArray();
+				groupDlg.Groups = Bridge.Groups.ToArray();
+				groupDlg.Folders = Bridge.Folders.ToArray();
+				if (groupDlg.ShowDialog() != DialogResult.OK)
+				{
+					Close();
+					return;
+				}
+				Group = groupDlg.SelectedGroup;
 			}
 
-			this.Group = groupDlg.SelectedGroup;
-
-			PopulateChatList();
+			PopulateChatList(true);
 		}
 
 		protected override void OnClientSizeChanged(EventArgs e)
@@ -115,14 +172,19 @@ namespace Ginger
 			{
 				ViewChat(e.Item.Tag as Bridge.ChatInstance);
 			}
+			else
+			{
+				_selectedChatInstance = null;
+			}
 		}
 
-		private void PopulateChatList()
+		private void PopulateChatList(bool bSelectFirst)
 		{
 			// List chats for group
 			Bridge.ChatInstance[] chats;
 			Bridge.GetChats(Group, out chats);
 
+			_selectedChatInstance = null;
 			chatInstanceList.BeginUpdate();
 			chatInstanceList.Items.Clear();
 			chatInstanceList.Groups.Clear();
@@ -140,35 +202,39 @@ namespace Ginger
 					var item = chatInstanceList.Items.Add(chats[i].name);
 					item.Tag = chats[i];
 
-					if (chats[i].history.Count >= 2)
-						item.ImageIndex = 0;	// Chat icon
-					else
-						item.ImageIndex = 1;	// Empty chat icon
+					var updateDate = DateTimeExtensions.Max(chats[i].history.lastMessageTime, chats[i].creationDate);
 
-					if (chats[i].updateDate.Date == now.Date) // Today
+					if (chats[i].history.count >= 20)
+						item.ImageIndex = 2;	// Long chat icon
+					else if (chats[i].history.count >= 2)
+						item.ImageIndex = 1;	// Short chat icon
+					else 
+						item.ImageIndex = 0;	// Empty chat icon
+
+					if (updateDate.Date == now.Date) // Today
 					{
-						item.SubItems.Add(chats[i].updateDate.ToString("t", CultureInfo.InvariantCulture));
+						item.SubItems.Add(updateDate.ToString("t", CultureInfo.InvariantCulture));
 						if (groupToday == null)
 							groupToday = chatInstanceList.Groups.Add("today", "Today");
 						item.Group = groupToday;
 					}
-					else if (chats[i].updateDate.Date == now.Date - TimeSpan.FromDays(1)) // Yesterday
+					else if (updateDate.Date == now.Date - TimeSpan.FromDays(1)) // Yesterday
 					{
-						item.SubItems.Add(chats[i].updateDate.ToString("t"));
+						item.SubItems.Add(updateDate.ToString("t"));
 						if (groupYesterday == null)
 							groupYesterday = chatInstanceList.Groups.Add("yesterday", "Yesterday");
 						item.Group = groupYesterday;
 					}
-					else if (chats[i].updateDate.Year == now.Year) // Older than yesterday
+					else if (updateDate.Year == now.Year) // Older than yesterday
 					{
-						item.SubItems.Add(chats[i].updateDate.ToString("m", CultureInfo.InvariantCulture));
+						item.SubItems.Add(updateDate.ToString("m", CultureInfo.InvariantCulture));
 						if (groupOlder == null)
 							groupOlder = chatInstanceList.Groups.Add("older", "Older than yesterday");
 						item.Group = groupOlder;
 					}
-					else if (chats[i].updateDate.Year < now.Year) // Last year
+					else if (updateDate.Year < now.Year) // Last year
 					{
-						item.SubItems.Add(chats[i].updateDate.ToString("d"));
+						item.SubItems.Add(updateDate.ToString("d"));
 						if (groupLastYear == null)
 							groupLastYear = chatInstanceList.Groups.Add("year", "Last year");
 						item.Group = groupLastYear;
@@ -177,11 +243,25 @@ namespace Ginger
 			}
 
 			chatInstanceList.EndUpdate();
+
+			if (bSelectFirst)
+				SelectChat(0);
+
+			ResetStatusBarMessage();
+			RefreshTitle();
 		}
+
 
 		private void ViewChat(Bridge.ChatInstance chatInstance)
 		{
 			chatView.Items.Clear();
+			if (chatInstance == null)
+			{
+				_selectedChatInstance = null;
+				statusChatLabel.Text = "";
+				return;
+			}
+			_selectedChatInstance = chatInstance;
 
 			List<Bridge.CharacterInstance> participants = new List<Bridge.CharacterInstance>(4);
 			participants.Add(chatInstance.participants.Select(id => Bridge.GetCharacter(id)).FirstOrDefault(c => c.isUser)); // User first
@@ -212,18 +292,24 @@ namespace Ginger
 					characterIndex = entry.speaker,
 					color = NameColors[entry.speaker % NameColors.Length],
 					name = namesById[entry.speaker],
-					message = entry.message,
+					message = entry.text,
 					timestamp = timestamp,
 				});
 			}
 			chatView.Items.AddRange(lines.ToArray());
 			chatView.listBox.TopIndex = 0; // chatView.Items.Count - 1;
 
+			var sbStatus = new StringBuilder();
+			int messageCount = chatInstance.history.count;
+			sbStatus.Append(string.Format("{0} {1}", messageCount, messageCount == 1 ? "message" : "messages"));
+			if (chatInstance.hasGreeting)
+				sbStatus.Append(" (incl. greeting)");
+			statusChatLabel.Text = sbStatus.ToString();
 		}
 
 		private void btnExport_Click(object sender, EventArgs e)
 		{
-			ExportChat();
+			ExportChat(_selectedChatInstance);
 		}
 
 		private void btnImport_Click(object sender, EventArgs e)
@@ -231,12 +317,8 @@ namespace Ginger
 			ImportChat();
 		}
 
-		private void ExportChat()
+		private void ExportChat(Bridge.ChatInstance chatInstance)
 		{
-			if (chatInstanceList.SelectedItems.Count == 0)
-				return; // No selection
-
-			var chatInstance = chatInstanceList.SelectedItems[0].Tag as Bridge.ChatInstance;
 			if (chatInstance == null)
 				return; // Error
 
@@ -321,10 +403,21 @@ namespace Ginger
 				return false;
 			}
 			
-			PopulateChatList();
+			PopulateChatList(false);
 			SelectChat(chatInstance.instanceId);
 
 			return true;
+		}
+
+		private void SelectChat(int index)
+		{
+			if (index >= 0 && index < chatInstanceList.Items.Count)
+			{
+				chatInstanceList.Items[index].Focused = true;
+				chatInstanceList.Items[index].Selected = true;
+//				chatInstanceList.Select();
+				chatInstanceList.EnsureVisible(index);
+			}
 		}
 
 		private void SelectChat(string instanceId)
@@ -333,10 +426,7 @@ namespace Ginger
 			{
 				if (((Bridge.ChatInstance)chatInstanceList.Items[i].Tag).instanceId == instanceId)
 				{
-					chatInstanceList.Items[i].Focused = true;
-					chatInstanceList.Items[i].Selected = true;
-					chatInstanceList.Select();
-					chatInstanceList.EnsureVisible(i);
+					SelectChat(i);
 					break;
 				}
 			}
@@ -357,6 +447,168 @@ namespace Ginger
 			}
 
 			return null;
+		}
+
+		private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Close();
+		}
+
+		private void selectCharacterMenuItem_Click(object sender, EventArgs e)
+		{
+			// Refresh character list
+			if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_read_data, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+
+			var groupDlg = new LinkSelectGroupDialog();
+			groupDlg.Characters = Bridge.Characters.ToArray();
+			groupDlg.Groups = Bridge.Groups.ToArray();
+			groupDlg.Folders = Bridge.Folders.ToArray();
+			if (groupDlg.ShowDialog() == DialogResult.OK)
+			{
+				Group = groupDlg.SelectedGroup;
+			}
+
+			chatView.Items.Clear();
+			PopulateChatList(true);
+		}
+
+		private void chatInstanceList_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyData == Keys.F2 && chatInstanceList.SelectedItems.Count > 0)
+			{
+				chatInstanceList.SelectedItems[0].BeginEdit();
+				e.Handled = true;
+			}
+
+			if (e.KeyData == Keys.Delete && chatInstanceList.SelectedItems.Count > 0)
+			{
+				var chatInstance = chatInstanceList.SelectedItems[0].Tag as Bridge.ChatInstance;
+				if (chatInstance != null)
+					DeleteChat(chatInstance);
+				e.Handled = true;
+			}
+		}
+
+		private void chatInstanceList_AfterLabelEdit(object sender, LabelEditEventArgs e)
+		{
+			if (e.Label == null) // Cancelled by user
+			{
+				e.CancelEdit = false;
+				return;
+			}
+
+			string newName = e.Label;
+			if (string.IsNullOrWhiteSpace(newName))
+				newName = Bridge.DefaultChatTitle;
+			if (newName.Length > 100)
+				newName = newName.Substring(0, 100);
+			newName = newName.Trim();
+
+			var item = chatInstanceList.Items[e.Item];
+			if (item.Text == newName) // No change
+			{
+				e.CancelEdit = false;
+				return;
+			}
+
+			// Rename
+			if (Bridge.RenameChat(_selectedChatInstance, newName) == Bridge.Error.NoError)
+			{
+				SetStatusBarMessage(Resources.status_link_renamed_chat, Constants.StatusBarMessageInterval);
+				e.CancelEdit = false;
+			}
+			else
+			{
+				MessageBox.Show(Resources.error_link_rename_chat, Resources.cap_link_rename_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				e.CancelEdit = true;
+			}
+		}
+
+		private void DeleteChat(Bridge.ChatInstance chatInstance)
+		{
+			if (chatInstance == null)
+				return;
+
+			// Delete
+			int chatCounts;
+			if (Bridge.ConfirmDeleteChat(chatInstance, Group, out chatCounts) != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			Bridge.Error error;
+			if (chatCounts == 1) // Last chat
+			{
+				var mr = MessageBox.Show(string.Format(Resources.msg_link_delete_confirm_last, chatInstance.name), Resources.cap_link_delete_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+				if (mr != DialogResult.Yes)
+					return;
+
+				// Update chat
+				chatInstance.name = Bridge.DefaultChatTitle;
+				chatInstance.updateDate = DateTime.Now;
+				chatInstance.history = new ChatHistory();
+				error = Bridge.UpdateChat(chatInstance);
+			}
+			else
+			{
+				var mr = MessageBox.Show(string.Format(Resources.msg_link_delete_confirm, chatInstance.name), Resources.cap_link_delete_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+				if (mr != DialogResult.Yes)
+					return;
+
+				error = Bridge.DeleteChat(chatInstance);
+			}
+
+			if (error != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_delete_chat, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				PopulateChatList(chatCounts == 1);
+				SetStatusBarMessage(Resources.status_link_deleted_chat, Constants.StatusBarMessageInterval);
+			}
+		}
+
+		public void SetStatusBarMessage(string message, int durationMS = 0)
+		{
+			statusLabel.Text = message;
+			statusBar.Refresh();
+
+			if (durationMS > 0)
+			{
+				_statusbarTimer.Stop();
+				_statusbarTimer.Interval = durationMS;
+				_statusbarTimer.Start();
+			}
+		}
+
+		public void ResetStatusBarMessage()
+		{
+			int count = chatInstanceList.Items.Count;
+			if (count > 0)
+				statusLabel.Text = string.Format("{0} {1}", count, count == 1 ? "chat" : "chats");
+			else
+				statusLabel.Text = "No chats";
+		}
+
+		private void OnStatusBarTimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
+		{
+			ResetStatusBarMessage();
+		}
+
+		private void menuBar_MenuActivate(object sender, EventArgs e)
+		{
+			bool hasGroup = string.IsNullOrEmpty(Group.instanceId) == false;
+			bool hasSelection = _selectedChatInstance != null;
+			importMenuItem.Enabled = hasGroup;
+			exportMenuItem.Enabled = hasGroup && hasSelection;
+			duplicateMenuItem.Enabled = hasGroup && hasSelection;
 		}
 	}
 }

@@ -41,7 +41,7 @@ namespace Ginger
 			btnOk.Enabled = false;
 		}
 
-		private string GetGroupTitle(Bridge.GroupInstance group)
+		private string GetGroupName(Bridge.GroupInstance group)
 		{
 			if (string.IsNullOrEmpty(group.name) == false)
 			{
@@ -143,14 +143,14 @@ namespace Ginger
 			if (AppSettings.User.SortGroupsAlphabetically)
 			{
 				sortedGroups = Groups
-					.OrderBy(g => GetGroupTitle(g))
+					.OrderBy(g => GetGroupName(g))
 					.ThenByDescending(c => c.creationDate);
 			}
 			else
 			{
 				sortedGroups = Groups
 					.OrderByDescending(g => GetLatestMessageTime(g))
-					.ThenBy(g => GetGroupTitle(g));
+					.ThenBy(g => GetGroupName(g));
 			}
 			foreach (var group in sortedGroups)
 				CreateGroupNode(group, nodesById);
@@ -187,7 +187,7 @@ namespace Ginger
 			TreeNode parentNode;
 			nodes.TryGetValue(group.folderId, out parentNode);
 
-			string groupLabel = GetGroupTitle(group);
+			string groupLabel = GetGroupName(group);
 			var sbTooltip = new StringBuilder();
 
 			string[] characterNames = group.members

@@ -861,4 +861,35 @@ Do you want to continue?</value>
   <data name="error_unrecognized_chat_format" xml:space="preserve">
     <value>Unrecognized chat format.</value>
   </data>
+  <data name="cap_link_delete_chat" xml:space="preserve">
+    <value>Delete chat</value>
+  </data>
+  <data name="cap_link_rename_chat" xml:space="preserve">
+    <value>Rename chat</value>
+  </data>
+  <data name="error_link_delete_chat" xml:space="preserve">
+    <value>Failed to delete chat. Operation cancelled.</value>
+  </data>
+  <data name="error_link_rename_chat" xml:space="preserve">
+    <value>Failed to rename chat. Operation cancelled.</value>
+  </data>
+  <data name="error_link_unknown" xml:space="preserve">
+    <value>An error occurred while accessing Backyard AI. Please reestablish the connection and try again.</value>
+  </data>
+  <data name="msg_link_delete_confirm" xml:space="preserve">
+    <value>This will delete '{0}' and all of its messages. This action cannot be reversed.
+
+Do you want to continue?</value>
+  </data>
+  <data name="msg_link_delete_confirm_last" xml:space="preserve">
+    <value>This will delete all messages in '{0}'. This action cannot be reversed.
+
+Do you want to continue?</value>
+  </data>
+  <data name="status_link_deleted_chat" xml:space="preserve">
+    <value>Successfully deleted chat</value>
+  </data>
+  <data name="status_link_renamed_chat" xml:space="preserve">
+    <value>Successfully renamed chat</value>
+  </data>
 </root>

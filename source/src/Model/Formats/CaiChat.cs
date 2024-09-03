@@ -57,16 +57,16 @@ namespace Ginger
 			return null;
 		}
 
-		public static CAIChat FromChat(ChatHistory chat)
+		public static CAIChat FromChat(ChatHistory chatHistory)
 		{
 			CAIChat caiChatV2 = new CAIChat();
-			var lsItems = new List<ChatItem>(chat.Count / 2 + 1);
+			var lsItems = new List<ChatItem>(chatHistory.count / 2 + 1);
 
-			foreach (var pair in chat.MessagesWithoutGreeting.Pairwise())
+			foreach (var pair in chatHistory.messagesWithoutGreeting.Pairwise())
 			{
 				lsItems.Add(new ChatItem() {
-					input = pair.Item1.message ?? "",
-					output = pair.Item2?.message ?? "",
+					input = pair.Item1.text ?? "",
+					output = pair.Item2?.text ?? "",
 					timestamp = pair.Item1.creationDate.ToUnixTimeMilliseconds(),
 				});
 			}
@@ -105,7 +105,6 @@ namespace Ginger
 			}
 
 			return new ChatHistory() {
-				greeting = "",
 				messages = messages.ToArray(),
 			};
 		}

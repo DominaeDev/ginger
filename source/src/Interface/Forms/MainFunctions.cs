@@ -1749,10 +1749,19 @@ namespace Ginger
 
 		private bool OpenChatEditor()
 		{
+			if (BackyardBridge.ConnectionEstablished == false)
+			{
+				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
 			if (_editChatDialog != null && !_editChatDialog.IsDisposed)
 				_editChatDialog.Close(); // Close existing
 
 			_editChatDialog = new LinkEditChatDialog();
+			if (Current.HasActiveLink)
+				_editChatDialog.Group = BackyardBridge.GetGroup(BackyardBridge.GetCharacter(Current.Link.characterId).groupId);
+
 			_editChatDialog.Show(this);
 			return true;
 		}

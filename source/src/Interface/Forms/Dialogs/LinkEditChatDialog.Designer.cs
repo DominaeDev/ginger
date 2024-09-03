@@ -42,33 +42,60 @@ namespace Ginger
 			System.Windows.Forms.ColumnHeader columnDate;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkEditChatDialog));
 			System.Windows.Forms.Panel centerPanel;
+			this.groupBox = new System.Windows.Forms.GroupBox();
 			this.chatInstanceList = new System.Windows.Forms.ListView();
 			this.imageList = new System.Windows.Forms.ImageList(this.components);
-			this.btnImport = new System.Windows.Forms.Button();
-			this.btnExport = new System.Windows.Forms.Button();
 			this.chatView = new Ginger.ChatListBox();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
+			this.menuBar = new System.Windows.Forms.MenuStrip();
+			this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
+			this.selectCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+			this.importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.exportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.duplicateMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+			this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolsMenu = new System.Windows.Forms.ToolStripMenuItem();
+			this.fixLegacyChatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+			this.purgeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.statusBar = new System.Windows.Forms.StatusStrip();
+			this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+			this.statusChatLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			leftPanel = new System.Windows.Forms.Panel();
 			columnTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			columnDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			centerPanel = new System.Windows.Forms.Panel();
 			leftPanel.SuspendLayout();
+			this.groupBox.SuspendLayout();
 			centerPanel.SuspendLayout();
+			this.menuBar.SuspendLayout();
+			this.statusBar.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// leftPanel
 			// 
-			leftPanel.Controls.Add(this.chatInstanceList);
-			leftPanel.Controls.Add(this.btnImport);
-			leftPanel.Controls.Add(this.btnExport);
+			leftPanel.Controls.Add(this.groupBox);
 			leftPanel.Dock = System.Windows.Forms.DockStyle.Left;
-			leftPanel.Location = new System.Drawing.Point(0, 0);
+			leftPanel.Location = new System.Drawing.Point(0, 24);
 			leftPanel.Name = "leftPanel";
 			leftPanel.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-			leftPanel.Size = new System.Drawing.Size(260, 761);
+			leftPanel.Size = new System.Drawing.Size(260, 715);
 			leftPanel.TabIndex = 0;
+			// 
+			// groupBox
+			// 
+			this.groupBox.Controls.Add(this.chatInstanceList);
+			this.groupBox.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.groupBox.Location = new System.Drawing.Point(3, 2);
+			this.groupBox.Name = "groupBox";
+			this.groupBox.Size = new System.Drawing.Size(254, 711);
+			this.groupBox.TabIndex = 1;
+			this.groupBox.TabStop = false;
+			this.groupBox.Text = "Chats";
 			// 
 			// chatInstanceList
 			// 
@@ -88,16 +115,20 @@ namespace Ginger
 			this.chatInstanceList.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
             listViewItem1,
             listViewItem2});
-			this.chatInstanceList.Location = new System.Drawing.Point(3, 2);
+			this.chatInstanceList.LabelEdit = true;
+			this.chatInstanceList.LabelWrap = false;
+			this.chatInstanceList.Location = new System.Drawing.Point(3, 19);
 			this.chatInstanceList.MultiSelect = false;
 			this.chatInstanceList.Name = "chatInstanceList";
 			this.chatInstanceList.ShowItemToolTips = true;
-			this.chatInstanceList.Size = new System.Drawing.Size(254, 697);
+			this.chatInstanceList.Size = new System.Drawing.Size(248, 689);
 			this.chatInstanceList.SmallImageList = this.imageList;
-			this.chatInstanceList.TabIndex = 1;
+			this.chatInstanceList.TabIndex = 0;
 			this.chatInstanceList.UseCompatibleStateImageBehavior = false;
 			this.chatInstanceList.View = System.Windows.Forms.View.Details;
+			this.chatInstanceList.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.chatInstanceList_AfterLabelEdit);
 			this.chatInstanceList.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.chatList_ColumnWidthChanging);
+			this.chatInstanceList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.chatInstanceList_KeyDown);
 			// 
 			// columnTitle
 			// 
@@ -114,52 +145,27 @@ namespace Ginger
 			// 
 			this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
 			this.imageList.TransparentColor = System.Drawing.Color.Transparent;
-			this.imageList.Images.SetKeyName(0, "chat.png");
-			this.imageList.Images.SetKeyName(1, "chat_empty.png");
-			// 
-			// btnImport
-			// 
-			this.btnImport.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.btnImport.Location = new System.Drawing.Point(3, 699);
-			this.btnImport.Name = "btnImport";
-			this.btnImport.Size = new System.Drawing.Size(254, 30);
-			this.btnImport.TabIndex = 1;
-			this.btnImport.Text = "Import chat";
-			this.btnImport.UseVisualStyleBackColor = true;
-			this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
-			// 
-			// btnExport
-			// 
-			this.btnExport.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnExport.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.btnExport.Location = new System.Drawing.Point(3, 729);
-			this.btnExport.Margin = new System.Windows.Forms.Padding(4, 0, 0, 0);
-			this.btnExport.Name = "btnExport";
-			this.btnExport.Size = new System.Drawing.Size(254, 30);
-			this.btnExport.TabIndex = 2;
-			this.btnExport.Text = "Export chat";
-			this.btnExport.UseVisualStyleBackColor = true;
-			this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
+			this.imageList.Images.SetKeyName(0, "chat_empty.png");
+			this.imageList.Images.SetKeyName(1, "chat_short.png");
+			this.imageList.Images.SetKeyName(2, "chat_long.png");
 			// 
 			// centerPanel
 			// 
 			centerPanel.Controls.Add(this.chatView);
 			centerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-			centerPanel.Location = new System.Drawing.Point(260, 0);
+			centerPanel.Location = new System.Drawing.Point(260, 24);
 			centerPanel.Name = "centerPanel";
-			centerPanel.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-			centerPanel.Size = new System.Drawing.Size(774, 761);
+			centerPanel.Size = new System.Drawing.Size(774, 715);
 			centerPanel.TabIndex = 1;
 			// 
 			// chatView
 			// 
 			this.chatView.BackColor = System.Drawing.SystemColors.Window;
-			this.chatView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.chatView.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.chatView.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.chatView.Location = new System.Drawing.Point(3, 2);
+			this.chatView.Location = new System.Drawing.Point(0, 0);
 			this.chatView.Name = "chatView";
-			this.chatView.Size = new System.Drawing.Size(768, 757);
+			this.chatView.Size = new System.Drawing.Size(774, 715);
 			this.chatView.TabIndex = 0;
 			// 
 			// toolTip
@@ -183,6 +189,128 @@ namespace Ginger
 			this.importFileDialog.SupportMultiDottedExtensions = true;
 			this.importFileDialog.Title = "Import";
 			// 
+			// menuBar
+			// 
+			this.menuBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileMenu,
+            this.toolsMenu});
+			this.menuBar.Location = new System.Drawing.Point(0, 0);
+			this.menuBar.Name = "menuBar";
+			this.menuBar.Size = new System.Drawing.Size(1034, 24);
+			this.menuBar.TabIndex = 1;
+			this.menuBar.Text = "menuStrip1";
+			this.menuBar.MenuActivate += new System.EventHandler(this.menuBar_MenuActivate);
+			// 
+			// fileMenu
+			// 
+			this.fileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.selectCharacterMenuItem,
+            this.toolStripMenuItem3,
+            this.importMenuItem,
+            this.exportMenuItem,
+            this.duplicateMenuItem,
+            this.toolStripMenuItem1,
+            this.closeToolStripMenuItem});
+			this.fileMenu.Name = "fileMenu";
+			this.fileMenu.Size = new System.Drawing.Size(37, 20);
+			this.fileMenu.Text = "File";
+			// 
+			// selectCharacterMenuItem
+			// 
+			this.selectCharacterMenuItem.Name = "selectCharacterMenuItem";
+			this.selectCharacterMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.selectCharacterMenuItem.Text = "Select character...";
+			this.selectCharacterMenuItem.Click += new System.EventHandler(this.selectCharacterMenuItem_Click);
+			// 
+			// toolStripMenuItem3
+			// 
+			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+			this.toolStripMenuItem3.Size = new System.Drawing.Size(177, 6);
+			// 
+			// importMenuItem
+			// 
+			this.importMenuItem.Name = "importMenuItem";
+			this.importMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.importMenuItem.Text = "Import...";
+			this.importMenuItem.Click += new System.EventHandler(this.btnImport_Click);
+			// 
+			// exportMenuItem
+			// 
+			this.exportMenuItem.Name = "exportMenuItem";
+			this.exportMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.exportMenuItem.Text = "Export...";
+			this.exportMenuItem.Click += new System.EventHandler(this.btnExport_Click);
+			// 
+			// duplicateMenuItem
+			// 
+			this.duplicateMenuItem.Name = "duplicateMenuItem";
+			this.duplicateMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.duplicateMenuItem.Text = "Duplicate";
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+			// 
+			// closeToolStripMenuItem
+			// 
+			this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+			this.closeToolStripMenuItem.ShortcutKeyDisplayString = "Escape";
+			this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.closeToolStripMenuItem.Text = "Close";
+			this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+			// 
+			// toolsMenu
+			// 
+			this.toolsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fixLegacyChatsMenuItem,
+            this.toolStripMenuItem2,
+            this.purgeMenuItem});
+			this.toolsMenu.Name = "toolsMenu";
+			this.toolsMenu.Size = new System.Drawing.Size(46, 20);
+			this.toolsMenu.Text = "Tools";
+			// 
+			// fixLegacyChatsMenuItem
+			// 
+			this.fixLegacyChatsMenuItem.Name = "fixLegacyChatsMenuItem";
+			this.fixLegacyChatsMenuItem.Size = new System.Drawing.Size(170, 22);
+			this.fixLegacyChatsMenuItem.Text = "Fix legacy chats";
+			// 
+			// toolStripMenuItem2
+			// 
+			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(167, 6);
+			// 
+			// purgeMenuItem
+			// 
+			this.purgeMenuItem.Name = "purgeMenuItem";
+			this.purgeMenuItem.Size = new System.Drawing.Size(170, 22);
+			this.purgeMenuItem.Text = "Purge chat history";
+			// 
+			// statusBar
+			// 
+			this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusLabel,
+            this.statusChatLabel});
+			this.statusBar.Location = new System.Drawing.Point(0, 739);
+			this.statusBar.Name = "statusBar";
+			this.statusBar.Size = new System.Drawing.Size(1034, 22);
+			this.statusBar.TabIndex = 1;
+			this.statusBar.Text = "statusStrip1";
+			// 
+			// statusLabel
+			// 
+			this.statusLabel.AutoSize = false;
+			this.statusLabel.Name = "statusLabel";
+			this.statusLabel.Size = new System.Drawing.Size(260, 17);
+			this.statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// statusChatLabel
+			// 
+			this.statusChatLabel.Name = "statusChatLabel";
+			this.statusChatLabel.Size = new System.Drawing.Size(0, 17);
+			this.statusChatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
 			// LinkEditChatDialog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -190,29 +318,53 @@ namespace Ginger
 			this.ClientSize = new System.Drawing.Size(1034, 761);
 			this.Controls.Add(centerPanel);
 			this.Controls.Add(leftPanel);
+			this.Controls.Add(this.menuBar);
+			this.Controls.Add(this.statusBar);
 			this.DoubleBuffered = true;
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.MainMenuStrip = this.menuBar;
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(800, 600);
 			this.Name = "LinkEditChatDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Chat viewer";
+			this.Text = "Chat history";
 			leftPanel.ResumeLayout(false);
+			this.groupBox.ResumeLayout(false);
 			centerPanel.ResumeLayout(false);
+			this.menuBar.ResumeLayout(false);
+			this.menuBar.PerformLayout();
+			this.statusBar.ResumeLayout(false);
+			this.statusBar.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
 		#endregion
 		private System.Windows.Forms.ToolTip toolTip;
 		private System.Windows.Forms.ListView chatInstanceList;
-		private System.Windows.Forms.Button btnImport;
-		private System.Windows.Forms.Button btnExport;
 		private ChatListBox chatView;
 		private System.Windows.Forms.ImageList imageList;
 		private System.Windows.Forms.SaveFileDialog exportFileDialog;
 		private System.Windows.Forms.OpenFileDialog importFileDialog;
+		private System.Windows.Forms.MenuStrip menuBar;
+		private System.Windows.Forms.ToolStripMenuItem fileMenu;
+		private System.Windows.Forms.ToolStripMenuItem selectCharacterMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
+		private System.Windows.Forms.ToolStripMenuItem importMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem exportMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+		private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem toolsMenu;
+		private System.Windows.Forms.ToolStripMenuItem fixLegacyChatsMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+		private System.Windows.Forms.ToolStripMenuItem purgeMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem duplicateMenuItem;
+		private System.Windows.Forms.StatusStrip statusBar;
+		private System.Windows.Forms.ToolStripStatusLabel statusLabel;
+		private System.Windows.Forms.ToolStripStatusLabel statusChatLabel;
+		private System.Windows.Forms.GroupBox groupBox;
 	}
 }

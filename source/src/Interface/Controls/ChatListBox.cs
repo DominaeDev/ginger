@@ -108,7 +108,7 @@ namespace Ginger
 		private void ChatListView_Resize(object sender, EventArgs e)
 		{
 			listBox.Location = new Point(0, 0);
-			listBox.Size = new Size(this.Width, this.Height);
+			listBox.Size = new Size(this.ClientSize.Width, this.ClientSize.Height);
 			listBox.Invalidate();
 		}
 		

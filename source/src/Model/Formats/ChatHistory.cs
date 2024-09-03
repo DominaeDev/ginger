@@ -6,20 +6,28 @@ namespace Ginger
 {
 	public class ChatHistory
 	{
-		public string greeting;				// Chat.greetingDialogue
 		public Message[] messages;
 
-		public bool hasGreeting { get { return string.IsNullOrEmpty(greeting) == false; } }
-		public int Count { get { return messages != null ? messages.Length : 0; } }
-		public bool isEmpty { get { return Count == 0; } }
-
-		public IEnumerable<Message> MessagesWithoutGreeting
+		public IEnumerable<Message> messagesWithoutGreeting
 		{
 			get
 			{
-				if (hasGreeting) 
-					return messages.Skip(1);
+				if (count > 0 && messages[0].speaker == 1)
+					return messages.Skip(1); // Skip greeting
 				return messages;
+			}
+		}
+
+		public int count { get { return messages != null ? messages.Length : 0; } }
+		public bool isEmpty { get { return count == 0; } }
+
+		public DateTime lastMessageTime
+		{
+			get
+			{
+				if (count > 0)
+					return messages.Max(m => m.updateDate);
+				return DateTime.MinValue;
 			}
 		}
 
@@ -33,7 +41,7 @@ namespace Ginger
 			public int activeSwipe;
 			public string[] swipes;
 
-			public string message { get { return swipes != null && activeSwipe >= 0 && activeSwipe < swipes.Length ? swipes[activeSwipe] : null; } }
+			public string text { get { return swipes != null && activeSwipe >= 0 && activeSwipe < swipes.Length ? swipes[activeSwipe] : null; } }
 		}
 	}
 }

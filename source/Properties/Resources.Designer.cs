@@ -409,6 +409,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete chat.
+        /// </summary>
+        internal static string cap_link_delete_chat {
+            get {
+                return ResourceManager.GetString("cap_link_delete_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Linking error.
         /// </summary>
         internal static string cap_link_error {
@@ -432,6 +441,15 @@ namespace Ginger.Properties {
         internal static string cap_link_reestablish {
             get {
                 return ResourceManager.GetString("cap_link_reestablish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rename chat.
+        /// </summary>
+        internal static string cap_link_rename_chat {
+            get {
+                return ResourceManager.GetString("cap_link_rename_chat", resourceCulture);
             }
         }
         
@@ -797,6 +815,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to delete chat. Operation cancelled..
+        /// </summary>
+        internal static string error_link_delete_chat {
+            get {
+                return ResourceManager.GetString("error_link_delete_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to connect to Backyard AI..
         /// </summary>
         internal static string error_link_failed {
@@ -835,11 +862,29 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to rename chat. Operation cancelled..
+        /// </summary>
+        internal static string error_link_rename_chat {
+            get {
+                return ResourceManager.GetString("error_link_rename_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to save character to Backyard AI. Operation cancelled..
         /// </summary>
         internal static string error_link_save_character {
             get {
                 return ResourceManager.GetString("error_link_save_character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while accessing Backyard AI. Please reestablish the connection and try again..
+        /// </summary>
+        internal static string error_link_unknown {
+            get {
+                return ResourceManager.GetString("error_link_unknown", resourceCulture);
             }
         }
         
@@ -1575,6 +1620,28 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will delete &apos;{0}&apos; and all of its messages. This action cannot be reversed.
+        ///
+        ///Do you want to continue?.
+        /// </summary>
+        internal static string msg_link_delete_confirm {
+            get {
+                return ResourceManager.GetString("msg_link_delete_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will delete all messages in &apos;{0}&apos;. This action cannot be reversed.
+        ///
+        ///Do you want to continue?.
+        /// </summary>
+        internal static string msg_link_delete_confirm_last {
+            get {
+                return ResourceManager.GetString("msg_link_delete_confirm_last", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Do you want to create a link between Ginger and Backyard AI for the currently open file?.
         /// </summary>
         internal static string msg_link_new {
@@ -2129,6 +2196,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Successfully deleted chat.
+        /// </summary>
+        internal static string status_link_deleted_chat {
+            get {
+                return ResourceManager.GetString("status_link_deleted_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Disconnected from Backyard AI.
         /// </summary>
         internal static string status_link_disconnect {
@@ -2143,6 +2219,15 @@ namespace Ginger.Properties {
         internal static string status_link_reestablished {
             get {
                 return ResourceManager.GetString("status_link_reestablished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully renamed chat.
+        /// </summary>
+        internal static string status_link_renamed_chat {
+            get {
+                return ResourceManager.GetString("status_link_renamed_chat", resourceCulture);
             }
         }
         
