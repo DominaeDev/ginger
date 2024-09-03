@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -8,7 +9,7 @@ using Bridge = Ginger.BackyardBridge;
 
 namespace Ginger
 {
-	public partial class LinkSelectChatGroupDialog : Form
+	public partial class LinkSelectGroupDialog : Form
 	{
 		public Bridge.CharacterInstance[] Characters;
 		public Bridge.GroupInstance[] Groups;
@@ -16,10 +17,10 @@ namespace Ginger
 		public Bridge.GroupInstance SelectedGroup { get; private set; }
 
 		private Dictionary<string, Bridge.CharacterInstance> _charactersById;
-		public Dictionary<string, int> _folderCounts = new Dictionary<string, int>();
-		public Dictionary<string, int> _chatCounts;
+		private Dictionary<string, int> _folderCounts = new Dictionary<string, int>();
+		private Dictionary<string, Bridge.ChatCount> _chatCounts;
 
-		public LinkSelectChatGroupDialog()
+		public LinkSelectGroupDialog()
 		{
 			InitializeComponent();
 
@@ -30,9 +31,9 @@ namespace Ginger
 		{
 			_charactersById = Characters.ToDictionary(c => c.instanceId, c => c);
 			if (Bridge.GetChatCounts(out _chatCounts) != Bridge.Error.NoError)
-				_chatCounts = new Dictionary<string, int>(); // Empty
+				_chatCounts = new Dictionary<string, Bridge.ChatCount>(); // Empty
 
-			PopulateTree();
+			PopulateTree(false);
 
 			treeView.SelectedNode = null;
 			SelectedGroup = default(Bridge.GroupInstance);
@@ -43,7 +44,9 @@ namespace Ginger
 		private string GetGroupTitle(Bridge.GroupInstance group)
 		{
 			if (string.IsNullOrEmpty(group.name) == false)
+			{
 				return group.name;
+			}
 			else
 			{
 				var characters = group.members
@@ -59,6 +62,7 @@ namespace Ginger
 					string groupTitle = string.Join(", ", memberNames.Take(3));
 					if (memberNames.Length > 3)
 						groupTitle += ", ...";
+					
 					return groupTitle;
 				}
 				else
@@ -70,22 +74,42 @@ namespace Ginger
 			}
 		}
 
-		private void PopulateTree()
+		private DateTime GetLatestMessageTime(Bridge.GroupInstance group)
 		{
+			Bridge.ChatCount count;
+			if (_chatCounts.TryGetValue(group.instanceId, out count))
+				return count.lastMessaged;
+			return DateTime.MinValue;
+		}
+
+		private void PopulateTree(bool bRefresh)
+		{
+			HashSet<string> openedFolders = new HashSet<string>();
+			foreach (var node in treeView.AllNodes())
+			{
+				if (node.IsExpanded && node.Tag is string)
+					openedFolders.Add(node.Tag as string);
+			}
+
 			treeView.BeginUpdate();
 			treeView.Nodes.Clear();
 
 			if (Folders == null || Groups == null)
 				return; // Nothing to show
 
-			// Sum character counts
-			for (int i = 0; i < Folders.Length; ++i)
-				_folderCounts.Add(Folders[i].instanceId, Groups.Count(c => c.folderId == Folders[i].instanceId));
-			for (int i = Folders.Length - 1; i >= 0; --i)
+			if (bRefresh == false)
 			{
-				if (string.IsNullOrEmpty(Folders[i].parentId) == false)
-					_folderCounts[Folders[i].parentId] += _folderCounts[Folders[i].instanceId];
+				_folderCounts.Clear();
+				// Sum character counts
+				for (int i = 0; i < Folders.Length; ++i)
+					_folderCounts.Add(Folders[i].instanceId, Groups.Count(c => c.folderId == Folders[i].instanceId));
+				for (int i = Folders.Length - 1; i >= 0; --i)
+				{
+					if (string.IsNullOrEmpty(Folders[i].parentId) == false)
+						_folderCounts[Folders[i].parentId] += _folderCounts[Folders[i].instanceId];
+				}
 			}
+
 
 			// Create folder nodes
 			var nodesById = new Dictionary<string, TreeNode>();
@@ -96,6 +120,7 @@ namespace Ginger
 				.Select(f => f.instanceId)
 				.Distinct());
 
+			var expandedNodes = new List<TreeNode>();
 			while (openList.Count > 0)
 			{
 				string parentId = openList[0];
@@ -104,28 +129,38 @@ namespace Ginger
 					.OrderBy(f => f.name);
 
 				foreach (var folder in subfolders)
-					CreateFolderNode(folder, nodesById, _folderCounts[folder.instanceId]);
+				{
+					var folderNode = CreateFolderNode(folder, nodesById, _folderCounts[folder.instanceId]);
+					if (openedFolders.Contains(folder.instanceId))
+						expandedNodes.Add(folderNode);
+				}
 				
 				openList.Remove(parentId);
 			}
 
 			// Create group nodes
+			IEnumerable<Bridge.GroupInstance> sortedGroups;
+			if (AppSettings.User.SortGroupsAlphabetically)
+			{
+				sortedGroups = Groups
+					.OrderBy(g => GetGroupTitle(g))
+					.ThenByDescending(c => c.creationDate);
+			}
+			else
+			{
+				sortedGroups = Groups
+					.OrderByDescending(g => GetLatestMessageTime(g))
+					.ThenBy(g => GetGroupTitle(g));
+			}
+			foreach (var group in sortedGroups)
+				CreateGroupNode(group, nodesById);
 
-			// First group chats...
-			foreach (var group in Groups
-				.Where(g => g.members.Length > 2)
-				.OrderByDescending(c => c.creationDate))
+			if (bRefresh)
 			{
-				CreateGroupNode(group, nodesById);
+				for (int i = expandedNodes.Count - 1; i >= 0; --i)
+					expandedNodes[i].Expand();
 			}
-			// Then one-on-ones
-			foreach (var group in Groups
-				.Where(g => g.members.Length <= 2)
-				.OrderBy(g => GetGroupTitle(g))
-				.ThenByDescending(c => c.creationDate))
-			{
-				CreateGroupNode(group, nodesById);
-			}
+
 			treeView.EndUpdate();
 		}
 
@@ -139,6 +174,7 @@ namespace Ginger
 				parentNode.Nodes.Add(node);
 			else
 				treeView.Nodes.Add(node);
+			node.Tag = folder.instanceId;
 			nodes.Add(folder.instanceId, node);
 			return node;
 		}
@@ -170,9 +206,9 @@ namespace Ginger
 				sbTooltip.Append(characterNames[0]);
 			}
 
-			int chatCount;
+			Bridge.ChatCount chatCount;
 			if (_chatCounts.TryGetValue(group.instanceId, out chatCount))
-				sbTooltip.AppendFormat(" ({0} {1})", chatCount, chatCount == 1 ? "chat" : "chats");
+				sbTooltip.AppendFormat(" ({0} {1})", chatCount.count, chatCount.count == 1 ? "chat" : "chats");
 
 			sbTooltip.NewParagraph();
 			sbTooltip.AppendLine($"Created: {group.creationDate.ToShortDateString()}");
@@ -203,29 +239,64 @@ namespace Ginger
 
 		private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
 		{
-			if (e.Node == null || e.Node.Tag == null)
-			{
-				SelectedGroup = default(Bridge.GroupInstance);
-				btnOk.Enabled = false;
-			}
-			else
+			if (e.Node != null && e.Node.Tag is Bridge.GroupInstance)
 			{
 				SelectedGroup = (Bridge.GroupInstance)e.Node.Tag;
 				btnOk.Enabled = true;
+			}
+			else
+			{
+				SelectedGroup = default(Bridge.GroupInstance);
+				btnOk.Enabled = false;
 			}
 		}
 
 		private void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
-			if (e.Node == null || e.Node.Tag == null || e.Node != treeView.SelectedNode)
-			{
-				return; // Double-clicked folder: Do nothing
-			}
-			else
+			if (e.Node != null && e.Node.Tag is Bridge.GroupInstance && e.Node == treeView.SelectedNode)
 			{
 				SelectedGroup = (Bridge.GroupInstance)e.Node.Tag;
 				BtnOk_Click(this, EventArgs.Empty);
 			}
+			else
+			{
+				return; // Double-clicked folder: Do nothing
+			}
+		}
+
+		private void treeView_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right)
+			{
+				ShowContextMenu(sender as Control, new Point(e.X, e.Y));
+			}
+		}
+
+		private void ShowContextMenu(Control control, Point location)
+		{
+			ContextMenuStrip menu = new ContextMenuStrip();
+			menu.Items.Add(new ToolStripMenuItem("Sort alphabetically", null, (s, e) => {
+				if (AppSettings.User.SortGroupsAlphabetically == false)
+				{
+					AppSettings.User.SortGroupsAlphabetically = true;
+					PopulateTree(true);
+				}
+			}) 
+			{
+				Checked = AppSettings.User.SortGroupsAlphabetically,
+			});
+				
+			menu.Items.Add(new ToolStripMenuItem("Sort by last message", null, (s, e) => {
+				if (AppSettings.User.SortGroupsAlphabetically)
+				{
+					AppSettings.User.SortGroupsAlphabetically = false;
+					PopulateTree(true);
+				}
+			}) 
+			{
+				Checked = !AppSettings.User.SortGroupsAlphabetically,
+			});
+			menu.Show(control, location);
 		}
 	}
 }

@@ -140,7 +140,7 @@ namespace Ginger
 
 			public void RefreshState()
 			{
-				if (BackyardBridge.ConnectionEstablished)
+				if (ConnectionEstablished)
 				{
 					CharacterInstance character;
 					if (GetCharacter(characterId, out character))
@@ -401,8 +401,8 @@ namespace Ginger
 
 								string displayName = reader.GetString(2);
 								string name = reader.GetString(3);
-								DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(4));
-								DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(5));
+								DateTime createdAt = reader.GetUnixTime(4);
+								DateTime updatedAt = reader.GetUnixTime(5);
 								bool isUser = reader.GetBoolean(6);
 
 								_Characters.TryAdd(instanceId, 
@@ -441,7 +441,7 @@ namespace Ginger
 								string groupId = reader.GetString(1);
 								string folderId = reader.GetString(2);
 								string hubAuthorUsername = reader[3] as string;
-								DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(4)); // Should be very latest
+								DateTime updatedAt = reader.GetUnixTime(4); // Should be very latest
 
 								CharacterInstance character;
 								if (_Characters.TryGetValue(instanceId, out character))
@@ -535,8 +535,8 @@ namespace Ginger
 							while (reader.Read())
 							{
 								string instanceId = reader.GetString(0);
-								DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(1));
-								DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(2));
+								DateTime createdAt = reader.GetUnixTime(1);
+								DateTime updatedAt = reader.GetUnixTime(2);
 								string name = reader.GetString(3);
 								string folderId = reader.GetString(4);
 
@@ -628,8 +628,8 @@ namespace Ginger
 							}
 
 							string instanceId = reader.GetString(0);
-							DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(1));
-							DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(2));
+							DateTime createdAt = reader.GetUnixTime(1);
+							DateTime updatedAt = reader.GetUnixTime(2);
 							string displayName = reader.GetString(3);
 							string name = reader.GetString(4);
 							string persona = reader.GetString(5);
@@ -648,6 +648,7 @@ namespace Ginger
 							card.data.system = system;
 							card.data.persona = persona;
 							card.data.scenario = scenario;
+							card.data.greeting = greeting;
 							card.data.example = example;
 							card.data.grammar = grammar;
 							card.data.creationDate = createdAt.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
@@ -808,7 +809,7 @@ namespace Ginger
 
 							string configId = reader.GetString(0);
 							string groupId = reader.GetString(1);
-							DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(2));
+							DateTime updatedAt = reader.GetUnixTime(2);
 							newerChangesFound = updatedAt > linkInfo.updateDate;
 
 							connection.Close();
@@ -1691,7 +1692,12 @@ namespace Ginger
 
 		#region Chat
 
-		public static Error GetChatCounts(out Dictionary<string, int> counts)
+		public struct ChatCount {
+			public int count;
+			public DateTime lastMessaged;
+		}
+
+		public static Error GetChatCounts(out Dictionary<string, ChatCount> counts)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -1705,15 +1711,21 @@ namespace Ginger
 				{
 					connection.Open();
 					
-					counts = new Dictionary<string, int>();
+					counts = new Dictionary<string, ChatCount>();
 					using (var cmdChat = connection.CreateCommand())
 					{ 
 						cmdChat.CommandText =
 						@"
 							SELECT 
-								groupConfigId, COUNT(*)
-							FROM Chat
-							GROUP BY groupConfigId;
+								groupConfigId, 
+								COUNT(*), 
+								(
+									SELECT MAX(updatedAt)
+									FROM Message
+									WHERE chatId = C.id
+								)
+							FROM Chat AS C
+							GROUP BY groupConfigId
 						";
 
 						using (var reader = cmdChat.ExecuteReader())
@@ -1722,11 +1734,16 @@ namespace Ginger
 							{
 								string groupId = reader.GetString(0);
 								int count = reader.GetInt32(1);
+								DateTime updatedAt = reader.IsDBNull(2) ? DateTime.MinValue : reader.GetUnixTime(2);
 
-								counts.Add(groupId, count);
+								counts.Add(groupId, new ChatCount() {
+									count = count,
+									lastMessaged = updatedAt,
+								});
 							}							
 						}
 					}
+					
 					return Error.NoError;
 				}
 			}
@@ -1831,8 +1848,8 @@ namespace Ginger
 							{
 								string chatId = reader.GetString(0);
 								string name = reader.GetString(1);
-								DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(2));
-								DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(3));
+								DateTime createdAt = reader.GetUnixTime(2);
+								DateTime updatedAt = reader.GetUnixTime(3);
 								string greeting = reader.GetString(4);
 
 								if (string.IsNullOrWhiteSpace(name))
@@ -1882,9 +1899,9 @@ namespace Ginger
 								while (reader.Read())
 								{
 									string messageId = reader.GetString(0);
-									DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(1));
-									DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(2));
-									DateTime activeAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(3));
+									DateTime createdAt = reader.GetUnixTime(1);
+									DateTime updatedAt = reader.GetUnixTime(2);
+									DateTime activeAt = reader.GetUnixTime(3);
 									string characterId = reader.GetString(4);
 									string text = reader.GetString(5);
 
@@ -1919,7 +1936,8 @@ namespace Ginger
 									creationDate = message.createdAt,
 									updateDate = message.updatedAt,
 									activeSwipe = swipes.OrderByDescending(x => x.active).Select(x => x.index).First(),
-									swipes = swipes.Select(x => x.text).ToArray(),
+									swipes = swipes.Select(x => x.text)
+									.ToArray(),
 								};
 							})
 							.ToList();
@@ -2526,7 +2544,6 @@ namespace Ginger
 			newImageLinks = lsImageLinks.Count > 0 ? lsImageLinks.ToArray() : null;
 			return imagesToSave.ContainsAny(i => i.data.isEmpty == false);
 		}
-
 		#endregion
 
 
@@ -2659,6 +2676,13 @@ namespace Ginger
 			},
 		};
 		#endregion
+	}
 
+	public static class SqlExtensions
+	{
+		public static DateTime GetUnixTime(this SQLiteDataReader reader, int index)
+		{
+			return DateTimeExtensions.FromUnixTime(reader.GetInt64(index));
+		}
 	}
 }

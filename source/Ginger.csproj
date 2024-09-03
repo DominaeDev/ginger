@@ -187,6 +187,9 @@
     <Compile Include="src\Interface\Controls\TrackBarEx.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="src\Interface\Controls\TreeViewEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="src\Interface\Controls\UserNotes.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -199,17 +202,17 @@
     <Compile Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.Designer.cs">
       <DependentUpon>LinkEditChatDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectChatGroupDialog.cs">
+    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectGroupDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectChatGroupDialog.Designer.cs">
-      <DependentUpon>LinkSelectChatGroupDialog.cs</DependentUpon>
+    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectGroupDialog.Designer.cs">
+      <DependentUpon>LinkSelectGroupDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\Interface\Forms\Dialogs\LinkImportDialog.cs">
+    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectCharacterDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\Interface\Forms\Dialogs\LinkImportDialog.Designer.cs">
-      <DependentUpon>LinkImportDialog.cs</DependentUpon>
+    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectCharacterDialog.Designer.cs">
+      <DependentUpon>LinkSelectCharacterDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\AssetViewDialog.cs">
       <SubType>Form</SubType>
@@ -631,11 +634,11 @@
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.resx">
       <DependentUpon>LinkEditChatDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectChatGroupDialog.resx">
-      <DependentUpon>LinkSelectChatGroupDialog.cs</DependentUpon>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectGroupDialog.resx">
+      <DependentUpon>LinkSelectGroupDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkImportDialog.resx">
-      <DependentUpon>LinkImportDialog.cs</DependentUpon>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectCharacterDialog.resx">
+      <DependentUpon>LinkSelectCharacterDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\AssetViewDialog.resx">
       <DependentUpon>AssetViewDialog.cs</DependentUpon>

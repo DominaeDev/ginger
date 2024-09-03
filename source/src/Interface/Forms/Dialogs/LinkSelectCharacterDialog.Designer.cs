@@ -1,7 +1,7 @@
 ﻿
 namespace Ginger
 {
-	partial class LinkSelectChatGroupDialog
+	partial class LinkSelectCharacterDialog
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -32,16 +32,17 @@ namespace Ginger
 			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.Panel listPanel;
 			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Character", 1, 1);
-			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Group", 2, 2);
+			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Group", 2, 2, new System.Windows.Forms.TreeNode[] {
+            treeNode1});
 			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
-            treeNode1,
             treeNode2});
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectChatGroupDialog));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectCharacterDialog));
 			System.Windows.Forms.FlowLayoutPanel buttonLayout;
-			this.treeView = new System.Windows.Forms.TreeView();
+			this.treeView = new Ginger.TreeViewEx();
 			this.imageList = new System.Windows.Forms.ImageList(this.components);
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.btnOk = new System.Windows.Forms.Button();
+			this.cbCreateLink = new System.Windows.Forms.CheckBox();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			listPanel = new System.Windows.Forms.Panel();
 			buttonLayout = new System.Windows.Forms.FlowLayoutPanel();
@@ -90,6 +91,7 @@ namespace Ginger
 			this.treeView.ShowNodeToolTips = true;
 			this.treeView.Size = new System.Drawing.Size(480, 320);
 			this.treeView.TabIndex = 0;
+			this.treeView.OnRightClick += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseClick);
 			this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
 			this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseDoubleClick);
 			// 
@@ -98,8 +100,8 @@ namespace Ginger
 			this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
 			this.imageList.TransparentColor = System.Drawing.Color.Transparent;
 			this.imageList.Images.SetKeyName(0, "tree_folder.png");
-			this.imageList.Images.SetKeyName(1, "character_pair.png");
-			this.imageList.Images.SetKeyName(2, "character_group.png");
+			this.imageList.Images.SetKeyName(1, "character_small.png");
+			this.imageList.Images.SetKeyName(2, "group_small.png");
 			// 
 			// buttonLayout
 			// 
@@ -136,9 +138,20 @@ namespace Ginger
 			this.btnOk.Name = "btnOk";
 			this.btnOk.Size = new System.Drawing.Size(117, 30);
 			this.btnOk.TabIndex = 1;
-			this.btnOk.Text = "OK";
+			this.btnOk.Text = "Open";
 			this.btnOk.UseVisualStyleBackColor = true;
 			this.btnOk.Click += new System.EventHandler(this.BtnOk_Click);
+			// 
+			// cbCreateLink
+			// 
+			this.cbCreateLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.cbCreateLink.AutoSize = true;
+			this.cbCreateLink.Location = new System.Drawing.Point(11, 334);
+			this.cbCreateLink.Name = "cbCreateLink";
+			this.cbCreateLink.Size = new System.Drawing.Size(148, 19);
+			this.cbCreateLink.TabIndex = 3;
+			this.cbCreateLink.Text = "Create link to character";
+			this.cbCreateLink.UseVisualStyleBackColor = true;
 			// 
 			// toolTip
 			// 
@@ -149,13 +162,14 @@ namespace Ginger
 			this.toolTip.UseAnimation = false;
 			this.toolTip.UseFading = false;
 			// 
-			// LinkSelectChatGroupDialog
+			// LinkSelectCharacterDialog
 			// 
 			this.AcceptButton = this.btnOk;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnCancel;
 			this.ClientSize = new System.Drawing.Size(484, 361);
+			this.Controls.Add(this.cbCreateLink);
 			this.Controls.Add(listPanel);
 			this.Controls.Add(buttonLayout);
 			this.DoubleBuffered = true;
@@ -164,21 +178,23 @@ namespace Ginger
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(450, 300);
-			this.Name = "LinkSelectChatGroupDialog";
+			this.Name = "LinkSelectCharacterDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Select a character or group";
+			this.Text = "Open Backyard AI character";
 			listPanel.ResumeLayout(false);
 			buttonLayout.ResumeLayout(false);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
 		#endregion
 		private System.Windows.Forms.Button btnCancel;
 		private System.Windows.Forms.Button btnOk;
-		private System.Windows.Forms.TreeView treeView;
+		private TreeViewEx treeView;
 		private System.Windows.Forms.ImageList imageList;
+		private System.Windows.Forms.CheckBox cbCreateLink;
 		private System.Windows.Forms.ToolTip toolTip;
 	}
 }

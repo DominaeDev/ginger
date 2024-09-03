@@ -2076,13 +2076,21 @@ namespace Ginger
 				}
 				else
 				{
-					BackyardBridge.RefreshCharacters();
+					// Fetch characters
+					if (BackyardBridge.RefreshCharacters() != BackyardBridge.Error.NoError)
+					{
+						// Error
+						MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+						AppSettings.BackyardLink.Enabled = false;
+					}
+					else
+					{
+						if (Current.HasLink)
+							Current.Link.RefreshState();
 
-					if (Current.HasLink)
-						Current.Link.RefreshState();
-
-					SetStatusBarMessage(Resources.status_link_connect, Constants.StatusBarMessageInterval);
-					AppSettings.BackyardLink.Enabled = true;
+						SetStatusBarMessage(Resources.status_link_connect, Constants.StatusBarMessageInterval);
+						AppSettings.BackyardLink.Enabled = true;
+					}
 				}
 			}
 			else

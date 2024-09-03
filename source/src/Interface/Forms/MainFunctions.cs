@@ -1513,7 +1513,7 @@ namespace Ginger
 
 		private bool ImportCharacterFromBackyard()
 		{
-			var dlg = new LinkImportDialog();
+			var dlg = new LinkSelectCharacterDialog();
 
 			// Refresh character list
 			if (BackyardBridge.RefreshCharacters() != BackyardBridge.Error.NoError)

@@ -66,7 +66,7 @@ namespace Ginger
 
 		private void LinkEditChatDialog_Shown(object sender, EventArgs e)
 		{
-			var groupDlg = new LinkSelectChatGroupDialog();
+			var groupDlg = new LinkSelectGroupDialog();
 			groupDlg.Characters = Bridge.Characters.ToArray();
 			groupDlg.Groups = Bridge.Groups.ToArray();
 			groupDlg.Folders = Bridge.Folders.ToArray();
@@ -217,7 +217,7 @@ namespace Ginger
 				});
 			}
 			chatView.Items.AddRange(lines.ToArray());
-			chatView.listBox.TopIndex = chatView.Items.Count - 1;
+			chatView.listBox.TopIndex = 0; // chatView.Items.Count - 1;
 
 		}
 
