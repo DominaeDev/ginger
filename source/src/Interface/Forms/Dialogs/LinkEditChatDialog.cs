@@ -57,6 +57,12 @@ namespace Ginger
 			_statusbarTimer.Elapsed += OnStatusBarTimerElapsed;
 			_statusbarTimer.AutoReset = false;
 			_statusbarTimer.SynchronizingObject = this;
+
+			importMenuItem.ToolTipText = Resources.tooltip_import_chat;
+			exportMenuItem.ToolTipText = Resources.tooltip_export_chat;
+			duplicateMenuItem.ToolTipText = Resources.tooltip_duplicate_chat;
+			repairChatsMenuItem.ToolTipText = Resources.tooltip_repair_chat;
+			purgeMenuItem.ToolTipText = Resources.tooltip_purge_chat;
 		}
 
 		private void OnLoad(object sender, EventArgs e)
@@ -383,25 +389,13 @@ namespace Ginger
 			AppSettings.User.LastImportChatFilter = importFileDialog.FilterIndex;
 			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
 
-			string ext = (Path.GetExtension(importFileDialog.FileName) ?? "").ToLowerInvariant();
-
-			ChatHistory importedChat = null;
-			if (ext == ".json")
-			{
-				importedChat = LoadChatFromJson(importFileDialog.FileName);
-				if (importedChat == null)
-				{
-					MessageBox.Show(Resources.error_unrecognized_chat_format, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return false;
-				}
-			}
-			else
+			ChatHistory importedChat = FileUtil.ImportChat(importFileDialog.FileName);
+			if (importedChat == null)
 			{
 				MessageBox.Show(Resources.error_unrecognized_chat_format, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
-
-			if (importedChat == null || importedChat.isEmpty)
+			else if (importedChat.isEmpty)
 			{
 				MessageBox.Show(Resources.error_empty_chat, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
@@ -449,23 +443,6 @@ namespace Ginger
 					return;
 				}
 			}
-		}
-
-		private static ChatHistory LoadChatFromJson(string filename)
-		{
-			string json;
-			if (FileUtil.ReadTextFile(filename, out json) == false)
-				return null;
-
-			// Try to read Tavern format (World book)
-			if (CAIChat.Validate(json))
-			{
-				var caiChat = CAIChat.FromJson(json);
-				if (caiChat != null)
-					return caiChat.ToChat();
-			}
-
-			return null;
 		}
 
 		private void closeToolStripMenuItem_Click(object sender, EventArgs e)

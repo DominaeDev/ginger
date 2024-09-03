@@ -1747,7 +1747,7 @@ namespace Ginger
 			return BackyardBridge.Error.NoError;
 		}
 
-		private bool OpenChatEditor()
+		private bool OpenChatHistory()
 		{
 			if (BackyardBridge.ConnectionEstablished == false)
 			{

@@ -932,4 +932,19 @@ Do you want to continue?</value>
   <data name="status_link_repaired_chat" xml:space="preserve">
     <value>Modified {0} chats</value>
   </data>
+  <data name="tooltip_duplicate_chat" xml:space="preserve">
+    <value>Make a duplicate copy of the selected chat.</value>
+  </data>
+  <data name="tooltip_export_chat" xml:space="preserve">
+    <value>Export the selected chat to a file.</value>
+  </data>
+  <data name="tooltip_import_chat" xml:space="preserve">
+    <value>Import a chat from a file.</value>
+  </data>
+  <data name="tooltip_purge_chat" xml:space="preserve">
+    <value>Delete all chats for the current character.</value>
+  </data>
+  <data name="tooltip_repair_chat" xml:space="preserve">
+    <value>Remove instances of "#{character}:" and "#{user}:" from all chats for the current character.</value>
+  </data>
 </root>

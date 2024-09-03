@@ -1211,6 +1211,7 @@ namespace Ginger
 			reestablishLinkMenuItem.Visible = BackyardBridge.ConnectionEstablished && Current.HasStaleLink;
 			breakLinkMenuItem.Enabled = BackyardBridge.ConnectionEstablished;
 			breakLinkMenuItem.Visible = BackyardBridge.ConnectionEstablished && Current.HasActiveLink;
+			chatHistoryMenuItem.Visible = BackyardBridge.ConnectionEstablished;
 		}
 
 		private void PopulateMRUMenu(ToolStripItemCollection items)
@@ -1553,6 +1554,11 @@ namespace Ginger
 			else if (keyData == ShortcutKeys.LinkedSaveAsNew && BackyardBridge.ConnectionEstablished && Current.HasActiveLink == false)
 			{
 				saveNewLinkedMenuItem_Click(this, EventArgs.Empty);
+				return true;
+			}
+			else if (keyData == ShortcutKeys.LinkedChatHistory && BackyardBridge.ConnectionEstablished)
+			{
+				OpenChatHistory();
 				return true;
 			}
 
@@ -2199,9 +2205,9 @@ namespace Ginger
 			recipeList.RefreshAllParameters();
 		}
 
-		private void chatEditorMenuItem_Click(object sender, EventArgs e)
+		private void chatHistoryMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenChatEditor();
+			OpenChatHistory();
 		}
 	}
 

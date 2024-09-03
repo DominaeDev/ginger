@@ -44,8 +44,6 @@ namespace Ginger {
 			this.reestablishLinkSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.reestablishLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.breakLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
-			this.chatEditorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitContainer = new System.Windows.Forms.SplitContainer();
 			this.sidePanel = new Ginger.SidePanel();
 			this.tabControl = new System.Windows.Forms.CustomTabControl();
@@ -104,6 +102,7 @@ namespace Ginger {
 			this.viewOutputMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.viewNotesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.embeddedAssetsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.chatHistoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.collapseAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.expandAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.showRecipeCategoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -233,9 +232,7 @@ namespace Ginger {
             this.revertLinkedMenuItem,
             this.reestablishLinkSeparator,
             this.reestablishLinkMenuItem,
-            this.breakLinkMenuItem,
-            this.toolStripMenuItem11,
-            this.chatEditorMenuItem});
+            this.breakLinkMenuItem});
 			linkMenuItem.Name = "linkMenuItem";
 			linkMenuItem.Size = new System.Drawing.Size(259, 22);
 			linkMenuItem.Text = "&Link";
@@ -308,19 +305,6 @@ namespace Ginger {
 			this.breakLinkMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.breakLinkMenuItem.Text = "Break link";
 			this.breakLinkMenuItem.Click += new System.EventHandler(this.breakLinkMenuItem_Click);
-			// 
-			// toolStripMenuItem11
-			// 
-			this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-			this.toolStripMenuItem11.Size = new System.Drawing.Size(236, 6);
-			// 
-			// chatEditorMenuItem
-			// 
-			this.chatEditorMenuItem.Name = "chatEditorMenuItem";
-			this.chatEditorMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
-			this.chatEditorMenuItem.Size = new System.Drawing.Size(239, 22);
-			this.chatEditorMenuItem.Text = "Chat viewer";
-			this.chatEditorMenuItem.Click += new System.EventHandler(this.chatEditorMenuItem_Click);
 			// 
 			// splitContainer
 			// 
@@ -981,6 +965,7 @@ namespace Ginger {
             this.viewOutputMenuItem,
             this.viewNotesMenuItem,
             this.embeddedAssetsMenuItem,
+            this.chatHistoryMenuItem,
             toolStripMenuItem5,
             this.collapseAllMenuItem,
             this.expandAllMenuItem,
@@ -1022,6 +1007,14 @@ namespace Ginger {
 			this.embeddedAssetsMenuItem.Size = new System.Drawing.Size(219, 22);
 			this.embeddedAssetsMenuItem.Text = "Embedded &assets";
 			this.embeddedAssetsMenuItem.Click += new System.EventHandler(this.embeddedAssetsMenuItem_Click);
+			// 
+			// chatHistoryMenuItem
+			// 
+			this.chatHistoryMenuItem.Name = "chatHistoryMenuItem";
+			this.chatHistoryMenuItem.ShortcutKeyDisplayString = "Alt+C";
+			this.chatHistoryMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.chatHistoryMenuItem.Text = "Chat &history";
+			this.chatHistoryMenuItem.Click += new System.EventHandler(this.chatHistoryMenuItem_Click);
 			// 
 			// collapseAllMenuItem
 			// 
@@ -1613,8 +1606,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripStatusLabel statusConnectionIcon;
 		private System.Windows.Forms.ToolStripMenuItem revertLinkedMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem rearrangeLoreMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
-		private System.Windows.Forms.ToolStripMenuItem chatEditorMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem chatHistoryMenuItem;
 	}
 }
 

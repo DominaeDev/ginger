@@ -2737,6 +2737,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Make a duplicate copy of the selected chat..
+        /// </summary>
+        internal static string tooltip_duplicate_chat {
+            get {
+                return ResourceManager.GetString("tooltip_duplicate_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Include attributes in the character persona..
         /// </summary>
         internal static string tooltip_enable_attributes {
@@ -2796,6 +2805,24 @@ namespace Ginger.Properties {
         internal static string tooltip_enable_scenario {
             get {
                 return ResourceManager.GetString("tooltip_enable_scenario", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export the selected chat to a file..
+        /// </summary>
+        internal static string tooltip_export_chat {
+            get {
+                return ResourceManager.GetString("tooltip_export_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import a chat from a file..
+        /// </summary>
+        internal static string tooltip_import_chat {
+            get {
+                return ResourceManager.GetString("tooltip_import_chat", resourceCulture);
             }
         }
         
@@ -3003,6 +3030,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete all chats for the current character..
+        /// </summary>
+        internal static string tooltip_purge_chat {
+            get {
+                return ResourceManager.GetString("tooltip_purge_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allows lorebook entries to be moved on a row-by-row basis..
         /// </summary>
         internal static string tooltip_rearrange_lore {
@@ -3080,6 +3116,15 @@ namespace Ginger.Properties {
         internal static string tooltip_remove_lore {
             get {
                 return ResourceManager.GetString("tooltip_remove_lore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove instances of &quot;#{character}:&quot; and &quot;#{user}:&quot; from all chats for the current character..
+        /// </summary>
+        internal static string tooltip_repair_chat {
+            get {
+                return ResourceManager.GetString("tooltip_repair_chat", resourceCulture);
             }
         }
         

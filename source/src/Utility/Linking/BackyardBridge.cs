@@ -202,7 +202,7 @@ namespace Ginger
 			return new SQLiteConnection($"Data Source={dbFilePath}; Version=3; Foreign Keys=True; Pooled=True;");
 		}
 
-#region Establish Link
+		#region Establish Link
 		public static Error EstablishConnection()
 		{
 			try
@@ -301,9 +301,9 @@ namespace Ginger
 			AppSettings.BackyardLink.Enabled = false;
 			SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
 		}
-#endregion
+		#endregion
 
-#region Character information
+		#region Enumerate characters and groups
 		public static bool GetCharacter(string characterId, out CharacterInstance character)
 		{
 			return _Characters.TryGetValue(characterId, out character);
@@ -1362,9 +1362,9 @@ namespace Ginger
 				return Error.Unknown;
 			}
 		}
-#endregion
+		#endregion
 
-#region Save new character
+		#region Save new character
 
 		public static Error CreateNewCharacter(FaradayCardV4 card, out CharacterInstance characterInstance, out Link.Image[] imageLinks)
 		{
@@ -2011,8 +2011,6 @@ namespace Ginger
 							},
 						};
 
-//						if (messages.Count > 0)
-//							chatInstance.updateDate = DateTimeExtensions.Max(chatInstance.updateDate, messages.Max(m => m.createdAt)); // Latest message
 						lsChatInstances.Add(chatInstance);
 					}
 
@@ -3309,7 +3307,6 @@ namespace Ginger
 			return imagesToSave.ContainsAny(i => i.data.isEmpty == false);
 		}
 		#endregion // Utilities
-
 
 		#region Validation
 		// Validation table

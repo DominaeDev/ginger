@@ -220,5 +220,6 @@ namespace Ginger
 		public const Keys LinkedOpen = Keys.Control | Keys.Shift | Keys.O;
 		public const Keys LinkedSave = Keys.Control | Keys.U;
 		public const Keys LinkedSaveAsNew = Keys.Control | Keys.Shift | Keys.U;
+		public const Keys LinkedChatHistory = Keys.Alt | Keys.C;
 	}
 }
