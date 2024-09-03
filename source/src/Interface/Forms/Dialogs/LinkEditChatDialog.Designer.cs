@@ -246,6 +246,7 @@ namespace Ginger
 			this.duplicateMenuItem.Name = "duplicateMenuItem";
 			this.duplicateMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.duplicateMenuItem.Text = "Duplicate";
+			this.duplicateMenuItem.Click += new System.EventHandler(this.duplicateMenuItem_Click);
 			// 
 			// toolStripMenuItem1
 			// 
@@ -273,19 +274,20 @@ namespace Ginger
 			// fixLegacyChatsMenuItem
 			// 
 			this.fixLegacyChatsMenuItem.Name = "fixLegacyChatsMenuItem";
-			this.fixLegacyChatsMenuItem.Size = new System.Drawing.Size(170, 22);
+			this.fixLegacyChatsMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.fixLegacyChatsMenuItem.Text = "Fix legacy chats";
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(167, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
 			// 
 			// purgeMenuItem
 			// 
 			this.purgeMenuItem.Name = "purgeMenuItem";
-			this.purgeMenuItem.Size = new System.Drawing.Size(170, 22);
+			this.purgeMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.purgeMenuItem.Text = "Purge chat history";
+			this.purgeMenuItem.Click += new System.EventHandler(this.purgeMenuItem_Click);
 			// 
 			// statusBar
 			// 

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Ginger
 {
-	public class ChatHistory
+	public class ChatHistory : ICloneable
 	{
 		public Message[] messages;
 
@@ -31,7 +31,7 @@ namespace Ginger
 			}
 		}
 
-		public class Message
+		public class Message : ICloneable
 		{
 			public string instanceId;		// Message.id
 			public int speaker;
@@ -42,6 +42,23 @@ namespace Ginger
 			public string[] swipes;
 
 			public string text { get { return swipes != null && activeSwipe >= 0 && activeSwipe < swipes.Length ? swipes[activeSwipe] : null; } }
+
+			public object Clone()
+			{
+				var clone = (Message)MemberwiseClone();
+				clone.swipes = new string[this.swipes.Length];
+				Array.Copy(this.swipes, clone.swipes, this.swipes.Length);
+				return clone;
+			}
+		}
+
+		public object Clone()
+		{
+			var clone = new ChatHistory();
+			clone.messages = new Message[messages.Length];
+			for (int i = 0; i < messages.Length; ++i)
+				clone.messages[i] = (Message)messages[i].Clone();
+			return clone;
 		}
 	}
 }

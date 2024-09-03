@@ -72,15 +72,19 @@ namespace Ginger
 
 		private void RefreshTitle()
 		{
-			if (string.IsNullOrEmpty(Group.instanceId) == false)
-				Text = string.Format("Chat history - {1}{0}", GetGroupTitle(Group), Group.members.Length > 2 ? "[Group] " : "");
+			if (Group.isEmpty == false)
+				Text = string.Format("Chat history - {1}{0}", GetGroupTitle(Group), Group.members.Length > 2 ? "(Group) " : "");
 			else
 				Text = "Chat history";
 		}
 
 		private string GetGroupTitle(Bridge.GroupInstance group)
 		{
-			if (string.IsNullOrEmpty(group.name) == false)
+			if (group.isEmpty)
+			{
+				return "Undefined";
+			}
+			else if (string.IsNullOrEmpty(group.name) == false)
 			{
 				return group.name;
 			}
@@ -114,7 +118,7 @@ namespace Ginger
 		private void LinkEditChatDialog_Shown(object sender, EventArgs e)
 		{
 			// Refresh character list
-			if (string.IsNullOrEmpty(Group.instanceId))
+			if (Group.isEmpty)
 			{
 				if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
 				{
@@ -321,6 +325,12 @@ namespace Ginger
 		{
 			if (chatInstance == null)
 				return; // Error
+
+			if (chatInstance.history.messagesWithoutGreeting.Count() == 0)
+			{
+				MessageBox.Show(Resources.error_empty_chat, Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return ;
+			}
 
 			string filename = chatInstance.name;
 //			if (AppSettings.User.LastExportChatFilter == 1) // json
@@ -604,11 +614,62 @@ namespace Ginger
 
 		private void menuBar_MenuActivate(object sender, EventArgs e)
 		{
-			bool hasGroup = string.IsNullOrEmpty(Group.instanceId) == false;
+			bool hasGroup = Group.isEmpty == false;
 			bool hasSelection = _selectedChatInstance != null;
 			importMenuItem.Enabled = hasGroup;
 			exportMenuItem.Enabled = hasGroup && hasSelection;
 			duplicateMenuItem.Enabled = hasGroup && hasSelection;
+			purgeMenuItem.Enabled = hasGroup;
+		}
+
+		private void duplicateMenuItem_Click(object sender, EventArgs e)
+		{
+			DuplicateChat(_selectedChatInstance);
+		}
+
+		public void DuplicateChat(Bridge.ChatInstance chatInstance)
+		{
+			if (chatInstance == null || Group.isEmpty)
+				return;
+
+			Bridge.ChatInstance duplicate;
+			var error = Bridge.CreateNewChat(string.Concat(chatInstance.name, " (copy)"), chatInstance.history, Group.instanceId, out duplicate);
+
+			if (error != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_duplicate_chat, Resources.cap_link_duplicate_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				PopulateChatList(true);
+				SetStatusBarMessage(Resources.status_link_duplicated_chat, Constants.StatusBarMessageInterval);
+			}
+		}
+
+		private void purgeMenuItem_Click(object sender, EventArgs e)
+		{
+			PurgeAllChats();
+		}
+
+		private void PurgeAllChats()
+		{
+			if (Group.isEmpty)
+				return; // Error
+
+			var mr = MessageBox.Show(string.Format(Resources.msg_link_purge_chat, GetGroupTitle(Group)), Resources.cap_link_purge_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+			if (mr != DialogResult.Yes)
+				return;
+
+			var error = Bridge.PurgeChats(Group.instanceId);
+			if (error != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_purge_chat, Resources.cap_link_purge_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				PopulateChatList(true);
+				SetStatusBarMessage(Resources.status_link_purged_chat, Constants.StatusBarMessageInterval);
+			}
 		}
 	}
 }

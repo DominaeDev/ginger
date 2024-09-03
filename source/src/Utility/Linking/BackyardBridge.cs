@@ -33,6 +33,11 @@ namespace Ginger
 			public DateTime creationDate;	// CharacterConfig.createdAt
 			public DateTime updateDate;     // CharacterConfig.updatedAt
 			public string[] members;		// CharacterConfigVersion.id...
+
+			public bool isEmpty
+			{
+				get { return string.IsNullOrEmpty(instanceId) || members == null || members.Length == 0; }
+			}
 		}
 
 		public struct FolderInstance
@@ -2220,11 +2225,12 @@ namespace Ginger
 
 							// Write messages
 							var lsMessages = new List<ChatHistory.Message>();
-							if (chatHistory.count > 0)
+							int messageCount = chatHistory.messagesWithoutGreeting.Count();
+							if (messageCount > 0)
 							{
 								// Generate unique IDs
-								var messageIds = new string[chatHistory.count];
-								var swipeIds = new string[chatHistory.count];
+								var messageIds = new string[messageCount];
+								var swipeIds = new string[messageCount];
 								for (int i = 0; i < messageIds.Length; ++i)
 								{
 									messageIds[i] = Cuid.NewCuid();
@@ -2285,7 +2291,7 @@ namespace Ginger
 
 									cmdMessages.Parameters.AddWithValue("$chatId", chatId);
 
-									expectedUpdates += chatHistory.messagesWithoutGreeting.Count() * 2;
+									expectedUpdates += messageCount * 2;
 									updates += cmdMessages.ExecuteNonQuery();
 								}
 							}
@@ -2566,6 +2572,147 @@ namespace Ginger
 			}
 		}
 
+		public static Error PurgeChats(string groupId)
+		{
+			if (ConnectionEstablished == false)
+				return Error.NotConnected;
+
+			if (string.IsNullOrEmpty(groupId))
+				return Error.InvalidArgument;
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					// Fetch character config id
+					var chatIds = new List<string>();
+					using (var cmdGetChats = connection.CreateCommand())
+					{ 
+						cmdGetChats.CommandText =
+						@"
+							SELECT id
+							FROM Chat
+							WHERE groupConfigId = $groupId
+						";
+						cmdGetChats.Parameters.AddWithValue("$groupId", groupId);
+
+						using (var reader = cmdGetChats.ExecuteReader())
+						{
+							while (reader.Read())
+								chatIds.Add(reader.GetString(0));
+						}
+					}
+
+					if (chatIds.Count == 0)
+					{
+						return Error.NotFound;
+					}	
+
+					// Write to database
+					int updates = 0;
+					int expectedUpdates = 0;
+					DateTime now = DateTime.Now;
+					long updatedAt = now.ToUnixTimeMilliseconds();
+
+					using (var transaction = connection.BeginTransaction())
+					{
+						try
+						{
+							// Delete all but one chat
+							using (var cmdDeleteChat = connection.CreateCommand())
+							{
+								var sbCommand = new StringBuilder();
+								sbCommand.AppendLine(
+								@"
+									DELETE FROM Chat
+									WHERE id IN (
+								");
+
+								for (int i = 1; i < chatIds.Count; ++i)
+								{
+									if (i > 1)
+										sbCommand.Append(", ");
+									sbCommand.AppendFormat("'{0}'", chatIds[i]);
+								}
+								sbCommand.AppendLine(");");
+								cmdDeleteChat.CommandText = sbCommand.ToString();
+
+								expectedUpdates += chatIds.Count - 1;
+								updates += cmdDeleteChat.ExecuteNonQuery();
+							}
+
+							// Delete all messages from the first chat
+							using (var cmdEditChat = connection.CreateCommand())
+							{
+								cmdEditChat.CommandText =
+								@"
+									DELETE FROM Message
+									WHERE chatId = $chatId;
+								";
+
+								cmdEditChat.Parameters.AddWithValue("$chatId", chatIds[0]);
+
+								int nDeleted = cmdEditChat.ExecuteNonQuery();
+								expectedUpdates += nDeleted;
+								updates += nDeleted;
+							}
+
+							// Update first chat info
+							using (var cmdUpdateChat = connection.CreateCommand())
+							{
+								cmdUpdateChat.CommandText =
+								@"
+									UPDATE Chat
+									SET 
+										updatedAt = $timestamp,
+										name = $name
+									WHERE id = $chatId;
+								";
+
+								cmdUpdateChat.Parameters.AddWithValue("$chatId", chatIds[0]);
+								cmdUpdateChat.Parameters.AddWithValue("$timestamp", updatedAt);
+								cmdUpdateChat.Parameters.AddWithValue("$name", "");
+
+								expectedUpdates += 1;
+								updates += cmdUpdateChat.ExecuteNonQuery();
+							}
+		
+							if (updates != expectedUpdates)
+							{
+								transaction.Rollback();
+								return Error.SQLCommandFailed;
+							}
+
+							transaction.Commit();
+							return Error.NoError;
+						}
+						catch (Exception e)
+						{
+							transaction.Rollback();
+							return Error.SQLCommandFailed;
+						}
+					}
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Disconnect();
+				return Error.FileNotFound;
+			}
+			catch (SQLiteException e)
+			{
+				Disconnect();
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				Disconnect();
+				return Error.Unknown;
+			}
+		}
+
 		public static Error UpdateChat(ChatInstance chatInstance)
 		{
 			if (ConnectionEstablished == false)
@@ -2629,11 +2776,12 @@ namespace Ginger
 							
 							// Write messages
 							var lsMessages = new List<ChatHistory.Message>();
-							if (chatInstance.history.count > 0)
+							int messageCount = chatInstance.history.messagesWithoutGreeting.Count();
+							if (messageCount > 0)
 							{
 								// Generate unique IDs
-								var messageIds = new string[chatInstance.history.count];
-								var swipeIds = new string[chatInstance.history.count];
+								var messageIds = new string[messageCount];
+								var swipeIds = new string[messageCount];
 								for (int i = 0; i < messageIds.Length; ++i)
 								{
 									messageIds[i] = Cuid.NewCuid();
@@ -2694,7 +2842,7 @@ namespace Ginger
 
 									cmdMessages.Parameters.AddWithValue("$chatId", chatId);
 
-									expectedUpdates += chatInstance.history.messagesWithoutGreeting.Count() * 2;
+									expectedUpdates += messageCount * 2;
 									updates += cmdMessages.ExecuteNonQuery();
 								}
 							}

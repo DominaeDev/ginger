@@ -864,11 +864,23 @@ Do you want to continue?</value>
   <data name="cap_link_delete_chat" xml:space="preserve">
     <value>Delete chat</value>
   </data>
+  <data name="cap_link_duplicate_chat" xml:space="preserve">
+    <value>Duplicate chat</value>
+  </data>
+  <data name="cap_link_purge_chat" xml:space="preserve">
+    <value>Purge chat history</value>
+  </data>
   <data name="cap_link_rename_chat" xml:space="preserve">
     <value>Rename chat</value>
   </data>
   <data name="error_link_delete_chat" xml:space="preserve">
     <value>Failed to delete chat. Operation cancelled.</value>
+  </data>
+  <data name="error_link_duplicate_chat" xml:space="preserve">
+    <value>Failed to duplicate chat. Operation cancelled.</value>
+  </data>
+  <data name="error_link_purge_chat" xml:space="preserve">
+    <value>Failed to purge chat. Operation cancelled.</value>
   </data>
   <data name="error_link_rename_chat" xml:space="preserve">
     <value>Failed to rename chat. Operation cancelled.</value>
@@ -886,8 +898,19 @@ Do you want to continue?</value>
 
 Do you want to continue?</value>
   </data>
+  <data name="msg_link_purge_chat" xml:space="preserve">
+    <value>WARNING! This will delete all chat history for '{0}'. This action cannot be reversed.
+
+Are you sure you want to delete everything?</value>
+  </data>
   <data name="status_link_deleted_chat" xml:space="preserve">
     <value>Successfully deleted chat</value>
+  </data>
+  <data name="status_link_duplicated_chat" xml:space="preserve">
+    <value>Successfully duplicated chat</value>
+  </data>
+  <data name="status_link_purged_chat" xml:space="preserve">
+    <value>Chat history deleted.</value>
   </data>
   <data name="status_link_renamed_chat" xml:space="preserve">
     <value>Successfully renamed chat</value>
