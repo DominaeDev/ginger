@@ -791,9 +791,9 @@ namespace Ginger
 			}
 		}
 
-#endregion
+		#endregion
 
-#region Update character
+		#region Update character
 		public static Error ConfirmSaveCharacter(FaradayCardV4 card, Link linkInfo, out bool newerChangesFound)
 		{
 			if (ConnectionEstablished == false)
@@ -2453,7 +2453,7 @@ namespace Ginger
 				{
 					connection.Open();
 
-					// Fetch character config id
+					// Count chats
 					using (var cmdConfirm = connection.CreateCommand())
 					{ 
 						cmdConfirm.CommandText =
@@ -2586,7 +2586,7 @@ namespace Ginger
 				{
 					connection.Open();
 
-					// Fetch character config id
+					// Find chats to purge
 					var chatIds = new List<string>();
 					using (var cmdGetChats = connection.CreateCommand())
 					{ 
@@ -2891,6 +2891,196 @@ namespace Ginger
 				return Error.Unknown;
 			}
 		}
+
+		private struct _SwipeRepair
+		{
+			public string instanceId;
+			public string chatId;
+			public string text;
+		}
+		public static Error RepairChats(string groupId, out int modified)
+		{
+			if (ConnectionEstablished == false)
+			{
+				modified = 0;
+				return Error.NotConnected;
+			}
+
+			if (string.IsNullOrEmpty(groupId))
+			{
+				modified = 0;
+				return Error.InvalidArgument;
+			}
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					// Find chats for group
+					var chatIds = new List<string>();
+					using (var cmdGetChats = connection.CreateCommand())
+					{ 
+						cmdGetChats.CommandText =
+						@"
+							SELECT id
+							FROM Chat
+							WHERE groupConfigId = $groupId
+						";
+						cmdGetChats.Parameters.AddWithValue("$groupId", groupId);
+
+						using (var reader = cmdGetChats.ExecuteReader())
+						{
+							while (reader.Read())
+								chatIds.Add(reader.GetString(0));
+						}
+					}
+
+					// Find messages to fix
+					var swipes = new List<_SwipeRepair>(512);
+					for (int i = 0; i < chatIds.Count; ++i)
+					{
+						string chatId = chatIds[i];
+						using (var cmdMessages = connection.CreateCommand())
+						{
+							cmdMessages.CommandText =
+							@"
+								SELECT 
+									R.id, R.text 
+								FROM RegenSwipe As R
+								WHERE R.messageId IN (
+									SELECT id
+									FROM Message
+									WHERE chatId = $chatId
+								)
+							";
+							cmdMessages.Parameters.AddWithValue("$chatId", chatId);
+
+							using (var reader = cmdMessages.ExecuteReader())
+							{
+								while (reader.Read())
+								{
+									string messageId = reader.GetString(0);
+									string text = reader.GetString(1);
+
+									swipes.Add(new _SwipeRepair() {
+										instanceId = messageId,
+										chatId = chatId,
+										text = text,
+									});
+								}
+							}
+						}
+					}
+
+					// Fix strings
+					var repairs = new List<_SwipeRepair>(512);
+					foreach (var swipe in swipes)
+					{
+						bool bFront = swipe.text.BeginsWith("#{character}: ");
+						bool bBack = swipe.text.EndsWith("\n#{user}: ");
+						if (bFront && bBack)
+						{
+							repairs.Add(new _SwipeRepair() {
+								instanceId = swipe.instanceId,
+								chatId = swipe.chatId,
+								text = swipe.text.Substring(14, swipe.text.Length - 24),
+							});
+						}
+						else if (bFront)
+						{
+							repairs.Add(new _SwipeRepair() {
+								instanceId = swipe.instanceId,
+								chatId = swipe.chatId,
+								text = swipe.text.Substring(14),
+							});
+						}
+						else if (bBack)
+						{
+							repairs.Add(new _SwipeRepair() {
+								instanceId = swipe.instanceId,
+								chatId = swipe.chatId,
+								text = swipe.text.Substring(swipe.text.Length - 10),
+							});
+						}
+					}
+
+					if (repairs.Count == 0)
+					{
+						modified = 0;
+						return Error.NoError;
+					}
+
+					// Write to database
+					int updates = 0;
+					int expectedUpdates = 0;
+
+					using (var transaction = connection.BeginTransaction())
+					{
+						try
+						{
+							using (var cmdUpdateChat = connection.CreateCommand())
+							{
+								var sbCommand = new StringBuilder();
+									
+								for (int i = 0; i < repairs.Count; ++i)
+								{
+									sbCommand.AppendLine(
+									$@"
+										UPDATE RegenSwipe
+										SET text = $text{i:000}
+										WHERE id = $messageId{i:000};
+									");
+									cmdUpdateChat.Parameters.AddWithValue($"$messageId{i:000}", repairs[i].instanceId);
+									cmdUpdateChat.Parameters.AddWithValue($"$text{i:000}", repairs[i].text);
+									expectedUpdates += 1;
+								}
+
+								cmdUpdateChat.CommandText = sbCommand.ToString();
+								updates += cmdUpdateChat.ExecuteNonQuery();
+							}
+		
+							if (updates != expectedUpdates)
+							{
+								transaction.Rollback();
+								modified = 0;
+								return Error.SQLCommandFailed;
+							}
+
+							transaction.Commit();
+							modified = repairs.DistinctBy(r => r.chatId).Count();
+							return Error.NoError;
+						}
+						catch (Exception e)
+						{
+							transaction.Rollback();
+							modified = 0;
+							return Error.SQLCommandFailed;
+						}
+					}
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Disconnect();
+				modified = 0;
+				return Error.FileNotFound;
+			}
+			catch (SQLiteException e)
+			{
+				Disconnect();
+				modified = 0;
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				Disconnect();
+				modified = 0;
+				return Error.Unknown;
+			}
+		}
+
 		#endregion // Chat
 
 		#region Utilities
@@ -3118,7 +3308,7 @@ namespace Ginger
 			newImageLinks = lsImageLinks.Count > 0 ? lsImageLinks.ToArray() : null;
 			return imagesToSave.ContainsAny(i => i.data.isEmpty == false);
 		}
-		#endregion
+		#endregion // Utilities
 
 
 		#region Validation
@@ -3249,7 +3439,7 @@ namespace Ginger
 				"messageId", "TEXT",
 			},
 		};
-		#endregion
+		#endregion // Validation
 	}
 
 	public static class SqlExtensions

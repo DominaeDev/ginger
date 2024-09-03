@@ -873,6 +873,9 @@ Do you want to continue?</value>
   <data name="cap_link_rename_chat" xml:space="preserve">
     <value>Rename chat</value>
   </data>
+  <data name="cap_link_repair_chat" xml:space="preserve">
+    <value>Fix legacy chats</value>
+  </data>
   <data name="error_link_delete_chat" xml:space="preserve">
     <value>Failed to delete chat. Operation cancelled.</value>
   </data>
@@ -884,6 +887,9 @@ Do you want to continue?</value>
   </data>
   <data name="error_link_rename_chat" xml:space="preserve">
     <value>Failed to rename chat. Operation cancelled.</value>
+  </data>
+  <data name="error_link_repair_chat" xml:space="preserve">
+    <value>Something went wrong. Operation cancelled.</value>
   </data>
   <data name="error_link_unknown" xml:space="preserve">
     <value>An error occurred while accessing Backyard AI. Please reestablish the connection and try again.</value>
@@ -903,6 +909,14 @@ Do you want to continue?</value>
 
 Are you sure you want to delete everything?</value>
   </data>
+  <data name="msg_link_repaired_chat" xml:space="preserve">
+    <value>{0} chats modified.</value>
+  </data>
+  <data name="msg_link_repair_chat" xml:space="preserve">
+    <value>This will migrate all legacy chat history for '{0}'.
+
+Do you want to continue?</value>
+  </data>
   <data name="status_link_deleted_chat" xml:space="preserve">
     <value>Successfully deleted chat</value>
   </data>
@@ -914,5 +928,8 @@ Are you sure you want to delete everything?</value>
   </data>
   <data name="status_link_renamed_chat" xml:space="preserve">
     <value>Successfully renamed chat</value>
+  </data>
+  <data name="status_link_repaired_chat" xml:space="preserve">
+    <value>Modified {0} chats</value>
   </data>
 </root>

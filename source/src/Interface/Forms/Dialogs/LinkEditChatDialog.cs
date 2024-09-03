@@ -250,11 +250,20 @@ namespace Ginger
 
 			if (bSelectFirst)
 				SelectChat(0);
-
+			else
+				Unselect();
+			
 			ResetStatusBarMessage();
 			RefreshTitle();
 		}
 
+		private void Unselect()
+		{
+			if (chatInstanceList.SelectedIndices.Count > 0)
+				chatInstanceList.Items[chatInstanceList.SelectedIndices[0]].Selected = false;
+			_selectedChatInstance = null;
+			chatView.Items.Clear();
+		}
 
 		private void ViewChat(Bridge.ChatInstance chatInstance)
 		{
@@ -425,7 +434,7 @@ namespace Ginger
 			{
 				chatInstanceList.Items[index].Focused = true;
 				chatInstanceList.Items[index].Selected = true;
-//				chatInstanceList.Select();
+				chatInstanceList.Select();
 				chatInstanceList.EnsureVisible(index);
 			}
 		}
@@ -437,7 +446,7 @@ namespace Ginger
 				if (((Bridge.ChatInstance)chatInstanceList.Items[i].Tag).instanceId == instanceId)
 				{
 					SelectChat(i);
-					break;
+					return;
 				}
 			}
 		}
@@ -669,6 +678,28 @@ namespace Ginger
 			{
 				PopulateChatList(true);
 				SetStatusBarMessage(Resources.status_link_purged_chat, Constants.StatusBarMessageInterval);
+			}
+		}
+
+		private void repairChatsMenuItem_Click(object sender, EventArgs e)
+		{
+			if (Group.isEmpty)
+				return; // Error
+
+			var mr = MessageBox.Show(string.Format(Resources.msg_link_repair_chat, GetGroupTitle(Group)), Resources.cap_link_repair_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+			if (mr != DialogResult.Yes)
+				return;
+
+			int modified = 0;
+			var error = Bridge.RepairChats(Group.instanceId, out modified);
+			if (error != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_repair_chat, Resources.cap_link_repair_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				PopulateChatList(true);
+				MessageBox.Show(string.Format(Resources.msg_link_repaired_chat, modified), Resources.cap_link_repair_chat, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 		}
 	}

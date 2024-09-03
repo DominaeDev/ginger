@@ -472,6 +472,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fix legacy chats.
+        /// </summary>
+        internal static string cap_link_repair_chat {
+            get {
+                return ResourceManager.GetString("cap_link_repair_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reimport character.
         /// </summary>
         internal static string cap_link_revert {
@@ -903,6 +912,15 @@ namespace Ginger.Properties {
         internal static string error_link_rename_chat {
             get {
                 return ResourceManager.GetString("error_link_rename_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Something went wrong. Operation cancelled..
+        /// </summary>
+        internal static string error_link_repair_chat {
+            get {
+                return ResourceManager.GetString("error_link_repair_chat", resourceCulture);
             }
         }
         
@@ -1698,6 +1716,26 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will migrate all legacy chat history for &apos;{0}&apos;.
+        ///
+        ///Do you want to continue?.
+        /// </summary>
+        internal static string msg_link_repair_chat {
+            get {
+                return ResourceManager.GetString("msg_link_repair_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} chats modified..
+        /// </summary>
+        internal static string msg_link_repaired_chat {
+            get {
+                return ResourceManager.GetString("msg_link_repaired_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This will reimport the character from Backyard AI, replacing any recipes or changes in the file. This action can be undone.
         ///
         ///Do you want to continue?.
@@ -2293,6 +2331,15 @@ namespace Ginger.Properties {
         internal static string status_link_renamed_chat {
             get {
                 return ResourceManager.GetString("status_link_renamed_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modified {0} chats.
+        /// </summary>
+        internal static string status_link_repaired_chat {
+            get {
+                return ResourceManager.GetString("status_link_repaired_chat", resourceCulture);
             }
         }
         
