@@ -45,6 +45,9 @@ namespace Ginger
 			this.listBox.TabIndex = 0;
 			this.listBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBox_DrawItem);
 			this.listBox.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listBox_MeasureItem);
+			this.listBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox_MouseDown);
+			this.listBox.MouseLeave += new System.EventHandler(this.listBox_MouseLeave);
+			this.listBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listBox_MouseUp);
 			// 
 			// ChatListBox
 			// 

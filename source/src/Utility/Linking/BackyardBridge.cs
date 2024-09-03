@@ -2570,12 +2570,12 @@ namespace Ginger
 			}
 		}
 
-		public static Error PurgeChats(string groupId)
+		public static Error PurgeChats(GroupInstance groupInstance)
 		{
 			if (ConnectionEstablished == false)
 				return Error.NotConnected;
 
-			if (string.IsNullOrEmpty(groupId))
+			if (string.IsNullOrEmpty(groupInstance.instanceId))
 				return Error.InvalidArgument;
 
 			try
@@ -2594,7 +2594,7 @@ namespace Ginger
 							FROM Chat
 							WHERE groupConfigId = $groupId
 						";
-						cmdGetChats.Parameters.AddWithValue("$groupId", groupId);
+						cmdGetChats.Parameters.AddWithValue("$groupId", groupInstance.instanceId);
 
 						using (var reader = cmdGetChats.ExecuteReader())
 						{
@@ -2711,12 +2711,15 @@ namespace Ginger
 			}
 		}
 
-		public static Error UpdateChat(ChatInstance chatInstance)
+		public static Error UpdateChat(ChatInstance chatInstance, GroupInstance groupInstance)
 		{
 			if (ConnectionEstablished == false)
 				return Error.NotConnected;
 
-			if (chatInstance == null || string.IsNullOrEmpty(chatInstance.instanceId))
+			if (chatInstance == null)
+				return Error.InvalidArgument;
+
+			if (string.IsNullOrEmpty(chatInstance.instanceId) || string.IsNullOrEmpty(groupInstance.instanceId))
 				return Error.InvalidArgument;
 
 			try
@@ -2731,6 +2734,55 @@ namespace Ginger
 
 					DateTime now = DateTime.Now;
 					long updatedAt = now.ToUnixTimeMilliseconds();
+
+					// Fetch group members
+					var groupMembers = new List<string>();
+					using (var cmdGroupMembers = connection.CreateCommand())
+					{
+						cmdGroupMembers.CommandText =
+						@"
+							SELECT 
+								A.A, B.isUserControlled
+							FROM _CharacterConfigToGroupConfig AS A
+							INNER JOIN CharacterConfig AS B ON B.id = A.A
+							WHERE A.B = $groupId;
+						";
+
+						cmdGroupMembers.Parameters.AddWithValue("$groupId", groupInstance.instanceId);
+
+						var members = new List<KeyValuePair<string, bool>>();
+						using (var reader = cmdGroupMembers.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string characterId = reader.GetString(0);
+								bool isUser = reader.GetBoolean(1);
+								members.Add(new KeyValuePair<string, bool>(characterId, isUser));
+							}
+						}
+						if (members.Count(kvp => kvp.Value) > 1)
+						{
+							// Can only have one user
+							chatInstance = default(ChatInstance);
+							return Error.InvalidArgument;
+						}
+
+						// Validate message indices
+						foreach (var message in chatInstance.history.messages)
+						{
+							if (message.speaker < 0 || message.speaker >= members.Count)
+							{
+								// Too many group members
+								chatInstance = default(ChatInstance);
+								return Error.InvalidArgument;
+							}
+						}
+
+						// Place user first
+						groupMembers = members.Where(kvp => kvp.Value).Select(kvp => kvp.Key)
+							.Union(members.Where(kvp => kvp.Value == false).Select(kvp => kvp.Key))
+							.ToList();
+					}
 
 					using (var transaction = connection.BeginTransaction())
 					{
@@ -2805,7 +2857,7 @@ namespace Ginger
 										cmdMessages.Parameters.AddWithValue($"$messageId{i:000}", messageIds[i]);
 										cmdMessages.Parameters.AddWithValue($"$createdAt{i:000}", message.creationDate.ToUnixTimeMilliseconds());
 										cmdMessages.Parameters.AddWithValue($"$updatedAt{i:000}", message.updateDate.ToUnixTimeMilliseconds());
-										cmdMessages.Parameters.AddWithValue($"$charId{i:000}", chatInstance.participants[message.speaker]);
+										cmdMessages.Parameters.AddWithValue($"$charId{i:000}", groupMembers[message.speaker]);
 
 										lsMessages.Add(new ChatHistory.Message() {
 											instanceId = messageIds[i],
@@ -2896,7 +2948,7 @@ namespace Ginger
 			public string chatId;
 			public string text;
 		}
-		public static Error RepairChats(string groupId, out int modified)
+		public static Error RepairChats(GroupInstance groupInstance, out int modified)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -2904,7 +2956,7 @@ namespace Ginger
 				return Error.NotConnected;
 			}
 
-			if (string.IsNullOrEmpty(groupId))
+			if (string.IsNullOrEmpty(groupInstance.instanceId))
 			{
 				modified = 0;
 				return Error.InvalidArgument;
@@ -2926,7 +2978,7 @@ namespace Ginger
 							FROM Chat
 							WHERE groupConfigId = $groupId
 						";
-						cmdGetChats.Parameters.AddWithValue("$groupId", groupId);
+						cmdGetChats.Parameters.AddWithValue("$groupId", groupInstance.instanceId);
 
 						using (var reader = cmdGetChats.ExecuteReader())
 						{

@@ -167,6 +167,7 @@ namespace Ginger
 			this.chatView.Name = "chatView";
 			this.chatView.Size = new System.Drawing.Size(774, 715);
 			this.chatView.TabIndex = 0;
+			this.chatView.OnContextMenu += new System.EventHandler<Ginger.ChatListBox.ContextMenuEventArgs>(this.chatView_OnContextMenu);
 			// 
 			// toolTip
 			// 
@@ -218,46 +219,46 @@ namespace Ginger
 			// selectCharacterMenuItem
 			// 
 			this.selectCharacterMenuItem.Name = "selectCharacterMenuItem";
-			this.selectCharacterMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.selectCharacterMenuItem.Size = new System.Drawing.Size(166, 22);
 			this.selectCharacterMenuItem.Text = "Select &character...";
 			this.selectCharacterMenuItem.Click += new System.EventHandler(this.selectCharacterMenuItem_Click);
 			// 
 			// toolStripMenuItem3
 			// 
 			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-			this.toolStripMenuItem3.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem3.Size = new System.Drawing.Size(163, 6);
 			// 
 			// importMenuItem
 			// 
 			this.importMenuItem.Name = "importMenuItem";
-			this.importMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.importMenuItem.Size = new System.Drawing.Size(166, 22);
 			this.importMenuItem.Text = "&Import...";
 			this.importMenuItem.Click += new System.EventHandler(this.btnImport_Click);
 			// 
 			// exportMenuItem
 			// 
 			this.exportMenuItem.Name = "exportMenuItem";
-			this.exportMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.exportMenuItem.Size = new System.Drawing.Size(166, 22);
 			this.exportMenuItem.Text = "&Export...";
 			this.exportMenuItem.Click += new System.EventHandler(this.btnExport_Click);
 			// 
 			// duplicateMenuItem
 			// 
 			this.duplicateMenuItem.Name = "duplicateMenuItem";
-			this.duplicateMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.duplicateMenuItem.Size = new System.Drawing.Size(166, 22);
 			this.duplicateMenuItem.Text = "&Duplicate";
 			this.duplicateMenuItem.Click += new System.EventHandler(this.duplicateMenuItem_Click);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(163, 6);
 			// 
 			// closeToolStripMenuItem
 			// 
 			this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
 			this.closeToolStripMenuItem.ShortcutKeyDisplayString = "Escape";
-			this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.closeToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
 			this.closeToolStripMenuItem.Text = "&Close";
 			this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
 			// 
@@ -274,19 +275,19 @@ namespace Ginger
 			// repairChatsMenuItem
 			// 
 			this.repairChatsMenuItem.Name = "repairChatsMenuItem";
-			this.repairChatsMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.repairChatsMenuItem.Size = new System.Drawing.Size(170, 22);
 			this.repairChatsMenuItem.Text = "&Fix legacy chats";
 			this.repairChatsMenuItem.Click += new System.EventHandler(this.repairChatsMenuItem_Click);
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(167, 6);
 			// 
 			// purgeMenuItem
 			// 
 			this.purgeMenuItem.Name = "purgeMenuItem";
-			this.purgeMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.purgeMenuItem.Size = new System.Drawing.Size(170, 22);
 			this.purgeMenuItem.Text = "&Purge chat history";
 			this.purgeMenuItem.Click += new System.EventHandler(this.purgeMenuItem_Click);
 			// 

@@ -25,10 +25,20 @@ namespace Ginger
 		private static readonly int MinRowHeight = 22;
 
 		public ListBox.ObjectCollection Items { get { return listBox.Items; } }
+		
+		public class ContextMenuEventArgs : EventArgs
+		{
+			public int Index { get; set; }
+			public Point Location { get; set; }
+		}
+		public event EventHandler<ContextMenuEventArgs> OnContextMenu;
 
 		private Font _nameFont;
 		private Font _timeFont;
 		private static StringFormat RightAligned = new StringFormat() { Alignment = StringAlignment.Far };
+		private Point _rightDownLocation;
+		private bool _bRightDown = false;
+
 
 		public ChatListBox()
 		{
@@ -133,6 +143,59 @@ namespace Ginger
 				onMeasureEvent(listBox, eArgs);
 				SendMessage(listBox.Handle, LB_SETITEMHEIGHT, i, eArgs.ItemHeight);
 			}
+			listBox.Refresh();
+		}
+
+		private void listBox_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right)
+			{
+				if (_bRightDown && (Math.Abs(e.X - _rightDownLocation.X) < 10 && Math.Abs(e.Y - _rightDownLocation.Y) < 10))
+				{
+					int index = HitTest(new Point(e.X, e.Y));
+					if (index != -1)
+					{
+						SelectLine(index);
+						OnContextMenu?.Invoke(listBox, new ContextMenuEventArgs() {
+							Index = index,
+							Location = new Point(e.X, e.Y),
+						});
+					}
+				}
+			}
+		}
+
+		private int HitTest(Point location)
+		{
+			if (Items.Count == 0)
+				return -1;
+
+			Rectangle lastRect = listBox.GetItemRectangle(Items.Count - 1);
+			if (lastRect.Bottom < location.Y)
+				return -1;
+			return listBox.IndexFromPoint(location);
+		}
+
+		private void listBox_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right)
+			{
+				_rightDownLocation = new Point(e.X, e.Y);
+				_bRightDown = true;
+			}
+		}
+
+		private void listBox_MouseLeave(object sender, EventArgs e)
+		{
+			_bRightDown = false;
+		}
+
+		private void SelectLine(int index)
+		{
+			listBox.BeginUpdate();
+			for (int i = 0; i < listBox.Items.Count; ++i)
+				listBox.SetSelected(i, i == index);
+			listBox.EndUpdate();
 			listBox.Refresh();
 		}
 	}

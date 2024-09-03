@@ -1760,7 +1760,11 @@ namespace Ginger
 
 			_editChatDialog = new LinkEditChatDialog();
 			if (Current.HasActiveLink)
-				_editChatDialog.Group = BackyardBridge.GetGroup(BackyardBridge.GetCharacter(Current.Link.characterId).groupId);
+			{
+				var group = BackyardBridge.GetGroup(BackyardBridge.GetCharacter(Current.Link.characterId).groupId);
+				if (string.IsNullOrEmpty(group.instanceId) == false)
+					_editChatDialog.Group = group;
+			}
 
 			_editChatDialog.Show(this);
 			return true;

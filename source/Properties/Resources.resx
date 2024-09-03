@@ -861,6 +861,9 @@ Do you want to continue?</value>
   <data name="error_unrecognized_chat_format" xml:space="preserve">
     <value>Unrecognized chat format.</value>
   </data>
+  <data name="cap_link_branch_chat" xml:space="preserve">
+    <value>Branch chat</value>
+  </data>
   <data name="cap_link_delete_chat" xml:space="preserve">
     <value>Delete chat</value>
   </data>
@@ -876,11 +879,20 @@ Do you want to continue?</value>
   <data name="cap_link_repair_chat" xml:space="preserve">
     <value>Fix legacy chats</value>
   </data>
+  <data name="cap_link_scrub_chat" xml:space="preserve">
+    <value>Scrub chat</value>
+  </data>
+  <data name="error_link_branch_chat" xml:space="preserve">
+    <value>Failed to branch chat. Operation cancelled.</value>
+  </data>
   <data name="error_link_delete_chat" xml:space="preserve">
     <value>Failed to delete chat. Operation cancelled.</value>
   </data>
   <data name="error_link_duplicate_chat" xml:space="preserve">
     <value>Failed to duplicate chat. Operation cancelled.</value>
+  </data>
+  <data name="error_link_generic" xml:space="preserve">
+    <value>Something went wrong. Operation cancelled.</value>
   </data>
   <data name="error_link_purge_chat" xml:space="preserve">
     <value>Failed to purge chat. Operation cancelled.</value>
@@ -889,6 +901,9 @@ Do you want to continue?</value>
     <value>Failed to rename chat. Operation cancelled.</value>
   </data>
   <data name="error_link_repair_chat" xml:space="preserve">
+    <value>Something went wrong. Operation cancelled.</value>
+  </data>
+  <data name="error_link_scrub_chat" xml:space="preserve">
     <value>Something went wrong. Operation cancelled.</value>
   </data>
   <data name="error_link_unknown" xml:space="preserve">
@@ -917,6 +932,14 @@ Are you sure you want to delete everything?</value>
 
 Do you want to continue?</value>
   </data>
+  <data name="msg_link_scrub_confirm" xml:space="preserve">
+    <value>This will delete this message and any message below it. This action cannot be reversed.
+
+Do you want to continue?</value>
+  </data>
+  <data name="status_link_branched_chat" xml:space="preserve">
+    <value>A new branch was created</value>
+  </data>
   <data name="status_link_deleted_chat" xml:space="preserve">
     <value>Successfully deleted chat</value>
   </data>
@@ -932,19 +955,34 @@ Do you want to continue?</value>
   <data name="status_link_repaired_chat" xml:space="preserve">
     <value>Modified {0} chats</value>
   </data>
-  <data name="tooltip_duplicate_chat" xml:space="preserve">
+  <data name="status_link_scrubbed_chat" xml:space="preserve">
+    <value>Removed messages from chat</value>
+  </data>
+  <data name="tooltip_link_branch_chat" xml:space="preserve">
+    <value>Create a new chat and copy the messages up to this point.</value>
+  </data>
+  <data name="tooltip_link_cannot_branch_chat" xml:space="preserve">
+    <value>Cannot branch from this message.</value>
+  </data>
+  <data name="tooltip_link_cannot_scrub_chat" xml:space="preserve">
+    <value>Cannot scrub from this message.</value>
+  </data>
+  <data name="tooltip_link_duplicate_chat" xml:space="preserve">
     <value>Make a duplicate copy of the selected chat.</value>
   </data>
-  <data name="tooltip_export_chat" xml:space="preserve">
+  <data name="tooltip_link_export_chat" xml:space="preserve">
     <value>Export the selected chat to a file.</value>
   </data>
-  <data name="tooltip_import_chat" xml:space="preserve">
+  <data name="tooltip_link_import_chat" xml:space="preserve">
     <value>Import a chat from a file.</value>
   </data>
-  <data name="tooltip_purge_chat" xml:space="preserve">
+  <data name="tooltip_link_purge_chat" xml:space="preserve">
     <value>Delete all chats for the current character.</value>
   </data>
-  <data name="tooltip_repair_chat" xml:space="preserve">
+  <data name="tooltip_link_repair_chat" xml:space="preserve">
     <value>Remove instances of "#{character}:" and "#{user}:" from all chats for the current character.</value>
+  </data>
+  <data name="tooltip_link_scrub_chat" xml:space="preserve">
+    <value>Delete this message and any messages below it.</value>
   </data>
 </root>

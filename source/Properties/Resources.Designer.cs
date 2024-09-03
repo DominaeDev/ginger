@@ -400,6 +400,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Branch chat.
+        /// </summary>
+        internal static string cap_link_branch_chat {
+            get {
+                return ResourceManager.GetString("cap_link_branch_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create link.
         /// </summary>
         internal static string cap_link_character {
@@ -495,6 +504,15 @@ namespace Ginger.Properties {
         internal static string cap_link_save_character {
             get {
                 return ResourceManager.GetString("cap_link_save_character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scrub chat.
+        /// </summary>
+        internal static string cap_link_scrub_chat {
+            get {
+                return ResourceManager.GetString("cap_link_scrub_chat", resourceCulture);
             }
         }
         
@@ -842,6 +860,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to branch chat. Operation cancelled..
+        /// </summary>
+        internal static string error_link_branch_chat {
+            get {
+                return ResourceManager.GetString("error_link_branch_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to delete chat. Operation cancelled..
         /// </summary>
         internal static string error_link_delete_chat {
@@ -865,6 +892,15 @@ namespace Ginger.Properties {
         internal static string error_link_failed {
             get {
                 return ResourceManager.GetString("error_link_failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Something went wrong. Operation cancelled..
+        /// </summary>
+        internal static string error_link_generic {
+            get {
+                return ResourceManager.GetString("error_link_generic", resourceCulture);
             }
         }
         
@@ -930,6 +966,15 @@ namespace Ginger.Properties {
         internal static string error_link_save_character {
             get {
                 return ResourceManager.GetString("error_link_save_character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Something went wrong. Operation cancelled..
+        /// </summary>
+        internal static string error_link_scrub_chat {
+            get {
+                return ResourceManager.GetString("error_link_scrub_chat", resourceCulture);
             }
         }
         
@@ -1756,6 +1801,17 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will delete this message and any message below it. This action cannot be reversed.
+        ///
+        ///Do you want to continue?.
+        /// </summary>
+        internal static string msg_link_scrub_confirm {
+            get {
+                return ResourceManager.GetString("msg_link_scrub_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The card loaded successfully, but with {0} error(s).
         ///Some data may be missing..
         /// </summary>
@@ -2254,6 +2310,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A new branch was created.
+        /// </summary>
+        internal static string status_link_branched_chat {
+            get {
+                return ResourceManager.GetString("status_link_branched_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Character link broken.
         /// </summary>
         internal static string status_link_break {
@@ -2358,6 +2423,15 @@ namespace Ginger.Properties {
         internal static string status_link_saved {
             get {
                 return ResourceManager.GetString("status_link_saved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removed messages from chat.
+        /// </summary>
+        internal static string status_link_scrubbed_chat {
+            get {
+                return ResourceManager.GetString("status_link_scrubbed_chat", resourceCulture);
             }
         }
         
@@ -2737,15 +2811,6 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Make a duplicate copy of the selected chat..
-        /// </summary>
-        internal static string tooltip_duplicate_chat {
-            get {
-                return ResourceManager.GetString("tooltip_duplicate_chat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Include attributes in the character persona..
         /// </summary>
         internal static string tooltip_enable_attributes {
@@ -2809,24 +2874,6 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Export the selected chat to a file..
-        /// </summary>
-        internal static string tooltip_export_chat {
-            get {
-                return ResourceManager.GetString("tooltip_export_chat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Import a chat from a file..
-        /// </summary>
-        internal static string tooltip_import_chat {
-            get {
-                return ResourceManager.GetString("tooltip_import_chat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Linking allows changes made in Ginger to be saved back to Backyard AI..
         /// </summary>
         internal static string tooltip_link_about_linking {
@@ -2845,11 +2892,38 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create a new chat and copy the messages up to this point..
+        /// </summary>
+        internal static string tooltip_link_branch_chat {
+            get {
+                return ResourceManager.GetString("tooltip_link_branch_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Break the link connecting this file to Backyard AI..
         /// </summary>
         internal static string tooltip_link_break {
             get {
                 return ResourceManager.GetString("tooltip_link_break", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot branch from this message..
+        /// </summary>
+        internal static string tooltip_link_cannot_branch_chat {
+            get {
+                return ResourceManager.GetString("tooltip_link_cannot_branch_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot scrub from this message..
+        /// </summary>
+        internal static string tooltip_link_cannot_scrub_chat {
+            get {
+                return ResourceManager.GetString("tooltip_link_cannot_scrub_chat", resourceCulture);
             }
         }
         
@@ -2864,6 +2938,33 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Make a duplicate copy of the selected chat..
+        /// </summary>
+        internal static string tooltip_link_duplicate_chat {
+            get {
+                return ResourceManager.GetString("tooltip_link_duplicate_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export the selected chat to a file..
+        /// </summary>
+        internal static string tooltip_link_export_chat {
+            get {
+                return ResourceManager.GetString("tooltip_link_export_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import a chat from a file..
+        /// </summary>
+        internal static string tooltip_link_import_chat {
+            get {
+                return ResourceManager.GetString("tooltip_link_import_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open a Backyard AI character..
         /// </summary>
         internal static string tooltip_link_open {
@@ -2873,11 +2974,29 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete all chats for the current character..
+        /// </summary>
+        internal static string tooltip_link_purge_chat {
+            get {
+                return ResourceManager.GetString("tooltip_link_purge_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attempt to restore the link connecting this file to Backyard AI..
         /// </summary>
         internal static string tooltip_link_reestablish {
             get {
                 return ResourceManager.GetString("tooltip_link_reestablish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove instances of &quot;#{character}:&quot; and &quot;#{user}:&quot; from all chats for the current character..
+        /// </summary>
+        internal static string tooltip_link_repair_chat {
+            get {
+                return ResourceManager.GetString("tooltip_link_repair_chat", resourceCulture);
             }
         }
         
@@ -2905,6 +3024,15 @@ namespace Ginger.Properties {
         internal static string tooltip_link_save_as_new {
             get {
                 return ResourceManager.GetString("tooltip_link_save_as_new", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete this message and any messages below it..
+        /// </summary>
+        internal static string tooltip_link_scrub_chat {
+            get {
+                return ResourceManager.GetString("tooltip_link_scrub_chat", resourceCulture);
             }
         }
         
@@ -3030,15 +3158,6 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete all chats for the current character..
-        /// </summary>
-        internal static string tooltip_purge_chat {
-            get {
-                return ResourceManager.GetString("tooltip_purge_chat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Allows lorebook entries to be moved on a row-by-row basis..
         /// </summary>
         internal static string tooltip_rearrange_lore {
@@ -3116,15 +3235,6 @@ namespace Ginger.Properties {
         internal static string tooltip_remove_lore {
             get {
                 return ResourceManager.GetString("tooltip_remove_lore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remove instances of &quot;#{character}:&quot; and &quot;#{user}:&quot; from all chats for the current character..
-        /// </summary>
-        internal static string tooltip_repair_chat {
-            get {
-                return ResourceManager.GetString("tooltip_repair_chat", resourceCulture);
             }
         }
         

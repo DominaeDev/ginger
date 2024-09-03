@@ -15,8 +15,8 @@ namespace Ginger
 {
 	public partial class LinkEditChatDialog : Form
 	{
-		public Bridge.GroupInstance Group { get; set; }
-		
+		public Bridge.GroupInstance Group { get { return _groupInstance; } set { _groupInstance = value; } }
+		private Bridge.GroupInstance _groupInstance;
 		private Dictionary<string, Bridge.CharacterInstance> _charactersById;
 		private Bridge.ChatInstance _selectedChatInstance = null;
 
@@ -58,11 +58,11 @@ namespace Ginger
 			_statusbarTimer.AutoReset = false;
 			_statusbarTimer.SynchronizingObject = this;
 
-			importMenuItem.ToolTipText = Resources.tooltip_import_chat;
-			exportMenuItem.ToolTipText = Resources.tooltip_export_chat;
-			duplicateMenuItem.ToolTipText = Resources.tooltip_duplicate_chat;
-			repairChatsMenuItem.ToolTipText = Resources.tooltip_repair_chat;
-			purgeMenuItem.ToolTipText = Resources.tooltip_purge_chat;
+			importMenuItem.ToolTipText = Resources.tooltip_link_import_chat;
+			exportMenuItem.ToolTipText = Resources.tooltip_link_export_chat;
+			duplicateMenuItem.ToolTipText = Resources.tooltip_link_duplicate_chat;
+			repairChatsMenuItem.ToolTipText = Resources.tooltip_link_repair_chat;
+			purgeMenuItem.ToolTipText = Resources.tooltip_link_purge_chat;
 		}
 
 		private void OnLoad(object sender, EventArgs e)
@@ -78,8 +78,8 @@ namespace Ginger
 
 		private void RefreshTitle()
 		{
-			if (Group.isEmpty == false)
-				Text = string.Format("Chat history - {1}{0}", GetGroupTitle(Group), Group.members.Length > 2 ? "(Group) " : "");
+			if (_groupInstance.isEmpty == false)
+				Text = string.Format("Chat history - {1}{0}", GetGroupTitle(_groupInstance), _groupInstance.members.Length > 2 ? "(Group) " : "");
 			else
 				Text = "Chat history";
 		}
@@ -124,7 +124,7 @@ namespace Ginger
 		private void LinkEditChatDialog_Shown(object sender, EventArgs e)
 		{
 			// Refresh character list
-			if (Group.isEmpty)
+			if (_groupInstance.isEmpty)
 			{
 				if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
 				{
@@ -142,7 +142,7 @@ namespace Ginger
 					Close();
 					return;
 				}
-				Group = groupDlg.SelectedGroup;
+				_groupInstance = groupDlg.SelectedGroup;
 			}
 
 			PopulateChatList(true);
@@ -192,7 +192,7 @@ namespace Ginger
 		{
 			// List chats for group
 			Bridge.ChatInstance[] chats;
-			Bridge.GetChats(Group, out chats);
+			Bridge.GetChats(_groupInstance, out chats);
 
 			_selectedChatInstance = null;
 			chatInstanceList.BeginUpdate();
@@ -403,10 +403,10 @@ namespace Ginger
 
 			// Write to db...
 			Bridge.ChatInstance chatInstance;
-			var error = Bridge.CreateNewChat("Imported chat", importedChat, Group.instanceId, out chatInstance);
+			var error = Bridge.CreateNewChat("Imported chat", importedChat, _groupInstance.instanceId, out chatInstance);
 			if (error == Bridge.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_unknown, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 				return false;
 			}
@@ -415,11 +415,12 @@ namespace Ginger
 				MessageBox.Show(Resources.error_link_import_chat, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
-			
-			PopulateChatList(false);
-			SelectChat(chatInstance.instanceId);
-
-			return true;
+			else
+			{
+				PopulateChatList(false);
+				SelectChat(chatInstance.instanceId);
+				return true;
+			}
 		}
 
 		private void SelectChat(int index)
@@ -466,7 +467,7 @@ namespace Ginger
 			groupDlg.Folders = Bridge.Folders.ToArray();
 			if (groupDlg.ShowDialog() == DialogResult.OK)
 			{
-				Group = groupDlg.SelectedGroup;
+				_groupInstance = groupDlg.SelectedGroup;
 			}
 
 			chatView.Items.Clear();
@@ -532,7 +533,7 @@ namespace Ginger
 
 			// Delete
 			int chatCounts;
-			if (Bridge.ConfirmDeleteChat(chatInstance, Group, out chatCounts) != Bridge.Error.NoError)
+			if (Bridge.ConfirmDeleteChat(chatInstance, _groupInstance, out chatCounts) != Bridge.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
@@ -549,7 +550,7 @@ namespace Ginger
 				chatInstance.name = Bridge.DefaultChatTitle;
 				chatInstance.updateDate = DateTime.Now;
 				chatInstance.history = new ChatHistory();
-				error = Bridge.UpdateChat(chatInstance);
+				error = Bridge.UpdateChat(chatInstance, _groupInstance);
 			}
 			else
 			{
@@ -560,7 +561,12 @@ namespace Ginger
 				error = Bridge.DeleteChat(chatInstance);
 			}
 
-			if (error != Bridge.Error.NoError)
+			if (error == Bridge.Error.NotConnected)
+			{
+				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+			}
+			else if (error != Bridge.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_delete_chat, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -600,7 +606,7 @@ namespace Ginger
 
 		private void menuBar_MenuActivate(object sender, EventArgs e)
 		{
-			bool hasGroup = Group.isEmpty == false;
+			bool hasGroup = _groupInstance.isEmpty == false;
 			bool hasSelection = _selectedChatInstance != null;
 			importMenuItem.Enabled = hasGroup;
 			exportMenuItem.Enabled = hasGroup && hasSelection;
@@ -615,13 +621,19 @@ namespace Ginger
 
 		public void DuplicateChat(Bridge.ChatInstance chatInstance)
 		{
-			if (chatInstance == null || Group.isEmpty)
+			if (chatInstance == null || _groupInstance.isEmpty)
 				return;
 
+			string chatTitle = string.Concat(chatInstance.name, " (copy)");
 			Bridge.ChatInstance duplicate;
-			var error = Bridge.CreateNewChat(string.Concat(chatInstance.name, " (copy)"), chatInstance.history, Group.instanceId, out duplicate);
+			var error = Bridge.CreateNewChat(chatTitle, chatInstance.history, _groupInstance.instanceId, out duplicate);
 
-			if (error != Bridge.Error.NoError)
+			if (error == Bridge.Error.NotConnected)
+			{
+				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_duplicate_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+			}
+			else if (error != Bridge.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_duplicate_chat, Resources.cap_link_duplicate_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -639,15 +651,20 @@ namespace Ginger
 
 		private void PurgeAllChats()
 		{
-			if (Group.isEmpty)
+			if (_groupInstance.isEmpty)
 				return; // Error
 
-			var mr = MessageBox.Show(string.Format(Resources.msg_link_purge_chat, GetGroupTitle(Group)), Resources.cap_link_purge_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+			var mr = MessageBox.Show(string.Format(Resources.msg_link_purge_chat, GetGroupTitle(_groupInstance)), Resources.cap_link_purge_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
 			if (mr != DialogResult.Yes)
 				return;
 
-			var error = Bridge.PurgeChats(Group.instanceId);
-			if (error != Bridge.Error.NoError)
+			var error = Bridge.PurgeChats(_groupInstance);
+			if (error == Bridge.Error.NotConnected)
+			{
+				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_purge_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+			}
+			else if (error != Bridge.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_purge_chat, Resources.cap_link_purge_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -660,16 +677,21 @@ namespace Ginger
 
 		private void repairChatsMenuItem_Click(object sender, EventArgs e)
 		{
-			if (Group.isEmpty)
+			if (_groupInstance.isEmpty)
 				return; // Error
 
-			var mr = MessageBox.Show(string.Format(Resources.msg_link_repair_chat, GetGroupTitle(Group)), Resources.cap_link_repair_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+			var mr = MessageBox.Show(string.Format(Resources.msg_link_repair_chat, GetGroupTitle(_groupInstance)), Resources.cap_link_repair_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
 			if (mr != DialogResult.Yes)
 				return;
 
 			int modified = 0;
-			var error = Bridge.RepairChats(Group.instanceId, out modified);
-			if (error != Bridge.Error.NoError)
+			var error = Bridge.RepairChats(_groupInstance, out modified);
+			if (error == Bridge.Error.NotConnected)
+			{
+				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_repair_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+			}
+			else if (error != Bridge.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_repair_chat, Resources.cap_link_repair_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -677,6 +699,111 @@ namespace Ginger
 			{
 				PopulateChatList(true);
 				MessageBox.Show(string.Format(Resources.msg_link_repaired_chat, modified), Resources.cap_link_repair_chat, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+		}
+
+		private void chatView_OnContextMenu(object sender, ChatListBox.ContextMenuEventArgs args)
+		{
+			if (_selectedChatInstance == null)
+				return; // No chat
+
+			int messageIndex = args.Index;
+			int messageCount = _selectedChatInstance.history.count;
+			bool bUserMessage = messageIndex >= 0 && messageIndex < messageCount && _selectedChatInstance.history.messages[messageIndex].speaker == 0;
+			bool bCanBranch = !bUserMessage && messageIndex < messageCount - 1;
+			bool bCanScrub = bUserMessage;
+
+			if ((_selectedChatInstance.hasGreeting && messageIndex == 0) // Greeting
+				|| string.IsNullOrEmpty(_selectedChatInstance.history.messages[messageIndex].instanceId)) // No message id
+			{
+				bCanBranch = false;
+				bCanScrub = false;
+			}
+
+			ContextMenuStrip menu = new ContextMenuStrip();
+			menu.Items.Add(new ToolStripMenuItem("Branch from this point", null, (s, e) => {
+				BranchChat(_selectedChatInstance, _selectedChatInstance.history.messages[messageIndex].instanceId);
+			}) 
+			{
+				Enabled = bCanBranch,
+				ToolTipText = bCanBranch ? Resources.tooltip_link_branch_chat : Resources.tooltip_link_cannot_branch_chat,
+			});
+				
+			menu.Items.Add(new ToolStripMenuItem("Scrub from this point ", null, (s, e) => {
+				ScrubChat(_selectedChatInstance, _selectedChatInstance.history.messages[messageIndex].instanceId);
+			}) 
+			{
+				Enabled = bCanScrub,
+				ToolTipText = bCanScrub ? Resources.tooltip_link_scrub_chat : Resources.tooltip_link_cannot_scrub_chat,
+			});
+			menu.Show(sender as Control, args.Location);
+		}
+
+		private void BranchChat(Bridge.ChatInstance chatInstance, string messageId)
+		{
+			if (chatInstance == null || string.IsNullOrEmpty(messageId) || _groupInstance.isEmpty)
+				return; // Error
+
+			string chatTitle = string.Concat(chatInstance.name, " (branch)");
+			var branchedChatHistory = (ChatHistory)chatInstance.history.Clone();
+			int messageIndex = Array.FindIndex(branchedChatHistory.messages, m => m.instanceId == messageId);
+			if (messageIndex == -1)
+			{
+				MessageBox.Show(Resources.error_link_generic, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+			Array.Resize(ref branchedChatHistory.messages, messageIndex + 1);
+
+			Bridge.ChatInstance branchedChat;
+			var error = Bridge.CreateNewChat(chatTitle, branchedChatHistory, _groupInstance.instanceId, out branchedChat);
+			if (error == Bridge.Error.NotConnected)
+			{
+				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+			}
+			else if (error != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_branch_chat, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				PopulateChatList(true);
+				SetStatusBarMessage(Resources.status_link_branched_chat, Constants.StatusBarMessageInterval);
+			}
+		}
+
+		private void ScrubChat(Bridge.ChatInstance chatInstance, string messageId)
+		{
+			if (chatInstance == null || string.IsNullOrEmpty(messageId))
+				return; // Error
+
+			var mr = MessageBox.Show(string.Format(Resources.msg_link_scrub_confirm, chatInstance.name), Resources.cap_link_scrub_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+			if (mr != DialogResult.Yes)
+				return;
+
+			chatInstance.updateDate = DateTime.Now;
+			int messageIndex = Array.FindIndex(chatInstance.history.messages, m => m.instanceId == messageId);
+			if (messageIndex == -1)
+			{
+				MessageBox.Show(Resources.error_link_generic, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+			Array.Resize(ref chatInstance.history.messages, messageIndex);
+		
+			var error = Bridge.UpdateChat(chatInstance, _groupInstance);
+			if (error == Bridge.Error.NotConnected)
+			{
+				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+			}
+			else if (error != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_scrub_chat, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				PopulateChatList(true);
+				SetStatusBarMessage(Resources.status_link_scrubbed_chat, Constants.StatusBarMessageInterval);
 			}
 		}
 	}
