@@ -1212,6 +1212,7 @@ namespace Ginger
 			breakLinkMenuItem.Enabled = BackyardBridge.ConnectionEstablished;
 			breakLinkMenuItem.Visible = BackyardBridge.ConnectionEstablished && Current.HasActiveLink;
 			chatHistoryMenuItem.Visible = BackyardBridge.ConnectionEstablished;
+			revertLinkedMenuItem.Visible = BackyardBridge.ConnectionEstablished;
 		}
 
 		private void PopulateMRUMenu(ToolStripItemCollection items)

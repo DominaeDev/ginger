@@ -1772,7 +1772,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} chats modified..
+        ///   Looks up a localized string similar to {0} chats updated..
         /// </summary>
         internal static string msg_link_repaired_chat {
             get {
@@ -2400,7 +2400,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Modified {0} chats.
+        ///   Looks up a localized string similar to Updated {0} chats.
         /// </summary>
         internal static string status_link_repaired_chat {
             get {
@@ -2928,12 +2928,21 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attempt to connect to a local installation of Backyard AI.
-        ///(Backyard AI must be installed on this system.).
+        ///   Looks up a localized string similar to Connect to a local installation of Backyard AI.
+        ///(Backyard AI must be installed for the current local user.).
         /// </summary>
         internal static string tooltip_link_connect {
             get {
                 return ResourceManager.GetString("tooltip_link_connect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deletes this chat and all its messages..
+        /// </summary>
+        internal static string tooltip_link_delete_chat {
+            get {
+                return ResourceManager.GetString("tooltip_link_delete_chat", resourceCulture);
             }
         }
         

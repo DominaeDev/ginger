@@ -704,10 +704,14 @@ namespace Ginger
 
 		private void chatView_OnContextMenu(object sender, ChatListBox.ContextMenuEventArgs args)
 		{
+			ShowChatContextMenu(args.Index, args.Location);
+		}
+
+		private void ShowChatContextMenu(int messageIndex, Point location)
+		{
 			if (_selectedChatInstance == null)
 				return; // No chat
 
-			int messageIndex = args.Index;
 			int messageCount = _selectedChatInstance.history.count;
 			bool bUserMessage = messageIndex >= 0 && messageIndex < messageCount && _selectedChatInstance.history.messages[messageIndex].speaker == 0;
 			bool bCanBranch = !bUserMessage && messageIndex < messageCount - 1;
@@ -723,20 +727,18 @@ namespace Ginger
 			ContextMenuStrip menu = new ContextMenuStrip();
 			menu.Items.Add(new ToolStripMenuItem("Branch from this point", null, (s, e) => {
 				BranchChat(_selectedChatInstance, _selectedChatInstance.history.messages[messageIndex].instanceId);
-			}) 
-			{
+			}) {
 				Enabled = bCanBranch,
 				ToolTipText = bCanBranch ? Resources.tooltip_link_branch_chat : Resources.tooltip_link_cannot_branch_chat,
 			});
-				
+
 			menu.Items.Add(new ToolStripMenuItem("Scrub from this point ", null, (s, e) => {
 				ScrubChat(_selectedChatInstance, _selectedChatInstance.history.messages[messageIndex].instanceId);
-			}) 
-			{
+			}) {
 				Enabled = bCanScrub,
 				ToolTipText = bCanScrub ? Resources.tooltip_link_scrub_chat : Resources.tooltip_link_cannot_scrub_chat,
 			});
-			menu.Show(sender as Control, args.Location);
+			menu.Show(chatView.listBox, location);
 		}
 
 		private void BranchChat(Bridge.ChatInstance chatInstance, string messageId)
@@ -805,6 +807,44 @@ namespace Ginger
 				PopulateChatList(true);
 				SetStatusBarMessage(Resources.status_link_scrubbed_chat, Constants.StatusBarMessageInterval);
 			}
+		}
+
+		private void chatInstanceList_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right)
+			{
+				var hitTest = chatInstanceList.HitTest(e.X, e.Y);
+				if (hitTest.Item == null)
+					return;
+
+				ShowChatListContextMenu(hitTest.Item, new Point(e.X, e.Y));
+			}
+		}
+
+		private void ShowChatListContextMenu(ListViewItem item, Point location)
+		{
+			ContextMenuStrip menu = new ContextMenuStrip();
+			menu.Items.Add(new ToolStripMenuItem("Duplicate", null, (s, e) => {
+				DuplicateChat(item.Tag as Bridge.ChatInstance);
+			}) {
+				ToolTipText = Resources.tooltip_link_duplicate_chat,
+			});
+
+			menu.Items.Add(new ToolStripMenuItem("Export...", null, (s, e) => {
+				ExportChat(item.Tag as Bridge.ChatInstance);
+			}) {
+				ToolTipText = Resources.tooltip_link_export_chat,
+			});
+
+			menu.Items.Add(new ToolStripSeparator());
+
+			menu.Items.Add(new ToolStripMenuItem("Delete", null, (s, e) => {
+				DeleteChat(item.Tag as Bridge.ChatInstance);
+			}) {
+				ToolTipText = Resources.tooltip_link_delete_chat,
+			});
+
+			menu.Show(chatInstanceList, location);
 		}
 	}
 }

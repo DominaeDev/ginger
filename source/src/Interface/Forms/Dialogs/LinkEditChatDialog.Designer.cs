@@ -129,6 +129,7 @@ namespace Ginger
 			this.chatInstanceList.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.chatInstanceList_AfterLabelEdit);
 			this.chatInstanceList.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.chatList_ColumnWidthChanging);
 			this.chatInstanceList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.chatInstanceList_KeyDown);
+			this.chatInstanceList.MouseClick += new System.Windows.Forms.MouseEventHandler(this.chatInstanceList_MouseClick);
 			// 
 			// columnTitle
 			// 

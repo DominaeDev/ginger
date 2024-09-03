@@ -740,8 +740,8 @@ Do you want to continue and overwrite those changes?</value>
     <value>If enabled, when you save your changes, Ginger will automatically save them to Backyard AI as well.</value>
   </data>
   <data name="tooltip_link_connect" xml:space="preserve">
-    <value>Attempt to connect to a local installation of Backyard AI.
-(Backyard AI must be installed on this system.)</value>
+    <value>Connect to a local installation of Backyard AI.
+(Backyard AI must be installed for the current local user.)</value>
   </data>
   <data name="tooltip_link_reestablish" xml:space="preserve">
     <value>Attempt to restore the link connecting this file to Backyard AI.</value>
@@ -925,7 +925,7 @@ Do you want to continue?</value>
 Are you sure you want to delete everything?</value>
   </data>
   <data name="msg_link_repaired_chat" xml:space="preserve">
-    <value>{0} chats modified.</value>
+    <value>{0} chats updated.</value>
   </data>
   <data name="msg_link_repair_chat" xml:space="preserve">
     <value>This will migrate all legacy chat history for '{0}'.
@@ -953,7 +953,7 @@ Do you want to continue?</value>
     <value>Successfully renamed chat</value>
   </data>
   <data name="status_link_repaired_chat" xml:space="preserve">
-    <value>Modified {0} chats</value>
+    <value>Updated {0} chats</value>
   </data>
   <data name="status_link_scrubbed_chat" xml:space="preserve">
     <value>Removed messages from chat</value>
@@ -966,6 +966,9 @@ Do you want to continue?</value>
   </data>
   <data name="tooltip_link_cannot_scrub_chat" xml:space="preserve">
     <value>Cannot scrub from this message.</value>
+  </data>
+  <data name="tooltip_link_delete_chat" xml:space="preserve">
+    <value>Deletes this chat and all its messages.</value>
   </data>
   <data name="tooltip_link_duplicate_chat" xml:space="preserve">
     <value>Make a duplicate copy of the selected chat.</value>

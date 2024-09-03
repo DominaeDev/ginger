@@ -2768,13 +2768,16 @@ namespace Ginger
 						}
 
 						// Validate message indices
-						foreach (var message in chatInstance.history.messages)
+						if (chatInstance.history.messages != null)
 						{
-							if (message.speaker < 0 || message.speaker >= members.Count)
+							foreach (var message in chatInstance.history.messages)
 							{
-								// Too many group members
-								chatInstance = default(ChatInstance);
-								return Error.InvalidArgument;
+								if (message.speaker < 0 || message.speaker >= members.Count)
+								{
+									// Too many group members
+									chatInstance = default(ChatInstance);
+									return Error.InvalidArgument;
+								}
 							}
 						}
 

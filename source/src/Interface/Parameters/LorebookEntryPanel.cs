@@ -242,7 +242,7 @@ namespace Ginger
 			btnMoveDown.Visible = bRearranging;
 			var scaleFactor = this.Font.SizeInPoints / Constants.ReferenceFontSize;
 			btnRemove.Top = (int)((bRearranging ? 76 : 56) * scaleFactor);
-			labelIndex.Text = bRearranging ? "Row #" : "Order:";
+			labelIndex.Text = bRearranging ? "Item #" : "Order:";
 
 			_bIgnoreEvents = false;
 		}

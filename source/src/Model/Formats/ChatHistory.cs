@@ -14,7 +14,7 @@ namespace Ginger
 			{
 				if (count > 0 && messages[0].speaker == 1)
 					return messages.Skip(1); // Skip greeting
-				return messages;
+				return messages ?? new Message[0];
 			}
 		}
 
