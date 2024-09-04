@@ -627,6 +627,11 @@ namespace Ginger
 				OnPasteLore(targetPanel);
 				return;
 			}
+			else if (Clipboard.ContainsData(ChatClipboard.Format))
+			{
+				OnPasteChat(targetPanel);
+				return;
+			}
 			else if (Clipboard.ContainsText(TextDataFormat.UnicodeText))
 			{
 				OnPasteText(targetPanel);
@@ -738,6 +743,51 @@ namespace Ginger
 			Invalidate(false);
 
 			Undo.Push(Undo.Kind.RecipeAddRemove, "Paste lorebook");
+			Current.IsDirty = true;
+		}
+		
+		private void OnPasteChat(RecipePanel targetPanel)
+		{
+			if (Clipboard.ContainsData(ChatClipboard.Format) == false)
+				return;
+
+			int insertionIndex = -1;
+			if (targetPanel != null)
+				insertionIndex = _recipePanels.FindIndex(p => p.recipe == targetPanel.recipe);
+			if (insertionIndex == -1)
+				insertionIndex = _recipePanels.Count;
+
+			ChatClipboard data = Clipboard.GetData(ChatClipboard.Format) as ChatClipboard;
+			if (data == null)
+				return;
+
+			var content = data.text;
+			if (string.IsNullOrEmpty(content))
+				return;
+
+			content = Parameter.FromClipboard(content, Current.Name, Current.Card.userPlaceholder);
+
+			// Apply standard text style
+			content = TextStyleConverter.Convert(content, CardData.TextStyle.Mixed);
+
+			var recipe = RecipeBook.CreateRecipeFromResource(Resources.example_recipe, Recipe.Type.Component);
+			if (recipe == null)
+				return; // Error
+
+			(recipe.parameters[0] as TextParameter).value = content;
+
+			this.Suspend();
+			this.DisableRedrawAndDo(() => {
+				Current.Character.recipes.Insert(insertionIndex, recipe);
+				var pastedPanel = AddRecipePanel(recipe, false, insertionIndex);
+				pastedPanel.Focus();
+
+				RefreshSyntaxHighlighting(true);
+				ScrollToPanel(pastedPanel);
+			});
+			this.Resume();
+			
+			Undo.Push(Undo.Kind.RecipeAddRemove, "Paste");
 			Current.IsDirty = true;
 		}
 
@@ -899,6 +949,10 @@ namespace Ginger
 				else if (Clipboard.ContainsData(LoreClipboard.Format))
 				{
 					menu.Items.Add(new ToolStripMenuItem("Paste lorebook", null, (s, e) => { OnPaste(null, e); }));
+				} 
+				else if (Clipboard.ContainsData(ChatClipboard.Format))
+				{
+					menu.Items.Add(new ToolStripMenuItem("Paste chat", null, (s, e) => { OnPaste(null, e); }));
 				} 
 				else if (Clipboard.ContainsText(TextDataFormat.UnicodeText))
 				{

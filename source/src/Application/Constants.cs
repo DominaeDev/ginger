@@ -200,6 +200,8 @@ namespace Ginger
 
 	public static class ShortcutKeys
 	{
+		public const Keys Copy = Keys.Control | Keys.C;
+		public const Keys Paste = Keys.Control | Keys.V;
 		public const Keys Undo = Keys.Control | Keys.Z;
 		public const Keys Redo = Keys.Control | Keys.Y;
 		public const Keys EraseWord = Keys.Control | Keys.Back;

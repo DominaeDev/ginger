@@ -708,31 +708,44 @@ namespace Ginger
 
 		private void ShowChatContextMenu(int messageIndex, Point location)
 		{
-			if (_selectedChatInstance == null)
+			if (_selectedChatInstance == null || _selectedChatInstance.history == null || _selectedChatInstance.history.messages == null)
 				return; // No chat
+
+			string instanceId = null;
+			if (messageIndex >= 0 && messageIndex < _selectedChatInstance.history.messages.Length)
+				instanceId = _selectedChatInstance.history.messages[messageIndex].instanceId;
 
 			int messageCount = _selectedChatInstance.history.count;
 			bool bUserMessage = messageIndex >= 0 && messageIndex < messageCount && _selectedChatInstance.history.messages[messageIndex].speaker == 0;
 			bool bCanBranch = !bUserMessage && messageIndex < messageCount - 1;
 			bool bCanScrub = bUserMessage;
 
-			if ((_selectedChatInstance.hasGreeting && messageIndex == 0) // Greeting
-				|| string.IsNullOrEmpty(_selectedChatInstance.history.messages[messageIndex].instanceId)) // No message id
+			if ((messageIndex == 0 && _selectedChatInstance.hasGreeting) // Greeting
+				|| (string.IsNullOrEmpty(instanceId))) // No message id
 			{
 				bCanBranch = false;
 				bCanScrub = false;
 			}
 
 			ContextMenuStrip menu = new ContextMenuStrip();
+			menu.Items.Add(new ToolStripMenuItem("Copy selection", null, (s, e) => {
+				chatView.CopySelected();
+			}) {
+				Enabled = chatView.listBox.SelectedItems.Count > 0,
+				ToolTipText = "Copy selected chat to clipboard.",
+			});
+
+			menu.Items.Add(new ToolStripSeparator());
+
 			menu.Items.Add(new ToolStripMenuItem("Branch from here", null, (s, e) => {
-				BranchChat(_selectedChatInstance, _selectedChatInstance.history.messages[messageIndex].instanceId);
+				BranchChat(_selectedChatInstance, instanceId);
 			}) {
 				Enabled = bCanBranch,
 				ToolTipText = bCanBranch ? Resources.tooltip_link_branch_chat : Resources.tooltip_link_cannot_branch_chat,
 			});
 
 			menu.Items.Add(new ToolStripMenuItem("Scrub from here", null, (s, e) => {
-				ScrubChat(_selectedChatInstance, _selectedChatInstance.history.messages[messageIndex].instanceId);
+				ScrubChat(_selectedChatInstance, instanceId);
 			}) {
 				Enabled = bCanScrub,
 				ToolTipText = bCanScrub ? Resources.tooltip_link_scrub_chat : Resources.tooltip_link_cannot_scrub_chat,
@@ -861,6 +874,11 @@ namespace Ginger
 			}
 
 			PopulateChatList(true);
+		}
+
+		private void splitter_SplitterMoved(object sender, SplitterEventArgs e)
+		{
+			chatView.ResizeItems();
 		}
 	}
 }

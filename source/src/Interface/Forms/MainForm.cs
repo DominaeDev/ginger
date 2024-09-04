@@ -1187,6 +1187,11 @@ namespace Ginger
 				pasteMenuItem.Text = "Paste lorebook";
 				pasteMenuItem.Enabled = true;
 			}
+			else if (Clipboard.ContainsData(ChatClipboard.Format))
+			{
+				pasteMenuItem.Text = "Paste chat";
+				pasteMenuItem.Enabled = true;
+			} 
 			else if (Clipboard.ContainsText(TextDataFormat.UnicodeText))
 			{
 				pasteMenuItem.Text = "Paste text";

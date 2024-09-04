@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -38,7 +39,6 @@ namespace Ginger
 		private static StringFormat RightAligned = new StringFormat() { Alignment = StringAlignment.Far };
 		private Point _rightDownLocation;
 		private bool _bRightDown = false;
-
 
 		public ChatListBox()
 		{
@@ -153,14 +153,12 @@ namespace Ginger
 				if (_bRightDown && (Math.Abs(e.X - _rightDownLocation.X) < 10 && Math.Abs(e.Y - _rightDownLocation.Y) < 10))
 				{
 					int index = HitTest(new Point(e.X, e.Y));
-					if (index != -1)
-					{
-						SelectLine(index);
-						OnContextMenu?.Invoke(listBox, new ContextMenuEventArgs() {
-							Index = index,
-							Location = new Point(e.X, e.Y),
-						});
-					}
+//					SelectLine(index);
+
+					OnContextMenu?.Invoke(listBox, new ContextMenuEventArgs() {
+						Index = index,
+						Location = new Point(e.X, e.Y),
+					});
 				}
 			}
 		}
@@ -202,6 +200,49 @@ namespace Ginger
 		public void ShowChat(bool bShow)
 		{
 			listBox.Visible = bShow;
+		}
+
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			if (keyData == ShortcutKeys.Copy)
+			{
+				CopySelected();
+				return true;
+			}
+			
+			return false;
+		}
+
+		public void CopySelected()
+		{
+			if (listBox.SelectedItems.Count == 0)
+				return;
+
+			var messages = new List<ChatClipboard.Message>();
+			int lastIndex = -1;
+			for (int i = 0; i < listBox.Items.Count; ++i)
+			{
+				if (listBox.GetSelected(i) == false)
+					continue;
+				if (lastIndex >= 0 && i - lastIndex > 1)
+				{
+					// Insert gap
+					messages.Add(new ChatClipboard.Message());
+				}
+				lastIndex = i;
+				var entry = (Entry)listBox.Items[i];
+				messages.Add(new ChatClipboard.Message() {
+					name = entry.name,
+					characterIndex = entry.characterIndex,
+					text = entry.message,
+				});
+			}
+
+			ChatClipboard chatClipboard = ChatClipboard.FromMessages(messages);
+			DataObject dataObject = new DataObject();
+			dataObject.SetData(ChatClipboard.Format, chatClipboard);
+			dataObject.SetData(DataFormats.UnicodeText, chatClipboard.rawText);
+			Clipboard.SetDataObject(dataObject);
 		}
 	}
 }

@@ -159,12 +159,6 @@
     <Compile Include="src\Interface\Controls\ComboBoxEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="src\Interface\Controls\EmptyControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="src\Interface\Controls\EmptyControl.Designer.cs">
-      <DependentUpon>EmptyControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="src\Interface\Controls\FlatRichTextBox.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -363,6 +357,7 @@
       <DependentUpon>RecipePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Model\CardData.cs" />
+    <Compile Include="src\Model\Clipboard\ChatClipboard.cs" />
     <Compile Include="src\Model\Formats\AssetFile.cs" />
     <Compile Include="src\Model\Formats\CaiChat.cs" />
     <Compile Include="src\Model\Formats\FaradayCardV4.cs" />
@@ -383,7 +378,7 @@
     <Compile Include="src\Model\Parameters\MultiChoiceParameter.cs" />
     <Compile Include="src\Model\Parameters\MeasurementParameter.cs" />
     <Compile Include="src\Model\Parameters\RangeParameter.cs" />
-    <Compile Include="src\Model\Recipe\LoreClipboard.cs" />
+    <Compile Include="src\Model\Clipboard\LoreClipboard.cs" />
     <Compile Include="src\Model\Recipe\RecipeClipboard.cs" />
     <Compile Include="src\Utility\CharUtil.cs" />
     <Compile Include="src\Utility\Extensions\ControlExtensions.cs" />
