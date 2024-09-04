@@ -84,7 +84,7 @@
 		pe ::= dialogue " " action " " dialogue " " action
 		pf ::= action " " dialogue " " action " " dialogue
 		dialogue ::= [[^<\n*#\"]]+
-		action ::= "*" [[^ ]][[a-z .,'?!:;0-9-]]+[[^ ]] "*"
+		action ::= "*" [[a-z .,'?!:;0-9-]]+ "*"
 	]]></Grammar>
 	<!-- Novel -->
 	<Grammar rule="use-grammar and __support-grammar and text-style eq 2"><![CDATA[
@@ -110,7 +110,7 @@
 		pe ::= dialogue " " action " " dialogue " " action
 		pf ::= action " " dialogue " " action " " dialogue
 		dialogue ::= "\"" [[^<\n*#\"]]+ "\""
-		action ::= "*" [[^ ]][[a-z .,'?!:;0-9-]]+[[^ ]] "*"
+		action ::= "*" [[a-z .,'?!:;0-9-]]+ "*"
 	]]></Grammar>
 	<!-- Decorative -->
 	<Grammar rule="use-grammar and __support-grammar and text-style eq 4"><![CDATA[
