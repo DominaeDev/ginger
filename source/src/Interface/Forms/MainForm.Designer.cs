@@ -1011,7 +1011,7 @@ namespace Ginger {
 			// chatHistoryMenuItem
 			// 
 			this.chatHistoryMenuItem.Name = "chatHistoryMenuItem";
-			this.chatHistoryMenuItem.ShortcutKeyDisplayString = "Alt+C";
+			this.chatHistoryMenuItem.ShortcutKeyDisplayString = "Ctrl+H";
 			this.chatHistoryMenuItem.Size = new System.Drawing.Size(219, 22);
 			this.chatHistoryMenuItem.Text = "Chat &history";
 			this.chatHistoryMenuItem.Click += new System.EventHandler(this.chatHistoryMenuItem_Click);

@@ -1076,23 +1076,31 @@ namespace Ginger
 			bool bShouldAutosave =
 				AppSettings.BackyardLink.Autosave
 				&& BackyardBridge.ConnectionEstablished
-				&& Current.HasActiveLink
-				&& Current.IsLinkDirty;
+				&& Current.HasActiveLink;
 			
-			bool bAutoSaved = false;
-			BackyardBridge.Error autosaveError = BackyardBridge.Error.Unknown;
+			// Check if link is still valid
+			BackyardBridge.Error autosaveError = BackyardBridge.Error.NoError;
+
 			if (bShouldAutosave)
 			{
+				BackyardBridge.CharacterInstance character;
+				autosaveError = BackyardBridge.RefreshCharacter(Current.Link.characterId, out character);
+				bShouldAutosave &= autosaveError == BackyardBridge.Error.NoError;
+			}
+
+			bShouldAutosave &= Current.IsLinkDirty;
+
+			if (bShouldAutosave)
+			{
+				// Save changes to Backyard
 				autosaveError = UpdateCharacterInBackyard();
+
 				if (autosaveError == BackyardBridge.Error.CancelledByUser)
 					return false; // User clicked 'cancel'
 				else if (autosaveError == BackyardBridge.Error.DismissedByUser)
 					bShouldAutosave = false; // User clicked 'no'
 				else if (autosaveError == BackyardBridge.Error.NoError)
-				{
-					bAutoSaved = true;
 					Current.IsLinkDirty = false;
-				}
 			}
 
 			if (FileUtil.Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, formats))
@@ -1108,29 +1116,25 @@ namespace Ginger
 
 				MRUList.AddToMRU(filename, Current.Card.name);
 
-				if (bShouldAutosave)
-				{
-					if (bAutoSaved)
-						SetStatusBarMessage(Resources.status_link_saved, Constants.StatusBarMessageInterval);
-					else if (autosaveError == BackyardBridge.Error.NotFound)
-					{
-						MessageBox.Show(Resources.error_link_autosave_not_found, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				SetStatusBarMessage(Resources.status_file_save, Constants.StatusBarMessageInterval);
 
-						// Something went wrong. Refresh the character list
-						BackyardBridge.RefreshCharacters();
-						Current.Link.RefreshState();
-						RefreshTitle();
-					}
-					else
-					{
-						MessageBox.Show(Resources.error_link_autosave, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);						
-					}
+				if (bShouldAutosave && autosaveError == BackyardBridge.Error.NoError)
+					SetStatusBarMessage(Resources.status_link_saved, Constants.StatusBarMessageInterval);
+				else if (autosaveError == BackyardBridge.Error.NotFound)
+				{
+					MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					BreakLink(true);
+				}
+				else if (autosaveError != BackyardBridge.Error.NoError)
+				{
+					MessageBox.Show(Resources.error_link_autosave, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					BackyardBridge.Disconnect();
 				}
 				return true;
 			}
 			else
 			{
-				if (bAutoSaved) // Notify user the auto save worked
+				if (bShouldAutosave && autosaveError == BackyardBridge.Error.NoError) // Notify user the auto save worked
 					SetStatusBarMessage(Resources.status_link_saved, Constants.StatusBarMessageInterval);
 
 				MessageBox.Show(Resources.error_save_character_card, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1647,13 +1651,16 @@ namespace Ginger
 			}
 		}
 
-		private void ReestablishLink()
+		private bool ReestablishLink(bool bSilent = false)
 		{
 			// Refresh character information
 			if (BackyardBridge.RefreshCharacters() != BackyardBridge.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
+				if (bSilent == false)
+				{
+					MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+				return false;
 			}
 
 			if (Current.Link != null)
@@ -1667,9 +1674,11 @@ namespace Ginger
 					Current.Link.RefreshState();
 					RefreshTitle();
 
-					SetStatusBarMessage(Resources.status_link_reestablished, Constants.StatusBarMessageInterval);
+					if (bSilent == false)
+						SetStatusBarMessage(Resources.status_link_reestablished, Constants.StatusBarMessageInterval);
+					return true;
 				}
-				else
+				else if (bSilent == false)
 				{
 					if (MessageBox.Show(Resources.error_link_reestablish, Resources.cap_link_reestablish, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
 					{
@@ -1679,17 +1688,22 @@ namespace Ginger
 					}
 				}
 			}
+			return false;
 		}
 
-		private void BreakLink()
+		private bool BreakLink(bool bSilent = false)
 		{
-			if (Current.Link != null)
+			if (Current.HasActiveLink)
 			{
-				SetStatusBarMessage(Resources.status_link_break, Constants.StatusBarMessageInterval);
 				Current.IsFileDirty = true;
 				Current.Link.isActive = false;
 				RefreshTitle();
+
+				if (bSilent == false)
+					SetStatusBarMessage(Resources.status_link_break, Constants.StatusBarMessageInterval);
+				return true;
 			}
+			return false;
 		}
 
 		private BackyardBridge.Error RevertCharacterFromBackyard()

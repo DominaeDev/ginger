@@ -842,20 +842,11 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File was saved, however synchronization with Backyard AI failed..
+        ///   Looks up a localized string similar to Failed to save character to Backyard AI. Operation cancelled..
         /// </summary>
         internal static string error_link_autosave {
             get {
                 return ResourceManager.GetString("error_link_autosave", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to File was saved, however synchronization with Backyard AI failed. Character not found..
-        /// </summary>
-        internal static string error_link_autosave_not_found {
-            get {
-                return ResourceManager.GetString("error_link_autosave_not_found", resourceCulture);
             }
         }
         
@@ -963,6 +954,15 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Failed to save character to Backyard AI. Operation cancelled..
         /// </summary>
+        internal static string error_link_save {
+            get {
+                return ResourceManager.GetString("error_link_save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to save character to Backyard AI. Character not found..
+        /// </summary>
         internal static string error_link_save_character {
             get {
                 return ResourceManager.GetString("error_link_save_character", resourceCulture);
@@ -984,15 +984,6 @@ namespace Ginger.Properties {
         internal static string error_link_unknown {
             get {
                 return ResourceManager.GetString("error_link_unknown", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to save character to Backyard AI. Character not found..
-        /// </summary>
-        internal static string error_link_unrecognized_character {
-            get {
-                return ResourceManager.GetString("error_link_unrecognized_character", resourceCulture);
             }
         }
         
@@ -2306,6 +2297,15 @@ namespace Ginger.Properties {
         internal static string snippet_template {
             get {
                 return ResourceManager.GetString("snippet_template", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saved file.
+        /// </summary>
+        internal static string status_file_save {
+            get {
+                return ResourceManager.GetString("status_file_save", resourceCulture);
             }
         }
         

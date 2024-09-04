@@ -81,7 +81,7 @@ namespace Ginger
 		private static Dictionary<string, CharacterInstance> _Characters = new Dictionary<string, CharacterInstance>();
 		private static Dictionary<string, GroupInstance> _Groups = new Dictionary<string, GroupInstance>();
 
-		public static string DefaultChatTitle = "Untitled Chat";
+		public static string DefaultChatTitle = "Untitled chat";
 
 		public class Link : IXmlLoadable, IXmlSaveable
 		{
@@ -338,6 +338,97 @@ namespace Ginger
 			return default(GroupInstance);
 		}
 
+		public static Error RefreshCharacter(string characterId, out CharacterInstance characterInstance)
+		{
+			if (ConnectionEstablished == false)
+			{
+				characterInstance = default(CharacterInstance);
+				return Error.NotConnected;
+			}
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					using (var cmdCharacterData = connection.CreateCommand())
+					{
+						cmdCharacterData.CommandText =
+						@"
+							SELECT 
+								A.id, B.id, D.id,
+								B.displayName, B.name, A.createdAt,
+								E.updatedAt, D.folderId, D.hubAuthorUsername, A.isUserControlled
+							FROM CharacterConfig as A
+							INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
+							INNER JOIN _CharacterConfigToGroupConfig AS C ON C.A = A.id
+							INNER JOIN GroupConfig AS D ON D.id = C.B
+							INNER JOIN Chat AS E ON E.groupConfigId = D.id
+							WHERE A.id = $charId;
+						";
+						cmdCharacterData.Parameters.AddWithValue("$charId", characterId);
+
+						using (var reader = cmdCharacterData.ExecuteReader())
+						{
+							if (reader.Read() == false)
+							{
+								characterInstance = default(CharacterInstance);
+								return Error.NotFound;
+							}
+							
+							string instanceId = reader.GetString(0);
+							string configId = reader.GetString(1);
+							string groupId = reader.GetString(2);
+							string displayName = reader.GetString(3);
+							string name = reader.GetString(4);
+							DateTime createdAt = reader.GetUnixTime(5);
+							DateTime updatedAt = reader.GetUnixTime(6);
+							string folderId = reader.GetString(7);
+							string hubAuthorUsername = reader[8] as string;
+							bool isUser = reader.GetBoolean(9);
+
+							characterInstance = new CharacterInstance() {
+								instanceId = instanceId,
+								configId = configId,
+								groupId = groupId,
+								displayName = displayName,
+								name = name,
+								creationDate = createdAt,
+								updateDate = updatedAt,
+								folderId = folderId,
+								creator = hubAuthorUsername,
+							};
+
+							// Update list
+							_Characters.Set(instanceId, characterInstance);
+						}
+					}
+
+					connection.Close();
+					return Error.NoError;
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Disconnect();
+				characterInstance = default(CharacterInstance);
+				return Error.FileNotFound;
+			}
+			catch (SQLiteException e)
+			{
+				Disconnect();
+				characterInstance = default(CharacterInstance);
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				Disconnect();
+				characterInstance = default(CharacterInstance);
+				return Error.Unknown;
+			}
+		}
+
 		public static Error RefreshCharacters()
 		{
 			if (ConnectionEstablished == false)
@@ -352,59 +443,6 @@ namespace Ginger
 				using (var connection = CreateSQLiteConnection())
 				{
 					connection.Open();
-
-					// Fetch character images
-					var characterImages = new Dictionary<string, ImageInstance>();
-					using (var cmdImageData = connection.CreateCommand())
-					{
-						cmdImageData.CommandText =
-						@"
-							SELECT 
-								id, imageUrl, label, aspectRatio
-							FROM AppImage
-							ORDER BY ""order"" ASC;
-						";
-						using (var reader = cmdImageData.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string instanceId = reader.GetString(0);
-								string imageUrl = reader.GetString(1);
-								string label = reader[2] as string;
-								string aspectRatio = reader[3] as string;
-								int width, height;
-
-								if (string.IsNullOrEmpty(aspectRatio) == false)
-								{
-									int pos_slash = aspectRatio.IndexOf('/');
-									if (pos_slash != -1)
-									{
-										int.TryParse(aspectRatio.Substring(0, pos_slash), out width);
-										int.TryParse(aspectRatio.Substring(pos_slash + 1), out height);
-									}
-									else
-									{
-										width = 0;
-										height = 0;
-									}
-								}
-								else
-								{
-									width = 0;
-									height = 0;
-								}
-
-								characterImages.TryAdd(instanceId,
-									new ImageInstance() {
-										instanceId = instanceId,
-										label = label,
-										imageUrl = imageUrl,
-										width = width,
-										height = height,
-									});
-							}
-						}
-					}
 
 					using (var cmdCharacterData = connection.CreateCommand())
 					{
@@ -2664,6 +2702,7 @@ namespace Ginger
 								@"
 									UPDATE Chat
 									SET 
+										createdAt = $timestamp,
 										updatedAt = $timestamp,
 										name = $name
 									WHERE id = $chatId;

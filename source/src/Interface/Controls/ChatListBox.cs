@@ -16,9 +16,9 @@ namespace Ginger
 			public string timestamp;
 		}
 
-		private static readonly int NameLeft = 2;
+		private static readonly int NameLeft = 4;
 		private static readonly int NameTop = 2;
-		private static readonly int MessageLeft = 2;
+		private static readonly int MessageLeft = 4;
 		private static readonly int MessageRight = 0;
 		private static readonly int MessageTop = 19;
 		private static readonly int MessageBottom = 6;
@@ -77,14 +77,14 @@ namespace Ginger
 				e.Graphics.DrawString(
 					 entry.name,
 					 _nameFont,
-					 new SolidBrush(selected ? Color.White : entry.color),
+					 new SolidBrush(selected ? e.ForeColor : entry.color),
 					 new Point(e.Bounds.Left + NameLeft, e.Bounds.Top + NameTop));
 
 				// Timestamp
 				e.Graphics.DrawString(
 					 entry.timestamp,
 					 _timeFont,
-					 new SolidBrush(Color.DarkGray),
+					 new SolidBrush(selected ? e.ForeColor : Color.DarkGray),
 					 new Rectangle(e.Bounds.Left, e.Bounds.Top + NameTop, e.Bounds.Width - 2, e.Bounds.Height),
 					 RightAligned);
 					
@@ -117,8 +117,8 @@ namespace Ginger
 
 		private void ChatListView_Resize(object sender, EventArgs e)
 		{
-			listBox.Location = new Point(0, 0);
-			listBox.Size = new Size(this.ClientSize.Width, this.ClientSize.Height);
+			listBox.Location = new Point(1, 0);
+			listBox.Size = new Size(this.ClientSize.Width - 1, this.ClientSize.Height);
 			listBox.Invalidate();
 		}
 		
@@ -197,6 +197,11 @@ namespace Ginger
 				listBox.SetSelected(i, i == index);
 			listBox.EndUpdate();
 			listBox.Refresh();
+		}
+
+		public void ShowChat(bool bShow)
+		{
+			listBox.Visible = bShow;
 		}
 	}
 }

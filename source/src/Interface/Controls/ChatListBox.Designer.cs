@@ -34,14 +34,15 @@ namespace Ginger
 			// 
 			// listBox
 			// 
+			this.listBox.BackColor = System.Drawing.Color.WhiteSmoke;
 			this.listBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.listBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
 			this.listBox.FormattingEnabled = true;
-			this.listBox.Location = new System.Drawing.Point(3, 0);
+			this.listBox.Location = new System.Drawing.Point(0, 0);
 			this.listBox.Name = "listBox";
 			this.listBox.ScrollAlwaysVisible = true;
 			this.listBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.listBox.Size = new System.Drawing.Size(144, 147);
+			this.listBox.Size = new System.Drawing.Size(135, 134);
 			this.listBox.TabIndex = 0;
 			this.listBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBox_DrawItem);
 			this.listBox.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listBox_MeasureItem);
@@ -52,7 +53,7 @@ namespace Ginger
 			// ChatListBox
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-			this.BackColor = System.Drawing.SystemColors.Window;
+			this.BackColor = System.Drawing.Color.Gray;
 			this.Controls.Add(this.listBox);
 			this.Name = "ChatListBox";
 			this.Resize += new System.EventHandler(this.ChatListView_Resize);

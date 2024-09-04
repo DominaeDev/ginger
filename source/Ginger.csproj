@@ -159,6 +159,12 @@
     <Compile Include="src\Interface\Controls\ComboBoxEx.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="src\Interface\Controls\EmptyControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\EmptyControl.Designer.cs">
+      <DependentUpon>EmptyControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\Interface\Controls\FlatRichTextBox.cs">
       <SubType>UserControl</SubType>
     </Compile>

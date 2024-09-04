@@ -50,6 +50,7 @@ namespace Ginger
 			this.ResizeEnd += LinkEditChatDialog_ResizeEnd;
 			chatInstanceList.Resize += ChatInstanceList_Resize;
 			chatInstanceList.ItemSelectionChanged += ChatInstanceList_ItemSelectionChanged;
+			chatView.ShowChat(false);
 
 			_charactersById = Bridge.Characters.ToDictionary(c => c.instanceId, c => c);
 
@@ -74,6 +75,11 @@ namespace Ginger
 			SendMessage(chatInstanceList.Handle, LVM_SETHOTCURSOR, IntPtr.Zero, Cursors.Arrow.Handle);
 
 			RefreshTitle();
+		}
+		
+		private void LinkEditChatDialog_Shown(object sender, EventArgs e)
+		{
+			PopulateChatList(true);
 		}
 
 		private void RefreshTitle()
@@ -121,33 +127,6 @@ namespace Ginger
 			}
 		}
 
-		private void LinkEditChatDialog_Shown(object sender, EventArgs e)
-		{
-			// Refresh character list
-			if (_groupInstance.isEmpty)
-			{
-				if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
-				{
-					MessageBox.Show(Resources.error_read_data, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					Close();
-					return;
-				}
-
-				var groupDlg = new LinkSelectGroupDialog();
-				groupDlg.Characters = Bridge.Characters.ToArray();
-				groupDlg.Groups = Bridge.Groups.ToArray();
-				groupDlg.Folders = Bridge.Folders.ToArray();
-				if (groupDlg.ShowDialog() != DialogResult.OK)
-				{
-					Close();
-					return;
-				}
-				_groupInstance = groupDlg.SelectedGroup;
-			}
-
-			PopulateChatList(true);
-		}
-
 		protected override void OnClientSizeChanged(EventArgs e)
 		{
 			base.OnClientSizeChanged(e);
@@ -184,15 +163,20 @@ namespace Ginger
 			}
 			else
 			{
-				_selectedChatInstance = null;
+				ViewChat(null);
 			}
 		}
 
 		private void PopulateChatList(bool bSelectFirst)
 		{
 			// List chats for group
-			Bridge.ChatInstance[] chats;
-			Bridge.GetChats(_groupInstance, out chats);
+			Bridge.ChatInstance[] chats = null;
+			if (_groupInstance.isEmpty == false && Bridge.GetChats(_groupInstance, out chats) != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
 
 			_selectedChatInstance = null;
 			chatInstanceList.BeginUpdate();
@@ -204,8 +188,9 @@ namespace Ginger
 				var now = DateTime.Now;
 				ListViewGroup groupToday = null;
 				ListViewGroup groupYesterday = null;
+				ListViewGroup groupLastWeek = null;
+				ListViewGroup groupLastMonth = null;
 				ListViewGroup groupOlder = null;
-				ListViewGroup groupLastYear = null;
 
 				for (int i = 0; i < chats.Length; ++i)
 				{
@@ -235,19 +220,26 @@ namespace Ginger
 							groupYesterday = chatInstanceList.Groups.Add("yesterday", "Yesterday");
 						item.Group = groupYesterday;
 					}
-					else if (updateDate.Year == now.Year) // Older than yesterday
+					else if ((now.Date - updateDate.Date) < TimeSpan.FromDays(7)) // Last week
 					{
 						item.SubItems.Add(updateDate.ToString("m", CultureInfo.InvariantCulture));
-						if (groupOlder == null)
-							groupOlder = chatInstanceList.Groups.Add("older", "Older than yesterday");
-						item.Group = groupOlder;
+						if (groupLastWeek == null)
+							groupLastWeek = chatInstanceList.Groups.Add("week", "Last week");
+						item.Group = groupLastWeek;
+					}		
+					else if ((now.Date - updateDate.Date) < TimeSpan.FromDays(31)) // Last month
+					{
+						item.SubItems.Add(updateDate.ToString("m", CultureInfo.InvariantCulture));
+						if (groupLastMonth == null)
+							groupLastMonth = chatInstanceList.Groups.Add("month", "Last month");
+						item.Group = groupLastMonth;
 					}
-					else if (updateDate.Year < now.Year) // Last year
+					else // Older
 					{
 						item.SubItems.Add(updateDate.ToString("d"));
-						if (groupLastYear == null)
-							groupLastYear = chatInstanceList.Groups.Add("year", "Last year");
-						item.Group = groupLastYear;
+						if (groupOlder == null)
+							groupOlder = chatInstanceList.Groups.Add("year", "Older chats");
+						item.Group = groupOlder;
 					}
 				}
 			}
@@ -278,9 +270,12 @@ namespace Ginger
 			{
 				_selectedChatInstance = null;
 				statusChatLabel.Text = "";
+				chatView.ShowChat(false);
 				return;
 			}
+
 			_selectedChatInstance = chatInstance;
+			chatView.ShowChat(true);
 
 			List<Bridge.CharacterInstance> participants = new List<Bridge.CharacterInstance>(4);
 			participants.Add(chatInstance.participants.Select(id => Bridge.GetCharacter(id)).FirstOrDefault(c => c.isUser)); // User first
@@ -456,7 +451,7 @@ namespace Ginger
 			// Refresh character list
 			if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_read_data, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 				return;
 			}
@@ -607,11 +602,15 @@ namespace Ginger
 		private void menuBar_MenuActivate(object sender, EventArgs e)
 		{
 			bool hasGroup = _groupInstance.isEmpty == false;
-			bool hasSelection = _selectedChatInstance != null;
+			bool hasChat = _selectedChatInstance != null;
+
 			importMenuItem.Enabled = hasGroup;
-			exportMenuItem.Enabled = hasGroup && hasSelection;
-			duplicateMenuItem.Enabled = hasGroup && hasSelection;
+			exportMenuItem.Enabled = hasGroup && hasChat;
+			duplicateMenuItem.Enabled = hasGroup && hasChat;
 			purgeMenuItem.Enabled = hasGroup;
+			refreshMenuItem.Enabled = hasGroup;
+			repairChatsMenuItem.Enabled = hasGroup;
+			createBackupMenuItem.Enabled = hasGroup;
 		}
 
 		private void duplicateMenuItem_Click(object sender, EventArgs e)
@@ -725,14 +724,14 @@ namespace Ginger
 			}
 
 			ContextMenuStrip menu = new ContextMenuStrip();
-			menu.Items.Add(new ToolStripMenuItem("Branch from this point", null, (s, e) => {
+			menu.Items.Add(new ToolStripMenuItem("Branch from here", null, (s, e) => {
 				BranchChat(_selectedChatInstance, _selectedChatInstance.history.messages[messageIndex].instanceId);
 			}) {
 				Enabled = bCanBranch,
 				ToolTipText = bCanBranch ? Resources.tooltip_link_branch_chat : Resources.tooltip_link_cannot_branch_chat,
 			});
 
-			menu.Items.Add(new ToolStripMenuItem("Scrub from this point ", null, (s, e) => {
+			menu.Items.Add(new ToolStripMenuItem("Scrub from here", null, (s, e) => {
 				ScrubChat(_selectedChatInstance, _selectedChatInstance.history.messages[messageIndex].instanceId);
 			}) {
 				Enabled = bCanScrub,
@@ -824,6 +823,10 @@ namespace Ginger
 		private void ShowChatListContextMenu(ListViewItem item, Point location)
 		{
 			ContextMenuStrip menu = new ContextMenuStrip();
+			menu.Items.Add(new ToolStripMenuItem("Rename", null, (s, e) => {
+				item.BeginEdit();
+			}));			
+
 			menu.Items.Add(new ToolStripMenuItem("Duplicate", null, (s, e) => {
 				DuplicateChat(item.Tag as Bridge.ChatInstance);
 			}) {
@@ -845,6 +848,19 @@ namespace Ginger
 			});
 
 			menu.Show(chatInstanceList, location);
+		}
+
+		private void refreshMenuItem_Click(object sender, EventArgs e)
+		{
+			// Refresh character list
+			if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+
+			PopulateChatList(true);
 		}
 	}
 }

@@ -1019,7 +1019,7 @@ namespace Ginger
 				title = AppTitle;
 
 			// Is dirty?
-			if (Current.IsFileDirty || Current.IsLinkDirty)
+			if (Current.IsFileDirty || (Current.IsLinkDirty && BackyardBridge.ConnectionEstablished))
 				title = string.Concat("*", title);
 
 			this.Text = title;
@@ -2123,7 +2123,7 @@ namespace Ginger
 			}
 			else if (error == BackyardBridge.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_unrecognized_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 			else if (error == BackyardBridge.Error.CancelledByUser || error == BackyardBridge.Error.DismissedByUser)
 			{
@@ -2132,7 +2132,7 @@ namespace Ginger
 			}
 			else if (error != BackyardBridge.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_save, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 			else
 			{
@@ -2150,9 +2150,9 @@ namespace Ginger
 			if (error == BackyardBridge.Error.NotConnected)
 				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			else if (error == BackyardBridge.Error.NotFound)
-				MessageBox.Show(Resources.error_link_unrecognized_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			else if (error != BackyardBridge.Error.NoError)
 				MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			else if (error != BackyardBridge.Error.NoError)
+				MessageBox.Show(Resources.error_link_save, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			else
 			{
 				MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
