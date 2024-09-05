@@ -791,7 +791,7 @@ Do you want to remove the link from this file?</value>
     <value>..\Resources\Icons\link_inactive.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="msg_link_new" xml:space="preserve">
-    <value>Do you want to create a link between Ginger and Backyard AI for the currently open file?</value>
+    <value>Do you want to link this file to the Backyard AI representation of this character?</value>
   </data>
   <data name="tooltip_link_save" xml:space="preserve">
     <value>Save changes to the linked Backyard AI character.</value>
@@ -888,7 +888,7 @@ Do you want to continue?</value>
   <data name="error_link_duplicate_chat" xml:space="preserve">
     <value>Failed to duplicate chat. Operation cancelled.</value>
   </data>
-  <data name="error_link_generic" xml:space="preserve">
+  <data name="error_link_general" xml:space="preserve">
     <value>Something went wrong. Operation cancelled.</value>
   </data>
   <data name="error_link_purge_chat" xml:space="preserve">
@@ -987,5 +987,28 @@ Do you want to continue?</value>
   </data>
   <data name="status_file_save" xml:space="preserve">
     <value>Saved file</value>
+  </data>
+  <data name="cap_link_create_backup" xml:space="preserve">
+    <value>Create backup</value>
+  </data>
+  <data name="error_link_create_backup" xml:space="preserve">
+    <value>Unable to access character data. Character not found.</value>
+  </data>
+  <data name="cap_link_restore_backup" xml:space="preserve">
+    <value>Restore backup</value>
+  </data>
+  <data name="error_link_restore_backup_invalid" xml:space="preserve">
+    <value>Invalid character backup file.</value>
+  </data>
+  <data name="msg_link_create_backup" xml:space="preserve">
+    <value>Created character backup file!</value>
+  </data>
+  <data name="msg_link_restore_backup" xml:space="preserve">
+    <value>This will restore '{0}' along with {1} chat(s).
+
+Do you want to continue?</value>
+  </data>
+  <data name="msg_link_restore_backup_success" xml:space="preserve">
+    <value>Character restored from backup!</value>
   </data>
 </root>

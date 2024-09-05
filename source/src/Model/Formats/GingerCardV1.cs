@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 
+using Bridge = Ginger.BackyardBridge;
+
 namespace Ginger
 {
 	public class GingerCardV1 : IXmlLoadable, IXmlSaveable
@@ -35,7 +37,7 @@ namespace Ginger
 		public List<Character> characters = new List<Character>();
 		
 		public string portraitUID = null;
-		public BackyardBridge.Link backyardLinkInfo = null;
+		public Bridge.Link backyardLinkInfo = null;
 		public List<AssetFile> assets = new List<AssetFile>(); // Meta only. Actual data is stored in the ccv3 chunk
 
 		public bool LoadFromXml(XmlNode xmlNode)
@@ -196,7 +198,7 @@ namespace Ginger
             var linkNode = xmlNode.GetFirstElement("Link");
 			if (linkNode != null)
 			{
-				backyardLinkInfo = new BackyardBridge.Link();
+				backyardLinkInfo = new Bridge.Link();
 				if (backyardLinkInfo.LoadFromXml(linkNode) == false)
 					backyardLinkInfo = null;
 			}

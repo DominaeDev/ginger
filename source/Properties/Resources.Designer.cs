@@ -418,6 +418,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create backup.
+        /// </summary>
+        internal static string cap_link_create_backup {
+            get {
+                return ResourceManager.GetString("cap_link_create_backup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete chat.
         /// </summary>
         internal static string cap_link_delete_chat {
@@ -486,6 +495,15 @@ namespace Ginger.Properties {
         internal static string cap_link_repair_chat {
             get {
                 return ResourceManager.GetString("cap_link_repair_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restore backup.
+        /// </summary>
+        internal static string cap_link_restore_backup {
+            get {
+                return ResourceManager.GetString("cap_link_restore_backup", resourceCulture);
             }
         }
         
@@ -860,6 +878,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to access character data. Character not found..
+        /// </summary>
+        internal static string error_link_create_backup {
+            get {
+                return ResourceManager.GetString("error_link_create_backup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to delete chat. Operation cancelled..
         /// </summary>
         internal static string error_link_delete_chat {
@@ -889,9 +916,9 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Something went wrong. Operation cancelled..
         /// </summary>
-        internal static string error_link_generic {
+        internal static string error_link_general {
             get {
-                return ResourceManager.GetString("error_link_generic", resourceCulture);
+                return ResourceManager.GetString("error_link_general", resourceCulture);
             }
         }
         
@@ -948,6 +975,15 @@ namespace Ginger.Properties {
         internal static string error_link_repair_chat {
             get {
                 return ResourceManager.GetString("error_link_repair_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid character backup file..
+        /// </summary>
+        internal static string error_link_restore_backup_invalid {
+            get {
+                return ResourceManager.GetString("error_link_restore_backup_invalid", resourceCulture);
             }
         }
         
@@ -1710,6 +1746,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Created character backup file!.
+        /// </summary>
+        internal static string msg_link_create_backup {
+            get {
+                return ResourceManager.GetString("msg_link_create_backup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This will delete &apos;{0}&apos; and all of its messages. This action cannot be reversed.
         ///
         ///Do you want to continue?.
@@ -1732,7 +1777,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Do you want to create a link between Ginger and Backyard AI for the currently open file?.
+        ///   Looks up a localized string similar to Do you want to link this file to the Backyard AI representation of this character?.
         /// </summary>
         internal static string msg_link_new {
             get {
@@ -1768,6 +1813,26 @@ namespace Ginger.Properties {
         internal static string msg_link_repaired_chat {
             get {
                 return ResourceManager.GetString("msg_link_repaired_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will restore &apos;{0}&apos; along with {1} chat(s).
+        ///
+        ///Do you want to continue?.
+        /// </summary>
+        internal static string msg_link_restore_backup {
+            get {
+                return ResourceManager.GetString("msg_link_restore_backup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character restored from backup!.
+        /// </summary>
+        internal static string msg_link_restore_backup_success {
+            get {
+                return ResourceManager.GetString("msg_link_restore_backup_success", resourceCulture);
             }
         }
         

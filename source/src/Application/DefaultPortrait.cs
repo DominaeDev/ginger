@@ -6,13 +6,15 @@ namespace Ginger
 {
 	public static class DefaultPortrait
 	{
-		public static Image @Image 
+		public static ImageRef @Image 
 		{ 
 			get
 			{
 				if (_image == null)
 					ReadImage();
-				return _image;
+				var imageRef = ImageRef.FromImage(_image);
+				imageRef.uid = "__default";
+				return imageRef;
 			} 
 		}
 		private static Image _image;
@@ -21,7 +23,7 @@ namespace Ginger
 		{
 			using (var stream = new MemoryStream(Resources.default_portrait, false))
 			{
-				_image = Image.FromStream(stream);
+				_image = System.Drawing.Image.FromStream(stream);
 			}
 		}
 

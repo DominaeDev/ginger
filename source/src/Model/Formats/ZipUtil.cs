@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -150,7 +148,7 @@ namespace Ginger
 
 					// Write readme.txt
 					var gingerEntry = zip.CreateEntry("readme.txt", CompressionLevel.NoCompression);
-					using (StreamWriter writer = new StreamWriter(gingerEntry.Open()))
+					using (StreamWriter writer = new StreamWriter(gingerEntry.Open(), Encoding.UTF8))
                     {
 						writer.WriteLine("This character card was created using Ginger.");
 						writer.WriteLine();

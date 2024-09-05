@@ -386,6 +386,7 @@
     <Compile Include="src\Utility\Extensions\RichTextBoxExtensions.cs" />
     <Compile Include="src\Utility\FindReplace.cs" />
     <Compile Include="src\Utility\GenderSwap.cs" />
+    <Compile Include="src\Utility\Linking\BackyardBackup.cs" />
     <Compile Include="src\Utility\Linking\BackyardBridge.cs" />
     <Compile Include="src\Utility\Measurement.cs" />
     <Compile Include="src\Utility\Random\RandomNoise.cs" />

@@ -148,6 +148,121 @@ namespace Ginger
 			return Error.NoError;
 		}
 
+		public static Error ExtractJsonFromPNG(byte[] buffer, out EmbeddedData result)
+		{
+			if (buffer == null || buffer.Length == 0)
+			{
+				result = default(EmbeddedData);
+				return Error.FileReadError;
+			}
+
+			result = new EmbeddedData();
+			bool bDataFound = false;
+			try
+			{
+				// Read Faraday json (Exif)
+				using (var stream = new MemoryStream(buffer))
+				{
+					ExifData exifData = new ExifData(stream);
+					if (exifData.GetTagValue(ExifTag.UserComment, out result.faradayJson, StrCoding.IdCode_UsAscii))
+					{
+						bDataFound = true;
+
+						// Decode base64
+						if (result.faradayJson.BeginsWith('{') == false
+							 && result.faradayJson.Length > 0 && result.faradayJson.Length % 4 == 0) // Base64?
+						{
+							byte[] byteArray = Convert.FromBase64String(result.faradayJson);
+							result.faradayJson = new string(Encoding.UTF8.GetChars(byteArray));
+						}
+					}
+				}
+			}
+			catch
+			{
+				result.faradayJson = null;
+			}
+
+			try
+			{
+				// Read PNG chunks
+				Dictionary<string, string> metaData = new Dictionary<string, string>();
+				using (var stream = new MemoryStream(buffer))
+				{
+					PNGImage image = new PNGImage(stream);
+					foreach (var chunk in image.Chunks)
+					{
+						if (chunk is tEXtChunk) // Uncompressed
+						{
+							var textChunk = chunk as tEXtChunk;
+							metaData.TryAdd(textChunk.Keyword.ToLowerInvariant(), textChunk.Text);
+						}
+						else if (chunk is zTXtChunk) // Compressed
+						{
+							var textChunk = chunk as zTXtChunk;
+							metaData.TryAdd(textChunk.Keyword.ToLowerInvariant(), textChunk.Text);
+						}
+					}
+				}
+
+				try
+				{
+
+					// Read ginger (PNG chunk)
+					if (metaData.ContainsKey("ginger"))
+					{
+						bDataFound = true;
+						string gingerBase64 = metaData["ginger"];
+						byte[] byteArray = Convert.FromBase64String(gingerBase64);
+						result.gingerXml = new string(Encoding.UTF8.GetChars(byteArray));
+					}
+				}
+				catch
+				{
+					result.gingerXml = null;
+				}
+				
+				try
+				{
+					// Read Tavern v2 json (PNG chunk)
+					if (metaData.ContainsKey("chara"))
+					{
+						bDataFound = true;
+						string charaBase64 = metaData["chara"];
+						byte[] byteArray = Convert.FromBase64String(charaBase64);
+						result.tavernJsonV2 = new string(Encoding.UTF8.GetChars(byteArray));
+					}
+
+					// Read Tavern v3 json (PNG chunk)
+					if (metaData.ContainsKey("ccv3"))
+					{
+						bDataFound = true;
+						string charaBase64 = metaData["ccv3"];
+						byte[] byteArray = Convert.FromBase64String(charaBase64);
+						result.tavernJsonV3 = new string(Encoding.UTF8.GetChars(byteArray));
+					}
+					
+				}
+				catch
+				{
+					result.tavernJsonV2 = null;
+					result.tavernJsonV3 = null;
+				}
+			}
+			catch
+			{
+				result.tavernJsonV2 = null;
+				result.tavernJsonV3 = null;
+				result.gingerXml = null;
+			}
+
+			if (!bDataFound)
+				return Error.NoDataFound;
+			if (result.isEmpty)
+				return Error.InvalidData;
+			return Error.NoError;
+		}
+
 		public struct ImportResult
 		{
 			public GingerCardV1 gingerData;
@@ -659,7 +774,7 @@ namespace Ginger
 			}
 		}
 		
-		private static bool WriteExifMetaData(string filename, string faradayPayload)
+		internal static bool WriteExifMetaData(string filename, string faradayPayload)
 		{
 			try
 			{
@@ -1187,33 +1302,10 @@ namespace Ginger
 			{
 				var caiChat = CAIChat.FromJson(json);
 				if (caiChat != null)
-					return RepairChatMessages(caiChat.ToChat());
+					return ChatHistory.LegacyFix(caiChat.ToChat());
 			}
 
 			return null;
-		}
-
-		private static ChatHistory RepairChatMessages(ChatHistory chat)
-		{
-			if (chat.isEmpty)
-				return chat;
-
-			for (int i = 0; i < chat.messages.Length; ++i)
-			{
-				for (int j = 0; j < chat.messages[i].swipes.Length; ++j)
-				{
-					string text = chat.messages[i].swipes[j];
-					bool bFront = text.BeginsWith("#{character}: ");
-					bool bBack = text.EndsWith("\n#{user}: ");
-					if (bFront && bBack)
-						chat.messages[i].swipes[j] = text.Substring(14, text.Length - 24);
-					else if (bFront)
-						chat.messages[i].swipes[j] = text.Substring(14);
-					else if (bBack)
-						chat.messages[i].swipes[j] = text.Substring(text.Length - 10);
-				}
-			}
-			return chat;
 		}
 
 		public static bool ExportCaiChat(ChatHistory chat, string filename)

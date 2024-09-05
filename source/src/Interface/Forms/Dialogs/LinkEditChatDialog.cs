@@ -456,6 +456,8 @@ namespace Ginger
 				return;
 			}
 
+			_charactersById = Bridge.Characters.ToDictionary(c => c.instanceId, c => c);
+
 			var groupDlg = new LinkSelectGroupDialog();
 			groupDlg.Characters = Bridge.Characters.ToArray();
 			groupDlg.Groups = Bridge.Groups.ToArray();
@@ -763,7 +765,7 @@ namespace Ginger
 			int messageIndex = Array.FindIndex(branchedChatHistory.messages, m => m.instanceId == messageId);
 			if (messageIndex == -1)
 			{
-				MessageBox.Show(Resources.error_link_generic, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 			Array.Resize(ref branchedChatHistory.messages, messageIndex + 1);
@@ -799,7 +801,7 @@ namespace Ginger
 			int messageIndex = Array.FindIndex(chatInstance.history.messages, m => m.instanceId == messageId);
 			if (messageIndex == -1)
 			{
-				MessageBox.Show(Resources.error_link_generic, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 			Array.Resize(ref chatInstance.history.messages, messageIndex);
@@ -872,6 +874,7 @@ namespace Ginger
 				Close();
 				return;
 			}
+			_charactersById = Bridge.Characters.ToDictionary(c => c.instanceId, c => c);
 
 			PopulateChatList(true);
 		}
@@ -880,5 +883,155 @@ namespace Ginger
 		{
 			chatView.ResizeItems();
 		}
+
+		private void createBackupMenuItem_Click(object sender, EventArgs e)
+		{
+			if (_groupInstance.isEmpty)
+				return;
+
+			CreateBackup();
+		}
+		
+		private void restoreBackupMenuItem_Click(object sender, EventArgs e)
+		{
+			Bridge.CharacterInstance characterInstance;
+			if (RestoreBackup(out characterInstance))
+			{
+				// Refresh and select newly created character
+				if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
+				{
+					MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					Close();
+					return;
+				}
+
+				var group = Bridge.GetGroupForCharacter(characterInstance.instanceId);
+				if (group.isEmpty == false)
+				{
+					_groupInstance = group;
+					_charactersById = Bridge.Characters.ToDictionary(c => c.instanceId, c => c);
+
+					PopulateChatList(true);
+				}
+			}
+		}
+
+		private bool CreateBackup()
+		{
+			Bridge.CharacterInstance characterInstance;
+			characterInstance = Group.members
+				.Select(id => BackyardBridge.GetCharacter(id))
+				.FirstOrDefault(c => c.isUser == false);
+
+			if (string.IsNullOrEmpty(characterInstance.instanceId))
+				return false; // Error
+
+			BackyardBackupInfo backup;
+			var error = BackyardBackupUtil.CreateBackup(characterInstance, out backup);
+			if (error == Bridge.Error.NotFound)
+			{
+				MessageBox.Show(Resources.error_link_create_backup, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+			else if (error == Bridge.Error.NotConnected)
+			{
+				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return false;
+			}
+			else if (error != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			string filename = string.Concat(GetGroupTitle(Group), ".backup.", DateTime.Now.ToString("yyyy-MM-dd"), ".zip");
+
+			exportFileDialog.Title = "Save backup";
+			exportFileDialog.Filter = "Character backup file|*.zip";
+			exportFileDialog.FileName = Utility.ValidFilename(filename);
+			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			exportFileDialog.FilterIndex = AppSettings.User.LastExportChatFilter;
+
+			var result = exportFileDialog.ShowDialog();
+			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
+				return false;
+
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
+			AppSettings.User.LastExportChatFilter = exportFileDialog.FilterIndex;
+
+			if (BackyardBackupUtil.WriteBackup(exportFileDialog.FileName, backup) == false)
+			{
+				MessageBox.Show(Resources.error_export_file, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			MessageBox.Show(Resources.msg_link_create_backup, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			return true;
+		}
+
+		private bool RestoreBackup(out Bridge.CharacterInstance characterInstance)
+		{
+			if (Bridge.ConnectionEstablished == false)
+			{
+				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				characterInstance = default(Bridge.CharacterInstance);
+				return false;
+			}
+
+			importFileDialog.Title = Resources.cap_import_chat;
+			importFileDialog.Filter = "Character backup file|*.zip";
+			importFileDialog.FilterIndex = AppSettings.User.LastImportChatFilter;
+			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			var result = importFileDialog.ShowDialog();
+			if (result != DialogResult.OK)
+			{
+				characterInstance = default(Bridge.CharacterInstance);
+				return false;
+			}
+
+			AppSettings.User.LastImportChatFilter = importFileDialog.FilterIndex;
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
+
+			BackyardBackupInfo backup;
+			FileUtil.Error readError = BackyardBackupUtil.ReadBackup(importFileDialog.FileName, out backup);
+			if (readError != FileUtil.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_restore_backup_invalid, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				characterInstance = default(Bridge.CharacterInstance);
+				return false;
+			}
+
+			// Confirmation
+			if (MessageBox.Show(string.Format(Resources.msg_link_restore_backup, backup.characterCard.data.displayName, backup.chats.Count), Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) == DialogResult.No)
+			{
+				characterInstance = default(Bridge.CharacterInstance);
+				return false;
+			}
+
+			Bridge.Link.Image[] imageLinks; // Ignored
+			Bridge.ImageInput[] images = backup.images
+				.Select(i => new Bridge.ImageInput {
+					asset = new AssetFile() {
+						name = i.filename,
+						data = AssetData.FromBytes(i.data),
+						ext = i.ext,
+						assetType = AssetFile.AssetType.Icon,
+					},
+					fileExt = i.ext,
+				})
+				.ToArray();
+
+			Bridge.Error error = Bridge.CreateNewCharacter(backup.characterCard, images, backup.chats.ToArray(), out characterInstance, out imageLinks);
+			if (error != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+						
+			MessageBox.Show(Resources.msg_link_restore_backup_success, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			return true;
+		}
+
 	}
 }

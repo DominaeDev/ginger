@@ -8,6 +8,8 @@ using System.Text;
 using System.Windows.Forms;
 using Ginger.Properties;
 
+using Bridge = Ginger.BackyardBridge;
+
 namespace Ginger
 {
 	public partial class MainForm : Form
@@ -1019,7 +1021,7 @@ namespace Ginger
 				title = AppTitle;
 
 			// Is dirty?
-			if (Current.IsFileDirty || (Current.IsLinkDirty && BackyardBridge.ConnectionEstablished))
+			if (Current.IsFileDirty || (Current.IsLinkDirty && Bridge.ConnectionEstablished))
 				title = string.Concat("*", title);
 
 			this.Text = title;
@@ -1036,7 +1038,7 @@ namespace Ginger
 			statusBarActor.Text = statusBarActor.Text + (_bEnableFormLevelDoubleBuffering && AppSettings.Settings.EnableFormLevelBuffering ? " ON" : " OFF");
 #endif
 			// Connection status icon
-			if (BackyardBridge.ConnectionEstablished)
+			if (Bridge.ConnectionEstablished)
 			{
 				if (Current.HasActiveLink)
 				{
@@ -1045,7 +1047,7 @@ namespace Ginger
 				}
 				else if (Current.HasLink)
 				{
-					if (BackyardBridge.HasCharacter(Current.Link.characterId))
+					if (Bridge.HasCharacter(Current.Link.characterId))
 					{
 						statusConnectionIcon.Image = Resources.link_inactive;
 						statusConnectionIcon.ToolTipText = "Connected; Link inactive";
@@ -1204,20 +1206,20 @@ namespace Ginger
 			}
 
 			// Link menu
-			enableLinkMenuItem.Checked = BackyardBridge.ConnectionEstablished;
-			importLinkedMenuItem.Enabled = BackyardBridge.ConnectionEstablished;
-			saveLinkedMenuItem.Enabled = BackyardBridge.ConnectionEstablished && Current.HasActiveLink;
-			saveNewLinkedMenuItem.Enabled = BackyardBridge.ConnectionEstablished && Current.HasActiveLink == false;
-			revertLinkedMenuItem.Enabled = BackyardBridge.ConnectionEstablished && Current.HasActiveLink;
-			enableAutosaveMenuItem.Enabled = BackyardBridge.ConnectionEstablished;
-			enableAutosaveMenuItem.Checked = BackyardBridge.ConnectionEstablished && AppSettings.BackyardLink.Autosave;
-			reestablishLinkSeparator.Visible = BackyardBridge.ConnectionEstablished && Current.HasLink;
-			reestablishLinkMenuItem.Enabled = BackyardBridge.ConnectionEstablished;
-			reestablishLinkMenuItem.Visible = BackyardBridge.ConnectionEstablished && Current.HasStaleLink;
-			breakLinkMenuItem.Enabled = BackyardBridge.ConnectionEstablished;
-			breakLinkMenuItem.Visible = BackyardBridge.ConnectionEstablished && Current.HasActiveLink;
-			chatHistoryMenuItem.Visible = BackyardBridge.ConnectionEstablished;
-			revertLinkedMenuItem.Visible = BackyardBridge.ConnectionEstablished;
+			enableLinkMenuItem.Checked = Bridge.ConnectionEstablished;
+			importLinkedMenuItem.Enabled = Bridge.ConnectionEstablished;
+			saveLinkedMenuItem.Enabled = Bridge.ConnectionEstablished && Current.HasActiveLink;
+			saveNewLinkedMenuItem.Enabled = Bridge.ConnectionEstablished && Current.HasActiveLink == false;
+			revertLinkedMenuItem.Enabled = Bridge.ConnectionEstablished && Current.HasActiveLink;
+			enableAutosaveMenuItem.Enabled = Bridge.ConnectionEstablished;
+			enableAutosaveMenuItem.Checked = Bridge.ConnectionEstablished && AppSettings.BackyardLink.Autosave;
+			reestablishLinkSeparator.Visible = Bridge.ConnectionEstablished && Current.HasLink;
+			reestablishLinkMenuItem.Enabled = Bridge.ConnectionEstablished;
+			reestablishLinkMenuItem.Visible = Bridge.ConnectionEstablished && Current.HasStaleLink;
+			breakLinkMenuItem.Enabled = Bridge.ConnectionEstablished;
+			breakLinkMenuItem.Visible = Bridge.ConnectionEstablished && Current.HasActiveLink;
+			chatHistoryMenuItem.Visible = Bridge.ConnectionEstablished;
+			revertLinkedMenuItem.Visible = Bridge.ConnectionEstablished;
 		}
 
 		private void PopulateMRUMenu(ToolStripItemCollection items)
@@ -1547,22 +1549,22 @@ namespace Ginger
 				SaveIncremental();
 				return true;
 			}
-			else if (keyData == ShortcutKeys.LinkedOpen && BackyardBridge.ConnectionEstablished)
+			else if (keyData == ShortcutKeys.LinkedOpen && Bridge.ConnectionEstablished)
 			{
 				importLinkedMenuItem_Click(this, EventArgs.Empty);
 				return true;
 			}
-			else if (keyData == ShortcutKeys.LinkedSave && BackyardBridge.ConnectionEstablished && Current.HasActiveLink)
+			else if (keyData == ShortcutKeys.LinkedSave && Bridge.ConnectionEstablished && Current.HasActiveLink)
 			{
 				saveLinkedMenuItem_Click(this, EventArgs.Empty);
 				return true;
 			}
-			else if (keyData == ShortcutKeys.LinkedSaveAsNew && BackyardBridge.ConnectionEstablished && Current.HasActiveLink == false)
+			else if (keyData == ShortcutKeys.LinkedSaveAsNew && Bridge.ConnectionEstablished && Current.HasActiveLink == false)
 			{
 				saveNewLinkedMenuItem_Click(this, EventArgs.Empty);
 				return true;
 			}
-			else if (keyData == ShortcutKeys.LinkedChatHistory && BackyardBridge.ConnectionEstablished)
+			else if (keyData == ShortcutKeys.LinkedChatHistory && Bridge.ConnectionEstablished)
 			{
 				OpenChatHistory();
 				return true;
@@ -2073,15 +2075,15 @@ namespace Ginger
 
 		private void enableLinkMenuItem_Click(object sender, EventArgs e)
 		{
-			if (BackyardBridge.ConnectionEstablished == false)
+			if (Bridge.ConnectionEstablished == false)
 			{
-				var error = BackyardBridge.EstablishConnection();
-				if (error == BackyardBridge.Error.ValidationFailed)
+				var error = Bridge.EstablishConnection();
+				if (error == Bridge.Error.ValidationFailed)
 				{
 					MessageBox.Show(Resources.error_link_unsupported, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					AppSettings.BackyardLink.Enabled = false;
 				}
-				else if (error != BackyardBridge.Error.NoError)
+				else if (error != Bridge.Error.NoError)
 				{
 					MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					AppSettings.BackyardLink.Enabled = false;
@@ -2089,7 +2091,7 @@ namespace Ginger
 				else
 				{
 					// Fetch characters
-					if (BackyardBridge.RefreshCharacters() != BackyardBridge.Error.NoError)
+					if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
 					{
 						// Error
 						MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -2109,7 +2111,7 @@ namespace Ginger
 			{
 				SetStatusBarMessage(Resources.status_link_disconnect, Constants.StatusBarMessageInterval);
 				AppSettings.BackyardLink.Enabled = false;
-				BackyardBridge.Disconnect();
+				Bridge.Disconnect();
 			}
 			RefreshTitle();
 		}
@@ -2122,20 +2124,20 @@ namespace Ginger
 		private void saveLinkedMenuItem_Click(object sender, EventArgs e)
 		{
 			var error = UpdateCharacterInBackyard();
-			if (error == BackyardBridge.Error.NotConnected)
+			if (error == Bridge.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-			else if (error == BackyardBridge.Error.NotFound)
+			else if (error == Bridge.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-			else if (error == BackyardBridge.Error.CancelledByUser || error == BackyardBridge.Error.DismissedByUser)
+			else if (error == Bridge.Error.CancelledByUser || error == Bridge.Error.DismissedByUser)
 			{
 				// User clicked cancel
 				return;
 			}
-			else if (error != BackyardBridge.Error.NoError)
+			else if (error != Bridge.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_save, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -2148,15 +2150,15 @@ namespace Ginger
 		
 		private void saveNewLinkedMenuItem_Click(object sender, EventArgs e)
 		{
-			BackyardBridge.CharacterInstance createdCharacter;
-			BackyardBridge.Link.Image[] images;
+			Bridge.CharacterInstance createdCharacter;
+			Bridge.Link.Image[] images;
 
 			var error = CreateNewCharacterInBackyard(out createdCharacter, out images);
-			if (error == BackyardBridge.Error.NotConnected)
+			if (error == Bridge.Error.NotConnected)
 				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			else if (error == BackyardBridge.Error.NotFound)
+			else if (error == Bridge.Error.NotFound)
 				MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			else if (error != BackyardBridge.Error.NoError)
+			else if (error != Bridge.Error.NoError)
 				MessageBox.Show(Resources.error_link_save, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			else
 			{
@@ -2193,9 +2195,9 @@ namespace Ginger
 				return;
 
 			var error = RevertCharacterFromBackyard();
-			if (error == BackyardBridge.Error.NotConnected)
+			if (error == Bridge.Error.NotConnected)
 				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			else if (error != BackyardBridge.Error.NoError)
+			else if (error != Bridge.Error.NoError)
 				MessageBox.Show(Resources.error_link_open_character, Resources.cap_link_revert, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			else
 			{

@@ -338,6 +338,11 @@ namespace Ginger
 			return default(GroupInstance);
 		}
 
+		public static GroupInstance GetGroupForCharacter(string characterId)
+		{
+			return _Groups.Values.FirstOrDefault(g => g.members.Length == 2 && g.members.Contains(characterId));
+		}
+
 		public static Error RefreshCharacter(string characterId, out CharacterInstance characterInstance)
 		{
 			if (ConnectionEstablished == false)
@@ -1043,7 +1048,7 @@ namespace Ginger
 					// Compile list of images to update / insert
 					ImageOutput[] images;
 					Link.Image[] imageLinks;
-					bool bUpdateImages = GetImageUpdates(imageInstances, linkInfo.imageLinks, out images, out imageLinks);
+					bool bUpdateImages = PrepareImageUpdates(imageInstances, linkInfo.imageLinks, out images, out imageLinks);
 
 					DateTime now = DateTime.Now;
 					long updatedAt = now.ToUnixTimeMilliseconds();
@@ -1404,7 +1409,7 @@ namespace Ginger
 
 		#region Save new character
 
-		public static Error CreateNewCharacter(FaradayCardV4 card, out CharacterInstance characterInstance, out Link.Image[] imageLinks)
+		public static Error CreateNewCharacter(FaradayCardV4 card, ImageInput[] imageInput, BackyardBackupInfo.Chat[] chats, out CharacterInstance characterInstance, out Link.Image[] imageLinks)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -1430,8 +1435,8 @@ namespace Ginger
 			}
 
 			// Prepare image information
-			ImageOutput[] images;
-			GetImageUpdates(null, null, out images, out imageLinks);
+			ImageOutput[] imageOutput;
+			PrepareImages(imageInput, out imageOutput, out imageLinks);
 						
 			try
 			{
@@ -1441,12 +1446,12 @@ namespace Ginger
 
 					string characterId	= Cuid.NewCuid();
 					string configId		= Cuid.NewCuid();
-					string chatId		= Cuid.NewCuid();
 					string groupId		= Cuid.NewCuid();
 					string userId		= null;
 					DateTime now = DateTime.Now;
 					long createdAt = now.ToUnixTimeMilliseconds();
 					string folderOrder = null;
+					string[] chatIds = null;
 
 					// Fetch default user
 					using (var cmdUser = connection.CreateCommand())
@@ -1517,12 +1522,9 @@ namespace Ginger
 								sbCommand.AppendLine(
 								@"
 									INSERT INTO GroupConfig
-										(id, createdAt, updatedAt, isNSFW, folderId, folderSortPosition,
-											name)
+										(id, createdAt, updatedAt, isNSFW, folderId, folderSortPosition, name)
 									VALUES 
-										($groupId, $timestamp, $timestamp, $isNSFW, $folderId, $folderSortPosition,
-											''
-										);
+										($groupId, $timestamp, $timestamp, $isNSFW, $folderId, $folderSortPosition, '');
 								");
 
 								// _CharacterConfigToGroupConfig
@@ -1535,27 +1537,62 @@ namespace Ginger
 										($userId, $groupId);
 								");
 
-								// Chat
-								sbCommand.AppendLine(
-								@"
-									INSERT INTO Chat
-										(id, createdAt, updatedAt, context, customDialogue, canDeleteCustomDialogue, 
-											modelInstructions, greetingDialogue, grammar, groupConfigId, 
-											model, temperature, topP, minP, minPEnabled, topK, repeatPenalty, repeatLastN, promptTemplate,
-											name, authorNote)
-									VALUES 
-										($chatId, $timestamp, $timestamp, $scenario, $example, $pruneExample, 
-											$system, $greeting, $grammar, $groupId, 
-											$model, $temperature, $topP, $minP, $minPEnabled, $topK, $repeatPenalty, $repeatLastN, $promptTemplate,
-											'', '');
-								");
+								expectedUpdates += 5;
 
-								expectedUpdates += 6;
+								if (chats == null || chats.Length == 0)
+								{
+									// Chat
+									sbCommand.AppendLine(
+									@"
+										INSERT INTO Chat
+											(id, createdAt, updatedAt, context, customDialogue, canDeleteCustomDialogue, 
+												modelInstructions, greetingDialogue, grammar, groupConfigId, 
+												model, temperature, topP, minP, minPEnabled, topK, repeatPenalty, repeatLastN, promptTemplate,
+												name, authorNote)
+										VALUES 
+											($chatId, $timestamp, $timestamp, $scenario, $example, $pruneExample, 
+												$system, $greeting, $grammar, $groupId, 
+												$model, $temperature, $topP, $minP, $minPEnabled, $topK, $repeatPenalty, $repeatLastN, $promptTemplate,
+												'', '');
+									");
+	
+									cmdCreate.Parameters.AddWithValue("$chatId", Cuid.NewCuid());
+									expectedUpdates += 1;
+								}
+								else
+								{
+									// Generate unique IDs
+									chatIds = new string[chats.Length];
+									for (int i = 0; i < chatIds.Length; ++i)
+										chatIds[i] = Cuid.NewCuid();
+
+									for (int i = 0; i < chats.Length; ++i)
+									{
+										sbCommand.AppendLine(
+										$@"
+											INSERT INTO Chat
+												(id, createdAt, updatedAt, context, customDialogue, canDeleteCustomDialogue, 
+													modelInstructions, greetingDialogue, grammar, groupConfigId, 
+													model, temperature, topP, minP, minPEnabled, topK, repeatPenalty, repeatLastN, promptTemplate,
+													name, authorNote)
+											VALUES 
+												($chatId{i:000}, $chatCreatedAt{i:000}, $chatCreatedAt{i:000}, $scenario, $example, $pruneExample, 
+													$system, $greeting, $grammar, $groupId, 
+													$model, $temperature, $topP, $minP, $minPEnabled, $topK, $repeatPenalty, $repeatLastN, $promptTemplate,
+													$chatName{i:000}, '');
+										");
+										cmdCreate.Parameters.AddWithValue($"$chatId{i:000}", chatIds[i]);
+										cmdCreate.Parameters.AddWithValue($"$chatName{i:000}", chats[i].name ?? "");
+										cmdCreate.Parameters.AddWithValue($"$chatCreatedAt{i:000}", chats[i].creationDate.ToUnixTimeMilliseconds());
+									}
+
+									expectedUpdates += chats.Length;
+								}
 
 								// Add images
-								if (images != null)
+								if (imageOutput != null)
 								{
-									for (int i = 0; i < images.Length; ++i)
+									for (int i = 0; i < imageOutput.Length; ++i)
 									{
 										// AppImage
 										sbCommand.AppendLine(
@@ -1575,11 +1612,11 @@ namespace Ginger
 												($imageId{i:000}, $configId);
 										");
 
-										cmdCreate.Parameters.AddWithValue($"$imageId{i:000}", images[i].instanceId);
-										cmdCreate.Parameters.AddWithValue($"$imageUrl{i:000}", images[i].imageUrl);
-										cmdCreate.Parameters.AddWithValue($"$label{i:000}", images[i].label ?? "");
-										if (images[i].width > 0 && images[i].height > 0)
-											cmdCreate.Parameters.AddWithValue($"$aspectRatio{i:000}", string.Format("{0}/{1}", images[i].width, images[i].height));
+										cmdCreate.Parameters.AddWithValue($"$imageId{i:000}", imageOutput[i].instanceId);
+										cmdCreate.Parameters.AddWithValue($"$imageUrl{i:000}", imageOutput[i].imageUrl);
+										cmdCreate.Parameters.AddWithValue($"$label{i:000}", imageOutput[i].label ?? "");
+										if (imageOutput[i].width > 0 && imageOutput[i].height > 0)
+											cmdCreate.Parameters.AddWithValue($"$aspectRatio{i:000}", string.Format("{0}/{1}", imageOutput[i].width, imageOutput[i].height));
 										else 
 											cmdCreate.Parameters.AddWithValue($"$aspectRatio{i:000}", "");
 
@@ -1592,7 +1629,6 @@ namespace Ginger
 								cmdCreate.Parameters.AddWithValue("$userId", userId);
 								cmdCreate.Parameters.AddWithValue("$configId", configId);
 								cmdCreate.Parameters.AddWithValue("$groupId", groupId);
-								cmdCreate.Parameters.AddWithValue("$chatId", chatId);
 								cmdCreate.Parameters.AddWithValue("$displayName", card.data.displayName);
 								cmdCreate.Parameters.AddWithValue("$name", card.data.name);
 								cmdCreate.Parameters.AddWithValue("$system", card.data.system);
@@ -1678,7 +1714,77 @@ namespace Ginger
 									expectedUpdates += uids.Length;
 									updates += cmdLoreRef.ExecuteNonQuery();
 								}
+							}
 
+							// Write messages
+							if (chats != null)
+							{
+								for (int iChat = 0; iChat < chats.Length; ++iChat)
+								{
+									var chatHistory = chats[iChat].history;
+									int messageCount = chatHistory.messagesWithoutGreeting.Count();
+									if (messageCount > 0)
+									{
+										// Generate unique IDs
+										var messageIds = new string[messageCount];
+										var swipeIds = new string[messageCount];
+										for (int i = 0; i < messageIds.Length; ++i)
+										{
+											messageIds[i] = Cuid.NewCuid();
+											swipeIds[i] = Cuid.NewCuid();
+										}
+
+										using (var cmdMessages = new SQLiteCommand(connection))
+										{
+											var sbCommand = new StringBuilder();
+											sbCommand.AppendLine(
+											@"
+										INSERT INTO Message 
+											(id, createdAt, updatedAt, chatId, characterConfigId)
+										VALUES ");
+
+											int i = 0;
+											foreach (var message in chatHistory.messagesWithoutGreeting)
+											{
+												if (i > 0)
+													sbCommand.Append(",\n");
+												sbCommand.Append($"($messageId{i:000}, $createdAt{i:000}, $updatedAt{i:000}, $chatId, $charId{message.speaker})");
+
+												cmdMessages.Parameters.AddWithValue($"$messageId{i:000}", messageIds[i]);
+												cmdMessages.Parameters.AddWithValue($"$createdAt{i:000}", message.creationDate.ToUnixTimeMilliseconds());
+												cmdMessages.Parameters.AddWithValue($"$updatedAt{i:000}", message.updateDate.ToUnixTimeMilliseconds());
+												++i;
+											}
+											sbCommand.Append(";");
+
+											sbCommand.AppendLine(
+											@"
+										INSERT INTO RegenSwipe
+											(id, createdAt, updatedAt, activeTimestamp, text, messageId)
+										VALUES ");
+											i = 0;
+											foreach (var message in chatHistory.messagesWithoutGreeting)
+											{
+												if (i > 0)
+													sbCommand.Append(",\n");
+												sbCommand.Append($"($swipeId{i:000}, $updatedAt{i:000}, $updatedAt{i:000}, $updatedAt{i:000}, $text{i:000}, $messageId{i:000})");
+
+												cmdMessages.Parameters.AddWithValue($"$swipeId{i:000}", swipeIds[i]);
+												cmdMessages.Parameters.AddWithValue($"$text{i:000}", message.text);
+												++i;
+											}
+											sbCommand.Append(";");
+											cmdMessages.CommandText = sbCommand.ToString();
+
+											cmdMessages.Parameters.AddWithValue("$chatId", chatIds[iChat]);
+											cmdMessages.Parameters.AddWithValue($"$charId0", userId);
+											cmdMessages.Parameters.AddWithValue($"$charId1", characterId);
+
+											expectedUpdates += messageCount * 2;
+											updates += cmdMessages.ExecuteNonQuery();
+										}
+									}
+								}
 							}
 							
 							if (updates != expectedUpdates)
@@ -1690,9 +1796,9 @@ namespace Ginger
 							}
 
 							// Write images to disk
-							if (images != null)
+							if (imageOutput != null)
 							{
-								foreach (var image in images.Where(i => i.data.isEmpty == false))
+								foreach (var image in imageOutput.Where(i => i.data.isEmpty == false))
 								{
 									try
 									{
@@ -1998,9 +2104,13 @@ namespace Ginger
 
 								var message = g.First();
 
+								int speakerIdx;
+								if (indexById.TryGetValue(message.characterId, out speakerIdx) == false)
+									speakerIdx = 0; // User
+
 								return new ChatHistory.Message() {
 									instanceId = message.messageId,
-									speaker = indexById[message.characterId],
+									speaker = speakerIdx,
 									creationDate = message.createdAt,
 									updateDate = message.updatedAt,
 									activeSwipe = swipes.OrderByDescending(x => x.active).Select(x => x.index).First(),
@@ -3071,13 +3181,13 @@ namespace Ginger
 					foreach (var swipe in swipes)
 					{
 						bool bFront = swipe.text.BeginsWith("#{character}: ");
-						bool bBack = swipe.text.EndsWith("\n#{user}: ");
+						bool bBack = swipe.text.EndsWith("\n#{user}:");
 						if (bFront && bBack)
 						{
 							repairs.Add(new _SwipeRepair() {
 								instanceId = swipe.instanceId,
 								chatId = swipe.chatId,
-								text = swipe.text.Substring(14, swipe.text.Length - 24),
+								text = swipe.text.Substring(14, swipe.text.Length - 23),
 							});
 						}
 						else if (bFront)
@@ -3093,7 +3203,7 @@ namespace Ginger
 							repairs.Add(new _SwipeRepair() {
 								instanceId = swipe.instanceId,
 								chatId = swipe.chatId,
-								text = swipe.text.Substring(swipe.text.Length - 10),
+								text = swipe.text.Substring(0, swipe.text.Length - 9),
 							});
 						}
 					}
@@ -3232,7 +3342,14 @@ namespace Ginger
 			public AssetData data;
 		}
 
-		private static bool GetImageUpdates(List<ImageInstance> imageInstances, Link.Image[] imageLinks, out ImageOutput[] imagesToSave, out Link.Image[] newImageLinks)
+		public struct ImageInput
+		{
+			public ImageRef image;
+			public AssetFile asset;
+			public string fileExt; // "png"
+		}
+
+		private static bool PrepareImageUpdates(List<ImageInstance> imageInstances, Link.Image[] imageLinks, out ImageOutput[] imagesToSave, out Link.Image[] newImageLinks)
 		{
 			// Prepare image information
 			string destPath = Path.Combine(AppSettings.BackyardLink.Location, "images");
@@ -3347,32 +3464,20 @@ namespace Ginger
 					{
 						asset.knownWidth = imageWidth;
 						asset.knownHeight = imageHeight;
-						ImageOutput output;
-						if (asset.ext == "jpeg" || asset.ext == "jpg") // Jpeg
-						{
-							output = new ImageOutput() {
-								instanceId = Cuid.NewCuid(),
-								imageUrl = Path.Combine(destPath, string.Concat(Guid.NewGuid().ToString().ToLowerInvariant(), ".jpeg")), // Random filename
-								data = asset.data,
-								width = imageWidth,
-								height = imageHeight,
-							};
-						}
-						else // Png
-						{
-							output = new ImageOutput() {
-								instanceId = Cuid.NewCuid(),
-								imageUrl = Path.Combine(destPath, string.Concat(Guid.NewGuid().ToString().ToLowerInvariant(), ".png")), // Random filename
-								data = asset.data,
-								width = imageWidth,
-								height = imageHeight,
-							};
-						}
+
+						string filename = string.Concat(Guid.NewGuid().ToString().ToLowerInvariant(), ".", asset.ext); // Random filename
+						ImageOutput output = new ImageOutput() {
+							instanceId = Cuid.NewCuid(),
+							imageUrl = Path.Combine(destPath, filename),
+							data = asset.data,
+							width = imageWidth,
+							height = imageHeight,
+						};
 						
 						results.Add(output);
 						lsImageLinks.Add(new Link.Image() {
 							uid = asset.uid,
-							filename = Path.GetFileName(output.imageUrl),
+							filename = filename,
 						});
 					}
 				}
@@ -3395,11 +3500,71 @@ namespace Ginger
 					}));
 			}
 
+			imagesToSave = results.ToArray();
+			newImageLinks = lsImageLinks.Count > 0 ? lsImageLinks.ToArray() : null;
+			return imagesToSave.ContainsAny(i => i.data.isEmpty == false);
+		}
+
+		private static bool PrepareImages(ImageInput[] imageInput, out ImageOutput[] imagesToSave, out Link.Image[] newImageLinks)
+		{
+			if (imageInput == null || imageInput.Length == 0)
+			{
+				imagesToSave = null;
+				newImageLinks = null;
+				return false;
+			}
+
+			// Prepare image information
+			string destPath = Path.Combine(AppSettings.BackyardLink.Location, "images");
+
+			List<ImageOutput> results = new List<ImageOutput>();
+			List<Link.Image> lsImageLinks = new List<Link.Image>();
+			
+			foreach (var input in imageInput)
+			{
+				if (input.asset != null && input.asset.data.isEmpty == false) // Data buffer
+				{
+					// Measure dimensions
+					int imageWidth;
+					int imageHeight;
+					if (Utility.GetImageDimensions(input.asset.data.bytes, out imageWidth, out imageHeight))
+					{
+						string filename = string.Concat(Guid.NewGuid().ToString().ToLowerInvariant(), ".", input.fileExt); // Random filename
+						results.Add(new ImageOutput() {
+							instanceId = Cuid.NewCuid(),
+							imageUrl = Path.Combine(destPath, filename),
+							data = input.asset.data,
+							width = imageWidth,
+							height = imageHeight,
+						});
+						lsImageLinks.Add(new Link.Image() {
+							uid = input.asset.uid,
+							filename = filename,
+						});
+					}
+				}
+				else if (input.image != null) // Image reference
+				{
+					string filename = string.Concat(Guid.NewGuid().ToString().ToLowerInvariant(), ".", input.fileExt); // Random filename
+					results.Add(new ImageOutput() {
+						instanceId = Cuid.NewCuid(),
+						imageUrl = Path.Combine(destPath, filename),
+						data = AssetData.FromBytes(Utility.ImageToMemory(input.image)),
+						width = input.image.Width,
+						height = input.image.Height,
+					});
+					lsImageLinks.Add(new Link.Image() {
+						uid = input.image.uid,
+						filename = filename,
+					});
+				}
+			}
 
 			imagesToSave = results.ToArray();
 			newImageLinks = lsImageLinks.Count > 0 ? lsImageLinks.ToArray() : null;
 			return imagesToSave.ContainsAny(i => i.data.isEmpty == false);
 		}
+
 		#endregion // Utilities
 
 		#region Validation

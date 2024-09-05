@@ -4,8 +4,6 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Bridge = Ginger.BackyardBridge;
 
 namespace Ginger
 {
@@ -19,10 +17,16 @@ namespace Ginger
 		}
 
 		[JsonProperty("version", Required = Required.Always)]
-		public int name = 2;
+		public int version = 2;
+
+		[JsonProperty("name", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Ignore)]
+		public string name = null;
 
 		[JsonProperty("chat", Required = Required.Always)]
-		public Data data = new Data();
+		public Data chat = new Data();
+
+		[JsonProperty("greeting", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Ignore)]
+		public string greeting = null;
 
 		public class Data
 		{
@@ -40,23 +44,6 @@ namespace Ginger
 			public long timestamp;
 		}
 
-		public static CAIChat FromJson(string json)
-		{
-			try
-			{
-				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_schema))
-				{
-					var card = JsonConvert.DeserializeObject<CAIChat>(json);
-					return card;
-				}
-			}
-			catch
-			{
-			}
-			return null;
-		}
-
 		public static CAIChat FromChat(ChatHistory chatHistory)
 		{
 			CAIChat caiChatV2 = new CAIChat();
@@ -71,14 +58,14 @@ namespace Ginger
 				});
 			}
 
-			caiChatV2.data.items = lsItems.ToArray();
+			caiChatV2.chat.items = lsItems.ToArray();
 			return caiChatV2;
 		}
 
 		public ChatHistory ToChat()
 		{
 			var messages = new List<ChatHistory.Message>();
-			foreach (var item in data.items)
+			foreach (var item in chat.items)
 			{
 				DateTime inputTime = DateTimeExtensions.FromUnixTime(item.timestamp);
 				DateTime outputTime = DateTimeExtensions.FromUnixTime(item.timestamp) + TimeSpan.FromMilliseconds(10);
@@ -107,6 +94,23 @@ namespace Ginger
 			return new ChatHistory() {
 				messages = messages.ToArray(),
 			};
+		}
+		
+		public static CAIChat FromJson(string json)
+		{
+			try
+			{
+				JObject jObject = JObject.Parse(json);
+				if (jObject.IsValid(_schema))
+				{
+					var card = JsonConvert.DeserializeObject<CAIChat>(json);
+					return card;
+				}
+			}
+			catch
+			{
+			}
+			return null;
 		}
 
 		public string ToJson()

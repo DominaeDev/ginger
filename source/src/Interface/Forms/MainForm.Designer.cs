@@ -261,7 +261,7 @@ namespace Ginger {
 			this.importLinkedMenuItem.Name = "importLinkedMenuItem";
 			this.importLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+O";
 			this.importLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
-			this.importLinkedMenuItem.Text = "Open character...";
+			this.importLinkedMenuItem.Text = "Import character...";
 			this.importLinkedMenuItem.Click += new System.EventHandler(this.importLinkedMenuItem_Click);
 			// 
 			// saveLinkedMenuItem
@@ -269,7 +269,7 @@ namespace Ginger {
 			this.saveLinkedMenuItem.Name = "saveLinkedMenuItem";
 			this.saveLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+U";
 			this.saveLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
-			this.saveLinkedMenuItem.Text = "Save and update";
+			this.saveLinkedMenuItem.Text = "Update character";
 			this.saveLinkedMenuItem.Click += new System.EventHandler(this.saveLinkedMenuItem_Click);
 			// 
 			// saveNewLinkedMenuItem

@@ -60,5 +60,28 @@ namespace Ginger
 				clone.messages[i] = (Message)messages[i].Clone();
 			return clone;
 		}
+
+		public static ChatHistory LegacyFix(ChatHistory chat)
+		{
+			if (chat.isEmpty)
+				return chat;
+
+			for (int i = 0; i < chat.messages.Length; ++i)
+			{
+				for (int j = 0; j < chat.messages[i].swipes.Length; ++j)
+				{
+					string text = chat.messages[i].swipes[j];
+					bool bFront = text.BeginsWith("#{character}: ");
+					bool bBack = text.EndsWith("\n#{user}:");
+					if (bFront && bBack)
+						chat.messages[i].swipes[j] = text.Substring(14, text.Length - 23);
+					else if (bFront)
+						chat.messages[i].swipes[j] = text.Substring(14);
+					else if (bBack)
+						chat.messages[i].swipes[j] = text.Substring(text.Length - 9);
+				}
+			}
+			return chat;
+		}
 	}
 }
