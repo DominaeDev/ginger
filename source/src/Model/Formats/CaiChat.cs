@@ -19,14 +19,8 @@ namespace Ginger
 		[JsonProperty("version", Required = Required.Always)]
 		public int version = 2;
 
-		[JsonProperty("name", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Ignore)]
-		public string name = null;
-
 		[JsonProperty("chat", Required = Required.Always)]
 		public Data chat = new Data();
-
-		[JsonProperty("greeting", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Ignore)]
-		public string greeting = null;
 
 		public class Data
 		{

@@ -41,9 +41,13 @@ namespace Ginger
 		{
 			public string name;
 			public DateTime creationDate;
-			public string greeting;
+			public DateTime updateDate;
 			public ChatHistory history;
+			public BackyardBridge.ChatStaging staging = new BackyardBridge.ChatStaging();
+			public BackyardBridge.ChatParameters parameters = new BackyardBridge.ChatParameters();
 		}
+
+		public bool hasParameters { get { return chats != null && chats.ContainsAny(c => c.parameters != null); } }
 	}
 
 	public static class BackyardBackupUtil
@@ -76,8 +80,10 @@ namespace Ginger
 				.Select(c => new BackyardBackupInfo.Chat() { 
 					name = c.name,
 					history = c.history,
-					greeting = c.greeting,
+					staging = c.staging,
+					parameters = c.parameters,
 					creationDate = c.creationDate,
+					updateDate = c.updateDate,
 				})
 				.ToList();
 			backupInfo.images = imageUrls.Select(url => new BackyardBackupInfo.Image() { 
@@ -139,13 +145,19 @@ namespace Ginger
 				int chatIdx = 0;
 				foreach (var chat in backup.chats.OrderBy(c => c.creationDate))
 				{
-					string name = string.Format("chatlog{0:00}_{1}.json", chatIdx + 1, chat.history.lastMessageTime.ToUnixTimeSeconds());
-					var caiChat = CAIChat.FromChat(ChatHistory.LegacyFix(chat.history));
-					caiChat.name = chat.name;
-					caiChat.greeting = chat.greeting;
-					string json = caiChat.ToJson();
+					string chatFilename = string.Format("chat_{0:00}_{1}.json", ++chatIdx, chat.history.lastMessageTime.ToUnixTimeSeconds());
+
+					var chatBackup = ChatBackup.FromChat(new BackyardBackupInfo.Chat() {
+						name = chat.name,
+						creationDate = chat.creationDate,
+						updateDate = chat.updateDate,
+						staging = chat.staging,
+						parameters = chat.parameters,
+						history = ChatHistory.LegacyFix(chat.history),
+					});
+					string json = chatBackup.ToJson();
 					if (json != null)
-						chats.Add(new KeyValuePair<string, string>(name, json));
+						chats.Add(new KeyValuePair<string, string>(chatFilename, json));
 				}
 
 				// Create zip archive
@@ -185,7 +197,7 @@ namespace Ginger
 					// Write chat files
 					for (int i = 0; i < chats.Count; ++i)
 					{
-						string entryName = string.Concat("logs/", chats[i].Key);
+						string entryName = string.Concat("chats/", chats[i].Key);
 
 						var fileEntry = zip.CreateEntry(string.Format(entryName, CompressionLevel.NoCompression));
 						using (Stream writer = fileEntry.Open())
@@ -256,7 +268,7 @@ namespace Ginger
 								}
 							}
 							// Read chat log
-							if (entryPath == "logs" && entryExt == ".json")
+							if ((entryPath == "chats" || entryPath == "logs") && entryExt == ".json")
 							{
 								long dataSize = entry.Length;
 								if (dataSize > 0)
@@ -266,16 +278,15 @@ namespace Ginger
 									dataStream.Read(buffer, 0, (int)dataSize);
 									string chatJson = new string(Encoding.UTF8.GetChars(buffer));
 
-									var caiChat = CAIChat.FromJson(chatJson);
-									var chatHistory = caiChat.ToChat();
-									string chatName = caiChat.name ?? "";
-									string greeting = caiChat.greeting ?? "";
-									
+									var chatBackup = ChatBackup.FromJson(chatJson).ToChat();
+
 									chats.Add(new BackyardBackupInfo.Chat() {
-										creationDate = DateTime.Now,
-										name = chatName,
-										greeting = greeting,
-										history = chatHistory,
+										creationDate = chatBackup.creationDate,
+										updateDate = chatBackup.updateDate,
+										name = chatBackup.name ?? "",
+										staging = chatBackup.staging,
+										parameters = chatBackup.parameters,
+										history = chatBackup.history,
 									});
 								}
 								continue;

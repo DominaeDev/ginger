@@ -64,6 +64,8 @@ namespace Ginger
 			duplicateMenuItem.ToolTipText = Resources.tooltip_link_duplicate_chat;
 			repairChatsMenuItem.ToolTipText = Resources.tooltip_link_repair_chat;
 			purgeMenuItem.ToolTipText = Resources.tooltip_link_purge_chat;
+			createBackupMenuItem.ToolTipText = Resources.tooltip_link_create_backup;
+			restoreBackupMenuItem.ToolTipText = Resources.tooltip_link_restore_backup;
 		}
 
 		private void OnLoad(object sender, EventArgs e)
@@ -85,7 +87,7 @@ namespace Ginger
 		private void RefreshTitle()
 		{
 			if (_groupInstance.isEmpty == false)
-				Text = string.Format("Chat history - {1}{0}", GetGroupTitle(_groupInstance), _groupInstance.members.Length > 2 ? "(Group) " : "");
+				Text = string.Format("{1}{0} - Chat history", GetGroupTitle(_groupInstance), _groupInstance.members.Length > 2 ? "(Group) " : "");
 			else
 				Text = "Chat history";
 		}
@@ -655,7 +657,7 @@ namespace Ginger
 			if (_groupInstance.isEmpty)
 				return; // Error
 
-			var mr = MessageBox.Show(string.Format(Resources.msg_link_purge_chat, GetGroupTitle(_groupInstance)), Resources.cap_link_purge_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+			var mr = MessageBox.Show(string.Format(Resources.msg_link_purge_chat, GetGroupTitle(_groupInstance)), Resources.cap_link_purge_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button2);
 			if (mr != DialogResult.Yes)
 				return;
 
@@ -947,7 +949,7 @@ namespace Ginger
 
 			string filename = string.Concat(GetGroupTitle(Group), ".backup.", DateTime.Now.ToString("yyyy-MM-dd"), ".zip");
 
-			exportFileDialog.Title = "Save backup";
+			importFileDialog.Title = Resources.cap_link_create_backup;
 			exportFileDialog.Filter = "Character backup file|*.zip";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
@@ -974,12 +976,12 @@ namespace Ginger
 		{
 			if (Bridge.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				characterInstance = default(Bridge.CharacterInstance);
 				return false;
 			}
 
-			importFileDialog.Title = Resources.cap_import_chat;
+			importFileDialog.Title = Resources.cap_link_restore_backup;
 			importFileDialog.Filter = "Character backup file|*.zip";
 			importFileDialog.FilterIndex = AppSettings.User.LastImportChatFilter;
 			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
@@ -1007,6 +1009,14 @@ namespace Ginger
 			{
 				characterInstance = default(Bridge.CharacterInstance);
 				return false;
+			}
+
+			// Import chat parameters?
+			if (backup.hasParameters && MessageBox.Show(Resources.msg_link_restore_backup_settings, Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) == DialogResult.No)
+			{
+				// Strip parameters
+				foreach (var chat in backup.chats)
+					chat.parameters = null;
 			}
 
 			Bridge.Link.Image[] imageLinks; // Ignored

@@ -219,6 +219,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {&quot;type&quot;:&quot;object&quot;,&quot;properties&quot;:{&quot;version&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;integer&quot;},&quot;chat&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;object&quot;,&quot;properties&quot;:{&quot;ChatItems&quot;:{&quot;required&quot;:true,&quot;type&quot;:[&quot;array&quot;,&quot;null&quot;],&quot;items&quot;:{&quot;type&quot;:[&quot;object&quot;,&quot;null&quot;],&quot;properties&quot;:{&quot;input&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;output&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;createdAt&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;integer&quot;}}}}}},&quot;name&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;createdAt&quot;:{&quot;type&quot;:[&quot;integer&quot;,&quot;null&quot;]},&quot;updatedAt&quot;:{&quot;type&quot;:[&quot;integer&quot;,&quot;null&quot;]},&quot;staging&quot;:{&quot;type&quot;:[&quot;object&quot;,&quot;n [rest of stri....
+        /// </summary>
+        internal static string backup_chat_schema {
+            get {
+                return ResourceManager.GetString("backup_chat_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {
         ///	&quot;type&quot;: &quot;object&quot;,
         ///	&quot;properties&quot;: {
@@ -1828,6 +1837,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to One or more chats have associated model settings. Do you want to import these settings as well? (Click No to use your current defaults)..
+        /// </summary>
+        internal static string msg_link_restore_backup_settings {
+            get {
+                return ResourceManager.GetString("msg_link_restore_backup_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Character restored from backup!.
         /// </summary>
         internal static string msg_link_restore_backup_success {
@@ -3003,6 +3021,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Save a character and its related chats to a file..
+        /// </summary>
+        internal static string tooltip_link_create_backup {
+            get {
+                return ResourceManager.GetString("tooltip_link_create_backup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deletes this chat and all its messages..
         /// </summary>
         internal static string tooltip_link_delete_chat {
@@ -3071,6 +3098,15 @@ namespace Ginger.Properties {
         internal static string tooltip_link_repair_chat {
             get {
                 return ResourceManager.GetString("tooltip_link_repair_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restore a character and its related chats from a file..
+        /// </summary>
+        internal static string tooltip_link_restore_backup {
+            get {
+                return ResourceManager.GetString("tooltip_link_restore_backup", resourceCulture);
             }
         }
         

@@ -1011,4 +1011,16 @@ Do you want to continue?</value>
   <data name="msg_link_restore_backup_success" xml:space="preserve">
     <value>Character restored from backup!</value>
   </data>
+  <data name="backup_chat_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\backup_chat_schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="msg_link_restore_backup_settings" xml:space="preserve">
+    <value>One or more chats have associated model settings. Do you want to import these settings as well? (Click No to use your current defaults).</value>
+  </data>
+  <data name="tooltip_link_create_backup" xml:space="preserve">
+    <value>Save a character and its related chats to a file.</value>
+  </data>
+  <data name="tooltip_link_restore_backup" xml:space="preserve">
+    <value>Restore a character and its related chats from a file.</value>
+  </data>
 </root>
