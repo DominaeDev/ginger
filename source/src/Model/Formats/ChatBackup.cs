@@ -1,4 +1,5 @@
 ﻿using Ginger.Properties;
+using Ginger.Integration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
@@ -7,8 +8,6 @@ using System.Collections.Generic;
 
 namespace Ginger
 {
-	using Bridge = BackyardBridge;
-
 	public class ChatBackup
 	{
 		private static JsonSchema _schema;
@@ -118,7 +117,7 @@ namespace Ginger
 			public long timestamp;
 		}
 
-		public static ChatBackup FromChat(BackyardBackupInfo.Chat chat)
+		public static ChatBackup FromChat(BackupData.Chat chat)
 		{
 			ChatBackup backup = new ChatBackup();
 			var lsItems = new List<ChatItem>(chat.history.count / 2 + 1);
@@ -149,7 +148,7 @@ namespace Ginger
 			if (chat.parameters != null)
 			{
 				backup.parameters = new Parameters() {
-					model = chat.parameters.model ?? BackyardBridge.DefaultModel,
+					model = chat.parameters.model ?? Backyard.DefaultModel,
 					authorNote = chat.parameters.authorNote ?? "",
 					temperature = chat.parameters.temperature,
 					topP = chat.parameters.topP,
@@ -168,7 +167,7 @@ namespace Ginger
 			return backup;
 		}
 
-		public BackyardBackupInfo.Chat ToChat()
+		public BackupData.Chat ToChat()
 		{
 			var messages = new List<ChatHistory.Message>();
 			foreach (var item in chat.items)
@@ -197,12 +196,12 @@ namespace Ginger
 				}
 			}
 
-			Bridge.ChatStaging staging = null;
-			Bridge.ChatParameters parameters = null;
+			ChatStaging staging = null;
+			ChatParameters parameters = null;
 
 			if (this.staging != null)
 			{
-				staging = new Bridge.ChatStaging() {
+				staging = new ChatStaging() {
 					system = this.staging.system,
 					scenario = this.staging.scenario,
 					greeting = this.staging.greeting,
@@ -213,7 +212,7 @@ namespace Ginger
 
 			if (this.parameters != null)
 			{
-				parameters = new Bridge.ChatParameters() {
+				parameters = new ChatParameters() {
 					model = this.parameters.model,
 					temperature = this.parameters.temperature,
 					topP = this.parameters.topP,
@@ -230,7 +229,7 @@ namespace Ginger
 				};
 			}
 
-			return new BackyardBackupInfo.Chat() {
+			return new BackupData.Chat() {
 				name = name,
 				creationDate = createdAt.HasValue ? DateTimeExtensions.FromUnixTime(createdAt.Value) : DateTime.Now,
 				updateDate = updatedAt.HasValue ? DateTimeExtensions.FromUnixTime(updatedAt.Value) : DateTime.Now,

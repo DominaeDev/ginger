@@ -7,8 +7,9 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using Ginger.Properties;
+using Ginger.Integration;
 
-using Bridge = Ginger.BackyardBridge;
+using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
 {
@@ -1077,17 +1078,17 @@ namespace Ginger
 			// Write to Backyard database?
 			bool bShouldAutosave =
 				AppSettings.BackyardLink.Autosave
-				&& Bridge.ConnectionEstablished
+				&& Backyard.ConnectionEstablished
 				&& Current.HasActiveLink;
 			
 			// Check if link is still valid
-			Bridge.Error autosaveError = Bridge.Error.NoError;
+			Backyard.Error autosaveError = Backyard.Error.NoError;
 
 			if (bShouldAutosave)
 			{
-				Bridge.CharacterInstance character;
-				autosaveError = Bridge.RefreshCharacter(Current.Link.characterId, out character);
-				bShouldAutosave &= autosaveError == Bridge.Error.NoError;
+				CharacterInstance character;
+				autosaveError = Backyard.RefreshCharacter(Current.Link.characterId, out character);
+				bShouldAutosave &= autosaveError == Backyard.Error.NoError;
 			}
 
 			bShouldAutosave &= Current.IsLinkDirty;
@@ -1097,11 +1098,11 @@ namespace Ginger
 				// Save changes to Backyard
 				autosaveError = UpdateCharacterInBackyard();
 
-				if (autosaveError == Bridge.Error.CancelledByUser)
+				if (autosaveError == Backyard.Error.CancelledByUser)
 					return false; // User clicked 'cancel'
-				else if (autosaveError == Bridge.Error.DismissedByUser)
+				else if (autosaveError == Backyard.Error.DismissedByUser)
 					bShouldAutosave = false; // User clicked 'no'
-				else if (autosaveError == Bridge.Error.NoError)
+				else if (autosaveError == Backyard.Error.NoError)
 					Current.IsLinkDirty = false;
 			}
 
@@ -1120,23 +1121,23 @@ namespace Ginger
 
 				SetStatusBarMessage(Resources.status_file_save, Constants.StatusBarMessageInterval);
 
-				if (bShouldAutosave && autosaveError == Bridge.Error.NoError)
+				if (bShouldAutosave && autosaveError == Backyard.Error.NoError)
 					SetStatusBarMessage(Resources.status_link_saved, Constants.StatusBarMessageInterval);
-				else if (autosaveError == Bridge.Error.NotFound)
+				else if (autosaveError == Backyard.Error.NotFound)
 				{
 					MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 					BreakLink(true);
 				}
-				else if (autosaveError != Bridge.Error.NoError)
+				else if (autosaveError != Backyard.Error.NoError)
 				{
 					MessageBox.Show(Resources.error_link_autosave, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-					Bridge.Disconnect();
+					Backyard.Disconnect();
 				}
 				return true;
 			}
 			else
 			{
-				if (bShouldAutosave && autosaveError == Bridge.Error.NoError) // Notify user the auto save worked
+				if (bShouldAutosave && autosaveError == Backyard.Error.NoError) // Notify user the auto save worked
 					SetStatusBarMessage(Resources.status_link_saved, Constants.StatusBarMessageInterval);
 
 				MessageBox.Show(Resources.error_save_character_card, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1522,14 +1523,14 @@ namespace Ginger
 			var dlg = new LinkSelectCharacterDialog();
 
 			// Refresh character list
-			if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_read_data, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
-			dlg.Characters = Bridge.Characters.ToArray();
-			dlg.Folders = Bridge.Folders.ToArray();
+			dlg.Characters = Backyard.Characters.ToArray();
+			dlg.Folders = Backyard.Folders.ToArray();
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return false;
 
@@ -1541,14 +1542,14 @@ namespace Ginger
 			// Import...
 			FaradayCardV4 faradayData;
 			string[] images;
-			var importError = Bridge.ReadCharacter(dlg.SelectedCharacter, out faradayData, out images);
-			if (importError == Bridge.Error.NotFound)
+			var importError = Backyard.ReadCharacter(dlg.SelectedCharacter, out faradayData, out images);
+			if (importError == Backyard.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				ClearStatusBarMessage();
 				return false;
 			}
-			else if (importError != Bridge.Error.NoError || faradayData == null)
+			else if (importError != Backyard.Error.NoError || faradayData == null)
 			{
 				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				ClearStatusBarMessage();
@@ -1576,19 +1577,19 @@ namespace Ginger
 			return true;
 		}
 
-		private Bridge.Error UpdateCharacterInBackyard()
+		private Backyard.Error UpdateCharacterInBackyard()
 		{
-			if (Bridge.ConnectionEstablished == false)
-				return Bridge.Error.NotConnected;
+			if (Backyard.ConnectionEstablished == false)
+				return Backyard.Error.NotConnected;
 			else if (Current.HasLink == false)
-				return Bridge.Error.NotFound;
+				return Backyard.Error.NotFound;
 
 			FaradayCardV4 card = FaradayCardV4.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.Faraday));
 
 			// Check if character exists, has newer changes
 			bool hasChanges;
-			var error = Bridge.ConfirmSaveCharacter(card, Current.Link, out hasChanges);
-			if (error != Bridge.Error.NoError)
+			var error = Backyard.ConfirmSaveCharacter(card, Current.Link, out hasChanges);
+			if (error != Backyard.Error.NoError)
 			{
 				Current.Unlink();
 				return error;
@@ -1599,15 +1600,15 @@ namespace Ginger
 				// Overwrite prompt
 				var mr = MessageBox.Show(Resources.msg_link_confirm_overwrite, Resources.cap_link_overwrite, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
 				if (mr == DialogResult.Cancel)
-					return Bridge.Error.CancelledByUser;
+					return Backyard.Error.CancelledByUser;
 				else if (mr == DialogResult.No)
-					return Bridge.Error.DismissedByUser;
+					return Backyard.Error.DismissedByUser;
 			}
 
 			DateTime updateDate;
-			Bridge.Link.Image[] imageLinks;
-			error = Bridge.UpdateCharacter(card, Current.Link, out updateDate, out imageLinks);
-			if (error != Bridge.Error.NoError)
+			Backyard.Link.Image[] imageLinks;
+			error = Backyard.UpdateCharacter(card, Current.Link, out updateDate, out imageLinks);
+			if (error != Backyard.Error.NoError)
 			{
 				return error;
 			}
@@ -1620,24 +1621,24 @@ namespace Ginger
 				RefreshTitle();
 
 				// Refresh character information
-				Bridge.RefreshCharacters();
-				return Bridge.Error.NoError;
+				Backyard.RefreshCharacters();
+				return Backyard.Error.NoError;
 			}
 		}
 
-		private Bridge.Error CreateNewCharacterInBackyard(out Bridge.CharacterInstance createdCharacter, out Bridge.Link.Image[] images)
+		private Backyard.Error CreateNewCharacterInBackyard(out CharacterInstance createdCharacter, out Backyard.Link.Image[] images)
 		{
-			if (Bridge.ConnectionEstablished == false)
+			if (Backyard.ConnectionEstablished == false)
 			{
-				createdCharacter = default(Bridge.CharacterInstance);
+				createdCharacter = default(CharacterInstance);
 				images = null;
-				return Bridge.Error.NotConnected;
+				return Backyard.Error.NotConnected;
 			}
 			
 			FaradayCardV4 card = FaradayCardV4.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.Faraday));
-			Bridge.ImageInput[] imageInput = GatherImages();
-			var error = Bridge.CreateNewCharacter(card, imageInput, null, out createdCharacter, out images);
-			if (error != Bridge.Error.NoError)
+			Backyard.ImageInput[] imageInput = GatherImages();
+			var error = Backyard.CreateNewCharacter(card, imageInput, null, out createdCharacter, out images);
+			if (error != Backyard.Error.NoError)
 			{
 				return error;
 			}
@@ -1648,26 +1649,26 @@ namespace Ginger
 				RefreshTitle();
 
 				// Refresh character information
-				Bridge.RefreshCharacters();
-				return Bridge.Error.NoError;
+				Backyard.RefreshCharacters();
+				return Backyard.Error.NoError;
 			}
 		}
 
-		private Bridge.ImageInput[] GatherImages()
+		private Backyard.ImageInput[] GatherImages()
 		{
-			var lsImages = new List<Bridge.ImageInput>();
+			var lsImages = new List<Backyard.ImageInput>();
 
 			// Main portrait
 			if (Current.Card.portraitImage != null)
 			{
-				lsImages.Add(new Bridge.ImageInput() {
+				lsImages.Add(new Backyard.ImageInput() {
 					image = Current.Card.portraitImage,
 					fileExt = "png",
 				});
 			}
 			else
 			{
-				lsImages.Add(new Bridge.ImageInput() {
+				lsImages.Add(new Backyard.ImageInput() {
 					image = DefaultPortrait.Image,
 					fileExt = "png",
 				});
@@ -1680,7 +1681,7 @@ namespace Ginger
 						&& (a.assetType == AssetFile.AssetType.Icon || a.assetType == AssetFile.AssetType.Expression)
 						&& a.data.length > 0))
 				{
-					lsImages.Add(new Bridge.ImageInput() {
+					lsImages.Add(new Backyard.ImageInput() {
 						asset = asset,
 						fileExt = asset.ext,
 					});
@@ -1692,7 +1693,7 @@ namespace Ginger
 		private bool ReestablishLink(bool bSilent = false)
 		{
 			// Refresh character information
-			if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
 				if (bSilent == false)
 				{
@@ -1703,8 +1704,8 @@ namespace Ginger
 
 			if (Current.Link != null)
 			{
-				Bridge.CharacterInstance characterInstance;
-				if (Bridge.GetCharacter(Current.Link.characterId, out characterInstance))
+				CharacterInstance characterInstance;
+				if (Backyard.GetCharacter(Current.Link.characterId, out characterInstance))
 				{
 					Current.Link.isActive = true;
 					Current.IsFileDirty = true;
@@ -1744,28 +1745,28 @@ namespace Ginger
 			return false;
 		}
 
-		private Bridge.Error RevertCharacterFromBackyard()
+		private Backyard.Error RevertCharacterFromBackyard()
 		{
-			if (Bridge.ConnectionEstablished == false)
-				return Bridge.Error.NotConnected;
+			if (Backyard.ConnectionEstablished == false)
+				return Backyard.Error.NotConnected;
 			else if (Current.HasLink == false)
-				return Bridge.Error.NotFound;
+				return Backyard.Error.NotFound;
 
 			// Refresh character list
-			var refreshError = Bridge.RefreshCharacters();
-			if (refreshError != Bridge.Error.NoError)
+			var refreshError = Backyard.RefreshCharacters();
+			if (refreshError != Backyard.Error.NoError)
 				return refreshError;
 
 			// Get character instance
-			Bridge.CharacterInstance characterInstance;
-			if (Bridge.GetCharacter(Current.Link.characterId, out characterInstance) == false)
-				return Bridge.Error.NotFound;
+			CharacterInstance characterInstance;
+			if (Backyard.GetCharacter(Current.Link.characterId, out characterInstance) == false)
+				return Backyard.Error.NotFound;
 
 			// Import data
 			FaradayCardV4 faradayData;
 			string[] images;
-			var importError = Bridge.ReadCharacter(characterInstance, out faradayData, out images);
-			if (importError != Bridge.Error.NoError)
+			var importError = Backyard.ReadCharacter(characterInstance, out faradayData, out images);
+			if (importError != Backyard.Error.NoError)
 				return importError;
 
 			// Success
@@ -1796,12 +1797,12 @@ namespace Ginger
 
 			Undo.Push(Undo.Kind.RecipeList, "Reimport character");
 			
-			return Bridge.Error.NoError;
+			return Backyard.Error.NoError;
 		}
 
 		private bool OpenChatHistory()
 		{
-			if (Bridge.ConnectionEstablished == false)
+			if (Backyard.ConnectionEstablished == false)
 			{
 				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
@@ -1813,7 +1814,7 @@ namespace Ginger
 			_editChatDialog = new LinkEditChatDialog();
 			if (Current.HasActiveLink)
 			{
-				var group = Bridge.GetGroup(Bridge.GetCharacter(Current.Link.characterId).groupId);
+				var group = Backyard.GetGroup(Backyard.GetCharacter(Current.Link.characterId).groupId);
 				if (string.IsNullOrEmpty(group.instanceId) == false)
 					_editChatDialog.Group = group;
 			}

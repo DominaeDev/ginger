@@ -1,24 +1,25 @@
-﻿using System;
+﻿using Ginger.Integration;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using Bridge = Ginger.BackyardBridge;
+using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
 {
 	public partial class LinkSelectGroupDialog : Form
 	{
-		public Bridge.CharacterInstance[] Characters;
-		public Bridge.GroupInstance[] Groups;
-		public Bridge.FolderInstance[] Folders;
-		public Bridge.GroupInstance SelectedGroup { get; private set; }
+		public CharacterInstance[] Characters;
+		public GroupInstance[] Groups;
+		public FolderInstance[] Folders;
+		public GroupInstance SelectedGroup { get; private set; }
 
-		private Dictionary<string, Bridge.CharacterInstance> _charactersById;
+		private Dictionary<string, CharacterInstance> _charactersById;
 		private Dictionary<string, int> _folderCounts = new Dictionary<string, int>();
-		private Dictionary<string, Bridge.ChatCount> _chatCounts;
+		private Dictionary<string, Backyard.ChatCount> _chatCounts;
 
 		public LinkSelectGroupDialog()
 		{
@@ -30,18 +31,18 @@ namespace Ginger
 		private void OnLoad(object sender, EventArgs e)
 		{
 			_charactersById = Characters.ToDictionary(c => c.instanceId, c => c);
-			if (Bridge.GetChatCounts(out _chatCounts) != Bridge.Error.NoError)
-				_chatCounts = new Dictionary<string, Bridge.ChatCount>(); // Empty
+			if (Backyard.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
+				_chatCounts = new Dictionary<string, Backyard.ChatCount>(); // Empty
 
 			PopulateTree(false);
 
 			treeView.SelectedNode = null;
-			SelectedGroup = default(Bridge.GroupInstance);
+			SelectedGroup = default(GroupInstance);
 
 			btnOk.Enabled = false;
 		}
 
-		private string GetGroupName(Bridge.GroupInstance group)
+		private string GetGroupName(GroupInstance group)
 		{
 			if (string.IsNullOrEmpty(group.name) == false)
 			{
@@ -74,9 +75,9 @@ namespace Ginger
 			}
 		}
 
-		private DateTime GetLatestMessageTime(Bridge.GroupInstance group)
+		private DateTime GetLatestMessageTime(GroupInstance group)
 		{
-			Bridge.ChatCount count;
+			Backyard.ChatCount count;
 			if (_chatCounts.TryGetValue(group.instanceId, out count))
 				return count.lastMessage;
 			return DateTime.MinValue;
@@ -139,7 +140,7 @@ namespace Ginger
 			}
 
 			// Create group nodes
-			IEnumerable<Bridge.GroupInstance> sortedGroups;
+			IEnumerable<GroupInstance> sortedGroups;
 			if (AppSettings.User.SortGroupsAlphabetically)
 			{
 				sortedGroups = Groups
@@ -163,7 +164,7 @@ namespace Ginger
 			treeView.EndUpdate();
 		}
 
-		private TreeNode CreateFolderNode(Bridge.FolderInstance folder, Dictionary<string, TreeNode> nodes, int count)
+		private TreeNode CreateFolderNode(FolderInstance folder, Dictionary<string, TreeNode> nodes, int count)
 		{
 			TreeNode parentNode;
 			nodes.TryGetValue(folder.parentId, out parentNode);
@@ -178,7 +179,7 @@ namespace Ginger
 			return node;
 		}
 
-		private TreeNode CreateGroupNode(Bridge.GroupInstance group, Dictionary<string, TreeNode> nodes)
+		private TreeNode CreateGroupNode(GroupInstance group, Dictionary<string, TreeNode> nodes)
 		{
 			if (group.members.Length < 2)
 				return null;
@@ -205,7 +206,7 @@ namespace Ginger
 				sbTooltip.Append(characterNames[0]);
 			}
 
-			Bridge.ChatCount chatCount;
+			Backyard.ChatCount chatCount;
 			if (_chatCounts.TryGetValue(group.instanceId, out chatCount))
 				sbTooltip.AppendFormat(" ({0} {1})", chatCount.count, chatCount.count == 1 ? "chat" : "chats");
 
@@ -238,23 +239,23 @@ namespace Ginger
 
 		private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
 		{
-			if (e.Node != null && e.Node.Tag is Bridge.GroupInstance)
+			if (e.Node != null && e.Node.Tag is GroupInstance)
 			{
-				SelectedGroup = (Bridge.GroupInstance)e.Node.Tag;
+				SelectedGroup = (GroupInstance)e.Node.Tag;
 				btnOk.Enabled = true;
 			}
 			else
 			{
-				SelectedGroup = default(Bridge.GroupInstance);
+				SelectedGroup = default(GroupInstance);
 				btnOk.Enabled = false;
 			}
 		}
 
 		private void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
-			if (e.Node != null && e.Node.Tag is Bridge.GroupInstance && e.Node == treeView.SelectedNode)
+			if (e.Node != null && e.Node.Tag is GroupInstance && e.Node == treeView.SelectedNode)
 			{
-				SelectedGroup = (Bridge.GroupInstance)e.Node.Tag;
+				SelectedGroup = (GroupInstance)e.Node.Tag;
 				BtnOk_Click(this, EventArgs.Empty);
 			}
 			else

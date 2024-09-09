@@ -1793,22 +1793,11 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will delete &apos;{0}&apos; and all of its messages. This action cannot be reversed.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to permanently delete this chat?.
         /// </summary>
         internal static string msg_link_delete_confirm {
             get {
                 return ResourceManager.GetString("msg_link_delete_confirm", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This will delete all messages in &apos;{0}&apos;. This action cannot be reversed.
-        ///
-        ///Do you want to continue?.
-        /// </summary>
-        internal static string msg_link_delete_confirm_last {
-            get {
-                return ResourceManager.GetString("msg_link_delete_confirm_last", resourceCulture);
             }
         }
         
@@ -1822,9 +1811,9 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WARNING! This will delete all chat history for &apos;{0}&apos;. This action cannot be reversed.
+        ///   Looks up a localized string similar to WARNING! This will delete all chats with &apos;{0}&apos;. This action cannot be reversed.
         ///
-        ///Are you sure you want to delete everything?.
+        ///Are you sure you want to permanently delete the chats?.
         /// </summary>
         internal static string msg_link_purge_chat {
             get {
@@ -1833,7 +1822,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will migrate all legacy chat history for &apos;{0}&apos;.
+        ///   Looks up a localized string similar to This will update and fix all legacy chats for &apos;{0}&apos;.
         ///
         ///Do you want to continue?.
         /// </summary>
@@ -1873,7 +1862,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Character restored from backup!.
+        ///   Looks up a localized string similar to Successfully restored character from backup..
         /// </summary>
         internal static string msg_link_restore_backup_success {
             get {
@@ -1904,7 +1893,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will delete this message and any message below it. This action cannot be reversed.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to permanently delete the messages?.
         /// </summary>
         internal static string msg_link_scrub_confirm {
             get {
@@ -3165,7 +3154,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove instances of &quot;#{character}:&quot; and &quot;#{user}:&quot; from all chats for the current character..
+        ///   Looks up a localized string similar to Remove instances of &quot;#{character}:&quot; and &quot;#{user}:&quot; from old chats with this character..
         /// </summary>
         internal static string tooltip_link_repair_chat {
             get {

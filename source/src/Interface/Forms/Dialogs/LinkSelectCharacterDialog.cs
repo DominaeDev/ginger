@@ -1,4 +1,5 @@
 ﻿using Ginger.Properties;
+using Ginger.Integration;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -6,18 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using Bridge = Ginger.BackyardBridge;
+using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
 {
 	public partial class LinkSelectCharacterDialog : Form
 	{
-		public Bridge.CharacterInstance[] Characters;
-		public Bridge.FolderInstance[] Folders;
-		public Bridge.CharacterInstance SelectedCharacter { get; private set; }
+		public CharacterInstance[] Characters;
+		public FolderInstance[] Folders;
+		public CharacterInstance SelectedCharacter { get; private set; }
 
 		public Dictionary<string, int> _folderCounts = new Dictionary<string, int>();
-		private Dictionary<string, Bridge.ChatCount> _chatCounts;
+		private Dictionary<string, Backyard.ChatCount> _chatCounts;
 
 		public bool ShouldLink { get { return cbCreateLink.Checked; } }
 
@@ -30,13 +31,13 @@ namespace Ginger
 
 		private void OnLoad(object sender, EventArgs e)
 		{
-			if (Bridge.GetChatCounts(out _chatCounts) != Bridge.Error.NoError)
-				_chatCounts = new Dictionary<string, Bridge.ChatCount>(); // Empty
+			if (Backyard.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
+				_chatCounts = new Dictionary<string, Backyard.ChatCount>(); // Empty
 
 			PopulateTree(false);
 
 			treeView.SelectedNode = null;
-			SelectedCharacter = default(Bridge.CharacterInstance);
+			SelectedCharacter = default(CharacterInstance);
 
 			btnOk.Enabled = false;
 			cbCreateLink.Checked = AppSettings.BackyardLink.LinkOnImport;
@@ -101,7 +102,7 @@ namespace Ginger
 			}
 
 			// Create characters
-			IEnumerable<Bridge.CharacterInstance> sortedCharacters = Characters.Where(c => c.isUser == false);
+			IEnumerable<CharacterInstance> sortedCharacters = Characters.Where(c => c.isUser == false);
 			if (AppSettings.User.SortCharactersAlphabetically)
 			{
 				sortedCharacters = sortedCharacters
@@ -125,7 +126,7 @@ namespace Ginger
 			treeView.EndUpdate();
 		}
 
-		private TreeNode CreateFolderNode(Bridge.FolderInstance folder, Dictionary<string, TreeNode> nodes, int count)
+		private TreeNode CreateFolderNode(FolderInstance folder, Dictionary<string, TreeNode> nodes, int count)
 		{
 			TreeNode parentNode;
 			nodes.TryGetValue(folder.parentId, out parentNode);
@@ -140,7 +141,7 @@ namespace Ginger
 			return node;
 		}
 
-		private TreeNode CreateCharacterNode(Bridge.CharacterInstance character, Dictionary<string, TreeNode> nodes)
+		private TreeNode CreateCharacterNode(CharacterInstance character, Dictionary<string, TreeNode> nodes)
 		{
 			TreeNode parentNode;
 			if (character.folderId != null)
@@ -180,9 +181,9 @@ namespace Ginger
 			return node;
 		}
 
-		private DateTime GetLatestMessageTime(Bridge.CharacterInstance characterInstance)
+		private DateTime GetLatestMessageTime(CharacterInstance characterInstance)
 		{
-			Bridge.ChatCount count;
+			Backyard.ChatCount count;
 			if (_chatCounts.TryGetValue(characterInstance.groupId, out count))
 				return count.lastMessage;
 			return DateTime.MinValue;
@@ -203,23 +204,23 @@ namespace Ginger
 
 		private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
 		{
-			if (e.Node != null && e.Node.Tag is Bridge.CharacterInstance)
+			if (e.Node != null && e.Node.Tag is CharacterInstance)
 			{
-				SelectedCharacter = (Bridge.CharacterInstance)e.Node.Tag;
+				SelectedCharacter = (CharacterInstance)e.Node.Tag;
 				btnOk.Enabled = true;
 			}
 			else
 			{
-				SelectedCharacter = default(Bridge.CharacterInstance);
+				SelectedCharacter = default(CharacterInstance);
 				btnOk.Enabled = false;
 			}
 		}
 
 		private void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
-			if (e.Node != null && e.Node.Tag is Bridge.CharacterInstance && e.Node == treeView.SelectedNode)
+			if (e.Node != null && e.Node.Tag is CharacterInstance && e.Node == treeView.SelectedNode)
 			{
-				SelectedCharacter = (Bridge.CharacterInstance)e.Node.Tag;
+				SelectedCharacter = (CharacterInstance)e.Node.Tag;
 				BtnOk_Click(this, EventArgs.Empty);
 			}
 			else

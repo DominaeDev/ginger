@@ -909,30 +909,25 @@ Do you want to continue?</value>
   <data name="msg_link_delete_confirm" xml:space="preserve">
     <value>This will delete '{0}' and all of its messages. This action cannot be reversed.
 
-Do you want to continue?</value>
-  </data>
-  <data name="msg_link_delete_confirm_last" xml:space="preserve">
-    <value>This will delete all messages in '{0}'. This action cannot be reversed.
-
-Do you want to continue?</value>
+Are you sure you want to permanently delete this chat?</value>
   </data>
   <data name="msg_link_purge_chat" xml:space="preserve">
-    <value>WARNING! This will delete all chat history for '{0}'. This action cannot be reversed.
+    <value>WARNING! This will delete all chats with '{0}'. This action cannot be reversed.
 
-Are you sure you want to delete everything?</value>
+Are you sure you want to permanently delete the chats?</value>
   </data>
   <data name="msg_link_repaired_chat" xml:space="preserve">
     <value>{0} chats updated.</value>
   </data>
   <data name="msg_link_repair_chat" xml:space="preserve">
-    <value>This will migrate all legacy chat history for '{0}'.
+    <value>This will update and fix all legacy chats for '{0}'.
 
 Do you want to continue?</value>
   </data>
   <data name="msg_link_scrub_confirm" xml:space="preserve">
     <value>This will delete this message and any message below it. This action cannot be reversed.
 
-Do you want to continue?</value>
+Are you sure you want to permanently delete the messages?</value>
   </data>
   <data name="status_link_branched_chat" xml:space="preserve">
     <value>A new branch was created</value>
@@ -980,7 +975,7 @@ Do you want to continue?</value>
     <value>Delete all chats for the current character.</value>
   </data>
   <data name="tooltip_link_repair_chat" xml:space="preserve">
-    <value>Remove instances of "#{character}:" and "#{user}:" from all chats for the current character.</value>
+    <value>Remove instances of "#{character}:" and "#{user}:" from old chats with this character.</value>
   </data>
   <data name="tooltip_link_scrub_chat" xml:space="preserve">
     <value>Delete this message and any messages below it.</value>
@@ -1007,9 +1002,6 @@ Do you want to continue?</value>
     <value>This will restore '{0}' along with {1} chat(s).
 
 Do you want to continue?</value>
-  </data>
-  <data name="msg_link_restore_backup_success" xml:space="preserve">
-    <value>Character restored from backup!</value>
   </data>
   <data name="backup_chat_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Schemas\backup_chat_schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
@@ -1051,5 +1043,8 @@ Do you want to continue?</value>
     <value>Reset this chat's settings to their default values.
 
 (See Settings.ini)</value>
+  </data>
+  <data name="msg_link_restore_backup_success" xml:space="preserve">
+    <value>Successfully restored character from backup.</value>
   </data>
 </root>

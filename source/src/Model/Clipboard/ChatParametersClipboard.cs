@@ -1,18 +1,16 @@
 ﻿using System;
 
-namespace Ginger
+namespace Ginger.Integration
 {
-	using Bridge = BackyardBridge;
-
 	[Serializable]
 	public class ChatParametersClipboard
 	{
-		public static readonly string Format = "Ginger.ChatParametersClipboard";
+		public static readonly string Format = "Ginger.Integration.ChatParametersClipboard";
 
 		public int version;
-		public Bridge.ChatParameters parameters;
+		public ChatParameters parameters;
 
-		public static ChatParametersClipboard FromParameters(Bridge.ChatParameters parameters)
+		public static ChatParametersClipboard FromParameters(ChatParameters parameters)
 		{
 			return new ChatParametersClipboard() {
 				version = 1,

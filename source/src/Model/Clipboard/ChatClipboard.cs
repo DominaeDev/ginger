@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Ginger
+namespace Ginger.Integration
 {
 	[Serializable]
 	public class ChatClipboard
 	{
-		public static readonly string Format = "Ginger.ChatClipboard";
+		public static readonly string Format = "Ginger.Integration.ChatClipboard";
 
 		public int version;
 		public string text;

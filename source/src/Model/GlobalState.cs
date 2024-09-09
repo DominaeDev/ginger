@@ -5,8 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Ginger.Properties;
+using Ginger.Integration;
 
-using Bridge = Ginger.BackyardBridge;
+using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
 {
@@ -54,7 +55,7 @@ namespace Ginger
 		}
 		private static bool _bFileDirty = false;
 
-		public static Bridge.Link Link = null;
+		public static Backyard.Link Link = null;
 		public static bool HasLink { get { return Link != null; } }
 		public static bool HasActiveLink { get { return Link != null && Link.isActive; } }
 		public static bool HasStaleLink { get { return Link != null && !Link.isActive; } }
@@ -736,9 +737,9 @@ namespace Ginger
 			return CardData.TextStyle.None;
 		}
 
-		public static void LinkWith(Bridge.CharacterInstance characterInstance, Bridge.Link.Image[] images)
+		public static void LinkWith(CharacterInstance characterInstance, Backyard.Link.Image[] images)
 		{
-			Link = new Bridge.Link() {
+			Link = new Backyard.Link() {
 				characterId = characterInstance.instanceId,
 				updateDate = characterInstance.updateDate,
 				imageLinks = images,
@@ -761,13 +762,13 @@ namespace Ginger
 			if (images == null || images.Length == 0)
 				return;
 
-			var imageLinks = new List<Bridge.Link.Image>();
+			var imageLinks = new List<Backyard.Link.Image>();
 
 			Image image;
 			if (Utility.LoadImageFromFile(images[0], out image))
 			{
 				Card.portraitImage = ImageRef.FromImage(image);
-				imageLinks.Add(new Bridge.Link.Image() {
+				imageLinks.Add(new Backyard.Link.Image() {
 					filename = Path.GetFileName(images[0]),
 					uid = Card.portraitImage.uid,
 				});
@@ -791,7 +792,7 @@ namespace Ginger
 						uriType = AssetFile.UriType.Embedded,
 					};
 					Card.assets.Add(asset);
-					imageLinks.Add(new Bridge.Link.Image() {
+					imageLinks.Add(new Backyard.Link.Image() {
 						filename = Path.GetFileName(images[i]),
 						uid = asset.uid,
 					});

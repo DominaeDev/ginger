@@ -1,7 +1,5 @@
-﻿using Ginger.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -9,12 +7,9 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 
-namespace Ginger
+namespace Ginger.Integration
 {
-	using CharacterInstance = BackyardBridge.CharacterInstance;
-	using ChatInstance = BackyardBridge.ChatInstance;
-
-	public class BackyardBackupInfo
+	public class BackupData
 	{
 		public FaradayCardV4 characterCard;
 		public List<Image> images;
@@ -43,41 +38,41 @@ namespace Ginger
 			public DateTime creationDate;
 			public DateTime updateDate;
 			public ChatHistory history;
-			public BackyardBridge.ChatStaging staging = new BackyardBridge.ChatStaging();
-			public BackyardBridge.ChatParameters parameters = new BackyardBridge.ChatParameters();
+			public ChatStaging staging = new ChatStaging();
+			public ChatParameters parameters = new ChatParameters();
 		}
 
 		public bool hasParameters { get { return chats != null && chats.ContainsAny(c => c.parameters != null); } }
 	}
 
-	public static class BackyardBackupUtil
+	public static class BackupUtil
 	{
-		public static BackyardBridge.Error CreateBackup(CharacterInstance characterInstance, out BackyardBackupInfo backupInfo)
+		public static Backyard.Error CreateBackup(CharacterInstance characterInstance, out BackupData backupInfo)
 		{
 			FaradayCardV4 card = null;
 			string[] imageUrls = null;
 			ChatInstance[] chatInstances = null;
-			var error = BackyardBridge.ReadCharacter(characterInstance, out card, out imageUrls);
-			if (error != BackyardBridge.Error.NoError)
+			var error = Backyard.ReadCharacter(characterInstance, out card, out imageUrls);
+			if (error != Backyard.Error.NoError)
 			{
 				backupInfo = null;
 				return error;
 			}
 
-			var groupInstance = BackyardBridge.Groups.FirstOrDefault(g => g.members.Length == 2 && g.members.Contains(characterInstance.instanceId));
-			error = BackyardBridge.GetChats(groupInstance, out chatInstances);
-			if (error != BackyardBridge.Error.NoError)
+			var groupInstance = Backyard.Groups.FirstOrDefault(g => g.members.Length == 2 && g.members.Contains(characterInstance.instanceId));
+			error = Backyard.GetChats(groupInstance, out chatInstances);
+			if (error != Backyard.Error.NoError)
 			{
 				backupInfo = null;
 				return error;
 			}
 
 			// Create backup
-			backupInfo = new BackyardBackupInfo();
+			backupInfo = new BackupData();
 			backupInfo.characterCard = card;
 			backupInfo.chats = chatInstances
 				.Where(c => c.history.isEmpty == false)
-				.Select(c => new BackyardBackupInfo.Chat() { 
+				.Select(c => new BackupData.Chat() { 
 					name = c.name,
 					history = c.history,
 					staging = c.staging,
@@ -86,15 +81,15 @@ namespace Ginger
 					updateDate = c.updateDate,
 				})
 				.ToList();
-			backupInfo.images = imageUrls.Select(url => new BackyardBackupInfo.Image() { 
+			backupInfo.images = imageUrls.Select(url => new BackupData.Image() { 
 				filename = Path.GetFileName(url),
 				data = Utility.LoadFile(url),
 			}).ToList();
 
-			return BackyardBridge.Error.NoError;
+			return Backyard.Error.NoError;
 		}
 
-		public static bool WriteBackup(string filename, BackyardBackupInfo backup)
+		public static bool WriteBackup(string filename, BackupData backup)
 		{
 			try
 			{
@@ -147,7 +142,7 @@ namespace Ginger
 				{
 					string chatFilename = string.Format("chat_{0:00}_{1}.json", ++chatIdx, chat.history.lastMessageTime.ToUnixTimeSeconds());
 
-					var chatBackup = ChatBackup.FromChat(new BackyardBackupInfo.Chat() {
+					var chatBackup = ChatBackup.FromChat(new BackupData.Chat() {
 						name = chat.name,
 						creationDate = chat.creationDate,
 						updateDate = chat.updateDate,
@@ -220,11 +215,11 @@ namespace Ginger
 			return false;
 		}
 
-		public static FileUtil.Error ReadBackup(string filename, out BackyardBackupInfo backup)
+		public static FileUtil.Error ReadBackup(string filename, out BackupData backup)
 		{
 			FaradayCardV4 characterCard = null;
-			List<BackyardBackupInfo.Image> images = new List<BackyardBackupInfo.Image>();
-			List<BackyardBackupInfo.Chat> chats = new List<BackyardBackupInfo.Chat>();
+			List<BackupData.Image> images = new List<BackupData.Image>();
+			List<BackupData.Chat> chats = new List<BackupData.Chat>();
 
 			try
 			{
@@ -258,7 +253,7 @@ namespace Ginger
 										characterCard = FaradayCardV4.FromJson(data.faradayJson);
 										if (characterCard != null)
 										{
-											images.Add(new BackyardBackupInfo.Image() {
+											images.Add(new BackupData.Image() {
 												filename = entryFullName,
 												data = buffer,
 											});
@@ -280,7 +275,7 @@ namespace Ginger
 
 									var chatBackup = ChatBackup.FromJson(chatJson).ToChat();
 
-									chats.Add(new BackyardBackupInfo.Chat() {
+									chats.Add(new BackupData.Chat() {
 										creationDate = chatBackup.creationDate,
 										updateDate = chatBackup.updateDate,
 										name = chatBackup.name ?? "",
@@ -303,7 +298,7 @@ namespace Ginger
 									byte[] buffer = new byte[dataSize];
 									dataStream.Read(buffer, 0, (int)dataSize);
 
-									images.Add(new BackyardBackupInfo.Image() {
+									images.Add(new BackupData.Image() {
 										filename = entryFullName,
 										data = buffer,
 									});
@@ -315,11 +310,11 @@ namespace Ginger
 
 				if (characterCard == null)
 				{
-					backup = default(BackyardBackupInfo);
+					backup = default(BackupData);
 					return FileUtil.Error.NoDataFound;
 				}
 
-				backup = new BackyardBackupInfo() {
+				backup = new BackupData() {
 					characterCard = characterCard,
 					chats = chats,
 					images = images,
@@ -328,7 +323,7 @@ namespace Ginger
 			}
 			catch
 			{
-				backup = default(BackyardBackupInfo);
+				backup = default(BackupData);
 				return FileUtil.Error.FileReadError;
 			}
 		}

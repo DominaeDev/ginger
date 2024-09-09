@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using Ginger.Integration;
 
 namespace Ginger
 {
@@ -32,8 +33,8 @@ namespace Ginger
 			// Initialize link
 			if (AppSettings.BackyardLink.Enabled)
 			{
-				if (BackyardBridge.EstablishConnection() == BackyardBridge.Error.NoError)
-					BackyardBridge.RefreshCharacters();
+				if (Backyard.EstablishConnection() == Backyard.Error.NoError)
+					Backyard.RefreshCharacters();
 				else
 					AppSettings.BackyardLink.Enabled = false;
 			}

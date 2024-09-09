@@ -1,5 +1,4 @@
-﻿using Ginger.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -8,17 +7,19 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using Ginger.Properties;
+using Ginger.Integration;
 
-using Bridge = Ginger.BackyardBridge;
+using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
 {
 	public partial class LinkEditChatDialog : Form
 	{
-		public Bridge.GroupInstance Group { get { return _groupInstance; } set { _groupInstance = value; } }
-		private Bridge.GroupInstance _groupInstance;
-		private Dictionary<string, Bridge.CharacterInstance> _charactersById;
-		private Bridge.ChatInstance _selectedChatInstance = null;
+		public GroupInstance Group { get { return _groupInstance; } set { _groupInstance = value; } }
+		private GroupInstance _groupInstance;
+		private Dictionary<string, CharacterInstance> _charactersById;
+		private ChatInstance _selectedChatInstance = null;
 
 		private static readonly Color[] NameColors = new Color[] {
 			ColorTranslator.FromHtml("#0185b6"),
@@ -52,7 +53,7 @@ namespace Ginger
 			chatInstanceList.ItemSelectionChanged += ChatInstanceList_ItemSelectionChanged;
 			chatView.ShowChat(false);
 
-			_charactersById = Bridge.Characters.ToDictionary(c => c.instanceId, c => c);
+			_charactersById = Backyard.Characters.ToDictionary(c => c.instanceId, c => c);
 
 			_statusbarTimer.Interval = 1000;
 			_statusbarTimer.Elapsed += OnStatusBarTimerElapsed;
@@ -92,7 +93,7 @@ namespace Ginger
 				Text = "Chat history";
 		}
 
-		private string GetGroupTitle(Bridge.GroupInstance group)
+		private string GetGroupTitle(GroupInstance group)
 		{
 			if (group.isEmpty)
 			{
@@ -184,7 +185,7 @@ namespace Ginger
 		{
 			if (e.IsSelected)
 			{
-				ViewChat(e.Item.Tag as Bridge.ChatInstance);
+				ViewChat(e.Item.Tag as ChatInstance);
 			}
 			else
 			{
@@ -195,8 +196,8 @@ namespace Ginger
 		private void PopulateChatList(bool bSelectFirst)
 		{
 			// List chats for group
-			Bridge.ChatInstance[] chats = null;
-			if (_groupInstance.isEmpty == false && Bridge.GetChats(_groupInstance, out chats) != Bridge.Error.NoError)
+			ChatInstance[] chats = null;
+			if (_groupInstance.isEmpty == false && Backyard.GetChats(_groupInstance, out chats) != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
@@ -288,7 +289,7 @@ namespace Ginger
 			chatView.Items.Clear();
 		}
 
-		private void ViewChat(Bridge.ChatInstance chatInstance)
+		private void ViewChat(ChatInstance chatInstance)
 		{
 			chatView.Items.Clear();
 			if (chatInstance == null)
@@ -302,9 +303,9 @@ namespace Ginger
 			_selectedChatInstance = chatInstance;
 			chatView.ShowChat(true);
 
-			List<Bridge.CharacterInstance> participants = new List<Bridge.CharacterInstance>(4);
-			participants.Add(chatInstance.participants.Select(id => Bridge.GetCharacter(id)).FirstOrDefault(c => c.isUser)); // User first
-			participants.AddRange(chatInstance.participants.Select(id => Bridge.GetCharacter(id)).Where(c => c.isUser == false));
+			List<CharacterInstance> participants = new List<CharacterInstance>(4);
+			participants.Add(chatInstance.participants.Select(id => Backyard.GetCharacter(id)).FirstOrDefault(c => c.isUser)); // User first
+			participants.AddRange(chatInstance.participants.Select(id => Backyard.GetCharacter(id)).Where(c => c.isUser == false));
 
 			var namesById = participants
 				.Select(c => c.name ?? "Unknown")
@@ -356,7 +357,7 @@ namespace Ginger
 			ImportChat();
 		}
 
-		private void ExportChat(Bridge.ChatInstance chatInstance)
+		private void ExportChat(ChatInstance chatInstance)
 		{
 			if (chatInstance == null)
 				return; // Error
@@ -418,19 +419,19 @@ namespace Ginger
 			}
 
 			// Write to db...
-			Bridge.ChatInstance chatInstance;
-			var args = new Bridge.CreateChatArguments() {
+			ChatInstance chatInstance;
+			var args = new Backyard.CreateChatArguments() {
 				name = "Imported chat",
 				history = importedChat,
 			};
-			var error = Bridge.CreateNewChat(args, _groupInstance.instanceId, out chatInstance);
-			if (error == Bridge.Error.NotConnected)
+			var error = Backyard.CreateNewChat(args, _groupInstance.instanceId, out chatInstance);
+			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 				return false;
 			}
-			else if (error != Bridge.Error.NoError)
+			else if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_import_chat, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
@@ -458,7 +459,7 @@ namespace Ginger
 		{
 			for (int i = 0; i < chatInstanceList.Items.Count; ++i)
 			{
-				if (((Bridge.ChatInstance)chatInstanceList.Items[i].Tag).instanceId == instanceId)
+				if (((ChatInstance)chatInstanceList.Items[i].Tag).instanceId == instanceId)
 				{
 					SelectChat(i);
 					return;
@@ -474,19 +475,19 @@ namespace Ginger
 		private void selectCharacterMenuItem_Click(object sender, EventArgs e)
 		{
 			// Refresh character list
-			if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 				return;
 			}
 
-			_charactersById = Bridge.Characters.ToDictionary(c => c.instanceId, c => c);
+			_charactersById = Backyard.Characters.ToDictionary(c => c.instanceId, c => c);
 
 			var groupDlg = new LinkSelectGroupDialog();
-			groupDlg.Characters = Bridge.Characters.ToArray();
-			groupDlg.Groups = Bridge.Groups.ToArray();
-			groupDlg.Folders = Bridge.Folders.ToArray();
+			groupDlg.Characters = Backyard.Characters.ToArray();
+			groupDlg.Groups = Backyard.Groups.ToArray();
+			groupDlg.Folders = Backyard.Folders.ToArray();
 			if (groupDlg.ShowDialog() == DialogResult.OK)
 			{
 				_groupInstance = groupDlg.SelectedGroup;
@@ -506,7 +507,7 @@ namespace Ginger
 
 			if (e.KeyData == Keys.Delete && chatInstanceList.SelectedItems.Count > 0)
 			{
-				var chatInstance = chatInstanceList.SelectedItems[0].Tag as Bridge.ChatInstance;
+				var chatInstance = chatInstanceList.SelectedItems[0].Tag as ChatInstance;
 				if (chatInstance != null)
 					DeleteChat(chatInstance);
 				e.Handled = true;
@@ -523,7 +524,7 @@ namespace Ginger
 
 			string newName = e.Label;
 			if (string.IsNullOrWhiteSpace(newName))
-				newName = Bridge.DefaultChatTitle;
+				newName = ChatInstance.DefaultName;
 			if (newName.Length > 100)
 				newName = newName.Substring(0, 100);
 			newName = newName.Trim();
@@ -536,7 +537,7 @@ namespace Ginger
 			}
 
 			// Rename
-			if (Bridge.RenameChat(_selectedChatInstance, newName) == Bridge.Error.NoError)
+			if (Backyard.RenameChat(_selectedChatInstance, newName) == Backyard.Error.NoError)
 			{
 				SetStatusBarMessage(Resources.status_link_renamed_chat, Constants.StatusBarMessageInterval);
 				e.CancelEdit = false;
@@ -548,47 +549,44 @@ namespace Ginger
 			}
 		}
 
-		private void DeleteChat(Bridge.ChatInstance chatInstance)
+		private void DeleteChat(ChatInstance chatInstance)
 		{
 			if (chatInstance == null)
 				return;
 
-			// Delete
+			// Chat chat counts
 			int chatCounts;
-			if (Bridge.ConfirmDeleteChat(chatInstance, _groupInstance, out chatCounts) != Bridge.Error.NoError)
+			if (Backyard.ConfirmDeleteChat(chatInstance, _groupInstance, out chatCounts) != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
-			Bridge.Error error;
-			if (chatCounts == 1) // Last chat
-			{
-				var mr = MessageBox.Show(string.Format(Resources.msg_link_delete_confirm_last, chatInstance.name), Resources.cap_link_delete_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
-				if (mr != DialogResult.Yes)
-					return;
+			// Confirm
+			if (MessageBox.Show(string.Format(Resources.msg_link_delete_confirm, chatInstance.name), Resources.cap_link_delete_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+				return;
 
-				// Update chat
-				chatInstance.name = Bridge.DefaultChatTitle;
+			Backyard.Error error;
+			if (chatCounts == 1) // Last chat mustn't be deleted
+			{
+				// Clear messages
+				chatInstance.name = ChatInstance.DefaultName;
 				chatInstance.updateDate = DateTime.Now;
 				chatInstance.history = new ChatHistory();
-				error = Bridge.UpdateChat(chatInstance, _groupInstance);
+				error = Backyard.UpdateChat(chatInstance, _groupInstance);
 			}
 			else
 			{
-				var mr = MessageBox.Show(string.Format(Resources.msg_link_delete_confirm, chatInstance.name), Resources.cap_link_delete_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
-				if (mr != DialogResult.Yes)
-					return;
-
-				error = Bridge.DeleteChat(chatInstance);
+				// Delete chat
+				error = Backyard.DeleteChat(chatInstance);
 			}
 
-			if (error == Bridge.Error.NotConnected)
+			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 			}
-			else if (error != Bridge.Error.NoError)
+			else if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_delete_chat, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -645,26 +643,26 @@ namespace Ginger
 			DuplicateChat(_selectedChatInstance);
 		}
 
-		public void DuplicateChat(Bridge.ChatInstance chatInstance)
+		public void DuplicateChat(ChatInstance chatInstance)
 		{
 			if (chatInstance == null || _groupInstance.isEmpty)
 				return;
 
-			Bridge.ChatInstance duplicate;
-			var args = new Bridge.CreateChatArguments() {
+			ChatInstance duplicate;
+			var args = new Backyard.CreateChatArguments() {
 				name = string.Concat(chatInstance.name, " (copy)"),
 				history = (ChatHistory)chatInstance.history.Clone(),
 				staging = chatInstance.staging,
 				parameters = chatInstance.parameters,
 			};
-			var error = Bridge.CreateNewChat(args, _groupInstance.instanceId, out duplicate);
+			var error = Backyard.CreateNewChat(args, _groupInstance.instanceId, out duplicate);
 
-			if (error == Bridge.Error.NotConnected)
+			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_duplicate_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 			}
-			else if (error != Bridge.Error.NoError)
+			else if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_duplicate_chat, Resources.cap_link_duplicate_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -689,13 +687,13 @@ namespace Ginger
 			if (mr != DialogResult.Yes)
 				return;
 
-			var error = Bridge.PurgeChats(_groupInstance);
-			if (error == Bridge.Error.NotConnected)
+			var error = Backyard.PurgeChats(_groupInstance);
+			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_purge_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 			}
-			else if (error != Bridge.Error.NoError)
+			else if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_purge_chat, Resources.cap_link_purge_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -715,14 +713,14 @@ namespace Ginger
 			if (mr != DialogResult.Yes)
 				return;
 
-			int modified = 0;
-			var error = Bridge.RepairChats(_groupInstance, out modified);
-			if (error == Bridge.Error.NotConnected)
+			int modified;
+			var error = Backyard.RepairChats(_groupInstance, out modified);
+			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_repair_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 			}
-			else if (error != Bridge.Error.NoError)
+			else if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_repair_chat, Resources.cap_link_repair_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -785,7 +783,7 @@ namespace Ginger
 			menu.Show(chatView.listBox, location);
 		}
 
-		private void BranchChat(Bridge.ChatInstance chatInstance, string messageId)
+		private void BranchChat(ChatInstance chatInstance, string messageId)
 		{
 			if (chatInstance == null || string.IsNullOrEmpty(messageId) || _groupInstance.isEmpty)
 				return; // Error
@@ -799,20 +797,20 @@ namespace Ginger
 			}
 			Array.Resize(ref chatHistory.messages, messageIndex + 1);
 
-			Bridge.ChatInstance branchedChat;
-			var args = new Bridge.CreateChatArguments() {
+			ChatInstance branchedChat;
+			var args = new Backyard.CreateChatArguments() {
 				name = string.Concat(chatInstance.name, " (branch)"),
 				history = chatHistory,
 				staging = chatInstance.staging,
 				parameters = chatInstance.parameters,
 			};
-			var error = Bridge.CreateNewChat(args, _groupInstance.instanceId, out branchedChat);
-			if (error == Bridge.Error.NotConnected)
+			var error = Backyard.CreateNewChat(args, _groupInstance.instanceId, out branchedChat);
+			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 			}
-			else if (error != Bridge.Error.NoError)
+			else if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_branch_chat, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -823,13 +821,13 @@ namespace Ginger
 			}
 		}
 
-		private void ScrubChat(Bridge.ChatInstance chatInstance, string messageId)
+		private void ScrubChat(ChatInstance chatInstance, string messageId)
 		{
 			if (chatInstance == null || string.IsNullOrEmpty(messageId))
 				return; // Error
 
-			var mr = MessageBox.Show(string.Format(Resources.msg_link_scrub_confirm, chatInstance.name), Resources.cap_link_scrub_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
-			if (mr != DialogResult.Yes)
+			// Confirm
+			if (MessageBox.Show(string.Format(Resources.msg_link_scrub_confirm, chatInstance.name), Resources.cap_link_scrub_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 				return;
 
 			chatInstance.updateDate = DateTime.Now;
@@ -841,13 +839,13 @@ namespace Ginger
 			}
 			Array.Resize(ref chatInstance.history.messages, messageIndex);
 		
-			var error = Bridge.UpdateChat(chatInstance, _groupInstance);
-			if (error == Bridge.Error.NotConnected)
+			var error = Backyard.UpdateChat(chatInstance, _groupInstance);
+			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 			}
-			else if (error != Bridge.Error.NoError)
+			else if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_scrub_chat, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -878,13 +876,13 @@ namespace Ginger
 			}));			
 
 			menu.Items.Add(new ToolStripMenuItem("Duplicate", null, (s, e) => {
-				DuplicateChat(item.Tag as Bridge.ChatInstance);
+				DuplicateChat(item.Tag as ChatInstance);
 			}) {
 				ToolTipText = Resources.tooltip_link_duplicate_chat,
 			});
 
 			menu.Items.Add(new ToolStripMenuItem("Export...", null, (s, e) => {
-				ExportChat(item.Tag as Bridge.ChatInstance);
+				ExportChat(item.Tag as ChatInstance);
 			}) {
 				ToolTipText = Resources.tooltip_link_export_chat,
 			});
@@ -892,20 +890,20 @@ namespace Ginger
 			menu.Items.Add(new ToolStripSeparator());
 
 			menu.Items.Add(new ToolStripMenuItem("Copy chat settings", null, (s, e) => {
-				CopySettings(item.Tag as Bridge.ChatInstance);
+				CopySettings(item.Tag as ChatInstance);
 			}) {
 				ToolTipText = Resources.tooltip_link_copy_settings,
 			});
 
 			menu.Items.Add(new ToolStripMenuItem("Paste chat settings", null, (s, e) => {
-				PasteSettings(item.Tag as Bridge.ChatInstance);
+				PasteSettings(item.Tag as ChatInstance);
 			}) {
 				ToolTipText = Resources.tooltip_link_paste_settings,
 				Enabled = Clipboard.ContainsData(ChatParametersClipboard.Format),
 			});
 
 			menu.Items.Add(new ToolStripMenuItem("Reset chat settings", null, (s, e) => {
-				ResetSettings(item.Tag as Bridge.ChatInstance);
+				ResetSettings(item.Tag as ChatInstance);
 			}) {
 				ToolTipText = Resources.tooltip_link_reset_settings,
 			});
@@ -913,7 +911,7 @@ namespace Ginger
 			menu.Items.Add(new ToolStripSeparator());
 
 			menu.Items.Add(new ToolStripMenuItem("Delete", null, (s, e) => {
-				DeleteChat(item.Tag as Bridge.ChatInstance);
+				DeleteChat(item.Tag as ChatInstance);
 			}) {
 				ToolTipText = Resources.tooltip_link_delete_chat,
 			});
@@ -924,13 +922,13 @@ namespace Ginger
 		private void refreshMenuItem_Click(object sender, EventArgs e)
 		{
 			// Refresh character list
-			if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 				return;
 			}
-			_charactersById = Bridge.Characters.ToDictionary(c => c.instanceId, c => c);
+			_charactersById = Backyard.Characters.ToDictionary(c => c.instanceId, c => c);
 
 			PopulateChatList(true);
 		}
@@ -950,22 +948,22 @@ namespace Ginger
 		
 		private void restoreBackupMenuItem_Click(object sender, EventArgs e)
 		{
-			Bridge.CharacterInstance characterInstance;
+			CharacterInstance characterInstance;
 			if (RestoreBackup(out characterInstance))
 			{
 				// Refresh and select newly created character
-				if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
+				if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 				{
 					MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					Close();
 					return;
 				}
 
-				var group = Bridge.GetGroupForCharacter(characterInstance.instanceId);
+				var group = Backyard.GetGroupForCharacter(characterInstance.instanceId);
 				if (group.isEmpty == false)
 				{
 					_groupInstance = group;
-					_charactersById = Bridge.Characters.ToDictionary(c => c.instanceId, c => c);
+					_charactersById = Backyard.Characters.ToDictionary(c => c.instanceId, c => c);
 
 					PopulateChatList(true);
 				}
@@ -974,28 +972,28 @@ namespace Ginger
 
 		private bool CreateBackup()
 		{
-			Bridge.CharacterInstance characterInstance;
+			CharacterInstance characterInstance;
 			characterInstance = Group.members
-				.Select(id => BackyardBridge.GetCharacter(id))
+				.Select(id => Backyard.GetCharacter(id))
 				.FirstOrDefault(c => c.isUser == false);
 
 			if (string.IsNullOrEmpty(characterInstance.instanceId))
 				return false; // Error
 
-			BackyardBackupInfo backup;
-			var error = BackyardBackupUtil.CreateBackup(characterInstance, out backup);
-			if (error == Bridge.Error.NotFound)
+			BackupData backup;
+			var error = BackupUtil.CreateBackup(characterInstance, out backup);
+			if (error == Backyard.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_create_backup, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
-			else if (error == Bridge.Error.NotConnected)
+			else if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 				return false;
 			}
-			else if (error != Bridge.Error.NoError)
+			else if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
@@ -1016,7 +1014,7 @@ namespace Ginger
 			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
 			AppSettings.User.LastExportChatFilter = exportFileDialog.FilterIndex;
 
-			if (BackyardBackupUtil.WriteBackup(exportFileDialog.FileName, backup) == false)
+			if (BackupUtil.WriteBackup(exportFileDialog.FileName, backup) == false)
 			{
 				MessageBox.Show(Resources.error_export_file, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
@@ -1026,12 +1024,12 @@ namespace Ginger
 			return true;
 		}
 
-		private bool RestoreBackup(out Bridge.CharacterInstance characterInstance)
+		private bool RestoreBackup(out CharacterInstance characterInstance)
 		{
-			if (Bridge.ConnectionEstablished == false)
+			if (Backyard.ConnectionEstablished == false)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				characterInstance = default(Bridge.CharacterInstance);
+				characterInstance = default(CharacterInstance);
 				return false;
 			}
 
@@ -1042,26 +1040,26 @@ namespace Ginger
 			var result = importFileDialog.ShowDialog();
 			if (result != DialogResult.OK)
 			{
-				characterInstance = default(Bridge.CharacterInstance);
+				characterInstance = default(CharacterInstance);
 				return false;
 			}
 
 			AppSettings.User.LastImportChatFilter = importFileDialog.FilterIndex;
 			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
 
-			BackyardBackupInfo backup;
-			FileUtil.Error readError = BackyardBackupUtil.ReadBackup(importFileDialog.FileName, out backup);
+			BackupData backup;
+			FileUtil.Error readError = BackupUtil.ReadBackup(importFileDialog.FileName, out backup);
 			if (readError != FileUtil.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_restore_backup_invalid, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				characterInstance = default(Bridge.CharacterInstance);
+				characterInstance = default(CharacterInstance);
 				return false;
 			}
 
 			// Confirmation
 			if (MessageBox.Show(string.Format(Resources.msg_link_restore_backup, backup.characterCard.data.displayName, backup.chats.Count), Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) == DialogResult.No)
 			{
-				characterInstance = default(Bridge.CharacterInstance);
+				characterInstance = default(CharacterInstance);
 				return false;
 			}
 
@@ -1073,9 +1071,9 @@ namespace Ginger
 					chat.parameters = null;
 			}
 
-			Bridge.Link.Image[] imageLinks; // Ignored
-			Bridge.ImageInput[] images = backup.images
-				.Select(i => new Bridge.ImageInput {
+			Backyard.Link.Image[] imageLinks; // Ignored
+			Backyard.ImageInput[] images = backup.images
+				.Select(i => new Backyard.ImageInput {
 					asset = new AssetFile() {
 						name = i.filename,
 						data = AssetData.FromBytes(i.data),
@@ -1086,8 +1084,8 @@ namespace Ginger
 				})
 				.ToArray();
 
-			Bridge.Error error = Bridge.CreateNewCharacter(backup.characterCard, images, backup.chats.ToArray(), out characterInstance, out imageLinks);
-			if (error != Bridge.Error.NoError)
+			Backyard.Error error = Backyard.CreateNewCharacter(backup.characterCard, images, backup.chats.ToArray(), out characterInstance, out imageLinks);
+			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
@@ -1097,17 +1095,17 @@ namespace Ginger
 			return true;
 		}
 
-		private void CopySettings(Bridge.ChatInstance chatInstance)
+		private void CopySettings(ChatInstance chatInstance)
 		{
-			if (Bridge.ConnectionEstablished == false)
+			if (Backyard.ConnectionEstablished == false)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_copy_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
-			Bridge.ChatInstance[] chats;
-			var error = Bridge.GetChats(_groupInstance, out chats);
-			if (error != Bridge.Error.NoError)
+			ChatInstance[] chats;
+			var error = Backyard.GetChats(_groupInstance, out chats);
+			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_copy_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
@@ -1125,9 +1123,9 @@ namespace Ginger
 			SetStatusBarMessage(Resources.status_link_copy_settings, Constants.StatusBarMessageInterval);
 		}
 
-		private void PasteSettings(Bridge.ChatInstance chatInstance)
+		private void PasteSettings(ChatInstance chatInstance)
 		{
-			if (Bridge.ConnectionEstablished == false)
+			if (Backyard.ConnectionEstablished == false)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_paste_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
@@ -1140,8 +1138,8 @@ namespace Ginger
 			if (parameters == null)
 				return;
 
-			var error = Bridge.UpdateChatParameters(chatInstance.instanceId, parameters.parameters);
-			if (error != Bridge.Error.NoError)
+			var error = Backyard.UpdateChatParameters(chatInstance.instanceId, parameters.parameters);
+			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_paste_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
@@ -1150,16 +1148,16 @@ namespace Ginger
 			SetStatusBarMessage(Resources.status_link_paste_settings, Constants.StatusBarMessageInterval);
 		}
 
-		private void ResetSettings(Bridge.ChatInstance chatInstance)
+		private void ResetSettings(ChatInstance chatInstance)
 		{
-			if (Bridge.ConnectionEstablished == false)
+			if (Backyard.ConnectionEstablished == false)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_reset_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
-			var error = Bridge.UpdateChatParameters(chatInstance.instanceId, null);
-			if (error != Bridge.Error.NoError)
+			var error = Backyard.UpdateChatParameters(chatInstance.instanceId, null);
+			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_reset_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;

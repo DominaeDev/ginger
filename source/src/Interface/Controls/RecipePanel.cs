@@ -1,10 +1,11 @@
-﻿using Ginger.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Ginger.Properties;
+using Ginger.Integration;
 
 namespace Ginger
 {

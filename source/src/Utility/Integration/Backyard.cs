@@ -7,120 +7,122 @@ using System.Xml;
 using System.Text;
 using Ginger.Properties;
 
-namespace Ginger
+namespace Ginger.Integration
 {
-	public static class BackyardBridge
+	public struct CharacterInstance
 	{
-		public struct CharacterInstance
+		public string instanceId;       // CharacterConfig.id
+		public DateTime creationDate;   // CharacterConfig.createdAt
+		public DateTime updateDate;     // CharacterConfig.updatedAt
+		public bool isUser;             // CharacterConfig.isUserControlled
+		public string configId;         // CharacterConfigVersion.id
+		public string displayName;      // CharacterConfigVersion.displayName
+		public string name;             // CharacterConfigVersion.name
+		public string groupId;          // GroupConfig.id (Primary group)
+		public string folderId;         // GroupConfig.folderId (Primary group)
+		public string creator;          // GroupConfig.hubAuthorUsername
+	}
+
+	public struct GroupInstance
+	{
+		public string instanceId;       // GroupConfig.id
+		public string name;             // GroupConfig.name
+		public string folderId;         // GroupConfig.folderId
+		public DateTime creationDate;   // CharacterConfig.createdAt
+		public DateTime updateDate;     // CharacterConfig.updatedAt
+		public string[] members;        // CharacterConfigVersion.id ...
+
+		public bool isEmpty
 		{
-			public string instanceId;		// CharacterConfig.id
-			public DateTime creationDate;	// CharacterConfig.createdAt
-			public DateTime updateDate;     // CharacterConfig.updatedAt
-			public bool isUser;				// CharacterConfig.isUserControlled
-			public string configId;			// CharacterConfigVersion.id
-			public string displayName;		// CharacterConfigVersion.displayName
-			public string name;				// CharacterConfigVersion.name
-			public string groupId;			// GroupConfig.id (Primary group)
-			public string folderId;			// GroupConfig.folderId (Primary group)
-			public string creator;          // GroupConfig.hubAuthorUsername
+			get { return string.IsNullOrEmpty(instanceId) || members == null || members.Length == 0; }
+		}
+	}
+
+	public struct FolderInstance
+	{
+		public string instanceId;       // AppFolder.id
+		public string parentId;         // AppFolder.parentFolderId
+		public string name;             // AppFolder.name
+		public bool isRoot;
+	}
+
+	public class ImageInstance
+	{
+		public string instanceId;       // AppImage.id
+		public string imageUrl;         // AppImage.imageUrl
+		public string label;            // AppImage.label
+		public int width;               // AppImage.aspectRatio
+		public int height;              // AppImage.aspectRatio
+	}
+
+	public class ChatStaging
+	{
+		public string system = "";      // Chat.modelInstructions
+		public string scenario = "";    // Chat.context
+		public string greeting = "";    // Chat.greetingDialogue
+		public string example = "";     // Chat.customDialogue
+		public string grammar = "";     // Chat.grammar
+	}
+
+	[Serializable]
+	public class ChatParameters
+	{
+		public ChatParameters()
+		{
+			model = Backyard.DefaultModel;
+			temperature = AppSettings.Faraday.Temperature;
+			topP = AppSettings.Faraday.TopP;
+			minP = AppSettings.Faraday.MinP;
+			minPEnabled = AppSettings.Faraday.MinPEnabled;
+			topK = AppSettings.Faraday.TopK;
+			repeatPenalty = AppSettings.Faraday.RepeatPenalty;
+			repeatLastN = AppSettings.Faraday.RepeatPenaltyTokens;
+			pruneExampleChat = AppSettings.Faraday.PruneExampleChat;
+			promptTemplate = AppSettings.Faraday.GetPromptTemplateName();
 		}
 
-		public struct GroupInstance
-		{
-			public string instanceId;		// GroupConfig.id
-			public string name;				// GroupConfig.name
-			public string folderId;			// GroupConfig.folderId
-			public DateTime creationDate;	// CharacterConfig.createdAt
-			public DateTime updateDate;     // CharacterConfig.updatedAt
-			public string[] members;		// CharacterConfigVersion.id ...
+		public string model = "";                   // Chat.model
+		public string authorNote = "";              // Chat.authorNote
+		public decimal temperature = 1.2m;          // Chat.temperature
+		public decimal topP = 0.9m;                 // Chat.topP
+		public decimal minP = 0.1m;                 // Chat.minP
+		public int topK = 30;                       // Chat.topK
+		public bool minPEnabled = true;             // Chat.minPEnabled
+		public int repeatLastN = 256;               // Chat.repeatLastN
+		public decimal repeatPenalty = 1.05m;       // Chat.repeatPenalty
+		public string promptTemplate = null;        // Chat.promptTemplate
+		public bool pruneExampleChat = true;        // Chat.canDeleteCustomDialogue
+		public bool ttsAutoPlay = false;            // Chat.ttsAutoPlay
+		public string ttsInputFilter = "default";   // Chat.ttsInputFilter
+	}
 
-			public bool isEmpty
-			{
-				get { return string.IsNullOrEmpty(instanceId) || members == null || members.Length == 0; }
-			}
+	public class ChatInstance
+	{
+		public ChatInstance()
+		{
+			name = DefaultName;
+			creationDate = DateTime.Now;
+			updateDate = DateTime.Now;
 		}
 
-		public struct FolderInstance
-		{
-			public string instanceId;		// AppFolder.id
-			public string parentId;         // AppFolder.parentFolderId
-			public string name;				// AppFolder.name
-			public bool isRoot;
-		}
+		public string instanceId = null;    // Chat.id
+		public string name;                 // Chat.name
+		public DateTime creationDate;       // Chat.createdAt
+		public DateTime updateDate;         // Chat.updatedAt
 
-		public class ImageInstance
-		{
-			public string instanceId;		// AppImage.id
-			public string imageUrl;			// AppImage.imageUrl
-			public string label;			// AppImage.label
-			public int width;				// AppImage.aspectRatio
-			public int height;				// AppImage.aspectRatio
-		}
+		public string[] participants = null;
 
-		public class ChatStaging
-		{
-			public string system = "";		// Chat.modelInstructions
-			public string scenario = "";	// Chat.context
-			public string greeting = "";	// Chat.greetingDialogue
-			public string example = "";		// Chat.customDialogue
-			public string grammar = "";		// Chat.grammar
-		}
-		
-		[Serializable]
-		public class ChatParameters
-		{
-			public ChatParameters()
-			{
-				model = DefaultModel;
-				temperature = AppSettings.Faraday.Temperature;
-				topP = AppSettings.Faraday.TopP;
-				minP = AppSettings.Faraday.MinP;
-				minPEnabled = AppSettings.Faraday.MinPEnabled;
-				topK = AppSettings.Faraday.TopK;
-				repeatPenalty = AppSettings.Faraday.RepeatPenalty;
-				repeatLastN = AppSettings.Faraday.RepeatPenaltyTokens;
-				pruneExampleChat = AppSettings.Faraday.PruneExampleChat;
-				promptTemplate = AppSettings.Faraday.GetPromptTemplateName();
-			}
+		public ChatHistory history = null;
+		public ChatStaging staging = null;
+		public ChatParameters parameters = null;
 
-			public string model = "";					// Chat.model
-			public string authorNote = "";				// Chat.authorNote
-			public decimal temperature = 1.2m;			// Chat.temperature
-			public decimal topP = 0.9m;					// Chat.topP
-			public decimal minP = 0.1m;					// Chat.minP
-			public int topK = 30;						// Chat.topK
-			public bool minPEnabled = true;				// Chat.minPEnabled
-			public int repeatLastN = 256;				// Chat.repeatLastN
-			public decimal repeatPenalty = 1.05m;		// Chat.repeatPenalty
-			public string promptTemplate = null;		// Chat.promptTemplate
-			public bool pruneExampleChat = true;		// Chat.canDeleteCustomDialogue
-			public bool ttsAutoPlay = false;			// Chat.ttsAutoPlay
-			public string ttsInputFilter = "default";   // Chat.ttsInputFilter
-		}
+		public bool hasGreeting { get { return staging != null && string.IsNullOrEmpty(staging.greeting) == false; } }
 
-		public class ChatInstance
-		{
-			public ChatInstance()
-			{
-				name = DefaultChatTitle;
-				creationDate = DateTime.Now;
-				updateDate = DateTime.Now;
-			}
+		public static string DefaultName = "Untitled chat";
+	}
 
-			public string instanceId = null;	// Chat.id
-			public string name;					// Chat.name
-			public DateTime creationDate;		// Chat.createdAt
-			public DateTime updateDate;			// Chat.updatedAt
-
-			public string[] participants = null;
-
-			public ChatHistory history = null;
-			public ChatStaging staging = null;
-			public ChatParameters parameters = null;
-
-			public bool hasGreeting { get { return staging != null && string.IsNullOrEmpty(staging.greeting) == false; } }
-		}
-
+	public static class Backyard
+	{
 		public static IEnumerable<FolderInstance> Folders { get { return _Folders.Values; } }
 		public static IEnumerable<CharacterInstance> Characters { get { return _Characters.Values; } }
 		public static IEnumerable<GroupInstance> Groups { get { return _Groups.Values; } }
@@ -131,7 +133,6 @@ namespace Ginger
 		private static Dictionary<string, CharacterInstance> _Characters = new Dictionary<string, CharacterInstance>();
 		private static Dictionary<string, GroupInstance> _Groups = new Dictionary<string, GroupInstance>();
 
-		public static string DefaultChatTitle = "Untitled chat";
 
 		public class Link : IXmlLoadable, IXmlSaveable
 		{
@@ -1459,7 +1460,7 @@ namespace Ginger
 
 		#region Save new character
 
-		public static Error CreateNewCharacter(FaradayCardV4 card, ImageInput[] imageInput, BackyardBackupInfo.Chat[] chats, out CharacterInstance characterInstance, out Link.Image[] imageLinks)
+		public static Error CreateNewCharacter(FaradayCardV4 card, ImageInput[] imageInput, BackupData.Chat[] chats, out CharacterInstance characterInstance, out Link.Image[] imageLinks)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -2142,9 +2143,9 @@ namespace Ginger
 								if (string.IsNullOrWhiteSpace(name))
 								{
 									if (++untitledCounter > 1)
-										name = string.Concat(DefaultChatTitle, " #", untitledCounter.ToString());
+										name = string.Concat(ChatInstance.DefaultName, " #", untitledCounter.ToString());
 									else
-										name = DefaultChatTitle;
+										name = ChatInstance.DefaultName;
 								}
 
 								chats.Add(new _Chat() {
