@@ -197,7 +197,7 @@ namespace Ginger
 		{
 			// List chats for group
 			ChatInstance[] chats = null;
-			if (_groupInstance.isEmpty == false && Backyard.GetChats(_groupInstance, out chats) != Backyard.Error.NoError)
+			if (_groupInstance.isEmpty == false && Backyard.GetChats(_groupInstance.instanceId, out chats) != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
@@ -220,10 +220,25 @@ namespace Ginger
 
 				for (int i = 0; i < chats.Length; ++i)
 				{
-					var item = chatInstanceList.Items.Add(chats[i].name);
-					item.Tag = chats[i];
+					var chat = chats[i];
+					var item = chatInstanceList.Items.Add(chat.name);
+					item.Tag = chat;
 
-					var updateDate = DateTimeExtensions.Max(chats[i].history.lastMessageTime, chats[i].creationDate);
+					var lastMessageTime = chat.history.lastMessageTime;
+
+					var sbTooltip = new StringBuilder();
+					sbTooltip.AppendLine($"Created: {chats[i].creationDate.ToLongTimeString()}");
+					sbTooltip.AppendLine($"Updated: {chats[i].updateDate.ToShortDateString()}");
+					sbTooltip.AppendLine($"Last messaged: {lastMessageTime.ToShortDateString()}");
+					if (chat.parameters != null)
+					{
+						sbTooltip.NewParagraph();
+						sbTooltip.AppendLine($"Model: {chat.parameters.model ?? Backyard.DefaultModel }");
+					}
+
+					item.ToolTipText = sbTooltip.ToString();
+
+					var updateDate = DateTimeExtensions.Max(lastMessageTime, chats[i].creationDate);
 
 					if (chats[i].history.count >= 20)
 						item.ImageIndex = 2;	// Long chat icon
@@ -368,7 +383,7 @@ namespace Ginger
 				return ;
 			}
 
-			string filename = string.Concat(GetCharacterName(), " - ", chatInstance.name, ".json");
+			string filename = string.Concat(GetCharacterName().Replace(" ", "_"), "-", chatInstance.name, "-", chatInstance.creationDate.ToUnixTimeMilliseconds().ToString(), ".json");
 			
 			exportFileDialog.Title = "Export chat";
 			exportFileDialog.Filter = "c.ai JSON|*.json";
@@ -573,7 +588,7 @@ namespace Ginger
 				chatInstance.name = ChatInstance.DefaultName;
 				chatInstance.updateDate = DateTime.Now;
 				chatInstance.history = new ChatHistory();
-				error = Backyard.UpdateChat(chatInstance, _groupInstance);
+				error = Backyard.UpdateChat(chatInstance, _groupInstance.instanceId);
 			}
 			else
 			{
@@ -839,7 +854,7 @@ namespace Ginger
 			}
 			Array.Resize(ref chatInstance.history.messages, messageIndex);
 		
-			var error = Backyard.UpdateChat(chatInstance, _groupInstance);
+			var error = Backyard.UpdateChat(chatInstance, _groupInstance.instanceId);
 			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1104,7 +1119,7 @@ namespace Ginger
 			}
 
 			ChatInstance[] chats;
-			var error = Backyard.GetChats(_groupInstance, out chats);
+			var error = Backyard.GetChats(_groupInstance.instanceId, out chats);
 			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_copy_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1164,6 +1179,17 @@ namespace Ginger
 			}
 
 			SetStatusBarMessage(Resources.status_link_reset_settings, Constants.StatusBarMessageInterval);
+		}
+
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			if (keyData == Keys.F5)
+			{
+				refreshMenuItem_Click(this, EventArgs.Empty);
+				return true;
+			}
+
+			return base.ProcessCmdKey(ref msg, keyData);
 		}
 	}
 }

@@ -59,8 +59,7 @@ namespace Ginger.Integration
 				return error;
 			}
 
-			var groupInstance = Backyard.Groups.FirstOrDefault(g => g.members.Length == 2 && g.members.Contains(characterInstance.instanceId));
-			error = Backyard.GetChats(groupInstance, out chatInstances);
+			error = Backyard.GetChats(characterInstance.groupId, out chatInstances);
 			if (error != Backyard.Error.NoError)
 			{
 				backupInfo = null;
@@ -142,7 +141,7 @@ namespace Ginger.Integration
 				{
 					string chatFilename = string.Format("chat_{0:00}_{1}.json", ++chatIdx, chat.history.lastMessageTime.ToUnixTimeSeconds());
 
-					var chatBackup = ChatBackup.FromChat(new BackupData.Chat() {
+					var chatBackup = BackupChat.FromChat(new BackupData.Chat() {
 						name = chat.name,
 						creationDate = chat.creationDate,
 						updateDate = chat.updateDate,
@@ -273,7 +272,7 @@ namespace Ginger.Integration
 									dataStream.Read(buffer, 0, (int)dataSize);
 									string chatJson = new string(Encoding.UTF8.GetChars(buffer));
 
-									var chatBackup = ChatBackup.FromJson(chatJson).ToChat();
+									var chatBackup = BackupChat.FromJson(chatJson).ToChat();
 
 									chats.Add(new BackupData.Chat() {
 										creationDate = chatBackup.creationDate,

@@ -8,24 +8,15 @@ using System.Collections.Generic;
 
 namespace Ginger
 {
-	public class ChatBackup
+	public class BackupChat
 	{
 		private static JsonSchema _schema;
 
-		static ChatBackup()
+		static BackupChat()
 		{
 			_schema = JsonSchema.Parse(Resources.backup_chat_schema);
 		}
 
-		// Same as c.ai chat
-		[JsonProperty("version", Required = Required.Always)]
-		public int version = 2;
-
-		// Same as c.ai chat
-		[JsonProperty("chat", Required = Required.Always)]
-		public Chat chat = new Chat();
-
-		// New fields
 		[JsonProperty("name", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Ignore)]
 		public string name = null;
 
@@ -35,11 +26,19 @@ namespace Ginger
 		[JsonProperty("updatedAt", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
 		public long? updatedAt;
 
+		// Same as c.ai chat
+		[JsonProperty("chat", Required = Required.Always)]
+		public Chat chat = new Chat();
+
 		[JsonProperty("staging", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
 		public Staging staging = null;
 
 		[JsonProperty("parameters", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
 		public Parameters parameters = null;
+
+		// Same as c.ai chat
+		[JsonProperty("version", Required = Required.Always)]
+		public int version = 2; // For Backyard compatibility
 
 		public class Staging
 		{
@@ -117,9 +116,9 @@ namespace Ginger
 			public long timestamp;
 		}
 
-		public static ChatBackup FromChat(BackupData.Chat chat)
+		public static BackupChat FromChat(BackupData.Chat chat)
 		{
-			ChatBackup backup = new ChatBackup();
+			BackupChat backup = new BackupChat();
 			var lsItems = new List<ChatItem>(chat.history.count / 2 + 1);
 
 			foreach (var pair in chat.history.messagesWithoutGreeting.Pairwise())
@@ -241,14 +240,14 @@ namespace Ginger
 			};
 		}
 
-		public static ChatBackup FromJson(string json)
+		public static BackupChat FromJson(string json)
 		{
 			try
 			{
 				JObject jObject = JObject.Parse(json);
 				if (jObject.IsValid(_schema))
 				{
-					var card = JsonConvert.DeserializeObject<ChatBackup>(json);
+					var card = JsonConvert.DeserializeObject<BackupChat>(json);
 					return card;
 				}
 			}

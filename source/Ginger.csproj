@@ -360,8 +360,8 @@
     <Compile Include="src\Model\Clipboard\ChatClipboard.cs" />
     <Compile Include="src\Model\Clipboard\ChatParametersClipboard.cs" />
     <Compile Include="src\Model\Formats\AssetFile.cs" />
-    <Compile Include="src\Model\Formats\ChatBackup.cs" />
-    <Compile Include="src\Model\Formats\CaiChat.cs" />
+    <Compile Include="src\Model\Formats\BackupChat.cs" />
+    <Compile Include="src\Model\Formats\CAIChatV2.cs" />
     <Compile Include="src\Model\Formats\FaradayCardV4.cs" />
     <Compile Include="src\Model\Formats\FaradayCardV3.cs" />
     <Compile Include="src\Model\Formats\ChatHistory.cs" />

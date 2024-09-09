@@ -704,7 +704,7 @@ namespace Ginger.Integration
 		}
 		#endregion
 
-		#region Import character
+		#region Characters
 
 		public static Error ReadCharacter(CharacterInstance character, out FaradayCardV4 card, out string[] imageUrls)
 		{
@@ -885,9 +885,6 @@ namespace Ginger.Integration
 			}
 		}
 
-		#endregion
-
-		#region Update character
 		public static Error ConfirmSaveCharacter(FaradayCardV4 card, Link linkInfo, out bool newerChangesFound)
 		{
 			if (ConnectionEstablished == false)
@@ -1456,9 +1453,6 @@ namespace Ginger.Integration
 				return Error.Unknown;
 			}
 		}
-		#endregion
-
-		#region Save new character
 
 		public static Error CreateNewCharacter(FaradayCardV4 card, ImageInput[] imageInput, BackupData.Chat[] chats, out CharacterInstance characterInstance, out Link.Image[] imageLinks)
 		{
@@ -1474,6 +1468,13 @@ namespace Ginger.Integration
 				characterInstance = default(CharacterInstance);
 				imageLinks = null;
 				return Error.NotFound;
+			}
+
+			if (chats != null && chats.ContainsAny(c => c.history != null && c.history.numSpeakers > 2))
+			{
+				characterInstance = default(CharacterInstance);
+				imageLinks = null;
+				return Error.InvalidArgument;
 			}
 
 			// Get root folder
@@ -1863,8 +1864,8 @@ namespace Ginger.Integration
 											cmdMessages.CommandText = sbCommand.ToString();
 
 											cmdMessages.Parameters.AddWithValue("$chatId", chatIds[iChat]);
-											cmdMessages.Parameters.AddWithValue($"$charId0", userId);
-											cmdMessages.Parameters.AddWithValue($"$charId1", characterId);
+											cmdMessages.Parameters.AddWithValue($"$charId0", userId); // Backups have exactly 2 speakers
+											cmdMessages.Parameters.AddWithValue($"$charId1", characterId); // Backups have exactly 2 speakers
 
 											expectedUpdates += messageCount * 2;
 											updates += cmdMessages.ExecuteNonQuery();
@@ -2026,6 +2027,13 @@ namespace Ginger.Integration
 		}
 		
 		// Intermediaries
+		private struct _Character
+		{
+			public string instanceId;
+			public string name;
+			public bool isUser;
+		}
+
 		private struct _Chat
 		{
 			public string instanceId;
@@ -2046,7 +2054,7 @@ namespace Ginger.Integration
 			public DateTime activeAt;
 		}
 
-		public static Error GetChats(GroupInstance groupInstance, out ChatInstance[] chatInstances)
+		public static Error GetChats(string groupId, out ChatInstance[] chatInstances)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -2054,41 +2062,31 @@ namespace Ginger.Integration
 				return Error.NotConnected;
 			}
 
-			string groupId = groupInstance.instanceId;
 			if (string.IsNullOrEmpty(groupId))
 			{
 				chatInstances = null;
 				return Error.NotFound;
 			}
 
-			var characterInstances = groupInstance.members
-				.Select(id => GetCharacter(id));
-			if (characterInstances.ContainsAny(c => string.IsNullOrEmpty(c.instanceId)))
-			{
-				chatInstances = null;
-				return Error.NotFound; // Group contains unknown characters
-			}
-
-			var userId = characterInstances
-				.Where(c => c.isUser)
-				.Select(c => c.instanceId)
-				.FirstOrDefault();
-
-			int index = 1;
-			var indexById = characterInstances
-				.Where(c => c.isUser == false)
-				.Select(c => new {
-					id = c.instanceId,
-					index = index++,
-				})
-				.ToDictionary(x => x.id, x => x.index);
-			indexById.Add(userId, 0);
-
 			try
 			{
 				using (var connection = CreateSQLiteConnection())
 				{
 					connection.Open();
+
+					var characters = FetchCharacters(connection);
+					if (characters == null)
+					{
+						chatInstances = null;
+						return Error.NotFound;
+					}
+					var characterLookup = characters.ToDictionary(c => c.instanceId, c => c);
+
+					var users = new HashSet<string>(characters.Where(c => c.isUser).Select(c => c.instanceId));
+					var nonUsers = new HashSet<string>(characters.Where(c => c.isUser == false).Select(c => c.instanceId));
+
+					var groupMembers = FetchGroupMembers(connection, groupId);
+					var canonicalUser = groupMembers.FirstOrDefault(c => c.isUser);
 
 					var lsChatInstances = new List<ChatInstance>();
 					var chats = new List<_Chat>();
@@ -2185,6 +2183,9 @@ namespace Ginger.Integration
 					{
 						string chatId = chats[i].instanceId;
 
+						int index = 1;
+						var indexById = new Dictionary<string, int>();
+
 						var messages = new List<_Message>(64);
 						using (var cmdMessages = connection.CreateCommand())
 						{
@@ -2239,9 +2240,20 @@ namespace Ginger.Integration
 
 								var message = g.First();
 
+								// Assign a character index
 								int speakerIdx;
 								if (indexById.TryGetValue(message.characterId, out speakerIdx) == false)
-									speakerIdx = 0; // User
+								{
+									if (users.Contains(message.characterId)) // User (there can be many, but they should be treated as one)
+										speakerIdx = 0;
+									else if (nonUsers.Contains(message.characterId)) // Character (there can be many)
+									{
+										indexById.Add(message.characterId, index);
+										speakerIdx = index++;
+									}
+									else // Unknown character id
+										return null;
+								}
 
 								return new ChatHistory.Message() {
 									instanceId = message.messageId,
@@ -2253,25 +2265,37 @@ namespace Ginger.Integration
 									.ToArray(),
 								};
 							})
+							.NotNull()
 							.ToList();
+
+						var participants = indexById
+							.Select(kvp => new {
+								index = kvp.Value,
+								id = kvp.Key,
+							})
+							.OrderBy(x => x.index)
+							.Select(x => {
+								_Character character;
+								if (characterLookup.TryGetValue(x.id, out character))
+									return character;
+								return default(_Character);
+							})
+							.Where(c => c.instanceId != null)
+							.ToList();
+						participants.Insert(0, canonicalUser);
+
+						if (groupMembers.Count < 2)
+							continue; // Error
 
 						// Insert greeting
 						if (string.IsNullOrEmpty(chats[i].staging.greeting) == false)
 						{
-							string characterName = groupInstance.members
-								.Select(id => GetCharacter(id))
-								.Where(c => c.isUser == false)
-								.Select(c => c.name)
-								.FirstOrDefault() ?? "Unnamed";
-							string UserName = groupInstance.members
-								.Select(id => GetCharacter(id))
-								.Where(c => c.isUser)
-								.Select(c => c.name)
-								.FirstOrDefault() ?? "User";
+							string userName = groupMembers[0].name ?? "User";
+							string characterName = groupMembers[1].name ?? "Unknown";
 
 							var sb = new StringBuilder(GingerString.FromFaraday(chats[i].staging.greeting).ToString());
 							sb.Replace(GingerString.CharacterMarker, characterName, true);
-							sb.Replace(GingerString.UserMarker, UserName, true);
+							sb.Replace(GingerString.UserMarker, userName, true);
 
 							entries.Insert(0, new ChatHistory.Message() {
 								speaker = 1,
@@ -2287,7 +2311,7 @@ namespace Ginger.Integration
 							creationDate = chats[i].creationDate,
 							updateDate = chats[i].updateDate,
 							name = chats[i].name,
-							participants = groupInstance.members,
+							participants = groupMembers.Select(c => c.instanceId).ToArray(),
 							staging = chats[i].staging,
 							parameters = chats[i].parameters,
 							history = new ChatHistory() {
@@ -2399,52 +2423,11 @@ namespace Ginger.Integration
 					}
 
 					// Fetch group members
-					var groupMembers = new List<string>();
-					using (var cmdGroupMembers = connection.CreateCommand())
+					var groupMembers = FetchGroupMembers(connection, groupId, args.history);
+					if (groupMembers == null)
 					{
-						cmdGroupMembers.CommandText =
-						@"
-							SELECT 
-								A.A, B.isUserControlled
-							FROM _CharacterConfigToGroupConfig AS A
-							INNER JOIN CharacterConfig AS B ON B.id = A.A
-							WHERE A.B = $groupId;
-						";
-
-						cmdGroupMembers.Parameters.AddWithValue("$groupId", groupId);
-
-						var members = new List<KeyValuePair<string, bool>>();
-						using (var reader = cmdGroupMembers.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string characterId = reader.GetString(0);
-								bool isUser = reader.GetBoolean(1);
-								members.Add(new KeyValuePair<string, bool>(characterId, isUser));
-							}
-						}
-						if (members.Count(kvp => kvp.Value) > 1)
-						{
-							// Can only have one user
-							chatInstance = default(ChatInstance);
-							return Error.InvalidArgument;
-						}
-
-						// Validate message indices
-						foreach (var message in args.history.messages)
-						{
-							if (message.speaker < 0 || message.speaker >= members.Count)
-							{
-								// Too many group members
-								chatInstance = default(ChatInstance);
-								return Error.InvalidArgument;
-							}
-						}
-
-						// Place user first
-						groupMembers = members.Where(kvp => kvp.Value).Select(kvp => kvp.Key)
-							.Union(members.Where(kvp => kvp.Value == false).Select(kvp => kvp.Key))
-							.ToList();
+						chatInstance = null;
+						return Error.InvalidArgument;
 					}
 
 					// Write to database
@@ -2542,7 +2525,7 @@ namespace Ginger.Integration
 										cmdMessages.Parameters.AddWithValue($"$messageId{i:000}", messageIds[i]);
 										cmdMessages.Parameters.AddWithValue($"$createdAt{i:000}", message.creationDate.ToUnixTimeMilliseconds());
 										cmdMessages.Parameters.AddWithValue($"$updatedAt{i:000}", message.updateDate.ToUnixTimeMilliseconds());
-										cmdMessages.Parameters.AddWithValue($"$charId{i:000}", groupMembers[message.speaker]);
+										cmdMessages.Parameters.AddWithValue($"$charId{i:000}", groupMembers[message.speaker].instanceId);
 
 										lsMessages.Add(new ChatHistory.Message() {
 											instanceId = messageIds[i],
@@ -2599,7 +2582,7 @@ namespace Ginger.Integration
 								history = new ChatHistory() {
 									messages = lsMessages.ToArray(),
 								},
-								participants = groupMembers.ToArray(),
+								participants = groupMembers.Select(c => c.instanceId).ToArray(),
 							};
 
 							transaction.Commit();
@@ -3001,7 +2984,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public static Error UpdateChat(ChatInstance chatInstance, GroupInstance groupInstance)
+		public static Error UpdateChat(ChatInstance chatInstance, string groupId)
 		{
 			if (ConnectionEstablished == false)
 				return Error.NotConnected;
@@ -3009,7 +2992,7 @@ namespace Ginger.Integration
 			if (chatInstance == null)
 				return Error.InvalidArgument;
 
-			if (string.IsNullOrEmpty(chatInstance.instanceId) || string.IsNullOrEmpty(groupInstance.instanceId))
+			if (string.IsNullOrEmpty(chatInstance.instanceId) || string.IsNullOrEmpty(groupId))
 				return Error.InvalidArgument;
 
 			try
@@ -3026,55 +3009,11 @@ namespace Ginger.Integration
 					long updatedAt = now.ToUnixTimeMilliseconds();
 
 					// Fetch group members
-					var groupMembers = new List<string>();
-					using (var cmdGroupMembers = connection.CreateCommand())
+					var groupMembers = FetchGroupMembers(connection, groupId, chatInstance.history);
+					if (groupMembers == null)
 					{
-						cmdGroupMembers.CommandText =
-						@"
-							SELECT 
-								A.A, B.isUserControlled
-							FROM _CharacterConfigToGroupConfig AS A
-							INNER JOIN CharacterConfig AS B ON B.id = A.A
-							WHERE A.B = $groupId;
-						";
-
-						cmdGroupMembers.Parameters.AddWithValue("$groupId", groupInstance.instanceId);
-
-						var members = new List<KeyValuePair<string, bool>>();
-						using (var reader = cmdGroupMembers.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string characterId = reader.GetString(0);
-								bool isUser = reader.GetBoolean(1);
-								members.Add(new KeyValuePair<string, bool>(characterId, isUser));
-							}
-						}
-						if (members.Count(kvp => kvp.Value) > 1)
-						{
-							// Can only have one user
-							chatInstance = default(ChatInstance);
-							return Error.InvalidArgument;
-						}
-
-						// Validate message indices
-						if (chatInstance.history.messages != null)
-						{
-							foreach (var message in chatInstance.history.messages)
-							{
-								if (message.speaker < 0 || message.speaker >= members.Count)
-								{
-									// Too many group members
-									chatInstance = default(ChatInstance);
-									return Error.InvalidArgument;
-								}
-							}
-						}
-
-						// Place user first
-						groupMembers = members.Where(kvp => kvp.Value).Select(kvp => kvp.Key)
-							.Union(members.Where(kvp => kvp.Value == false).Select(kvp => kvp.Key))
-							.ToList();
+						chatInstance = null;
+						return Error.NotFound;
 					}
 
 					using (var transaction = connection.BeginTransaction())
@@ -3150,7 +3089,7 @@ namespace Ginger.Integration
 										cmdMessages.Parameters.AddWithValue($"$messageId{i:000}", messageIds[i]);
 										cmdMessages.Parameters.AddWithValue($"$createdAt{i:000}", message.creationDate.ToUnixTimeMilliseconds());
 										cmdMessages.Parameters.AddWithValue($"$updatedAt{i:000}", message.updateDate.ToUnixTimeMilliseconds());
-										cmdMessages.Parameters.AddWithValue($"$charId{i:000}", groupMembers[message.speaker]);
+										cmdMessages.Parameters.AddWithValue($"$charId{i:000}", groupMembers[message.speaker].instanceId);
 
 										lsMessages.Add(new ChatHistory.Message() {
 											instanceId = messageIds[i],
@@ -3806,6 +3745,93 @@ namespace Ginger.Integration
 			return imagesToSave.ContainsAny(i => i.data.isEmpty == false);
 		}
 
+		private static List<_Character> FetchCharacters(SQLiteConnection connection)
+		{
+			using (var cmdCharacters = connection.CreateCommand())
+			{
+				cmdCharacters.CommandText =
+				@"
+					SELECT 
+						A.id, B.name, A.isUserControlled
+					FROM CharacterConfig AS A
+					INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id;
+				";
+
+				var members = new List<_Character>();
+				using (var reader = cmdCharacters.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						string instanceId = reader.GetString(0);
+						string name = reader.GetString(1);
+						bool isUser = reader.GetBoolean(2);
+						members.Add(new _Character() {
+							instanceId = instanceId,
+							name = name,
+							isUser = isUser,
+						});
+					}
+				}
+
+				return members;
+			}
+		}
+
+		private static List<_Character> FetchGroupMembers(SQLiteConnection connection, string groupId, ChatHistory chatHistory = null)
+		{
+			using (var cmdGroupMembers = connection.CreateCommand())
+			{
+				cmdGroupMembers.CommandText =
+				@"
+					SELECT 
+						A.A, C.name, B.isUserControlled
+					FROM _CharacterConfigToGroupConfig AS A
+					INNER JOIN CharacterConfig AS B ON B.id = A.A
+					INNER JOIN CharacterConfigVersion AS C ON C.characterConfigId = B.id
+					WHERE A.B = $groupId;
+				";
+
+				cmdGroupMembers.Parameters.AddWithValue("$groupId", groupId);
+
+				var members = new List<_Character>();
+				using (var reader = cmdGroupMembers.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						string instanceId = reader.GetString(0);
+						string name = reader.GetString(1);
+						bool isUser = reader.GetBoolean(2);
+						members.Add(new _Character() {
+							instanceId = instanceId,
+							name = name,
+							isUser = isUser,
+						});
+					}
+				}
+
+				if (members.Count(c => c.isUser) > 1)
+				{
+					// Groups can only contain one user
+					return null;
+				}
+
+				// Validate message indices
+				if (chatHistory != null && chatHistory.messages != null)
+				{
+					for (int i = 0; i < chatHistory.messages.Length; ++i)
+					{
+						if (chatHistory.messages[i].speaker < 0 || chatHistory.messages[i].speaker >= members.Count)
+							return null;
+					}
+				}
+
+				// Place user first
+				var user = members.FirstOrDefault(c => c.isUser);
+				members.Remove(user);
+				members.Insert(0, user);
+				return members;
+			}
+		}
 		#endregion // Utilities
 
 		#region Validation

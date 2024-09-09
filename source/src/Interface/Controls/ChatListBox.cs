@@ -210,8 +210,8 @@ namespace Ginger
 				CopySelected();
 				return true;
 			}
-			
-			return false;
+
+			return base.ProcessCmdKey(ref msg, keyData);
 		}
 
 		public void CopySelected()

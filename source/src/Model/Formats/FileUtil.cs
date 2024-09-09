@@ -1298,9 +1298,9 @@ namespace Ginger
 				return null;
 
 			// Try to read Tavern format (World book)
-			if (CAIChat.Validate(json))
+			if (CAIChatV2.Validate(json))
 			{
-				var caiChat = CAIChat.FromJson(json);
+				var caiChat = CAIChatV2.FromJson(json);
 				if (caiChat != null)
 					return ChatHistory.LegacyFix(caiChat.ToChat());
 			}
@@ -1315,7 +1315,7 @@ namespace Ginger
 
 			try
 			{
-				CAIChat caiChat = CAIChat.FromChat(chat);
+				CAIChatV2 caiChat = CAIChatV2.FromChat(chat);
 				string json = caiChat.ToJson();
 				if (json == null)
 					return false;

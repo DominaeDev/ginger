@@ -7,11 +7,11 @@ using System.Collections.Generic;
 
 namespace Ginger
 {
-	public class CAIChat
+	public class CAIChatV2
 	{
 		private static JsonSchema _schema;
 
-		static CAIChat()
+		static CAIChatV2()
 		{
 			_schema = JsonSchema.Parse(Resources.cai_chat_v2_schema);
 		}
@@ -38,9 +38,9 @@ namespace Ginger
 			public long timestamp;
 		}
 
-		public static CAIChat FromChat(ChatHistory chatHistory)
+		public static CAIChatV2 FromChat(ChatHistory chatHistory)
 		{
-			CAIChat caiChatV2 = new CAIChat();
+			CAIChatV2 caiChatV2 = new CAIChatV2();
 			var lsItems = new List<ChatItem>(chatHistory.count / 2 + 1);
 
 			foreach (var pair in chatHistory.messagesWithoutGreeting.Pairwise())
@@ -90,14 +90,14 @@ namespace Ginger
 			};
 		}
 		
-		public static CAIChat FromJson(string json)
+		public static CAIChatV2 FromJson(string json)
 		{
 			try
 			{
 				JObject jObject = JObject.Parse(json);
 				if (jObject.IsValid(_schema))
 				{
-					var card = JsonConvert.DeserializeObject<CAIChat>(json);
+					var card = JsonConvert.DeserializeObject<CAIChatV2>(json);
 					return card;
 				}
 			}

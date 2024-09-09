@@ -31,6 +31,16 @@ namespace Ginger
 			}
 		}
 
+		public int numSpeakers
+		{
+			get
+			{
+				if (count == 0)
+					return 0;
+				return messages.Max(m => m.speaker) + 1;
+			}
+		}
+
 		public class Message : ICloneable
 		{
 			public string instanceId;		// Message.id

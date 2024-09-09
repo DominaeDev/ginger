@@ -1819,7 +1819,7 @@ namespace Ginger
 					_editChatDialog.Group = group;
 			}
 
-			_editChatDialog.Show(this);
+			_editChatDialog.Show();
 			return true;
 		}
 	}
