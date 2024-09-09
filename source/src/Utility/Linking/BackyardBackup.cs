@@ -57,7 +57,7 @@ namespace Ginger
 			FaradayCardV4 card = null;
 			string[] imageUrls = null;
 			ChatInstance[] chatInstances = null;
-			var error = BackyardBridge.ImportCharacter(characterInstance, out card, out imageUrls);
+			var error = BackyardBridge.ReadCharacter(characterInstance, out card, out imageUrls);
 			if (error != BackyardBridge.Error.NoError)
 			{
 				backupInfo = null;

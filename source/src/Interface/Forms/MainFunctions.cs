@@ -1541,7 +1541,7 @@ namespace Ginger
 			// Import...
 			FaradayCardV4 faradayData;
 			string[] images;
-			var importError = Bridge.ImportCharacter(dlg.SelectedCharacter, out faradayData, out images);
+			var importError = Bridge.ReadCharacter(dlg.SelectedCharacter, out faradayData, out images);
 			if (importError == Bridge.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1764,7 +1764,7 @@ namespace Ginger
 			// Import data
 			FaradayCardV4 faradayData;
 			string[] images;
-			var importError = Bridge.ImportCharacter(characterInstance, out faradayData, out images);
+			var importError = Bridge.ReadCharacter(characterInstance, out faradayData, out images);
 			if (importError != Bridge.Error.NoError)
 				return importError;
 

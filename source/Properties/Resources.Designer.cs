@@ -427,6 +427,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy chat settings.
+        /// </summary>
+        internal static string cap_link_copy_settings {
+            get {
+                return ResourceManager.GetString("cap_link_copy_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create backup.
         /// </summary>
         internal static string cap_link_create_backup {
@@ -472,6 +481,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Paste chat settings.
+        /// </summary>
+        internal static string cap_link_paste_settings {
+            get {
+                return ResourceManager.GetString("cap_link_paste_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Purge chat history.
         /// </summary>
         internal static string cap_link_purge_chat {
@@ -504,6 +522,15 @@ namespace Ginger.Properties {
         internal static string cap_link_repair_chat {
             get {
                 return ResourceManager.GetString("cap_link_repair_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset chat settings.
+        /// </summary>
+        internal static string cap_link_reset_settings {
+            get {
+                return ResourceManager.GetString("cap_link_reset_settings", resourceCulture);
             }
         }
         
@@ -905,6 +932,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occurred while accessing Backyard AI. Please reestablish the connection and try again..
+        /// </summary>
+        internal static string error_link_disconnected {
+            get {
+                return ResourceManager.GetString("error_link_disconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to duplicate chat. Operation cancelled..
         /// </summary>
         internal static string error_link_duplicate_chat {
@@ -1020,15 +1056,6 @@ namespace Ginger.Properties {
         internal static string error_link_scrub_chat {
             get {
                 return ResourceManager.GetString("error_link_scrub_chat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An error occurred while accessing Backyard AI. Please reestablish the connection and try again..
-        /// </summary>
-        internal static string error_link_unknown {
-            get {
-                return ResourceManager.GetString("error_link_unknown", resourceCulture);
             }
         }
         
@@ -2420,6 +2447,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copied chat settings.
+        /// </summary>
+        internal static string status_link_copy_settings {
+            get {
+                return ResourceManager.GetString("status_link_copy_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Link created.
         /// </summary>
         internal static string status_link_create {
@@ -2456,6 +2492,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pasted chat settings.
+        /// </summary>
+        internal static string status_link_paste_settings {
+            get {
+                return ResourceManager.GetString("status_link_paste_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Chat history deleted..
         /// </summary>
         internal static string status_link_purged_chat {
@@ -2488,6 +2533,15 @@ namespace Ginger.Properties {
         internal static string status_link_repaired_chat {
             get {
                 return ResourceManager.GetString("status_link_repaired_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat settings reset.
+        /// </summary>
+        internal static string status_link_reset_settings {
+            get {
+                return ResourceManager.GetString("status_link_reset_settings", resourceCulture);
             }
         }
         
@@ -3021,6 +3075,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy this chat&apos;s settings to the clipboard..
+        /// </summary>
+        internal static string tooltip_link_copy_settings {
+            get {
+                return ResourceManager.GetString("tooltip_link_copy_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save a character and its related chats to a file..
         /// </summary>
         internal static string tooltip_link_create_backup {
@@ -3075,6 +3138,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Paste copied settings into this chat..
+        /// </summary>
+        internal static string tooltip_link_paste_settings {
+            get {
+                return ResourceManager.GetString("tooltip_link_paste_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete all chats for the current character..
         /// </summary>
         internal static string tooltip_link_purge_chat {
@@ -3098,6 +3170,17 @@ namespace Ginger.Properties {
         internal static string tooltip_link_repair_chat {
             get {
                 return ResourceManager.GetString("tooltip_link_repair_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset this chat&apos;s settings to their default values.
+        ///
+        ///(See Settings.ini).
+        /// </summary>
+        internal static string tooltip_link_reset_settings {
+            get {
+                return ResourceManager.GetString("tooltip_link_reset_settings", resourceCulture);
             }
         }
         

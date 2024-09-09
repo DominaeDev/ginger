@@ -358,6 +358,7 @@
     </Compile>
     <Compile Include="src\Model\CardData.cs" />
     <Compile Include="src\Model\Clipboard\ChatClipboard.cs" />
+    <Compile Include="src\Model\Clipboard\ChatParametersClipboard.cs" />
     <Compile Include="src\Model\Formats\AssetFile.cs" />
     <Compile Include="src\Model\Formats\ChatBackup.cs" />
     <Compile Include="src\Model\Formats\CaiChat.cs" />

@@ -129,6 +129,29 @@ namespace Ginger
 			}
 		}
 
+		private string GetCharacterName()
+		{
+			if (_groupInstance.isEmpty)
+				return "Unnamed";
+			else if (string.IsNullOrEmpty(_groupInstance.name) == false)
+				return _groupInstance.name;
+			else
+			{
+				var characters = _groupInstance.members
+					.Select(id => _charactersById.GetOrDefault(id))
+					.Where(c => c.isUser == false)
+					.Select(c => c.name ?? "Unnamed")
+					.ToArray();
+
+				if (characters.Count() > 1)
+					return string.Concat(characters[0], " et al");
+				else if (characters.Count() == 1)
+					return characters[0];
+				else
+					return "Unnamed";
+			}
+		}
+
 		protected override void OnClientSizeChanged(EventArgs e)
 		{
 			base.OnClientSizeChanged(e);
@@ -175,7 +198,7 @@ namespace Ginger
 			Bridge.ChatInstance[] chats = null;
 			if (_groupInstance.isEmpty == false && Bridge.GetChats(_groupInstance, out chats) != Bridge.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 				return;
 			}
@@ -344,14 +367,10 @@ namespace Ginger
 				return ;
 			}
 
-			string filename = chatInstance.name;
-//			if (AppSettings.User.LastExportChatFilter == 1) // json
-//				filename = string.Concat(filename, ".csv");
-//			else // json
-				filename = string.Concat(filename, ".json");
+			string filename = string.Concat(GetCharacterName(), " - ", chatInstance.name, ".json");
 			
 			exportFileDialog.Title = "Export chat";
-			exportFileDialog.Filter = "C.AI JSON|*.json";
+			exportFileDialog.Filter = "c.ai JSON|*.json";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			exportFileDialog.FilterIndex = AppSettings.User.LastExportChatFilter;
@@ -400,10 +419,14 @@ namespace Ginger
 
 			// Write to db...
 			Bridge.ChatInstance chatInstance;
-			var error = Bridge.CreateNewChat("Imported chat", importedChat, _groupInstance.instanceId, out chatInstance);
+			var args = new Bridge.CreateChatArguments() {
+				name = "Imported chat",
+				history = importedChat,
+			};
+			var error = Bridge.CreateNewChat(args, _groupInstance.instanceId, out chatInstance);
 			if (error == Bridge.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_unknown, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 				return false;
 			}
@@ -453,7 +476,7 @@ namespace Ginger
 			// Refresh character list
 			if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 				return;
 			}
@@ -534,7 +557,7 @@ namespace Ginger
 			int chatCounts;
 			if (Bridge.ConfirmDeleteChat(chatInstance, _groupInstance, out chatCounts) != Bridge.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
@@ -562,7 +585,7 @@ namespace Ginger
 
 			if (error == Bridge.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 			}
 			else if (error != Bridge.Error.NoError)
@@ -627,13 +650,18 @@ namespace Ginger
 			if (chatInstance == null || _groupInstance.isEmpty)
 				return;
 
-			string chatTitle = string.Concat(chatInstance.name, " (copy)");
 			Bridge.ChatInstance duplicate;
-			var error = Bridge.CreateNewChat(chatTitle, chatInstance.history, _groupInstance.instanceId, out duplicate);
+			var args = new Bridge.CreateChatArguments() {
+				name = string.Concat(chatInstance.name, " (copy)"),
+				history = (ChatHistory)chatInstance.history.Clone(),
+				staging = chatInstance.staging,
+				parameters = chatInstance.parameters,
+			};
+			var error = Bridge.CreateNewChat(args, _groupInstance.instanceId, out duplicate);
 
 			if (error == Bridge.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_duplicate_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_duplicate_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 			}
 			else if (error != Bridge.Error.NoError)
@@ -664,7 +692,7 @@ namespace Ginger
 			var error = Bridge.PurgeChats(_groupInstance);
 			if (error == Bridge.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_purge_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_purge_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 			}
 			else if (error != Bridge.Error.NoError)
@@ -691,7 +719,7 @@ namespace Ginger
 			var error = Bridge.RepairChats(_groupInstance, out modified);
 			if (error == Bridge.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_repair_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_repair_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 			}
 			else if (error != Bridge.Error.NoError)
@@ -762,21 +790,26 @@ namespace Ginger
 			if (chatInstance == null || string.IsNullOrEmpty(messageId) || _groupInstance.isEmpty)
 				return; // Error
 
-			string chatTitle = string.Concat(chatInstance.name, " (branch)");
-			var branchedChatHistory = (ChatHistory)chatInstance.history.Clone();
-			int messageIndex = Array.FindIndex(branchedChatHistory.messages, m => m.instanceId == messageId);
+			var chatHistory = (ChatHistory)chatInstance.history.Clone();
+			int messageIndex = Array.FindIndex(chatHistory.messages, m => m.instanceId == messageId);
 			if (messageIndex == -1)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
-			Array.Resize(ref branchedChatHistory.messages, messageIndex + 1);
+			Array.Resize(ref chatHistory.messages, messageIndex + 1);
 
 			Bridge.ChatInstance branchedChat;
-			var error = Bridge.CreateNewChat(chatTitle, branchedChatHistory, _groupInstance.instanceId, out branchedChat);
+			var args = new Bridge.CreateChatArguments() {
+				name = string.Concat(chatInstance.name, " (branch)"),
+				history = chatHistory,
+				staging = chatInstance.staging,
+				parameters = chatInstance.parameters,
+			};
+			var error = Bridge.CreateNewChat(args, _groupInstance.instanceId, out branchedChat);
 			if (error == Bridge.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 			}
 			else if (error != Bridge.Error.NoError)
@@ -811,7 +844,7 @@ namespace Ginger
 			var error = Bridge.UpdateChat(chatInstance, _groupInstance);
 			if (error == Bridge.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 			}
 			else if (error != Bridge.Error.NoError)
@@ -858,6 +891,27 @@ namespace Ginger
 
 			menu.Items.Add(new ToolStripSeparator());
 
+			menu.Items.Add(new ToolStripMenuItem("Copy chat settings", null, (s, e) => {
+				CopySettings(item.Tag as Bridge.ChatInstance);
+			}) {
+				ToolTipText = Resources.tooltip_link_copy_settings,
+			});
+
+			menu.Items.Add(new ToolStripMenuItem("Paste chat settings", null, (s, e) => {
+				PasteSettings(item.Tag as Bridge.ChatInstance);
+			}) {
+				ToolTipText = Resources.tooltip_link_paste_settings,
+				Enabled = Clipboard.ContainsData(ChatParametersClipboard.Format),
+			});
+
+			menu.Items.Add(new ToolStripMenuItem("Reset chat settings", null, (s, e) => {
+				ResetSettings(item.Tag as Bridge.ChatInstance);
+			}) {
+				ToolTipText = Resources.tooltip_link_reset_settings,
+			});
+
+			menu.Items.Add(new ToolStripSeparator());
+
 			menu.Items.Add(new ToolStripMenuItem("Delete", null, (s, e) => {
 				DeleteChat(item.Tag as Bridge.ChatInstance);
 			}) {
@@ -872,7 +926,7 @@ namespace Ginger
 			// Refresh character list
 			if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 				return;
 			}
@@ -902,7 +956,7 @@ namespace Ginger
 				// Refresh and select newly created character
 				if (Bridge.RefreshCharacters() != Bridge.Error.NoError)
 				{
-					MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					Close();
 					return;
 				}
@@ -937,7 +991,7 @@ namespace Ginger
 			}
 			else if (error == Bridge.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 				return false;
 			}
@@ -947,7 +1001,7 @@ namespace Ginger
 				return false;
 			}
 
-			string filename = string.Concat(GetGroupTitle(Group), ".backup.", DateTime.Now.ToString("yyyy-MM-dd"), ".zip");
+			string filename = string.Concat(GetCharacterName(), ".backup.", DateTime.Now.ToString("yyyy-MM-dd"), ".zip");
 
 			importFileDialog.Title = Resources.cap_link_create_backup;
 			exportFileDialog.Filter = "Character backup file|*.zip";
@@ -976,7 +1030,7 @@ namespace Ginger
 		{
 			if (Bridge.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_unknown, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				characterInstance = default(Bridge.CharacterInstance);
 				return false;
 			}
@@ -1043,5 +1097,75 @@ namespace Ginger
 			return true;
 		}
 
+		private void CopySettings(Bridge.ChatInstance chatInstance)
+		{
+			if (Bridge.ConnectionEstablished == false)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_copy_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			Bridge.ChatInstance[] chats;
+			var error = Bridge.GetChats(_groupInstance, out chats);
+			if (error != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_copy_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			int index = Array.FindIndex(chats, c => c.instanceId == chatInstance.instanceId);
+			if (index == -1 || chats[index].parameters == null)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_copy_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			Clipboard.SetDataObject(ChatParametersClipboard.FromParameters(chats[index].parameters), true);
+
+			SetStatusBarMessage(Resources.status_link_copy_settings, Constants.StatusBarMessageInterval);
+		}
+
+		private void PasteSettings(Bridge.ChatInstance chatInstance)
+		{
+			if (Bridge.ConnectionEstablished == false)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_paste_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			if (Clipboard.ContainsData(ChatParametersClipboard.Format) == false)
+				return;
+
+			ChatParametersClipboard parameters = Clipboard.GetData(ChatParametersClipboard.Format) as ChatParametersClipboard;
+			if (parameters == null)
+				return;
+
+			var error = Bridge.UpdateChatParameters(chatInstance.instanceId, parameters.parameters);
+			if (error != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_paste_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			SetStatusBarMessage(Resources.status_link_paste_settings, Constants.StatusBarMessageInterval);
+		}
+
+		private void ResetSettings(Bridge.ChatInstance chatInstance)
+		{
+			if (Bridge.ConnectionEstablished == false)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_reset_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			var error = Bridge.UpdateChatParameters(chatInstance.instanceId, null);
+			if (error != Bridge.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_reset_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			SetStatusBarMessage(Resources.status_link_reset_settings, Constants.StatusBarMessageInterval);
+		}
 	}
 }

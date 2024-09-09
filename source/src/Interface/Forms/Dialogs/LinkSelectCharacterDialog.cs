@@ -184,7 +184,7 @@ namespace Ginger
 		{
 			Bridge.ChatCount count;
 			if (_chatCounts.TryGetValue(characterInstance.groupId, out count))
-				return count.lastMessaged;
+				return count.lastMessage;
 			return DateTime.MinValue;
 		}
 

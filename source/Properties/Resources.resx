@@ -903,7 +903,7 @@ Do you want to continue?</value>
   <data name="error_link_scrub_chat" xml:space="preserve">
     <value>Something went wrong. Operation cancelled.</value>
   </data>
-  <data name="error_link_unknown" xml:space="preserve">
+  <data name="error_link_disconnected" xml:space="preserve">
     <value>An error occurred while accessing Backyard AI. Please reestablish the connection and try again.</value>
   </data>
   <data name="msg_link_delete_confirm" xml:space="preserve">
@@ -1022,5 +1022,34 @@ Do you want to continue?</value>
   </data>
   <data name="tooltip_link_restore_backup" xml:space="preserve">
     <value>Restore a character and its related chats from a file.</value>
+  </data>
+  <data name="status_link_copy_settings" xml:space="preserve">
+    <value>Copied chat settings</value>
+  </data>
+  <data name="status_link_paste_settings" xml:space="preserve">
+    <value>Pasted chat settings</value>
+  </data>
+  <data name="cap_link_copy_settings" xml:space="preserve">
+    <value>Copy chat settings</value>
+  </data>
+  <data name="cap_link_paste_settings" xml:space="preserve">
+    <value>Paste chat settings</value>
+  </data>
+  <data name="cap_link_reset_settings" xml:space="preserve">
+    <value>Reset chat settings</value>
+  </data>
+  <data name="status_link_reset_settings" xml:space="preserve">
+    <value>Chat settings reset</value>
+  </data>
+  <data name="tooltip_link_copy_settings" xml:space="preserve">
+    <value>Copy this chat's settings to the clipboard.</value>
+  </data>
+  <data name="tooltip_link_paste_settings" xml:space="preserve">
+    <value>Paste copied settings into this chat.</value>
+  </data>
+  <data name="tooltip_link_reset_settings" xml:space="preserve">
+    <value>Reset this chat's settings to their default values.
+
+(See Settings.ini)</value>
   </data>
 </root>

@@ -65,7 +65,8 @@ namespace Ginger
 			public string example = "";		// Chat.customDialogue
 			public string grammar = "";		// Chat.grammar
 		}
-
+		
+		[Serializable]
 		public class ChatParameters
 		{
 			public ChatParameters()
@@ -704,7 +705,7 @@ namespace Ginger
 
 		#region Import character
 
-		public static Error ImportCharacter(CharacterInstance character, out FaradayCardV4 card, out string[] imageUrls)
+		public static Error ReadCharacter(CharacterInstance character, out FaradayCardV4 card, out string[] imageUrls)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -1952,7 +1953,7 @@ namespace Ginger
 
 		public struct ChatCount {
 			public int count;
-			public DateTime lastMessaged;
+			public DateTime lastMessage;
 		}
 
 		public static Error GetChatCounts(out Dictionary<string, ChatCount> counts)
@@ -1975,13 +1976,13 @@ namespace Ginger
 						cmdChat.CommandText =
 						@"
 							SELECT 
-								groupConfigId, 
+								groupConfigId, updatedAt,
 								COUNT(*), 
 								(
-									SELECT MAX(updatedAt)
-									FROM Message
-									WHERE chatId = C.id
-								)
+									SELECT MAX(M.updatedAt)
+									FROM Message as M
+									WHERE M.chatId = C.id
+								) AS subquery
 							FROM Chat AS C
 							GROUP BY groupConfigId
 						";
@@ -1991,12 +1992,13 @@ namespace Ginger
 							while (reader.Read())
 							{
 								string groupId = reader.GetString(0);
-								int count = reader.GetInt32(1);
-								DateTime updatedAt = reader.IsDBNull(2) ? DateTime.MinValue : reader.GetUnixTime(2);
+								DateTime updatedAt = reader.GetUnixTime(1);
+								int count = reader.GetInt32(2);
+								DateTime lastMessage = reader.IsDBNull(3) ? updatedAt : reader.GetUnixTime(3);
 
 								counts.Add(groupId, new ChatCount() {
 									count = count,
-									lastMessaged = updatedAt,
+									lastMessage = lastMessage,
 								});
 							}							
 						}
@@ -2318,7 +2320,15 @@ namespace Ginger
 			}
 		}
 
-		public static Error CreateNewChat(string chatTitle, ChatHistory chatHistory, string groupId, out ChatInstance chatInstance)
+		public struct CreateChatArguments
+		{
+			public string name;
+			public ChatStaging staging;
+			public ChatParameters parameters;
+			public ChatHistory history;
+		}
+
+		public static Error CreateNewChat(CreateChatArguments args, string groupId, out ChatInstance chatInstance)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -2326,7 +2336,7 @@ namespace Ginger
 				return Error.NotConnected;
 			}
 
-			if (chatHistory == null || chatHistory.messages == null || groupId == null)
+			if (args.history == null || args.history.messages == null || groupId == null)
 			{
 				chatInstance = default(ChatInstance);
 				return Error.InvalidArgument;
@@ -2338,10 +2348,10 @@ namespace Ginger
 				{
 					connection.Open();
 
-					var staging = new ChatStaging();
-					var parameters = new ChatParameters();
+					var defaultStaging = new ChatStaging();
+					var defaultParameters = new ChatParameters();
 
-					// Fetch group chat info
+					// Read default chat settings (latest)
 					using (var cmdGroupInfo = connection.CreateCommand())
 					{ 
 						cmdGroupInfo.CommandText =
@@ -2352,7 +2362,8 @@ namespace Ginger
 								repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, 
 								authorNote, ttsAutoplay, ttsInputFilter
 							FROM Chat
-							WHERE groupConfigId = $groupId;
+							WHERE groupConfigId = $groupId
+							ORDER BY updatedAt DESC
 						";
 
 						cmdGroupInfo.Parameters.AddWithValue("$groupId", groupId);
@@ -2365,24 +2376,24 @@ namespace Ginger
 								return Error.NotFound;
 							}
 
-							staging.system = reader.GetString(0);
-							staging.scenario = reader.GetString(1);
-							staging.greeting = reader.GetString(2);
-							staging.example = reader.GetString(3);
-							staging.grammar = reader[4] as string ?? "";
-							parameters.model = reader.GetString(5);
-							parameters.temperature = reader.GetDecimal(6);
-							parameters.topP = reader.GetDecimal(7);
-							parameters.minP = reader.GetDecimal(8);
-							parameters.minPEnabled = reader.GetBoolean(9);
-							parameters.topK = reader.GetInt32(10);
-							parameters.repeatPenalty = reader.GetDecimal(11);
-							parameters.repeatLastN = reader.GetInt32(12);
-							parameters.promptTemplate = reader[13] as string;
-							parameters.pruneExampleChat = reader.GetBoolean(14);
-							parameters.authorNote = reader.GetString(15);
-							parameters.ttsAutoPlay = reader.GetBoolean(16);
-							parameters.ttsInputFilter = reader.GetString(17);
+							defaultStaging.system = reader.GetString(0);
+							defaultStaging.scenario = reader.GetString(1);
+							defaultStaging.greeting = reader.GetString(2);
+							defaultStaging.example = reader.GetString(3);
+							defaultStaging.grammar = reader[4] as string ?? "";
+							defaultParameters.model = reader.GetString(5);
+							defaultParameters.temperature = reader.GetDecimal(6);
+							defaultParameters.topP = reader.GetDecimal(7);
+							defaultParameters.minP = reader.GetDecimal(8);
+							defaultParameters.minPEnabled = reader.GetBoolean(9);
+							defaultParameters.topK = reader.GetInt32(10);
+							defaultParameters.repeatPenalty = reader.GetDecimal(11);
+							defaultParameters.repeatLastN = reader.GetInt32(12);
+							defaultParameters.promptTemplate = reader[13] as string;
+							defaultParameters.pruneExampleChat = reader.GetBoolean(14);
+							defaultParameters.authorNote = reader.GetString(15);
+							defaultParameters.ttsAutoPlay = reader.GetBoolean(16);
+							defaultParameters.ttsInputFilter = reader.GetString(17);
 						}
 					}
 
@@ -2419,7 +2430,7 @@ namespace Ginger
 						}
 
 						// Validate message indices
-						foreach (var message in chatHistory.messages)
+						foreach (var message in args.history.messages)
 						{
 							if (message.speaker < 0 || message.speaker >= members.Count)
 							{
@@ -2446,6 +2457,8 @@ namespace Ginger
 
 							int updates = 0;
 							int expectedUpdates = 0;
+							var staging = args.staging ?? defaultStaging;
+							var parameters = args.parameters ?? defaultParameters;
 							
 							using (var cmdCreateChat = new SQLiteCommand(connection))
 							{
@@ -2470,14 +2483,14 @@ namespace Ginger
 								cmdCreateChat.CommandText = sbCommand.ToString();
 								cmdCreateChat.Parameters.AddWithValue("$chatId", chatId);
 								cmdCreateChat.Parameters.AddWithValue("$groupId", groupId);
-								cmdCreateChat.Parameters.AddWithValue("$chatName", chatTitle);
+								cmdCreateChat.Parameters.AddWithValue("$chatName", args.name ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$timestamp", createdAt);
 								cmdCreateChat.Parameters.AddWithValue("$system", staging.system);
 								cmdCreateChat.Parameters.AddWithValue("$scenario",  staging.scenario);
 								cmdCreateChat.Parameters.AddWithValue("$example",  staging.example);
 								cmdCreateChat.Parameters.AddWithValue("$greeting",  staging.greeting);
 								cmdCreateChat.Parameters.AddWithValue("$grammar",  staging.grammar ?? "");
-								cmdCreateChat.Parameters.AddWithValue("$model", parameters.model);
+								cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? DefaultModel);
 								cmdCreateChat.Parameters.AddWithValue("$pruneExample", parameters.pruneExampleChat);
 								cmdCreateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 								cmdCreateChat.Parameters.AddWithValue("$topP", parameters.topP);
@@ -2487,9 +2500,9 @@ namespace Ginger
 								cmdCreateChat.Parameters.AddWithValue("$repeatPenalty", parameters.repeatPenalty);
 								cmdCreateChat.Parameters.AddWithValue("$repeatLastN", parameters.repeatLastN);
 								cmdCreateChat.Parameters.AddWithValue("$promptTemplate", parameters.promptTemplate);
-								cmdCreateChat.Parameters.AddWithValue("$authorNote", parameters.authorNote);
+								cmdCreateChat.Parameters.AddWithValue("$authorNote", parameters.authorNote ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$ttsAutoPlay", parameters.ttsAutoPlay);
-								cmdCreateChat.Parameters.AddWithValue("$ttsInputFilter", parameters.ttsInputFilter);
+								cmdCreateChat.Parameters.AddWithValue("$ttsInputFilter", parameters.ttsInputFilter ?? "default");
 
 								expectedUpdates += 1;
 								updates += cmdCreateChat.ExecuteNonQuery();
@@ -2497,7 +2510,7 @@ namespace Ginger
 
 							// Write messages
 							var lsMessages = new List<ChatHistory.Message>();
-							int messageCount = chatHistory.messagesWithoutGreeting.Count();
+							int messageCount = args.history.messagesWithoutGreeting.Count();
 							if (messageCount > 0)
 							{
 								// Generate unique IDs
@@ -2519,7 +2532,7 @@ namespace Ginger
 										VALUES ");
 
 									int i = 0;
-									foreach (var message in chatHistory.messagesWithoutGreeting)
+									foreach (var message in args.history.messagesWithoutGreeting)
 									{
 										if (i > 0)
 											sbCommand.Append(",\n");
@@ -2548,7 +2561,7 @@ namespace Ginger
 											(id, createdAt, updatedAt, activeTimestamp, text, messageId)
 										VALUES ");
 									i = 0;
-									foreach (var message in chatHistory.messagesWithoutGreeting)
+									foreach (var message in args.history.messagesWithoutGreeting)
 									{
 										if (i > 0)
 											sbCommand.Append(",\n");
@@ -2579,7 +2592,7 @@ namespace Ginger
 								instanceId = chatId,
 								creationDate = now,
 								updateDate = now,
-								name = chatTitle,
+								name = args.name,
 								staging = staging,
 								parameters = parameters,
 								history = new ChatHistory() {
@@ -3410,6 +3423,106 @@ namespace Ginger
 			}
 		}
 
+		public static Error UpdateChatParameters(string chatId, ChatParameters parameters)
+		{
+			if (ConnectionEstablished == false)
+				return Error.NotConnected;
+
+			if (parameters == null)
+				parameters = new ChatParameters();
+
+			if (string.IsNullOrEmpty(chatId))
+				return Error.InvalidArgument;
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					int updates = 0;
+					int expectedUpdates = 0;
+
+					DateTime now = DateTime.Now;
+					long updatedAt = now.ToUnixTimeMilliseconds();
+
+					using (var transaction = connection.BeginTransaction())
+					{
+						try
+						{
+							// Update chat info
+							using (var cmdUpdateChat = connection.CreateCommand())
+							{
+								cmdUpdateChat.CommandText =
+								@"
+									UPDATE Chat
+									SET 
+										updatedAt = $timestamp,
+										model = $model, 
+										temperature = $temperature,
+										topP = $topP,
+										minP = $minP,
+										minPEnabled = $minPEnabled,
+										topK = $topK,
+										repeatPenalty = $repeatPenalty,
+										repeatLastN = $repeatLastN,
+										promptTemplate = $promptTemplate,
+										canDeleteCustomDialogue = $pruneExample
+									WHERE id = $chatId;
+								";
+
+								cmdUpdateChat.Parameters.AddWithValue("$chatId", chatId);
+								cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? DefaultModel);
+								cmdUpdateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
+								cmdUpdateChat.Parameters.AddWithValue("$topP", parameters.topP);
+								cmdUpdateChat.Parameters.AddWithValue("$minP", parameters.minP);
+								cmdUpdateChat.Parameters.AddWithValue("$minPEnabled", parameters.minPEnabled);
+								cmdUpdateChat.Parameters.AddWithValue("$topK", parameters.topK);
+								cmdUpdateChat.Parameters.AddWithValue("$repeatPenalty", parameters.repeatPenalty);
+								cmdUpdateChat.Parameters.AddWithValue("$repeatLastN", parameters.repeatLastN);
+								cmdUpdateChat.Parameters.AddWithValue("$promptTemplate", parameters.promptTemplate);
+								cmdUpdateChat.Parameters.AddWithValue("$pruneExample", parameters.pruneExampleChat);
+								cmdUpdateChat.Parameters.AddWithValue("$timestamp", updatedAt);
+
+								expectedUpdates += 1;
+								updates += cmdUpdateChat.ExecuteNonQuery();
+							}
+							
+							if (updates != expectedUpdates)
+							{
+								transaction.Rollback();
+								return Error.SQLCommandFailed;
+							}
+
+							transaction.Commit();
+							return Error.NoError;
+
+						}
+						catch (Exception e)
+						{
+							transaction.Rollback();
+							return Error.SQLCommandFailed;
+						}
+					}
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Disconnect();
+				return Error.FileNotFound;
+			}
+			catch (SQLiteException e)
+			{
+				Disconnect();
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				Disconnect();
+				return Error.Unknown;
+			}
+		}
+		
 		#endregion // Chat
 
 		#region Utilities

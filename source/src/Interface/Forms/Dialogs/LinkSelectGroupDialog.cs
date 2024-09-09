@@ -78,7 +78,7 @@ namespace Ginger
 		{
 			Bridge.ChatCount count;
 			if (_chatCounts.TryGetValue(group.instanceId, out count))
-				return count.lastMessaged;
+				return count.lastMessage;
 			return DateTime.MinValue;
 		}
 
@@ -149,8 +149,7 @@ namespace Ginger
 			else
 			{
 				sortedGroups = Groups
-					.OrderByDescending(g => GetLatestMessageTime(g))
-					.ThenBy(g => GetGroupName(g));
+					.OrderByDescending(g => GetLatestMessageTime(g));
 			}
 			foreach (var group in sortedGroups)
 				CreateGroupNode(group, nodesById);
