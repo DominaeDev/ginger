@@ -1183,6 +1183,11 @@ namespace Ginger
 
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
+			if (keyData == Keys.Escape)
+			{
+				Close();
+				return true;
+			}
 			if (keyData == Keys.F5)
 			{
 				refreshMenuItem_Click(this, EventArgs.Empty);

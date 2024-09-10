@@ -353,7 +353,7 @@ namespace Ginger
 						sb.Insert(end, toClose);
 				}
 			}
-			if (fromOpen != toClose)
+			if (fromOpen != toOpen)
 			{
 				if (bRemove)
 				{

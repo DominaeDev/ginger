@@ -39,6 +39,7 @@ namespace Ginger
 	{
 		public static readonly string GlobalInternal = "__internal";
 		public static readonly string GlobalExternal = "__global";
+		public static readonly string PruneScenario = "__prune-scenario";
 
 		public static void LoadRecipes()
 		{

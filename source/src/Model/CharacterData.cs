@@ -153,7 +153,7 @@ namespace Ginger
 
 			// Flags
 			if (Current.Card.extraFlags.Contains(CardData.Flag.PruneScenario))
-				context.AddTag("__prune-scenario");
+				context.AddTag(Constants.Flag.PruneScenario);
 
 			if (type == ContextType.Full)
 			{

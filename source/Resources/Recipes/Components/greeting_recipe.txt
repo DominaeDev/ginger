@@ -1,10 +1,10 @@
 <Ginger id="__greeting">
 	<Name>Greeting</Name>
-	<Order>4</Order>
+	<Order>3</Order>
 	<Color>FloralWhite</Color>
 	<Multiple>True</Multiple>
 	<Requires>not __actor</Requires>
-	<Flags>greeting, __greeting,  __component, __formatting, __internal</Flags>
+	<Flags>greeting, __greeting,  __component, __internal</Flags>
 	
 	<!-- Parameters -->
 	<Text id="greeting" style="component">

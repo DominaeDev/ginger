@@ -1,6 +1,6 @@
 <Ginger id="__system">
 	<Name>Model instructions</Name>
-	<Order>0</Order>
+	<Order>5</Order>
 	<Color>#bfd0db</Color>
 	<Multiple>True</Multiple>
 	<Requires>not __actor</Requires>

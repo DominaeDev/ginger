@@ -197,7 +197,7 @@ namespace Ginger
 			int numChannels = EnumHelper.ToInt(Recipe.Component.Count);
 			Recipe internalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalInternal).Instantiate();
 			Recipe externalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalExternal).Instantiate();
-			Recipe pruneScenarioRecipe = RecipeBook.GetRecipeByID("__prune-scenario").Instantiate();
+			Recipe pruneScenarioRecipe = RecipeBook.GetRecipeByID(RecipeBook.PruneScenario).Instantiate();
 
 			for (int index = 0; index < Current.Characters.Count; ++index)
 			{
@@ -349,7 +349,7 @@ namespace Ginger
 				personality = GingerString.FromOutput(blockBuilder.Build("persona/output/personality"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 
 			// Option: Prune scenario
-			if (context.HasTag("__prune-scenario") && options.ContainsAny(Option.Snippet | Option.Bake) == false)
+			if (context.HasTag(Constants.Flag.PruneScenario) && options.ContainsAny(Option.Snippet | Option.Bake) == false)
 			{
 				GingerString scenario = GingerString.FromOutput(blockBuilder.Build("scenario/output"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 				blockBuilder.Add(new Block() {
@@ -595,6 +595,8 @@ namespace Ginger
 
 						if (channel == Recipe.Component.Grammar)
 							lsOutputsByChannel[(int)channel].Add(Text.DontProcess(Utility.Unindent(Text.Process(text, Text.EvalOption.Minimal))));
+						else if (channel == Recipe.Component.Example || channel == Recipe.Component.Greeting || channel == Recipe.Component.Greeting_Group)
+							lsOutputsByChannel[(int)channel].Add(Text.DontProcess(Utility.Unindent(Text.Process(text, Text.EvalOption.ExampleFormatting))));
 						else if (template.isRaw)
 							lsOutputsByChannel[(int)channel].Add(Text.DontProcess(text));
 						else

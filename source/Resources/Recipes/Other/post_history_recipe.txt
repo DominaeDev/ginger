@@ -5,7 +5,7 @@
 		(Used for compatibility.)
 	</Description>
 	<Color>#bfd0db</Color>
-	<Order>0</Order>
+	<Order>1</Order>
 	<Multiple>True</Multiple>
 	<Requires>not __actor</Requires>
 	<Flags>system-prompt, model, __post-history, __component, __formatting, __internal</Flags>

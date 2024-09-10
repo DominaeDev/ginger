@@ -11,7 +11,7 @@
 	<Node path="persona/output" style="line" order="500" mode="exclude"/>
 	<Node path="scenario/output" style="line" order="500" mode="exclude"/>
 	<Node path="user/output" style="line" order="500" mode="exclude"/>
-	<Node path="example/output" style="paragraph" order="500" mode="exclude"/>
+	<Node path="example/output" style="paragraph" order="500" mode="exclude" format="none"/>
 
 	<!-- Important instructions / Jailbreak -->
 	<Node path="system/important" style="paragraph" mode="exclude"/>

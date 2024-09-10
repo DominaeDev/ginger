@@ -1,9 +1,9 @@
 <Ginger id="__example">
 	<Name>Example chat</Name>
 	<Color>FloralWhite</Color>
-	<Order>5</Order>
+	<Order>4</Order>
 	<Multiple>True</Multiple>
-	<Flags>example-dialogue, __example, __component, __formatting, __internal</Flags>
+	<Flags>example-dialogue, __example, __component, __internal</Flags>
 
 	<!-- Parameters -->
 	<Text id="example" style="chat" mandatory="true">

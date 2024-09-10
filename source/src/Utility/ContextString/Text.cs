@@ -38,7 +38,7 @@ namespace Ginger
 			LimitedBlockFormatting		= Whitespace | Punctuation | NoInternal, // Nodes
 			LoreFormatting				= Default | Linebreaks,
 			OutputFormatting			= Whitespace | Linebreaks | Punctuation,
-			ExampleFormatting			= Minimal,
+			ExampleFormatting			= Whitespace | Punctuation | Minimal,
 		}
 
 		public static readonly string Space				= "\uFFF0\uFFF1";

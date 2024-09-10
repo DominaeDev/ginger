@@ -69,7 +69,7 @@
 
 	<Example>
 		[user]: "Hi, I'm [user]."
-		[char]: "Hi there!" *[nocap]smiles[cap]*
+		[char]: "Hi there!" *smiles*
 	</Example>
 
 	<!-- Grammar to enforce chat style -->

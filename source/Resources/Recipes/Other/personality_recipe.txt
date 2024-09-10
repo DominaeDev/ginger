@@ -5,7 +5,7 @@
 		This is equivalent to the "Personality summary" field in SillyTavern.
 		(Used for compatibility)
 	</Description>
-	<Order>1</Order>
+	<Order>0</Order>
 	<Multiple>True</Multiple>
 	<Flags>persona, __personality, __component, __internal</Flags>
 	
