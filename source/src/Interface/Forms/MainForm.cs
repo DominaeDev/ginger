@@ -413,6 +413,30 @@ namespace Ginger
 				return;
 			}
 
+			if (image.Width > Constants.MaxImageDimension || image.Height > Constants.MaxImageDimension)
+			{
+				int srcWidth = image.Width;
+				int srcHeight = image.Height;
+				int fitWidth = Constants.MaxImageDimension;
+				int fitHeight = Constants.MaxImageDimension;
+				float scale = Math.Min((float)fitWidth / srcWidth, (float)fitHeight / srcHeight);
+				int newWidth = Math.Max((int)Math.Round(srcWidth * scale), 1);
+				int newHeight = Math.Max((int)Math.Round(srcHeight * scale), 1);
+
+				if (MessageBox.Show(string.Format(Resources.msg_rescale_portrait, image.Width, image.Height, newWidth, newHeight), Resources.cap_change_portrait, MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+				{
+					Image bmpNewImage = new Bitmap(newWidth, newHeight);
+					using (Graphics gfxNewImage = Graphics.FromImage(bmpNewImage))
+					{
+						gfxNewImage.DrawImage(image,
+							new Rectangle(0, 0, newWidth, newHeight),
+								0, 0, srcWidth, srcHeight,
+								GraphicsUnit.Pixel);
+					}
+					image = bmpNewImage;
+				}
+			}
+
 			Current.Card.portraitImage = ImageRef.FromImage(image);
 			Current.IsDirty = true;
 			sidePanel.RefreshValues();

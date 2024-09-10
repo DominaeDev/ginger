@@ -1047,4 +1047,12 @@ Do you want to continue?</value>
   <data name="msg_link_restore_backup_success" xml:space="preserve">
     <value>Successfully restored character from backup.</value>
   </data>
+  <data name="cap_change_portrait" xml:space="preserve">
+    <value>Change portrait</value>
+  </data>
+  <data name="msg_rescale_portrait" xml:space="preserve">
+    <value>This image is very large at {0} x {1}.
+
+Would you like to reduce it to a more appropriate size?</value>
+  </data>
 </root>

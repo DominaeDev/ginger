@@ -283,6 +283,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change portrait.
+        /// </summary>
+        internal static string cap_change_portrait {
+            get {
+                return ResourceManager.GetString("cap_change_portrait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Confirm.
         /// </summary>
         internal static string cap_confirm {
@@ -1243,9 +1252,9 @@ namespace Ginger.Properties {
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__example&quot;&gt;
         ///	&lt;Name&gt;Example chat&lt;/Name&gt;
         ///	&lt;Color&gt;FloralWhite&lt;/Color&gt;
-        ///	&lt;Order&gt;5&lt;/Order&gt;
+        ///	&lt;Order&gt;4&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Flags&gt;example-dialogue, __example, __component, __formatting, __internal&lt;/Flags&gt;
+        ///	&lt;Flags&gt;example-dialogue, __example, __component, __internal&lt;/Flags&gt;
         ///
         ///	&lt;!-- Parameters --&gt;
         ///	&lt;Text id=&quot;example&quot; style=&quot;chat&quot; mandatory=&quot;true&quot;&gt;
@@ -1256,7 +1265,8 @@ namespace Ginger.Properties {
         ///		&lt;/Default&gt;
         ///	&lt;/Text&gt;
         ///
-        ///	&lt;Example&gt;{example:local [rest of string was truncated]&quot;;.
+        ///	&lt;Example&gt;{example:local}&lt;/Example&gt;
+        ///&lt; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string example_recipe {
             get {
@@ -1462,11 +1472,11 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__greeting&quot;&gt;
         ///	&lt;Name&gt;Greeting&lt;/Name&gt;
-        ///	&lt;Order&gt;4&lt;/Order&gt;
+        ///	&lt;Order&gt;3&lt;/Order&gt;
         ///	&lt;Color&gt;FloralWhite&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
-        ///	&lt;Flags&gt;greeting, __greeting,  __component, __formatting, __internal&lt;/Flags&gt;
+        ///	&lt;Flags&gt;greeting, __greeting,  __component, __internal&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
         ///	&lt;Text id=&quot;greeting&quot; style=&quot;component&quot;&gt;
@@ -1493,14 +1503,15 @@ namespace Ginger.Properties {
         ///	&lt;Order&gt;2&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
-        ///	&lt;Flags&gt;__group-greeting, __component, __formatting, __internal, __ccv3&lt;/Flags&gt;
+        ///	&lt;Flags&gt;__group-greeting, __component, __internal, __ccv3&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
         ///	&lt;Text id=&quot;greeting&quot; style=&quot;component&quot;&gt;
         ///		&lt;Label&gt;Message&lt;/Label&gt;
         ///	&lt;/Text&gt;
         ///	
-        ///	&lt;Greeting group=&quot;true&quot;&gt;{greeting:local [rest of string was truncated]&quot;;.
+        ///	&lt;Greeting group=&quot;true&quot;&gt;{greeting:local}&lt;/Greeting&gt;
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string group_greeting_recipe {
             get {
@@ -1988,6 +1999,17 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This image is very large at {0} x {1}.
+        ///
+        ///Would you like to reduce it to a more appropriate size?.
+        /// </summary>
+        internal static string msg_rescale_portrait {
+            get {
+                return ResourceManager.GetString("msg_rescale_portrait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save changes?.
         /// </summary>
         internal static string msg_save_changes {
@@ -2009,7 +2031,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__persona&quot;&gt;
         ///	&lt;Name&gt;Character persona&lt;/Name&gt;
-        ///	&lt;Order&gt;1&lt;/Order&gt;
+        ///	&lt;Order&gt;0&lt;/Order&gt;
         ///	&lt;Color&gt;HoneyDew&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Flags&gt;persona, __persona, __component, __formatting, __internal&lt;/Flags&gt;
@@ -2046,7 +2068,7 @@ namespace Ginger.Properties {
         ///		This is equivalent to the &quot;Personality summary&quot; field in SillyTavern.
         ///		(Used for compatibility)
         ///	&lt;/Description&gt;
-        ///	&lt;Order&gt;1&lt;/Order&gt;
+        ///	&lt;Order&gt;0&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Flags&gt;persona, __personality, __component, __internal&lt;/Flags&gt;
         ///	
@@ -2070,7 +2092,7 @@ namespace Ginger.Properties {
         ///		(Used for compatibility.)
         ///	&lt;/Description&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
-        ///	&lt;Order&gt;0&lt;/Order&gt;
+        ///	&lt;Order&gt;1&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;system-prompt, model, __post-history, __component, __formatting, __internal&lt;/Flags&gt;
@@ -2347,7 +2369,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__scenario&quot;&gt;
         ///	&lt;Name&gt;Scenario&lt;/Name&gt;
-        ///	&lt;Order&gt;3&lt;/Order&gt;
+        ///	&lt;Order&gt;2&lt;/Order&gt;
         ///	&lt;Color&gt;Linen&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Flags&gt;scenario, __scenario, __component, __formatting, __internal&lt;/Flags&gt;
@@ -2592,7 +2614,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__system&quot;&gt;
         ///	&lt;Name&gt;Model instructions&lt;/Name&gt;
-        ///	&lt;Order&gt;0&lt;/Order&gt;
+        ///	&lt;Order&gt;5&lt;/Order&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
@@ -3527,7 +3549,7 @@ namespace Ginger.Properties {
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__user-persona&quot;&gt;
         ///	&lt;Name&gt;User persona&lt;/Name&gt;
         ///	&lt;Color&gt;#ddf5ef&lt;/Color&gt;
-        ///	&lt;Order&gt;2&lt;/Order&gt;
+        ///	&lt;Order&gt;1&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;user-persona, __user, __component, __formatting, __internal&lt;/Flags&gt;

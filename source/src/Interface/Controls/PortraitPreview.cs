@@ -102,8 +102,8 @@ namespace Ginger
 				using (Graphics gfxNewImage = Graphics.FromImage(bmpNewImage))
 				{
 					float scale = Math.Max((float)fitWidth / srcWidth, (float)fitHeight / srcHeight);
-					int newWidth = (int)Math.Round(srcWidth * scale);
-					int newHeight = (int)Math.Round(srcHeight * scale);
+					int newWidth = Math.Max((int)Math.Round(srcWidth * scale), 1);
+					int newHeight = Math.Max((int)Math.Round(srcHeight * scale), 1);
 					gfxNewImage.DrawImage(image,
 						new Rectangle(-(newWidth - fitWidth)/2, 0, newWidth, newHeight),
 							0, 0, srcWidth, srcHeight,

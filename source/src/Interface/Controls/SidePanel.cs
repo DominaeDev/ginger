@@ -213,8 +213,8 @@ namespace Ginger
 					width,
 					height);
 			}
-			if (width > 2048 || height > 2048)
-				label_Image_Value.ForeColor = System.Drawing.Color.Red;
+			if (width > Constants.MaxImageDimension || height > Constants.MaxImageDimension)
+				label_Image_Value.ForeColor = Color.Red;
 			else
 				label_Image_Value.ForeColor = this.ForeColor;
 		}
