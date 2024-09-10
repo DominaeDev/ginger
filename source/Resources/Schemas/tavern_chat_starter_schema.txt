@@ -1,0 +1,21 @@
+{
+  "type": "object",
+  "properties": {
+    "user_name": {
+      "required": true,
+      "type": "string"
+    },
+    "character_name": {
+      "required": true,
+      "type": "string"
+    },
+    "create_date": {
+      "required": true,
+      "type": [
+        "string",
+		"integer",
+        "null"
+      ]
+    }
+  }
+}

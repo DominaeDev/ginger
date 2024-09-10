@@ -1,0 +1,34 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "required": true,
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "createdAt": {
+      "required": true,
+      "type": "integer"
+    },
+    "speakers": {
+      "required": true,
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "spec": {
+      "required": true,
+      "type": "string"
+    },
+    "version": {
+      "required": true,
+      "type": "integer"
+    }
+  }
+}

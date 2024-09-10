@@ -1,0 +1,35 @@
+{
+	"type": "object",
+	"properties": {
+		"internal": {
+			"required": true,
+			"type": "array",
+			"items": {
+				"type": [
+					"array",
+					"null"
+				],
+				"items": {
+					"type": [
+						"string"
+					]
+				}
+			}
+		},
+		"visible": {
+			"required": true,
+			"type": "array",
+			"items": {
+				"type": [
+					"array",
+					"null"
+				],
+				"items": {
+					"type": [
+						"string"
+					]
+				}
+			}
+		}
+	}
+}

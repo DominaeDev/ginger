@@ -1016,10 +1016,10 @@ Do you want to continue?</value>
     <value>Restore a character and its related chats from a file.</value>
   </data>
   <data name="status_link_copy_settings" xml:space="preserve">
-    <value>Copied chat settings</value>
+    <value>Copied model settings</value>
   </data>
   <data name="status_link_paste_settings" xml:space="preserve">
-    <value>Pasted chat settings</value>
+    <value>Pasted model settings</value>
   </data>
   <data name="cap_link_copy_settings" xml:space="preserve">
     <value>Copy chat settings</value>
@@ -1034,15 +1034,13 @@ Do you want to continue?</value>
     <value>Chat settings reset</value>
   </data>
   <data name="tooltip_link_copy_settings" xml:space="preserve">
-    <value>Copy this chat's settings to the clipboard.</value>
+    <value>Copy the model settings (model, temperature, etc.) to the clipboard.</value>
   </data>
   <data name="tooltip_link_paste_settings" xml:space="preserve">
-    <value>Paste copied settings into this chat.</value>
+    <value>Paste model settings (model, temperature, etc.) from the clipboard.</value>
   </data>
   <data name="tooltip_link_reset_settings" xml:space="preserve">
-    <value>Reset this chat's settings to their default values.
-
-(See Settings.ini)</value>
+    <value>Reset this chat's settings to their default values.</value>
   </data>
   <data name="msg_link_restore_backup_success" xml:space="preserve">
     <value>Successfully restored character from backup.</value>
@@ -1050,9 +1048,42 @@ Do you want to continue?</value>
   <data name="cap_change_portrait" xml:space="preserve">
     <value>Change portrait</value>
   </data>
+  <data name="cap_link_copy_staging" xml:space="preserve">
+    <value>Copy chat scenario</value>
+  </data>
+  <data name="cap_link_paste_staging" xml:space="preserve">
+    <value>Paste chat scenario</value>
+  </data>
   <data name="msg_rescale_portrait" xml:space="preserve">
     <value>This image is very large at {0} x {1}.
 
 Would you like to reduce it to a more appropriate size?</value>
+  </data>
+  <data name="status_link_copy_staging" xml:space="preserve">
+    <value>Copied chat settings</value>
+  </data>
+  <data name="status_link_paste_staging" xml:space="preserve">
+    <value>Pasted chat settings</value>
+  </data>
+  <data name="tooltip_link_copy_staging" xml:space="preserve">
+    <value>Copy the chat settings (model instructions, scenario, first message, etc.) to the clipboard.</value>
+  </data>
+  <data name="tooltip_link_paste_staging" xml:space="preserve">
+    <value>Paste chat settings (model instructions, scenario, first message, etc.) from the clipboard.</value>
+  </data>
+  <data name="textgenwebui_chat_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\textgenwebui_chat_schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="tavern_chat_entry_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\tavern_chat_entry_schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="tavern_chat_starter_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\tavern_chat_starter_schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="agnai_chat_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\agnai_chat_schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="ginger_chat_v1_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\ginger_chat_v1_schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

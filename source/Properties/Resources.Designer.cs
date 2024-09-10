@@ -64,6 +64,40 @@ namespace Ginger.Properties {
         ///   Looks up a localized string similar to {
         ///  &quot;type&quot;: &quot;object&quot;,
         ///  &quot;properties&quot;: {
+        ///    &quot;messages&quot;: {
+        ///      &quot;required&quot;: true,
+        ///      &quot;type&quot;: &quot;array&quot;,
+        ///      &quot;items&quot;: {
+        ///        &quot;type&quot;: [
+        ///          &quot;object&quot;,
+        ///          &quot;null&quot;
+        ///        ],
+        ///        &quot;properties&quot;: {
+        ///          &quot;userId&quot;: {
+        ///            &quot;type&quot;: [
+        ///              &quot;string&quot;,
+        ///              &quot;null&quot;
+        ///            ]
+        ///          },
+        ///          &quot;characterId&quot;: {
+        ///            &quot;type&quot;: [
+        ///              &quot;string&quot;,
+        ///              &quot;null&quot;
+        ///            ]
+        ///          },
+        ///          &quot;msg&quot;: {
+        ///            &quot;requir [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string agnai_chat_schema {
+            get {
+                return ResourceManager.GetString("agnai_chat_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///  &quot;type&quot;: &quot;object&quot;,
+        ///  &quot;properties&quot;: {
         ///    &quot;name&quot;: {
         ///      &quot;required&quot;: true,
         ///      &quot;type&quot;: [
@@ -445,6 +479,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy chat scenario.
+        /// </summary>
+        internal static string cap_link_copy_staging {
+            get {
+                return ResourceManager.GetString("cap_link_copy_staging", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create backup.
         /// </summary>
         internal static string cap_link_create_backup {
@@ -495,6 +538,15 @@ namespace Ginger.Properties {
         internal static string cap_link_paste_settings {
             get {
                 return ResourceManager.GetString("cap_link_paste_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paste chat scenario.
+        /// </summary>
+        internal static string cap_link_paste_staging {
+            get {
+                return ResourceManager.GetString("cap_link_paste_staging", resourceCulture);
             }
         }
         
@@ -1439,6 +1491,44 @@ namespace Ginger.Properties {
             get {
                 object obj = ResourceManager.GetObject("folder", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///  &quot;type&quot;: &quot;object&quot;,
+        ///  &quot;properties&quot;: {
+        ///    &quot;name&quot;: {
+        ///      &quot;required&quot;: true,
+        ///      &quot;type&quot;: [
+        ///        &quot;string&quot;,
+        ///        &quot;null&quot;
+        ///      ]
+        ///    },
+        ///    &quot;createdAt&quot;: {
+        ///      &quot;required&quot;: true,
+        ///      &quot;type&quot;: &quot;integer&quot;
+        ///    },
+        ///    &quot;speakers&quot;: {
+        ///      &quot;required&quot;: true,
+        ///      &quot;type&quot;: &quot;object&quot;,
+        ///      &quot;additionalProperties&quot;: {
+        ///        &quot;type&quot;: [
+        ///          &quot;string&quot;,
+        ///          &quot;null&quot;
+        ///        ]
+        ///      }
+        ///    },
+        ///    &quot;spec&quot;: {
+        ///      &quot;required&quot;: true,
+        ///      &quot;type&quot;: &quot;string&quot;
+        ///    },
+        ///    &quot;version&quot;: {
+        ///     [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ginger_chat_v1_schema {
+            get {
+                return ResourceManager.GetString("ginger_chat_v1_schema", resourceCulture);
             }
         }
         
@@ -2458,11 +2548,20 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Copied chat settings.
+        ///   Looks up a localized string similar to Copied model settings.
         /// </summary>
         internal static string status_link_copy_settings {
             get {
                 return ResourceManager.GetString("status_link_copy_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copied chat settings.
+        /// </summary>
+        internal static string status_link_copy_staging {
+            get {
+                return ResourceManager.GetString("status_link_copy_staging", resourceCulture);
             }
         }
         
@@ -2503,11 +2602,20 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pasted chat settings.
+        ///   Looks up a localized string similar to Pasted model settings.
         /// </summary>
         internal static string status_link_paste_settings {
             get {
                 return ResourceManager.GetString("status_link_paste_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pasted chat settings.
+        /// </summary>
+        internal static string status_link_paste_staging {
+            get {
+                return ResourceManager.GetString("status_link_paste_staging", resourceCulture);
             }
         }
         
@@ -2833,6 +2941,71 @@ namespace Ginger.Properties {
         ///  &quot;type&quot;: &quot;object&quot;,
         ///  &quot;properties&quot;: {
         ///    &quot;name&quot;: {
+        ///      &quot;required&quot;: true,
+        ///      &quot;type&quot;: &quot;string&quot;
+        ///    },
+        ///    &quot;is_user&quot;: {
+        ///      &quot;required&quot;: true,
+        ///      &quot;type&quot;: &quot;boolean&quot;
+        ///    },
+        ///    &quot;send_date&quot;: {
+        ///      &quot;required&quot;: true,
+        ///      &quot;type&quot;: [
+        ///        &quot;string&quot;,
+        ///		&quot;integer&quot;,
+        ///        &quot;null&quot;
+        ///      ]
+        ///    },
+        ///    &quot;mes&quot;: {
+        ///      &quot;required&quot;: true,
+        ///      &quot;type&quot;: [
+        ///        &quot;string&quot;,
+        ///        &quot;null&quot;
+        ///      ]
+        ///    }
+        ///  }
+        ///}.
+        /// </summary>
+        internal static string tavern_chat_entry_schema {
+            get {
+                return ResourceManager.GetString("tavern_chat_entry_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///  &quot;type&quot;: &quot;object&quot;,
+        ///  &quot;properties&quot;: {
+        ///    &quot;user_name&quot;: {
+        ///      &quot;required&quot;: true,
+        ///      &quot;type&quot;: &quot;string&quot;
+        ///    },
+        ///    &quot;character_name&quot;: {
+        ///      &quot;required&quot;: true,
+        ///      &quot;type&quot;: &quot;string&quot;
+        ///    },
+        ///    &quot;create_date&quot;: {
+        ///      &quot;required&quot;: true,
+        ///      &quot;type&quot;: [
+        ///        &quot;string&quot;,
+        ///		&quot;integer&quot;,
+        ///        &quot;null&quot;
+        ///      ]
+        ///    }
+        ///  }
+        ///}.
+        /// </summary>
+        internal static string tavern_chat_starter_schema {
+            get {
+                return ResourceManager.GetString("tavern_chat_starter_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///  &quot;type&quot;: &quot;object&quot;,
+        ///  &quot;properties&quot;: {
+        ///    &quot;name&quot;: {
         ///      &quot;required&quot;: false,
         ///      &quot;type&quot;: &quot;string&quot;
         ///    },
@@ -2861,6 +3034,50 @@ namespace Ginger.Properties {
         internal static string tavern_worldbook_schema {
             get {
                 return ResourceManager.GetString("tavern_worldbook_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;internal&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;array&quot;,
+        ///			&quot;items&quot;: {
+        ///				&quot;type&quot;: [
+        ///					&quot;array&quot;,
+        ///					&quot;null&quot;
+        ///				],
+        ///				&quot;items&quot;: {
+        ///					&quot;type&quot;: [
+        ///						&quot;string&quot;
+        ///					]
+        ///				}
+        ///			}
+        ///		},
+        ///		&quot;visible&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;array&quot;,
+        ///			&quot;items&quot;: {
+        ///				&quot;type&quot;: [
+        ///					&quot;array&quot;,
+        ///					&quot;null&quot;
+        ///				],
+        ///				&quot;items&quot;: {
+        ///					&quot;type&quot;: [
+        ///						&quot;string&quot;
+        ///					]
+        ///				}
+        ///			}
+        ///		}
+        ///	}
+        ///}
+        ///.
+        /// </summary>
+        internal static string textgenwebui_chat_schema {
+            get {
+                return ResourceManager.GetString("textgenwebui_chat_schema", resourceCulture);
             }
         }
         
@@ -3086,11 +3303,20 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Copy this chat&apos;s settings to the clipboard..
+        ///   Looks up a localized string similar to Copy the model settings (model, temperature, etc.) to the clipboard..
         /// </summary>
         internal static string tooltip_link_copy_settings {
             get {
                 return ResourceManager.GetString("tooltip_link_copy_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy the chat settings (model instructions, scenario, first message, etc.) to the clipboard..
+        /// </summary>
+        internal static string tooltip_link_copy_staging {
+            get {
+                return ResourceManager.GetString("tooltip_link_copy_staging", resourceCulture);
             }
         }
         
@@ -3149,11 +3375,20 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Paste copied settings into this chat..
+        ///   Looks up a localized string similar to Paste model settings (model, temperature, etc.) from the clipboard..
         /// </summary>
         internal static string tooltip_link_paste_settings {
             get {
                 return ResourceManager.GetString("tooltip_link_paste_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paste chat settings (model instructions, scenario, first message, etc.) from the clipboard..
+        /// </summary>
+        internal static string tooltip_link_paste_staging {
+            get {
+                return ResourceManager.GetString("tooltip_link_paste_staging", resourceCulture);
             }
         }
         
@@ -3185,9 +3420,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reset this chat&apos;s settings to their default values.
-        ///
-        ///(See Settings.ini).
+        ///   Looks up a localized string similar to Reset this chat&apos;s settings to their default values..
         /// </summary>
         internal static string tooltip_link_reset_settings {
             get {

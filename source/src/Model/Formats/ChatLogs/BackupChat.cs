@@ -26,17 +26,17 @@ namespace Ginger
 		[JsonProperty("updatedAt", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
 		public long? updatedAt;
 
-		// Same as c.ai chat
-		[JsonProperty("chat", Required = Required.Always)]
-		public Chat chat = new Chat();
-
 		[JsonProperty("staging", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
 		public Staging staging = null;
 
 		[JsonProperty("parameters", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
 		public Parameters parameters = null;
 
-		// Same as c.ai chat
+		// Same as Backyard chat
+		[JsonProperty("chat", Required = Required.Always)]
+		public Chat chat = new Chat();
+
+		// Same as Backyard chat
 		[JsonProperty("version", Required = Required.Always)]
 		public int version = 2; // For Backyard compatibility
 

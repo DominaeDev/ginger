@@ -1,0 +1,33 @@
+{
+  "type": "object",
+  "properties": {
+    "messages": {
+      "required": true,
+      "type": "array",
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "userId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "characterId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "msg": {
+            "required": true,
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

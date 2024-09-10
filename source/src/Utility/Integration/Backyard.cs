@@ -55,6 +55,7 @@ namespace Ginger.Integration
 		public int height;              // AppImage.aspectRatio
 	}
 
+	[Serializable]
 	public class ChatStaging
 	{
 		public string system = "";      // Chat.modelInstructions
@@ -3365,13 +3366,13 @@ namespace Ginger.Integration
 			}
 		}
 
-		public static Error UpdateChatParameters(string chatId, ChatParameters parameters)
+		public static Error UpdateChatParameters(string chatId, ChatParameters parameters, ChatStaging staging)
 		{
 			if (ConnectionEstablished == false)
 				return Error.NotConnected;
 
-			if (parameters == null)
-				parameters = new ChatParameters();
+			if (parameters == null && staging == null)
+				return Error.InvalidArgument;
 
 			if (string.IsNullOrEmpty(chatId))
 				return Error.InvalidArgument;
@@ -3395,11 +3396,16 @@ namespace Ginger.Integration
 							// Update chat info
 							using (var cmdUpdateChat = connection.CreateCommand())
 							{
-								cmdUpdateChat.CommandText =
+								var sbCommand = new StringBuilder();
+								sbCommand.AppendLine(
 								@"
 									UPDATE Chat
 									SET 
-										updatedAt = $timestamp,
+										updatedAt = $timestamp");
+								if (parameters != null)
+								{
+									sbCommand.AppendLine(
+									@",
 										model = $model, 
 										temperature = $temperature,
 										topP = $topP,
@@ -3409,22 +3415,47 @@ namespace Ginger.Integration
 										repeatPenalty = $repeatPenalty,
 										repeatLastN = $repeatLastN,
 										promptTemplate = $promptTemplate,
-										canDeleteCustomDialogue = $pruneExample
+										canDeleteCustomDialogue = $pruneExample");
+								}
+								if (staging != null)
+								{
+									sbCommand.AppendLine(
+									@",
+										context = $scenario,
+										customDialogue = $example,
+										modelInstructions = $system,
+										grammar = $grammar,
+										greetingDialogue = $greeting");
+								}
+								sbCommand.AppendLine(
+								@"
 									WHERE id = $chatId;
-								";
+								");
 
+								cmdUpdateChat.CommandText = sbCommand.ToString();
 								cmdUpdateChat.Parameters.AddWithValue("$chatId", chatId);
-								cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? DefaultModel);
-								cmdUpdateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
-								cmdUpdateChat.Parameters.AddWithValue("$topP", parameters.topP);
-								cmdUpdateChat.Parameters.AddWithValue("$minP", parameters.minP);
-								cmdUpdateChat.Parameters.AddWithValue("$minPEnabled", parameters.minPEnabled);
-								cmdUpdateChat.Parameters.AddWithValue("$topK", parameters.topK);
-								cmdUpdateChat.Parameters.AddWithValue("$repeatPenalty", parameters.repeatPenalty);
-								cmdUpdateChat.Parameters.AddWithValue("$repeatLastN", parameters.repeatLastN);
-								cmdUpdateChat.Parameters.AddWithValue("$promptTemplate", parameters.promptTemplate);
-								cmdUpdateChat.Parameters.AddWithValue("$pruneExample", parameters.pruneExampleChat);
 								cmdUpdateChat.Parameters.AddWithValue("$timestamp", updatedAt);
+								if (parameters != null)
+								{
+									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? DefaultModel);
+									cmdUpdateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
+									cmdUpdateChat.Parameters.AddWithValue("$topP", parameters.topP);
+									cmdUpdateChat.Parameters.AddWithValue("$minP", parameters.minP);
+									cmdUpdateChat.Parameters.AddWithValue("$minPEnabled", parameters.minPEnabled);
+									cmdUpdateChat.Parameters.AddWithValue("$topK", parameters.topK);
+									cmdUpdateChat.Parameters.AddWithValue("$repeatPenalty", parameters.repeatPenalty);
+									cmdUpdateChat.Parameters.AddWithValue("$repeatLastN", parameters.repeatLastN);
+									cmdUpdateChat.Parameters.AddWithValue("$promptTemplate", parameters.promptTemplate);
+									cmdUpdateChat.Parameters.AddWithValue("$pruneExample", parameters.pruneExampleChat);
+								}
+								if (staging != null)
+								{
+									cmdUpdateChat.Parameters.AddWithValue("$system", Utility.FirstNonEmpty(staging.system, FaradayCardV4.OriginalModelInstructionsByFormat[0]));
+									cmdUpdateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$example", staging.example ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
+								}
 
 								expectedUpdates += 1;
 								updates += cmdUpdateChat.ExecuteNonQuery();

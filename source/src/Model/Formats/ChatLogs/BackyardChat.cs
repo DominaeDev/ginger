@@ -7,11 +7,11 @@ using System.Collections.Generic;
 
 namespace Ginger
 {
-	public class CAIChatV2
+	public class BackyardChat
 	{
 		private static JsonSchema _schema;
 
-		static CAIChatV2()
+		static BackyardChat()
 		{
 			_schema = JsonSchema.Parse(Resources.cai_chat_v2_schema);
 		}
@@ -38,9 +38,9 @@ namespace Ginger
 			public long timestamp;
 		}
 
-		public static CAIChatV2 FromChat(ChatHistory chatHistory)
+		public static BackyardChat FromChat(ChatHistory chatHistory)
 		{
-			CAIChatV2 caiChatV2 = new CAIChatV2();
+			BackyardChat chat = new BackyardChat();
 			var lsItems = new List<ChatItem>(chatHistory.count / 2 + 1);
 
 			foreach (var pair in chatHistory.messagesWithoutGreeting.Pairwise())
@@ -52,8 +52,8 @@ namespace Ginger
 				});
 			}
 
-			caiChatV2.chat.items = lsItems.ToArray();
-			return caiChatV2;
+			chat.chat.items = lsItems.ToArray();
+			return chat;
 		}
 
 		public ChatHistory ToChat()
@@ -61,8 +61,20 @@ namespace Ginger
 			var messages = new List<ChatHistory.Message>();
 			foreach (var item in chat.items)
 			{
-				DateTime inputTime = DateTimeExtensions.FromUnixTime(item.timestamp);
-				DateTime outputTime = DateTimeExtensions.FromUnixTime(item.timestamp) + TimeSpan.FromMilliseconds(10);
+				DateTime inputTime;
+				DateTime outputTime;
+
+				if (item.timestamp != 0)
+				{
+					inputTime = DateTimeExtensions.FromUnixTime(item.timestamp);
+					outputTime = DateTimeExtensions.FromUnixTime(item.timestamp) + TimeSpan.FromMilliseconds(10);
+				}
+				else
+				{
+					inputTime = DateTime.Now;
+					outputTime = DateTime.Now;
+				}
+
 				if (string.IsNullOrEmpty(item.input) == false)
 				{
 					messages.Add(new ChatHistory.Message() {
@@ -90,14 +102,14 @@ namespace Ginger
 			};
 		}
 		
-		public static CAIChatV2 FromJson(string json)
+		public static BackyardChat FromJson(string json)
 		{
 			try
 			{
 				JObject jObject = JObject.Parse(json);
 				if (jObject.IsValid(_schema))
 				{
-					var card = JsonConvert.DeserializeObject<CAIChatV2>(json);
+					var card = JsonConvert.DeserializeObject<BackyardChat>(json);
 					return card;
 				}
 			}

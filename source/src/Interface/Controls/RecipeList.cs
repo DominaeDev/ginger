@@ -633,6 +633,11 @@ namespace Ginger
 				OnPasteChat(targetPanel);
 				return;
 			}
+			else if (Clipboard.ContainsData(ChatStagingClipboard.Format))
+			{
+				OnPasteChatStaging(targetPanel);
+				return;
+			}
 			else if (Clipboard.ContainsText(TextDataFormat.UnicodeText))
 			{
 				OnPasteText(targetPanel);
@@ -785,6 +790,78 @@ namespace Ginger
 
 				RefreshSyntaxHighlighting(true);
 				ScrollToPanel(pastedPanel);
+			});
+			this.Resume();
+			
+			Undo.Push(Undo.Kind.RecipeAddRemove, "Paste");
+			Current.IsDirty = true;
+		}
+
+		private void OnPasteChatStaging(RecipePanel targetPanel)
+		{
+			if (Clipboard.ContainsData(ChatStagingClipboard.Format) == false)
+				return;
+
+			int insertionIndex = -1;
+			if (targetPanel != null)
+				insertionIndex = _recipePanels.FindIndex(p => p.recipe == targetPanel.recipe);
+			if (insertionIndex == -1)
+				insertionIndex = _recipePanels.Count;
+
+			ChatStagingClipboard data = Clipboard.GetData(ChatStagingClipboard.Format) as ChatStagingClipboard;
+			if (data == null)
+				return;
+
+			var staging = data.staging;
+			var components = new KeyValuePair<string, string>[]
+			{
+				new KeyValuePair<string, string>(staging.system, Resources.system_recipe),
+				new KeyValuePair<string, string>(staging.scenario, Resources.scenario_recipe),
+				new KeyValuePair<string, string>(staging.greeting, Resources.greeting_recipe),
+				new KeyValuePair<string, string>(staging.example, Resources.example_recipe),
+				new KeyValuePair<string, string>(staging.grammar, Resources.grammar_recipe),
+			};
+
+			List<Recipe> recipes = new List<Recipe>();
+			for (int i = 0; i < components.Length; ++i)
+			{
+				string content = GingerString.FromFaraday(components[i].Key).ToString();
+				if (string.IsNullOrWhiteSpace(content))
+					continue;
+				
+				content = Parameter.FromClipboard(content, Current.Name, Current.Card.userPlaceholder);
+
+				// Apply standard text style
+				if (i == 2 || i == 3) // Example or Greeting
+					content = TextStyleConverter.Convert(content, CardData.TextStyle.Mixed);
+
+				var recipe = RecipeBook.CreateRecipeFromResource(components[i].Value, Recipe.Type.Component);
+				if (recipe == null)
+					return; // Error
+
+				(recipe.parameters[0] as TextParameter).value = content;
+				recipes.Add(recipe);
+			}
+
+			if (recipes.Count == 0)
+				return; // Nothing
+
+			this.Suspend();
+			this.DisableRedrawAndDo(() => {
+				RecipePanel pastedPanel = null;
+				foreach (var recipe in recipes)
+				{
+					Current.Character.recipes.Insert(insertionIndex, recipe);
+					pastedPanel = AddRecipePanel(recipe, false, insertionIndex);
+					insertionIndex++;
+				}
+
+				RefreshSyntaxHighlighting(true);
+				if (pastedPanel != null)
+				{
+					pastedPanel.Focus();
+					ScrollToPanel(pastedPanel);
+				}
 			});
 			this.Resume();
 			
@@ -954,6 +1031,10 @@ namespace Ginger
 				else if (Clipboard.ContainsData(ChatClipboard.Format))
 				{
 					menu.Items.Add(new ToolStripMenuItem("Paste chat", null, (s, e) => { OnPaste(null, e); }));
+				} 
+				else if (Clipboard.ContainsData(ChatStagingClipboard.Format))
+				{
+					menu.Items.Add(new ToolStripMenuItem("Paste chat settings", null, (s, e) => { OnPaste(null, e); }));
 				} 
 				else if (Clipboard.ContainsText(TextDataFormat.UnicodeText))
 				{

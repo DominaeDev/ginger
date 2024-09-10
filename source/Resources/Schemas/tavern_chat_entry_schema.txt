@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "required": true,
+      "type": "string"
+    },
+    "is_user": {
+      "required": true,
+      "type": "boolean"
+    },
+    "send_date": {
+      "required": true,
+      "type": [
+        "string",
+		"integer",
+        "null"
+      ]
+    },
+    "mes": {
+      "required": true,
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

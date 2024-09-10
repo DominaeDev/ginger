@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace Ginger
 {
@@ -34,6 +35,49 @@ namespace Ginger
 		public static DateTime Max(DateTime a, DateTime b)
 		{
 			return a > b ? a : b;
+		}
+
+		public static string ToTavernDate(this DateTime dateTime)
+		{
+			string date = dateTime.ToString("yyyy-MM-dd");
+			string hour = dateTime.ToString("HH");
+			string minute = dateTime.ToString("mm");
+			string second = dateTime.ToString("ss");
+			string millisecond = dateTime.ToString("fff");
+			return string.Concat(date, " @", hour, "h ", minute, "m ", second, "s ", millisecond, "ms");
+		}
+
+		public static DateTime FromTavernDate(string tavernDate)
+		{
+			DateTime tryDate;
+			if (DateTime.TryParse(tavernDate, CultureInfo.InvariantCulture, DateTimeStyles.None, out tryDate))
+				return tryDate;
+
+			int idx_at = tavernDate.IndexOf('@');
+			if (idx_at != -1)
+			{
+				DateTime date, time;
+				DateTime.TryParse(tavernDate.Substring(0, idx_at), out date);
+
+				string sTime = tavernDate.Substring(idx_at + 1);
+				sTime = sTime.Replace("h", ":");
+				sTime = sTime.Replace("m", ":");
+				sTime = sTime.Replace("s", ".");
+				sTime = sTime.Replace(" ", "");
+				int idx_ms = sTime.IndexOf('.');
+				if (idx_ms != -1)
+					sTime = sTime.Substring(0, idx_ms);
+				DateTime.TryParse(sTime, out time);
+				return (date.Date + time.TimeOfDay).ToLocalTime();
+			}
+			else
+			{
+				long unixTime;
+				if (long.TryParse(tavernDate, out unixTime))
+					return FromUnixTime(unixTime).ToLocalTime();
+			}
+
+			return DateTime.Now;
 		}
 	}
 }

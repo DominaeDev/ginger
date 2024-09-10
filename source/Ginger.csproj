@@ -359,19 +359,24 @@
     <Compile Include="src\Model\CardData.cs" />
     <Compile Include="src\Model\Clipboard\ChatClipboard.cs" />
     <Compile Include="src\Model\Clipboard\ChatParametersClipboard.cs" />
+    <Compile Include="src\Model\Clipboard\ChatStagingClipboard.cs" />
     <Compile Include="src\Model\Formats\AssetFile.cs" />
-    <Compile Include="src\Model\Formats\BackupChat.cs" />
-    <Compile Include="src\Model\Formats\CAIChatV2.cs" />
-    <Compile Include="src\Model\Formats\FaradayCardV4.cs" />
-    <Compile Include="src\Model\Formats\FaradayCardV3.cs" />
-    <Compile Include="src\Model\Formats\ChatHistory.cs" />
-    <Compile Include="src\Model\Formats\TavernCardV3.cs" />
-    <Compile Include="src\Model\Formats\TextGenWebUICard.cs" />
+    <Compile Include="src\Model\Formats\ChatLogs\AgnaiChat.cs" />
+    <Compile Include="src\Model\Formats\ChatLogs\BackupChat.cs" />
+    <Compile Include="src\Model\Formats\ChatLogs\BackyardChat.cs" />
+    <Compile Include="src\Model\Formats\CharacterCards\FaradayCardV4.cs" />
+    <Compile Include="src\Model\Formats\CharacterCards\FaradayCardV3.cs" />
+    <Compile Include="src\Model\Formats\ChatLogs\ChatHistory.cs" />
+    <Compile Include="src\Model\Formats\CharacterCards\TavernCardV3.cs" />
+    <Compile Include="src\Model\Formats\CharacterCards\TextGenWebUICard.cs" />
+    <Compile Include="src\Model\Formats\ChatLogs\GingerChat.cs" />
+    <Compile Include="src\Model\Formats\ChatLogs\TavernChat.cs" />
+    <Compile Include="src\Model\Formats\ChatLogs\TextGenWebUIChat.cs" />
     <Compile Include="src\Model\Formats\ZipUtil.cs" />
     <Compile Include="src\Model\Generation\BlockBuilder.cs" />
-    <Compile Include="src\Model\Formats\FaradayCardV2.cs" />
+    <Compile Include="src\Model\Formats\CharacterCards\FaradayCardV2.cs" />
     <Compile Include="src\Model\Formats\JsonExtensionData.cs" />
-    <Compile Include="src\Model\Formats\TavernCardV1.cs" />
+    <Compile Include="src\Model\Formats\CharacterCards\TavernCardV1.cs" />
     <Compile Include="src\Model\Generation\BlockStyles.cs" />
     <Compile Include="src\Model\Generation\RecipeMaker.cs" />
     <Compile Include="src\Model\Generation\TextStyleConverter.cs" />
@@ -461,12 +466,12 @@
     </Compile>
     <Compile Include="src\Application\AppSettings.cs" />
     <Compile Include="src\Model\CharacterData.cs" />
-    <Compile Include="src\Model\Formats\PygmalionCard.cs" />
-    <Compile Include="src\Model\Formats\AgnaisticCard.cs" />
-    <Compile Include="src\Model\Formats\FaradayCardV1.cs" />
+    <Compile Include="src\Model\Formats\CharacterCards\PygmalionCard.cs" />
+    <Compile Include="src\Model\Formats\CharacterCards\AgnaisticCard.cs" />
+    <Compile Include="src\Model\Formats\CharacterCards\FaradayCardV1.cs" />
     <Compile Include="src\Model\Formats\GingerExtensionData.cs" />
     <Compile Include="src\Model\Generation\Generator.cs" />
-    <Compile Include="src\Model\Formats\GingerCardV1.cs" />
+    <Compile Include="src\Model\Formats\CharacterCards\GingerCardV1.cs" />
     <Compile Include="src\Model\Formats\FileUtil.cs" />
     <Compile Include="src\Model\Generation\GingerString.cs" />
     <Compile Include="src\Model\Lorebook\Lorebook.cs" />
@@ -485,7 +490,7 @@
     <Compile Include="src\Model\Recipe\RecipePreset.cs" />
     <Compile Include="src\Model\Recipe\Recipe.cs" />
     <Compile Include="src\Model\Recipe\RecipeBook.cs" />
-    <Compile Include="src\Model\Formats\TavernCardV2.cs" />
+    <Compile Include="src\Model\Formats\CharacterCards\TavernCardV2.cs" />
     <Compile Include="src\Interface\Controls\PortraitPreview.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -922,6 +927,24 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Schemas\backup_chat_schema.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\textgenwebui_chat_schema.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\tavern_chat_entry_schema.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\tavern_chat_starter_schema.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\agnai_chat_schema.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\ginger_chat_schema.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\ginger_chat_v1_schema.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

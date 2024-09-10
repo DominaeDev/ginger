@@ -1219,6 +1219,11 @@ namespace Ginger
 				pasteMenuItem.Text = "Paste chat";
 				pasteMenuItem.Enabled = true;
 			} 
+			else if (Clipboard.ContainsData(ChatStagingClipboard.Format))
+			{
+				pasteMenuItem.Text = "Paste chat settings";
+				pasteMenuItem.Enabled = true;
+			} 
 			else if (Clipboard.ContainsText(TextDataFormat.UnicodeText))
 			{
 				pasteMenuItem.Text = "Paste text";

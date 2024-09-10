@@ -1297,26 +1297,127 @@ namespace Ginger
 			if (FileUtil.ReadTextFile(filename, out json) == false)
 				return null;
 
-			// Try to read Tavern format (World book)
-			if (CAIChatV2.Validate(json))
+			string ext = Path.GetExtension(filename).ToLowerInvariant();
+
+			if (ext == ".json")
 			{
-				var caiChat = CAIChatV2.FromJson(json);
-				if (caiChat != null)
-					return ChatHistory.LegacyFix(caiChat.ToChat());
+				if (BackyardChat.Validate(json))   // Backyard JSON (c.ai?)
+				{
+					var chat = BackyardChat.FromJson(json);
+					if (chat != null)
+						return ChatHistory.LegacyFix(chat.ToChat());
+				}
+				else if (TextGenWebUIChat.Validate(json)) // Text generation web ui chat log
+				{
+					var chat = TextGenWebUIChat.FromJson(json);
+					if (chat != null)
+						return chat.ToChat();
+				} 
+				else if (AgnaiChat.Validate(json)) // Agnaistic
+				{
+					var chat = AgnaiChat.FromJson(json);
+					if (chat != null)
+						return chat.ToChat();
+				}
+				else if (GingerChat.Validate(json)) // Ginger
+				{
+					var chat = GingerChat.FromJson(json);
+					if (chat != null)
+						return chat.ToChat();
+				}
+			}
+			else if (ext == ".jsonl")
+			{
+				if (TavernChat.Validate(json)) // SillyTavern chat
+				{
+					var chat = TavernChat.FromJson(json);
+					if (chat != null)
+						return chat.ToChat();
+				}
+
 			}
 
 			return null;
 		}
 
-		public static bool ExportCaiChat(ChatHistory chat, string filename)
+		public static bool ExportBackyardChat(ChatHistory chatHistory, string filename)
 		{
-			if (chat == null)
+			if (chatHistory == null)
 				return false;
 
 			try
 			{
-				CAIChatV2 caiChat = CAIChatV2.FromChat(chat);
-				string json = caiChat.ToJson();
+				BackyardChat chat = BackyardChat.FromChat(chatHistory);
+				string json = chat.ToJson();
+				if (json == null)
+					return false;
+
+				return ExportTextFile(filename, json);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		public static bool ExportTextGenWebUI(ChatHistory chatHistory, string filename)
+		{
+			if (chatHistory == null)
+				return false;
+
+			try
+			{
+				TextGenWebUIChat chat = TextGenWebUIChat.FromChat(chatHistory);
+				string json = chat.ToJson();
+				if (json == null)
+					return false;
+
+				return ExportTextFile(filename, json);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+		
+		public static bool ExportTavernChat(ChatHistory chatHistory, string filename, string characterName = null, string userName = null)
+		{
+			if (chatHistory == null)
+				return false;
+
+			try
+			{
+				TavernChat chat = TavernChat.FromChat(chatHistory, characterName, userName);
+				string json = chat.ToJson();
+				if (json == null)
+					return false;
+
+				return ExportTextFile(filename, json);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		public static bool ExportGingerChat(Integration.ChatInstance chatInstance, string filename)
+		{
+			if (chatInstance == null)
+				return false;
+
+			try
+			{
+				var speakers = new List<GingerChat.Speaker>();
+				for (int i = 0; i < chatInstance.participants.Length; ++i)
+				{
+					speakers.Add(new GingerChat.Speaker() {
+						id = i.ToString(),
+						name = chatInstance.participants[i],
+					});
+				}
+
+				GingerChat chat = GingerChat.FromChat(chatInstance, speakers);
+				string json = chat.ToJson();
 				if (json == null)
 					return false;
 

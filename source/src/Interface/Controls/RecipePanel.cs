@@ -512,7 +512,8 @@ namespace Ginger
 			menu.Items.Add(new ToolStripMenuItem("Paste", null, (s, e) => { OnPaste?.Invoke(this, e); }) {
 				Enabled = Clipboard.ContainsData(RecipeClipboard.Format) 
 					|| Clipboard.ContainsData(LoreClipboard.Format)
-					|| Clipboard.ContainsData(ChatClipboard.Format),
+					|| Clipboard.ContainsData(ChatClipboard.Format)
+					|| Clipboard.ContainsData(ChatStagingClipboard.Format),
 			});
 
 			menu.Items.Add("-");
