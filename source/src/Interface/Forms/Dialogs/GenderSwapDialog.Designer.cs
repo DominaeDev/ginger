@@ -250,10 +250,17 @@
 			this.comboBox_UserTarget.Items.AddRange(new object[] {
 			"Masculine",
 			"Feminine",
-			"Neutral",
-			"Mixed",
+			"Neutral (They/Them)",
+			"Mixed (He/She)",
 			"Variables",
-			"Variables (User)"});
+			"Variables (User)",
+            "Objective (It/It)",
+			"Neopronouns (Shi/Hir)",
+			"Neopronouns (Ey/Em)",
+			"Neopronouns (Ze/Zir)",
+			"Neopronouns (Xe/Xem)",
+			"Neopronouns (Fae/Faer)",
+			});
 			this.comboBox_UserTarget.Location = new System.Drawing.Point(281, 27);
 			this.comboBox_UserTarget.Margin = new System.Windows.Forms.Padding(0);
 			this.comboBox_UserTarget.MaxLength = 128;
@@ -272,10 +279,17 @@
 			this.comboBox_UserGender.Items.AddRange(new object[] {
             "Masculine",
             "Feminine",
-            "Neutral",
-            "Mixed",
+            "Neutral (They/Them)",
+            "Mixed (He/She)",
             "Variables",
-			"Variables (User)"});
+			"Variables (User)",
+            "Objective (It/It)",
+			"Neopronouns (Shi/Hir)",
+			"Neopronouns (Ey/Em)",
+			"Neopronouns (Ze/Zir)",
+			"Neopronouns (Xe/Xem)",
+			"Neopronouns (Fae/Faer)",
+			});
 			this.comboBox_UserGender.Location = new System.Drawing.Point(26, 27);
 			this.comboBox_UserGender.Margin = new System.Windows.Forms.Padding(0);
 			this.comboBox_UserGender.MaxLength = 128;
@@ -293,10 +307,17 @@
 			this.comboBox_CharacterTarget.Items.AddRange(new object[] {
 			"Masculine",
 			"Feminine",
-			"Neutral",
-			"Mixed",
+			"Neutral (They/Them)",
+			"Mixed (He/She)",
 			"Variables",
-			"Variables (User)"});
+			"Variables (User)",
+            "Objective (It/It)",
+			"Neopronouns (Shi/Hir)",
+			"Neopronouns (Ey/Em)",
+			"Neopronouns (Ze/Zir)",
+			"Neopronouns (Xe/Xem)",
+			"Neopronouns (Fae/Faer)",
+			});
 			this.comboBox_CharacterTarget.Location = new System.Drawing.Point(281, 23);
 			this.comboBox_CharacterTarget.Margin = new System.Windows.Forms.Padding(0);
 			this.comboBox_CharacterTarget.MaxLength = 128;
@@ -314,10 +335,17 @@
 			this.comboBox_CharacterGender.Items.AddRange(new object[] {
             "Masculine",
             "Feminine",
-            "Neutral",
-            "Mixed",
+            "Neutral (They/Them)",
+            "Mixed (He/She)",
             "Variables",
-			"Variables (User)"});
+			"Variables (User)",
+            "Objective (It/It)",
+			"Neopronouns (Shi/Hir)",
+			"Neopronouns (Ey/Em)",
+			"Neopronouns (Ze/Zir)",
+			"Neopronouns (Xe/Xem)",
+			"Neopronouns (Fae/Faer)",
+			});
 			this.comboBox_CharacterGender.Location = new System.Drawing.Point(26, 23);
 			this.comboBox_CharacterGender.Margin = new System.Windows.Forms.Padding(0);
 			this.comboBox_CharacterGender.MaxLength = 128;

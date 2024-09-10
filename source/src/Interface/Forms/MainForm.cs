@@ -1212,7 +1212,7 @@ namespace Ginger
 			saveLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
 			saveNewLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink == false;
 			revertLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
-			enableAutosaveMenuItem.Enabled = Backyard.ConnectionEstablished;
+			enableAutosaveMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
 			enableAutosaveMenuItem.Checked = Backyard.ConnectionEstablished && AppSettings.BackyardLink.Autosave;
 			reestablishLinkSeparator.Visible = Backyard.ConnectionEstablished && Current.HasLink;
 			reestablishLinkMenuItem.Enabled = Backyard.ConnectionEstablished;

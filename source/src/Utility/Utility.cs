@@ -1031,11 +1031,13 @@ namespace Ginger
 
 			bool bTermLeft = !left.HasValue
 				|| char.IsWhiteSpace(left.Value)
+				|| char.IsPunctuation(left.Value)
 				|| charSet == CharUtil.CharacterSet.CJK
 				|| (charSet == CharUtil.CharacterSet.Default && !char.IsLetter(left.Value))
 				|| charSet != leftCharSet;
 			bool bTermRight = !right.HasValue
 				|| char.IsWhiteSpace(right.Value)
+				|| char.IsPunctuation(right.Value)
 				|| charSet == CharUtil.CharacterSet.CJK
 				|| (charSet == CharUtil.CharacterSet.Default && !char.IsLetter(right.Value))
 				|| charSet != rightCharSet;

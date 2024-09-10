@@ -81,14 +81,16 @@ namespace Ginger
 				for (int j = 0; j < chat.messages[i].swipes.Length; ++j)
 				{
 					string text = chat.messages[i].swipes[j];
-					bool bFront = text.BeginsWith("#{character}: ");
-					bool bBack = text.EndsWith("\n#{user}:");
+					int pos_begin = text.IndexOf("#{character}:");
+					int pos_end = text.IndexOf("\n#{user}:");
+					bool bFront = pos_begin == 0;
+					bool bBack = pos_end >= 0 && pos_end >= text.Length - 10;
 					if (bFront && bBack)
-						chat.messages[i].swipes[j] = text.Substring(14, text.Length - 23);
+						chat.messages[i].swipes[j] = text.Substring(pos_begin + 13, pos_end - pos_begin - 13).Trim();
 					else if (bFront)
-						chat.messages[i].swipes[j] = text.Substring(14);
+						chat.messages[i].swipes[j] = text.Substring(pos_begin + 13).TrimStart();
 					else if (bBack)
-						chat.messages[i].swipes[j] = text.Substring(text.Length - 9);
+						chat.messages[i].swipes[j] = text.Substring(0, pos_end).TrimEnd();
 				}
 			}
 			return chat;

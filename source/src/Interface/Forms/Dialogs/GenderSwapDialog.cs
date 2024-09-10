@@ -23,6 +23,12 @@ namespace Ginger
 			GenderSwap.Pronouns.Mixed,
 			GenderSwap.Pronouns.VariableNeutral,
 			GenderSwap.Pronouns.VariableUserNeutral,
+			GenderSwap.Pronouns.Objective,
+			GenderSwap.Pronouns.NeopronounsShiHir,
+			GenderSwap.Pronouns.NeopronounsEyEm,
+			GenderSwap.Pronouns.NeopronounsZeZir,
+			GenderSwap.Pronouns.NeopronounsXeXem,
+			GenderSwap.Pronouns.NeopronounsFaeFaer,
 		};
 
 		private GenderSwap.Pronouns[] CharacterToList = new GenderSwap.Pronouns[]
@@ -33,6 +39,12 @@ namespace Ginger
 			GenderSwap.Pronouns.Mixed,
 			GenderSwap.Pronouns.VariableNeutral,
 			GenderSwap.Pronouns.VariableUserNeutral,
+			GenderSwap.Pronouns.Objective,
+			GenderSwap.Pronouns.NeopronounsShiHir,
+			GenderSwap.Pronouns.NeopronounsEyEm,
+			GenderSwap.Pronouns.NeopronounsZeZir,
+			GenderSwap.Pronouns.NeopronounsXeXem,
+			GenderSwap.Pronouns.NeopronounsFaeFaer,
 		};
 
 		private GenderSwap.Pronouns[] UserFromList = new GenderSwap.Pronouns[]
@@ -43,6 +55,12 @@ namespace Ginger
 			GenderSwap.Pronouns.Mixed,
 			GenderSwap.Pronouns.VariableNeutral,
 			GenderSwap.Pronouns.VariableUserNeutral,
+			GenderSwap.Pronouns.Objective,
+			GenderSwap.Pronouns.NeopronounsShiHir,
+			GenderSwap.Pronouns.NeopronounsEyEm,
+			GenderSwap.Pronouns.NeopronounsZeZir,
+			GenderSwap.Pronouns.NeopronounsXeXem,
+			GenderSwap.Pronouns.NeopronounsFaeFaer,
 		};
 
 		private GenderSwap.Pronouns[] UserToList = new GenderSwap.Pronouns[]
@@ -53,6 +71,12 @@ namespace Ginger
 			GenderSwap.Pronouns.Mixed,
 			GenderSwap.Pronouns.VariableNeutral,
 			GenderSwap.Pronouns.VariableUserNeutral,
+			GenderSwap.Pronouns.Objective,
+			GenderSwap.Pronouns.NeopronounsShiHir,
+			GenderSwap.Pronouns.NeopronounsEyEm,
+			GenderSwap.Pronouns.NeopronounsZeZir,
+			GenderSwap.Pronouns.NeopronounsXeXem,
+			GenderSwap.Pronouns.NeopronounsFaeFaer,
 		};
 
 		public GenderSwapDialog()

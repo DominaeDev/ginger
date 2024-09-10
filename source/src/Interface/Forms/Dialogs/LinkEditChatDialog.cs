@@ -112,7 +112,7 @@ namespace Ginger
 				if (characters.Count() > 1)
 				{
 					string[] memberNames = characters
-						.Select(c => c.name ?? "Unnamed")
+						.Select(c => Utility.FirstNonEmpty(c.name, Constants.DefaultCharacterName))
 						.OrderBy(c => c)
 						.ToArray();
 					string groupTitle = string.Join(", ", memberNames.Take(3));
@@ -125,7 +125,7 @@ namespace Ginger
 				{
 					return characters
 						.Select(c => c.displayName)
-						.FirstOrDefault() ?? "Unnamed";
+						.FirstOrDefault() ?? Constants.DefaultCharacterName;
 				}
 			}
 		}
@@ -133,7 +133,7 @@ namespace Ginger
 		private string GetCharacterName()
 		{
 			if (_groupInstance.isEmpty)
-				return "Unnamed";
+				return Constants.DefaultCharacterName;
 			else if (string.IsNullOrEmpty(_groupInstance.name) == false)
 				return _groupInstance.name;
 			else
@@ -141,7 +141,7 @@ namespace Ginger
 				var characters = _groupInstance.members
 					.Select(id => _charactersById.GetOrDefault(id))
 					.Where(c => c.isUser == false)
-					.Select(c => c.name ?? "Unnamed")
+					.Select(c => Utility.FirstNonEmpty(c.name, Constants.DefaultCharacterName))
 					.ToArray();
 
 				if (characters.Count() > 1)
@@ -149,7 +149,7 @@ namespace Ginger
 				else if (characters.Count() == 1)
 					return characters[0];
 				else
-					return "Unnamed";
+					return Constants.DefaultCharacterName;
 			}
 		}
 
@@ -227,9 +227,9 @@ namespace Ginger
 					var lastMessageTime = chat.history.lastMessageTime;
 
 					var sbTooltip = new StringBuilder();
-					sbTooltip.AppendLine($"Created: {chats[i].creationDate.ToLongTimeString()}");
-					sbTooltip.AppendLine($"Updated: {chats[i].updateDate.ToShortDateString()}");
-					sbTooltip.AppendLine($"Last messaged: {lastMessageTime.ToShortDateString()}");
+					sbTooltip.AppendLine($"Created: {chats[i].creationDate.ToString("g")}");
+					sbTooltip.AppendLine($"Updated: {chats[i].updateDate.ToString("g")}");
+					sbTooltip.AppendLine($"Last messaged: {lastMessageTime.ToString("g")}");
 					if (chat.parameters != null)
 					{
 						sbTooltip.NewParagraph();
@@ -383,7 +383,7 @@ namespace Ginger
 				return ;
 			}
 
-			string filename = string.Concat(GetCharacterName().Replace(" ", "_"), "-", chatInstance.name, "-", chatInstance.creationDate.ToUnixTimeMilliseconds().ToString(), ".json");
+			string filename = string.Format("chatLog_{0}_{1}.json", GetCharacterName(), chatInstance.creationDate.ToUnixTimeSeconds()).Replace(" ", "_");
 			
 			exportFileDialog.Title = "Export chat";
 			exportFileDialog.Filter = "c.ai JSON|*.json";
@@ -1014,7 +1014,7 @@ namespace Ginger
 				return false;
 			}
 
-			string filename = string.Concat(GetCharacterName(), ".backup.", DateTime.Now.ToString("yyyy-MM-dd"), ".zip");
+			string filename = string.Concat(GetCharacterName(), ".backup.", DateTime.Now.ToString("yyyy-MM-dd"), ".zip").Replace(" ", "_");
 
 			importFileDialog.Title = Resources.cap_link_create_backup;
 			exportFileDialog.Filter = "Character backup file|*.zip";
@@ -1133,7 +1133,7 @@ namespace Ginger
 				return;
 			}
 
-			Clipboard.SetDataObject(ChatParametersClipboard.FromParameters(chats[index].parameters), true);
+			Clipboard.SetDataObject(ChatParametersClipboard.FromParameters(chats[index].parameters), false);
 
 			SetStatusBarMessage(Resources.status_link_copy_settings, Constants.StatusBarMessageInterval);
 		}

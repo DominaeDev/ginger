@@ -130,7 +130,7 @@
 		<String rule="skin-metallic" priority="1">is shiny and metallic</String>	
 		<String rule="skin-tone">is a shade of {skin-tone:value.lower}</String>
 	</String>
-	<Node path="appearance/body" order="0" rule="skin-tone">[Their] skin [@skin-tone].</Node>
+	<Node path="appearance/body" order="0" rule="skin-tone:local">[Their] skin [@skin-tone].</Node>
 	
 	<!-- Features -->
 	<Node path="appearance/features" rule="wings">

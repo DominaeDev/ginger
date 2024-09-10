@@ -9,48 +9,68 @@ namespace Ginger
 	{
 		public enum Pronouns
 		{
-			Neutral = 0,
-			Masculine = 1,
-			Feminine = 2,
-			Mixed = 3,
-			VariableNeutral = 4,
-			VariableMasculine = 5,
-			VariableFeminine = 6,
-			VariableUserNeutral = 7,
-			VariableUserMasculine = 8,
-			VariableUserFeminine = 9,
+			Neutral					= 0,
+			Masculine				= 1,
+			Feminine				= 2,
+			Mixed					= 3,
+			VariableNeutral			= 4,
+			VariableMasculine		= 5,
+			VariableFeminine		= 6,
+			VariableUserNeutral		= 7,
+			VariableUserMasculine	= 8,
+			VariableUserFeminine	= 9,
+			Objective				= 10,
+			NeopronounsShiHir		= 11,
+			NeopronounsEyEm			= 12,
+			NeopronounsZeZir		= 13,
+			NeopronounsFaeFaer		= 14,
+			NeopronounsXeXem		= 15,
 		}
 
 		private static string[][] PronounTable	= new string[][] 
 		{
-			/* Neutral               */	new string[] { "they'll", "they're", "they've", "they'd", "they", "them", "theirs", "their", "themselves", },
-			/* Masculine             */	new string[] { "he'll", "he's", "he's", "he'd", "he", "him", "his", "his", "himself", },
-			/* Feminine              */	new string[] { "she'll", "she's", "she's", "she'd", "she", "her", "hers", "her", "herself", },
-			/* Mixed                 */	new string[] { "he/she'll", "he/she's", "he/she's", "he/she'd", "he/she", "him/her", "his/hers", "his/her", "himself/herself", },
-			/* VariableNeutral       */	new string[] { "{they'll}", "{they're}", "{they've}", "{they'd}", "{they}", "{them}", "{theirs}", "{their}", "{themselves}", },
-			/* VariableMasculine     */	new string[] { "{he'll}", "{he's}", "{he's}", "{he'd}", "{he}", "{him}", "{theirs}", "{his}", "{himself}", },
-			/* VariableFeminine      */	new string[] { "{she'll}", "{she's}", "{she's}", "{she'd}", "{she}", "{them}", "{hers}", "{her}", "{herself}", },
-			/* VariableUserNeutral   */	new string[] { "{#they'll}", "{#they're}", "{#they've}", "{#they'd}", "{#they}", "{#them}", "{#theirs}", "{#their}", "{#themselves}", },
-			/* VariableUserMasculine */	new string[] { "{#he'll}", "{#he's}", "{#he's}", "{#he'd}", "{#he}", "{#him}", "{#theirs}", "{#his}", "{#himself}", },
-			/* VariableUserFeminine  */	new string[] { "{#she'll}", "{#she's}", "{#she's}", "{#she'd}", "{#she}", "{#them}", "{#hers}", "{#her}", "{#herself}", },
+			/* Neutral               */	new string[] { "they'll", "they're", "they've", "they'd", "they", "them", "theirs", "their", "themselves" },
+			/* Masculine             */	new string[] { "he'll", "he's", "he's", "he'd", "he", "him", "his", "his", "himself" },
+			/* Feminine              */	new string[] { "she'll", "she's", "she's", "she'd", "she", "her", "hers", "her", "herself" },
+			/* Mixed                 */	new string[] { "he/she'll", "he/she's", "he/she's", "he/she'd", "he/she", "him/her", "his/hers", "his/her", "himself/herself" },
+			/* VariableNeutral       */	new string[] { "{they'll}", "{they're}", "{they've}", "{they'd}", "{they}", "{them}", "{theirs}", "{their}", "{themselves}" },
+			/* VariableMasculine     */	new string[] { "{he'll}", "{he's}", "{he's}", "{he'd}", "{he}", "{him}", "{theirs}", "{his}", "{himself}" },
+			/* VariableFeminine      */	new string[] { "{she'll}", "{she's}", "{she's}", "{she'd}", "{she}", "{them}", "{hers}", "{her}", "{herself}" },
+			/* VariableUserNeutral   */	new string[] { "{#they'll}", "{#they're}", "{#they've}", "{#they'd}", "{#they}", "{#them}", "{#theirs}", "{#their}", "{#themselves}" },
+			/* VariableUserMasculine */	new string[] { "{#he'll}", "{#he's}", "{#he's}", "{#he'd}", "{#he}", "{#him}", "{#theirs}", "{#his}", "{#himself}" },
+			/* VariableUserFeminine  */	new string[] { "{#she'll}", "{#she's}", "{#she's}", "{#she'd}", "{#she}", "{#them}", "{#hers}", "{#her}", "{#herself}" },
+			/* Objective             */	new string[] { "it'll", "it's", "it's", "it'd", "it", "it", "its", "its", "itself" },
+			/* NeoNeutral (Shi/Hir)  */	new string[] { "shi'll", "shi's", "shi's", "shi'd", "shi", "hir", "hirs", "hir", "hirself" },
+			/* NeoNeutral (Ey/Em)    */	new string[] { "ey'll", "ey's", "ey've", "ey'd", "ey", "em", "eirs", "eir", "emself" },
+			/* NeoNeutral (Ze/Zir)   */	new string[] { "ze'll", "ze's", "ze've", "ze'd", "ze", "zir", "zirs", "zir", "zirself" },
+			/* NeoNeutral (Fae/Faer) */	new string[] { "fae'll", "fae's", "fae've", "fae'd", "fae", "faer", "faes", "faer", "faerself" },
+			/* NeoNeutral (Xe/Xem)   */	new string[] { "xe'll", "xe's", "xe've", "xe'd", "xe", "xem", "xyr", "xyrs", "xemself" },
 		};
 
 		private static bool[][] MaskTable = new bool[][]
 		{
-			/* Neutral               */	new bool[] { true, true, true, true, true, true, true, true, true, },
-			/* Masculine             */	new bool[] { true, true, true, true, true, true, false, true, true, },
-			/* Feminine              */	new bool[] { true, true, true, true, true, false, true, true, true, },
-			/* Mixed                 */	new bool[] { true, true, true, true, true, true, true, true, true, },
-			/* VariableNeutral       */	new bool[] { true, true, true, true, true, true, true, true, true, },
-			/* VariableMasculine     */	new bool[] { true, true, true, true, true, true, false, true, true, },
-			/* VariableFeminine      */	new bool[] { true, true, true, true, true, false, true, true, true, },
-			/* VariableUserNeutral   */	new bool[] { true, true, true, true, true, true, true, true, true, },
-			/* VariableUserMasculine */	new bool[] { true, true, true, true, true, true, false, true, true, },
-			/* VariableUserFeminine  */	new bool[] { true, true, true, true, true, false, true, true, true, },
+			//															     they, them, theirs, their, themselves
+			/* Neutral               */	new bool[] { true, true, true, true, true, true, true, true, true },
+			/* Masculine             */	new bool[] { true, true, true, true, true, true, false, true, true },
+			/* Feminine              */	new bool[] { true, true, true, true, true, false, true, true, true },
+			/* Mixed                 */	new bool[] { true, true, true, true, true, true, true, true, true },
+			/* VariableNeutral       */	new bool[] { true, true, true, true, true, true, true, true, true },
+			/* VariableMasculine     */	new bool[] { true, true, true, true, true, true, false, true, true },
+			/* VariableFeminine      */	new bool[] { true, true, true, true, true, false, true, true, true },
+			/* VariableUserNeutral   */	new bool[] { true, true, true, true, true, true, true, true, true },
+			/* VariableUserMasculine */	new bool[] { true, true, true, true, true, true, false, true, true },
+			/* VariableUserFeminine  */	new bool[] { true, true, true, true, true, false, true, true, true },
+			/* Objective             */	new bool[] { true, true, true, true, false, true, false, true, true },
+			/* NeoNeutral (Shi/Hir)  */	new bool[] { true, true, true, true, true, false, true, true, true },
+			/* NeoNeutral (Ey/Em)    */	new bool[] { true, true, true, true, true, true, true, true, true },
+			/* NeoNeutral (Ze/Zir)   */	new bool[] { true, true, true, true, true, false, true, true, true },
+			/* NeoNeutral (Fae/Faer) */	new bool[] { true, true, true, true, true, false, true, true, true },
+			/* NeoNeutral (Xe/Xem)   */	new bool[] { true, true, true, true, true, true, true, true, true },
 		};
 
-		private static string[] CharacterIntermediate = new string[] { "{ey'll__}", "{ey's__}", "{ey've__}", "{ey'd__}", "{ey__}", "{em__}", "{eirs__}", "{eir__}", "{emself__}", };
-		private static string[] UserIntermediate = new string[] { "{ey'll__u}", "{ey's__u}", "{ey've__u}", "{ey'd__u}", "{ey__u}", "{em__u}", "{eirs__u}", "{eir__u}", "{emself__u}", };
+		// Intermediate forms
+		private static string[] CharacterIntermediate = new string[] { "{ey'll__}", "{ey's__}", "{ey've__}", "{ey'd__}", "{ey__}", "{em__}", "{eirs__}", "{eir__}", "{emself__}" };
+		private static string[] UserIntermediate = new string[] { "{ey'll__u}", "{ey's__u}", "{ey've__u}", "{ey'd__u}", "{ey__u}", "{em__u}", "{eirs__u}", "{eir__u}", "{emself__u}" };
 
 		public static int SwapGenders(IEnumerable<Recipe> recipes, Pronouns characterFrom, Pronouns characterTo, Pronouns userFrom, Pronouns userTo, bool swapCharacter, bool swapUser)
 		{
@@ -113,13 +133,23 @@ namespace Ginger
 					if (swapCharacter)
 					{
 						for (int i = 0; i < CharacterIntermediate.Length && i < targetCharacterPronouns.Length; ++i)
-							ReplacePronoun(ref parameter.value, CharacterIntermediate[i], targetCharacterPronouns[i], false);
+						{
+							// Replace (with capitalization)
+							ReplacePronoun(ref parameter.value, CharacterIntermediate[i], targetCharacterPronouns[i], true);
+							// Replace remaining intermediates (jic)
+							parameter.value = parameter.value.Replace(CharacterIntermediate[i], targetCharacterPronouns[i], true);
+						}
 					}
 
 					if (swapUser)
 					{
 						for (int i = 0; i < UserIntermediate.Length && i < targetUserPronouns.Length; ++i)
+						{
+							// Replace (with capitalization)
 							ReplacePronoun(ref parameter.value, UserIntermediate[i], targetUserPronouns[i], true);
+							// Replace remaining intermediates (jic)
+							parameter.value = parameter.value.Replace(UserIntermediate[i], targetUserPronouns[i], true);
+						}
 					}
 				}
 			}
@@ -184,13 +214,23 @@ namespace Ginger
 			if (swapCharacter)
 			{
 				for (int i = 0; i < CharacterIntermediate.Length && i < targetCharacterPronouns.Length; ++i)
-					ReplacePronoun(ref text, CharacterIntermediate[i], targetCharacterPronouns[i], false);
+				{
+					// Replace (with capitalization)
+					ReplacePronoun(ref text, CharacterIntermediate[i], targetCharacterPronouns[i], true);
+					// Replace remaining intermediates (jic)
+					text = text.Replace(CharacterIntermediate[i], targetCharacterPronouns[i], true);
+				}
 			}
 
 			if (swapUser)
 			{
 				for (int i = 0; i < UserIntermediate.Length && i < targetUserPronouns.Length; ++i)
+				{
+					// Replace (with capitalization)
 					ReplacePronoun(ref text, UserIntermediate[i], targetUserPronouns[i], true);
+					// Replace remaining intermediates (jic)
+					text = text.Replace(UserIntermediate[i], targetUserPronouns[i], true);
+				}
 			}
 
 			return replacements;
@@ -224,10 +264,18 @@ namespace Ginger
 
 		private static int ReplaceHerThem(ref string text, string pronoun, bool user)
 		{
-			string replacement;
-			if (string.Compare(pronoun, "her", StringComparison.OrdinalIgnoreCase) == 0)
-				replacement = user ? "{em__u}" : "{em__}";
-			else
+			string[] ambiguousAccusative = new string[] { "her", "hir", "zir", "faer" };
+
+			string replacement = null;
+			for (int i = 0; i < ambiguousAccusative.Length; ++i)
+			{
+				if (string.Compare(pronoun, ambiguousAccusative[i], StringComparison.OrdinalIgnoreCase) == 0)
+				{
+					replacement = user ? "{em__u}" : "{em__}";
+					break;
+				}
+			}
+			if (replacement == null)
 				return 0; // Skip
 
 			int[] matches = Utility.FindWholeWords(text, pronoun, true);
@@ -252,10 +300,18 @@ namespace Ginger
 
 		private static int ReplaceHisTheirs(ref string text, string pronoun, bool user)
 		{
-			string replacement;
-			if (string.Compare(pronoun, "his", StringComparison.OrdinalIgnoreCase) == 0)
-				replacement = user ? "{eirs__u}" : "{eirs__}";
-			else
+			string[] ambiguousPossessive = new string[] { "his", "its" };
+
+			string replacement = null;
+			for (int i = 0; i < ambiguousPossessive.Length; ++i)
+			{
+				if (string.Compare(pronoun, ambiguousPossessive[i], StringComparison.OrdinalIgnoreCase) == 0)
+				{
+					replacement = user ? "{eirs__u}" : "{eirs__}";
+					break;
+				}
+			}
+			if (replacement == null)
 				return 0; // Skip
 
 			int[] matches = Utility.FindWholeWords(text, pronoun, true);
@@ -295,6 +351,8 @@ namespace Ginger
 			"this", "that", "these", "those",
 			// Possessive determiners
 			"my", "his", "her", "its", "our", "their", "your",
+			// Possessive determiners (neopronouns)
+			"hir", "eir", "zir", "faes", "xyrs",
 			// Interrogative determiners
 			"whose", "what", "which",
 			// Quantifiers

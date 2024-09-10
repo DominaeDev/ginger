@@ -57,7 +57,7 @@ namespace Ginger
 				if (characters.Count() > 1)
 				{
 					string[] memberNames = characters
-						.Select(c => c.name ?? "Unnamed")
+						.Select(c => c.name ?? Constants.DefaultCharacterName)
 						.OrderBy(c => c)
 						.ToArray();
 					string groupTitle = string.Join(", ", memberNames.Take(3));
@@ -70,7 +70,7 @@ namespace Ginger
 				{
 					return characters
 						.Select(c => c.displayName)
-						.FirstOrDefault() ?? "Unnamed";
+						.FirstOrDefault() ?? Constants.DefaultCharacterName;
 				}
 			}
 		}
@@ -193,7 +193,7 @@ namespace Ginger
 			string[] characterNames = group.members
 				.Select(id => _charactersById.GetOrDefault(id))
 				.Where(c => c.isUser == false)
-				.Select(c => c.name ?? "Unnamed")
+				.Select(c => Utility.FirstNonEmpty(c.name, Constants.DefaultCharacterName))
 				.ToArray();
 
 			if (characterNames.Length >= 2)

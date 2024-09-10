@@ -136,10 +136,9 @@ namespace Ginger.Integration
 				File.Delete(intermediateCardFilename);
 
 				List<KeyValuePair<string, string>> chats = new List<KeyValuePair<string, string>>();
-				int chatIdx = 0;
 				foreach (var chat in backup.chats.OrderBy(c => c.creationDate))
 				{
-					string chatFilename = string.Format("chat_{0:00}_{1}.json", ++chatIdx, chat.history.lastMessageTime.ToUnixTimeSeconds());
+					string chatFilename = string.Format("chatLog_{0}_{1}.json", backup.characterCard.data.displayName, chat.creationDate.ToUnixTimeSeconds()).Replace(" ", "_");
 
 					var chatBackup = BackupChat.FromChat(new BackupData.Chat() {
 						name = chat.name,
@@ -191,7 +190,7 @@ namespace Ginger.Integration
 					// Write chat files
 					for (int i = 0; i < chats.Count; ++i)
 					{
-						string entryName = string.Concat("chats/", chats[i].Key);
+						string entryName = string.Concat("logs/", chats[i].Key);
 
 						var fileEntry = zip.CreateEntry(string.Format(entryName, CompressionLevel.NoCompression));
 						using (Stream writer = fileEntry.Open())
@@ -277,7 +276,7 @@ namespace Ginger.Integration
 									chats.Add(new BackupData.Chat() {
 										creationDate = chatBackup.creationDate,
 										updateDate = chatBackup.updateDate,
-										name = chatBackup.name ?? "",
+										name = chatBackup.name ?? ChatInstance.DefaultName,
 										staging = chatBackup.staging,
 										parameters = chatBackup.parameters,
 										history = chatBackup.history,

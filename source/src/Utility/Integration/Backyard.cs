@@ -2290,8 +2290,8 @@ namespace Ginger.Integration
 						// Insert greeting
 						if (string.IsNullOrEmpty(chats[i].staging.greeting) == false)
 						{
-							string userName = groupMembers[0].name ?? "User";
-							string characterName = groupMembers[1].name ?? "Unknown";
+							string userName = Utility.FirstNonEmpty(groupMembers[0].name, Constants.DefaultUserName);
+							string characterName = Utility.FirstNonEmpty(groupMembers[1].name,Constants.DefaultCharacterName);
 
 							var sb = new StringBuilder(GingerString.FromFaraday(chats[i].staging.greeting).ToString());
 							sb.Replace(GingerString.CharacterMarker, characterName, true);
@@ -3260,14 +3260,16 @@ namespace Ginger.Integration
 					var repairs = new List<_SwipeRepair>(512);
 					foreach (var swipe in swipes)
 					{
-						bool bFront = swipe.text.BeginsWith("#{character}: ");
-						bool bBack = swipe.text.EndsWith("\n#{user}:");
+						int pos_begin = swipe.text.IndexOf("#{character}:");
+						int pos_end = swipe.text.IndexOf("\n#{user}:");
+						bool bFront = pos_begin == 0;
+						bool bBack = pos_end >= 0 && pos_end >= swipe.text.Length - 10;
 						if (bFront && bBack)
 						{
 							repairs.Add(new _SwipeRepair() {
 								instanceId = swipe.instanceId,
 								chatId = swipe.chatId,
-								text = swipe.text.Substring(14, swipe.text.Length - 23),
+								text = swipe.text.Substring(pos_begin + 13, pos_end - pos_begin - 13).Trim(),
 							});
 						}
 						else if (bFront)
@@ -3275,7 +3277,7 @@ namespace Ginger.Integration
 							repairs.Add(new _SwipeRepair() {
 								instanceId = swipe.instanceId,
 								chatId = swipe.chatId,
-								text = swipe.text.Substring(14),
+								text = swipe.text.Substring(pos_begin + 13).TrimStart(),
 							});
 						}
 						else if (bBack)
@@ -3283,7 +3285,7 @@ namespace Ginger.Integration
 							repairs.Add(new _SwipeRepair() {
 								instanceId = swipe.instanceId,
 								chatId = swipe.chatId,
-								text = swipe.text.Substring(0, swipe.text.Length - 9),
+								text = swipe.text.Substring(0, pos_end).TrimEnd(),
 							});
 						}
 					}
