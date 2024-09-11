@@ -121,6 +121,7 @@ namespace Ginger
 			}
 
 			return new ChatHistory() {
+				name = this.name,
 				messages = result.ToArray(),
 			};
 		}

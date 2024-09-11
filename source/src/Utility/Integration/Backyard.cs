@@ -101,22 +101,20 @@ namespace Ginger.Integration
 	{
 		public ChatInstance()
 		{
-			name = DefaultName;
 			creationDate = DateTime.Now;
 			updateDate = DateTime.Now;
 		}
 
 		public string instanceId = null;    // Chat.id
-		public string name;                 // Chat.name
 		public DateTime creationDate;       // Chat.createdAt
 		public DateTime updateDate;         // Chat.updatedAt
 
 		public string[] participants = null;
-
-		public ChatHistory history = null;
+		public ChatHistory history = new ChatHistory();
 		public ChatStaging staging = null;
 		public ChatParameters parameters = null;
 
+		public string name { get { return history.name; } }
 		public bool hasGreeting { get { return staging != null && string.IsNullOrEmpty(staging.greeting) == false; } }
 
 		public static string DefaultName = "Untitled chat";
@@ -2361,7 +2359,6 @@ namespace Ginger.Integration
 
 		public struct CreateChatArguments
 		{
-			public string name;
 			public ChatStaging staging;
 			public ChatParameters parameters;
 			public ChatHistory history;
@@ -2502,11 +2499,11 @@ namespace Ginger.Integration
 				instanceId = chatInfo.instanceId,
 				creationDate = chatInfo.creationDate,
 				updateDate = chatInfo.updateDate,
-				name = chatInfo.name,
 				participants = groupMembers.Select(c => c.instanceId).ToArray(),
 				staging = chatInfo.staging,
 				parameters = chatInfo.parameters,
 				history = new ChatHistory() {
+					name = chatInfo.name,
 					messages = entries.ToArray(),
 				},
 			};
@@ -2605,7 +2602,8 @@ namespace Ginger.Integration
 							int expectedUpdates = 0;
 							var staging = args.staging ?? defaultStaging;
 							var parameters = args.parameters ?? defaultParameters;
-							
+							var chatName = args.history.name ?? "";
+
 							using (var cmdCreateChat = new SQLiteCommand(connection))
 							{
 								var sbCommand = new StringBuilder();
@@ -2629,7 +2627,7 @@ namespace Ginger.Integration
 								cmdCreateChat.CommandText = sbCommand.ToString();
 								cmdCreateChat.Parameters.AddWithValue("$chatId", chatId);
 								cmdCreateChat.Parameters.AddWithValue("$groupId", groupId);
-								cmdCreateChat.Parameters.AddWithValue("$chatName", args.name ?? "");
+								cmdCreateChat.Parameters.AddWithValue("$chatName", chatName ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$timestamp", createdAt);
 								cmdCreateChat.Parameters.AddWithValue("$system", staging.system);
 								cmdCreateChat.Parameters.AddWithValue("$scenario",  staging.scenario);
@@ -2668,10 +2666,10 @@ namespace Ginger.Integration
 								instanceId = chatId,
 								creationDate = now,
 								updateDate = now,
-								name = args.name,
 								staging = staging,
 								parameters = parameters,
 								history = new ChatHistory() {
+									name = chatName,
 									messages = lsMessages.ToArray(),
 								},
 								participants = groupMembers.Select(c => c.instanceId).ToArray(),
@@ -2769,7 +2767,7 @@ namespace Ginger.Integration
 							}
 
 							chatInstance.updateDate = now;
-							chatInstance.name = newName;
+							chatInstance.history.name = newName;
 
 							transaction.Commit();
 							return Error.NoError;

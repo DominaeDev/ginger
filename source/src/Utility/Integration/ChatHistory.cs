@@ -6,7 +6,13 @@ namespace Ginger.Integration
 {
 	public class ChatHistory : ICloneable
 	{
+		public string name;
 		public Message[] messages;
+
+		public ChatHistory()
+		{
+			name = ChatInstance.DefaultName;
+		}
 
 		public IEnumerable<Message> messagesWithoutGreeting
 		{
@@ -20,7 +26,6 @@ namespace Ginger.Integration
 
 		public int count { get { return messages != null ? messages.Length : 0; } }
 		public bool isEmpty { get { return count == 0; } }
-
 		public bool hasGreeting { get { return count > 0 && messages[0].speaker == 1; } }
 
 		public DateTime lastMessageTime

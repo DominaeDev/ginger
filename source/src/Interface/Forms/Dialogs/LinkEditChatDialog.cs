@@ -379,26 +379,26 @@ namespace Ginger
 			AppSettings.User.LastImportChatFilter = importFileDialog.FilterIndex;
 			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
 
-			ChatHistory importedChat = FileUtil.ImportChat(importFileDialog.FileName);
-			if (importedChat == null)
+			ChatHistory chatHistory = FileUtil.ImportChat(importFileDialog.FileName);
+			if (chatHistory == null)
 			{
 				MessageBox.Show(Resources.error_unrecognized_chat_format, Resources.cap_import_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
-			else if (importedChat.isEmpty)
+			else if (chatHistory.isEmpty)
 			{
 				MessageBox.Show(Resources.error_empty_chat, Resources.cap_import_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
-			int numSpeakers = importedChat.numSpeakers;
+			int numSpeakers = chatHistory.numSpeakers;
 			if (numSpeakers > _groupInstance.members.Length)
 			{
 				if (MessageBox.Show(Resources.msg_link_chat_too_many_speakers, Resources.cap_import_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
 					return;
 
 				// Remove other characters' messages
-				importedChat.messages = importedChat.messages.Where(m => m.speaker < numSpeakers - 1).ToArray();
+				chatHistory.messages = chatHistory.messages.Where(m => m.speaker < numSpeakers - 1).ToArray();
 			}
 
 			// Apply names (2 character only)
@@ -412,13 +412,15 @@ namespace Ginger
 				.FirstOrDefault();
 			string characterName = Utility.FirstNonEmpty(characters.Length > 0 ? characters[0].name : "", Constants.DefaultCharacterName);
 			string userName = Utility.FirstNonEmpty(user.name, Constants.DefaultUserName);
-			importedChat.ApplyNames(new string[] { userName, characterName });
+			chatHistory.ApplyNames(new string[] { userName, characterName });
+
+			if (string.IsNullOrEmpty(chatHistory.name))
+				chatHistory.name = "Imported chat";
 
 			// Write to db...
 			ChatInstance chatInstance;
 			var args = new Backyard.CreateChatArguments() {
-				name = "Imported chat",
-				history = importedChat,
+				history = chatHistory,
 			};
 			var error = Backyard.CreateNewChat(args, _groupInstance.instanceId, out chatInstance);
 			if (error == Backyard.Error.NotConnected)
@@ -659,7 +661,6 @@ namespace Ginger
 			if (chatCounts == 1) // Last chat mustn't be deleted
 			{
 				// Clear messages
-				chatInstance.name = ChatInstance.DefaultName;
 				chatInstance.updateDate = DateTime.Now;
 				chatInstance.history = new ChatHistory();
 				error = Backyard.UpdateChat(chatInstance, _groupInstance.instanceId);
@@ -742,10 +743,12 @@ namespace Ginger
 			if (ConfirmChatExists(chatInstance.instanceId, out latestChat) == false)
 				latestChat = chatInstance;
 
+			var chatHistory = (ChatHistory)latestChat.history.Clone();
+			chatHistory.name = string.Concat(latestChat.name, " (copy)");
+
 			ChatInstance duplicate;
 			var args = new Backyard.CreateChatArguments() {
-				name = string.Concat(latestChat.name, " (copy)"),
-				history = (ChatHistory)latestChat.history.Clone(),
+				history = chatHistory,
 				staging = latestChat.staging,
 				parameters = latestChat.parameters,
 			};
@@ -888,6 +891,8 @@ namespace Ginger
 				latestChat = chatInstance;
 
 			var chatHistory = (ChatHistory)latestChat.history.Clone();
+			chatHistory.name = string.Concat(latestChat.name, " (branch)");
+
 			int messageIndex = Array.FindIndex(chatHistory.messages, m => m.instanceId == messageId);
 			if (messageIndex == -1)
 			{
@@ -898,7 +903,6 @@ namespace Ginger
 
 			ChatInstance branchedChat;
 			var args = new Backyard.CreateChatArguments() {
-				name = string.Concat(latestChat.name, " (branch)"),
 				history = chatHistory,
 				staging = latestChat.staging,
 				parameters = latestChat.parameters,
