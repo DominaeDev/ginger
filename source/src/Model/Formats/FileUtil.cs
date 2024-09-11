@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using PNGNet;
+using Ginger.Integration;
 
 namespace Ginger
 {

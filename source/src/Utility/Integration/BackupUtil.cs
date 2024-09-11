@@ -140,7 +140,7 @@ namespace Ginger.Integration
 				{
 					string chatFilename = string.Format("chatLog_{0}_{1}.json", backup.characterCard.data.displayName, chat.creationDate.ToUnixTimeSeconds()).Replace(" ", "_");
 
-					var chatBackup = BackupChat.FromChat(new BackupData.Chat() {
+					var chatBackup = BackyardChatBackup.FromChat(new BackupData.Chat() {
 						name = chat.name,
 						creationDate = chat.creationDate,
 						updateDate = chat.updateDate,
@@ -271,7 +271,7 @@ namespace Ginger.Integration
 									dataStream.Read(buffer, 0, (int)dataSize);
 									string chatJson = new string(Encoding.UTF8.GetChars(buffer));
 
-									var chatBackup = BackupChat.FromJson(chatJson).ToChat();
+									var chatBackup = BackyardChatBackup.FromJson(chatJson).ToChat();
 
 									chats.Add(new BackupData.Chat() {
 										creationDate = chatBackup.creationDate,

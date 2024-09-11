@@ -53,8 +53,6 @@ namespace Ginger
 			chatInstanceList.ItemSelectionChanged += ChatInstanceList_ItemSelectionChanged;
 			chatView.ShowChat(false);
 
-			_charactersById = Backyard.Characters.ToDictionary(c => c.instanceId, c => c);
-
 			_statusbarTimer.Interval = 1000;
 			_statusbarTimer.Elapsed += OnStatusBarTimerElapsed;
 			_statusbarTimer.AutoReset = false;
@@ -82,7 +80,7 @@ namespace Ginger
 		
 		private void LinkEditChatDialog_Shown(object sender, EventArgs e)
 		{
-			PopulateChatList(true);
+			RefreshChats();
 		}
 
 		private void RefreshTitle()
@@ -369,74 +367,6 @@ namespace Ginger
 
 		private void btnImport_Click(object sender, EventArgs e)
 		{
-			ImportChat();
-		}
-
-		private void ExportChat(ChatInstance chatInstance)
-		{
-			if (chatInstance == null)
-				return; // Error
-
-			if (chatInstance.history.messagesWithoutGreeting.Count() == 0)
-			{
-				MessageBox.Show(Resources.error_empty_chat, Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return ;
-			}
-
-			string filename = string.Format("chatLog_{0}_{1}.json", GetCharacterName(), chatInstance.creationDate.ToUnixTimeSeconds()).Replace(" ", "_");
-			
-			exportFileDialog.Title = "Export chat";
-			exportFileDialog.Filter = "Backyard chat|*.json|Text generation web ui chat|*.json|SillyTavern chat|*.jsonl|Ginger chat format|*.json";
-			exportFileDialog.FileName = Utility.ValidFilename(filename);
-			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
-			exportFileDialog.FilterIndex = AppSettings.User.LastExportChatFilter;
-
-			var result = exportFileDialog.ShowDialog();
-			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
-				return;
-
-			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
-			AppSettings.User.LastExportChatFilter = exportFileDialog.FilterIndex;
-
-			if (exportFileDialog.FilterIndex == 1) // Backyard
-			{
-				if (FileUtil.ExportBackyardChat(chatInstance.history, exportFileDialog.FileName))
-					return; // Success
-			}
-			else if (exportFileDialog.FilterIndex == 2) // TextGenWebUI
-			{
-				if (FileUtil.ExportTextGenWebUI(chatInstance.history, exportFileDialog.FileName))
-					return; // Success
-			}
-			else if (exportFileDialog.FilterIndex == 3) // SillyTavern
-			{
-				string userName = Utility.FirstNonEmpty(chatInstance.participants.Select(id => Backyard.GetCharacter(id)).FirstOrDefault(c => c.isUser).name, Constants.DefaultUserName);
-				string characterName = Utility.FirstNonEmpty(chatInstance.participants.Select(id => Backyard.GetCharacter(id)).FirstOrDefault(c => !c.isUser).name, Constants.DefaultCharacterName);
-
-				if (FileUtil.ExportTavernChat(chatInstance.history, exportFileDialog.FileName, characterName, userName))
-					return; // Success
-			} 
-			else if (exportFileDialog.FilterIndex == 4) // Ginger
-			{
-				var speakers = new List<GingerChat.Speaker>();
-				for (int i = 0; i < chatInstance.participants.Length; ++i)
-				{
-					speakers.Add(new GingerChat.Speaker() {
-						id = i.ToString(),
-						name = i > 0 ? _charactersById[chatInstance.participants[i]].name : "You",
-					});
-				}
-
-				var chat = GingerChat.FromChat(chatInstance, speakers);
-				string json = chat.ToJson();
-				if (json != null && FileUtil.ExportTextFile(exportFileDialog.FileName, json))
-					return; // Success
-			}
-			MessageBox.Show(Resources.error_write_json, Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-		}
-
-		private bool ImportChat()
-		{
 			// Open file...
 			importFileDialog.Title = Resources.cap_import_chat;
 			importFileDialog.Filter = "All supported file types|*.json;*.jsonl";
@@ -444,7 +374,7 @@ namespace Ginger
 			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			var result = importFileDialog.ShowDialog();
 			if (result != DialogResult.OK)
-				return false;
+				return;
 
 			AppSettings.User.LastImportChatFilter = importFileDialog.FilterIndex;
 			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
@@ -452,13 +382,23 @@ namespace Ginger
 			ChatHistory importedChat = FileUtil.ImportChat(importFileDialog.FileName);
 			if (importedChat == null)
 			{
-				MessageBox.Show(Resources.error_unrecognized_chat_format, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return false;
+				MessageBox.Show(Resources.error_unrecognized_chat_format, Resources.cap_import_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
 			}
 			else if (importedChat.isEmpty)
 			{
-				MessageBox.Show(Resources.error_empty_chat, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return false;
+				MessageBox.Show(Resources.error_empty_chat, Resources.cap_import_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			int numSpeakers = importedChat.numSpeakers;
+			if (numSpeakers > _groupInstance.members.Length)
+			{
+				if (MessageBox.Show(Resources.msg_link_chat_too_many_speakers, Resources.cap_import_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+					return;
+
+				// Remove other characters' messages
+				importedChat.messages = importedChat.messages.Where(m => m.speaker < numSpeakers - 1).ToArray();
 			}
 
 			// Apply names (2 character only)
@@ -483,21 +423,104 @@ namespace Ginger
 			var error = Backyard.CreateNewChat(args, _groupInstance.instanceId, out chatInstance);
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_import_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
-				return false;
+				return;
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_import_chat, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return false;
+				MessageBox.Show(Resources.error_link_import_chat, Resources.cap_import_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
 			}
 			else
 			{
 				PopulateChatList(false);
 				SelectChat(chatInstance.instanceId);
-				return true;
+				SetStatusBarMessage("Imported chat", Constants.StatusBarMessageInterval);
+				return;
 			}
+		}
+
+		private void ExportChat(ChatInstance chatInstance)
+		{
+			if (chatInstance == null)
+				return; // Error
+
+			if (chatInstance.history.messagesWithoutGreeting.Count() == 0)
+			{
+				MessageBox.Show(Resources.error_empty_chat, Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			string filename = string.Format("chatLog_{0}_{1}.json", GetCharacterName(), chatInstance.creationDate.ToUnixTimeSeconds()).Replace(" ", "_");
+
+			bool bGroup = chatInstance.history.numSpeakers > 2;
+
+			exportFileDialog.Title = "Export chat";
+			if (bGroup)
+			{
+				exportFileDialog.Filter = "Ginger chat format|*.json";
+				exportFileDialog.FileName = Utility.ValidFilename(filename);
+				exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+				exportFileDialog.FilterIndex = 1;
+
+				var result = exportFileDialog.ShowDialog();
+				if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
+					return;
+			}
+			else
+			{
+				exportFileDialog.Filter = "Backyard chat|*.json|Text generation web ui chat|*.json|SillyTavern chat|*.jsonl|Ginger chat format|*.json";
+				exportFileDialog.FileName = Utility.ValidFilename(filename);
+				exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+				exportFileDialog.FilterIndex = AppSettings.User.LastExportChatFilter;
+
+				var result = exportFileDialog.ShowDialog();
+				if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
+					return;
+
+				AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
+				AppSettings.User.LastExportChatFilter = exportFileDialog.FilterIndex;
+			}
+
+			if (!bGroup && exportFileDialog.FilterIndex == 1) // Backyard
+			{
+				if (FileUtil.ExportBackyardChat(chatInstance.history, exportFileDialog.FileName))
+					return; // Success
+			}
+			else if (!bGroup && exportFileDialog.FilterIndex == 2) // TextGenWebUI
+			{
+				if (FileUtil.ExportTextGenWebUI(chatInstance.history, exportFileDialog.FileName))
+					return; // Success
+			}
+			else if (!bGroup && exportFileDialog.FilterIndex == 3) // SillyTavern
+			{
+				string userName = Utility.FirstNonEmpty(chatInstance.participants.Select(id => Backyard.GetCharacter(id)).FirstOrDefault(c => c.isUser).name, Constants.DefaultUserName);
+				string characterName = Utility.FirstNonEmpty(chatInstance.participants.Select(id => Backyard.GetCharacter(id)).FirstOrDefault(c => !c.isUser).name, Constants.DefaultCharacterName);
+
+				if (FileUtil.ExportTavernChat(chatInstance.history, exportFileDialog.FileName, characterName, userName))
+					return; // Success
+			} 
+			else if ((!bGroup && exportFileDialog.FilterIndex == 4) || exportFileDialog.FilterIndex == 1) // Ginger
+			{
+				var speakers = new List<GingerChat.Speaker>();
+				for (int i = 0; i < chatInstance.participants.Length; ++i)
+				{
+					speakers.Add(new GingerChat.Speaker() {
+						id = i.ToString(),
+						name = i > 0 ? _charactersById[chatInstance.participants[i]].name : "You",
+					});
+				}
+
+				var chat = GingerChat.FromChat(chatInstance, speakers);
+				string json = chat.ToJson();
+				if (json != null && FileUtil.ExportTextFile(exportFileDialog.FileName, json))
+				{
+					SetStatusBarMessage("Exported chat", Constants.StatusBarMessageInterval);
+					return; // Success
+				}
+			}
+			MessageBox.Show(Resources.error_write_json, Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
 		private void SelectChat(int index)
@@ -593,10 +616,17 @@ namespace Ginger
 			}
 
 			// Rename
-			if (Backyard.RenameChat(_selectedChatInstance, newName) == Backyard.Error.NoError)
+			var error = Backyard.RenameChat(_selectedChatInstance, newName);
+			if (error == Backyard.Error.NoError)
 			{
 				SetStatusBarMessage(Resources.status_link_renamed_chat, Constants.StatusBarMessageInterval);
 				e.CancelEdit = false;
+			}
+			else if (error == Backyard.Error.NotFound)
+			{
+				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_rename_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				e.CancelEdit = true;
+				RefreshChats();
 			}
 			else
 			{
@@ -608,6 +638,9 @@ namespace Ginger
 		private void DeleteChat(ChatInstance chatInstance)
 		{
 			if (chatInstance == null)
+				return;
+
+			if (ConfirmChatExists(chatInstance.instanceId, Resources.cap_link_delete_chat) == false)
 				return;
 
 			// Chat chat counts
@@ -704,12 +737,17 @@ namespace Ginger
 			if (chatInstance == null || _groupInstance.isEmpty)
 				return;
 
+			// Fetch latest
+			ChatInstance latestChat;
+			if (ConfirmChatExists(chatInstance.instanceId, out latestChat) == false)
+				latestChat = chatInstance;
+
 			ChatInstance duplicate;
 			var args = new Backyard.CreateChatArguments() {
-				name = string.Concat(chatInstance.name, " (copy)"),
-				history = (ChatHistory)chatInstance.history.Clone(),
-				staging = chatInstance.staging,
-				parameters = chatInstance.parameters,
+				name = string.Concat(latestChat.name, " (copy)"),
+				history = (ChatHistory)latestChat.history.Clone(),
+				staging = latestChat.staging,
+				parameters = latestChat.parameters,
 			};
 			var error = Backyard.CreateNewChat(args, _groupInstance.instanceId, out duplicate);
 
@@ -844,7 +882,12 @@ namespace Ginger
 			if (chatInstance == null || string.IsNullOrEmpty(messageId) || _groupInstance.isEmpty)
 				return; // Error
 
-			var chatHistory = (ChatHistory)chatInstance.history.Clone();
+			// Fetch latest
+			ChatInstance latestChat;
+			if (ConfirmChatExists(chatInstance.instanceId, out latestChat) == false)
+				latestChat = chatInstance;
+
+			var chatHistory = (ChatHistory)latestChat.history.Clone();
 			int messageIndex = Array.FindIndex(chatHistory.messages, m => m.instanceId == messageId);
 			if (messageIndex == -1)
 			{
@@ -855,10 +898,10 @@ namespace Ginger
 
 			ChatInstance branchedChat;
 			var args = new Backyard.CreateChatArguments() {
-				name = string.Concat(chatInstance.name, " (branch)"),
+				name = string.Concat(latestChat.name, " (branch)"),
 				history = chatHistory,
-				staging = chatInstance.staging,
-				parameters = chatInstance.parameters,
+				staging = latestChat.staging,
+				parameters = latestChat.parameters,
 			};
 			var error = Backyard.CreateNewChat(args, _groupInstance.instanceId, out branchedChat);
 			if (error == Backyard.Error.NotConnected)
@@ -886,16 +929,21 @@ namespace Ginger
 			if (MessageBox.Show(string.Format(Resources.msg_link_scrub_confirm, chatInstance.name), Resources.cap_link_scrub_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 				return;
 
-			chatInstance.updateDate = DateTime.Now;
-			int messageIndex = Array.FindIndex(chatInstance.history.messages, m => m.instanceId == messageId);
+			// Fetch latest
+			ChatInstance latestChat;
+			if (ConfirmChatExists(chatInstance.instanceId, out latestChat, Resources.cap_link_branch_chat) == false)
+				return;
+
+			latestChat.updateDate = DateTime.Now;
+			int messageIndex = Array.FindIndex(latestChat.history.messages, m => m.instanceId == messageId);
 			if (messageIndex == -1)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
-			Array.Resize(ref chatInstance.history.messages, messageIndex);
+			Array.Resize(ref latestChat.history.messages, messageIndex);
 		
-			var error = Backyard.UpdateChat(chatInstance, _groupInstance.instanceId);
+			var error = Backyard.UpdateChat(latestChat, _groupInstance.instanceId);
 			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1184,22 +1232,18 @@ namespace Ginger
 				return;
 			}
 
-			ChatInstance[] chats;
-			var error = Backyard.GetChats(_groupInstance.instanceId, out chats);
-			if (error != Backyard.Error.NoError)
+			// Fetch latest
+			ChatInstance latestChat;
+			if (ConfirmChatExists(chatInstance.instanceId, out latestChat) == false)
+				latestChat = chatInstance;
+
+			if (latestChat.parameters == null)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_copy_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
-			int index = Array.FindIndex(chats, c => c.instanceId == chatInstance.instanceId);
-			if (index == -1 || chats[index].parameters == null)
-			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_copy_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			Clipboard.SetDataObject(ChatParametersClipboard.FromParameters(chats[index].parameters), false);
+			Clipboard.SetDataObject(ChatParametersClipboard.FromParameters(latestChat.parameters), false);
 
 			SetStatusBarMessage(Resources.status_link_copy_settings, Constants.StatusBarMessageInterval);
 		}
@@ -1220,6 +1264,12 @@ namespace Ginger
 				return;
 
 			var error = Backyard.UpdateChatParameters(chatInstance.instanceId, clip.parameters, null);
+			if (error == Backyard.Error.NotFound)
+			{
+				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_reset_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				RefreshChats();
+				return;
+			}
 			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_paste_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1237,22 +1287,18 @@ namespace Ginger
 				return;
 			}
 
-			ChatInstance[] chats;
-			var error = Backyard.GetChats(_groupInstance.instanceId, out chats);
-			if (error != Backyard.Error.NoError)
+			// Fetch latest
+			ChatInstance latestChat;
+			if (ConfirmChatExists(chatInstance.instanceId, out latestChat) == false)
+				latestChat = chatInstance;
+
+			if (latestChat.staging == null)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_copy_staging, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
-			int index = Array.FindIndex(chats, c => c.instanceId == chatInstance.instanceId);
-			if (index == -1 || chats[index].staging == null)
-			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_copy_staging, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			Clipboard.SetDataObject(ChatStagingClipboard.FromStaging(chats[index].staging), false);
+			Clipboard.SetDataObject(ChatStagingClipboard.FromStaging(latestChat.staging), false);
 
 			SetStatusBarMessage(Resources.status_link_copy_staging, Constants.StatusBarMessageInterval);
 		}
@@ -1273,6 +1319,12 @@ namespace Ginger
 				return;
 
 			var error = Backyard.UpdateChatParameters(chatInstance.instanceId, null, clip.staging);
+			if (error == Backyard.Error.NotFound)
+			{
+				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_paste_staging, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				RefreshChats();
+				return;
+			}
 			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_paste_staging, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1293,6 +1345,12 @@ namespace Ginger
 			}
 
 			var error = Backyard.UpdateChatParameters(chatInstance.instanceId, new ChatParameters(), null);
+			if (error == Backyard.Error.NotFound)
+			{
+				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_reset_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				RefreshChats();
+				return;
+			}
 			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_reset_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1300,6 +1358,42 @@ namespace Ginger
 			}
 
 			SetStatusBarMessage(Resources.status_link_reset_settings, Constants.StatusBarMessageInterval);
+		}
+
+		private bool ConfirmChatExists(string chatId, string errorCaption)
+		{
+			ChatInstance tmp;
+			return ConfirmChatExists(chatId, out tmp, errorCaption);
+		}
+
+		private bool ConfirmChatExists(string chatId, out ChatInstance chatInstance, string errorCaption = null)
+		{
+			var error = Backyard.GetChat(chatId, _groupInstance.instanceId, out chatInstance);
+			if (error == Backyard.Error.NoError)
+				return true;
+
+			if (errorCaption == null)
+				return chatInstance != null; // Silent
+
+			if (error == Backyard.Error.NotConnected)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, errorCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return false;
+			}
+			else if (error == Backyard.Error.NotFound)
+			{
+				MessageBox.Show(Resources.error_link_chat_not_found, errorCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				RefreshChats();
+				return false;
+			}
+			else if (error == Backyard.Error.Unknown)
+			{
+				MessageBox.Show(Resources.error_link_general, errorCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			return chatInstance != null;
 		}
 
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)

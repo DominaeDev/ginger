@@ -1,18 +1,18 @@
-﻿using Ginger.Properties;
-using Ginger.Integration;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
-using System;
-using System.Collections.Generic;
+using Ginger.Properties;
+using Ginger.Integration;
 
 namespace Ginger
 {
-	public class BackupChat
+	public class BackyardChatBackup
 	{
 		private static JsonSchema _schema;
 
-		static BackupChat()
+		static BackyardChatBackup()
 		{
 			_schema = JsonSchema.Parse(Resources.backup_chat_schema);
 		}
@@ -116,9 +116,9 @@ namespace Ginger
 			public long timestamp;
 		}
 
-		public static BackupChat FromChat(BackupData.Chat chat)
+		public static BackyardChatBackup FromChat(BackupData.Chat chat)
 		{
-			BackupChat backup = new BackupChat();
+			BackyardChatBackup backup = new BackyardChatBackup();
 			var lsItems = new List<ChatItem>(chat.history.count / 2 + 1);
 
 			foreach (var pair in chat.history.messagesWithoutGreeting.Pairwise())
@@ -240,14 +240,14 @@ namespace Ginger
 			};
 		}
 
-		public static BackupChat FromJson(string json)
+		public static BackyardChatBackup FromJson(string json)
 		{
 			try
 			{
 				JObject jObject = JObject.Parse(json);
 				if (jObject.IsValid(_schema))
 				{
-					var card = JsonConvert.DeserializeObject<BackupChat>(json);
+					var card = JsonConvert.DeserializeObject<BackyardChatBackup>(json);
 					return card;
 				}
 			}

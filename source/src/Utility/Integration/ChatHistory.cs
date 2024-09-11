@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Ginger
+namespace Ginger.Integration
 {
 	public class ChatHistory : ICloneable
 	{
@@ -21,6 +21,8 @@ namespace Ginger
 		public int count { get { return messages != null ? messages.Length : 0; } }
 		public bool isEmpty { get { return count == 0; } }
 
+		public bool hasGreeting { get { return count > 0 && messages[0].speaker == 1; } }
+
 		public DateTime lastMessageTime
 		{
 			get
@@ -37,7 +39,7 @@ namespace Ginger
 			{
 				if (count == 0)
 					return 0;
-				return messages.Max(m => m.speaker) + 1;
+				return messages.DistinctBy(m => m.speaker).Count();
 			}
 		}
 

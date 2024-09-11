@@ -1,9 +1,10 @@
-﻿using Ginger.Properties;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using System;
 using System.Collections.Generic;
+using Ginger.Properties;
+using Ginger.Integration;
 
 namespace Ginger
 {
@@ -27,6 +28,23 @@ namespace Ginger
 		static AgnaiChat()
 		{
 			_schema = JsonSchema.Parse(Resources.agnai_chat_schema);
+		}
+
+		public static AgnaiChat FromJson(string json)
+		{
+			try
+			{
+				JObject jObject = JObject.Parse(json);
+				if (jObject.IsValid(_schema))
+				{
+					var card = JsonConvert.DeserializeObject<AgnaiChat>(json);
+					return card;
+				}
+			}
+			catch
+			{
+			}
+			return null;
 		}
 
 		public ChatHistory ToChat()
@@ -58,23 +76,6 @@ namespace Ginger
 			};
 		}
 		
-		public static AgnaiChat FromJson(string json)
-		{
-			try
-			{
-				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_schema))
-				{
-					var card = JsonConvert.DeserializeObject<AgnaiChat>(json);
-					return card;
-				}
-			}
-			catch
-			{
-			}
-			return null;
-		}
-
 		public static bool Validate(string jsonData)
 		{
 			try

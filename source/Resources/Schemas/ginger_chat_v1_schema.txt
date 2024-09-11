@@ -2,14 +2,14 @@
   "type": "object",
   "properties": {
     "name": {
-      "required": true,
+      "required": false,
       "type": [
         "string",
         "null"
       ]
     },
     "createdAt": {
-      "required": true,
+      "required": false,
       "type": "integer"
     },
     "speakers": {
@@ -22,13 +22,44 @@
         ]
       }
     },
-    "spec": {
+    "messages": {
       "required": true,
-      "type": "string"
-    },
-    "version": {
-      "required": true,
-      "type": "integer"
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "speaker": {
+            "required": true,
+            "type": "string"
+          },
+          "message": {
+            "required": true,
+            "type": "string"
+          },
+          "timestamp": {
+            "required": false,
+            "type": "integer"
+          },
+          "regens": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }

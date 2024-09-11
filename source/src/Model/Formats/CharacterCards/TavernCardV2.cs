@@ -348,7 +348,7 @@ namespace Ginger
 		{
 			if (card == null || card.data == null)
 				return false;
-			if (string.IsNullOrEmpty(card.data.name))
+			if (card.data.name == null)
 				return false;
 			return card.spec == "chara_card_v2";
 		}
@@ -357,7 +357,7 @@ namespace Ginger
 		{
 			if (card == null)
 				return false;
-			if (string.IsNullOrEmpty(card.name))
+			if (card.name == null)
 				return false;
 			if (string.IsNullOrEmpty(card.description) && string.IsNullOrEmpty(card.personality))
 				return false;

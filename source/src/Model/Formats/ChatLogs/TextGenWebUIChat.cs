@@ -1,9 +1,10 @@
-﻿using Ginger.Properties;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using System;
 using System.Collections.Generic;
+using Ginger.Properties;
+using Ginger.Integration;
 
 namespace Ginger
 {
@@ -37,14 +38,14 @@ namespace Ginger
 
 			// Greeting
 			int iMsg = 0;
-			if (chatHistory.messages[0].speaker != 0)
+			if (chatHistory.hasGreeting)
 			{
 				lsInternal.Add(new string[2] {"<|BEGIN-VISIBLE-CHAT|>", chatHistory.messages[0].text });
 				lsVisible.Add(new string[2] { "", chatHistory.messages[0].text });
 				iMsg = 1;
 			}
 
-			string userMessage = null;
+			string lastMessage = null;
 			for (; iMsg < chatHistory.messages.Length; ++iMsg)
 			{
 				var message = chatHistory.messages[iMsg];
@@ -53,17 +54,16 @@ namespace Ginger
 					// Check if previous message was from user
 					if (iMsg > 0 && chatHistory.messages[iMsg - 1].speaker == 0)
 					{
-						lsInternal.Add(new string[2] { userMessage ?? "", "" });
-						lsVisible.Add(new string[2] { userMessage ?? "", "" });
-						userMessage = null;
-						continue;
+						lsInternal.Add(new string[2] { lastMessage ?? "", "" });
+						lsVisible.Add(new string[2] { lastMessage ?? "", "" });
 					}
-					userMessage = message.text;
+					lastMessage = message.text;
 				}
 				else
 				{
-					lsInternal.Add(new string[2] { userMessage ?? "", message.text ?? "" });
-					lsVisible.Add(new string[2] { userMessage ?? "", message.text ?? "" });
+					lsInternal.Add(new string[2] { lastMessage ?? "", message.text ?? "" });
+					lsVisible.Add(new string[2] { lastMessage ?? "", message.text ?? "" });
+					lastMessage = null;
 				}
 
 			}

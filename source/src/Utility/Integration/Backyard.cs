@@ -222,7 +222,6 @@ namespace Ginger.Integration
 		{
 			NoError,
 			NotConnected,
-			FileNotFound,
 			InvalidArgument,
 			ValidationFailed,
 			SQLCommandFailed,
@@ -330,7 +329,7 @@ namespace Ginger.Integration
 			catch (FileNotFoundException e)
 			{
 				Disconnect();
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -470,7 +469,7 @@ namespace Ginger.Integration
 			{
 				Disconnect();
 				characterInstance = default(CharacterInstance);
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -690,7 +689,7 @@ namespace Ginger.Integration
 			catch (FileNotFoundException e)
 			{
 				Disconnect();
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -868,7 +867,7 @@ namespace Ginger.Integration
 				Disconnect();
 				card = null;
 				imageUrls = null;
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -944,7 +943,7 @@ namespace Ginger.Integration
 			catch (FileNotFoundException e)
 			{
 				newerChangesFound = default(bool);
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -1437,7 +1436,7 @@ namespace Ginger.Integration
 				Disconnect();
 				updateDate = default(DateTime);
 				updatedImageLinks = null;
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -1935,7 +1934,7 @@ namespace Ginger.Integration
 			{
 				Disconnect();
 				characterInstance = default(CharacterInstance);
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -2013,7 +2012,7 @@ namespace Ginger.Integration
 			catch (FileNotFoundException e)
 			{
 				counts = null;
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -2075,24 +2074,24 @@ namespace Ginger.Integration
 				{
 					connection.Open();
 
-					var characters = FetchCharacters(connection);
-					if (characters == null)
+					List<_Character> characters;
+					var error = FetchCharacters(connection, out characters);
+					if (error != Error.NoError)
 					{
 						chatInstances = null;
-						return Error.NotFound;
+						return error;
 					}
-					var characterLookup = characters.ToDictionary(c => c.instanceId, c => c);
-
-					var users = new HashSet<string>(characters.Where(c => c.isUser).Select(c => c.instanceId));
-					var nonUsers = new HashSet<string>(characters.Where(c => c.isUser == false).Select(c => c.instanceId));
-
-					var groupMembers = FetchGroupMembers(connection, groupId);
-					var canonicalUser = groupMembers.FirstOrDefault(c => c.isUser);
-
+					List<_Character> groupMembers;
+					error = FetchGroupMembers(connection, groupId, null, out groupMembers);
+					if (error != Error.NoError)
+					{
+						chatInstances = null;
+						return error;
+					}
 					var lsChatInstances = new List<ChatInstance>();
 					var chats = new List<_Chat>();
 					using (var cmdChat = connection.CreateCommand())
-					{ 
+					{
 						cmdChat.CommandText =
 						@"
 							SELECT 
@@ -2175,152 +2174,16 @@ namespace Ginger.Integration
 										ttsInputFilter = ttsInputFilter,
 									}
 								});
-							}							
+							}
 						}
 					}
 
 					// Collect messages
 					for (int i = 0; i < chats.Count; ++i)
 					{
-						string chatId = chats[i].instanceId;
-
-						int index = 1;
-						var indexById = new Dictionary<string, int>();
-
-						var messages = new List<_Message>(64);
-						using (var cmdMessages = connection.CreateCommand())
-						{
-							cmdMessages.CommandText =
-							@"
-								SELECT 
-									R.messageId, M.createdAt, R.updatedAt, R.activeTimestamp, M.characterConfigId, R.text 
-								FROM RegenSwipe As R
-								INNER JOIN Message AS M ON M.id = R.messageId
-								WHERE R.messageId IN (
-									SELECT id
-									FROM Message
-									WHERE chatId = $chatId
-								)
-								ORDER BY M.createdAt ASC;
-							";
-							cmdMessages.Parameters.AddWithValue("$chatId", chatId);
-
-							using (var reader = cmdMessages.ExecuteReader())
-							{
-								while (reader.Read())
-								{
-									string messageId = reader.GetString(0);
-									DateTime createdAt = reader.GetUnixTime(1);
-									DateTime updatedAt = reader.GetUnixTime(2);
-									DateTime activeAt = reader.GetUnixTime(3);
-									string characterId = reader.GetString(4);
-									string text = reader.GetString(5);
-
-									messages.Add(new _Message() {
-										messageId = messageId,
-										createdAt = createdAt,
-										updatedAt = updatedAt,
-										activeAt = activeAt,
-										characterId = characterId,
-										text = text,
-									});
-								}
-							}
-						}
-
-						// Create entries
-						var entries = messages
-							.GroupBy(m => m.messageId)
-							.Select(g => {
-								int counter = 0;
-								var swipes = g.Select(m => new {
-									index = counter++,
-									text = m.text,
-									active = m.activeAt,
-								});
-
-								var message = g.First();
-
-								// Assign a character index
-								int speakerIdx;
-								if (indexById.TryGetValue(message.characterId, out speakerIdx) == false)
-								{
-									if (users.Contains(message.characterId)) // User (there can be many, but they should be treated as one)
-										speakerIdx = 0;
-									else if (nonUsers.Contains(message.characterId)) // Character (there can be many)
-									{
-										indexById.Add(message.characterId, index);
-										speakerIdx = index++;
-									}
-									else // Unknown character id
-										return null;
-								}
-
-								return new ChatHistory.Message() {
-									instanceId = message.messageId,
-									speaker = speakerIdx,
-									creationDate = message.createdAt,
-									updateDate = message.updatedAt,
-									activeSwipe = swipes.OrderByDescending(x => x.active).Select(x => x.index).First(),
-									swipes = swipes.Select(x => x.text)
-									.ToArray(),
-								};
-							})
-							.NotNull()
-							.ToList();
-
-						var participants = indexById
-							.Select(kvp => new {
-								index = kvp.Value,
-								id = kvp.Key,
-							})
-							.OrderBy(x => x.index)
-							.Select(x => {
-								_Character character;
-								if (characterLookup.TryGetValue(x.id, out character))
-									return character;
-								return default(_Character);
-							})
-							.Where(c => c.instanceId != null)
-							.ToList();
-						participants.Insert(0, canonicalUser);
-
-						if (groupMembers.Count < 2)
-							continue; // Error
-
-						// Insert greeting
-						if (string.IsNullOrEmpty(chats[i].staging.greeting) == false)
-						{
-							string userName = Utility.FirstNonEmpty(groupMembers[0].name, Constants.DefaultUserName);
-							string characterName = Utility.FirstNonEmpty(groupMembers[1].name,Constants.DefaultCharacterName);
-
-							var sb = new StringBuilder(GingerString.FromFaraday(chats[i].staging.greeting).ToString());
-							sb.Replace(GingerString.CharacterMarker, characterName, true);
-							sb.Replace(GingerString.UserMarker, userName, true);
-
-							entries.Insert(0, new ChatHistory.Message() {
-								speaker = 1,
-								creationDate = chats[i].creationDate,
-								updateDate = chats[i].updateDate,
-								activeSwipe = 0,
-								swipes = new string[1] { sb.ToString() },
-							});
-						}
-
-						var chatInstance = new ChatInstance() {
-							instanceId = chats[i].instanceId,
-							creationDate = chats[i].creationDate,
-							updateDate = chats[i].updateDate,
-							name = chats[i].name,
-							participants = groupMembers.Select(c => c.instanceId).ToArray(),
-							staging = chats[i].staging,
-							parameters = chats[i].parameters,
-							history = new ChatHistory() {
-								messages = entries.ToArray(),
-							},
-						};
-
-						lsChatInstances.Add(chatInstance);
+						var chatInstance = FetchChatInstance(connection, chats[i], characters, groupMembers);
+						if (chatInstance != null)
+							lsChatInstances.Add(chatInstance);
 					}
 
 					chatInstances = lsChatInstances
@@ -2332,7 +2195,7 @@ namespace Ginger.Integration
 			catch (FileNotFoundException e)
 			{
 				chatInstances = null;
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -2346,12 +2209,309 @@ namespace Ginger.Integration
 			}
 		}
 
+		public static Error GetChat(string chatId, string groupId, out ChatInstance chatInstance)
+		{
+			if (ConnectionEstablished == false)
+			{
+				chatInstance = null;
+				return Error.NotConnected;
+			}
+
+			if (string.IsNullOrEmpty(chatId) || string.IsNullOrEmpty(groupId))
+			{
+				chatInstance = null;
+				return Error.InvalidArgument;
+			}
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					List<_Character> characters;
+					var error = FetchCharacters(connection, out characters);
+					if (error != Error.NoError)
+					{
+						chatInstance = null;
+						return error;
+					}
+					List<_Character> groupMembers;
+					error = FetchGroupMembers(connection, groupId, null, out groupMembers);
+					if (error != Error.NoError)
+					{
+						chatInstance = null;
+						return error;
+					}
+
+					var lsChatInstances = new List<ChatInstance>();
+					_Chat chat;
+					using (var cmdChat = connection.CreateCommand())
+					{
+						cmdChat.CommandText =
+						@"
+							SELECT 
+								name, createdAt, updatedAt, 
+								modelInstructions, context, greetingDialogue, customDialogue, grammar,
+								model, temperature, topP, minP, minPEnabled, topK, 
+								repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, 
+								authorNote, ttsAutoplay, ttsInputFilter
+							FROM Chat
+							WHERE id = $chatId;
+						";
+						cmdChat.Parameters.AddWithValue("$chatId", chatId);
+
+						using (var reader = cmdChat.ExecuteReader())
+						{
+							int untitledCounter = 0;
+							if (reader.Read() == false)
+							{
+								chatInstance = null;
+								return Error.NotFound;
+							}
+							
+							string name = reader.GetString(0);
+							DateTime createdAt = reader.GetUnixTime(1);
+							DateTime updatedAt = reader.GetUnixTime(2);
+
+							// Staging
+							string system = reader.GetString(3);
+							string scenario = reader.GetString(4);
+							string greeting = reader.GetString(5);
+							string example = reader.GetString(6);
+							string grammar = reader[7] as string;
+
+							// Parameters
+							string model = reader.GetString(8);
+							decimal temperature = reader.GetDecimal(9);
+							decimal topP = reader.GetDecimal(10);
+							decimal minP = reader.GetDecimal(11);
+							bool minPEnabled = reader.GetBoolean(12);
+							int topK = reader.GetInt32(13);
+							decimal repeatPenalty = reader.GetDecimal(14);
+							int repeatLastN = reader.GetInt32(15);
+							string promptTemplate = reader[16] as string;
+							bool pruneExampleChat = reader.GetBoolean(17);
+							string authorNote = reader.GetString(18);
+							bool ttsAutoPlay = reader.GetBoolean(19);
+							string ttsInputFilter = reader.GetString(20);
+
+							if (string.IsNullOrWhiteSpace(name))
+							{
+								if (++untitledCounter > 1)
+									name = string.Concat(ChatInstance.DefaultName, " #", untitledCounter.ToString());
+								else
+									name = ChatInstance.DefaultName;
+							}
+
+							chat = new _Chat() {
+								instanceId = chatId,
+								creationDate = createdAt,
+								updateDate = updatedAt,
+								name = name,
+								staging = new ChatStaging() {
+									system = system,
+									scenario = scenario,
+									greeting = greeting,
+									example = example,
+									grammar = grammar,
+								},
+								parameters = new ChatParameters() {
+									model = model,
+									temperature = temperature,
+									topP = topP,
+									minP = minP,
+									minPEnabled = minPEnabled,
+									topK = topK,
+									repeatPenalty = repeatPenalty,
+									repeatLastN = repeatLastN,
+									promptTemplate = promptTemplate,
+									pruneExampleChat = pruneExampleChat,
+									authorNote = authorNote,
+									ttsAutoPlay = ttsAutoPlay,
+									ttsInputFilter = ttsInputFilter,
+								}
+							};
+						}
+					}
+
+					// Collect messages
+					chatInstance = FetchChatInstance(connection, chat, characters, groupMembers);
+					if (chatInstance == null)
+						return Error.NotFound;
+					return Error.NoError;
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				chatInstance = null;
+				return Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				chatInstance = null;
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				chatInstance = null;
+				return Error.Unknown;
+			}
+		}
+
 		public struct CreateChatArguments
 		{
 			public string name;
 			public ChatStaging staging;
 			public ChatParameters parameters;
 			public ChatHistory history;
+		}
+
+		private static ChatInstance FetchChatInstance(SQLiteConnection connection, _Chat chatInfo, List<_Character> characters, List<_Character> groupMembers)
+		{
+			int index = 1;
+			var indexById = new Dictionary<string, int>();
+
+			string chatId = chatInfo.instanceId;
+			var characterLookup = characters.ToDictionary(c => c.instanceId, c => c);
+			var users = new HashSet<string>(characters.Where(c => c.isUser).Select(c => c.instanceId));
+			var nonUsers = new HashSet<string>(characters.Where(c => c.isUser == false).Select(c => c.instanceId));
+			var canonicalUser = groupMembers.FirstOrDefault(c => c.isUser);
+
+			var messages = new List<_Message>(64);
+			using (var cmdMessages = connection.CreateCommand())
+			{
+				cmdMessages.CommandText =
+				@"
+					SELECT 
+						R.messageId, M.createdAt, M.updatedAt, R.activeTimestamp, M.characterConfigId, R.text 
+					FROM RegenSwipe As R
+					INNER JOIN Message AS M ON M.id = R.messageId
+					WHERE R.messageId IN (
+						SELECT id
+						FROM Message
+						WHERE chatId = $chatId
+					)
+					ORDER BY M.createdAt ASC;
+				";
+				cmdMessages.Parameters.AddWithValue("$chatId", chatId);
+
+				using (var reader = cmdMessages.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						string messageId = reader.GetString(0);
+						DateTime createdAt = reader.GetUnixTime(1);
+						DateTime updatedAt = reader.GetUnixTime(2);
+						DateTime activeAt = reader.GetUnixTime(3);
+						string characterId = reader.GetString(4);
+						string text = reader.GetString(5);
+
+						messages.Add(new _Message() {
+							messageId = messageId,
+							createdAt = createdAt,
+							updatedAt = updatedAt,
+							activeAt = activeAt,
+							characterId = characterId,
+							text = text,
+						});
+					}
+				}
+			}
+
+			// Create entries
+			var entries = messages
+				.GroupBy(m => m.messageId)
+				.Select(g => {
+					int counter = 0;
+					var swipes = g.Select(m => new {
+						index = counter++,
+						text = m.text,
+						active = m.activeAt,
+					});
+
+					var message = g.First();
+
+					// Assign a character index
+					int speakerIdx;
+					if (indexById.TryGetValue(message.characterId, out speakerIdx) == false)
+					{
+						if (users.Contains(message.characterId)) // User (there can be many, but they should be treated as one)
+							speakerIdx = 0;
+						else if (nonUsers.Contains(message.characterId)) // Character (there can be many)
+						{
+							indexById.Add(message.characterId, index);
+							speakerIdx = index++;
+						}
+						else // Unknown character id
+							return null;
+					}
+
+					return new ChatHistory.Message() {
+						instanceId = message.messageId,
+						speaker = speakerIdx,
+						creationDate = message.createdAt,
+						updateDate = message.updatedAt,
+						activeSwipe = swipes.OrderByDescending(x => x.active).Select(x => x.index).First(),
+						swipes = swipes.Select(x => x.text)
+						.ToArray(),
+					};
+				})
+				.NotNull()
+				.ToList();
+
+			var participants = indexById
+				.Select(kvp => new {
+					index = kvp.Value,
+					id = kvp.Key,
+				})
+				.OrderBy(x => x.index)
+				.Select(x => {
+					_Character character;
+					if (characterLookup.TryGetValue(x.id, out character))
+						return character;
+					return default(_Character);
+				})
+				.Where(c => c.instanceId != null)
+				.ToList();
+			participants.Insert(0, canonicalUser);
+
+			if (groupMembers.Count < 2)
+				return null; // Error
+
+			// Insert greeting
+			if (string.IsNullOrEmpty(chatInfo.staging.greeting) == false)
+			{
+				string userName = Utility.FirstNonEmpty(groupMembers[0].name, Constants.DefaultUserName);
+				string characterName = Utility.FirstNonEmpty(groupMembers[1].name, Constants.DefaultCharacterName);
+
+				var sb = new StringBuilder(GingerString.FromFaraday(chatInfo.staging.greeting).ToString());
+				sb.Replace(GingerString.CharacterMarker, characterName, true);
+				sb.Replace(GingerString.UserMarker, userName, true);
+
+				entries.Insert(0, new ChatHistory.Message() {
+					speaker = 1,
+					creationDate = chatInfo.creationDate,
+					updateDate = chatInfo.updateDate,
+					activeSwipe = 0,
+					swipes = new string[1] { sb.ToString() },
+				});
+			}
+
+			var chatInstance = new ChatInstance() {
+				instanceId = chatInfo.instanceId,
+				creationDate = chatInfo.creationDate,
+				updateDate = chatInfo.updateDate,
+				name = chatInfo.name,
+				participants = groupMembers.Select(c => c.instanceId).ToArray(),
+				staging = chatInfo.staging,
+				parameters = chatInfo.parameters,
+				history = new ChatHistory() {
+					messages = entries.ToArray(),
+				},
+			};
+
+			return chatInstance;
 		}
 
 		public static Error CreateNewChat(CreateChatArguments args, string groupId, out ChatInstance chatInstance)
@@ -2424,11 +2584,12 @@ namespace Ginger.Integration
 					}
 
 					// Fetch group members
-					var groupMembers = FetchGroupMembers(connection, groupId, args.history);
-					if (groupMembers == null)
+					List<_Character> groupMembers;
+					var error = FetchGroupMembers(connection, groupId, args.history, out groupMembers);
+					if (error != Error.NoError)
 					{
 						chatInstance = null;
-						return Error.InvalidArgument;
+						return error;
 					}
 
 					// Write to database
@@ -2494,77 +2655,7 @@ namespace Ginger.Integration
 							}
 
 							// Write messages
-							var lsMessages = new List<ChatHistory.Message>();
-							int messageCount = args.history.messagesWithoutGreeting.Count();
-							if (messageCount > 0)
-							{
-								// Generate unique IDs
-								var messageIds = new string[messageCount];
-								var swipeIds = new string[messageCount];
-								for (int i = 0; i < messageIds.Length; ++i)
-								{
-									messageIds[i] = Cuid.NewCuid();
-									swipeIds[i] = Cuid.NewCuid();
-								}
-
-								using (var cmdMessages = new SQLiteCommand(connection))
-								{
-									var sbCommand = new StringBuilder();
-									sbCommand.AppendLine(
-									@"
-										INSERT INTO Message 
-											(id, createdAt, updatedAt, chatId, characterConfigId)
-										VALUES ");
-
-									int i = 0;
-									foreach (var message in args.history.messagesWithoutGreeting)
-									{
-										if (i > 0)
-											sbCommand.Append(",\n");
-										sbCommand.Append($"($messageId{i:000}, $createdAt{i:000}, $updatedAt{i:000}, $chatId, $charId{i:000})");
-
-										cmdMessages.Parameters.AddWithValue($"$messageId{i:000}", messageIds[i]);
-										cmdMessages.Parameters.AddWithValue($"$createdAt{i:000}", message.creationDate.ToUnixTimeMilliseconds());
-										cmdMessages.Parameters.AddWithValue($"$updatedAt{i:000}", message.updateDate.ToUnixTimeMilliseconds());
-										cmdMessages.Parameters.AddWithValue($"$charId{i:000}", groupMembers[message.speaker].instanceId);
-
-										lsMessages.Add(new ChatHistory.Message() {
-											instanceId = messageIds[i],
-											activeSwipe = 0,
-											creationDate = message.creationDate,
-											updateDate = message.updateDate,
-											speaker = message.speaker,
-											swipes = new string[1] { message.text },
-										});
-										++i;
-									}
-									sbCommand.Append(";");
-
-									sbCommand.AppendLine(
-									@"
-										INSERT INTO RegenSwipe
-											(id, createdAt, updatedAt, activeTimestamp, text, messageId)
-										VALUES ");
-									i = 0;
-									foreach (var message in args.history.messagesWithoutGreeting)
-									{
-										if (i > 0)
-											sbCommand.Append(",\n");
-										sbCommand.Append($"($swipeId{i:000}, $updatedAt{i:000}, $updatedAt{i:000}, $updatedAt{i:000}, $text{i:000}, $messageId{i:000})");
-
-										cmdMessages.Parameters.AddWithValue($"$swipeId{i:000}", swipeIds[i]);
-										cmdMessages.Parameters.AddWithValue($"$text{i:000}", message.text);
-										++i;
-									}
-									sbCommand.Append(";");
-									cmdMessages.CommandText = sbCommand.ToString();
-
-									cmdMessages.Parameters.AddWithValue("$chatId", chatId);
-
-									expectedUpdates += messageCount * 2;
-									updates += cmdMessages.ExecuteNonQuery();
-								}
-							}
+							var lsMessages = WriteChatMessages(connection, chatId, args.history, groupMembers, ref expectedUpdates, ref updates);
 							
 							if (updates != expectedUpdates)
 							{
@@ -2603,7 +2694,7 @@ namespace Ginger.Integration
 			{
 				Disconnect();
 				chatInstance = default(ChatInstance);
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -2663,7 +2754,13 @@ namespace Ginger.Integration
 								expectedUpdates += 1;
 								updates += cmdEditChat.ExecuteNonQuery();
 							}
-														
+							
+							if (updates == 0)
+							{
+								transaction.Rollback(); // Superfluous. jic.
+								return Error.NotFound;
+							}
+
 							if (updates != expectedUpdates)
 							{
 								transaction.Rollback();
@@ -2690,7 +2787,7 @@ namespace Ginger.Integration
 			catch (FileNotFoundException e)
 			{
 				Disconnect();
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -2754,7 +2851,7 @@ namespace Ginger.Integration
 			catch (FileNotFoundException e)
 			{
 				chatCount = 0;
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -2768,6 +2865,51 @@ namespace Ginger.Integration
 			}
 		}
 
+		public static Error ConfirmChatExists(string chatId)
+		{
+			if (ConnectionEstablished == false)
+				return Error.NotConnected;
+
+			if (string.IsNullOrEmpty(chatId))
+				return Error.InvalidArgument;
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					// Count chats
+					using (var cmdConfirm = connection.CreateCommand())
+					{ 
+						cmdConfirm.CommandText =
+						@"
+							SELECT 1
+							FROM Chat
+							WHERE id = $chatId
+						";
+						cmdConfirm.Parameters.AddWithValue("$chatId", chatId);
+
+						if (cmdConfirm.ExecuteScalar() == null)
+							return Error.NotFound;
+						return Error.NoError;
+					}
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				return Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				return Error.Unknown;
+			}
+		}
+
 		public static Error DeleteChat(ChatInstance chatInstance)
 		{
 			if (ConnectionEstablished == false)
@@ -2775,6 +2917,10 @@ namespace Ginger.Integration
 
 			if (chatInstance == null || string.IsNullOrEmpty(chatInstance.instanceId))
 				return Error.InvalidArgument;
+
+			var error = ConfirmChatExists(chatInstance.instanceId);
+			if (error != Error.NoError)
+				return error;
 
 			try
 			{
@@ -2829,7 +2975,7 @@ namespace Ginger.Integration
 			catch (FileNotFoundException e)
 			{
 				Disconnect();
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -2971,7 +3117,7 @@ namespace Ginger.Integration
 			catch (FileNotFoundException e)
 			{
 				Disconnect();
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -2996,6 +3142,10 @@ namespace Ginger.Integration
 			if (string.IsNullOrEmpty(chatInstance.instanceId) || string.IsNullOrEmpty(groupId))
 				return Error.InvalidArgument;
 
+			var error = ConfirmChatExists(chatInstance.instanceId);
+			if (error != Error.NoError)
+				return error;
+
 			try
 			{
 				using (var connection = CreateSQLiteConnection())
@@ -3010,11 +3160,12 @@ namespace Ginger.Integration
 					long updatedAt = now.ToUnixTimeMilliseconds();
 
 					// Fetch group members
-					var groupMembers = FetchGroupMembers(connection, groupId, chatInstance.history);
-					if (groupMembers == null)
+					List<_Character> groupMembers;
+					error = FetchGroupMembers(connection, groupId, chatInstance.history, out groupMembers);
+					if (error != Error.NoError)
 					{
 						chatInstance = null;
-						return Error.NotFound;
+						return error;
 					}
 
 					using (var transaction = connection.BeginTransaction())
@@ -3058,78 +3209,8 @@ namespace Ginger.Integration
 							}
 							
 							// Write messages
-							var lsMessages = new List<ChatHistory.Message>();
-							int messageCount = chatInstance.history.messagesWithoutGreeting.Count();
-							if (messageCount > 0)
-							{
-								// Generate unique IDs
-								var messageIds = new string[messageCount];
-								var swipeIds = new string[messageCount];
-								for (int i = 0; i < messageIds.Length; ++i)
-								{
-									messageIds[i] = Cuid.NewCuid();
-									swipeIds[i] = Cuid.NewCuid();
-								}
+							var lsMessages = WriteChatMessages(connection, chatId, chatInstance.history, groupMembers, ref expectedUpdates, ref updates);
 
-								using (var cmdMessages = new SQLiteCommand(connection))
-								{
-									var sbCommand = new StringBuilder();
-									sbCommand.AppendLine(
-									@"
-										INSERT INTO Message 
-											(id, createdAt, updatedAt, chatId, characterConfigId)
-										VALUES ");
-
-									int i = 0;
-									foreach (var message in chatInstance.history.messagesWithoutGreeting)
-									{
-										if (i > 0)
-											sbCommand.Append(",\n");
-										sbCommand.Append($"($messageId{i:000}, $createdAt{i:000}, $updatedAt{i:000}, $chatId, $charId{i:000})");
-
-										cmdMessages.Parameters.AddWithValue($"$messageId{i:000}", messageIds[i]);
-										cmdMessages.Parameters.AddWithValue($"$createdAt{i:000}", message.creationDate.ToUnixTimeMilliseconds());
-										cmdMessages.Parameters.AddWithValue($"$updatedAt{i:000}", message.updateDate.ToUnixTimeMilliseconds());
-										cmdMessages.Parameters.AddWithValue($"$charId{i:000}", groupMembers[message.speaker].instanceId);
-
-										lsMessages.Add(new ChatHistory.Message() {
-											instanceId = messageIds[i],
-											activeSwipe = 0,
-											creationDate = message.creationDate,
-											updateDate = message.updateDate,
-											speaker = message.speaker,
-											swipes = new string[1] { message.text },
-										});
-										++i;
-									}
-									sbCommand.Append(";");
-
-									sbCommand.AppendLine(
-									@"
-										INSERT INTO RegenSwipe
-											(id, createdAt, updatedAt, activeTimestamp, text, messageId)
-										VALUES ");
-									i = 0;
-									foreach (var message in chatInstance.history.messagesWithoutGreeting)
-									{
-										if (i > 0)
-											sbCommand.Append(",\n");
-										sbCommand.Append($"($swipeId{i:000}, $updatedAt{i:000}, $updatedAt{i:000}, $updatedAt{i:000}, $text{i:000}, $messageId{i:000})");
-
-										cmdMessages.Parameters.AddWithValue($"$swipeId{i:000}", swipeIds[i]);
-										cmdMessages.Parameters.AddWithValue($"$text{i:000}", message.text);
-										++i;
-									}
-									sbCommand.Append(";");
-									cmdMessages.CommandText = sbCommand.ToString();
-
-									cmdMessages.Parameters.AddWithValue("$chatId", chatId);
-
-									expectedUpdates += messageCount * 2;
-									updates += cmdMessages.ExecuteNonQuery();
-								}
-							}
-							
 							if (updates != expectedUpdates)
 							{
 								transaction.Rollback();
@@ -3161,7 +3242,7 @@ namespace Ginger.Integration
 			catch (FileNotFoundException e)
 			{
 				Disconnect();
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -3175,12 +3256,96 @@ namespace Ginger.Integration
 			}
 		}
 
+		private static List<ChatHistory.Message> WriteChatMessages(SQLiteConnection connection, string chatId, ChatHistory chatHistory, List<_Character> groupMembers, ref int expectedUpdates, ref int updates)
+		{
+			List<ChatHistory.Message> lsMessages = new List<ChatHistory.Message>();
+			int messageCount = chatHistory.messagesWithoutGreeting.Count();
+			if (messageCount == 0)
+				return lsMessages; // No messages
+
+			// Generate unique IDs
+			var messageIds = new string[messageCount];
+			for (int i = 0; i < messageIds.Length; ++i)
+				messageIds[i] = Cuid.NewCuid();
+
+			using (var cmdMessages = new SQLiteCommand(connection))
+			{
+				var sbCommand = new StringBuilder();
+				sbCommand.AppendLine(
+				@"
+					INSERT INTO Message 
+						(id, createdAt, updatedAt, chatId, characterConfigId)
+					VALUES ");
+
+				int iMessage = 0;
+				foreach (var message in chatHistory.messagesWithoutGreeting)
+				{
+					if (iMessage > 0)
+						sbCommand.Append(",\n");
+					sbCommand.Append($"($messageId{iMessage:000}, $createdAt{iMessage:000}, $updatedAt{iMessage:000}, $chatId, $charId{iMessage:000})");
+
+					cmdMessages.Parameters.AddWithValue($"$messageId{iMessage:000}", messageIds[iMessage]);
+					cmdMessages.Parameters.AddWithValue($"$createdAt{iMessage:000}", message.creationDate.ToUnixTimeMilliseconds());
+					cmdMessages.Parameters.AddWithValue($"$updatedAt{iMessage:000}", message.updateDate.ToUnixTimeMilliseconds());
+					cmdMessages.Parameters.AddWithValue($"$charId{iMessage:000}", groupMembers[message.speaker].instanceId);
+
+					lsMessages.Add(new ChatHistory.Message() {
+						instanceId = messageIds[iMessage],
+						activeSwipe = message.activeSwipe,
+						creationDate = message.creationDate,
+						updateDate = message.updateDate,
+						speaker = message.speaker,
+						swipes = message.swipes,
+					});
+					++iMessage;
+				}
+				sbCommand.Append(";");
+
+				sbCommand.AppendLine(
+				@"
+					INSERT INTO RegenSwipe
+						(id, createdAt, updatedAt, activeTimestamp, text, messageId)
+					VALUES ");
+				iMessage = 0;
+				int iSwipe = 0;
+				foreach (var message in chatHistory.messagesWithoutGreeting)
+				{
+					for (int i = 0; i < message.swipes.Length; ++i, ++iSwipe)
+					{
+						if (iMessage > 0)
+							sbCommand.Append(",\n");
+						sbCommand.Append($"($swipeId{iSwipe:000}, $createdAt{iSwipe:000}, $createdAt{iSwipe:000}, $activeAt{iSwipe:000}, $text{iSwipe:000}, $messageId{iMessage:000})");
+
+						DateTime activeTime = message.creationDate;
+						if (i == message.activeSwipe)
+							activeTime += TimeSpan.FromMilliseconds(5000);
+						DateTime swipeTime = message.creationDate + TimeSpan.FromMilliseconds(i * 10);
+						cmdMessages.Parameters.AddWithValue($"$swipeId{iSwipe:000}", Cuid.NewCuid());
+						cmdMessages.Parameters.AddWithValue($"$createdAt{iSwipe:000}", swipeTime.ToUnixTimeMilliseconds());
+						cmdMessages.Parameters.AddWithValue($"$activeAt{iSwipe:000}", activeTime.ToUnixTimeMilliseconds());
+						cmdMessages.Parameters.AddWithValue($"$text{iSwipe:000}", message.swipes[i]);
+						++expectedUpdates;
+					}
+					++iMessage;
+				}
+				sbCommand.Append(";");
+				cmdMessages.CommandText = sbCommand.ToString();
+
+				cmdMessages.Parameters.AddWithValue("$chatId", chatId);
+
+				expectedUpdates += messageCount;
+				updates += cmdMessages.ExecuteNonQuery();
+			}
+			return lsMessages;
+		}
+
 		private struct _SwipeRepair
 		{
 			public string instanceId;
 			public string chatId;
 			public string text;
 		}
+
 		public static Error RepairChats(GroupInstance groupInstance, out int modified)
 		{
 			if (ConnectionEstablished == false)
@@ -3350,7 +3515,7 @@ namespace Ginger.Integration
 			{
 				Disconnect();
 				modified = 0;
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -3372,9 +3537,6 @@ namespace Ginger.Integration
 				return Error.NotConnected;
 
 			if (parameters == null && staging == null)
-				return Error.InvalidArgument;
-
-			if (string.IsNullOrEmpty(chatId))
 				return Error.InvalidArgument;
 
 			try
@@ -3461,6 +3623,12 @@ namespace Ginger.Integration
 								updates += cmdUpdateChat.ExecuteNonQuery();
 							}
 							
+							if (updates == 0)
+							{
+								transaction.Rollback(); // Superfluous. jic.
+								return Error.NotFound;
+							}
+
 							if (updates != expectedUpdates)
 							{
 								transaction.Rollback();
@@ -3482,7 +3650,7 @@ namespace Ginger.Integration
 			catch (FileNotFoundException e)
 			{
 				Disconnect();
-				return Error.FileNotFound;
+				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
@@ -3778,91 +3946,118 @@ namespace Ginger.Integration
 			return imagesToSave.ContainsAny(i => i.data.isEmpty == false);
 		}
 
-		private static List<_Character> FetchCharacters(SQLiteConnection connection)
+		private static Error FetchCharacters(SQLiteConnection connection, out List<_Character> characters)
 		{
-			using (var cmdCharacters = connection.CreateCommand())
+			try
 			{
-				cmdCharacters.CommandText =
-				@"
+				using (var cmdCharacters = connection.CreateCommand())
+				{
+					cmdCharacters.CommandText =
+					@"
 					SELECT 
 						A.id, B.name, A.isUserControlled
 					FROM CharacterConfig AS A
 					INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id;
 				";
 
-				var members = new List<_Character>();
-				using (var reader = cmdCharacters.ExecuteReader())
-				{
-					while (reader.Read())
+					characters = new List<_Character>();
+					using (var reader = cmdCharacters.ExecuteReader())
 					{
-						string instanceId = reader.GetString(0);
-						string name = reader.GetString(1);
-						bool isUser = reader.GetBoolean(2);
-						members.Add(new _Character() {
-							instanceId = instanceId,
-							name = name,
-							isUser = isUser,
-						});
+						while (reader.Read())
+						{
+							string instanceId = reader.GetString(0);
+							string name = reader.GetString(1);
+							bool isUser = reader.GetBoolean(2);
+							characters.Add(new _Character() {
+								instanceId = instanceId,
+								name = name,
+								isUser = isUser,
+							});
+						}
 					}
+					if (characters.Count == 0)
+						return Error.NotFound;
+					return Error.NoError;
 				}
-
-				return members;
+			}
+			catch (SQLiteException e)
+			{
+				characters = null;
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				characters = null;
+				return Error.Unknown;
 			}
 		}
 
-		private static List<_Character> FetchGroupMembers(SQLiteConnection connection, string groupId, ChatHistory chatHistory = null)
+		private static Error FetchGroupMembers(SQLiteConnection connection, string groupId, ChatHistory chatHistory, out List<_Character> members)
 		{
-			using (var cmdGroupMembers = connection.CreateCommand())
+			try
 			{
-				cmdGroupMembers.CommandText =
-				@"
-					SELECT 
-						A.A, C.name, B.isUserControlled
-					FROM _CharacterConfigToGroupConfig AS A
-					INNER JOIN CharacterConfig AS B ON B.id = A.A
-					INNER JOIN CharacterConfigVersion AS C ON C.characterConfigId = B.id
-					WHERE A.B = $groupId;
-				";
-
-				cmdGroupMembers.Parameters.AddWithValue("$groupId", groupId);
-
-				var members = new List<_Character>();
-				using (var reader = cmdGroupMembers.ExecuteReader())
+				using (var cmdGroupMembers = connection.CreateCommand())
 				{
-					while (reader.Read())
+					cmdGroupMembers.CommandText =
+					@"
+						SELECT 
+							A.A, C.name, B.isUserControlled
+						FROM _CharacterConfigToGroupConfig AS A
+						INNER JOIN CharacterConfig AS B ON B.id = A.A
+						INNER JOIN CharacterConfigVersion AS C ON C.characterConfigId = B.id
+						WHERE A.B = $groupId;
+					";
+
+					cmdGroupMembers.Parameters.AddWithValue("$groupId", groupId);
+
+					members = new List<_Character>();
+					using (var reader = cmdGroupMembers.ExecuteReader())
 					{
-						string instanceId = reader.GetString(0);
-						string name = reader.GetString(1);
-						bool isUser = reader.GetBoolean(2);
-						members.Add(new _Character() {
-							instanceId = instanceId,
-							name = name,
-							isUser = isUser,
-						});
+						while (reader.Read())
+						{
+							string instanceId = reader.GetString(0);
+							string name = reader.GetString(1);
+							bool isUser = reader.GetBoolean(2);
+							members.Add(new _Character() {
+								instanceId = instanceId,
+								name = name,
+								isUser = isUser,
+							});
+						}
 					}
-				}
 
-				if (members.Count(c => c.isUser) > 1)
-				{
-					// Groups can only contain one user
-					return null;
-				}
-
-				// Validate message indices
-				if (chatHistory != null && chatHistory.messages != null)
-				{
-					for (int i = 0; i < chatHistory.messages.Length; ++i)
+					if (members.Count(c => c.isUser) > 1)
 					{
-						if (chatHistory.messages[i].speaker < 0 || chatHistory.messages[i].speaker >= members.Count)
-							return null;
+						// Groups can only contain one user
+						return Error.Unknown;
 					}
-				}
 
-				// Place user first
-				var user = members.FirstOrDefault(c => c.isUser);
-				members.Remove(user);
-				members.Insert(0, user);
-				return members;
+					// Validate message indices
+					if (chatHistory != null && chatHistory.messages != null)
+					{
+						for (int i = 0; i < chatHistory.messages.Length; ++i)
+						{
+							if (chatHistory.messages[i].speaker < 0 || chatHistory.messages[i].speaker >= members.Count)
+								return Error.Unknown;
+						}
+					}
+
+					// Place user first
+					var user = members.First(c => c.isUser);
+					members.Remove(user);
+					members.Insert(0, user);
+					return Error.NoError;
+				}
+			}
+			catch (SQLiteException e)
+			{
+				members = null;
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				members = null;
+				return Error.Unknown;
 			}
 		}
 		#endregion // Utilities

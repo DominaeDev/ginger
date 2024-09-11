@@ -1,9 +1,10 @@
-﻿using Ginger.Properties;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using System;
 using System.Collections.Generic;
+using Ginger.Properties;
+using Ginger.Integration;
 
 namespace Ginger
 {
@@ -25,7 +26,7 @@ namespace Ginger
 		public class Data
 		{
 			[JsonProperty("ChatItems")]
-			public ChatItem[] items = new ChatItem[0];
+			public ChatItem[] entries = new ChatItem[0];
 		}
 
 		public class ChatItem
@@ -41,25 +42,49 @@ namespace Ginger
 		public static BackyardChat FromChat(ChatHistory chatHistory)
 		{
 			BackyardChat chat = new BackyardChat();
-			var lsItems = new List<ChatItem>(chatHistory.count / 2 + 1);
+			var lsEntries = new List<ChatItem>(chatHistory.count / 2 + 1);
 
-			foreach (var pair in chatHistory.messagesWithoutGreeting.Pairwise())
+			int iMsg = 0;
+			if (chatHistory.hasGreeting) // Skip greeting
+				iMsg = 1;
+
+			string lastMessage = null;
+			for (; iMsg < chatHistory.messages.Length; ++iMsg)
 			{
-				lsItems.Add(new ChatItem() {
-					input = pair.Item1.text ?? "",
-					output = pair.Item2?.text ?? "",
-					timestamp = pair.Item1.creationDate.ToUnixTimeMilliseconds(),
-				});
+				var message = chatHistory.messages[iMsg];
+				if (message.speaker == 0) // Is user
+				{
+					// Check if previous message was from user
+					if (iMsg > 0 && chatHistory.messages[iMsg - 1].speaker == 0)
+					{
+						lsEntries.Add(new ChatItem() {
+							input = lastMessage,
+							output = "",
+							timestamp = chatHistory.messages[iMsg - 1].creationDate.ToUnixTimeMilliseconds(),
+						});
+					}
+					lastMessage = message.text;
+				}
+				else // Is character
+				{
+					lsEntries.Add(new ChatItem() {
+						input = lastMessage ?? "",
+						output = message.text ?? "",
+						timestamp = message.creationDate.ToUnixTimeMilliseconds(),
+					});
+					lastMessage = null;
+				}
+
 			}
 
-			chat.chat.items = lsItems.ToArray();
+			chat.chat.entries = lsEntries.ToArray();
 			return chat;
 		}
 
 		public ChatHistory ToChat()
 		{
 			var messages = new List<ChatHistory.Message>();
-			foreach (var item in chat.items)
+			foreach (var item in chat.entries)
 			{
 				DateTime inputTime;
 				DateTime outputTime;

@@ -15,10 +15,14 @@ namespace Ginger
 
 		static GingerChat()
 		{
+			JsonSchemaGenerator generator = new JsonSchemaGenerator();
+			JsonSchema schema = generator.Generate(typeof(GingerChat));
+			string jsonSchema = schema.ToString();
+
 			_schema = JsonSchema.Parse(Resources.ginger_chat_v1_schema);
 		}
 
-		[JsonProperty("name", Required = Required.Default)]
+		[JsonProperty("name", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
 		public string name;
 
 		[JsonProperty("createdAt", Required = Required.Default)]
@@ -41,12 +45,6 @@ namespace Ginger
 
 		public Message[] messages;
 
-		[JsonProperty("spec", Required = Required.Always)]
-		private string spec = "ginger-chat";
-
-		[JsonProperty("version", Required = Required.Always)]
-		private int version = 1;
-
 		public struct Speaker
 		{
 			public string id;
@@ -65,7 +63,7 @@ namespace Ginger
 				lsMessages.Add(new Message() {
 					speakerId = speakers[message.speaker].id,
 					text = message.text,
-					regens = message.swipes.Length > 1 ? message.swipes : null,
+					regens = message.swipes,
 					timestamp = message.creationDate.ToUnixTimeMilliseconds(),
 				});
 			}
@@ -92,27 +90,33 @@ namespace Ginger
 				if (indexById.TryGetValue(message.speakerId, out speakerIdx) == false)
 					return null; // Error
 
-				int activeSwipe = 0;
-				var swipes = new List<string>();
-				if (message.regens != null)
+				string[] swipes;
+				int activeSwipe;
+				if (message.regens != null && message.regens.Length > 0)
 				{
-					swipes.AddRange(message.regens);
-					activeSwipe = swipes.IndexOf(message.text);
-					if (activeSwipe == -1)
+					activeSwipe = Array.IndexOf(message.regens, message.text);
+					if (activeSwipe == -1 && message.text != null)
 					{
-						swipes.Insert(0, message.text);
-						activeSwipe = 0;
+						swipes = new string[message.regens.Length + 1];
+						swipes[swipes.Length - 1] = message.text;
+						Array.Copy(message.regens, swipes, message.regens.Length);
+						activeSwipe = swipes.Length - 1;
 					}
+					else
+						swipes = message.regens;
 				}
 				else
-					swipes.Add(message.text);
+				{
+					swipes = new string[1] { message.text };
+					activeSwipe = 0;
+				}
 
 				result.Add(new ChatHistory.Message() {
 					speaker = speakerIdx,
 					creationDate = timestamp,
 					updateDate = timestamp,
-					activeSwipe = 0,
-					swipes = swipes.ToArray(),
+					activeSwipe = activeSwipe,
+					swipes = swipes,
 				});
 			}
 
@@ -129,8 +133,7 @@ namespace Ginger
 				if (jObject.IsValid(_schema))
 				{
 					var chat = JsonConvert.DeserializeObject<GingerChat>(json);
-					if (chat.spec == "ginger-chat" && chat.version >= 1)
-						return chat;
+					return chat;
 				}
 			}
 			catch

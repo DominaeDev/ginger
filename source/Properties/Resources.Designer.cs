@@ -975,6 +975,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Chat not found..
+        /// </summary>
+        internal static string error_link_chat_not_found {
+            get {
+                return ResourceManager.GetString("error_link_chat_not_found", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to access character data. Character not found..
         /// </summary>
         internal static string error_link_create_backup {
@@ -1868,6 +1877,17 @@ namespace Ginger.Properties {
         internal static string msg_incremental_file_exists {
             get {
                 return ResourceManager.GetString("msg_incremental_file_exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The imported chat contains messages from more characters than there are in this chat.
+        ///
+        ///Do you still want to import it? (Some messages will be omitted.).
+        /// </summary>
+        internal static string msg_link_chat_too_many_speakers {
+            get {
+                return ResourceManager.GetString("msg_link_chat_too_many_speakers", resourceCulture);
             }
         }
         
