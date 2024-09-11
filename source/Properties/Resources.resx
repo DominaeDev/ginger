@@ -1089,6 +1089,9 @@ Would you like to reduce it to a more appropriate size?</value>
   <data name="error_link_chat_not_found" xml:space="preserve">
     <value>Chat not found.</value>
   </data>
+  <data name="error_link_create_backup_not_character" xml:space="preserve">
+    <value>Cannot create a backup from a group of characters. Please select an individual character.</value>
+  </data>
   <data name="msg_link_chat_too_many_speakers" xml:space="preserve">
     <value>The imported chat contains messages from more characters than there are in this chat.
 

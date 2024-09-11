@@ -993,6 +993,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot create a backup from a group of characters. Please select an individual character..
+        /// </summary>
+        internal static string error_link_create_backup_not_character {
+            get {
+                return ResourceManager.GetString("error_link_create_backup_not_character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to delete chat. Operation cancelled..
         /// </summary>
         internal static string error_link_delete_chat {
@@ -1508,14 +1517,14 @@ namespace Ginger.Properties {
         ///  &quot;type&quot;: &quot;object&quot;,
         ///  &quot;properties&quot;: {
         ///    &quot;name&quot;: {
-        ///      &quot;required&quot;: true,
+        ///      &quot;required&quot;: false,
         ///      &quot;type&quot;: [
         ///        &quot;string&quot;,
         ///        &quot;null&quot;
         ///      ]
         ///    },
         ///    &quot;createdAt&quot;: {
-        ///      &quot;required&quot;: true,
+        ///      &quot;required&quot;: false,
         ///      &quot;type&quot;: &quot;integer&quot;
         ///    },
         ///    &quot;speakers&quot;: {
@@ -1528,12 +1537,11 @@ namespace Ginger.Properties {
         ///        ]
         ///      }
         ///    },
-        ///    &quot;spec&quot;: {
+        ///    &quot;messages&quot;: {
         ///      &quot;required&quot;: true,
-        ///      &quot;type&quot;: &quot;string&quot;
-        ///    },
-        ///    &quot;version&quot;: {
-        ///     [rest of string was truncated]&quot;;.
+        ///      &quot;type&quot;: [
+        ///        &quot;array&quot;,
+        ///        &quot;null [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ginger_chat_v1_schema {
             get {
@@ -2764,34 +2772,41 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to {
-        ///  &quot;type&quot;: &quot;object&quot;,
-        ///  &quot;properties&quot;: {
-        ///    &quot;name&quot;: {
-        ///      &quot;required&quot;: false,
-        ///      &quot;type&quot;: [
-        ///        &quot;string&quot;,
-        ///        &quot;null&quot;
-        ///      ]
-        ///    },
-        ///    &quot;description&quot;: {
-        ///      &quot;required&quot;: false,
-        ///      &quot;type&quot;: [
-        ///        &quot;string&quot;,
-        ///        &quot;null&quot;
-        ///      ]
-        ///    },
-        ///    &quot;scan_depth&quot;: {
-        ///      &quot;required&quot;: false,
-        ///      &quot;type&quot;: &quot;integer&quot;
-        ///    },
-        ///    &quot;token_budget&quot;: {
-        ///      &quot;required&quot;: false,
-        ///      &quot;type&quot;: &quot;integer&quot;
-        ///    },
-        ///    &quot;recursive_scanning&quot;: {
-        ///      &quot;required&quot;: false,
-        ///      &quot;type&quot;: &quot;boolean&quot;
-        /// [rest of string was truncated]&quot;;.
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;name&quot;: {
+        ///			&quot;required&quot;: false,
+        ///			&quot;type&quot;: [
+        ///				&quot;string&quot;,
+        ///				&quot;null&quot;
+        ///			]
+        ///		},
+        ///		&quot;description&quot;: {
+        ///			&quot;required&quot;: false,
+        ///			&quot;type&quot;: [
+        ///				&quot;string&quot;,
+        ///				&quot;null&quot;
+        ///			]
+        ///		},
+        ///		&quot;scan_depth&quot;: {
+        ///			&quot;required&quot;: false,
+        ///			&quot;type&quot;: [
+        ///				&quot;integer&quot;,
+        ///				&quot;string&quot;
+        ///			]
+        ///		},
+        ///		&quot;token_budget&quot;: {
+        ///			&quot;required&quot;: false,
+        ///			&quot;type&quot;: [
+        ///				&quot;integer&quot;,
+        ///				&quot;string&quot;
+        ///			]
+        ///		},
+        ///		&quot;recursive_scanning&quot;: {
+        ///			&quot;required&quot;: false,
+        ///			&quot;type&quot;: &quot;boolean&quot;
+        ///		},
+        ///		&quot;entries [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string tavern_characterbook_v2_schema {
             get {
@@ -3023,33 +3038,39 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to {
-        ///  &quot;type&quot;: &quot;object&quot;,
-        ///  &quot;properties&quot;: {
-        ///    &quot;name&quot;: {
-        ///      &quot;required&quot;: false,
-        ///      &quot;type&quot;: &quot;string&quot;
-        ///    },
-        ///    &quot;description&quot;: {
-        ///      &quot;required&quot;: false,
-        ///      &quot;type&quot;: [
-        ///        &quot;string&quot;,
-        ///        &quot;null&quot;
-        ///      ]
-        ///    },
-        ///    &quot;scan_depth&quot;: {
-        ///      &quot;required&quot;: false,
-        ///      &quot;type&quot;: &quot;integer&quot;
-        ///    },
-        ///    &quot;token_budget&quot;: {
-        ///      &quot;required&quot;: false,
-        ///      &quot;type&quot;: &quot;integer&quot;
-        ///    },
-        ///    &quot;recursive_scanning&quot;: {
-        ///      &quot;required&quot;: false,
-        ///      &quot;type&quot;: &quot;boolean&quot;
-        ///    },
-        ///    &quot;entries&quot;: {
-        ///      &quot;requ [rest of string was truncated]&quot;;.
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;name&quot;: {
+        ///			&quot;required&quot;: false,
+        ///			&quot;type&quot;: &quot;string&quot;
+        ///		},
+        ///		&quot;description&quot;: {
+        ///			&quot;required&quot;: false,
+        ///			&quot;type&quot;: [
+        ///				&quot;string&quot;,
+        ///				&quot;null&quot;
+        ///			]
+        ///		},
+        ///		&quot;scan_depth&quot;: {
+        ///			&quot;required&quot;: false,
+        ///			&quot;type&quot;: [
+        ///				&quot;integer&quot;,
+        ///				&quot;string&quot;
+        ///			]
+        ///		},
+        ///		&quot;token_budget&quot;: {
+        ///			&quot;required&quot;: false,
+        ///			&quot;type&quot;: [
+        ///				&quot;integer&quot;,
+        ///				&quot;string&quot;
+        ///			]
+        ///		},
+        ///		&quot;recursive_scanning&quot;: {
+        ///			&quot;required&quot;: false,
+        ///			&quot;type&quot;: &quot;boolean&quot;
+        ///		},
+        ///		&quot;entries&quot;: {
+        ///			&quot;required&quot;: true, [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string tavern_worldbook_schema {
             get {

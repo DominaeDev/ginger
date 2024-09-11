@@ -168,7 +168,7 @@ namespace Ginger
 			this.Name = "LinkSelectChatGroupDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Select a character or group";
+			this.Text = "Select a character";
 			listPanel.ResumeLayout(false);
 			buttonLayout.ResumeLayout(false);
 			this.ResumeLayout(false);

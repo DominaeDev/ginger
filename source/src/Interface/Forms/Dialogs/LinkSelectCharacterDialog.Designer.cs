@@ -148,9 +148,9 @@ namespace Ginger
 			this.cbCreateLink.AutoSize = true;
 			this.cbCreateLink.Location = new System.Drawing.Point(11, 334);
 			this.cbCreateLink.Name = "cbCreateLink";
-			this.cbCreateLink.Size = new System.Drawing.Size(148, 19);
+			this.cbCreateLink.Size = new System.Drawing.Size(143, 19);
 			this.cbCreateLink.TabIndex = 3;
-			this.cbCreateLink.Text = "Create link to character";
+			this.cbCreateLink.Text = "Create a character link";
 			this.cbCreateLink.UseVisualStyleBackColor = true;
 			// 
 			// toolTip
@@ -181,7 +181,7 @@ namespace Ginger
 			this.Name = "LinkSelectCharacterDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Open Backyard AI character";
+			this.Text = "Import character from Backyard AI";
 			listPanel.ResumeLayout(false);
 			buttonLayout.ResumeLayout(false);
 			this.ResumeLayout(false);

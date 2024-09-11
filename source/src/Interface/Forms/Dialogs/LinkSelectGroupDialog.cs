@@ -34,6 +34,9 @@ namespace Ginger
 			if (Backyard.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
 				_chatCounts = new Dictionary<string, Backyard.ChatCount>(); // Empty
 
+			if (Groups.ContainsAny(g => g.members.Length > 2))
+				this.Text = "Select a character or group";
+
 			PopulateTree(false);
 
 			treeView.SelectedNode = null;

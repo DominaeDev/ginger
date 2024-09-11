@@ -1105,8 +1105,17 @@ namespace Ginger
 
 		private bool CreateBackup()
 		{
+			if (_groupInstance.isEmpty)
+				return false;
+
+			if (_groupInstance.members.Length > 2)
+			{
+				MessageBox.Show(Resources.error_link_create_backup_not_character, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return false;
+			}
+
 			CharacterInstance characterInstance;
-			characterInstance = Group.members
+			characterInstance = _groupInstance.members
 				.Select(id => Backyard.GetCharacter(id))
 				.FirstOrDefault(c => c.isUser == false);
 

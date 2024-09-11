@@ -366,6 +366,7 @@
     <Compile Include="src\Model\Formats\ChatLogs\BackyardChat.cs" />
     <Compile Include="src\Model\Formats\CharacterCards\FaradayCardV4.cs" />
     <Compile Include="src\Model\Formats\CharacterCards\FaradayCardV3.cs" />
+    <Compile Include="src\Model\Formats\Lorebooks\TavernWorldbook.cs" />
     <Compile Include="src\Utility\Integration\ChatHistory.cs" />
     <Compile Include="src\Model\Formats\CharacterCards\TavernCardV3.cs" />
     <Compile Include="src\Model\Formats\CharacterCards\TextGenWebUICard.cs" />
