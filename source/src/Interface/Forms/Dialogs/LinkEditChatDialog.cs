@@ -72,7 +72,6 @@ namespace Ginger
 			chatInstanceList.Columns[0].Width = chatInstanceList.Width - chatInstanceList.Columns[1].Width - 4;
 			chatInstanceList.Items.Clear();
 
-			portraitImage.ShowText = false;
 			RefreshPortraitPosition();
 
 			// Fix for flickering cursor
@@ -1489,6 +1488,7 @@ namespace Ginger
 			if (_groupInstance.isEmpty)
 			{
 				portraitImage.SetImage(null);
+				portraitPanel.Visible = false;
 				return;
 			}
 
@@ -1505,10 +1505,12 @@ namespace Ginger
 				if (Utility.LoadImageFromFile(imageUrls[0], out image))
 				{
 					portraitImage.SetImage(ImageRef.FromImage(image));
+					portraitPanel.Visible = true;
 					return;
 				}
 			}
 			portraitImage.SetImage(null);
+			portraitPanel.Visible = false;
 		}
 
 		private void RefreshPortraitPosition()

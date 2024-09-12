@@ -269,7 +269,7 @@ namespace Ginger {
 			this.saveLinkedMenuItem.Name = "saveLinkedMenuItem";
 			this.saveLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+U";
 			this.saveLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
-			this.saveLinkedMenuItem.Text = "Update character";
+			this.saveLinkedMenuItem.Text = "Save changes";
 			this.saveLinkedMenuItem.Click += new System.EventHandler(this.saveLinkedMenuItem_Click);
 			// 
 			// saveNewLinkedMenuItem

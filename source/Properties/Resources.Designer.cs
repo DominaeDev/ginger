@@ -3452,7 +3452,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove instances of &quot;#{character}:&quot; and &quot;#{user}:&quot; from old chats with this character..
+        ///   Looks up a localized string similar to Remove instances of &quot;#{character}:&quot; and &quot;#{user}:&quot; from this character&apos;s chat logs..
         /// </summary>
         internal static string tooltip_link_repair_chat {
             get {

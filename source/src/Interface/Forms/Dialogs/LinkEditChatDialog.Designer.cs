@@ -46,6 +46,8 @@ namespace Ginger
 			this.chatInstanceList = new System.Windows.Forms.ListView();
 			this.imageList = new System.Windows.Forms.ImageList(this.components);
 			this.portraitPanel = new System.Windows.Forms.Panel();
+			this.portraitImage = new Ginger.PortraitPreview();
+			this.chatView = new Ginger.ChatListBox();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -69,8 +71,6 @@ namespace Ginger
 			this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusChatLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.splitter = new System.Windows.Forms.Splitter();
-			this.chatView = new Ginger.ChatListBox();
-			this.portraitImage = new Ginger.PortraitPreview();
 			leftPanel = new System.Windows.Forms.Panel();
 			columnTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			columnDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -78,10 +78,10 @@ namespace Ginger
 			leftPanel.SuspendLayout();
 			this.groupBox.SuspendLayout();
 			this.portraitPanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).BeginInit();
 			centerPanel.SuspendLayout();
 			this.menuBar.SuspendLayout();
 			this.statusBar.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// leftPanel
@@ -100,12 +100,12 @@ namespace Ginger
 			// 
 			this.groupBox.Controls.Add(this.chatInstanceList);
 			this.groupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.groupBox.Location = new System.Drawing.Point(3, 164);
+			this.groupBox.Location = new System.Drawing.Point(3, 204);
 			this.groupBox.Name = "groupBox";
-			this.groupBox.Size = new System.Drawing.Size(255, 549);
+			this.groupBox.Size = new System.Drawing.Size(255, 509);
 			this.groupBox.TabIndex = 1;
 			this.groupBox.TabStop = false;
-			this.groupBox.Text = "Chats";
+			this.groupBox.Text = "Chat logs";
 			// 
 			// chatInstanceList
 			// 
@@ -131,7 +131,7 @@ namespace Ginger
 			this.chatInstanceList.MultiSelect = false;
 			this.chatInstanceList.Name = "chatInstanceList";
 			this.chatInstanceList.ShowItemToolTips = true;
-			this.chatInstanceList.Size = new System.Drawing.Size(249, 527);
+			this.chatInstanceList.Size = new System.Drawing.Size(249, 487);
 			this.chatInstanceList.SmallImageList = this.imageList;
 			this.chatInstanceList.TabIndex = 0;
 			this.chatInstanceList.UseCompatibleStateImageBehavior = false;
@@ -167,8 +167,20 @@ namespace Ginger
 			this.portraitPanel.Location = new System.Drawing.Point(3, 2);
 			this.portraitPanel.Margin = new System.Windows.Forms.Padding(0);
 			this.portraitPanel.Name = "portraitPanel";
-			this.portraitPanel.Size = new System.Drawing.Size(255, 162);
+			this.portraitPanel.Size = new System.Drawing.Size(255, 202);
 			this.portraitPanel.TabIndex = 2;
+			// 
+			// portraitImage
+			// 
+			this.portraitImage.AllowDrop = true;
+			this.portraitImage.BackColor = System.Drawing.Color.DimGray;
+			this.portraitImage.BackgroundImage = global::Ginger.Properties.Resources.checker;
+			this.portraitImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.portraitImage.Location = new System.Drawing.Point(3, 2);
+			this.portraitImage.Name = "portraitImage";
+			this.portraitImage.Size = new System.Drawing.Size(150, 200);
+			this.portraitImage.TabIndex = 1;
+			this.portraitImage.TabStop = false;
 			// 
 			// centerPanel
 			// 
@@ -178,6 +190,18 @@ namespace Ginger
 			centerPanel.Name = "centerPanel";
 			centerPanel.Size = new System.Drawing.Size(772, 715);
 			centerPanel.TabIndex = 1;
+			// 
+			// chatView
+			// 
+			this.chatView.BackColor = System.Drawing.Color.Gray;
+			this.chatView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.chatView.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.chatView.Location = new System.Drawing.Point(0, 0);
+			this.chatView.Name = "chatView";
+			this.chatView.Padding = new System.Windows.Forms.Padding(1, 0, 0, 0);
+			this.chatView.Size = new System.Drawing.Size(772, 715);
+			this.chatView.TabIndex = 0;
+			this.chatView.OnContextMenu += new System.EventHandler<Ginger.ChatListBox.ContextMenuEventArgs>(this.chatView_OnContextMenu);
 			// 
 			// toolTip
 			// 
@@ -297,33 +321,33 @@ namespace Ginger
 			// createBackupMenuItem
 			// 
 			this.createBackupMenuItem.Name = "createBackupMenuItem";
-			this.createBackupMenuItem.Size = new System.Drawing.Size(179, 22);
+			this.createBackupMenuItem.Size = new System.Drawing.Size(184, 22);
 			this.createBackupMenuItem.Text = "Create &backup...";
 			this.createBackupMenuItem.Click += new System.EventHandler(this.createBackupMenuItem_Click);
 			// 
 			// restoreBackupMenuItem
 			// 
 			this.restoreBackupMenuItem.Name = "restoreBackupMenuItem";
-			this.restoreBackupMenuItem.Size = new System.Drawing.Size(179, 22);
+			this.restoreBackupMenuItem.Size = new System.Drawing.Size(184, 22);
 			this.restoreBackupMenuItem.Text = "&Restore backup...";
 			this.restoreBackupMenuItem.Click += new System.EventHandler(this.restoreBackupMenuItem_Click);
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(176, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(181, 6);
 			// 
 			// repairChatsMenuItem
 			// 
 			this.repairChatsMenuItem.Name = "repairChatsMenuItem";
-			this.repairChatsMenuItem.Size = new System.Drawing.Size(179, 22);
-			this.repairChatsMenuItem.Text = "&Fix legacy chats...";
+			this.repairChatsMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.repairChatsMenuItem.Text = "&Repair legacy chats...";
 			this.repairChatsMenuItem.Click += new System.EventHandler(this.repairChatsMenuItem_Click);
 			// 
 			// purgeMenuItem
 			// 
 			this.purgeMenuItem.Name = "purgeMenuItem";
-			this.purgeMenuItem.Size = new System.Drawing.Size(179, 22);
+			this.purgeMenuItem.Size = new System.Drawing.Size(184, 22);
 			this.purgeMenuItem.Text = "&Purge chat history...";
 			this.purgeMenuItem.Click += new System.EventHandler(this.purgeMenuItem_Click);
 			// 
@@ -363,31 +387,6 @@ namespace Ginger
 			this.splitter.TabStop = false;
 			this.splitter.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitter_SplitterMoved);
 			// 
-			// chatView
-			// 
-			this.chatView.BackColor = System.Drawing.Color.Gray;
-			this.chatView.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.chatView.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.chatView.Location = new System.Drawing.Point(0, 0);
-			this.chatView.Name = "chatView";
-			this.chatView.Padding = new System.Windows.Forms.Padding(1, 0, 0, 0);
-			this.chatView.Size = new System.Drawing.Size(772, 715);
-			this.chatView.TabIndex = 0;
-			this.chatView.OnContextMenu += new System.EventHandler<Ginger.ChatListBox.ContextMenuEventArgs>(this.chatView_OnContextMenu);
-			// 
-			// portraitImage
-			// 
-			this.portraitImage.AllowDrop = true;
-			this.portraitImage.BackColor = System.Drawing.Color.DimGray;
-			this.portraitImage.BackgroundImage = global::Ginger.Properties.Resources.checker;
-			this.portraitImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.portraitImage.Location = new System.Drawing.Point(3, 2);
-			this.portraitImage.Name = "portraitImage";
-			this.portraitImage.ShowText = true;
-			this.portraitImage.Size = new System.Drawing.Size(140, 160);
-			this.portraitImage.TabIndex = 1;
-			this.portraitImage.TabStop = false;
-			// 
 			// LinkEditChatDialog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -410,12 +409,12 @@ namespace Ginger
 			leftPanel.ResumeLayout(false);
 			this.groupBox.ResumeLayout(false);
 			this.portraitPanel.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).EndInit();
 			centerPanel.ResumeLayout(false);
 			this.menuBar.ResumeLayout(false);
 			this.menuBar.PerformLayout();
 			this.statusBar.ResumeLayout(false);
 			this.statusBar.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

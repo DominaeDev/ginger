@@ -13,8 +13,6 @@ namespace Ginger
 		}
 		public event EventHandler<ChangePortraitImageEventArgs> ChangePortraitImage;
 
-		public bool ShowText { get; set; } = true;
-
 		private ImageRef _image = null;
 
 		public PortraitPreview()
@@ -34,8 +32,7 @@ namespace Ginger
 				stringFormat.Alignment = StringAlignment.Center;
 				stringFormat.LineAlignment = StringAlignment.Center;
 
-				if (ShowText)
-					pe.Graphics.DrawString(Resources.msg_drop_image, Font, Brushes.White, ClientRectangle, stringFormat);
+				pe.Graphics.DrawString(Resources.msg_drop_image, Font, Brushes.White, ClientRectangle, stringFormat);
 			}
 		}
 

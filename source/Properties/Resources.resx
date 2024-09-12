@@ -975,7 +975,7 @@ Are you sure you want to permanently delete the messages?</value>
     <value>Delete all chats for the current character.</value>
   </data>
   <data name="tooltip_link_repair_chat" xml:space="preserve">
-    <value>Remove instances of "#{character}:" and "#{user}:" from old chats with this character.</value>
+    <value>Remove instances of "#{character}:" and "#{user}:" from this character's chat logs.</value>
   </data>
   <data name="tooltip_link_scrub_chat" xml:space="preserve">
     <value>Delete this message and any messages below it.</value>
