@@ -13,6 +13,8 @@ namespace Ginger
 		}
 		public event EventHandler<ChangePortraitImageEventArgs> ChangePortraitImage;
 
+		public bool ShowText { get; set; } = true;
+
 		private ImageRef _image = null;
 
 		public PortraitPreview()
@@ -32,7 +34,8 @@ namespace Ginger
 				stringFormat.Alignment = StringAlignment.Center;
 				stringFormat.LineAlignment = StringAlignment.Center;
 
-				pe.Graphics.DrawString(Resources.msg_drop_image, Font, Brushes.White, ClientRectangle, stringFormat);
+				if (ShowText)
+					pe.Graphics.DrawString(Resources.msg_drop_image, Font, Brushes.White, ClientRectangle, stringFormat);
 			}
 		}
 
@@ -92,11 +95,19 @@ namespace Ginger
 				return;
 			}
 
-			if (image.Width > this.Width || image.Height > this.Height)
+			ResizeImage();
+		}
+
+		public void ResizeImage()
+		{
+			if (_image == null)
+				return;
+
+			if (_image.Width > this.Width || _image.Height > this.Height)
 			{
 				Image bmpNewImage = new Bitmap(this.Width, this.Height);
-				int srcWidth = image.Width;
-				int srcHeight = image.Height;
+				int srcWidth = _image.Width;
+				int srcHeight = _image.Height;
 				int fitWidth = this.Width;
 				int fitHeight = this.Height;
 				using (Graphics gfxNewImage = Graphics.FromImage(bmpNewImage))
@@ -104,17 +115,16 @@ namespace Ginger
 					float scale = Math.Max((float)fitWidth / srcWidth, (float)fitHeight / srcHeight);
 					int newWidth = Math.Max((int)Math.Round(srcWidth * scale), 1);
 					int newHeight = Math.Max((int)Math.Round(srcHeight * scale), 1);
-					gfxNewImage.DrawImage(image,
-						new Rectangle(-(newWidth - fitWidth)/2, 0, newWidth, newHeight),
+					gfxNewImage.DrawImage(_image,
+						new Rectangle(-(newWidth - fitWidth) / 2, 0, newWidth, newHeight),
 							0, 0, srcWidth, srcHeight,
 							GraphicsUnit.Pixel);
 				}
 				this.Image = bmpNewImage;
-
 			}
 			else
 			{
-				this.Image = image.Clone();
+				this.Image = _image.Clone();
 			}
 		}
 
@@ -123,7 +133,7 @@ namespace Ginger
 			// No image: Single click
 			if (e.Button == MouseButtons.Left && this.Image == null)
 			{
-				ChangePortraitImage(this, new ChangePortraitImageEventArgs() {
+				ChangePortraitImage?.Invoke(this, new ChangePortraitImageEventArgs() {
 					Filename = null,
 				});
 			}
@@ -134,7 +144,7 @@ namespace Ginger
 			// Has image: Double click
 			if (e.Button == MouseButtons.Left && this.Image != null)
 			{
-				ChangePortraitImage(this, new ChangePortraitImageEventArgs() {
+				ChangePortraitImage?.Invoke(this, new ChangePortraitImageEventArgs() {
 					Filename = null,
 				});
 			}

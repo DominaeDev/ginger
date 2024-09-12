@@ -2174,7 +2174,6 @@ namespace Ginger
 			else
 			{
 				MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
-				//SetStatusBarMessage(Resources.msg_link_saved, Constants.StatusBarMessageInterval);
 			}
 		}
 		

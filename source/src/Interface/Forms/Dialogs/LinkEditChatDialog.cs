@@ -16,7 +16,7 @@ namespace Ginger
 {
 	public partial class LinkEditChatDialog : Form
 	{
-		public GroupInstance Group { get { return _groupInstance; } set { _groupInstance = value; } }
+		public GroupInstance Group { set { _groupInstance = value; } }
 		private GroupInstance _groupInstance;
 		private Dictionary<string, CharacterInstance> _charactersById;
 		private ChatInstance _selectedChatInstance = null;
@@ -72,8 +72,13 @@ namespace Ginger
 			chatInstanceList.Columns[0].Width = chatInstanceList.Width - chatInstanceList.Columns[1].Width - 4;
 			chatInstanceList.Items.Clear();
 
+			portraitImage.ShowText = false;
+			RefreshPortraitPosition();
+
 			// Fix for flickering cursor
 			SendMessage(chatInstanceList.Handle, LVM_SETHOTCURSOR, IntPtr.Zero, Cursors.Arrow.Handle);
+
+			_charactersById = Backyard.Characters.ToDictionary(c => c.instanceId, c => c);
 
 			RefreshTitle();
 		}
@@ -81,6 +86,7 @@ namespace Ginger
 		private void LinkEditChatDialog_Shown(object sender, EventArgs e)
 		{
 			RefreshChats();
+			RefreshPortrait();
 		}
 
 		private void RefreshTitle()
@@ -160,12 +166,14 @@ namespace Ginger
 				_lastWindowState = WindowState;
 
 				chatView.ResizeItems();
+				RefreshPortraitPosition();
 			}
 		}
 
 		private void LinkEditChatDialog_ResizeEnd(object sender, EventArgs e)
 		{
 			chatView.ResizeItems();
+			RefreshPortraitPosition();
 		}
 
 		private void chatList_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
@@ -576,6 +584,7 @@ namespace Ginger
 
 			chatView.Items.Clear();
 			PopulateChatList(true);
+			RefreshPortrait();
 		}
 
 		private void chatInstanceList_KeyDown(object sender, KeyEventArgs e)
@@ -806,7 +815,7 @@ namespace Ginger
 			if (_groupInstance.isEmpty)
 				return; // Error
 
-			var mr = MessageBox.Show(string.Format(Resources.msg_link_repair_chat, GetGroupTitle(_groupInstance)), Resources.cap_link_repair_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+			var mr = MessageBox.Show(string.Format(Resources.msg_link_repair_chat, GetGroupTitle(_groupInstance)), Resources.cap_link_repair_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
 			if (mr != DialogResult.Yes)
 				return;
 
@@ -930,7 +939,7 @@ namespace Ginger
 				return; // Error
 
 			// Confirm
-			if (MessageBox.Show(string.Format(Resources.msg_link_scrub_confirm, chatInstance.name), Resources.cap_link_scrub_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			if (MessageBox.Show(string.Format(Resources.msg_link_scrub_confirm, chatInstance.name), Resources.cap_link_scrub_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 				return;
 
 			// Fetch latest
@@ -1050,6 +1059,7 @@ namespace Ginger
 		private void refreshMenuItem_Click(object sender, EventArgs e)
 		{
 			RefreshChats();
+			RefreshPortrait();
 		}
 
 		private void RefreshChats()
@@ -1069,6 +1079,7 @@ namespace Ginger
 		private void splitter_SplitterMoved(object sender, SplitterEventArgs e)
 		{
 			chatView.ResizeItems();
+			RefreshPortraitPosition();
 		}
 
 		private void createBackupMenuItem_Click(object sender, EventArgs e)
@@ -1199,14 +1210,14 @@ namespace Ginger
 			}
 
 			// Confirmation
-			if (MessageBox.Show(string.Format(Resources.msg_link_restore_backup, backup.characterCard.data.displayName, backup.chats.Count), Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) == DialogResult.No)
+			if (MessageBox.Show(string.Format(Resources.msg_link_restore_backup, backup.characterCard.data.displayName, backup.chats.Count), Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No)
 			{
 				characterInstance = default(CharacterInstance);
 				return false;
 			}
 
 			// Import chat parameters?
-			if (backup.hasParameters && MessageBox.Show(Resources.msg_link_restore_backup_settings, Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) == DialogResult.No)
+			if (backup.hasParameters && MessageBox.Show(Resources.msg_link_restore_backup_settings, Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No)
 			{
 				// Strip parameters
 				foreach (var chat in backup.chats)
@@ -1423,6 +1434,38 @@ namespace Ginger
 			}
 
 			return base.ProcessCmdKey(ref msg, keyData);
+		}
+
+		private void RefreshPortrait()
+		{
+			if (_groupInstance.isEmpty)
+			{
+				portraitImage.SetImage(null);
+				return;
+			}
+
+			var character = _groupInstance.members
+				.Select(id => _charactersById.GetOrDefault(id))
+				.Where(c => c.isUser == false)
+				.FirstOrDefault();
+
+			string[] imageUrls;
+			var error = Backyard.GetImageUrls(character, out imageUrls);
+			if (error == Backyard.Error.NoError && imageUrls.Length > 0)
+			{
+				Image image;
+				if (Utility.LoadImageFromFile(imageUrls[0], out image))
+				{
+					portraitImage.SetImage(ImageRef.FromImage(image));
+					return;
+				}
+			}
+			portraitImage.SetImage(null);
+		}
+
+		private void RefreshPortraitPosition()
+		{
+			portraitImage.Left = (portraitPanel.Width - portraitImage.Width) / 2;
 		}
 	}
 }

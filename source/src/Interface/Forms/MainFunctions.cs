@@ -1075,7 +1075,16 @@ namespace Ginger
 			if (Current.ContainsV3Data)
 				formats |= FileUtil.Format.SillyTavernV3;
 
-			// Write to Backyard database?
+			// Linking: Check filename
+			if (Current.HasLink)
+			{
+				if (string.IsNullOrEmpty(Current.Link.filename))
+					Current.Link.filename = filename;
+				else if (string.Compare(Current.Link.filename, filename, true) != 0)
+					Current.Unlink(); // Saving as new
+			}
+
+			// Linking: Write to Backyard database?
 			bool bShouldAutosave =
 				AppSettings.BackyardLink.Autosave
 				&& Backyard.ConnectionEstablished
@@ -1083,7 +1092,6 @@ namespace Ginger
 			
 			// Check if link is still valid
 			Backyard.Error autosaveError = Backyard.Error.NoError;
-
 			if (bShouldAutosave)
 			{
 				CharacterInstance character;
@@ -1707,6 +1715,7 @@ namespace Ginger
 				CharacterInstance characterInstance;
 				if (Backyard.GetCharacter(Current.Link.characterId, out characterInstance))
 				{
+					Current.Link.filename = Current.Filename;
 					Current.Link.isActive = true;
 					Current.IsFileDirty = true;
 					Current.IsLinkDirty = false;

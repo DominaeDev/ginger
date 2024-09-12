@@ -5,6 +5,7 @@
 	<Description>Refer to a work of fiction such as a book, movie, or video game, etc.</Description>
 	<Author>Ginger</Author>
 	<Category>Story</Category>
+	<Order>10</Order>
 	
 	<!-- Parameters -->
 	<Text id="work-title" raw="true" required="true">

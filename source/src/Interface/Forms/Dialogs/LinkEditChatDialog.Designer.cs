@@ -45,6 +45,7 @@ namespace Ginger
 			this.groupBox = new System.Windows.Forms.GroupBox();
 			this.chatInstanceList = new System.Windows.Forms.ListView();
 			this.imageList = new System.Windows.Forms.ImageList(this.components);
+			this.portraitPanel = new System.Windows.Forms.Panel();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -69,22 +70,27 @@ namespace Ginger
 			this.statusChatLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.splitter = new System.Windows.Forms.Splitter();
 			this.chatView = new Ginger.ChatListBox();
+			this.portraitImage = new Ginger.PortraitPreview();
 			leftPanel = new System.Windows.Forms.Panel();
 			columnTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			columnDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			centerPanel = new System.Windows.Forms.Panel();
 			leftPanel.SuspendLayout();
 			this.groupBox.SuspendLayout();
+			this.portraitPanel.SuspendLayout();
 			centerPanel.SuspendLayout();
 			this.menuBar.SuspendLayout();
 			this.statusBar.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// leftPanel
 			// 
 			leftPanel.Controls.Add(this.groupBox);
+			leftPanel.Controls.Add(this.portraitPanel);
 			leftPanel.Dock = System.Windows.Forms.DockStyle.Left;
 			leftPanel.Location = new System.Drawing.Point(0, 24);
+			leftPanel.MaximumSize = new System.Drawing.Size(600, 0);
 			leftPanel.Name = "leftPanel";
 			leftPanel.Padding = new System.Windows.Forms.Padding(3, 2, 2, 2);
 			leftPanel.Size = new System.Drawing.Size(260, 715);
@@ -94,9 +100,9 @@ namespace Ginger
 			// 
 			this.groupBox.Controls.Add(this.chatInstanceList);
 			this.groupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.groupBox.Location = new System.Drawing.Point(3, 2);
+			this.groupBox.Location = new System.Drawing.Point(3, 164);
 			this.groupBox.Name = "groupBox";
-			this.groupBox.Size = new System.Drawing.Size(255, 711);
+			this.groupBox.Size = new System.Drawing.Size(255, 549);
 			this.groupBox.TabIndex = 1;
 			this.groupBox.TabStop = false;
 			this.groupBox.Text = "Chats";
@@ -125,7 +131,7 @@ namespace Ginger
 			this.chatInstanceList.MultiSelect = false;
 			this.chatInstanceList.Name = "chatInstanceList";
 			this.chatInstanceList.ShowItemToolTips = true;
-			this.chatInstanceList.Size = new System.Drawing.Size(249, 689);
+			this.chatInstanceList.Size = new System.Drawing.Size(249, 527);
 			this.chatInstanceList.SmallImageList = this.imageList;
 			this.chatInstanceList.TabIndex = 0;
 			this.chatInstanceList.UseCompatibleStateImageBehavior = false;
@@ -153,6 +159,16 @@ namespace Ginger
 			this.imageList.Images.SetKeyName(0, "chat_empty.png");
 			this.imageList.Images.SetKeyName(1, "chat_short.png");
 			this.imageList.Images.SetKeyName(2, "chat_long.png");
+			// 
+			// portraitPanel
+			// 
+			this.portraitPanel.Controls.Add(this.portraitImage);
+			this.portraitPanel.Dock = System.Windows.Forms.DockStyle.Top;
+			this.portraitPanel.Location = new System.Drawing.Point(3, 2);
+			this.portraitPanel.Margin = new System.Windows.Forms.Padding(0);
+			this.portraitPanel.Name = "portraitPanel";
+			this.portraitPanel.Size = new System.Drawing.Size(255, 162);
+			this.portraitPanel.TabIndex = 2;
 			// 
 			// centerPanel
 			// 
@@ -359,6 +375,19 @@ namespace Ginger
 			this.chatView.TabIndex = 0;
 			this.chatView.OnContextMenu += new System.EventHandler<Ginger.ChatListBox.ContextMenuEventArgs>(this.chatView_OnContextMenu);
 			// 
+			// portraitImage
+			// 
+			this.portraitImage.AllowDrop = true;
+			this.portraitImage.BackColor = System.Drawing.Color.DimGray;
+			this.portraitImage.BackgroundImage = global::Ginger.Properties.Resources.checker;
+			this.portraitImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.portraitImage.Location = new System.Drawing.Point(3, 2);
+			this.portraitImage.Name = "portraitImage";
+			this.portraitImage.ShowText = true;
+			this.portraitImage.Size = new System.Drawing.Size(140, 160);
+			this.portraitImage.TabIndex = 1;
+			this.portraitImage.TabStop = false;
+			// 
 			// LinkEditChatDialog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -380,11 +409,13 @@ namespace Ginger
 			this.Text = "Chat history";
 			leftPanel.ResumeLayout(false);
 			this.groupBox.ResumeLayout(false);
+			this.portraitPanel.ResumeLayout(false);
 			centerPanel.ResumeLayout(false);
 			this.menuBar.ResumeLayout(false);
 			this.menuBar.PerformLayout();
 			this.statusBar.ResumeLayout(false);
 			this.statusBar.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -418,5 +449,7 @@ namespace Ginger
 		private System.Windows.Forms.Splitter splitter;
 		private System.Windows.Forms.ToolStripMenuItem createBackupMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem restoreBackupMenuItem;
+		private PortraitPreview portraitImage;
+		private System.Windows.Forms.Panel portraitPanel;
 	}
 }

@@ -135,9 +135,10 @@ namespace Ginger.Integration
 
 		public class Link : IXmlLoadable, IXmlSaveable
 		{
-			public bool isActive;
 			public string characterId;
+			public string filename;
 			public DateTime updateDate;
+			public bool isActive;
 			public bool isDirty;
 
 			public struct Image
@@ -154,6 +155,8 @@ namespace Ginger.Integration
 				isActive = xmlNode.GetAttributeBool("active") && string.IsNullOrEmpty(characterId) == false;
 				updateDate = DateTimeExtensions.FromUnixTime(xmlNode.GetAttributeLong("updated"));
 				isDirty = xmlNode.GetAttributeBool("dirty");
+
+				filename = xmlNode.GetValueElement("File");
 
 				var imageNode = xmlNode.GetFirstElement("Image");
 				if (imageNode != null)
@@ -186,6 +189,8 @@ namespace Ginger.Integration
 				if (isActive)
 					xmlNode.AddAttribute("dirty", isDirty);
 
+				xmlNode.AddValueElement("File", filename);
+
 				if (imageLinks != null)
 				{
 					foreach (var image in imageLinks)
@@ -213,6 +218,8 @@ namespace Ginger.Integration
 						isActive = false; 
 					}
 				}
+				if (string.Compare(Current.Link.filename, Current.Filename, true) != 0)
+					isActive = false; // Different file
 			}
 		}
 
@@ -878,6 +885,79 @@ namespace Ginger.Integration
 			{
 				Disconnect();
 				card = null;
+				imageUrls = null;
+				return Error.Unknown;
+			}
+		}
+
+		public static Error GetImageUrls(CharacterInstance characterInstance, out string[] imageUrls)
+		{
+			if (ConnectionEstablished == false)
+			{
+				imageUrls = null;
+				return Error.NotConnected;
+			}
+
+			if (characterInstance.configId == null)
+			{
+				imageUrls = null;
+				return Error.InvalidArgument;
+			}
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					// Find portrait image file
+					var lsImageUrls = new List<string>();
+					using (var cmdImageLookup = connection.CreateCommand())
+					{ 
+						cmdImageLookup.CommandText = 
+						@"
+							SELECT 
+								imageUrl
+							FROM AppImage
+							WHERE id IN (
+								SELECT A
+								FROM _AppImageToCharacterConfigVersion
+								WHERE B = $configId
+							)
+							ORDER BY ""order"" ASC
+						";
+						cmdImageLookup.Parameters.AddWithValue("$configId", characterInstance.configId);
+
+						using (var reader = cmdImageLookup.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string filename = reader.GetString(0);
+								if (filename.BeginsWith("http")) // Remote URL -> Local filename
+									filename = Path.Combine(AppSettings.BackyardLink.Location, "images", Path.GetFileName(filename));
+								lsImageUrls.Add(filename);
+							}
+						}
+					}
+
+					imageUrls = lsImageUrls.ToArray();
+
+					connection.Close();
+					return Error.NoError;
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				imageUrls = null;
+				return Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				imageUrls = null;
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
 				imageUrls = null;
 				return Error.Unknown;
 			}
