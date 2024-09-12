@@ -195,9 +195,9 @@ namespace Ginger
 			List<Output> outputPerCharacter = new List<Output>();
 			option |= Option.All;
 			int numChannels = EnumHelper.ToInt(Recipe.Component.Count);
-			Recipe internalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalInternal).Instantiate();
-			Recipe externalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalExternal).Instantiate();
-			Recipe pruneScenarioRecipe = RecipeBook.GetRecipeByID(RecipeBook.PruneScenario).Instantiate();
+			Recipe internalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalInternal)?.Instantiate();
+			Recipe externalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalExternal)?.Instantiate();
+			Recipe pruneScenarioRecipe = RecipeBook.GetRecipeByID(RecipeBook.PruneScenario)?.Instantiate();
 
 			for (int index = 0; index < Current.Characters.Count; ++index)
 			{

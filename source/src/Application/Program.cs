@@ -19,6 +19,11 @@ namespace Ginger
 				return PostInstall.Execute();
 			}
 
+			if (Environment.Is64BitProcess)
+				AppDomain.CurrentDomain.AppendPrivatePath("Libraries/x64");
+			else
+				AppDomain.CurrentDomain.AppendPrivatePath("Libraries/x86");
+
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
