@@ -464,7 +464,7 @@ namespace Ginger
 				var intermediateFilename = Path.GetTempFileName();
 
 				// Write text file
-				using (StreamWriter outputFile = new StreamWriter(intermediateFilename))
+				using (StreamWriter outputFile = new StreamWriter(new FileStream(intermediateFilename, FileMode.Open, FileAccess.Write), Encoding.UTF8))
 				{
 					outputFile.Write(text);
 				}
@@ -1294,48 +1294,56 @@ namespace Ginger
 
 		public static ChatHistory ImportChat(string filename)
 		{
-			string json;
-			if (FileUtil.ReadTextFile(filename, out json) == false)
+			string textData;
+			if (FileUtil.ReadTextFile(filename, out textData) == false)
 				return null;
 
 			string ext = Path.GetExtension(filename).ToLowerInvariant();
 
 			if (ext == ".json")
 			{
-				if (BackyardChat.Validate(json))   // Backyard JSON (c.ai?)
+				if (BackyardChat.Validate(textData))   // Backyard JSON (c.ai?)
 				{
-					var chat = BackyardChat.FromJson(json);
+					var chat = BackyardChat.FromJson(textData);
 					if (chat != null)
 						return ChatHistory.LegacyFix(chat.ToChat());
 				}
-				else if (TextGenWebUIChat.Validate(json)) // Text generation web ui chat log
+				else if (TextGenWebUIChat.Validate(textData)) // Text generation web ui chat log
 				{
-					var chat = TextGenWebUIChat.FromJson(json);
+					var chat = TextGenWebUIChat.FromJson(textData);
 					if (chat != null)
 						return chat.ToChat();
 				} 
-				else if (AgnaiChat.Validate(json)) // Agnaistic
+				else if (AgnaiChat.Validate(textData)) // Agnaistic
 				{
-					var chat = AgnaiChat.FromJson(json);
+					var chat = AgnaiChat.FromJson(textData);
 					if (chat != null)
 						return chat.ToChat();
 				}
-				else if (GingerChat.Validate(json)) // Ginger
+				else if (GingerChat.Validate(textData)) // Ginger
 				{
-					var chat = GingerChat.FromJson(json);
+					var chat = GingerChat.FromJson(textData);
 					if (chat != null)
 						return chat.ToChat();
 				}
 			}
 			else if (ext == ".jsonl")
 			{
-				if (TavernChat.Validate(json)) // SillyTavern chat
+				if (TavernChat.Validate(textData)) // SillyTavern chat
 				{
-					var chat = TavernChat.FromJson(json);
+					var chat = TavernChat.FromJson(textData);
 					if (chat != null)
 						return chat.ToChat();
 				}
-
+			}
+			else if (ext == ".txt")
+			{
+				if (TextChat.Validate(textData))
+				{
+					var chat = TextChat.FromString(textData);
+					if (chat != null)
+						return chat.ToChat();
+				}
 			}
 
 			return null;
