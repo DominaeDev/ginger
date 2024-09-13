@@ -1563,12 +1563,12 @@ namespace Ginger
 				ClearStatusBarMessage();
 				return false;
 			}
-
+			
 			// Success
 			Current.ReadFaradayCard(faradayData, null);
-			if (dlg.ShouldLink)
-				Current.LinkWith(dlg.SelectedCharacter, null);
-			Current.ImportImages(images);
+
+			Backyard.Link.Image[] imageLinks;
+			Current.ImportImages(images, out imageLinks);
 
 			ClearStatusBarMessage();
 
@@ -1577,11 +1577,15 @@ namespace Ginger
 			Current.Filename = null;
 			Current.IsDirty = false;
 			Current.IsFileDirty = false;
-			Current.IsLinkDirty = false;
 			Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
 
-			if (dlg.ShouldLink)
+			if (MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+			{
+				Current.LinkWith(dlg.SelectedCharacter, imageLinks);
 				SetStatusBarMessage(Resources.status_link_create, Constants.StatusBarMessageInterval);
+				Current.IsFileDirty = false;
+				Current.IsLinkDirty = false;
+			}
 			return true;
 		}
 
@@ -1780,8 +1784,10 @@ namespace Ginger
 
 			// Success
 			Current.ReadFaradayCard(faradayData, null);
-			Current.LinkWith(characterInstance, null);
-			Current.ImportImages(images);
+
+			Backyard.Link.Image[] imageLinks;
+			Current.ImportImages(images, out imageLinks);
+			Current.LinkWith(characterInstance, imageLinks);
 			Current.IsDirty = true;
 			Current.IsLinkDirty = false;
 			

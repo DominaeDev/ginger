@@ -1920,6 +1920,17 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Do you want to create a link to the Backyard AI character?
+        ///
+        ///(Linking allows changes to be saved back to the same character.).
+        /// </summary>
+        internal static string msg_link_create_link {
+            get {
+                return ResourceManager.GetString("msg_link_create_link", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This will delete &apos;{0}&apos; and all of its messages. This action cannot be reversed.
         ///
         ///Are you sure you want to permanently delete this chat?.
@@ -1927,15 +1938,6 @@ namespace Ginger.Properties {
         internal static string msg_link_delete_confirm {
             get {
                 return ResourceManager.GetString("msg_link_delete_confirm", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Do you want to link this file to the Backyard AI representation of this character?.
-        /// </summary>
-        internal static string msg_link_new {
-            get {
-                return ResourceManager.GetString("msg_link_new", resourceCulture);
             }
         }
         
@@ -2594,7 +2596,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Link created.
+        ///   Looks up a localized string similar to Created link.
         /// </summary>
         internal static string status_link_create {
             get {
@@ -3717,7 +3719,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Resizes the image to an appropriate size..
+        ///   Looks up a localized string similar to Reduce the size of the portrait image to a more appropriate size..
         /// </summary>
         internal static string tooltip_resize_portrait_image {
             get {

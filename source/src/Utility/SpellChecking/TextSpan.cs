@@ -11,6 +11,8 @@ namespace Ginger
 
 		private static readonly char[] SpanBreakChars = new char[] { '\n', '/', '`', '<', '!', '@' };
 
+		private static readonly string[] HtmlTags = new string[] { "!doctype", "a", "abbr", "acronym", "address", "applet", "area", "article", "aside", "audio", "b", "base", "basefont", "bb", "bdo", "big", "blockquote", "body", "br", "button", "canvas", "caption", "center", "cite", "code", "col", "colgroup", "command", "datagrid", "datalist", "dd", "del", "details", "dfn", "dialog", "dir", "div", "dl", "dt", "em", "embed", "eventsource", "fieldset", "figcaption", "figure", "font", "footer", "form", "frame", "frameset", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr", "html", "i", "iframe", "img", "input", "ins", "isindex", "kbd", "keygen", "label", "legend", "li", "link", "map", "mark", "menu", "meta", "meter", "nav", "noframes", "noscript", "object", "ol", "optgroup", "option", "output", "p", "param", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "sup", "table", "tbody", "td", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track", "tt", "u", "ul", "var", "video", "wbr" };
+
 		public static TextSpans FromString(string text)
 		{
 			List<TextSpan> spans = new List<TextSpan>();
@@ -21,7 +23,7 @@ namespace Ginger
 				char ch = text[pos_end];
 				bool eol = ch == '\n';
 				bool isComment = ch == '/';
-				bool isHtmlComment = ch == '<';
+				bool isHtml = ch == '<';
 				bool isCode = ch == '`';
 				bool isMarkdownImage = ch == '!';
 				bool isDecorator = ch == '@';
@@ -44,8 +46,9 @@ namespace Ginger
 					pos_end = text.IndexOfAny(SpanBreakChars, pos_end + 1);
 					continue;
 				}
-				if (isHtmlComment) // <!-- ... -->
+				if (isHtml)
 				{
+					// HTML comment <!-- ... -->
 					if (pos_end + 3 < text.Length && text[pos_end + 1] == '!' && text[pos_end + 2] == '-' && text[pos_end + 3] == '-')
 					{
 						int end_comment = text.IndexOf("-->", pos_end + 4);
@@ -58,7 +61,26 @@ namespace Ginger
 							continue;
 						}
 					}
-					// Wasn't a comment. Continue...
+
+					// HTML tag <a href=""></a>
+					int end_html = text.IndexOf('>', pos_end + 1);
+					if (end_html != -1)
+					{
+						int begin_html = pos_end + 1;
+						if (text[begin_html] == '/')
+							begin_html += 1;
+
+						string tag = text.Substring(begin_html, end_html - begin_html).ToLowerInvariant();
+						if (HtmlTags.ContainsAny(t => tag.BeginsWith(t)))
+						{
+							spans.Add(TextSpan.FromString(text.Substring(pos, pos_end - pos), pos));
+							spans.Add(TextSpan.Ignore(text.Substring(pos_end, end_html - pos_end + 1), pos_end));
+							pos = end_html + 1;
+							pos_end = text.IndexOfAny(SpanBreakChars, pos);
+							continue;
+						}
+					}
+					// Wasn't HTML. Continue...
 					pos_end = text.IndexOfAny(SpanBreakChars, pos_end + 1);
 					continue;
 				}

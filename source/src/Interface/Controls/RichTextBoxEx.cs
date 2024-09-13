@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using WinFormsSyntaxHighlighter;
 
@@ -147,8 +148,9 @@ namespace Ginger
 			Decorators		= 1 << 10,
 			Comments		= 1 << 11,
 			Markdown		= 1 << 12,
+			HTML			= 1 << 13,
 
-			Default = Names | Dialogue | Actions | Commands | Numbers | CodeBlock | Comments | Markdown | SpellChecking,
+			Default = Names | Dialogue | Actions | Commands | Numbers | CodeBlock | Comments | Markdown | SpellChecking | HTML,
 			Limited = Names | Commands | Numbers | Comments | Markdown | SpellChecking,
 			Code	= Names | Commands | Numbers | Comments | Markdown,
 			LoreKey = Names | Commands | Numbers | Wildcards | SpellChecking,
@@ -492,6 +494,19 @@ namespace Ginger
 				Enabled = CanPaste(DataFormats.GetFormat("UnicodeText")),
 			});
 
+			string regexHtml = @"(<\/?([a-zA-Z]+)(?![^>]*\/>)[^>]*>|<([a-zA-Z ]+)\/>)";
+			string regexMarkdown = @"!\[(.*)\]\((.+)\)";
+
+			menu.Items.Add(new ToolStripSeparator());
+			menu.Items.Add(new ToolStripMenuItem("Strip HTML", null, (s, e) => { Strip(regexHtml); }) {
+				Enabled = CanStrip(regexHtml),
+				ToolTipText = "Remove all HTML tags from the text. (E.g. <span>, <div>, <p>)",
+			});
+			menu.Items.Add(new ToolStripMenuItem("Strip Markdown images", null, (s, e) => { Strip(regexMarkdown); }) {
+				Enabled = CanStrip(regexMarkdown),
+				ToolTipText = "Remove all markdown images from the text. (E.g. ![](image.png))",
+			});
+
 			menu.Show(this, location);
 		}
 
@@ -765,6 +780,12 @@ namespace Ginger
 			{
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"\/\*[\s\S]*?\*\/"), new SyntaxStyle(colorComment, false, true), -1);
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"<!--[\s\S]*?-->"), new SyntaxStyle(colorComment, false, true), -1);
+			}
+
+			// HTML
+			if (_syntaxFlags.Contains(SyntaxFlags.HTML))
+			{
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"(<\/?([a-zA-Z]+)(?![^>]*\/>)[^>]*>|<([a-zA-Z ]+)\/>)"), SyntaxStyle.Monospaced(colorCode), -1);
 			}
 
 			// Markdown image ![]()
@@ -1568,5 +1589,54 @@ namespace Ginger
 			Focus();
 			Select(start, length);
 		}
+
+		private bool CanStrip(string pattern)
+		{
+			Regex regex = new Regex(pattern);
+			return regex.Match(this.Text).Success;
+		}
+
+		private void Strip(string pattern)
+		{
+			try
+			{
+				Regex regex = new Regex(pattern);
+				var indices = new List<KeyValuePair<int, int>>();
+				foreach (Match match in regex.Matches(this.Text))
+					indices.Add(new KeyValuePair<int, int>(match.Index, match.Length));
+
+				if (indices.Count == 0)
+					return; // No matches
+
+				StringBuilder sb = new StringBuilder(this.Text);
+				foreach (var match in indices.OrderByDescending(i => i.Key))
+					sb.Remove(match.Key, match.Value);
+
+				string beforeText = Text;
+				int beforePos = SelectionStart;
+				int beforeLength = SelectionLength;
+
+				SetState(sb.ToString(), beforePos);
+				Refresh();
+
+				PushUndo(new UndoState(
+					new UndoState.Content() {
+						text = beforeText,
+						start = beforePos,
+						length = beforeLength,
+					},
+					new UndoState.Content() {
+						text = Text,
+						start = SelectionStart,
+						length = SelectionLength,
+					}, SelectionStart));
+				PushHistory();
+				_bBreakUndoMerge = true;
+			}
+			catch
+			{
+			}
+		}
+
 	}
 }

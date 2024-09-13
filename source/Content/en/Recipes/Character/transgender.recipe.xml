@@ -5,7 +5,7 @@
 	<Description>Makes the character transgender.</Description>
 	<Author>Ginger</Author>
 	<Category>Character</Category>
-	<Flags>trans, transgender, override-gender, pronouns</Flags>
+	<Flags>trans, transgender, override-gender</Flags>
 	<Requires>not override-gender</Requires>
 	
 	<!-- Parameters -->
@@ -15,7 +15,7 @@
 		<Option>Female</Option>
 	</Choice>
 	
-	<Choice id="trans-pronouns" required="yes" rule="not custom-pronoun">
+	<Choice id="trans-pronouns" rule="not custom-pronoun">
 		<Label>Pronouns</Label>
 		<Option id="pronouns-he">He / Him</Option>
 		<Option id="pronouns-she">She / Her</Option>
@@ -58,6 +58,20 @@
 	<Attribute mode="replace" order="10">
 		<Name>Gender</Name>
 		<Value>Transgender [@descriptor]</Value>
+	</Attribute>
+	
+	<!-- Pronouns -->
+	<Attribute mode="exclude" order="10" rule="normal-detail and trans-pronouns:local and pronouns-he">
+		<Name>Pronouns</Name>
+		<Value>He/Him</Value>
+	</Attribute>
+	<Attribute mode="exclude" order="10" rule="normal-detail and trans-pronouns:local and pronouns-she">
+		<Name>Pronouns</Name>
+		<Value>She/Her</Value>
+	</Attribute>
+	<Attribute mode="exclude" order="10" rule="normal-detail and trans-pronouns:local and pronouns-them">
+		<Name>Pronouns</Name>
+		<Value>They/Them</Value>
 	</Attribute>
 	
 	<Persona rule="trans-female">

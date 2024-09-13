@@ -737,12 +737,12 @@ namespace Ginger
 			return CardData.TextStyle.None;
 		}
 
-		public static void LinkWith(CharacterInstance characterInstance, Backyard.Link.Image[] images)
+		public static void LinkWith(CharacterInstance characterInstance, Backyard.Link.Image[] imageLinks)
 		{
 			Link = new Backyard.Link() {
 				characterId = characterInstance.instanceId,
 				updateDate = characterInstance.updateDate,
-				imageLinks = images,
+				imageLinks = imageLinks,
 				filename = Current.Filename,
 				isActive = true,
 			};
@@ -758,18 +758,21 @@ namespace Ginger
 			}
 		}
 
-		public static void ImportImages(string[] images) // Backyard import
+		public static void ImportImages(string[] images, out Backyard.Link.Image[] imageLinks) // Backyard import
 		{
 			if (images == null || images.Length == 0)
+			{
+				imageLinks = null;
 				return;
+			}
 
-			var imageLinks = new List<Backyard.Link.Image>();
+			var lsImageLinks = new List<Backyard.Link.Image>();
 
 			Image image;
 			if (Utility.LoadImageFromFile(images[0], out image))
 			{
 				Card.portraitImage = ImageRef.FromImage(image);
-				imageLinks.Add(new Backyard.Link.Image() {
+				lsImageLinks.Add(new Backyard.Link.Image() {
 					filename = Path.GetFileName(images[0]),
 					uid = Card.portraitImage.uid,
 				});
@@ -793,15 +796,14 @@ namespace Ginger
 						uriType = AssetFile.UriType.Embedded,
 					};
 					Card.assets.Add(asset);
-					imageLinks.Add(new Backyard.Link.Image() {
+					lsImageLinks.Add(new Backyard.Link.Image() {
 						filename = Path.GetFileName(images[i]),
 						uid = asset.uid,
 					});
 				}
 			}
 
-			if (Link != null)
-				Link.imageLinks = imageLinks.ToArray();
+			imageLinks = lsImageLinks.ToArray();
 		}
 	}
 }

@@ -1096,14 +1096,14 @@ namespace Ginger
 				if (Current.HasActiveLink)
 				{
 					statusConnectionIcon.Image = Resources.link_active;
-					statusConnectionIcon.ToolTipText = "Connected; Link active";
+					statusConnectionIcon.ToolTipText = "Connected; Linked";
 				}
 				else if (Current.HasLink)
 				{
 					if (Backyard.HasCharacter(Current.Link.characterId))
 					{
 						statusConnectionIcon.Image = Resources.link_inactive;
-						statusConnectionIcon.ToolTipText = "Connected; Link inactive";
+						statusConnectionIcon.ToolTipText = "Connected; Link broken";
 					}
 					else
 					{
@@ -2221,7 +2221,7 @@ namespace Ginger
 			{
 				MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-				if (MessageBox.Show(Resources.msg_link_new, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+				if (MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
 				{
 					Current.LinkWith(createdCharacter, images);
 					Current.IsLinkDirty = false;

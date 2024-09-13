@@ -152,6 +152,7 @@ namespace Ginger
 			this.cbCreateLink.TabIndex = 3;
 			this.cbCreateLink.Text = "Create a character link";
 			this.cbCreateLink.UseVisualStyleBackColor = true;
+			this.cbCreateLink.Visible = false;
 			// 
 			// toolTip
 			// 
