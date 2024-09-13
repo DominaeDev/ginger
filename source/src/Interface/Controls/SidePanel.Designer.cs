@@ -315,6 +315,7 @@
 			this.portraitImage.Location = new System.Drawing.Point(0, 0);
 			this.portraitImage.Name = "portraitImage";
 			this.portraitImage.Size = new System.Drawing.Size(165, 220);
+			this.portraitImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.portraitImage.TabIndex = 0;
 			this.portraitImage.TabStop = false;
 			this.portraitImage.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseClick);

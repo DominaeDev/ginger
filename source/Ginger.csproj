@@ -898,18 +898,6 @@
     <None Include="Resources\Icons\red_dot.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Icons\connected.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\disconnected.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\no_connection.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\broken_connection.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Icons\link_active.png" />
   </ItemGroup>
   <ItemGroup>

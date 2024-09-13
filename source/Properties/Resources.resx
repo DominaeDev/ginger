@@ -1097,4 +1097,7 @@ Would you like to reduce it to a more appropriate size?</value>
 
 Do you still want to import it? (Some messages will be omitted.)</value>
   </data>
+  <data name="tooltip_resize_portrait_image" xml:space="preserve">
+    <value>Resizes the image to an appropriate size.</value>
+  </data>
 </root>

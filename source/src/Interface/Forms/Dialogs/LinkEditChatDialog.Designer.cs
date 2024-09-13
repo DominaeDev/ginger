@@ -179,6 +179,7 @@ namespace Ginger
 			this.portraitImage.Location = new System.Drawing.Point(3, 2);
 			this.portraitImage.Name = "portraitImage";
 			this.portraitImage.Size = new System.Drawing.Size(150, 200);
+			this.portraitImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.portraitImage.TabIndex = 1;
 			this.portraitImage.TabStop = false;
 			// 

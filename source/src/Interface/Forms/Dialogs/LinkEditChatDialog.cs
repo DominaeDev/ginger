@@ -471,7 +471,7 @@ namespace Ginger
 			exportFileDialog.Title = "Export chat";
 			if (bGroupChat)
 			{
-				exportFileDialog.Filter = "Ginger chat log|*.json|Text log|*.txt";
+				exportFileDialog.Filter = "Ginger chat log|*.json|Text file|*.txt";
 				if (filterIndex == 5)
 					filterIndex = 2;
 				else
@@ -484,7 +484,7 @@ namespace Ginger
 			}
 			else
 			{
-				exportFileDialog.Filter = "Backyard chat|*.json|Text generation web ui chat|*.json|SillyTavern chat|*.jsonl|Ginger chat log|*.json|Text log|*.txt";
+				exportFileDialog.Filter = "Backyard chat log|*.json|Text generation web ui chat log|*.json|SillyTavern chat log|*.jsonl|Ginger chat log|*.json|Text file|*.txt";
 				
 				if (filterIndex == 3) // jsonl
 					filename = string.Concat(filename, ".jsonl");

@@ -218,6 +218,7 @@ namespace Ginger
 		private void MainForm_OnLoad(object sender, EventArgs e)
 		{
 			sidePanel.ChangePortraitImage += OnChangePortraitImage;
+			sidePanel.ResizePortraitImage += OnResizePortraitImage;
 			sidePanel.PastePortraitImage += OnPastePortraitImage;
 			sidePanel.RemovePortraitImage += OnRemovePortraitImage;
 
@@ -412,20 +413,18 @@ namespace Ginger
 				MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				return;
 			}
-
+			
 			if (image.Width > Constants.MaxImageDimension || image.Height > Constants.MaxImageDimension)
 			{
 				int srcWidth = image.Width;
 				int srcHeight = image.Height;
-				int fitWidth = Constants.MaxImageDimension;
-				int fitHeight = Constants.MaxImageDimension;
-				float scale = Math.Min((float)fitWidth / srcWidth, (float)fitHeight / srcHeight);
+				float scale = Math.Min((float)Constants.MaxImageDimension / srcWidth, (float)Constants.MaxImageDimension / srcHeight);
 				int newWidth = Math.Max((int)Math.Round(srcWidth * scale), 1);
 				int newHeight = Math.Max((int)Math.Round(srcHeight * scale), 1);
 
 				if (MessageBox.Show(string.Format(Resources.msg_rescale_portrait, image.Width, image.Height, newWidth, newHeight), Resources.cap_change_portrait, MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
 				{
-					Image bmpNewImage = new Bitmap(newWidth, newHeight);
+					var bmpNewImage = new Bitmap(newWidth, newHeight);
 					using (Graphics gfxNewImage = Graphics.FromImage(bmpNewImage))
 					{
 						gfxNewImage.DrawImage(image,
@@ -433,7 +432,7 @@ namespace Ginger
 								0, 0, srcWidth, srcHeight,
 								GraphicsUnit.Pixel);
 					}
-					image = bmpNewImage;
+					image = Image.FromHbitmap(bmpNewImage.GetHbitmap());
 				}
 			}
 
@@ -470,7 +469,36 @@ namespace Ginger
 			sidePanel.RefreshValues();
 			Undo.Push(Undo.Kind.Parameter, "Clear portrait");
 		}
-		
+
+		private void OnResizePortraitImage(object sender, EventArgs e)
+		{
+			Image image = Current.Card.portraitImage;
+			if (image == null || (image.Width <= Constants.MaxImageDimension && image.Height <= Constants.MaxImageDimension))
+				return; // No change
+
+			int srcWidth = image.Width;
+			int srcHeight = image.Height;
+			float scale = Math.Min((float)Constants.MaxImageDimension / srcWidth, (float)Constants.MaxImageDimension / srcHeight);
+			int newWidth = Math.Max((int)Math.Round(srcWidth * scale), 1);
+			int newHeight = Math.Max((int)Math.Round(srcHeight * scale), 1);
+
+			Image bmpNewImage = new Bitmap(newWidth, newHeight);
+			
+			using (Graphics gfxNewImage = Graphics.FromImage(bmpNewImage))
+			{
+				gfxNewImage.DrawImage(image,
+					new Rectangle(0, 0, newWidth, newHeight),
+						0, 0, srcWidth, srcHeight,
+						GraphicsUnit.Pixel);
+			}
+
+			Current.Card.portraitImage = ImageRef.FromImage(bmpNewImage);
+			Current.IsDirty = true;
+			sidePanel.RefreshValues();
+
+			Undo.Push(Undo.Kind.Parameter, "Resize portrait image");
+			SetStatusBarMessage("Resized portrait image", Constants.StatusBarMessageInterval);
+		}		
 
 		private void OnExitApplication(object sender, EventArgs e)
 		{

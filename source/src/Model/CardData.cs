@@ -127,7 +127,6 @@ namespace Ginger
 		{
 			if (ReferenceEquals(imageRef, null))
 				return null;
-
 			return imageRef._image;
 		}
 

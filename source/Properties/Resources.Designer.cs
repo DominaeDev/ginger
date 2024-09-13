@@ -3717,6 +3717,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Resizes the image to an appropriate size..
+        /// </summary>
+        internal static string tooltip_resize_portrait_image {
+            get {
+                return ResourceManager.GetString("tooltip_resize_portrait_image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save an incremental copy of this card.
         /// </summary>
         internal static string tooltip_save_incremental {

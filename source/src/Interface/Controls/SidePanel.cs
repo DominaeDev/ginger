@@ -9,6 +9,7 @@ namespace Ginger
 	public partial class SidePanel : UserControl
 	{
 		public event EventHandler<PortraitPreview.ChangePortraitImageEventArgs> ChangePortraitImage;
+		public event EventHandler ResizePortraitImage;
 		public event EventHandler PastePortraitImage;
 		public event EventHandler RemovePortraitImage;
 
@@ -487,6 +488,13 @@ namespace Ginger
 				{
 					menu.Items.Add(new ToolStripMenuItem("Paste image") { Enabled = false });
 				}
+				
+				menu.Items.Add(new ToolStripMenuItem("Reduce size", null, (s, e) => {
+					ResizePortraitImage?.Invoke(this, EventArgs.Empty);
+				}) {
+					Enabled = Current.Card.portraitImage != null && (Current.Card.portraitImage.Width > Constants.MaxImageDimension || Current.Card.portraitImage.Height > Constants.MaxImageDimension),
+					ToolTipText = Resources.tooltip_resize_portrait_image,
+				});
 
 				menu.Items.Add(new ToolStripSeparator()); // ----
 				menu.Items.Add(new ToolStripMenuItem("Clear portrait", null, (s, e) => {
