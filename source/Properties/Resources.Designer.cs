@@ -470,6 +470,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Success!.
+        /// </summary>
+        internal static string cap_link_connect {
+            get {
+                return ResourceManager.GetString("cap_link_connect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copy chat settings.
         /// </summary>
         internal static string cap_link_copy_settings {
@@ -1070,6 +1079,15 @@ namespace Ginger.Properties {
         internal static string error_link_import_chat {
             get {
                 return ResourceManager.GetString("error_link_import_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not connected to Backyard AI..
+        /// </summary>
+        internal static string error_link_not_connected {
+            get {
+                return ResourceManager.GetString("error_link_not_connected", resourceCulture);
             }
         }
         
@@ -1925,6 +1943,15 @@ namespace Ginger.Properties {
         internal static string msg_link_confirm_overwrite {
             get {
                 return ResourceManager.GetString("msg_link_confirm_overwrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connected to Backyard AI..
+        /// </summary>
+        internal static string msg_link_connected {
+            get {
+                return ResourceManager.GetString("msg_link_connected", resourceCulture);
             }
         }
         

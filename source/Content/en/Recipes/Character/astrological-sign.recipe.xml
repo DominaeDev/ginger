@@ -1,0 +1,31 @@
+﻿<Ginger id="astrological-sign" version="1.0">
+	<!-- Preamble -->
+	<Name>Identity/Astrological sign</Name>
+	<Title>Astrological sign</Title>
+	<Author>Ginger</Author>
+	<Category>Character</Category>
+	<Description>Assign an astrological sign.</Description>
+	
+	<!-- Parameters -->
+	<Choice id="astrological-sign" shared="yes" required="yes">
+		<Label>Astrological sign</Label>
+		<Option>Aries</Option>
+		<Option>Taurus</Option>
+		<Option>Gemini</Option>
+		<Option>Cancer</Option>
+		<Option>Leo</Option>
+		<Option>Virgo</Option>
+		<Option>Libra</Option>
+		<Option>Scorpio</Option>
+		<Option>Sagittarius</Option>
+		<Option>Capricorn</Option>
+		<Option>Aquarius</Option>
+		<Option>Pisces</Option>
+	</Choice>
+	
+	<!-- Output -->
+	<Attribute id="astrological-sign">
+		<Name>Birth sign</Name>
+		<Value>{astrological-sign:value}</Value>
+	</Attribute>
+</Ginger>

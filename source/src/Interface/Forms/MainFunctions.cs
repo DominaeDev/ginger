@@ -1536,7 +1536,7 @@ namespace Ginger
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_read_data, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_read_data, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
@@ -1582,12 +1582,13 @@ namespace Ginger
 			Current.IsFileDirty = false;
 			Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
 
-			if (MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+			if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
 			{
 				Current.LinkWith(dlg.SelectedCharacter, imageLinks);
 				SetStatusBarMessage(Resources.status_link_create, Constants.StatusBarMessageInterval);
 				Current.IsFileDirty = false;
 				Current.IsLinkDirty = false;
+				RefreshTitle();
 			}
 			return true;
 		}

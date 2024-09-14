@@ -1,0 +1,23 @@
+﻿<Ginger id="blood-type" version="1.0">
+	<!-- Preamble -->
+	<Name>Identity/Blood type</Name>
+	<Title>Blood type</Title>
+	<Author>Ginger</Author>
+	<Category>Character</Category>
+	<Description>Assign a blood type.</Description>
+	
+	<!-- Parameters -->
+	<Choice id="blood-type" style="radio" shared="yes" required="yes">
+		<Label>Blood type</Label>
+		<Option>A</Option>
+		<Option>B</Option>
+		<Option>AB</Option>
+		<Option>O</Option>
+	</Choice>
+	
+	<!-- Output -->
+	<Attribute id="blood-type">
+		<Name>Blood type</Name>
+		<Value>{blood-type:value}</Value>
+	</Attribute>
+</Ginger>

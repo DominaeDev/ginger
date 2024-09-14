@@ -1108,4 +1108,13 @@ Do you still want to import it? (Some messages will be omitted.)</value>
   <data name="error_link_create_chat" xml:space="preserve">
     <value>Failed to create chat. Operation cancelled.</value>
   </data>
+  <data name="cap_link_connect" xml:space="preserve">
+    <value>Success!</value>
+  </data>
+  <data name="error_link_not_connected" xml:space="preserve">
+    <value>Not connected to Backyard AI.</value>
+  </data>
+  <data name="msg_link_connected" xml:space="preserve">
+    <value>Connected to Backyard AI.</value>
+  </data>
 </root>

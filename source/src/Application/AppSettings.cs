@@ -176,7 +176,7 @@ namespace Ginger
 			public static bool Enabled = false;
 			public static string Location = null;
 			public static bool Autosave = true;
-			public static bool LinkOnImport = true;
+			public static bool AlwaysLinkOnImport = false;
 		}
 
 		public static bool LoadFromIni(string filePath)
@@ -309,7 +309,7 @@ namespace Ginger
 			{
 				ReadBool(ref BackyardLink.Enabled, linkSection, "Enabled");
 				ReadBool(ref BackyardLink.Autosave, linkSection, "Autosave");
-				ReadBool(ref BackyardLink.LinkOnImport, linkSection, "LinkOnImport");
+				ReadBool(ref BackyardLink.AlwaysLinkOnImport, linkSection, "AlwaysLinkOnImport");
 				ReadString(ref BackyardLink.Location, linkSection, "Location");
 			}
 
@@ -426,7 +426,7 @@ namespace Ginger
 					Write(outputFile, "Location", BackyardLink.Location);
 					Write(outputFile, "Enabled", BackyardLink.Enabled);
 					Write(outputFile, "Autosave", BackyardLink.Autosave);
-					Write(outputFile, "LinkOnImport", BackyardLink.LinkOnImport);
+					Write(outputFile, "AlwaysLinkOnImport", BackyardLink.AlwaysLinkOnImport);
 
 					// MRU list
 					WriteSection(outputFile, "MRU");

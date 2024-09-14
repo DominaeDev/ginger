@@ -40,7 +40,7 @@ namespace Ginger
 			SelectedCharacter = default(CharacterInstance);
 
 			btnOk.Enabled = false;
-			cbCreateLink.Checked = AppSettings.BackyardLink.LinkOnImport;
+			cbCreateLink.Checked = AppSettings.BackyardLink.AlwaysLinkOnImport;
 			
 			// Tooltips
 			toolTip.SetToolTip(cbCreateLink, Resources.tooltip_link_about_linking);
@@ -191,7 +191,7 @@ namespace Ginger
 
 		private void BtnOk_Click(object sender, EventArgs e)
 		{
-			AppSettings.BackyardLink.LinkOnImport = cbCreateLink.Checked;
+			AppSettings.BackyardLink.AlwaysLinkOnImport = cbCreateLink.Checked;
 			DialogResult = DialogResult.OK;
 			Close();
 		}

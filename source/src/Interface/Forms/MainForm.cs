@@ -1607,19 +1607,26 @@ namespace Ginger
 				SaveIncremental();
 				return true;
 			}
-			else if (keyData == ShortcutKeys.LinkedOpen && Backyard.ConnectionEstablished)
+			else if (keyData == ShortcutKeys.LinkedOpen)
 			{
-				importLinkedMenuItem_Click(this, EventArgs.Empty);
+				if (Backyard.ConnectionEstablished)
+					importLinkedMenuItem_Click(this, EventArgs.Empty);
+				else
+					MessageBox.Show(Resources.error_link_not_connected, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return true;
 			}
 			else if (keyData == ShortcutKeys.LinkedSave && Backyard.ConnectionEstablished && Current.HasActiveLink)
 			{
-				saveLinkedMenuItem_Click(this, EventArgs.Empty);
+				if (Backyard.ConnectionEstablished)
+					saveLinkedMenuItem_Click(this, EventArgs.Empty);
 				return true;
 			}
-			else if (keyData == ShortcutKeys.LinkedSaveAsNew && Backyard.ConnectionEstablished && Current.HasActiveLink == false)
+			else if (keyData == ShortcutKeys.LinkedSaveAsNew && Current.HasActiveLink == false)
 			{
-				saveNewLinkedMenuItem_Click(this, EventArgs.Empty);
+				if (Backyard.ConnectionEstablished)
+					saveNewLinkedMenuItem_Click(this, EventArgs.Empty);
+				else
+					MessageBox.Show(Resources.error_link_not_connected, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return true;
 			}
 			else if (keyData == ShortcutKeys.LinkedChatHistory && Backyard.ConnectionEstablished)
@@ -2160,6 +2167,7 @@ namespace Ginger
 						if (Current.HasLink)
 							Current.Link.RefreshState();
 
+						MessageBox.Show(Resources.msg_link_connected, Resources.cap_link_connect, MessageBoxButtons.OK, MessageBoxIcon.Information);
 						SetStatusBarMessage(Resources.status_link_connect, Constants.StatusBarMessageInterval);
 						AppSettings.BackyardLink.Enabled = true;
 					}
@@ -2268,6 +2276,7 @@ namespace Ginger
 		{
 			AppSettings.Settings.EnableRearrangeLoreMode = !AppSettings.Settings.EnableRearrangeLoreMode;
 			recipeList.RefreshAllParameters();
+			recipeList.RefreshSyntaxHighlighting(true);
 		}
 
 		private void chatHistoryMenuItem_Click(object sender, EventArgs e)
