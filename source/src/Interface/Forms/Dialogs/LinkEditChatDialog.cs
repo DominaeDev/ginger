@@ -62,7 +62,6 @@ namespace Ginger
 			exportMenuItem.ToolTipText = Resources.tooltip_link_export_chat;
 			duplicateMenuItem.ToolTipText = Resources.tooltip_link_duplicate_chat;
 			repairChatsMenuItem.ToolTipText = Resources.tooltip_link_repair_chat;
-			purgeMenuItem.ToolTipText = Resources.tooltip_link_purge_chat;
 			createBackupMenuItem.ToolTipText = Resources.tooltip_link_create_backup;
 			restoreBackupMenuItem.ToolTipText = Resources.tooltip_link_restore_backup;
 		}
@@ -374,6 +373,47 @@ namespace Ginger
 
 		private void btnImport_Click(object sender, EventArgs e)
 		{
+			ImportChat();
+		}
+
+		private void NewChat()
+		{
+			ChatHistory chatHistory = new ChatHistory() {
+				messages = new ChatHistory.Message[0],
+			};
+
+			if (string.IsNullOrEmpty(chatHistory.name) || chatHistory.name == ChatInstance.DefaultName)
+				chatHistory.name = ChatInstance.DefaultName;
+
+			var args = new Backyard.CreateChatArguments() {
+				history = chatHistory,
+			};
+
+			ChatInstance chatInstance = null;
+			var error = RunTask(() => Backyard.CreateNewChat(args, _groupInstance.instanceId, out chatInstance), "Creating chat...");
+			if (error == Backyard.Error.NotConnected)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_create_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+			else if (error != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_create_chat, Resources.cap_link_create_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+			else
+			{
+				PopulateChatList(false);
+				SelectChat(chatInstance.instanceId, true);
+
+				SetStatusBarMessage("New chat created", Constants.StatusBarMessageInterval);
+				return;
+			}
+		}
+
+		private void ImportChat()
+		{
 			// Open file...
 			importFileDialog.FileName = "";
 			importFileDialog.Title = Resources.cap_import_chat;
@@ -571,7 +611,7 @@ namespace Ginger
 			MessageBox.Show(Resources.error_write_json, Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
-		private void SelectChat(int index)
+		private void SelectChat(int index, bool bBeginEdit = false)
 		{
 			if (index >= 0 && index < chatInstanceList.Items.Count)
 			{
@@ -579,16 +619,18 @@ namespace Ginger
 				chatInstanceList.Items[index].Selected = true;
 				chatInstanceList.Select();
 				chatInstanceList.EnsureVisible(index);
+				if (bBeginEdit)
+					chatInstanceList.Items[index].BeginEdit();
 			}
 		}
 
-		private void SelectChat(string instanceId)
+		private void SelectChat(string instanceId, bool bBeginEdit = false)
 		{
 			for (int i = 0; i < chatInstanceList.Items.Count; ++i)
 			{
 				if (((ChatInstance)chatInstanceList.Items[i].Tag).instanceId == instanceId)
 				{
-					SelectChat(i);
+					SelectChat(i, bBeginEdit);
 					return;
 				}
 			}
@@ -770,7 +812,6 @@ namespace Ginger
 			importMenuItem.Enabled = hasGroup;
 			exportMenuItem.Enabled = hasGroup && hasChat;
 			duplicateMenuItem.Enabled = hasGroup && hasChat;
-			purgeMenuItem.Enabled = hasGroup;
 			refreshMenuItem.Enabled = hasGroup;
 			repairChatsMenuItem.Enabled = hasGroup;
 			createBackupMenuItem.Enabled = hasGroup;
@@ -820,10 +861,10 @@ namespace Ginger
 
 		private void purgeMenuItem_Click(object sender, EventArgs e)
 		{
-			PurgeAllChats();
+			DeleteAllChats();
 		}
 
-		private void PurgeAllChats()
+		private void DeleteAllChats()
 		{
 			if (_groupInstance.isEmpty)
 				return; // Error
@@ -1014,85 +1055,110 @@ namespace Ginger
 			}
 		}
 
-		private void chatInstanceList_MouseClick(object sender, MouseEventArgs e)
+		private void chatInstanceList_OnContextMenu(object sender, ChatListView.ContextMenuEventArgs e)
 		{
-			if (e.Button == MouseButtons.Right)
-			{
-				var hitTest = chatInstanceList.HitTest(e.X, e.Y);
-				if (hitTest.Item == null)
-					return;
-
-				ShowChatListContextMenu(hitTest.Item, new Point(e.X, e.Y));
-			}
+			if (e.Index >= 0)
+				ShowChatListContextMenu(chatInstanceList.Items[e.Index], e.Location);
+			else
+				ShowChatListContextMenu(null, e.Location);
 		}
 
 		private void ShowChatListContextMenu(ListViewItem item, Point location)
 		{
 			ContextMenuStrip menu = new ContextMenuStrip();
-			menu.Items.Add(new ToolStripMenuItem("Rename", null, (s, e) => {
-				item.BeginEdit();
-			}));			
 
-			menu.Items.Add(new ToolStripMenuItem("Duplicate", null, (s, e) => {
-				DuplicateChat(item.Tag as ChatInstance);
-			}) {
-				ToolTipText = Resources.tooltip_link_duplicate_chat,
-			});
-
-			menu.Items.Add(new ToolStripMenuItem("Export...", null, (s, e) => {
-				ExportChat(item.Tag as ChatInstance);
-			}) {
-				ToolTipText = Resources.tooltip_link_export_chat,
-			});
-
-			menu.Items.Add(new ToolStripSeparator());
-
-			menu.Items.Add(new ToolStripMenuItem("Copy chat settings", null, (s, e) => {
-				CopyStaging(item.Tag as ChatInstance);
-			}) {
-				ToolTipText = Resources.tooltip_link_copy_staging,
-			});
-
-			menu.Items.Add(new ToolStripMenuItem("Copy model settings", null, (s, e) => {
-				CopySettings(item.Tag as ChatInstance);
-			}) {
-				ToolTipText = Resources.tooltip_link_copy_settings,
-			});
-
-			if (Clipboard.ContainsData(ChatParametersClipboard.Format))
+			if (item != null)
 			{
-				menu.Items.Add(new ToolStripMenuItem("Paste model settings", null, (s, e) => {
-					PasteSettings(item.Tag as ChatInstance);
+				menu.Items.Add(new ToolStripMenuItem("Rename", null, (s, e) => {
+					item.BeginEdit();
+				}));
+
+				menu.Items.Add(new ToolStripMenuItem("Duplicate", null, (s, e) => {
+					DuplicateChat(item.Tag as ChatInstance);
 				}) {
-					ToolTipText = Resources.tooltip_link_paste_settings,
+					ToolTipText = Resources.tooltip_link_duplicate_chat,
 				});
-			}
-			else if (Clipboard.ContainsData(ChatStagingClipboard.Format))
-			{
-				menu.Items.Add(new ToolStripMenuItem("Paste chat settings", null, (s, e) => {
-					PasteStaging(item.Tag as ChatInstance);
+
+				menu.Items.Add(new ToolStripMenuItem("Export...", null, (s, e) => {
+					ExportChat(item.Tag as ChatInstance);
 				}) {
-					ToolTipText = Resources.tooltip_link_paste_settings,
+					ToolTipText = Resources.tooltip_link_export_chat,
+				});
+
+				menu.Items.Add(new ToolStripSeparator());
+
+				menu.Items.Add(new ToolStripMenuItem("Copy chat settings", null, (s, e) => {
+					CopyStaging(item.Tag as ChatInstance);
+				}) {
+					ToolTipText = Resources.tooltip_link_copy_staging,
+				});
+
+				menu.Items.Add(new ToolStripMenuItem("Copy model settings", null, (s, e) => {
+					CopySettings(item.Tag as ChatInstance);
+				}) {
+					ToolTipText = Resources.tooltip_link_copy_settings,
+				});
+
+				if (Clipboard.ContainsData(ChatParametersClipboard.Format))
+				{
+					menu.Items.Add(new ToolStripMenuItem("Paste model settings", null, (s, e) => {
+						PasteSettings(item.Tag as ChatInstance);
+					}) {
+						ToolTipText = Resources.tooltip_link_paste_settings,
+					});
+				}
+				else if (Clipboard.ContainsData(ChatStagingClipboard.Format))
+				{
+					menu.Items.Add(new ToolStripMenuItem("Paste chat settings", null, (s, e) => {
+						PasteStaging(item.Tag as ChatInstance);
+					}) {
+						ToolTipText = Resources.tooltip_link_paste_settings,
+					});
+				}
+				else
+				{
+					menu.Items.Add(new ToolStripMenuItem("Paste", null, (EventHandler)null) { Enabled = false });
+				}
+
+				menu.Items.Add(new ToolStripMenuItem("Reset model settings", null, (s, e) => {
+					ResetSettings(item.Tag as ChatInstance);
+				}) {
+					ToolTipText = Resources.tooltip_link_reset_settings,
+				});
+
+				menu.Items.Add(new ToolStripSeparator());
+
+				menu.Items.Add(new ToolStripMenuItem("Delete chat", null, (s, e) => {
+					DeleteChat(item.Tag as ChatInstance);
+				}) {
+					ToolTipText = Resources.tooltip_link_delete_chat,
 				});
 			}
 			else
 			{
-				menu.Items.Add(new ToolStripMenuItem("Paste", null, (EventHandler)null) { Enabled = false });
+				bool hasGroup = _groupInstance.isEmpty == false;
+				menu.Items.Add(new ToolStripMenuItem("New chat", null, (s, e) => {
+					NewChat();
+				}) { 
+					Enabled = hasGroup,	
+				});
+
+				menu.Items.Add(new ToolStripMenuItem("Import chat...", null, (s, e) => {
+					ImportChat();
+				}) {
+					Enabled = hasGroup,	
+					ToolTipText = Resources.tooltip_link_import_chat,
+				});
+
+				menu.Items.Add(new ToolStripSeparator());
+
+				menu.Items.Add(new ToolStripMenuItem("Delete all chats...", null, (s, e) => {
+					DeleteAllChats();
+				}) {
+					Enabled = hasGroup,	
+					ToolTipText = Resources.tooltip_link_purge_chat,
+				});
 			}
-
-			menu.Items.Add(new ToolStripMenuItem("Reset model settings", null, (s, e) => {
-				ResetSettings(item.Tag as ChatInstance);
-			}) {
-				ToolTipText = Resources.tooltip_link_reset_settings,
-			});
-
-			menu.Items.Add(new ToolStripSeparator());
-
-			menu.Items.Add(new ToolStripMenuItem("Delete chat", null, (s, e) => {
-				DeleteChat(item.Tag as ChatInstance);
-			}) {
-				ToolTipText = Resources.tooltip_link_delete_chat,
-			});
 
 			menu.Show(chatInstanceList, location);
 		}
@@ -1534,5 +1600,7 @@ namespace Ginger
 				this.statusLabel.Text = "";
 			return error;
 		}
+
+		
 	}
 }

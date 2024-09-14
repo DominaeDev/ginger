@@ -420,12 +420,11 @@ namespace Ginger.Integration
 							SELECT 
 								A.id, B.id, D.id,
 								B.displayName, B.name, A.createdAt,
-								E.updatedAt, D.folderId, D.hubAuthorUsername, A.isUserControlled
+								B.updatedAt, D.folderId, D.hubAuthorUsername, A.isUserControlled
 							FROM CharacterConfig as A
 							INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
 							INNER JOIN _CharacterConfigToGroupConfig AS C ON C.A = A.id
 							INNER JOIN GroupConfig AS D ON D.id = C.B
-							INNER JOIN Chat AS E ON E.groupConfigId = D.id
 							WHERE A.id = $charId;
 						";
 						cmdCharacterData.Parameters.AddWithValue("$charId", characterId);
@@ -505,37 +504,32 @@ namespace Ginger.Integration
 				{
 					connection.Open();
 
-					using (var cmdCharacterData = connection.CreateCommand())
+					var characterToGroup = new List<Tuple<string, string>>();
+					using (var cmdCharacter = connection.CreateCommand())
 					{
-						cmdCharacterData.CommandText =
+						cmdCharacter.CommandText =
 						@"
 							SELECT 
-								A.id, B.id, D.id,
-								B.displayName, B.name, A.createdAt,
-								E.updatedAt, D.folderId, D.hubAuthorUsername
+								A.id, B.id, B.displayName, B.name, A.createdAt, B.updatedAt, 
+								( SELECT B FROM _CharacterConfigToGroupConfig WHERE A = A.id LIMIT 1 )
 							FROM CharacterConfig as A
 							INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
-							INNER JOIN _CharacterConfigToGroupConfig AS C ON C.A = A.id
-							INNER JOIN GroupConfig AS D ON D.id = C.B
-							INNER JOIN Chat AS E ON E.groupConfigId = D.id
 							WHERE A.isUserControlled=0
 						";
-						using (var reader = cmdCharacterData.ExecuteReader())
+						using (var reader = cmdCharacter.ExecuteReader())
 						{
 							while (reader.Read())
 							{
 								string instanceId = reader.GetString(0);
 								string configId = reader.GetString(1);
-								string groupId = reader.GetString(2);
 								if (string.IsNullOrEmpty(instanceId) || string.IsNullOrEmpty(configId))
 									continue;
 
-								string displayName = reader.GetString(3);
-								string name = reader.GetString(4);
-								DateTime createdAt = reader.GetUnixTime(5);
-								DateTime updatedAt = reader.GetUnixTime(6);
-								string folderId = reader.GetString(7);
-								string hubAuthorUsername = reader[8] as string;
+								string displayName = reader.GetString(2);
+								string name = reader.GetString(3);
+								DateTime createdAt = reader.GetUnixTime(4);
+								DateTime updatedAt = reader.GetUnixTime(5);
+								string groupId = reader.GetString(6);
 
 								_Characters.TryAdd(instanceId, 
 									new CharacterInstance() {
@@ -546,10 +540,59 @@ namespace Ginger.Integration
 										name = name,
 										creationDate = createdAt,
 										updateDate = updatedAt,
-										folderId = folderId,
-										creator = hubAuthorUsername,
 										isUser = false,
 									});
+
+								characterToGroup.Add(new Tuple<string, string>(instanceId, groupId));
+							}
+						}
+					}
+
+					using (var cmdGroupInfo = connection.CreateCommand())
+					{
+						var sbCommand = new StringBuilder();
+						sbCommand.Append(
+						@"
+							SELECT 
+								id, folderId, hubCharId
+							FROM GroupConfig
+							WHERE id IN (
+						");
+
+						var characters = _Characters.Values.ToList();
+						int i = 0;
+						foreach (var groupId in characters.Select(c => c.groupId).NotNull().Distinct())
+						{
+							if (i++ > 0)
+								sbCommand.Append(", ");
+							sbCommand.AppendFormat("'{0}'", groupId);
+						}
+						sbCommand.AppendLine(");");
+
+						cmdGroupInfo.CommandText = sbCommand.ToString();
+						using (var reader = cmdGroupInfo.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string groupId = reader.GetString(0);
+								string folderId = reader.GetString(1);
+								string hubAuthorUsername = reader[2] as string;
+																
+								foreach (var character in characters.Where(c => c.groupId == groupId))
+								{
+									_Characters[character.instanceId] = new CharacterInstance() {
+										instanceId = character.instanceId,
+										configId = character.configId,
+										groupId = character.groupId,
+										displayName = character.displayName,
+										name = character.name,
+										creationDate = character.creationDate,
+										updateDate = character.updateDate,
+										isUser = character.isUser,
+										creator = hubAuthorUsername,
+										folderId = folderId,
+									};
+								}
 							}
 						}
 					}
@@ -989,12 +1032,10 @@ namespace Ginger.Integration
 						cmdCharacterData.CommandText =
 						@"
 							SELECT 
-								A.id, B.B, C.updatedAt
+								A.id, B.B, A.updatedAt
 							FROM CharacterConfigVersion AS A
 							INNER JOIN _CharacterConfigToGroupConfig AS B 
 								ON B.A = $charId
-							INNER JOIN Chat AS C
-								ON C.groupConfigId = B.B
 							WHERE A.characterConfigId = $charId
 						";
 						cmdCharacterData.Parameters.AddWithValue("$charId", linkInfo.characterId);
@@ -2611,7 +2652,9 @@ namespace Ginger.Integration
 				{
 					connection.Open();
 
-					var defaultStaging = new ChatStaging();
+					var defaultStaging = new ChatStaging() {
+						system = FaradayCardV4.OriginalModelInstructionsByFormat[0],
+					};
 					var defaultParameters = new ChatParameters();
 
 					// Read default chat settings (latest)
@@ -2633,30 +2676,27 @@ namespace Ginger.Integration
 
 						using (var reader = cmdGroupInfo.ExecuteReader())
 						{
-							if (reader.Read() == false)
+							if (reader.Read())
 							{
-								chatInstance = default(ChatInstance);
-								return Error.NotFound;
+								defaultStaging.system = reader.GetString(0);
+								defaultStaging.scenario = reader.GetString(1);
+								defaultStaging.greeting = reader.GetString(2);
+								defaultStaging.example = reader.GetString(3);
+								defaultStaging.grammar = reader[4] as string ?? "";
+								defaultParameters.model = reader.GetString(5);
+								defaultParameters.temperature = reader.GetDecimal(6);
+								defaultParameters.topP = reader.GetDecimal(7);
+								defaultParameters.minP = reader.GetDecimal(8);
+								defaultParameters.minPEnabled = reader.GetBoolean(9);
+								defaultParameters.topK = reader.GetInt32(10);
+								defaultParameters.repeatPenalty = reader.GetDecimal(11);
+								defaultParameters.repeatLastN = reader.GetInt32(12);
+								defaultParameters.promptTemplate = reader[13] as string;
+								defaultParameters.pruneExampleChat = reader.GetBoolean(14);
+								defaultParameters.authorNote = reader.GetString(15);
+								defaultParameters.ttsAutoPlay = reader.GetBoolean(16);
+								defaultParameters.ttsInputFilter = reader.GetString(17);
 							}
-
-							defaultStaging.system = reader.GetString(0);
-							defaultStaging.scenario = reader.GetString(1);
-							defaultStaging.greeting = reader.GetString(2);
-							defaultStaging.example = reader.GetString(3);
-							defaultStaging.grammar = reader[4] as string ?? "";
-							defaultParameters.model = reader.GetString(5);
-							defaultParameters.temperature = reader.GetDecimal(6);
-							defaultParameters.topP = reader.GetDecimal(7);
-							defaultParameters.minP = reader.GetDecimal(8);
-							defaultParameters.minPEnabled = reader.GetBoolean(9);
-							defaultParameters.topK = reader.GetInt32(10);
-							defaultParameters.repeatPenalty = reader.GetDecimal(11);
-							defaultParameters.repeatLastN = reader.GetInt32(12);
-							defaultParameters.promptTemplate = reader[13] as string;
-							defaultParameters.pruneExampleChat = reader.GetBoolean(14);
-							defaultParameters.authorNote = reader.GetString(15);
-							defaultParameters.ttsAutoPlay = reader.GetBoolean(16);
-							defaultParameters.ttsInputFilter = reader.GetString(17);
 						}
 					}
 
@@ -3443,6 +3483,24 @@ namespace Ginger.Integration
 				using (var connection = CreateSQLiteConnection())
 				{
 					connection.Open();
+
+					// Confirm group exists
+					using (var cmdConfirm = connection.CreateCommand())
+					{ 
+						cmdConfirm.CommandText =
+						@"
+							SELECT 1
+							FROM GroupConfig
+							WHERE id = $groupId
+						";
+						cmdConfirm.Parameters.AddWithValue("$groupId", groupInstance.instanceId);
+
+						if (cmdConfirm.ExecuteScalar() == null)
+						{
+							modified = 0;
+							return Error.NotFound;
+						}
+					}
 
 					// Find chats for group
 					var chatIds = new List<string>();

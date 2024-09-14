@@ -731,7 +731,7 @@ Continue?</value>
   <data name="msg_link_confirm_overwrite" xml:space="preserve">
     <value>This character has been modified in Backyard AI.
 
-Do you want to continue and overwrite those changes?</value>
+Do you want to overwrite those changes?</value>
   </data>
   <data name="msg_link_saved" xml:space="preserve">
     <value>Successfully saved character to Backyard AI</value>
@@ -974,7 +974,7 @@ Are you sure you want to permanently delete the messages?</value>
     <value>Import a chat from a file.</value>
   </data>
   <data name="tooltip_link_purge_chat" xml:space="preserve">
-    <value>Delete all chats for the current character.</value>
+    <value>Delete all chats for this character.</value>
   </data>
   <data name="tooltip_link_repair_chat" xml:space="preserve">
     <value>Remove instances of "#{character}:" and "#{user}:" from this character's chat logs.</value>
@@ -1101,5 +1101,11 @@ Do you still want to import it? (Some messages will be omitted.)</value>
   </data>
   <data name="tooltip_resize_portrait_image" xml:space="preserve">
     <value>Reduce the size of the portrait image to a more appropriate size.</value>
+  </data>
+  <data name="cap_link_create_chat" xml:space="preserve">
+    <value>New chat</value>
+  </data>
+  <data name="error_link_create_chat" xml:space="preserve">
+    <value>Failed to create chat. Operation cancelled.</value>
   </data>
 </root>

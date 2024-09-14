@@ -212,12 +212,16 @@ namespace Ginger
 			Backyard.ChatCount chatCount;
 			if (_chatCounts.TryGetValue(group.instanceId, out chatCount))
 				sbTooltip.AppendFormat(" ({0} {1})", chatCount.count, chatCount.count == 1 ? "chat" : "chats");
+			else
+				sbTooltip.Append(" (No chats found)");
 
 			sbTooltip.NewParagraph();
 			sbTooltip.AppendLine($"Created: {group.creationDate.ToShortDateString()}");
 			sbTooltip.AppendLine($"Last modified: {group.updateDate.ToShortDateString()}");
 
 			int icon = group.members.Length > 2 ? 2 : 1;
+			if (chatCount.count == 0)
+				icon = 3; // Error icon
 			var node = new TreeNode(groupLabel, icon, icon);
 			node.Tag = group;
 			node.ToolTipText = sbTooltip.ToString();

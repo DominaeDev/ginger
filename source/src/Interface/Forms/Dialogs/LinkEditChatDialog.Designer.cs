@@ -43,7 +43,7 @@ namespace Ginger
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkEditChatDialog));
 			System.Windows.Forms.Panel centerPanel;
 			this.groupBox = new System.Windows.Forms.GroupBox();
-			this.chatInstanceList = new System.Windows.Forms.ListView();
+			this.chatInstanceList = new Ginger.ChatListView();
 			this.imageList = new System.Windows.Forms.ImageList(this.components);
 			this.portraitPanel = new System.Windows.Forms.Panel();
 			this.portraitImage = new Ginger.PortraitPreview();
@@ -66,7 +66,6 @@ namespace Ginger
 			this.restoreBackupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
 			this.repairChatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.purgeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.statusBar = new System.Windows.Forms.StatusStrip();
 			this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusChatLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -136,10 +135,10 @@ namespace Ginger
 			this.chatInstanceList.TabIndex = 0;
 			this.chatInstanceList.UseCompatibleStateImageBehavior = false;
 			this.chatInstanceList.View = System.Windows.Forms.View.Details;
+			this.chatInstanceList.OnContextMenu += new System.EventHandler<Ginger.ChatListView.ContextMenuEventArgs>(this.chatInstanceList_OnContextMenu);
 			this.chatInstanceList.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.chatInstanceList_AfterLabelEdit);
 			this.chatInstanceList.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.chatList_ColumnWidthChanging);
 			this.chatInstanceList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.chatInstanceList_KeyDown);
-			this.chatInstanceList.MouseClick += new System.Windows.Forms.MouseEventHandler(this.chatInstanceList_MouseClick);
 			// 
 			// columnTitle
 			// 
@@ -313,8 +312,7 @@ namespace Ginger
             this.createBackupMenuItem,
             this.restoreBackupMenuItem,
             this.toolStripMenuItem2,
-            this.repairChatsMenuItem,
-            this.purgeMenuItem});
+            this.repairChatsMenuItem});
 			this.toolsMenu.Name = "toolsMenu";
 			this.toolsMenu.Size = new System.Drawing.Size(46, 20);
 			this.toolsMenu.Text = "&Tools";
@@ -322,35 +320,28 @@ namespace Ginger
 			// createBackupMenuItem
 			// 
 			this.createBackupMenuItem.Name = "createBackupMenuItem";
-			this.createBackupMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.createBackupMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.createBackupMenuItem.Text = "Create &backup...";
 			this.createBackupMenuItem.Click += new System.EventHandler(this.createBackupMenuItem_Click);
 			// 
 			// restoreBackupMenuItem
 			// 
 			this.restoreBackupMenuItem.Name = "restoreBackupMenuItem";
-			this.restoreBackupMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.restoreBackupMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.restoreBackupMenuItem.Text = "&Restore backup...";
 			this.restoreBackupMenuItem.Click += new System.EventHandler(this.restoreBackupMenuItem_Click);
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(181, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
 			// 
 			// repairChatsMenuItem
 			// 
 			this.repairChatsMenuItem.Name = "repairChatsMenuItem";
-			this.repairChatsMenuItem.Size = new System.Drawing.Size(184, 22);
-			this.repairChatsMenuItem.Text = "&Repair legacy chats...";
+			this.repairChatsMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.repairChatsMenuItem.Text = "&Fix legacy chats...";
 			this.repairChatsMenuItem.Click += new System.EventHandler(this.repairChatsMenuItem_Click);
-			// 
-			// purgeMenuItem
-			// 
-			this.purgeMenuItem.Name = "purgeMenuItem";
-			this.purgeMenuItem.Size = new System.Drawing.Size(184, 22);
-			this.purgeMenuItem.Text = "&Purge chat history...";
-			this.purgeMenuItem.Click += new System.EventHandler(this.purgeMenuItem_Click);
 			// 
 			// statusBar
 			// 
@@ -423,7 +414,7 @@ namespace Ginger
 
 		#endregion
 		private System.Windows.Forms.ToolTip toolTip;
-		private System.Windows.Forms.ListView chatInstanceList;
+		private ChatListView chatInstanceList;
 		private ChatListBox chatView;
 		private System.Windows.Forms.ImageList imageList;
 		private System.Windows.Forms.SaveFileDialog exportFileDialog;
@@ -439,7 +430,6 @@ namespace Ginger
 		private System.Windows.Forms.ToolStripMenuItem toolsMenu;
 		private System.Windows.Forms.ToolStripMenuItem repairChatsMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
-		private System.Windows.Forms.ToolStripMenuItem purgeMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem duplicateMenuItem;
 		private System.Windows.Forms.StatusStrip statusBar;
 		private System.Windows.Forms.ToolStripStatusLabel statusLabel;

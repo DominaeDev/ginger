@@ -1129,17 +1129,20 @@ namespace Ginger
 
 				SetStatusBarMessage(Resources.status_file_save, Constants.StatusBarMessageInterval);
 
-				if (bShouldAutosave && autosaveError == Backyard.Error.NoError)
-					SetStatusBarMessage(Resources.status_link_saved, Constants.StatusBarMessageInterval);
-				else if (autosaveError == Backyard.Error.NotFound)
+				if (bShouldAutosave)
 				{
-					MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-					BreakLink(true);
-				}
-				else if (autosaveError != Backyard.Error.NoError)
-				{
-					MessageBox.Show(Resources.error_link_autosave, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-					Backyard.Disconnect();
+					if (autosaveError == Backyard.Error.NoError)
+						SetStatusBarMessage(Resources.status_link_saved, Constants.StatusBarMessageInterval);
+					else if (autosaveError == Backyard.Error.NotFound)
+					{
+						MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						BreakLink(true);
+					}
+					else if (autosaveError != Backyard.Error.NoError)
+					{
+						MessageBox.Show(Resources.error_link_autosave, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						Backyard.Disconnect();
+					}
 				}
 				return true;
 			}

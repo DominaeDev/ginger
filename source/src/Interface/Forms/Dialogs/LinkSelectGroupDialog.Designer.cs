@@ -101,6 +101,7 @@ namespace Ginger
 			this.imageList.Images.SetKeyName(0, "tree_folder.png");
 			this.imageList.Images.SetKeyName(1, "character_pair.png");
 			this.imageList.Images.SetKeyName(2, "character_group.png");
+			this.imageList.Images.SetKeyName(3, "broken_chat.png");
 			// 
 			// buttonLayout
 			// 
@@ -150,7 +151,7 @@ namespace Ginger
 			this.toolTip.UseAnimation = false;
 			this.toolTip.UseFading = false;
 			// 
-			// LinkSelectChatGroupDialog
+			// LinkSelectGroupDialog
 			// 
 			this.AcceptButton = this.btnOk;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -165,7 +166,7 @@ namespace Ginger
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(450, 300);
-			this.Name = "LinkSelectChatGroupDialog";
+			this.Name = "LinkSelectGroupDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Select a character";

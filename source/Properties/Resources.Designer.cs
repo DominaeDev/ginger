@@ -497,6 +497,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New chat.
+        /// </summary>
+        internal static string cap_link_create_chat {
+            get {
+                return ResourceManager.GetString("cap_link_create_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete chat.
         /// </summary>
         internal static string cap_link_delete_chat {
@@ -998,6 +1007,15 @@ namespace Ginger.Properties {
         internal static string error_link_create_backup_not_character {
             get {
                 return ResourceManager.GetString("error_link_create_backup_not_character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to create chat. Operation cancelled..
+        /// </summary>
+        internal static string error_link_create_chat {
+            get {
+                return ResourceManager.GetString("error_link_create_chat", resourceCulture);
             }
         }
         
@@ -1902,7 +1920,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This character has been modified in Backyard AI.
         ///
-        ///Do you want to continue and overwrite those changes?.
+        ///Do you want to overwrite those changes?.
         /// </summary>
         internal static string msg_link_confirm_overwrite {
             get {
@@ -3436,7 +3454,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete all chats for the current character..
+        ///   Looks up a localized string similar to Delete all chats for this character..
         /// </summary>
         internal static string tooltip_link_purge_chat {
             get {
