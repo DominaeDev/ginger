@@ -24,6 +24,8 @@ namespace Ginger
 			FallbackError,
 		}
 
+		public static readonly Encoding UTF8WithoutBOM = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+
 		public struct EmbeddedData
 		{
 			public string faradayJson;
@@ -464,7 +466,7 @@ namespace Ginger
 				var intermediateFilename = Path.GetTempFileName();
 
 				// Write text file
-				using (StreamWriter outputFile = new StreamWriter(new FileStream(intermediateFilename, FileMode.Open, FileAccess.Write), Encoding.UTF8))
+				using (StreamWriter outputFile = new StreamWriter(new FileStream(intermediateFilename, FileMode.Open, FileAccess.Write), UTF8WithoutBOM))
 				{
 					outputFile.Write(text);
 				}
@@ -718,7 +720,7 @@ namespace Ginger
 				var intermediateFilename = Path.GetTempFileName();
 
 				// Write text file
-				using (StreamWriter outputFile = new StreamWriter(intermediateFilename))
+				using (StreamWriter outputFile = new StreamWriter(new FileStream(intermediateFilename, FileMode.Open, FileAccess.Write), UTF8WithoutBOM))
 				{
 					outputFile.NewLine = "\r\n";
 
