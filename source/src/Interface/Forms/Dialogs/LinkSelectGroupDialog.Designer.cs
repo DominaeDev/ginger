@@ -101,7 +101,9 @@ namespace Ginger
 			this.imageList.Images.SetKeyName(0, "tree_folder.png");
 			this.imageList.Images.SetKeyName(1, "character_pair.png");
 			this.imageList.Images.SetKeyName(2, "character_group.png");
-			this.imageList.Images.SetKeyName(3, "broken_chat.png");
+			this.imageList.Images.SetKeyName(3, "character_pair_empty.png");
+			this.imageList.Images.SetKeyName(4, "group_small_empty.png");
+			this.imageList.Images.SetKeyName(5, "broken_chat.png");
 			// 
 			// buttonLayout
 			// 

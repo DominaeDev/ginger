@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Ginger.Properties;
 using Ginger.Integration;
+using System.Text;
 
 namespace Ginger
 {
@@ -15,15 +16,14 @@ namespace Ginger
 
 		static GingerChat()
 		{
-			JsonSchemaGenerator generator = new JsonSchemaGenerator();
-			JsonSchema schema = generator.Generate(typeof(GingerChat));
-			string jsonSchema = schema.ToString();
+//			JsonSchemaGenerator generator = new JsonSchemaGenerator();
+//			JsonSchema schema = generator.Generate(typeof(GingerChat));
 
 			_schema = JsonSchema.Parse(Resources.ginger_chat_v1_schema);
 		}
 
-		[JsonProperty("name", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
-		public string name;
+		[JsonProperty("title", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+		public string title;
 
 		[JsonProperty("createdAt", Required = Required.Default)]
 		public long createdAt = 0;
@@ -57,19 +57,30 @@ namespace Ginger
 				return null;
 
 			var lsMessages = new List<Message>(chatInstance.history.count);
-			
+
 			foreach (var message in chatInstance.history.messages)
 			{
-				lsMessages.Add(new Message() {
-					speakerId = speakers[message.speaker].id,
-					text = message.text,
-					regens = message.swipes,
-					timestamp = message.creationDate.ToUnixTimeMilliseconds(),
-				});
+				if (message.swipes.Length > 1)
+				{
+					lsMessages.Add(new Message() {
+						speakerId = speakers[message.speaker].id,
+						text = message.text,
+						regens = message.swipes,
+						timestamp = message.creationDate.ToUnixTimeMilliseconds(),
+					});
+				}
+				else
+				{
+					lsMessages.Add(new Message() {
+						speakerId = speakers[message.speaker].id,
+						text = message.text,
+						timestamp = message.creationDate.ToUnixTimeMilliseconds(),
+					});
+				}
 			}
-			
+
 			return new GingerChat() {
-				name = chatInstance.name,
+				title = chatInstance.name,
 				speakers = speakers.ToDictionary(s => s.id, s => s.name),
 				createdAt = chatInstance.creationDate.ToUnixTimeMilliseconds(),
 				messages = lsMessages.ToArray(),
@@ -121,7 +132,7 @@ namespace Ginger
 			}
 
 			return new ChatHistory() {
-				name = this.name,
+				name = this.title,
 				messages = result.ToArray(),
 			};
 		}

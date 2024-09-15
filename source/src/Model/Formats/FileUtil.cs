@@ -1340,9 +1340,9 @@ namespace Ginger
 			}
 			else if (ext == ".txt")
 			{
-				if (TextChat.Validate(textData))
+				if (TextFileChat.Validate(textData))
 				{
-					var chat = TextChat.FromString(textData);
+					var chat = TextFileChat.FromString(textData);
 					if (chat != null)
 						return chat.ToChat();
 				}
@@ -1391,14 +1391,14 @@ namespace Ginger
 			}
 		}
 		
-		public static bool ExportTavernChat(ChatHistory chatHistory, string filename, string characterName = null, string userName = null)
+		public static bool ExportTavernChat(ChatHistory chatHistory, string filename, string[] names)
 		{
 			if (chatHistory == null)
 				return false;
 
 			try
 			{
-				TavernChat chat = TavernChat.FromChat(chatHistory, characterName, userName);
+				TavernChat chat = TavernChat.FromChat(chatHistory, names);
 				string json = chat.ToJson();
 				if (json == null)
 					return false;
@@ -1411,7 +1411,7 @@ namespace Ginger
 			}
 		}
 
-		public static bool ExportGingerChat(Integration.ChatInstance chatInstance, string filename)
+		public static bool ExportGingerChat(ChatInstance chatInstance, string filename)
 		{
 			if (chatInstance == null)
 				return false;

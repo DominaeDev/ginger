@@ -2072,8 +2072,11 @@ namespace Ginger.Integration
 
 		#region Chat
 
-		public struct ChatCount {
+		public struct ChatCount 
+		{
 			public int count;
+			public int minCount;
+			public bool isEmpty;
 			public DateTime lastMessage;
 		}
 
@@ -2103,6 +2106,11 @@ namespace Ginger.Integration
 									SELECT MAX(M.updatedAt)
 									FROM Message as M
 									WHERE M.chatId = C.id
+								) AS subquery, 
+								(
+									SELECT COUNT(*)
+									FROM Message
+									WHERE chatId = C.id
 								) AS subquery
 							FROM Chat AS C
 							GROUP BY groupConfigId
@@ -2116,10 +2124,12 @@ namespace Ginger.Integration
 								DateTime updatedAt = reader.GetUnixTime(1);
 								int count = reader.GetInt32(2);
 								DateTime lastMessage = reader.IsDBNull(3) ? updatedAt : reader.GetUnixTime(3);
+								bool isEmpty = reader.IsDBNull(4) ? true : reader.GetInt32(4) <= 1;
 
 								counts.Add(groupId, new ChatCount() {
 									count = count,
 									lastMessage = lastMessage,
+									isEmpty = isEmpty,
 								});
 							}							
 						}

@@ -82,7 +82,7 @@ namespace Ginger
 		{
 			Backyard.ChatCount count;
 			if (_chatCounts.TryGetValue(group.instanceId, out count))
-				return count.lastMessage;
+				return count.isEmpty ? DateTime.MinValue : count.lastMessage;
 			return DateTime.MinValue;
 		}
 
@@ -211,7 +211,14 @@ namespace Ginger
 
 			Backyard.ChatCount chatCount;
 			if (_chatCounts.TryGetValue(group.instanceId, out chatCount))
-				sbTooltip.AppendFormat(" ({0} {1})", chatCount.count, chatCount.count == 1 ? "chat" : "chats");
+			{
+				if (chatCount.isEmpty)
+					sbTooltip.Append(" (No messages)");
+				else
+					sbTooltip.AppendFormat(" ({0} {1})",
+						chatCount.count,
+						chatCount.count == 1 ? "chat" : "chats");
+			}
 			else
 				sbTooltip.Append(" (No chats found)");
 
@@ -222,6 +229,9 @@ namespace Ginger
 			int icon = group.members.Length > 2 ? 2 : 1;
 			if (chatCount.count == 0)
 				icon = 3; // Error icon
+			else if (chatCount.isEmpty)
+				icon += 2;
+
 			var node = new TreeNode(groupLabel, icon, icon);
 			node.Tag = group;
 			node.ToolTipText = sbTooltip.ToString();

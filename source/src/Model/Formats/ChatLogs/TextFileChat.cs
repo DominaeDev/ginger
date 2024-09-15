@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace Ginger
 {
-	class TextChat
+	public class TextFileChat
 	{
 		public class Message
 		{
@@ -18,7 +18,7 @@ namespace Ginger
 
 		public Message[] messages;
 
-		public static TextChat FromChat(ChatInstance chatInstance, string[] names)
+		public static TextFileChat FromChat(ChatInstance chatInstance, string[] names)
 		{
 			if (chatInstance == null || chatInstance.history.isEmpty)
 				return null;
@@ -42,7 +42,7 @@ namespace Ginger
 				});
 			}
 			
-			return new TextChat() {
+			return new TextFileChat() {
 				messages = lsMessages.ToArray(),
 			};
 		}
@@ -81,7 +81,7 @@ namespace Ginger
 			};
 		}
 		
-		public static TextChat FromString(string textData)
+		public static TextFileChat FromString(string textData)
 		{
 			if (string.IsNullOrEmpty(textData))
 				return null;
@@ -122,7 +122,7 @@ namespace Ginger
 			if (lsMessages.Count == 0)
 				return null;
 
-			return new TextChat() {
+			return new TextFileChat() {
 				messages = lsMessages.ToArray(),
 			};
 		}

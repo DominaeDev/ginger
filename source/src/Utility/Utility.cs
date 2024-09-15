@@ -1050,9 +1050,6 @@ namespace Ginger
 			if (string.IsNullOrEmpty(word))
 				return;
 
-			if (replace == null)
-				replace = "";
-
 			List<WholeWord> replacements = new List<WholeWord>();
 
 			string text = sb.ToString();
@@ -1077,7 +1074,7 @@ namespace Ginger
 			{
 				var r = replacements[i];
 				sb.Remove(r.start, r.length);
-				sb.Insert(r.start, replace);
+				sb.Insert(r.start, replace ?? "");
 			}
 		}
 

@@ -11,16 +11,16 @@ namespace Ginger
 {
 	public class TavernChat
 	{
-		private static JsonSchema _starterSchema;
+		private static JsonSchema _headerSchema;
 		private static JsonSchema _entrySchema;
 
 		static TavernChat()
 		{
-			_starterSchema = JsonSchema.Parse(Resources.tavern_chat_starter_schema);
+			_headerSchema = JsonSchema.Parse(Resources.tavern_chat_header_schema);
 			_entrySchema = JsonSchema.Parse(Resources.tavern_chat_entry_schema);
 		}
 
-		public class Starter
+		public class Header
 		{
 			[JsonProperty("user_name", Required = Required.Always)]
 			public string userName;
@@ -42,7 +42,7 @@ namespace Ginger
 			public string text;
 		}
 
-		public Starter starter = new Starter();
+		public Header header = new Header();
 		public Entry[] entries = new Entry[0];
 
 		public static TavernChat FromJson(string json)
@@ -55,12 +55,12 @@ namespace Ginger
 					return null;
 
 				// Parse starter
-				JObject jStarter = JObject.Parse(lines[0]);
-				if (jStarter.IsValid(_starterSchema) == false)
+				JObject jHeader = JObject.Parse(lines[0]);
+				if (jHeader.IsValid(_headerSchema) == false)
 					return null;
 
 				DateTime createdAt;
-				var starter = JsonConvert.DeserializeObject<Starter>(lines[0]);
+				var starter = JsonConvert.DeserializeObject<Header>(lines[0]);
 				createdAt = DateTimeExtensions.FromTavernDate(starter.creationDate);
 
 				List<Entry> lsEntries = new List<Entry>();
@@ -75,7 +75,7 @@ namespace Ginger
 				}
 
 				return new TavernChat() {
-					starter = starter,
+					header = starter,
 					entries = lsEntries.ToArray(),
 				};
 			}
@@ -91,7 +91,7 @@ namespace Ginger
 			{
 				var sbJson = new StringBuilder();
 				// Starter
-				sbJson.AppendLine(JsonConvert.SerializeObject(starter, new JsonSerializerSettings() {
+				sbJson.AppendLine(JsonConvert.SerializeObject(header, new JsonSerializerSettings() {
 						StringEscapeHandling = StringEscapeHandling.EscapeNonAscii,
 					}));
 
@@ -111,27 +111,25 @@ namespace Ginger
 			}
 		}
 
-		public static TavernChat FromChat(ChatHistory chatHistory, string characterName, string userName)
+		public static TavernChat FromChat(ChatHistory chatHistory, string[] names)
 		{
-			if (characterName == null)
-				characterName = Constants.DefaultCharacterName;
-			if (userName == null)
-				userName = Constants.DefaultUserName;
+			string userName			= names != null && names.Length > 0 ? names[0] : "You";
+			string characterName	= names != null && names.Length > 1 ? names[1] : Constants.DefaultCharacterName;
 
 			if (chatHistory == null || chatHistory.isEmpty)
 			{
 				return new TavernChat() {
-					starter = new Starter() {
-						creationDate = DateTime.UtcNow.ToTavernDate(),
-						characterName = characterName,
+					header = new Header() {
 						userName = userName,
+						characterName = characterName,
+						creationDate = DateTime.UtcNow.ToTavernDate(),
 					},
 					entries = new Entry[0],
 				};
 			}
 			
 			List<Entry> lsEntries = new List<Entry>();
-			foreach (var message in chatHistory.messages)
+			foreach (var message in chatHistory.messages) // Include greeting
 			{
 				lsEntries.Add(new Entry() {
 					isUser = message.speaker == 0,
@@ -141,10 +139,10 @@ namespace Ginger
 				});
 			}
 			return new TavernChat() {
-				starter = new Starter() {
-					creationDate = DateTime.UtcNow.ToTavernDate(),
-					characterName = characterName,
+				header = new Header() {
 					userName = userName,
+					characterName = characterName,
+					creationDate = DateTime.UtcNow.ToTavernDate(),
 				},
 				entries = lsEntries.ToArray(),
 			};
@@ -160,10 +158,10 @@ namespace Ginger
 				if (string.IsNullOrEmpty(entry.text) == false)
 				{
 					string text = entry.text;
-					if (string.IsNullOrEmpty(starter.characterName) == false)
-						text = Utility.ReplaceWholeWord(text, starter.characterName, GingerString.CharacterMarker, false);
-					if (string.IsNullOrEmpty(starter.userName) == false)
-						text = Utility.ReplaceWholeWord(text, starter.userName, GingerString.UserMarker, false);
+					if (string.IsNullOrEmpty(header.characterName) == false)
+						text = Utility.ReplaceWholeWord(text, header.characterName, GingerString.CharacterMarker, false);
+					if (string.IsNullOrEmpty(header.userName) == false)
+						text = Utility.ReplaceWholeWord(text, header.userName, GingerString.UserMarker, false);
 					text = text.Replace("<START>", "");
 					text = GingerString.FromTavern(text).ToString();
 
@@ -193,7 +191,7 @@ namespace Ginger
 
 				// Parse starter
 				JObject jObject = JObject.Parse(lines[0]);
-				return jObject.IsValid(_starterSchema);
+				return jObject.IsValid(_headerSchema);
 			}
 			catch
 			{

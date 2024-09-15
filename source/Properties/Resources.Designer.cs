@@ -3077,9 +3077,9 @@ namespace Ginger.Properties {
         ///  }
         ///}.
         /// </summary>
-        internal static string tavern_chat_starter_schema {
+        internal static string tavern_chat_header_schema {
             get {
-                return ResourceManager.GetString("tavern_chat_starter_schema", resourceCulture);
+                return ResourceManager.GetString("tavern_chat_header_schema", resourceCulture);
             }
         }
         

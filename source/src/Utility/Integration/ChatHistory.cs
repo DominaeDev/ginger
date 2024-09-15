@@ -102,22 +102,5 @@ namespace Ginger.Integration
 			}
 			return chat;
 		}
-
-		public void ApplyNames(string[] names)
-		{
-			if (isEmpty)
-				return;
-
-			for (int i = 0; i < messages.Length; ++i)
-			{
-				for (int j = 0; j < messages[i].swipes.Length; ++j)
-				{
-					if (names.Length > 0)
-						messages[i].swipes[j] = Utility.ReplaceWholeWord(messages[i].swipes[j], GingerString.UserMarker, names[0] ?? Constants.DefaultUserName);
-					if (names.Length > 1)
-						messages[i].swipes[j] = Utility.ReplaceWholeWord(messages[i].swipes[j], GingerString.CharacterMarker, names[1] ?? Constants.DefaultCharacterName);
-				}
-			}
-		}
 	}
 }

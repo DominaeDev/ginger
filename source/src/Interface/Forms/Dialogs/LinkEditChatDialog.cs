@@ -449,18 +449,7 @@ namespace Ginger
 				chatHistory.messages = chatHistory.messages.Where(m => m.speaker < numSpeakers - 1).ToArray();
 			}
 
-			// Apply names (2 character only)
-			var characters = _groupInstance.members
-				.Select(id => _charactersById.GetOrDefault(id))
-				.Where(c => c.isUser == false)
-				.ToArray();
-			var user = _groupInstance.members
-				.Select(id => _charactersById.GetOrDefault(id))
-				.Where(c => c.isUser)
-				.FirstOrDefault();
-			string characterName = Utility.FirstNonEmpty(characters.Length > 0 ? characters[0].name : "", Constants.DefaultCharacterName);
-			string userName = Utility.FirstNonEmpty(user.name, Constants.DefaultUserName);
-			chatHistory.ApplyNames(new string[] { userName, characterName });
+			Unanonymize(chatHistory);
 
 			if (string.IsNullOrEmpty(chatHistory.name) || chatHistory.name == ChatInstance.DefaultName)
 				chatHistory.name = "Imported chat";
@@ -492,6 +481,39 @@ namespace Ginger
 			}
 		}
 
+		private void Unanonymize(ChatHistory chatHistory)
+		{
+			if (chatHistory.isEmpty)
+				return;
+
+			var userName = _groupInstance.members
+				.Select(id => _charactersById.GetOrDefault(id))
+				.Where(c => c.isUser)
+				.FirstOrDefault()
+				.name ?? "{user}";
+			var characterName = _groupInstance.members
+				.Select(id => _charactersById.GetOrDefault(id))
+				.Where(c => c.isUser == false)
+				.FirstOrDefault()
+				.name ?? "{character}";
+
+			for (int i = 0; i < chatHistory.messages.Length; ++i)
+			{
+				for (int j = 0; j < chatHistory.messages[i].swipes.Length; ++j)
+				{
+					StringBuilder sb = new StringBuilder(chatHistory.messages[i].swipes[j]);
+					Utility.ReplaceWholeWord(sb, "{{user}}", "__UUUU__", true);
+					Utility.ReplaceWholeWord(sb, GingerString.UserMarker, "__UUUU__", true);
+					Utility.ReplaceWholeWord(sb, "{{char}}", "__CCCC__", true);
+					Utility.ReplaceWholeWord(sb, "{character}", "__CCCC__", true);
+					Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, "__CCCC__", true);
+					Utility.ReplaceWholeWord(sb, "__UUUU__", userName, false);
+					Utility.ReplaceWholeWord(sb, "__CCCC__", characterName, false);
+					chatHistory.messages[i].swipes[j] = sb.ToString();
+				}
+			}
+		}
+
 		private void ExportChat(ChatInstance chatInstance)
 		{
 			if (chatInstance == null)
@@ -507,28 +529,36 @@ namespace Ginger
 
 			bool bGroupChat = chatInstance.history.numSpeakers > 2;
 
+			const int SoloBackyard = 1;
+			const int SoloGinger = 2;
+			const int SoloSillyTavern = 3;
+			const int SoloTextGenWebUI = 4;
+			const int SoloTextFile = 5;
+			const int GroupGinger = 1;
+			const int GroupTextFile = 2;
+
 			int filterIndex = AppSettings.User.LastExportChatFilter;
 			exportFileDialog.Title = "Export chat";
 			if (bGroupChat)
 			{
 				exportFileDialog.Filter = "Ginger chat log|*.json|Text file|*.txt";
-				if (filterIndex == 5)
-					filterIndex = 2;
+				if (filterIndex == SoloTextFile) // Text
+					filterIndex = GroupTextFile;
 				else
-					filterIndex = 1;
+					filterIndex = GroupGinger;
 
-				if (filterIndex == 2) // txt
+				if (filterIndex == GroupTextFile) // Text
 					filename = string.Concat(filename, ".txt");
 				else // json
 					filename = string.Concat(filename, ".json");	
 			}
 			else
 			{
-				exportFileDialog.Filter = "Backyard chat log|*.json|Text generation web ui chat log|*.json|SillyTavern chat log|*.jsonl|Ginger chat log|*.json|Text file|*.txt";
+				exportFileDialog.Filter = "Backyard chat log|*.json|Ginger chat log|*.json|SillyTavern chat log|*.jsonl|Text generation web ui chat log|*.json|Text file|*.txt";
 				
-				if (filterIndex == 3) // jsonl
+				if (filterIndex == SoloSillyTavern)
 					filename = string.Concat(filename, ".jsonl");
-				else if (filterIndex == 5) // txt
+				else if (filterIndex == SoloTextFile)
 					filename = string.Concat(filename, ".txt");
 				else // json
 					filename = string.Concat(filename, ".json");		
@@ -544,41 +574,32 @@ namespace Ginger
 
 			if (bGroupChat)
 			{
-				if (exportFileDialog.FilterIndex == 1)
-					exportFileDialog.FilterIndex = 4;
-				else if (exportFileDialog.FilterIndex == 2)
-					exportFileDialog.FilterIndex = 5;
+				if (exportFileDialog.FilterIndex == GroupGinger)
+					exportFileDialog.FilterIndex = SoloGinger; // Ginger
+				else if (exportFileDialog.FilterIndex == GroupTextFile)
+					exportFileDialog.FilterIndex = SoloTextFile; // Text
 			}
 
 			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
 			AppSettings.User.LastExportChatFilter = exportFileDialog.FilterIndex;
 
-			if (exportFileDialog.FilterIndex == 1) // Backyard
+			string[] names = chatInstance.participants
+				.Select(id => Backyard.GetCharacter(id).name)
+				.ToArray();
+
+			if (exportFileDialog.FilterIndex == SoloBackyard) // Backyard
 			{
 				if (FileUtil.ExportBackyardChat(chatInstance.history, exportFileDialog.FileName))
 					return; // Success
 			}
-			else if (exportFileDialog.FilterIndex == 2) // TextGenWebUI
-			{
-				if (FileUtil.ExportTextGenWebUI(chatInstance.history, exportFileDialog.FileName))
-					return; // Success
-			}
-			else if (exportFileDialog.FilterIndex == 3) // SillyTavern
-			{
-				string userName = Utility.FirstNonEmpty(chatInstance.participants.Select(id => Backyard.GetCharacter(id)).FirstOrDefault(c => c.isUser).name, Constants.DefaultUserName);
-				string characterName = Utility.FirstNonEmpty(chatInstance.participants.Select(id => Backyard.GetCharacter(id)).FirstOrDefault(c => !c.isUser).name, Constants.DefaultCharacterName);
-
-				if (FileUtil.ExportTavernChat(chatInstance.history, exportFileDialog.FileName, characterName, userName))
-					return; // Success
-			} 
-			else if (exportFileDialog.FilterIndex == 4) // Ginger
+			else if (exportFileDialog.FilterIndex == SoloGinger) // Ginger
 			{
 				var speakers = new List<GingerChat.Speaker>();
 				for (int i = 0; i < chatInstance.participants.Length; ++i)
 				{
 					speakers.Add(new GingerChat.Speaker() {
 						id = i.ToString(),
-						name = i > 0 ? _charactersById[chatInstance.participants[i]].name : "You",
+						name = _charactersById[chatInstance.participants[i]].name,
 					});
 				}
 
@@ -590,17 +611,19 @@ namespace Ginger
 					return; // Success
 				}
 			}
-			else if (exportFileDialog.FilterIndex == 5) // Text file
+			else if (exportFileDialog.FilterIndex == SoloSillyTavern) // SillyTavern
 			{
-				string userName = "You";
-				if (_charactersById.Values.ContainsAny(c => !c.isUser && c.name == "You")) // Naming conflict
-					userName = "User";
-
-				var names = new List<string>();
-				for (int i = 0; i < chatInstance.participants.Length; ++i)
-					names.Add(i > 0 ? _charactersById[chatInstance.participants[i]].name : userName);
-
-				var chat = TextChat.FromChat(chatInstance, names.ToArray());
+				if (FileUtil.ExportTavernChat(chatInstance.history, exportFileDialog.FileName, names))
+					return; // Success
+			} 
+			else if (exportFileDialog.FilterIndex == SoloTextGenWebUI) // TextGenWebUI
+			{
+				if (FileUtil.ExportTextGenWebUI(chatInstance.history, exportFileDialog.FileName))
+					return; // Success
+			}
+			else if (exportFileDialog.FilterIndex == SoloTextFile) // Text file
+			{
+				var chat = TextFileChat.FromChat(chatInstance, names.ToArray());
 				string textData = chat.ToString();
 				if (textData != null && FileUtil.ExportTextFile(exportFileDialog.FileName, textData))
 				{
@@ -735,7 +758,7 @@ namespace Ginger
 			if (ConfirmChatExists(chatInstance.instanceId, Resources.cap_link_delete_chat) == false)
 				return;
 
-			// Chat chat counts
+			// Fetch chat counts
 			int chatCounts;
 			if (Backyard.ConfirmDeleteChat(chatInstance, _groupInstance, out chatCounts) != Backyard.Error.NoError)
 			{

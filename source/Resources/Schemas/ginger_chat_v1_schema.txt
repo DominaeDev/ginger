@@ -1,7 +1,7 @@
 {
   "type": "object",
   "properties": {
-    "name": {
+    "title": {
       "required": false,
       "type": [
         "string",

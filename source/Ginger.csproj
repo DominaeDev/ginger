@@ -369,7 +369,7 @@
     <Compile Include="src\Model\Formats\ChatLogs\BackyardChat.cs" />
     <Compile Include="src\Model\Formats\CharacterCards\FaradayCardV4.cs" />
     <Compile Include="src\Model\Formats\CharacterCards\FaradayCardV3.cs" />
-    <Compile Include="src\Model\Formats\ChatLogs\TextChat.cs" />
+    <Compile Include="src\Model\Formats\ChatLogs\TextFileChat.cs" />
     <Compile Include="src\Model\Formats\Lorebooks\TavernWorldbook.cs" />
     <Compile Include="src\Utility\Integration\ChatHistory.cs" />
     <Compile Include="src\Model\Formats\CharacterCards\TavernCardV3.cs" />
@@ -938,6 +938,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Schemas\ginger_chat_v1_schema.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\tavern_chat_header_schema.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
