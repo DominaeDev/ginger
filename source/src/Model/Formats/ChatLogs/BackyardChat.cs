@@ -45,7 +45,7 @@ namespace Ginger
 			var lsEntries = new List<ChatItem>(chatHistory.count / 2 + 1);
 
 			int iMsg = 0;
-			if (chatHistory.hasGreeting) // Skip greeting
+			if (chatHistory.hasGreeting) // Do not include greeting
 				iMsg = 1;
 
 			string lastMessage = null;

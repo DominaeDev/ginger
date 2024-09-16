@@ -419,8 +419,8 @@ namespace Ginger.Integration
 						@"
 							SELECT 
 								A.id, B.id, D.id,
-								B.displayName, B.name, A.createdAt,
-								B.updatedAt, D.folderId, D.hubAuthorUsername, A.isUserControlled
+								B.displayName, B.name, A.createdAt, B.updatedAt, 
+								D.folderId, D.hubAuthorUsername, A.isUserControlled
 							FROM CharacterConfig as A
 							INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
 							INNER JOIN _CharacterConfigToGroupConfig AS C ON C.A = A.id
@@ -1925,72 +1925,9 @@ namespace Ginger.Integration
 							// Write messages
 							if (chats != null)
 							{
-								for (int iChat = 0; iChat < chats.Length; ++iChat)
-								{
-									var chatHistory = chats[iChat].history;
-									int messageCount = chatHistory.messagesWithoutGreeting.Count();
-									if (messageCount > 0)
-									{
-										// Generate unique IDs
-										var messageIds = new string[messageCount];
-										var swipeIds = new string[messageCount];
-										for (int i = 0; i < messageIds.Length; ++i)
-										{
-											messageIds[i] = Cuid.NewCuid();
-											swipeIds[i] = Cuid.NewCuid();
-										}
-
-										using (var cmdMessages = new SQLiteCommand(connection))
-										{
-											var sbCommand = new StringBuilder();
-											sbCommand.AppendLine(
-											@"
-										INSERT INTO Message 
-											(id, createdAt, updatedAt, chatId, characterConfigId)
-										VALUES ");
-
-											int i = 0;
-											foreach (var message in chatHistory.messagesWithoutGreeting)
-											{
-												if (i > 0)
-													sbCommand.Append(",\n");
-												sbCommand.Append($"($messageId{i:000}, $createdAt{i:000}, $updatedAt{i:000}, $chatId, $charId{message.speaker})");
-
-												cmdMessages.Parameters.AddWithValue($"$messageId{i:000}", messageIds[i]);
-												cmdMessages.Parameters.AddWithValue($"$createdAt{i:000}", message.creationDate.ToUnixTimeMilliseconds());
-												cmdMessages.Parameters.AddWithValue($"$updatedAt{i:000}", message.updateDate.ToUnixTimeMilliseconds());
-												++i;
-											}
-											sbCommand.Append(";");
-
-											sbCommand.AppendLine(
-											@"
-										INSERT INTO RegenSwipe
-											(id, createdAt, updatedAt, activeTimestamp, text, messageId)
-										VALUES ");
-											i = 0;
-											foreach (var message in chatHistory.messagesWithoutGreeting)
-											{
-												if (i > 0)
-													sbCommand.Append(",\n");
-												sbCommand.Append($"($swipeId{i:000}, $updatedAt{i:000}, $updatedAt{i:000}, $updatedAt{i:000}, $text{i:000}, $messageId{i:000})");
-
-												cmdMessages.Parameters.AddWithValue($"$swipeId{i:000}", swipeIds[i]);
-												cmdMessages.Parameters.AddWithValue($"$text{i:000}", message.text);
-												++i;
-											}
-											sbCommand.Append(";");
-											cmdMessages.CommandText = sbCommand.ToString();
-
-											cmdMessages.Parameters.AddWithValue("$chatId", chatIds[iChat]);
-											cmdMessages.Parameters.AddWithValue($"$charId0", userId); // Backups have exactly 2 speakers
-											cmdMessages.Parameters.AddWithValue($"$charId1", characterId); // Backups have exactly 2 speakers
-
-											expectedUpdates += messageCount * 2;
-											updates += cmdMessages.ExecuteNonQuery();
-										}
-									}
-								}
+								var speakerIds = new string[] { userId, characterId };
+								for (int i = 0; i < chats.Length; ++i)
+									WriteChatMessages(connection, chatIds[i], chats[i].history, speakerIds, ref expectedUpdates, ref updates);
 							}
 							
 							if (updates != expectedUpdates)
@@ -2075,9 +2012,8 @@ namespace Ginger.Integration
 		public struct ChatCount 
 		{
 			public int count;
-			public int minCount;
-			public bool isEmpty;
 			public DateTime lastMessage;
+			public bool hasMessages { get { return lastMessage > DateTime.MinValue; } }
 		}
 
 		public static Error GetChatCounts(out Dictionary<string, ChatCount> counts)
@@ -2100,20 +2036,13 @@ namespace Ginger.Integration
 						cmdChat.CommandText =
 						@"
 							SELECT 
-								groupConfigId, updatedAt,
-								COUNT(*), 
+								groupConfigId,
 								(
 									SELECT MAX(M.updatedAt)
 									FROM Message as M
 									WHERE M.chatId = C.id
-								) AS subquery, 
-								(
-									SELECT COUNT(*)
-									FROM Message
-									WHERE chatId = C.id
-								) AS subquery
+								)
 							FROM Chat AS C
-							GROUP BY groupConfigId
 						";
 
 						using (var reader = cmdChat.ExecuteReader())
@@ -2121,17 +2050,23 @@ namespace Ginger.Integration
 							while (reader.Read())
 							{
 								string groupId = reader.GetString(0);
-								DateTime updatedAt = reader.GetUnixTime(1);
-								int count = reader.GetInt32(2);
-								DateTime lastMessage = reader.IsDBNull(3) ? updatedAt : reader.GetUnixTime(3);
-								bool isEmpty = reader.IsDBNull(4) ? true : reader.GetInt32(4) <= 1;
+								DateTime lastMessage = reader.IsDBNull(1) ? DateTime.MinValue : reader.GetUnixTime(1);
 
-								counts.Add(groupId, new ChatCount() {
-									count = count,
-									lastMessage = lastMessage,
-									isEmpty = isEmpty,
-								});
-							}							
+								if (counts.ContainsKey(groupId) == false)
+								{
+									counts.Add(groupId, new ChatCount() {
+										count = 1,
+										lastMessage = lastMessage,
+									});
+								}
+								else
+								{
+									counts[groupId] = new ChatCount() {
+										count = counts[groupId].count + 1,
+										lastMessage = DateTimeExtensions.Max(counts[groupId].lastMessage, lastMessage),
+									};
+								}
+							}
 						}
 					}
 					
@@ -2493,6 +2428,7 @@ namespace Ginger.Integration
 			public ChatStaging staging;
 			public ChatParameters parameters;
 			public ChatHistory history;
+			public bool isImport;
 		}
 
 		private static ChatInstance FetchChatInstance(SQLiteConnection connection, _Chat chatInfo, List<_Character> characters, List<_Character> groupMembers)
@@ -2733,6 +2669,9 @@ namespace Ginger.Integration
 							var staging = args.staging ?? defaultStaging;
 							var parameters = args.parameters ?? defaultParameters;
 							var chatName = args.history.name ?? "";
+							var greeting = staging.greeting;
+							if (args.isImport)
+								greeting = args.history.hasGreeting ? args.history.greeting : "";
 
 							using (var cmdCreateChat = new SQLiteCommand(connection))
 							{
@@ -2762,7 +2701,7 @@ namespace Ginger.Integration
 								cmdCreateChat.Parameters.AddWithValue("$system", staging.system);
 								cmdCreateChat.Parameters.AddWithValue("$scenario",  staging.scenario);
 								cmdCreateChat.Parameters.AddWithValue("$example",  staging.example);
-								cmdCreateChat.Parameters.AddWithValue("$greeting",  staging.greeting);
+								cmdCreateChat.Parameters.AddWithValue("$greeting",  greeting);
 								cmdCreateChat.Parameters.AddWithValue("$grammar",  staging.grammar ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? DefaultModel);
 								cmdCreateChat.Parameters.AddWithValue("$pruneExample", parameters.pruneExampleChat);
@@ -2783,7 +2722,8 @@ namespace Ginger.Integration
 							}
 
 							// Write messages
-							var lsMessages = WriteChatMessages(connection, chatId, args.history, groupMembers, ref expectedUpdates, ref updates);
+							var speakerIds = groupMembers.Select(m => m.instanceId).ToArray();							
+							var lsMessages = WriteChatMessages(connection, chatId, args.history, speakerIds, ref expectedUpdates, ref updates);
 							
 							if (updates != expectedUpdates)
 							{
@@ -3324,20 +3264,23 @@ namespace Ginger.Integration
 									UPDATE Chat
 									SET 
 										updatedAt = $timestamp,
-										name = $name
+										name = $name,
+										greetingDialogue = $greeting
 									WHERE id = $chatId;
 								";
 
 								cmdEditChat.Parameters.AddWithValue("$chatId", chatId);
 								cmdEditChat.Parameters.AddWithValue("$timestamp", updatedAt);
 								cmdEditChat.Parameters.AddWithValue("$name", chatInstance.name ?? "");
+								cmdEditChat.Parameters.AddWithValue("$greeting", chatInstance.history.greeting ?? "");
 
 								expectedUpdates += 1;
 								updates += cmdEditChat.ExecuteNonQuery();
 							}
-							
+
 							// Write messages
-							var lsMessages = WriteChatMessages(connection, chatId, chatInstance.history, groupMembers, ref expectedUpdates, ref updates);
+							string[] speakerIds = groupMembers.Select(m => m.instanceId).ToArray();
+							var lsMessages = WriteChatMessages(connection, chatId, chatInstance.history, speakerIds, ref expectedUpdates, ref updates);
 
 							if (updates != expectedUpdates)
 							{
@@ -3384,7 +3327,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static List<ChatHistory.Message> WriteChatMessages(SQLiteConnection connection, string chatId, ChatHistory chatHistory, List<_Character> groupMembers, ref int expectedUpdates, ref int updates)
+		private static List<ChatHistory.Message> WriteChatMessages(SQLiteConnection connection, string chatId, ChatHistory chatHistory, string[] speakerIds, ref int expectedUpdates, ref int updates)
 		{
 			List<ChatHistory.Message> lsMessages = new List<ChatHistory.Message>();
 			int messageCount = chatHistory.messagesWithoutGreeting.Count();
@@ -3410,12 +3353,12 @@ namespace Ginger.Integration
 				{
 					if (iMessage > 0)
 						sbCommand.Append(",\n");
-					sbCommand.Append($"($messageId{iMessage:000}, $createdAt{iMessage:000}, $updatedAt{iMessage:000}, $chatId, $charId{iMessage:000})");
+					sbCommand.Append($"($messageId{iMessage:000}, $messageCreatedAt{iMessage:000}, $messageUpdatedAt{iMessage:000}, $chatId, $charId{iMessage:000})");
 
 					cmdMessages.Parameters.AddWithValue($"$messageId{iMessage:000}", messageIds[iMessage]);
-					cmdMessages.Parameters.AddWithValue($"$createdAt{iMessage:000}", message.creationDate.ToUnixTimeMilliseconds());
-					cmdMessages.Parameters.AddWithValue($"$updatedAt{iMessage:000}", message.updateDate.ToUnixTimeMilliseconds());
-					cmdMessages.Parameters.AddWithValue($"$charId{iMessage:000}", groupMembers[message.speaker].instanceId);
+					cmdMessages.Parameters.AddWithValue($"$messageCreatedAt{iMessage:000}", message.creationDate.ToUnixTimeMilliseconds());
+					cmdMessages.Parameters.AddWithValue($"$messageUpdatedAt{iMessage:000}", message.updateDate.ToUnixTimeMilliseconds());
+					cmdMessages.Parameters.AddWithValue($"$charId{iMessage:000}", speakerIds[message.speaker]);
 
 					lsMessages.Add(new ChatHistory.Message() {
 						instanceId = messageIds[iMessage],
@@ -3442,15 +3385,15 @@ namespace Ginger.Integration
 					{
 						if (iMessage > 0)
 							sbCommand.Append(",\n");
-						sbCommand.Append($"($swipeId{iSwipe:000}, $createdAt{iSwipe:000}, $createdAt{iSwipe:000}, $activeAt{iSwipe:000}, $text{iSwipe:000}, $messageId{iMessage:000})");
+						sbCommand.Append($"($swipeId{iSwipe:000}, $swipeCreatedAt{iSwipe:000}, $swipeCreatedAt{iSwipe:000}, $swipeActiveAt{iSwipe:000}, $text{iSwipe:000}, $messageId{iMessage:000})");
 
 						DateTime activeTime = message.creationDate;
 						if (i == message.activeSwipe)
 							activeTime += TimeSpan.FromMilliseconds(5000);
 						DateTime swipeTime = message.creationDate + TimeSpan.FromMilliseconds(i * 10);
 						cmdMessages.Parameters.AddWithValue($"$swipeId{iSwipe:000}", Cuid.NewCuid());
-						cmdMessages.Parameters.AddWithValue($"$createdAt{iSwipe:000}", swipeTime.ToUnixTimeMilliseconds());
-						cmdMessages.Parameters.AddWithValue($"$activeAt{iSwipe:000}", activeTime.ToUnixTimeMilliseconds());
+						cmdMessages.Parameters.AddWithValue($"$swipeCreatedAt{iSwipe:000}", swipeTime.ToUnixTimeMilliseconds());
+						cmdMessages.Parameters.AddWithValue($"$swipeActiveAt{iSwipe:000}", activeTime.ToUnixTimeMilliseconds());
 						cmdMessages.Parameters.AddWithValue($"$text{iSwipe:000}", message.swipes[i]);
 						++expectedUpdates;
 					}

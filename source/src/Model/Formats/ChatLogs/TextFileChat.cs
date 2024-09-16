@@ -25,7 +25,35 @@ namespace Ginger
 
 			var lsMessages = new List<Message>(chatInstance.history.count);
 
-			foreach (var message in chatInstance.history.messagesWithoutGreeting)
+			if (names.Length > 2 && chatInstance.history.isEmpty == false) // Group chat
+			{
+				// Insert empty messages from everyone, indicating their intended order
+				for (int i = 0; i < names.Length; ++i)
+				{
+					lsMessages.Add(new Message() {
+						name = names[i],
+						text = "",
+						timestamp = chatInstance.history.messages[0].creationDate,
+					});
+				}
+			}
+			else if (chatInstance.history.hasGreeting) // Insert empty user message
+			{
+				string speakerName;
+				if (names != null && names.Length > 0)
+					speakerName = names[0];
+				else
+					speakerName = "Me";
+
+				lsMessages.Add(new Message() {
+					name = speakerName,
+					text = "",
+					timestamp = chatInstance.history.messages[0].creationDate,
+				});
+
+			}
+
+			foreach (var message in chatInstance.history.messages) // Include greeting
 			{
 				string speakerName;
 				if (names != null && message.speaker >= 0 && message.speaker < names.Length)
@@ -60,8 +88,12 @@ namespace Ginger
 			int index = 0;
 			var indexById = speakers.ToDictionary(s => s, s => index++);
 
+			// Skip initial empty messages
+			IEnumerable<Message> eMessages = this.messages
+				.SkipWhile(m => string.IsNullOrWhiteSpace(m.text));
+
 			var result = new List<ChatHistory.Message>();
-			foreach (var message in this.messages)
+			foreach (var message in eMessages)
 			{
 				int speakerIdx;
 				if (indexById.TryGetValue(message.name, out speakerIdx) == false)
@@ -135,7 +167,7 @@ namespace Ginger
 				sb.AppendFormat("[{0}, {1}] {2}: ",
 					message.timestamp.ToString("M/d/yyyy", CultureInfo.InvariantCulture),
 					message.timestamp.ToString("h:mm:ss tt", CultureInfo.InvariantCulture),
-					message.name);
+					message.name ?? "Unknown");
 				sb.Append(message.text);
 				sb.Append("\n---\n");
 			}

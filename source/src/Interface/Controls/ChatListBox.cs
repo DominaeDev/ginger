@@ -154,7 +154,8 @@ namespace Ginger
 				if (_bRightDown && (Math.Abs(e.X - _rightDownLocation.X) < 10 && Math.Abs(e.Y - _rightDownLocation.Y) < 10))
 				{
 					int index = HitTest(new Point(e.X, e.Y));
-//					SelectLine(index);
+					if (index != -1 && listBox.GetSelected(index) == false)
+						SelectLine(index);
 
 					OnContextMenu?.Invoke(listBox, new ContextMenuEventArgs() {
 						Index = index,

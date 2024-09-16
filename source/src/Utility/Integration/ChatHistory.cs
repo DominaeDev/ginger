@@ -48,6 +48,8 @@ namespace Ginger.Integration
 			}
 		}
 
+		public string greeting { get { return hasGreeting ? messages[0].text : null; } }
+
 		public class Message : ICloneable
 		{
 			public string instanceId;		// Message.id

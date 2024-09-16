@@ -18,7 +18,6 @@ namespace Ginger
 		{
 //			JsonSchemaGenerator generator = new JsonSchemaGenerator();
 //			JsonSchema schema = generator.Generate(typeof(GingerChat));
-
 			_schema = JsonSchema.Parse(Resources.ginger_chat_v1_schema);
 		}
 
@@ -29,7 +28,24 @@ namespace Ginger
 		public long createdAt = 0;
 
 		[JsonProperty("speakers", Required = Required.Always)]
-		public Dictionary<string, string> speakers = new Dictionary<string, string>();
+		[JsonConverter(typeof(JsonSpeakerListConverter))]
+		public SpeakerList speakers = new SpeakerList();
+
+		public class SpeakerList : List<Speaker>
+		{
+			public Speaker this[string id]
+			{
+				get
+				{
+					for (int i = 0; i < this.Count; ++i)
+					{
+						if (this[i].id == id)
+							return this[i];
+					}
+					return default(Speaker);
+				}
+			}
+		}
 
 		public class Message
 		{
@@ -51,14 +67,14 @@ namespace Ginger
 			public string name;
 
 		}
-		public static GingerChat FromChat(ChatInstance chatInstance, List<Speaker> speakers)
+		public static GingerChat FromChat(ChatInstance chatInstance, SpeakerList speakers)
 		{
 			if (speakers == null || chatInstance == null || chatInstance.history.isEmpty)
 				return null;
 
 			var lsMessages = new List<Message>(chatInstance.history.count);
 
-			foreach (var message in chatInstance.history.messages)
+			foreach (var message in chatInstance.history.messages) // Include greeting
 			{
 				if (message.swipes.Length > 1)
 				{
@@ -81,7 +97,7 @@ namespace Ginger
 
 			return new GingerChat() {
 				title = chatInstance.name,
-				speakers = speakers.ToDictionary(s => s.id, s => s.name),
+				speakers = speakers,
 				createdAt = chatInstance.creationDate.ToUnixTimeMilliseconds(),
 				messages = lsMessages.ToArray(),
 			};
@@ -90,7 +106,7 @@ namespace Ginger
 		public ChatHistory ToChat()
 		{
 			int index = 0;
-			var indexById = speakers.ToDictionary(s => s.Key, s => index++);
+			var indexById = speakers.ToDictionary(s => s.id, s => index++);
 
 			var result = new List<ChatHistory.Message>();
 			foreach (var message in this.messages)
@@ -122,6 +138,9 @@ namespace Ginger
 					activeSwipe = 0;
 				}
 
+				for (int i = 0; i < swipes.Length; ++i)
+					Anonymize(ref swipes[i]);
+
 				result.Add(new ChatHistory.Message() {
 					speaker = speakerIdx,
 					creationDate = timestamp,
@@ -136,7 +155,20 @@ namespace Ginger
 				messages = result.ToArray(),
 			};
 		}
-		
+
+		private void Anonymize(ref string text)
+		{
+			if (speakers == null || speakers.Count == 0)
+				return;
+
+			StringBuilder sb = new StringBuilder(text);
+			if (speakers.Count > 0)
+				Utility.ReplaceWholeWord(sb, speakers[0].name, GingerString.UserMarker, false);
+			if (speakers.Count > 1)
+				Utility.ReplaceWholeWord(sb, speakers[1].name, GingerString.CharacterMarker, false);
+			text = sb.ToString();
+		}
+
 		public static GingerChat FromJson(string json)
 		{
 			try
@@ -179,6 +211,47 @@ namespace Ginger
 			catch
 			{
 				return false;
+			}
+		}
+
+		private class JsonSpeakerListConverter : JsonConverter
+		{
+			public override bool CanConvert(Type objectType)
+			{
+				return objectType == typeof(SpeakerList);
+			}
+
+			public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+			{
+				SpeakerList list = new SpeakerList();
+				JObject jObj = JObject.Load(reader);
+
+				foreach (JProperty jProp in (JToken)jObj)
+				{
+					list.Add(new Speaker() {
+						id = jProp.Name.ToString(),
+						name = jProp.Value.ToString(),
+					});
+				}
+
+				return list;
+			}
+
+			public override bool CanWrite
+			{
+				get { return true; }
+			}
+
+			public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+			{
+				SpeakerList speakers = (SpeakerList)value;
+				writer.WriteStartObject();
+				foreach (var speaker in speakers)
+				{
+					writer.WritePropertyName(speaker.id);
+					writer.WriteValue(speaker.name);
+				}
+				writer.WriteEndObject();
 			}
 		}
 	}

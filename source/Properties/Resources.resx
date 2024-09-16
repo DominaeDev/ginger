@@ -902,9 +902,6 @@ Do you want to continue?</value>
   <data name="error_link_repair_chat" xml:space="preserve">
     <value>Something went wrong. Operation cancelled.</value>
   </data>
-  <data name="error_link_scrub_chat" xml:space="preserve">
-    <value>Something went wrong. Operation cancelled.</value>
-  </data>
   <data name="error_link_disconnected" xml:space="preserve">
     <value>An error occurred while accessing Backyard AI. Please reestablish the connection and try again.</value>
   </data>
@@ -927,9 +924,9 @@ Are you sure you want to permanently delete the chats?</value>
 Do you want to continue?</value>
   </data>
   <data name="msg_link_scrub_confirm" xml:space="preserve">
-    <value>This will delete this message and any message below it. This action cannot be reversed.
+    <value>This will delete this message and everything below it. This action cannot be reversed. If you want to keep these messages, please duplicate the chat first.
 
-Are you sure you want to permanently delete the messages?</value>
+Do you want to scrub the chat from here?</value>
   </data>
   <data name="status_link_branched_chat" xml:space="preserve">
     <value>A new branch was created</value>
@@ -1092,9 +1089,9 @@ Would you like to reduce it to a more appropriate size?</value>
     <value>Cannot create a backup from a group of characters. Please select an individual character.</value>
   </data>
   <data name="msg_link_chat_too_many_speakers" xml:space="preserve">
-    <value>The imported chat contains messages from more characters than there are in this chat.
+    <value>The imported chat contains messages from more characters than there are in this group.
 
-Do you still want to import it? (Some messages will be omitted.)</value>
+Do you want to import it anyway? (Messages from characters outside the group will be omitted.)</value>
   </data>
   <data name="tooltip_resize_portrait_image" xml:space="preserve">
     <value>Reduce the size of the portrait image to a more appropriate size.</value>
@@ -1116,5 +1113,27 @@ Do you still want to import it? (Some messages will be omitted.)</value>
   </data>
   <data name="tavern_chat_header_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Schemas\tavern_chat_header_schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="cap_link_restart_chat" xml:space="preserve">
+    <value>Start over from here</value>
+  </data>
+  <data name="msg_link_reset_settings" xml:space="preserve">
+    <value>This will reset the model settings for this chat to their default values.
+
+Do you want to continue?</value>
+  </data>
+  <data name="msg_link_restart_confirm" xml:space="preserve">
+    <value>This will delete all messages prior to this one. This action cannot be reversed. If you want to keep these messages, please duplicate the chat first.
+
+Do you want to start the chat over from here?</value>
+  </data>
+  <data name="status_link_restarted_chat" xml:space="preserve">
+    <value>Removed messages from chat</value>
+  </data>
+  <data name="tooltip_link_cannot_restart_chat" xml:space="preserve">
+    <value>Cannot start over from this message.</value>
+  </data>
+  <data name="tooltip_link_restart_chat" xml:space="preserve">
+    <value>Remove all messages prior to this one.</value>
   </data>
 </root>

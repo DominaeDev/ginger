@@ -119,15 +119,38 @@ namespace Ginger
 		public static BackyardChatBackup FromChat(BackupData.Chat chat)
 		{
 			BackyardChatBackup backup = new BackyardChatBackup();
-			var lsItems = new List<ChatItem>(chat.history.count / 2 + 1);
+			var lsEntries = new List<ChatItem>(chat.history.count / 2 + 1);
 
-			foreach (var pair in chat.history.messagesWithoutGreeting.Pairwise())
+			int iMsg = 0;
+			if (chat.history.hasGreeting) // Do not include greeting
+				iMsg = 1;
+
+			string lastMessage = null;
+			for (; iMsg < chat.history.messages.Length; ++iMsg)
 			{
-				lsItems.Add(new ChatItem() {
-					input = pair.Item1.text ?? "",
-					output = pair.Item2?.text ?? "",
-					timestamp = pair.Item1.creationDate.ToUnixTimeMilliseconds(),
-				});
+				var message = chat.history.messages[iMsg];
+				if (message.speaker == 0) // Is user
+				{
+					// Check if previous message was from user
+					if (iMsg > 0 && chat.history.messages[iMsg - 1].speaker == 0)
+					{
+						lsEntries.Add(new ChatItem() {
+							input = lastMessage,
+							output = "",
+							timestamp = chat.history.messages[iMsg - 1].creationDate.ToUnixTimeMilliseconds(),
+						});
+					}
+					lastMessage = message.text;
+				}
+				else // Is character
+				{
+					lsEntries.Add(new ChatItem() {
+						input = lastMessage ?? "",
+						output = message.text ?? "",
+						timestamp = message.creationDate.ToUnixTimeMilliseconds(),
+					});
+					lastMessage = null;
+				}
 			}
 
 			backup.name = chat.name;
@@ -162,7 +185,7 @@ namespace Ginger
 					ttsInputFilter = chat.parameters.ttsInputFilter ?? "default",
 				};
 			}
-			backup.chat.items = lsItems.ToArray();
+			backup.chat.items = lsEntries.ToArray();
 			return backup;
 		}
 
@@ -171,8 +194,20 @@ namespace Ginger
 			var messages = new List<ChatHistory.Message>();
 			foreach (var item in chat.items)
 			{
-				DateTime inputTime = DateTimeExtensions.FromUnixTime(item.timestamp);
-				DateTime outputTime = DateTimeExtensions.FromUnixTime(item.timestamp) + TimeSpan.FromMilliseconds(10);
+				DateTime inputTime;
+				DateTime outputTime;
+
+				if (item.timestamp != 0)
+				{
+					inputTime = DateTimeExtensions.FromUnixTime(item.timestamp);
+					outputTime = DateTimeExtensions.FromUnixTime(item.timestamp) + TimeSpan.FromMilliseconds(10);
+				}
+				else
+				{
+					inputTime = DateTime.Now;
+					outputTime = DateTime.Now;
+				}
+				
 				if (string.IsNullOrEmpty(item.input) == false)
 				{
 					messages.Add(new ChatHistory.Message() {

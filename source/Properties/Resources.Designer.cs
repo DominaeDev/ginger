@@ -614,6 +614,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Start over from here.
+        /// </summary>
+        internal static string cap_link_restart_chat {
+            get {
+                return ResourceManager.GetString("cap_link_restart_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Restore backup.
         /// </summary>
         internal static string cap_link_restore_backup {
@@ -1166,15 +1175,6 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Something went wrong. Operation cancelled..
-        /// </summary>
-        internal static string error_link_scrub_chat {
-            get {
-                return ResourceManager.GetString("error_link_scrub_chat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Failed to connect to Backyard AI. Unsupported version..
         /// </summary>
         internal static string error_link_unsupported {
@@ -1552,7 +1552,7 @@ namespace Ginger.Properties {
         ///   Looks up a localized string similar to {
         ///  &quot;type&quot;: &quot;object&quot;,
         ///  &quot;properties&quot;: {
-        ///    &quot;name&quot;: {
+        ///    &quot;title&quot;: {
         ///      &quot;required&quot;: false,
         ///      &quot;type&quot;: [
         ///        &quot;string&quot;,
@@ -1577,7 +1577,7 @@ namespace Ginger.Properties {
         ///      &quot;required&quot;: true,
         ///      &quot;type&quot;: [
         ///        &quot;array&quot;,
-        ///        &quot;null [rest of string was truncated]&quot;;.
+        ///        &quot;nul [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ginger_chat_v1_schema {
             get {
@@ -1925,9 +1925,9 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The imported chat contains messages from more characters than there are in this chat.
+        ///   Looks up a localized string similar to The imported chat contains messages from more characters than there are in this group.
         ///
-        ///Do you still want to import it? (Some messages will be omitted.).
+        ///Do you want to import it anyway? (Messages from characters outside the group will be omitted.).
         /// </summary>
         internal static string msg_link_chat_too_many_speakers {
             get {
@@ -2018,6 +2018,28 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will reset the model settings for this chat to their default values.
+        ///
+        ///Do you want to continue?.
+        /// </summary>
+        internal static string msg_link_reset_settings {
+            get {
+                return ResourceManager.GetString("msg_link_reset_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will delete all messages prior to this one. This action cannot be reversed. If you want to keep these messages, please duplicate the chat first.
+        ///
+        ///Do you want to start the chat over from here?.
+        /// </summary>
+        internal static string msg_link_restart_confirm {
+            get {
+                return ResourceManager.GetString("msg_link_restart_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This will restore &apos;{0}&apos; along with {1} chat(s).
         ///
         ///Do you want to continue?.
@@ -2067,9 +2089,9 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will delete this message and any message below it. This action cannot be reversed.
+        ///   Looks up a localized string similar to This will delete this message and everything below it. This action cannot be reversed. If you want to keep these messages, please duplicate the chat first.
         ///
-        ///Are you sure you want to permanently delete the messages?.
+        ///Do you want to scrub the chat from here?.
         /// </summary>
         internal static string msg_link_scrub_confirm {
             get {
@@ -2740,6 +2762,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Removed messages from chat.
+        /// </summary>
+        internal static string status_link_restarted_chat {
+            get {
+                return ResourceManager.GetString("status_link_restarted_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reimported character from Backyard AI.
         /// </summary>
         internal static string status_link_reverted {
@@ -3372,6 +3403,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot start over from this message..
+        /// </summary>
+        internal static string tooltip_link_cannot_restart_chat {
+            get {
+                return ResourceManager.GetString("tooltip_link_cannot_restart_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot scrub from this message..
         /// </summary>
         internal static string tooltip_link_cannot_scrub_chat {
@@ -3513,6 +3553,15 @@ namespace Ginger.Properties {
         internal static string tooltip_link_reset_settings {
             get {
                 return ResourceManager.GetString("tooltip_link_reset_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove all messages prior to this one..
+        /// </summary>
+        internal static string tooltip_link_restart_chat {
+            get {
+                return ResourceManager.GetString("tooltip_link_restart_chat", resourceCulture);
             }
         }
         

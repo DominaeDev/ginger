@@ -1418,7 +1418,7 @@ namespace Ginger
 
 			try
 			{
-				var speakers = new List<GingerChat.Speaker>();
+				var speakers = new GingerChat.SpeakerList();
 				for (int i = 0; i < chatInstance.participants.Length; ++i)
 				{
 					speakers.Add(new GingerChat.Speaker() {

@@ -233,7 +233,8 @@ namespace Ginger
 					var sbTooltip = new StringBuilder();
 					sbTooltip.AppendLine($"Created: {chats[i].creationDate.ToString("g")}");
 					sbTooltip.AppendLine($"Updated: {chats[i].updateDate.ToString("g")}");
-					sbTooltip.AppendLine($"Last messaged: {lastMessageTime.ToString("g")}");
+					if (lastMessageTime != default(DateTime))
+						sbTooltip.AppendLine($"Last messaged: {lastMessageTime.ToString("g")}");
 					if (chat.parameters != null)
 					{
 						sbTooltip.NewParagraph();
@@ -458,6 +459,7 @@ namespace Ginger
 			ChatInstance chatInstance = null;
 			var args = new Backyard.CreateChatArguments() {
 				history = chatHistory,
+				isImport = true,
 			};
 
 			var error = RunTask(() => Backyard.CreateNewChat(args, _groupInstance.instanceId, out chatInstance), "Importing chat...");
@@ -594,7 +596,7 @@ namespace Ginger
 			}
 			else if (exportFileDialog.FilterIndex == SoloGinger) // Ginger
 			{
-				var speakers = new List<GingerChat.Speaker>();
+				var speakers = new GingerChat.SpeakerList();
 				for (int i = 0; i < chatInstance.participants.Length; ++i)
 				{
 					speakers.Add(new GingerChat.Speaker() {
@@ -775,7 +777,17 @@ namespace Ginger
 			{
 				// Clear messages
 				chatInstance.updateDate = DateTime.Now;
+				string greeting = chatInstance.history.greeting;
 				chatInstance.history = new ChatHistory();
+				if (greeting != null)
+				{
+					chatInstance.history.messages = new ChatHistory.Message[] {
+						new ChatHistory.Message() {
+							speaker = 1,
+							swipes = new string[] { greeting },
+						}
+					};
+				}
 				error = RunTask(() => Backyard.UpdateChat(chatInstance, _groupInstance.instanceId), "Deleting chat...");
 			}
 			else
@@ -957,6 +969,7 @@ namespace Ginger
 			int messageCount = _selectedChatInstance.history.count;
 			bool bUserMessage = messageIndex >= 0 && messageIndex < messageCount && _selectedChatInstance.history.messages[messageIndex].speaker == 0;
 			bool bCanBranch = !bUserMessage && messageIndex < messageCount - 1;
+			bool bCanRestart = !bUserMessage && messageIndex > 0 && messageIndex < messageCount - 1;
 			bool bCanScrub = bUserMessage;
 
 			if ((messageIndex == 0 && _selectedChatInstance.hasGreeting) // Greeting
@@ -983,7 +996,14 @@ namespace Ginger
 				ToolTipText = bCanBranch ? Resources.tooltip_link_branch_chat : Resources.tooltip_link_cannot_branch_chat,
 			});
 
-			menu.Items.Add(new ToolStripMenuItem("Scrub from here", null, (s, e) => {
+			menu.Items.Add(new ToolStripMenuItem("Start over from here...", null, (s, e) => {
+				RestartChat(_selectedChatInstance, instanceId);
+			}) {
+				Enabled = bCanRestart,
+				ToolTipText = bCanRestart ? Resources.tooltip_link_restart_chat : Resources.tooltip_link_cannot_restart_chat,
+			});
+
+			menu.Items.Add(new ToolStripMenuItem("Scrub from here...", null, (s, e) => {
 				ScrubChat(_selectedChatInstance, instanceId);
 			}) {
 				Enabled = bCanScrub,
@@ -1038,6 +1058,49 @@ namespace Ginger
 			}
 		}
 
+		private void RestartChat(ChatInstance chatInstance, string messageId)
+		{
+			if (chatInstance == null || string.IsNullOrEmpty(messageId))
+				return; // Error
+
+			// Confirm
+			if (MessageBox.Show(string.Format(Resources.msg_link_restart_confirm, chatInstance.name), Resources.cap_link_restart_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+				return;
+
+			// Fetch latest
+			ChatInstance latestChat;
+			if (ConfirmChatExists(chatInstance.instanceId, out latestChat, Resources.cap_link_restart_chat) == false)
+				return;
+
+			latestChat.updateDate = DateTime.Now;
+			int messageIndex = Array.FindIndex(latestChat.history.messages, m => m.instanceId == messageId);
+			if (messageIndex == -1)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_restart_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+			var messages = new ChatHistory.Message[latestChat.history.messages.Length - messageIndex];
+			Array.Copy(latestChat.history.messages, messageIndex, messages, 0, latestChat.history.messages.Length - messageIndex);
+			latestChat.history.messages = messages;
+
+			var error = RunTask(() => Backyard.UpdateChat(latestChat, _groupInstance.instanceId), "Updating chat...");
+			if (error == Backyard.Error.NotConnected)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_restart_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+			}
+			else if (error != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_restart_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				PopulateChatList(true);
+				SetStatusBarMessage(Resources.status_link_restarted_chat, Constants.StatusBarMessageInterval);
+			}
+		}
+
+
 		private void ScrubChat(ChatInstance chatInstance, string messageId)
 		{
 			if (chatInstance == null || string.IsNullOrEmpty(messageId))
@@ -1049,14 +1112,14 @@ namespace Ginger
 
 			// Fetch latest
 			ChatInstance latestChat;
-			if (ConfirmChatExists(chatInstance.instanceId, out latestChat, Resources.cap_link_branch_chat) == false)
+			if (ConfirmChatExists(chatInstance.instanceId, out latestChat, Resources.cap_link_scrub_chat) == false)
 				return;
 
 			latestChat.updateDate = DateTime.Now;
 			int messageIndex = Array.FindIndex(latestChat.history.messages, m => m.instanceId == messageId);
 			if (messageIndex == -1)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 			Array.Resize(ref latestChat.history.messages, messageIndex);
@@ -1069,7 +1132,7 @@ namespace Ginger
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_scrub_chat, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 			else
 			{
@@ -1241,6 +1304,7 @@ namespace Ginger
 					_charactersById = Backyard.Characters.ToDictionary(c => c.instanceId, c => c);
 
 					PopulateChatList(true);
+					RefreshPortrait();
 				}
 			}
 		}
@@ -1500,6 +1564,10 @@ namespace Ginger
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_reset_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
+
+			// Confirm
+			if (MessageBox.Show(string.Format(Resources.msg_link_reset_settings, chatInstance.name), Resources.cap_link_reset_settings, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+				return;
 
 			var error = RunTask(() => Backyard.UpdateChatParameters(chatInstance.instanceId, new ChatParameters(), null), "Updating chat...");
 			if (error == Backyard.Error.NotFound)

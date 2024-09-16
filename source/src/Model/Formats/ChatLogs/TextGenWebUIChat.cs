@@ -38,10 +38,10 @@ namespace Ginger
 
 			// Greeting
 			int iMsg = 0;
-			if (chatHistory.hasGreeting)
+			if (chatHistory.hasGreeting) // Include greeting
 			{
-				lsInternal.Add(new string[2] {"<|BEGIN-VISIBLE-CHAT|>", chatHistory.messages[0].text });
-				lsVisible.Add(new string[2] { "", chatHistory.messages[0].text });
+				lsInternal.Add(new string[2] {"<|BEGIN-VISIBLE-CHAT|>", chatHistory.greeting });
+				lsVisible.Add(new string[2] { "", chatHistory.greeting });
 				iMsg = 1;
 			}
 

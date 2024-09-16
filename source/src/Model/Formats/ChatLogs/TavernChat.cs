@@ -165,6 +165,8 @@ namespace Ginger
 					text = text.Replace("<START>", "");
 					text = GingerString.FromTavern(text).ToString();
 
+					Anonymize(ref text);
+
 					messages.Add(new ChatHistory.Message() {
 						speaker = entry.isUser ? 0 : 1,
 						creationDate = messageTime,
@@ -178,6 +180,19 @@ namespace Ginger
 			return new ChatHistory() {
 				messages = messages.ToArray(),
 			};
+		}
+
+		private void Anonymize(ref string text)
+		{
+			if (header == null)
+				return;
+
+			StringBuilder sb = new StringBuilder(text);
+			if (string.IsNullOrEmpty(header.userName) == false)
+				Utility.ReplaceWholeWord(sb, header.userName, GingerString.UserMarker, false);
+			if (string.IsNullOrEmpty(header.characterName) == false)
+				Utility.ReplaceWholeWord(sb, header.characterName, GingerString.CharacterMarker, false);
+			text = sb.ToString();
 		}
 
 		public static bool Validate(string jsonData)
