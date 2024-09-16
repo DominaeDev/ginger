@@ -1155,6 +1155,35 @@ namespace Ginger.Integration
 						}
 					}
 
+					// Get existing chats
+					var chats = new List<_Chat>();
+					using (var cmdConfirm = connection.CreateCommand())
+					{ 
+						cmdConfirm.CommandText =
+						@"
+							SELECT id, createdAt, updatedAt
+							FROM Chat
+							WHERE groupConfigId = $groupId
+						";
+						cmdConfirm.Parameters.AddWithValue("$groupId", groupId);
+
+						using (var reader = cmdConfirm.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string chatId = reader.GetString(0);
+								DateTime chatCreatedAt = reader.GetUnixTime(1);
+								DateTime chatUpdatedAt = reader.GetUnixTime(2);
+
+								chats.Add(new _Chat() {
+									instanceId = chatId,
+									creationDate = chatCreatedAt,
+									updateDate = chatUpdatedAt,
+								});
+							}
+						}
+					}
+
 					// Get image ids
 					List<ImageInstance> imageInstances = new List<ImageInstance>();
 					using (var cmdImages = connection.CreateCommand())
@@ -1257,20 +1286,44 @@ namespace Ginger.Integration
 							using (var cmdChat = new SQLiteCommand(connection))
 							{
 								var sbCommand = new StringBuilder();
-								sbCommand.AppendLine(
-								@"
-									UPDATE Chat
-									SET 
-										updatedAt = $timestamp,
-										context = $scenario,
-										customDialogue = $example,
-										modelInstructions = $system,
-										grammar = $grammar,
-										greetingDialogue = $greeting
-									WHERE groupConfigId = $groupId;
-								");
+								if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.All)
+								{
+									sbCommand.AppendLine(
+									@"
+										UPDATE Chat
+										SET 
+											updatedAt = $timestamp,
+											context = $scenario,
+											customDialogue = $example,
+											modelInstructions = $system,
+											grammar = $grammar,
+											greetingDialogue = $greeting
+										WHERE groupConfigId = $groupId;
+									");
+									cmdChat.Parameters.AddWithValue("$groupId", groupId);
+								}
+								else
+								{
+									sbCommand.AppendLine(
+									@"
+										UPDATE Chat
+										SET 
+											updatedAt = $timestamp,
+											context = $scenario,
+											customDialogue = $example,
+											modelInstructions = $system,
+											grammar = $grammar,
+											greetingDialogue = $greeting
+										WHERE id = $chatId;
+									");
+
+									if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.Last)
+										cmdChat.Parameters.AddWithValue("$chatId", chats.OrderByDescending(c => c.updateDate).Select(c => c.instanceId).First());
+									else // First
+										cmdChat.Parameters.AddWithValue("$chatId", chats.OrderBy(c => c.creationDate).Select(c => c.instanceId).First());
+								}
+								
 								cmdChat.CommandText = sbCommand.ToString();
-								cmdChat.Parameters.AddWithValue("$groupId", groupId);
 								cmdChat.Parameters.AddWithValue("$system", card.data.system);
 								cmdChat.Parameters.AddWithValue("$scenario", card.data.scenario);
 								cmdChat.Parameters.AddWithValue("$example", card.data.example);

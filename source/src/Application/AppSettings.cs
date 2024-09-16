@@ -177,6 +177,14 @@ namespace Ginger
 			public static string Location = null;
 			public static bool Autosave = true;
 			public static bool AlwaysLinkOnImport = false;
+			
+			public enum ActiveChatSetting 
+			{
+				First,
+				Last,
+				All,
+			}
+			public static ActiveChatSetting ApplyChatSettings = ActiveChatSetting.All;
 		}
 
 		public static bool LoadFromIni(string filePath)
@@ -311,6 +319,7 @@ namespace Ginger
 				ReadBool(ref BackyardLink.Autosave, linkSection, "Autosave");
 				ReadBool(ref BackyardLink.AlwaysLinkOnImport, linkSection, "AlwaysLinkOnImport");
 				ReadString(ref BackyardLink.Location, linkSection, "Location");
+				ReadEnum(ref BackyardLink.ApplyChatSettings, linkSection, "ApplyChatSettings");
 			}
 
 			var mruSection = iniData.Sections["MRU"];
@@ -427,6 +436,7 @@ namespace Ginger
 					Write(outputFile, "Enabled", BackyardLink.Enabled);
 					Write(outputFile, "Autosave", BackyardLink.Autosave);
 					Write(outputFile, "AlwaysLinkOnImport", BackyardLink.AlwaysLinkOnImport);
+					Write(outputFile, "ApplyChatSettings", BackyardLink.ApplyChatSettings);
 
 					// MRU list
 					WriteSection(outputFile, "MRU");
