@@ -737,7 +737,7 @@ Do you want to overwrite those changes?</value>
     <value>Successfully saved character to Backyard AI</value>
   </data>
   <data name="tooltip_link_autosave" xml:space="preserve">
-    <value>If enabled, when you save your changes, Ginger will automatically save them to Backyard AI as well.</value>
+    <value>Automatically save changes to Backyard AI when saving the file.</value>
   </data>
   <data name="tooltip_link_connect" xml:space="preserve">
     <value>Connect to a local installation of Backyard AI.
@@ -816,7 +816,7 @@ Do you want to continue?</value>
     <value>Connected to Backyard AI</value>
   </data>
   <data name="status_link_create" xml:space="preserve">
-    <value>Created link</value>
+    <value>Created character link</value>
   </data>
   <data name="status_link_disconnect" xml:space="preserve">
     <value>Disconnected from Backyard AI</value>
@@ -1129,6 +1129,15 @@ Do you want to start the chat over from here?</value>
   </data>
   <data name="status_link_restarted_chat" xml:space="preserve">
     <value>Removed messages from chat</value>
+  </data>
+  <data name="tooltip_link_apply_to_all" xml:space="preserve">
+    <value>When saving changes to Backyard AI, apply chat settings to all chats. (Default)</value>
+  </data>
+  <data name="tooltip_link_apply_to_first" xml:space="preserve">
+    <value>When saving changes to Backyard AI, apply chat settings to the oldest chat.</value>
+  </data>
+  <data name="tooltip_link_apply_to_last" xml:space="preserve">
+    <value>When saving changes to Backyard AI, apply chat settings to the most recent chat.</value>
   </data>
   <data name="tooltip_link_cannot_restart_chat" xml:space="preserve">
     <value>Cannot start over from this message.</value>

@@ -35,8 +35,8 @@ namespace Ginger {
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
 			System.Windows.Forms.ToolStripMenuItem linkMenuItem;
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem10;
+			System.Windows.Forms.ToolStripMenuItem writeChatSettingsMenuItem;
 			this.enableLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveNewLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,6 +44,9 @@ namespace Ginger {
 			this.reestablishLinkSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.reestablishLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.breakLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.applyToFirstChatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.applyToLastChatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.applyToAllChatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitContainer = new System.Windows.Forms.SplitContainer();
 			this.sidePanel = new Ginger.SidePanel();
 			this.tabControl = new System.Windows.Forms.CustomTabControl();
@@ -131,6 +134,9 @@ namespace Ginger {
 			this.checkSpellingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.enableSpellCheckingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
+			this.linkOptionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.alwaysLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoConvertNameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoBreakMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.rearrangeLoreMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -164,6 +170,7 @@ namespace Ginger {
 			toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
 			linkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem10 = new System.Windows.Forms.ToolStripSeparator();
+			writeChatSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
 			this.splitContainer.Panel1.SuspendLayout();
 			this.splitContainer.Panel2.SuspendLayout();
@@ -224,7 +231,6 @@ namespace Ginger {
 			// 
 			linkMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.enableLinkMenuItem,
-            this.enableAutosaveMenuItem,
             toolStripMenuItem10,
             this.importLinkedMenuItem,
             this.saveLinkedMenuItem,
@@ -243,13 +249,6 @@ namespace Ginger {
 			this.enableLinkMenuItem.Size = new System.Drawing.Size(246, 22);
 			this.enableLinkMenuItem.Text = "Connect to Backyard AI";
 			this.enableLinkMenuItem.Click += new System.EventHandler(this.enableLinkMenuItem_Click);
-			// 
-			// enableAutosaveMenuItem
-			// 
-			this.enableAutosaveMenuItem.Name = "enableAutosaveMenuItem";
-			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(246, 22);
-			this.enableAutosaveMenuItem.Text = "Synchronized saving";
-			this.enableAutosaveMenuItem.Click += new System.EventHandler(this.enableAutosaveMenuItem_Click);
 			// 
 			// toolStripMenuItem10
 			// 
@@ -305,6 +304,37 @@ namespace Ginger {
 			this.breakLinkMenuItem.Size = new System.Drawing.Size(246, 22);
 			this.breakLinkMenuItem.Text = "Break link";
 			this.breakLinkMenuItem.Click += new System.EventHandler(this.breakLinkMenuItem_Click);
+			// 
+			// writeChatSettingsMenuItem
+			// 
+			writeChatSettingsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.applyToFirstChatMenuItem,
+            this.applyToLastChatMenuItem,
+            this.applyToAllChatsMenuItem});
+			writeChatSettingsMenuItem.Name = "writeChatSettingsMenuItem";
+			writeChatSettingsMenuItem.Size = new System.Drawing.Size(204, 22);
+			writeChatSettingsMenuItem.Text = "Apply chat settings to";
+			// 
+			// applyToFirstChatMenuItem
+			// 
+			this.applyToFirstChatMenuItem.Name = "applyToFirstChatMenuItem";
+			this.applyToFirstChatMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.applyToFirstChatMenuItem.Text = "Oldest chat";
+			this.applyToFirstChatMenuItem.Click += new System.EventHandler(this.applyToFirstChatMenuItem_Click);
+			// 
+			// applyToLastChatMenuItem
+			// 
+			this.applyToLastChatMenuItem.Name = "applyToLastChatMenuItem";
+			this.applyToLastChatMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.applyToLastChatMenuItem.Text = "Most recent chat";
+			this.applyToLastChatMenuItem.Click += new System.EventHandler(this.applyToLastChatMenuItem_Click);
+			// 
+			// applyToAllChatsMenuItem
+			// 
+			this.applyToAllChatsMenuItem.Name = "applyToAllChatsMenuItem";
+			this.applyToAllChatsMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.applyToAllChatsMenuItem.Text = "All chats";
+			this.applyToAllChatsMenuItem.Click += new System.EventHandler(this.applyToAllChatsMenuItem_Click);
 			// 
 			// splitContainer
 			// 
@@ -1063,6 +1093,7 @@ namespace Ginger {
             this.tokenBudgetMenuItem,
             this.outputPreviewToolStripMenuItem,
             this.checkSpellingMenuItem,
+            this.linkOptionsMenuItem,
             toolStripMenuItem9,
             this.autoConvertNameMenuItem,
             this.autoBreakMenuItem,
@@ -1249,14 +1280,37 @@ namespace Ginger {
 			// enableSpellCheckingMenuItem
 			// 
 			this.enableSpellCheckingMenuItem.Name = "enableSpellCheckingMenuItem";
-			this.enableSpellCheckingMenuItem.Size = new System.Drawing.Size(116, 22);
+			this.enableSpellCheckingMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.enableSpellCheckingMenuItem.Text = "Enabled";
 			this.enableSpellCheckingMenuItem.Click += new System.EventHandler(this.EnableSpellCheckingMenuItem_Click);
 			// 
 			// toolStripMenuItem4
 			// 
 			this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-			this.toolStripMenuItem4.Size = new System.Drawing.Size(113, 6);
+			this.toolStripMenuItem4.Size = new System.Drawing.Size(177, 6);
+			// 
+			// linkOptionsMenuItem
+			// 
+			this.linkOptionsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.enableAutosaveMenuItem,
+            this.alwaysLinkMenuItem,
+            writeChatSettingsMenuItem});
+			this.linkOptionsMenuItem.Name = "linkOptionsMenuItem";
+			this.linkOptionsMenuItem.Size = new System.Drawing.Size(183, 22);
+			this.linkOptionsMenuItem.Text = "Link options";
+			// 
+			// enableAutosaveMenuItem
+			// 
+			this.enableAutosaveMenuItem.Name = "enableAutosaveMenuItem";
+			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(204, 22);
+			this.enableAutosaveMenuItem.Text = "Synchronized saving";
+			// 
+			// alwaysLinkMenuItem
+			// 
+			this.alwaysLinkMenuItem.Name = "alwaysLinkMenuItem";
+			this.alwaysLinkMenuItem.Size = new System.Drawing.Size(204, 22);
+			this.alwaysLinkMenuItem.Text = "Always link to characters";
+			this.alwaysLinkMenuItem.Click += new System.EventHandler(this.alwaysLinkMenuItem_Click);
 			// 
 			// autoConvertNameMenuItem
 			// 
@@ -1599,7 +1653,6 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem importLinkedMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem saveNewLinkedMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem saveLinkedMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem enableAutosaveMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem reestablishLinkMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem breakLinkMenuItem;
 		private System.Windows.Forms.ToolStripSeparator reestablishLinkSeparator;
@@ -1607,6 +1660,12 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem revertLinkedMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem rearrangeLoreMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem chatHistoryMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem linkOptionsMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem enableAutosaveMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem applyToFirstChatMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem applyToLastChatMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem applyToAllChatsMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem alwaysLinkMenuItem;
 	}
 }
 

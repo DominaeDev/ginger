@@ -231,6 +231,7 @@ namespace Ginger
 			SetToolTip(btnAdd_Snippets, "Snippets");
 			SetToolTip(btnAdd_Lore, "Lorebooks");
 
+			rearrangeLoreMenuItem.ToolTipText = Resources.tooltip_rearrange_lore;
 			enableLinkMenuItem.ToolTipText = Resources.tooltip_link_connect;
 			enableAutosaveMenuItem.ToolTipText = Resources.tooltip_link_autosave;
 			reestablishLinkMenuItem.ToolTipText = Resources.tooltip_link_reestablish;
@@ -239,7 +240,10 @@ namespace Ginger
 			saveLinkedMenuItem.ToolTipText = Resources.tooltip_link_save;
 			saveNewLinkedMenuItem.ToolTipText = Resources.tooltip_link_save_as_new;
 			revertLinkedMenuItem.ToolTipText = Resources.tooltip_link_revert;
-			rearrangeLoreMenuItem.ToolTipText = Resources.tooltip_rearrange_lore;
+			applyToFirstChatMenuItem.ToolTipText = Resources.tooltip_link_apply_to_first;
+			applyToLastChatMenuItem.ToolTipText = Resources.tooltip_link_apply_to_last;
+			applyToAllChatsMenuItem.ToolTipText = Resources.tooltip_link_apply_to_all;
+			alwaysLinkMenuItem.ToolTipText = Resources.tooltip_link_about_linking;
 
 			RegisterIdleHandler(recipeList);
 
@@ -1278,6 +1282,13 @@ namespace Ginger
 			breakLinkMenuItem.Visible = Backyard.ConnectionEstablished && Current.HasActiveLink;
 			chatHistoryMenuItem.Visible = Backyard.ConnectionEstablished;
 			revertLinkedMenuItem.Visible = Backyard.ConnectionEstablished;
+			
+			// Link options
+			linkOptionsMenuItem.Visible = Backyard.ConnectionEstablished;
+			applyToFirstChatMenuItem.Checked = AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.First;
+			applyToLastChatMenuItem.Checked = AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.Last;
+			applyToAllChatsMenuItem.Checked = AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.All;
+			alwaysLinkMenuItem.Checked = AppSettings.BackyardLink.AlwaysLinkOnImport;
 		}
 
 		private void PopulateMRUMenu(ToolStripItemCollection items)
@@ -2282,6 +2293,26 @@ namespace Ginger
 		private void chatHistoryMenuItem_Click(object sender, EventArgs e)
 		{
 			OpenChatHistory();
+		}
+
+		private void applyToFirstChatMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.BackyardLink.ApplyChatSettings = AppSettings.BackyardLink.ActiveChatSetting.First;
+		}
+
+		private void applyToLastChatMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.BackyardLink.ApplyChatSettings = AppSettings.BackyardLink.ActiveChatSetting.Last;
+		}
+
+		private void applyToAllChatsMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.BackyardLink.ApplyChatSettings = AppSettings.BackyardLink.ActiveChatSetting.All;
+		}
+
+		private void alwaysLinkMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.BackyardLink.AlwaysLinkOnImport = !AppSettings.BackyardLink.AlwaysLinkOnImport;
 		}
 	}
 

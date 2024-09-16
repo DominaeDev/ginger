@@ -2663,7 +2663,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Created link.
+        ///   Looks up a localized string similar to Created character link.
         /// </summary>
         internal static string status_link_create {
             get {
@@ -3367,7 +3367,34 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If enabled, when you save your changes, Ginger will automatically save them to Backyard AI as well..
+        ///   Looks up a localized string similar to When saving changes to Backyard AI, apply chat settings to all chats. (Default).
+        /// </summary>
+        internal static string tooltip_link_apply_to_all {
+            get {
+                return ResourceManager.GetString("tooltip_link_apply_to_all", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When saving changes to Backyard AI, apply chat settings to the oldest chat..
+        /// </summary>
+        internal static string tooltip_link_apply_to_first {
+            get {
+                return ResourceManager.GetString("tooltip_link_apply_to_first", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When saving changes to Backyard AI, apply chat settings to the most recent chat..
+        /// </summary>
+        internal static string tooltip_link_apply_to_last {
+            get {
+                return ResourceManager.GetString("tooltip_link_apply_to_last", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Automatically save changes to Backyard AI when saving the file..
         /// </summary>
         internal static string tooltip_link_autosave {
             get {
