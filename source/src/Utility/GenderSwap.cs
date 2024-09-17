@@ -243,7 +243,7 @@ namespace Ginger
 			// Disambiguate his -> their / theirs
 			count += ReplaceHisTheirs(ref text, pronoun, user);
 
-			int[] matches = Utility.FindWholeWords(text, pronoun, true);
+			int[] matches = Utility.FindWholeWords(text, pronoun, StringComparison.OrdinalIgnoreCase);
 			if (matches == null || matches.Length == 0)
 				return 0;
 
@@ -278,7 +278,7 @@ namespace Ginger
 			if (replacement == null)
 				return 0; // Skip
 
-			int[] matches = Utility.FindWholeWords(text, pronoun, true);
+			int[] matches = Utility.FindWholeWords(text, pronoun, StringComparison.OrdinalIgnoreCase);
 			if (matches == null || matches.Length == 0)
 				return 0;
 
@@ -314,7 +314,7 @@ namespace Ginger
 			if (replacement == null)
 				return 0; // Skip
 
-			int[] matches = Utility.FindWholeWords(text, pronoun, true);
+			int[] matches = Utility.FindWholeWords(text, pronoun, StringComparison.OrdinalIgnoreCase);
 			if (matches == null || matches.Length == 0)
 				return 0;
 

@@ -21,6 +21,9 @@ namespace Ginger.Integration
 		public string groupId;          // GroupConfig.id (Primary group)
 		public string folderId;         // GroupConfig.folderId (Primary group)
 		public string creator;          // GroupConfig.hubAuthorUsername
+		public string persona;			// CharacterConfigVersion.persona
+
+		public string inferredGender { get { return Utility.InferGender(GingerString.FromFaraday(persona).ToString()); } }
 	}
 
 	public struct GroupInstance
@@ -419,7 +422,7 @@ namespace Ginger.Integration
 						@"
 							SELECT 
 								A.id, B.id, D.id,
-								B.displayName, B.name, A.createdAt, B.updatedAt, 
+								B.displayName, B.name, A.createdAt, B.updatedAt, B.persona,
 								D.folderId, D.hubAuthorUsername, A.isUserControlled
 							FROM CharacterConfig as A
 							INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
@@ -444,9 +447,10 @@ namespace Ginger.Integration
 							string name = reader.GetString(4);
 							DateTime createdAt = reader.GetUnixTime(5);
 							DateTime updatedAt = reader.GetUnixTime(6);
-							string folderId = reader.GetString(7);
-							string hubAuthorUsername = reader[8] as string;
-							bool isUser = reader.GetBoolean(9);
+							string persona = reader.GetString(7);
+							string folderId = reader.GetString(8);
+							string hubAuthorUsername = reader[9] as string;
+							bool isUser = reader.GetBoolean(10);
 
 							characterInstance = new CharacterInstance() {
 								instanceId = instanceId,
@@ -458,6 +462,7 @@ namespace Ginger.Integration
 								updateDate = updatedAt,
 								folderId = folderId,
 								creator = hubAuthorUsername,
+								persona = persona,
 							};
 
 							// Update list
@@ -510,7 +515,7 @@ namespace Ginger.Integration
 						cmdCharacter.CommandText =
 						@"
 							SELECT 
-								A.id, B.id, B.displayName, B.name, A.createdAt, B.updatedAt, 
+								A.id, B.id, B.displayName, B.name, A.createdAt, B.updatedAt, B.persona,
 								( SELECT B FROM _CharacterConfigToGroupConfig WHERE A = A.id LIMIT 1 )
 							FROM CharacterConfig as A
 							INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
@@ -529,7 +534,8 @@ namespace Ginger.Integration
 								string name = reader.GetString(3);
 								DateTime createdAt = reader.GetUnixTime(4);
 								DateTime updatedAt = reader.GetUnixTime(5);
-								string groupId = reader.GetString(6);
+								string persona = reader.GetString(6);
+								string groupId = reader.GetString(7);
 
 								_Characters.TryAdd(instanceId, 
 									new CharacterInstance() {
@@ -541,6 +547,7 @@ namespace Ginger.Integration
 										creationDate = createdAt,
 										updateDate = updatedAt,
 										isUser = false,
+										persona = persona,
 									});
 
 								characterToGroup.Add(new Tuple<string, string>(instanceId, groupId));
@@ -591,6 +598,7 @@ namespace Ginger.Integration
 										isUser = character.isUser,
 										creator = hubAuthorUsername,
 										folderId = folderId,
+										persona = character.persona,
 									};
 								}
 							}
@@ -1443,9 +1451,10 @@ namespace Ginger.Integration
 												value = $value{i:000}
 											WHERE id = $id{i:000};
 										");
+
+										cmdLore.Parameters.AddWithValue($"$id{i:000}", existingLoreItems[i]);
 										cmdLore.Parameters.AddWithValue($"$key{i:000}", card.data.loreItems[i].key);
 										cmdLore.Parameters.AddWithValue($"$value{i:000}", card.data.loreItems[i].value);
-										cmdLore.Parameters.AddWithValue($"$id{i:000}", existingLoreItems[i]);
 										cmdLore.Parameters.AddWithValue($"$order{i:000}", MakeLoreSortPosition(i, card.data.loreItems.Length - 1, hash));
 									}
 									cmdLore.CommandText = sbCommand.ToString();

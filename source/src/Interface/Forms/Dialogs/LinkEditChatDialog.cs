@@ -504,13 +504,13 @@ namespace Ginger
 				for (int j = 0; j < chatHistory.messages[i].swipes.Length; ++j)
 				{
 					StringBuilder sb = new StringBuilder(chatHistory.messages[i].swipes[j]);
-					Utility.ReplaceWholeWord(sb, "{{user}}", "__UUUU__", true);
-					Utility.ReplaceWholeWord(sb, GingerString.UserMarker, "__UUUU__", true);
-					Utility.ReplaceWholeWord(sb, "{{char}}", "__CCCC__", true);
-					Utility.ReplaceWholeWord(sb, "{character}", "__CCCC__", true);
-					Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, "__CCCC__", true);
-					Utility.ReplaceWholeWord(sb, "__UUUU__", userName, false);
-					Utility.ReplaceWholeWord(sb, "__CCCC__", characterName, false);
+					Utility.ReplaceWholeWord(sb, "{{user}}", "__UUUU__", StringComparison.OrdinalIgnoreCase);
+					Utility.ReplaceWholeWord(sb, GingerString.UserMarker, "__UUUU__", StringComparison.OrdinalIgnoreCase);
+					Utility.ReplaceWholeWord(sb, "{{char}}", "__CCCC__", StringComparison.OrdinalIgnoreCase);
+					Utility.ReplaceWholeWord(sb, "{character}", "__CCCC__", StringComparison.OrdinalIgnoreCase);
+					Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, "__CCCC__", StringComparison.OrdinalIgnoreCase);
+					Utility.ReplaceWholeWord(sb, "__UUUU__", userName, StringComparison.Ordinal);
+					Utility.ReplaceWholeWord(sb, "__CCCC__", characterName, StringComparison.Ordinal);
 					chatHistory.messages[i].swipes[j] = sb.ToString();
 				}
 			}

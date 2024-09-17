@@ -119,7 +119,6 @@ namespace Ginger
 			listViewGroup1.Name = "listViewGroup1";
 			this.chatInstanceList.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
             listViewGroup1});
-			this.chatInstanceList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			this.chatInstanceList.HideSelection = false;
 			this.chatInstanceList.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
             listViewItem1,
@@ -320,26 +319,26 @@ namespace Ginger
 			// createBackupMenuItem
 			// 
 			this.createBackupMenuItem.Name = "createBackupMenuItem";
-			this.createBackupMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.createBackupMenuItem.Size = new System.Drawing.Size(166, 22);
 			this.createBackupMenuItem.Text = "Create &backup...";
 			this.createBackupMenuItem.Click += new System.EventHandler(this.createBackupMenuItem_Click);
 			// 
 			// restoreBackupMenuItem
 			// 
 			this.restoreBackupMenuItem.Name = "restoreBackupMenuItem";
-			this.restoreBackupMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.restoreBackupMenuItem.Size = new System.Drawing.Size(166, 22);
 			this.restoreBackupMenuItem.Text = "&Restore backup...";
 			this.restoreBackupMenuItem.Click += new System.EventHandler(this.restoreBackupMenuItem_Click);
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(163, 6);
 			// 
 			// repairChatsMenuItem
 			// 
 			this.repairChatsMenuItem.Name = "repairChatsMenuItem";
-			this.repairChatsMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.repairChatsMenuItem.Size = new System.Drawing.Size(166, 22);
 			this.repairChatsMenuItem.Text = "&Fix legacy chats...";
 			this.repairChatsMenuItem.Click += new System.EventHandler(this.repairChatsMenuItem_Click);
 			// 

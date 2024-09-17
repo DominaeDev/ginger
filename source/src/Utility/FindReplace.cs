@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -10,9 +11,9 @@ namespace Ginger
 		{
 			int[] matches;
 			if (bWholeWord)
-				matches = Utility.FindWholeWords(text, word, bIgnoreCase);
+				matches = Utility.FindWholeWords(text, word, bIgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 			else
-				matches = Utility.FindWords(text, word, bIgnoreCase);
+				matches = Utility.FindWords(text, word, bIgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 
 			if (matches == null || matches.Length == 0)
 				return 0;

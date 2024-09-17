@@ -184,7 +184,7 @@ namespace Ginger
 				Last,
 				All,
 			}
-			public static ActiveChatSetting ApplyChatSettings = ActiveChatSetting.All;
+			public static ActiveChatSetting ApplyChatSettings = ActiveChatSetting.Last;
 		}
 
 		public static bool LoadFromIni(string filePath)

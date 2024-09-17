@@ -264,23 +264,23 @@ namespace Ginger
 				pos_comment = sb.IndexOf("<!--", pos_comment);
 			}
 
-			Utility.ReplaceWholeWord(sb, CharacterMarker, "__CCCC__", true);
-			Utility.ReplaceWholeWord(sb, UserMarker, "__UUUU__", true);
-			Utility.ReplaceWholeWord(sb, OriginalMarker, "__OOOO__", true);
-			Utility.ReplaceWholeWord(sb, NameMarker, "__NNNN__", true);
-			Utility.ReplaceWholeWord(sb, ContinueMarker, "", true);
+			Utility.ReplaceWholeWord(sb, CharacterMarker, "__CCCC__", StringComparison.OrdinalIgnoreCase);
+			Utility.ReplaceWholeWord(sb, UserMarker, "__UUUU__", StringComparison.OrdinalIgnoreCase);
+			Utility.ReplaceWholeWord(sb, OriginalMarker, "__OOOO__", StringComparison.OrdinalIgnoreCase);
+			Utility.ReplaceWholeWord(sb, NameMarker, "__NNNN__", StringComparison.OrdinalIgnoreCase);
+			Utility.ReplaceWholeWord(sb, ContinueMarker, "", StringComparison.OrdinalIgnoreCase);
 
 			if (AppSettings.Settings.AutoConvertNames)
 			{
 				string userPlaceholder = (Current.Card.userPlaceholder ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
-					Utility.ReplaceWholeWord(sb, userPlaceholder, "__UUUU__", false);
+					Utility.ReplaceWholeWord(sb, userPlaceholder, "__UUUU__", StringComparison.Ordinal);
 
 				for (int i = 0; i < Current.Characters.Count; ++i)
 				{
 					string characterPlaceholder = (Current.Characters[i].namePlaceholder ?? "").Trim();
 					if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
-						Utility.ReplaceWholeWord(sb, characterPlaceholder, MakeInternalCharacterMarker(i), false);
+						Utility.ReplaceWholeWord(sb, characterPlaceholder, MakeInternalCharacterMarker(i), StringComparison.Ordinal);
 				}
 			}
 
@@ -319,7 +319,7 @@ namespace Ginger
 				sb.Replace(UserMarker, userPlaceholder, true);
 			}
 
-			Utility.ReplaceWholeWord(sb, "<START>", "", false);
+			Utility.ReplaceWholeWord(sb, "<START>", "", StringComparison.Ordinal);
 			            
 			return sb.TrimStart().ToString();
 		}

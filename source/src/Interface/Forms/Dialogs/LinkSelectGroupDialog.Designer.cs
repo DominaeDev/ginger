@@ -31,18 +31,18 @@ namespace Ginger
 		{
 			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.Panel listPanel;
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectGroupDialog));
+			System.Windows.Forms.FlowLayoutPanel buttonLayout;
 			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Character", 1, 1);
 			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Group", 2, 2);
 			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
             treeNode1,
             treeNode2});
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectGroupDialog));
-			System.Windows.Forms.FlowLayoutPanel buttonLayout;
-			this.treeView = new Ginger.TreeViewEx();
 			this.imageList = new System.Windows.Forms.ImageList(this.components);
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.btnOk = new System.Windows.Forms.Button();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+			this.treeView = new Ginger.TreeViewEx();
 			listPanel = new System.Windows.Forms.Panel();
 			buttonLayout = new System.Windows.Forms.FlowLayoutPanel();
 			listPanel.SuspendLayout();
@@ -60,50 +60,22 @@ namespace Ginger
 			listPanel.Size = new System.Drawing.Size(484, 326);
 			listPanel.TabIndex = 0;
 			// 
-			// treeView
-			// 
-			this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.treeView.CausesValidation = false;
-			this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.treeView.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.treeView.FullRowSelect = true;
-			this.treeView.HideSelection = false;
-			this.treeView.ImageIndex = 0;
-			this.treeView.ImageList = this.imageList;
-			this.treeView.Location = new System.Drawing.Point(2, 4);
-			this.treeView.Name = "treeView";
-			treeNode1.ImageIndex = 1;
-			treeNode1.Name = "Node1";
-			treeNode1.SelectedImageIndex = 1;
-			treeNode1.Text = "Character";
-			treeNode2.ImageIndex = 2;
-			treeNode2.Name = "tmpNode1";
-			treeNode2.SelectedImageIndex = 2;
-			treeNode2.Text = "Group";
-			treeNode3.Name = "tmpNode1";
-			treeNode3.SelectedImageIndex = 0;
-			treeNode3.Text = "Folder";
-			this.treeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode3});
-			this.treeView.SelectedImageIndex = 0;
-			this.treeView.ShowLines = false;
-			this.treeView.ShowNodeToolTips = true;
-			this.treeView.Size = new System.Drawing.Size(480, 320);
-			this.treeView.TabIndex = 0;
-			this.treeView.OnRightClick += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseClick);
-			this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
-			this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseDoubleClick);
-			// 
 			// imageList
 			// 
 			this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
 			this.imageList.TransparentColor = System.Drawing.Color.Transparent;
 			this.imageList.Images.SetKeyName(0, "tree_folder.png");
-			this.imageList.Images.SetKeyName(1, "character_pair.png");
-			this.imageList.Images.SetKeyName(2, "character_group.png");
-			this.imageList.Images.SetKeyName(3, "character_pair_empty.png");
-			this.imageList.Images.SetKeyName(4, "group_small_empty.png");
-			this.imageList.Images.SetKeyName(5, "broken_chat.png");
+			this.imageList.Images.SetKeyName(1, "character_neutral.png");
+			this.imageList.Images.SetKeyName(2, "character_male.png");
+			this.imageList.Images.SetKeyName(3, "character_female.png");
+			this.imageList.Images.SetKeyName(4, "character_other.png");
+			this.imageList.Images.SetKeyName(5, "character_group.png");
+			this.imageList.Images.SetKeyName(6, "character_neutral_empty.png");
+			this.imageList.Images.SetKeyName(7, "character_male_empty.png");
+			this.imageList.Images.SetKeyName(8, "character_female_empty.png");
+			this.imageList.Images.SetKeyName(9, "character_other_empty.png");
+			this.imageList.Images.SetKeyName(10, "group_small_empty.png");
+			this.imageList.Images.SetKeyName(11, "broken_chat.png");
 			// 
 			// buttonLayout
 			// 
@@ -152,6 +124,40 @@ namespace Ginger
 			this.toolTip.ReshowDelay = 50;
 			this.toolTip.UseAnimation = false;
 			this.toolTip.UseFading = false;
+			// 
+			// treeView
+			// 
+			this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.treeView.CausesValidation = false;
+			this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.treeView.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.treeView.FullRowSelect = true;
+			this.treeView.HideSelection = false;
+			this.treeView.ImageIndex = 0;
+			this.treeView.ImageList = this.imageList;
+			this.treeView.Location = new System.Drawing.Point(2, 4);
+			this.treeView.Name = "treeView";
+			treeNode1.ImageIndex = 1;
+			treeNode1.Name = "Node1";
+			treeNode1.SelectedImageIndex = 1;
+			treeNode1.Text = "Character";
+			treeNode2.ImageIndex = 2;
+			treeNode2.Name = "tmpNode1";
+			treeNode2.SelectedImageIndex = 2;
+			treeNode2.Text = "Group";
+			treeNode3.Name = "tmpNode1";
+			treeNode3.SelectedImageIndex = 0;
+			treeNode3.Text = "Folder";
+			this.treeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
+            treeNode3});
+			this.treeView.SelectedImageIndex = 0;
+			this.treeView.ShowLines = false;
+			this.treeView.ShowNodeToolTips = true;
+			this.treeView.Size = new System.Drawing.Size(480, 320);
+			this.treeView.TabIndex = 0;
+			this.treeView.OnRightClick += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseClick);
+			this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
+			this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseDoubleClick);
 			// 
 			// LinkSelectGroupDialog
 			// 

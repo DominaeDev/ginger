@@ -87,15 +87,15 @@ namespace Ginger
 			{
 				StringBuilder sb = new StringBuilder(value);
 
-				Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, "__CCCC__", true);
-				Utility.ReplaceWholeWord(sb, GingerString.UserMarker, "__UUUU__", true);
+				Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, "__CCCC__", StringComparison.OrdinalIgnoreCase);
+				Utility.ReplaceWholeWord(sb, GingerString.UserMarker, "__UUUU__", StringComparison.OrdinalIgnoreCase);
 
 				string userPlaceholder = (Current.Card.userPlaceholder ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
-					Utility.ReplaceWholeWord(sb, userPlaceholder, "__UUUU__", false);
+					Utility.ReplaceWholeWord(sb, userPlaceholder, "__UUUU__", StringComparison.Ordinal);
 				string characterPlaceholder = (Current.Character.namePlaceholder ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
-					Utility.ReplaceWholeWord(sb, characterPlaceholder, "__CCCC__", false);
+					Utility.ReplaceWholeWord(sb, characterPlaceholder, "__CCCC__", StringComparison.Ordinal);
 
 				sb.Replace("__CCCC__", GingerString.CharacterMarker);
 				sb.Replace("__UUUU__", GingerString.UserMarker);

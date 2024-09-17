@@ -243,7 +243,7 @@ namespace Ginger
 			applyToFirstChatMenuItem.ToolTipText = Resources.tooltip_link_apply_to_first;
 			applyToLastChatMenuItem.ToolTipText = Resources.tooltip_link_apply_to_last;
 			applyToAllChatsMenuItem.ToolTipText = Resources.tooltip_link_apply_to_all;
-			alwaysLinkMenuItem.ToolTipText = Resources.tooltip_link_about_linking;
+			alwaysLinkMenuItem.ToolTipText = Resources.tooltip_link_always_create;
 
 			RegisterIdleHandler(recipeList);
 

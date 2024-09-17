@@ -252,11 +252,11 @@ namespace Ginger
 						continue;
 
 					if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
-						parameter.value = Utility.ReplaceWholeWord(parameter.value, GingerString.CharacterMarker, characterPlaceholder, true);
+						parameter.value = Utility.ReplaceWholeWord(parameter.value, GingerString.CharacterMarker, characterPlaceholder, StringComparison.OrdinalIgnoreCase);
 					if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
-						parameter.value = Utility.ReplaceWholeWord(parameter.value, GingerString.UserMarker, userPlaceholder, true);
+						parameter.value = Utility.ReplaceWholeWord(parameter.value, GingerString.UserMarker, userPlaceholder, StringComparison.OrdinalIgnoreCase);
 
-					parameter.value = Utility.ReplaceWholeWord(parameter.value, oldName, newName, false);
+					parameter.value = Utility.ReplaceWholeWord(parameter.value, oldName, newName, StringComparison.Ordinal);
 				}
 
 				// List parameters
@@ -265,7 +265,7 @@ namespace Ginger
 					string sValue = Utility.ListToDelimitedString(parameter.value, ",");
 					if (sValue.Contains(oldName))
 					{ 
-						sValue = Utility.ReplaceWholeWord(sValue, oldName, newName, false);
+						sValue = Utility.ReplaceWholeWord(sValue, oldName, newName, StringComparison.Ordinal);
 						parameter.value = new HashSet<string>(Utility.ListFromCommaSeparatedString(sValue));
 					}
 				}
@@ -280,11 +280,11 @@ namespace Ginger
 							continue;
 
 						if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
-							entry.value = Utility.ReplaceWholeWord(entry.value, GingerString.CharacterMarker, characterPlaceholder, true);
+							entry.value = Utility.ReplaceWholeWord(entry.value, GingerString.CharacterMarker, characterPlaceholder, StringComparison.OrdinalIgnoreCase);
 						if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
-							entry.value = Utility.ReplaceWholeWord(entry.value, GingerString.UserMarker, userPlaceholder, true);
+							entry.value = Utility.ReplaceWholeWord(entry.value, GingerString.UserMarker, userPlaceholder, StringComparison.OrdinalIgnoreCase);
 
-						entry.value = Utility.ReplaceWholeWord(entry.value, oldName, newName, false);
+						entry.value = Utility.ReplaceWholeWord(entry.value, oldName, newName, StringComparison.Ordinal);
 					}
 				}
 			}
@@ -769,9 +769,9 @@ namespace Ginger
 				{
 					StringBuilder sb = new StringBuilder(parameter.value);
 					if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
-						Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, characterPlaceholder, true);
+						Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, characterPlaceholder, StringComparison.OrdinalIgnoreCase);
 					if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
-						Utility.ReplaceWholeWord(sb, GingerString.UserMarker, userPlaceholder, true);
+						Utility.ReplaceWholeWord(sb, GingerString.UserMarker, userPlaceholder, StringComparison.OrdinalIgnoreCase);
 					parameter.value = sb.ToString();
 				}
 
@@ -782,9 +782,9 @@ namespace Ginger
 					{
 						StringBuilder sb = new StringBuilder(entry.value);
 						if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
-							Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, characterPlaceholder, true);
+							Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, characterPlaceholder, StringComparison.OrdinalIgnoreCase);
 						if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
-							Utility.ReplaceWholeWord(sb, GingerString.UserMarker, userPlaceholder, true);
+							Utility.ReplaceWholeWord(sb, GingerString.UserMarker, userPlaceholder, StringComparison.OrdinalIgnoreCase);
 						entry.value = sb.ToString();
 					}
 				}
@@ -795,9 +795,9 @@ namespace Ginger
 				{
 					StringBuilder sb = new StringBuilder(parameter.value);
 					if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
-						Utility.ReplaceWholeWord(sb, characterPlaceholder, GingerString.CharacterMarker, false);
+						Utility.ReplaceWholeWord(sb, characterPlaceholder, GingerString.CharacterMarker, StringComparison.Ordinal);
 					if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
-						Utility.ReplaceWholeWord(sb, userPlaceholder, GingerString.UserMarker, false);
+						Utility.ReplaceWholeWord(sb, userPlaceholder, GingerString.UserMarker, StringComparison.Ordinal);
 					parameter.value = sb.ToString();
 				}
 
@@ -808,9 +808,9 @@ namespace Ginger
 					{
 						StringBuilder sb = new StringBuilder(entry.value);
 						if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
-							Utility.ReplaceWholeWord(sb, characterPlaceholder, GingerString.CharacterMarker, false);
+							Utility.ReplaceWholeWord(sb, characterPlaceholder, GingerString.CharacterMarker, StringComparison.Ordinal);
 						if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
-							Utility.ReplaceWholeWord(sb, userPlaceholder, GingerString.UserMarker, false);
+							Utility.ReplaceWholeWord(sb, userPlaceholder, GingerString.UserMarker, StringComparison.Ordinal);
 						entry.value = sb.ToString();
 					}
 				}

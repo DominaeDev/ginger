@@ -153,13 +153,19 @@ namespace Ginger
 			if (string.Compare(character.name, label, StringComparison.OrdinalIgnoreCase) != 0)
 				label = string.Concat(label, " (", character.name, ")");
 
+			string inferredGender = character.inferredGender;
 			var sbTooltip = new StringBuilder();
 			sbTooltip.Append(character.displayName);
 			if (string.Compare(character.name, label, StringComparison.OrdinalIgnoreCase) != 0)
 			{
-				sbTooltip.Append(" (aka ");
+				sbTooltip.Append(" (goes by '");
 				sbTooltip.Append(character.name);
-				sbTooltip.Append(")");
+				sbTooltip.Append("')");
+			}
+			if (string.IsNullOrEmpty(inferredGender) == false)
+			{
+				sbTooltip.NewLine();
+				sbTooltip.AppendFormat("Gender: {0} (Inferred)", inferredGender);
 			}
 			sbTooltip.NewParagraph();
 			if (character.creator != null)
@@ -171,7 +177,21 @@ namespace Ginger
 			sbTooltip.AppendLine($"Created: {character.creationDate.ToShortDateString()}");
 			sbTooltip.AppendLine($"Last modified: {character.updateDate.ToShortDateString()}");
 
-			var node = new TreeNode(label, 1, 1);
+			int icon;
+			if (string.IsNullOrEmpty(inferredGender))
+				icon = 1;
+			else if (string.Compare(inferredGender, "male", StringComparison.OrdinalIgnoreCase) == 0)
+				icon = 2;
+			else if (string.Compare(inferredGender, "female", StringComparison.OrdinalIgnoreCase) == 0)
+				icon = 3;
+			else if (string.Compare(inferredGender, "transgender", StringComparison.OrdinalIgnoreCase) == 0)
+				icon = 1;
+			else if (string.Compare(inferredGender, "non-binary", StringComparison.OrdinalIgnoreCase) == 0)
+				icon = 1;
+			else 
+				icon = 4;
+
+			var node = new TreeNode(label, icon, icon);
 			node.Tag = character;
 			node.ToolTipText = sbTooltip.ToString();
 			if (parentNode != null)

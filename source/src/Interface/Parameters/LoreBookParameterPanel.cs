@@ -699,7 +699,7 @@ namespace Ginger
 					startIndex = 0;
 
 				if (matchWord)
-					return Utility.FindWholeWord(text, match, startIndex, !matchCase);
+					return Utility.FindWholeWord(text, match, startIndex, matchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
 				else
 					return text.IndexOf(match, startIndex, matchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
 			}
@@ -709,7 +709,7 @@ namespace Ginger
 					startIndex = Math.Min(startIndex, text.Length);
 
 				if (matchWord)
-					return Utility.FindWholeWordReverse(text, match, startIndex, !matchCase);
+					return Utility.FindWholeWordReverse(text, match, startIndex, !matchCase, Utility.WholeWordOptions.Default);
 				else
 					return text.IndexOfReverse(match, startIndex, !matchCase);
 			}

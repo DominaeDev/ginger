@@ -290,7 +290,8 @@ namespace Ginger.Properties {
         ///								&quot;type&quot;: &quot;string&quot;
         ///							},
         ///							&quot;output&quot;: {
-        ///								&quot;required&quot;: true,        /// [rest of string was truncated]&quot;;.
+        ///								&quot;required&quot;: true,
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string cai_chat_v2_schema {
             get {
@@ -470,7 +471,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Success!.
+        ///   Looks up a localized string similar to Connect to Backyard AI.
         /// </summary>
         internal static string cap_link_connect {
             get {
@@ -1663,16 +1664,6 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap group_small {
-            get {
-                object obj = ResourceManager.GetObject("group_small", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon icon {
@@ -1947,7 +1938,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connected to Backyard AI..
+        ///   Looks up a localized string similar to Successfully connected to Backyard AI..
         /// </summary>
         internal static string msg_link_connected {
             get {
@@ -2287,7 +2278,8 @@ namespace Ginger.Properties {
         ///	&lt;Text id=&quot;system&quot; style=&quot;component&quot;&gt;
         ///		&lt;Label&gt;Instructions&lt;/Label&gt;
         ///	&lt;/Text&gt;
-        ///	        /// [rest of string was truncated]&quot;;.
+        ///	
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string post_history_recipe {
             get {
@@ -3367,7 +3359,16 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When saving changes to Backyard AI, apply chat settings to all chats. (Default).
+        ///   Looks up a localized string similar to Always link characters when importing or saving to Backyard AI..
+        /// </summary>
+        internal static string tooltip_link_always_create {
+            get {
+                return ResourceManager.GetString("tooltip_link_always_create", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When saving changes to Backyard AI, apply chat settings to all chats..
         /// </summary>
         internal static string tooltip_link_apply_to_all {
             get {
@@ -3385,7 +3386,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When saving changes to Backyard AI, apply chat settings to the most recent chat..
+        ///   Looks up a localized string similar to When saving changes to Backyard AI, apply chat settings to the most recent chat. (Default).
         /// </summary>
         internal static string tooltip_link_apply_to_last {
             get {

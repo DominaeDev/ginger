@@ -106,7 +106,7 @@ namespace Ginger
 					startIndex = 0;
 
 				if (matchWord)
-					return Utility.FindWholeWord(textBox.Text, match, startIndex, !matchCase);
+					return Utility.FindWholeWord(textBox.Text, match, startIndex, matchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
 				else
 					return textBox.Text.IndexOf(match, startIndex, matchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
 			}

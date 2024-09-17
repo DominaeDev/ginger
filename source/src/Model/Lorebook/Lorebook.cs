@@ -613,7 +613,7 @@ namespace Ginger
 				var entry = entries[i];
 				lorebook.entries.Add(new Entry() {
 					key = entry.key,
-					value = GingerString.FromFaraday(entry.value).ToString(),
+					value = GingerString.FromFaraday(entry.value).ToParameter(),
 					addition_index = index++,
 				});
 			}

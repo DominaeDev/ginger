@@ -193,9 +193,12 @@ namespace Ginger
 			string groupLabel = GetGroupName(group);
 			var sbTooltip = new StringBuilder();
 
-			string[] characterNames = group.members
+			CharacterInstance[] characters = group.members
 				.Select(id => _charactersById.GetOrDefault(id))
 				.Where(c => c.isUser == false)
+				.ToArray();
+
+			string[] characterNames = characters
 				.Select(c => Utility.FirstNonEmpty(c.name, Constants.DefaultCharacterName))
 				.ToArray();
 
@@ -226,11 +229,31 @@ namespace Ginger
 			sbTooltip.AppendLine($"Created: {group.creationDate.ToShortDateString()}");
 			sbTooltip.AppendLine($"Last modified: {group.updateDate.ToShortDateString()}");
 
-			int icon = group.members.Length > 2 ? 2 : 1;
+			// Icon
+			int icon = 1;
+			if (characters.Length >= 2)
+				icon = 5; // Group
+			else if (characters.Length == 1)
+			{
+				string inferredGender = characters[0].inferredGender;
+				if (string.IsNullOrEmpty(inferredGender))
+					icon = 1;
+				else if (string.Compare(inferredGender, "male", StringComparison.OrdinalIgnoreCase) == 0)
+					icon = 2;
+				else if (string.Compare(inferredGender, "female", StringComparison.OrdinalIgnoreCase) == 0)
+					icon = 3;
+				else if (string.Compare(inferredGender, "transgender", StringComparison.OrdinalIgnoreCase) == 0)
+					icon = 1;
+				else if (string.Compare(inferredGender, "non-binary", StringComparison.OrdinalIgnoreCase) == 0)
+					icon = 1;
+				else 
+					icon = 4;
+			}
+
 			if (chatCount.count == 0)
-				icon = 3; // Error icon
+				icon = 11; // Error icon
 			else if (chatCount.hasMessages == false)
-				icon += 2; // Empty chat
+				icon += 5; // Empty chat
 
 			var node = new TreeNode(groupLabel, icon, icon);
 			node.Tag = group;

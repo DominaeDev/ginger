@@ -159,9 +159,9 @@ namespace Ginger
 				{
 					string text = entry.text;
 					if (string.IsNullOrEmpty(header.characterName) == false)
-						text = Utility.ReplaceWholeWord(text, header.characterName, GingerString.CharacterMarker, false);
+						text = Utility.ReplaceWholeWord(text, header.characterName, GingerString.CharacterMarker, StringComparison.Ordinal);
 					if (string.IsNullOrEmpty(header.userName) == false)
-						text = Utility.ReplaceWholeWord(text, header.userName, GingerString.UserMarker, false);
+						text = Utility.ReplaceWholeWord(text, header.userName, GingerString.UserMarker, StringComparison.Ordinal);
 					text = text.Replace("<START>", "");
 					text = GingerString.FromTavern(text).ToString();
 
@@ -189,9 +189,9 @@ namespace Ginger
 
 			StringBuilder sb = new StringBuilder(text);
 			if (string.IsNullOrEmpty(header.userName) == false)
-				Utility.ReplaceWholeWord(sb, header.userName, GingerString.UserMarker, false);
+				Utility.ReplaceWholeWord(sb, header.userName, GingerString.UserMarker, StringComparison.Ordinal);
 			if (string.IsNullOrEmpty(header.characterName) == false)
-				Utility.ReplaceWholeWord(sb, header.characterName, GingerString.CharacterMarker, false);
+				Utility.ReplaceWholeWord(sb, header.characterName, GingerString.CharacterMarker, StringComparison.Ordinal);
 			text = sb.ToString();
 		}
 

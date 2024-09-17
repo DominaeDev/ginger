@@ -312,7 +312,7 @@ namespace Ginger {
             this.applyToLastChatMenuItem,
             this.applyToAllChatsMenuItem});
 			writeChatSettingsMenuItem.Name = "writeChatSettingsMenuItem";
-			writeChatSettingsMenuItem.Size = new System.Drawing.Size(204, 22);
+			writeChatSettingsMenuItem.Size = new System.Drawing.Size(190, 22);
 			writeChatSettingsMenuItem.Text = "Apply chat settings to";
 			// 
 			// applyToFirstChatMenuItem
@@ -1280,14 +1280,14 @@ namespace Ginger {
 			// enableSpellCheckingMenuItem
 			// 
 			this.enableSpellCheckingMenuItem.Name = "enableSpellCheckingMenuItem";
-			this.enableSpellCheckingMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.enableSpellCheckingMenuItem.Size = new System.Drawing.Size(116, 22);
 			this.enableSpellCheckingMenuItem.Text = "Enabled";
 			this.enableSpellCheckingMenuItem.Click += new System.EventHandler(this.EnableSpellCheckingMenuItem_Click);
 			// 
 			// toolStripMenuItem4
 			// 
 			this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-			this.toolStripMenuItem4.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem4.Size = new System.Drawing.Size(113, 6);
 			// 
 			// linkOptionsMenuItem
 			// 
@@ -1302,14 +1302,14 @@ namespace Ginger {
 			// enableAutosaveMenuItem
 			// 
 			this.enableAutosaveMenuItem.Name = "enableAutosaveMenuItem";
-			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(204, 22);
+			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(190, 22);
 			this.enableAutosaveMenuItem.Text = "Synchronized saving";
 			// 
 			// alwaysLinkMenuItem
 			// 
 			this.alwaysLinkMenuItem.Name = "alwaysLinkMenuItem";
-			this.alwaysLinkMenuItem.Size = new System.Drawing.Size(204, 22);
-			this.alwaysLinkMenuItem.Text = "Always link to characters";
+			this.alwaysLinkMenuItem.Size = new System.Drawing.Size(190, 22);
+			this.alwaysLinkMenuItem.Text = "Always link characters";
 			this.alwaysLinkMenuItem.Click += new System.EventHandler(this.alwaysLinkMenuItem_Click);
 			// 
 			// autoConvertNameMenuItem

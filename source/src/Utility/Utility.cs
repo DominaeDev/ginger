@@ -1001,13 +1001,13 @@ namespace Ginger
 			return HSVToRGB(hsv).ToColor();
 		}
 
-		public static string ReplaceWholeWord(string text, string word, string replace, bool ignoreCase = false)
+		public static string ReplaceWholeWord(string text, string word, string replace, StringComparison comparison = StringComparison.Ordinal, WholeWordOptions options = WholeWordOptions.Default)
 		{
 			if (string.IsNullOrEmpty(word))
 				return text;
 
 			StringBuilder sb = new StringBuilder(text);
-			ReplaceWholeWord(sb, word, replace, ignoreCase);
+			ReplaceWholeWord(sb, word, replace, comparison, options);
 			return sb.ToString();
 		}
 
@@ -1017,7 +1017,16 @@ namespace Ginger
 			public int length;
 		}
 
-		private static bool IsWhole(string text, string word, int pos)
+		[Flags]
+		public enum WholeWordOptions
+		{
+			None = 0,
+			CharacterSetBoundaries = 1 << 0,
+
+			Default = CharacterSetBoundaries,
+		}
+
+		public static bool IsWhole(string text, string word, int pos, WholeWordOptions options = WholeWordOptions.Default)
 		{
 			char? left = null;
 			char? right = null;
@@ -1025,27 +1034,36 @@ namespace Ginger
 			if (pos + word.Length < text.Length) right = text[pos + word.Length];
 
 			char ch = text[pos];
-			var charSet = CharUtil.GetCharacterSet(ch);
-			var leftCharSet = left.HasValue ? CharUtil.GetCharacterSet(left.Value) : CharUtil.CharacterSet.Undefined;
-			var rightCharSet = right.HasValue ? CharUtil.GetCharacterSet(right.Value) : CharUtil.CharacterSet.Undefined;
-
 			bool bTermLeft = !left.HasValue
 				|| char.IsWhiteSpace(left.Value)
-				|| char.IsPunctuation(left.Value)
-				|| charSet == CharUtil.CharacterSet.CJK
-				|| (charSet == CharUtil.CharacterSet.Default && !char.IsLetter(left.Value))
-				|| charSet != leftCharSet;
+				|| char.IsPunctuation(left.Value);
 			bool bTermRight = !right.HasValue
 				|| char.IsWhiteSpace(right.Value)
-				|| char.IsPunctuation(right.Value)
-				|| charSet == CharUtil.CharacterSet.CJK
-				|| (charSet == CharUtil.CharacterSet.Default && !char.IsLetter(right.Value))
-				|| charSet != rightCharSet;
+				|| char.IsPunctuation(right.Value);
+
+			if (options.Contains(WholeWordOptions.CharacterSetBoundaries) && !(bTermLeft || bTermRight))
+			{ 
+				var charSet = CharUtil.GetCharacterSet(ch);
+				if (!bTermLeft)
+				{
+					var leftCharSet = left.HasValue ? CharUtil.GetCharacterSet(left.Value) : CharUtil.CharacterSet.Undefined;
+					bTermLeft |= charSet == CharUtil.CharacterSet.CJK
+						|| (charSet == CharUtil.CharacterSet.Default && !char.IsLetter(left.Value))
+						|| charSet != leftCharSet;
+				}
+				if (!bTermRight)
+				{
+					var rightCharSet = right.HasValue ? CharUtil.GetCharacterSet(right.Value) : CharUtil.CharacterSet.Undefined;
+					bTermRight |= charSet == CharUtil.CharacterSet.CJK
+						|| (charSet == CharUtil.CharacterSet.Default && !char.IsLetter(right.Value))
+						|| charSet != rightCharSet;
+				}
+			}
 
 			return bTermLeft && bTermRight;
 		}
 
-		public static void ReplaceWholeWord(StringBuilder sb, string word, string replace, bool ignoreCase = false)
+		public static void ReplaceWholeWord(StringBuilder sb, string word, string replace, StringComparison comparison = StringComparison.Ordinal, WholeWordOptions options = WholeWordOptions.Default)
 		{
 			if (string.IsNullOrEmpty(word))
 				return;
@@ -1054,20 +1072,20 @@ namespace Ginger
 
 			string text = sb.ToString();
 
-			int pos = text.IndexOf(word, 0, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+			int pos = text.IndexOf(word, 0, comparison);
 			while (pos != -1)
 			{
-				bool whole = IsWhole(text, word, pos);
+				bool whole = IsWhole(text, word, pos, options);
 				if (whole)
 				{
 					replacements.Add(new WholeWord() {
 						start = pos,
 						length = word.Length,
 					});
-					pos = text.IndexOf(word, pos + word.Length, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+					pos = text.IndexOf(word, pos + word.Length, comparison);
 					continue;
 				}
-				pos = text.IndexOf(word, pos + 1, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+				pos = text.IndexOf(word, pos + 1, comparison);
 			}
 
 			for (int i = replacements.Count - 1; i >= 0; --i)
@@ -1078,39 +1096,39 @@ namespace Ginger
 			}
 		}
 
-		public static int[] FindWords(string text, string word, bool bIgnoreCase)
+		public static int[] FindWords(string text, string word, StringComparison comparison = StringComparison.Ordinal)
 		{
 			if (string.IsNullOrEmpty(word))
 				return null;
 
 			List<int> found = new List<int>();
-			int pos = text.IndexOf(word, 0, bIgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+			int pos = text.IndexOf(word, 0, comparison);
 			while (pos != -1)
 			{
 				found.Add(pos);
-				pos = text.IndexOf(word, pos + word.Length, bIgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+				pos = text.IndexOf(word, pos + word.Length, comparison);
 			}
 			return found.ToArray();
 		}
 
-		public static int FindWholeWord(string text, string word, int startIndex = 0, bool ignoreCase = false)
+		public static int FindWholeWord(string text, string word, int startIndex = 0, StringComparison comparison = StringComparison.Ordinal, WholeWordOptions options = WholeWordOptions.Default)
 		{
 			if (string.IsNullOrEmpty(word))
 				return -1;
 
-			int pos = text.IndexOf(word, startIndex, ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture);
+			int pos = text.IndexOf(word, startIndex, comparison);
 			while (pos != -1)
 			{
-				bool whole = IsWhole(text, word, pos);
+				bool whole = IsWhole(text, word, pos, options);
 
 				if (whole)
 					return pos;
-				pos = text.IndexOf(word, pos + 1, ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture);
+				pos = text.IndexOf(word, pos + 1, comparison);
 			}
 			return -1;
 		}
 
-		public static int FindWholeWordReverse(string text, string word, int startIndex = -1, bool ignoreCase = false)
+		public static int FindWholeWordReverse(string text, string word, int startIndex = -1, bool ignoreCase = false, WholeWordOptions options = WholeWordOptions.Default)
 		{
 			if (string.IsNullOrEmpty(word))
 				return -1;
@@ -1119,7 +1137,7 @@ namespace Ginger
 			int pos = text.IndexOfReverse(word, startIndex, ignoreCase);
 			while (pos != -1)
 			{
-				bool whole = IsWhole(text, word, pos);
+				bool whole = IsWhole(text, word, pos, options);
 
 				if (whole)
 					return pos;
@@ -1128,16 +1146,16 @@ namespace Ginger
 			return -1;
 		}
 
-		public static int[] FindWholeWords(string text, string word, bool ignoreCase = false)
+		public static int[] FindWholeWords(string text, string word, StringComparison comparison = StringComparison.Ordinal, WholeWordOptions options = WholeWordOptions.Default)
 		{
 			if (string.IsNullOrEmpty(word))
 				return null;
 
 			List<int> found = new List<int>();
-			int pos = text.IndexOf(word, 0, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+			int pos = text.IndexOf(word, 0, comparison);
 			while (pos != -1)
 			{
-				bool whole = IsWhole(text, word, pos);
+				bool whole = IsWhole(text, word, pos, options);
 
 				if (whole)
 				{
@@ -1145,12 +1163,12 @@ namespace Ginger
 					pos = text.IndexOf(word, pos + word.Length, StringComparison.OrdinalIgnoreCase);
 					continue;
 				}
-				pos = text.IndexOf(word, pos + 1, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+				pos = text.IndexOf(word, pos + 1, comparison);
 			}
 			return found.ToArray();
 		}
 
-		public static int FindFirstWholeWord(string text, string[] words, bool ignoreCase = false)
+		public static int FindFirstWholeWord(string text, string[] words, StringComparison comparison = StringComparison.Ordinal, WholeWordOptions options = WholeWordOptions.Default)
 		{
 			if (words == null || words.Length == 0)
 				return -1;
@@ -1158,13 +1176,41 @@ namespace Ginger
 			int found = int.MaxValue;
 			for (int i = 0; i < words.Length; ++i)
 			{
-				int index = Math.Min(found, FindWholeWord(text, words[i], 0, ignoreCase));
+				int index = Math.Min(found, FindWholeWord(text, words[i], 0, comparison, options));
 				if (index >= 0)
 					found = Math.Min(found, index);
 			}
 
 			if (found != int.MaxValue)
 				return found;
+			return -1;
+		}
+
+		public static int FindAnyWord(string text, string[] words, StringComparison comparison = StringComparison.Ordinal)
+		{
+			if (words == null || words.Length == 0)
+				return -1;
+
+			for (int i = 0; i < words.Length; ++i)
+			{
+				int index = text.IndexOf(words[i], comparison);
+				if (index != -1)
+					return i;
+			}
+			return -1;
+		}
+
+		public static int FindAnyWholeWord(string text, string[] words, StringComparison comparison = StringComparison.Ordinal, WholeWordOptions options = WholeWordOptions.Default)
+		{
+			if (words == null || words.Length == 0)
+				return -1;
+
+			for (int i = 0; i < words.Length; ++i)
+			{
+				int index = FindWholeWord(text, words[i], 0, comparison, options);
+				if (index != -1)
+					return i;
+			}
 			return -1;
 		}
 
@@ -1432,6 +1478,94 @@ namespace Ginger
 			{
 				return null;
 			}
+		}
+
+		public static string InferGender(string persona)
+		{
+			if (string.IsNullOrEmpty(persona))
+				return null;
+
+			persona = persona.ToLowerInvariant();
+
+			// Unambiguous indicators
+			if (FindAnyWord(persona, new string[] { "hermaphrodite" }, StringComparison.Ordinal) != -1)
+				return "Hermaphrodite";
+			if (FindAnyWord(persona, new string[] { "futanari", "dickgirl", "shemale", "dick-girl", "she-male", "newhalf" }, StringComparison.Ordinal) != -1)
+				return "Futanari";
+			if (FindAnyWord(persona, new string[] { "transgender", "transsexual" }, StringComparison.Ordinal) != -1)
+				return "Transgender";
+			if (FindAnyWord(persona, new string[] { "non-binary", "nonbinary", "intersex" }, StringComparison.Ordinal) != -1)
+				return "Non-binary";
+
+			// Split text into lines/sentences
+			string[] lines = persona
+				.Split(new char[] { '\n', '.' }, StringSplitOptions.RemoveEmptyEntries)
+				.Where(s => s.Contains("{user}") == false)
+				.ToArray();
+
+			string primaryGuess = null;
+			string secondaryGuess = null;
+			string tertiaryGuess = null;
+
+			// Primary indicators
+			for (int i = 0; i < lines.Length; ++i)
+			{
+				string line = lines[i];
+
+				if (primaryGuess == null)
+				{
+					int index = -1;
+					if (Scan(line, ref index, "futa"))
+						return "Futanari";
+					if (Scan(line, ref index, "male", "man", "boy"))
+						primaryGuess = "Male";
+					if (Scan(line, ref index, "female", "woman", "girl"))
+						primaryGuess = "Female";
+					if (Scan(line, ref index, "trans"))
+						primaryGuess = "Transgender";
+				}
+
+				if (secondaryGuess == null)
+				{
+					int index = -1;
+					if (Scan(line, ref index, "he", "him", "himself", "his"))
+						secondaryGuess = "Male";
+					if (Scan(line, ref index, "she", "her", "herself", "hers"))
+						secondaryGuess = "Female";
+				}
+
+				if (tertiaryGuess == null)
+				{
+					int index = -1;
+					if (Scan(line, ref index, "boyfriend", "husband", "father", "dad", "son", "patriarch", "incubus", "master", "gentleman"))
+						tertiaryGuess = "Male";
+					if (Scan(line, ref index, "girlfriend", "wife", "waifu", "mother", "mom", "milf", "daughter", "matron", "matriarch", "succubus", "mistress", "lady"))
+						tertiaryGuess = "Female";
+				}
+
+				if (primaryGuess != null)
+					return primaryGuess;
+				if (secondaryGuess != null)
+					return secondaryGuess;
+				if (tertiaryGuess != null)
+					return tertiaryGuess;
+			}
+
+			return null; // None (or Neutral)
+		}
+
+		private static bool Scan(string text, ref int index, params string[] words)
+		{
+			int found = FindFirstWholeWord(text, words, StringComparison.Ordinal, WholeWordOptions.None);
+			if (found == -1)
+				return false;
+
+			if (index == -1 || found < index)
+			{
+				index = found;
+				return true;
+			}
+			return false;
 		}
 	}
 

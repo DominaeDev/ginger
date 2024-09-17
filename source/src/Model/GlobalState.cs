@@ -320,7 +320,7 @@ namespace Ginger
 				spokenName = card.data.name,
 			};
 
-			InferGender(GingerString.FromFaraday(card.data.persona), out Character.gender);
+			Character.gender = Utility.InferGender(GingerString.FromFaraday(card.data.persona).ToString());
 			Card.textStyle = DetectTextStyle(card.data.example, card.data.greeting);
 
 			AddChannel(GingerString.FromFaraday(card.data.system).ToParameter(), Resources.system_recipe);
@@ -361,7 +361,7 @@ namespace Ginger
 			if (card.data.tags != null)
 				Card.tags = new HashSet<string>(card.data.tags);
 
-			InferGender(GingerString.FromTavern(card.data.persona), out Character.gender);
+			Character.gender = Utility.InferGender(GingerString.FromTavern(card.data.persona).ToString());
 			Card.textStyle = DetectTextStyle(card.data.example, card.data.greeting);
 
 			AddChannel(GingerString.FromTavern(card.data.system).ToParameter(), Resources.system_recipe);
@@ -418,7 +418,7 @@ namespace Ginger
 			if (card.data.tags != null)
 				Card.tags = new HashSet<string>(card.data.tags);
 
-			InferGender(GingerString.FromTavern(card.data.persona), out Character.gender);
+			Character.gender = Utility.InferGender(GingerString.FromTavern(card.data.persona).ToString());
 			Card.textStyle = DetectTextStyle(card.data.example, card.data.greeting);
 
 			AddChannel(GingerString.FromTavern(card.data.system).ToParameter(), Resources.system_recipe);
@@ -505,7 +505,7 @@ namespace Ginger
 			if (card.tags != null)
 				Card.tags = new HashSet<string>(card.tags);
 
-			InferGender(GingerString.FromTavern(card.persona), out Character.gender);
+			Character.gender = Utility.InferGender(GingerString.FromTavern(card.persona).ToString());
 			Card.textStyle = DetectTextStyle(card.example, card.greeting);
 
 			if (string.IsNullOrEmpty(card.avatar) == false)
@@ -556,7 +556,7 @@ namespace Ginger
 				spokenName = null,
 			};
 
-			InferGender(GingerString.FromTavern(card.persona), out Character.gender);
+			Character.gender = Utility.InferGender(GingerString.FromTavern(card.persona).ToString());
 			Card.textStyle = DetectTextStyle(card.example, card.greeting);
 
 			AddChannel(GingerString.FromTavern(card.persona).ToParameter(), Resources.persona_recipe);
@@ -585,7 +585,7 @@ namespace Ginger
 				spokenName = null,
 			};
 
-			InferGender(GingerString.FromTavern(card.context), out Character.gender);
+			Character.gender = Utility.InferGender(GingerString.FromTavern(card.context).ToString());
 			Card.textStyle = DetectTextStyle(card.example, card.greeting);
 
 			AddChannel(GingerString.FromTavern(card.context).ToParameter(), Resources.persona_recipe);
@@ -608,84 +608,6 @@ namespace Ginger
 				return recipe;
 			}
 			return null;
-		}
-
-		private static void InferGender(GingerString persona, out string gender)
-		{
-			string text = persona.ToString();
-			if (string.IsNullOrEmpty(text))
-			{
-				gender = null;
-				return;
-			}
-
-			// Gender indicators:
-			// Primary
-			int iFemale = Utility.FindFirstWholeWord(text, new string[] { "female", "woman", "girl" }, true);
-			int iMale = Utility.FindFirstWholeWord(text, new string[] { "male", "man", "boy"}, true);
-			int iFuta = Utility.FindFirstWholeWord(text, new string[] { "futanari", "futa", "dickgirl", "shemale", "dick-girl", "she-male" }, true);
-			int iTrans = Utility.FindFirstWholeWord(text, new string[] { "trans", "transgender", "transsexual" }, true);
-			int iNonBinary = Utility.FindFirstWholeWord(text, new string[] { "non-binary", "nonbinary" }, true);
-			// Secondary
-			int iFeminine = Utility.FindFirstWholeWord(text, new string[] { "she", "her", "herself", "hers" }, true);
-			int iMasculine = Utility.FindFirstWholeWord(text, new string[] { "he", "him", "himself", "his" }, true);
-			int iNeutral = Utility.FindFirstWholeWord(text, new string[] { "they", "them", "themselves", "their", "theirs" }, true);
-			// Tertiary
-			int iFemaleRole = Utility.FindFirstWholeWord(text, new string[] { "girlfriend", "wife", "waifu", "mother", "mom", "milf", "daughter", "matron", "matriarch" }, true);
-			int iMaleRole = Utility.FindFirstWholeWord(text, new string[] { "boyfriend", "husband", "father", "dad", "son", "patriarch" }, true);
-
-			if (iFuta != -1) // Special case: Futanari mostly use feminine pronouns
-			{
-				gender = "Futanari";
-				return;
-			}
-			if (iNonBinary != -1) // Special case: Non-binary may use any pronouns.
-			{
-				gender = "Non-binary";
-				return;
-			}
-			if (iTrans != -1 && (iMale == -1 || iTrans < iMale) && (iFemale == -1 || iTrans < iFemale))
-			{
-				gender = "Transgender";
-				return;
-			}
-			if (iFemale != -1 && (iMale == -1 || iFemale < iMale))
-			{
-				gender = "Female";
-				return;
-			}
-			if (iMale != -1 && (iFemale == -1 || iMale < iFemale))
-			{
-				gender = "Male";
-				return;
-			}
-			if (iFeminine != -1 && (iMasculine == -1 || iFeminine < iMasculine))
-			{
-				gender = "Female";
-				return;
-			}
-			if (iMasculine != -1 && (iFeminine == -1 || iMasculine < iFeminine))
-			{
-				gender = "Male";
-				return;
-			}
-			if (iFemaleRole != -1 && (iMaleRole == -1 || iFemaleRole < iMaleRole))
-			{
-				gender = "Female";
-				return;
-			}
-			if (iMaleRole != -1 && (iFemaleRole == -1 || iMaleRole < iFemaleRole))
-			{
-				gender = "Male";
-				return;
-			}
-			if (iNeutral != -1 && (iMale == -1 || iNeutral < iMale) && (iFemale == -1 || iNeutral < iFemale))
-			{
-				gender = null; // Neutral or undetermined
-				return;
-			}
-
-			gender = null;
 		}
 
 		public static void AddCharacter()

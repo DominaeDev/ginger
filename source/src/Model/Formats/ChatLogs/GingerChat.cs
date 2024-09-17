@@ -163,9 +163,9 @@ namespace Ginger
 
 			StringBuilder sb = new StringBuilder(text);
 			if (speakers.Count > 0)
-				Utility.ReplaceWholeWord(sb, speakers[0].name, GingerString.UserMarker, false);
+				Utility.ReplaceWholeWord(sb, speakers[0].name, GingerString.UserMarker, StringComparison.Ordinal);
 			if (speakers.Count > 1)
-				Utility.ReplaceWholeWord(sb, speakers[1].name, GingerString.CharacterMarker, false);
+				Utility.ReplaceWholeWord(sb, speakers[1].name, GingerString.CharacterMarker, StringComparison.Ordinal);
 			text = sb.ToString();
 		}
 

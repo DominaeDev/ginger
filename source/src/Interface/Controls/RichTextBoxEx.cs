@@ -1159,12 +1159,12 @@ namespace Ginger
 				string user = AppSettings.Settings.AutoConvertNames ? Current.Card.userPlaceholder : GingerString.UserMarker;
 				string character = AppSettings.Settings.AutoConvertNames ? Current.Character.namePlaceholder : GingerString.CharacterMarker;
 
-				Utility.ReplaceWholeWord(sb, "<bot>", character, true);         // Tavern
-				Utility.ReplaceWholeWord(sb, "<user>", user, true);             // Tavern
-				Utility.ReplaceWholeWord(sb, "{{char}}", character, true);      // Tavern
-				Utility.ReplaceWholeWord(sb, "{{user}}", user, true);           // Tavern
-				Utility.ReplaceWholeWord(sb, "#{character}", character, true);  // Faraday
-				Utility.ReplaceWholeWord(sb, "{character}", character, true);   // Faraday
+				Utility.ReplaceWholeWord(sb, "<bot>", character, StringComparison.OrdinalIgnoreCase);         // Tavern
+				Utility.ReplaceWholeWord(sb, "<user>", user, StringComparison.OrdinalIgnoreCase);             // Tavern
+				Utility.ReplaceWholeWord(sb, "{{char}}", character, StringComparison.OrdinalIgnoreCase);      // Tavern
+				Utility.ReplaceWholeWord(sb, "{{user}}", user, StringComparison.OrdinalIgnoreCase);           // Tavern
+				Utility.ReplaceWholeWord(sb, "#{character}", character, StringComparison.OrdinalIgnoreCase);  // Faraday
+				Utility.ReplaceWholeWord(sb, "{character}", character, StringComparison.OrdinalIgnoreCase);   // Faraday
 
 				string beforeText = Text;
 				int beforePos = SelectionStart;
