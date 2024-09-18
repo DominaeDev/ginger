@@ -1088,18 +1088,10 @@ namespace Ginger
 			bool bShouldAutosave =
 				AppSettings.BackyardLink.Autosave
 				&& Backyard.ConnectionEstablished
-				&& Current.HasActiveLink;
+				&& Current.HasActiveLink
+				&& Current.IsLinkDirty;
 			
-			// Check if link is still valid
 			Backyard.Error autosaveError = Backyard.Error.NoError;
-			if (bShouldAutosave)
-			{
-				CharacterInstance character;
-				autosaveError = Backyard.RefreshCharacter(Current.Link.characterId, out character);
-				bShouldAutosave &= autosaveError == Backyard.Error.NoError;
-			}
-
-			bShouldAutosave &= Current.IsLinkDirty;
 
 			if (bShouldAutosave)
 			{
@@ -1553,7 +1545,7 @@ namespace Ginger
 			// Import...
 			FaradayCardV4 faradayData;
 			string[] images;
-			var importError = Backyard.ReadCharacter(dlg.SelectedCharacter, out faradayData, out images);
+			var importError = Backyard.ImportCharacter(dlg.SelectedCharacter, out faradayData, out images);
 			if (importError == Backyard.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1782,7 +1774,7 @@ namespace Ginger
 			// Import data
 			FaradayCardV4 faradayData;
 			string[] images;
-			var importError = Backyard.ReadCharacter(characterInstance, out faradayData, out images);
+			var importError = Backyard.ImportCharacter(characterInstance, out faradayData, out images);
 			if (importError != Backyard.Error.NoError)
 				return importError;
 

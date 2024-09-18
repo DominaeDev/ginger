@@ -209,6 +209,7 @@ namespace Ginger
 			}
 			else if (characterNames.Length == 1)
 			{
+				sbTooltip.Append("Name: ");
 				sbTooltip.Append(characterNames[0]);
 			}
 

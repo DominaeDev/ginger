@@ -21,9 +21,10 @@ namespace Ginger.Integration
 		public string groupId;          // GroupConfig.id (Primary group)
 		public string folderId;         // GroupConfig.folderId (Primary group)
 		public string creator;          // GroupConfig.hubAuthorUsername
-		public string persona;			// CharacterConfigVersion.persona
+		public string persona;          // CharacterConfigVersion.persona
 
 		public string inferredGender { get { return Utility.InferGender(GingerString.FromFaraday(persona).ToString()); } }
+		public int loreEntries;
 	}
 
 	public struct GroupInstance
@@ -436,98 +437,6 @@ namespace Ginger.Integration
 			return _Groups.Values.FirstOrDefault(g => g.members.Length == 2 && g.members.Contains(characterId));
 		}
 
-		public static Error RefreshCharacter(string characterId, out CharacterInstance characterInstance)
-		{
-			if (ConnectionEstablished == false)
-			{
-				characterInstance = default(CharacterInstance);
-				return Error.NotConnected;
-			}
-
-			try
-			{
-				using (var connection = CreateSQLiteConnection())
-				{
-					connection.Open();
-
-					using (var cmdCharacterData = connection.CreateCommand())
-					{
-						cmdCharacterData.CommandText =
-						@"
-							SELECT 
-								A.id, B.id, D.id,
-								B.displayName, B.name, A.createdAt, B.updatedAt, B.persona,
-								D.folderId, D.hubAuthorUsername, A.isUserControlled
-							FROM CharacterConfig as A
-							INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
-							INNER JOIN _CharacterConfigToGroupConfig AS C ON C.A = A.id
-							INNER JOIN GroupConfig AS D ON D.id = C.B
-							WHERE A.id = $charId;
-						";
-						cmdCharacterData.Parameters.AddWithValue("$charId", characterId);
-
-						using (var reader = cmdCharacterData.ExecuteReader())
-						{
-							if (reader.Read() == false)
-							{
-								characterInstance = default(CharacterInstance);
-								return Error.NotFound;
-							}
-							
-							string instanceId = reader.GetString(0);
-							string configId = reader.GetString(1);
-							string groupId = reader.GetString(2);
-							string displayName = reader.GetString(3);
-							string name = reader.GetString(4);
-							DateTime createdAt = reader.GetUnixTime(5);
-							DateTime updatedAt = reader.GetUnixTime(6);
-							string persona = reader.GetString(7);
-							string folderId = reader.GetString(8);
-							string hubAuthorUsername = reader[9] as string;
-							bool isUser = reader.GetBoolean(10);
-
-							characterInstance = new CharacterInstance() {
-								instanceId = instanceId,
-								configId = configId,
-								groupId = groupId,
-								displayName = displayName,
-								name = name,
-								creationDate = createdAt,
-								updateDate = updatedAt,
-								folderId = folderId,
-								creator = hubAuthorUsername,
-								persona = persona,
-							};
-
-							// Update list
-							_Characters.Set(instanceId, characterInstance);
-						}
-					}
-
-					connection.Close();
-					return Error.NoError;
-				}
-			}
-			catch (FileNotFoundException e)
-			{
-				Disconnect();
-				characterInstance = default(CharacterInstance);
-				return Error.NotConnected;
-			}
-			catch (SQLiteException e)
-			{
-				Disconnect();
-				characterInstance = default(CharacterInstance);
-				return Error.SQLCommandFailed;
-			}
-			catch (Exception e)
-			{
-				Disconnect();
-				characterInstance = default(CharacterInstance);
-				return Error.Unknown;
-			}
-		}
-
 		public static Error RefreshCharacters()
 		{
 			if (ConnectionEstablished == false)
@@ -550,7 +459,8 @@ namespace Ginger.Integration
 						@"
 							SELECT 
 								A.id, B.id, B.displayName, B.name, A.createdAt, B.updatedAt, B.persona,
-								( SELECT B FROM _CharacterConfigToGroupConfig WHERE A = A.id LIMIT 1 )
+								( SELECT B FROM _CharacterConfigToGroupConfig WHERE A = A.id LIMIT 1 ),
+								( SELECT COUNT(*) FROM _AppCharacterLorebookItemToCharacterConfigVersion WHERE ""B"" = B.id )
 							FROM CharacterConfig as A
 							INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
 							WHERE A.isUserControlled=0
@@ -570,6 +480,7 @@ namespace Ginger.Integration
 								DateTime updatedAt = reader.GetUnixTime(5);
 								string persona = reader.GetString(6);
 								string groupId = reader.GetString(7);
+								int loreEntries = reader.GetInt32(8);
 
 								_Characters.TryAdd(instanceId, 
 									new CharacterInstance() {
@@ -582,6 +493,7 @@ namespace Ginger.Integration
 										updateDate = updatedAt,
 										isUser = false,
 										persona = persona,
+										loreEntries = loreEntries,
 									});
 
 								characterToGroup.Add(new Tuple<string, string>(instanceId, groupId));
@@ -633,6 +545,7 @@ namespace Ginger.Integration
 										creator = hubAuthorUsername,
 										folderId = folderId,
 										persona = character.persona,
+										loreEntries = character.loreEntries,
 									};
 								}
 							}
@@ -796,7 +709,7 @@ namespace Ginger.Integration
 
 		#region Characters
 
-		public static Error ReadCharacter(CharacterInstance character, out FaradayCardV4 card, out string[] imageUrls)
+		public static Error ImportCharacter(CharacterInstance character, out FaradayCardV4 card, out string[] imageUrls)
 		{
 			if (ConnectionEstablished == false)
 			{

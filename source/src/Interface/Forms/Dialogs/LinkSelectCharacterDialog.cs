@@ -155,6 +155,7 @@ namespace Ginger
 
 			string inferredGender = character.inferredGender;
 			var sbTooltip = new StringBuilder();
+			sbTooltip.Append("Name: ");
 			sbTooltip.Append(character.displayName);
 			if (string.Compare(character.name, label, StringComparison.OrdinalIgnoreCase) != 0)
 			{
@@ -166,6 +167,11 @@ namespace Ginger
 			{
 				sbTooltip.NewLine();
 				sbTooltip.AppendFormat("Gender: {0} (Inferred)", inferredGender);
+			}
+			if (character.loreEntries > 0)
+			{
+				sbTooltip.NewLine();
+				sbTooltip.AppendFormat("Lore items: {0}", character.loreEntries);
 			}
 			sbTooltip.NewParagraph();
 			if (character.creator != null)
@@ -190,6 +196,8 @@ namespace Ginger
 				icon = 1;
 			else 
 				icon = 4;
+			if (character.loreEntries > 0)
+				icon += 4;
 
 			var node = new TreeNode(label, icon, icon);
 			node.Tag = character;
