@@ -816,7 +816,6 @@
     <None Include="Resources\Schemas\faraday_charactercard_v3.schema.txt" />
     <None Include="Resources\Schemas\agnaistic_charactercard.schema.txt" />
     <None Include="Resources\Templates\recipe_template_personality.txt" />
-    <None Include="Resources\Schemas\tavern_characterbook.schema.txt" />
     <None Include="Resources\Schemas\agnaistic_characterbook.schema.txt" />
     <None Include="Resources\Schemas\tavern_worldbook.schema.txt" />
     <None Include="Resources\Templates\recipe_template_card.txt" />
@@ -928,13 +927,7 @@
     <None Include="Resources\Schemas\tavern_chat_entry_schema.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Schemas\tavern_chat_starter_schema.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Schemas\agnai_chat_schema.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Schemas\ginger_chat_schema.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Schemas\ginger_chat_v1_schema.txt" />

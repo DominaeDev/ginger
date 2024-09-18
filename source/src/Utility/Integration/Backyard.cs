@@ -249,7 +249,7 @@ namespace Ginger.Integration
 #if DEBUG
 				string appPath = "faraday-canary"; // Use canary database during development and testing
 #else
-				string appPath = "faraday"; // User production database 
+				string appPath = "faraday"; // Use production database 
 #endif
 				backyardPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), appPath);
 			}
@@ -4342,6 +4342,37 @@ namespace Ginger.Integration
 			},
 		};
 		#endregion // Validation
+
+		public static bool GetAppVersion(out VersionNumber appVersion)
+		{
+#if DEBUG
+				// Use canary database during development and testing
+				string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "faraday-canary", "Backyard AI - Canary.exe");
+#else
+				// Use production database 
+				string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "faraday", "Backyard AI.exe");
+#endif
+			if (File.Exists(appPath) == false)
+			{
+				appVersion = VersionNumber.Zero;
+				return false;
+			}
+
+			try
+			{
+				var versionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(appPath);
+				if (versionInfo != null)
+				{
+					appVersion = new VersionNumber(versionInfo.FileMajorPart, versionInfo.FileMinorPart, versionInfo.FileBuildPart);
+					return true;
+				}
+			}
+			catch
+			{
+			}
+			appVersion = VersionNumber.Zero;
+			return false;
+		}
 	}
 
 	public static class SqlExtensions

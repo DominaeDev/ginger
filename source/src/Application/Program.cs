@@ -38,10 +38,17 @@ namespace Ginger
 			// Initialize link
 			if (AppSettings.BackyardLink.Enabled)
 			{
-				if (Backyard.EstablishConnection() == Backyard.Error.NoError)
-					Backyard.RefreshCharacters();
+				// Check last version
+				VersionNumber appVersion;
+				if (Backyard.GetAppVersion(out appVersion) && AppSettings.BackyardLink.LastVersion != appVersion)
+					AppSettings.BackyardLink.Enabled = false; // Do not auto-connect to newer versions
 				else
-					AppSettings.BackyardLink.Enabled = false;
+				{
+					if (Backyard.EstablishConnection() == Backyard.Error.NoError)
+						Backyard.RefreshCharacters();
+					else
+						AppSettings.BackyardLink.Enabled = false;
+				}
 			}
 
 			Application.Run(mainForm);

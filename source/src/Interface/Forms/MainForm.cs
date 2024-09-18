@@ -2181,6 +2181,10 @@ namespace Ginger
 						MessageBox.Show(Resources.msg_link_connected, Resources.cap_link_connect, MessageBoxButtons.OK, MessageBoxIcon.Information);
 						SetStatusBarMessage(Resources.status_link_connect, Constants.StatusBarMessageInterval);
 						AppSettings.BackyardLink.Enabled = true;
+
+						VersionNumber appVersion;
+						if (Backyard.GetAppVersion(out appVersion))
+							AppSettings.BackyardLink.LastVersion = appVersion;
 					}
 				}
 			}

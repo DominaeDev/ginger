@@ -51,7 +51,7 @@ namespace Ginger
 		{
 			[JsonProperty("speaker", Required = Required.Always)]
 			public string speakerId;
-			[JsonProperty("message", Required = Required.Always)]
+			[JsonProperty("text", Required = Required.Always)]
 			public string text;
 			[JsonProperty("timestamp", Required = Required.Default)]
 			public long timestamp = 0;

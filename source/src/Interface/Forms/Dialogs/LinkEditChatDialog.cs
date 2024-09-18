@@ -996,7 +996,7 @@ namespace Ginger
 				ToolTipText = bCanBranch ? Resources.tooltip_link_branch_chat : Resources.tooltip_link_cannot_branch_chat,
 			});
 
-			menu.Items.Add(new ToolStripMenuItem("Start over from here...", null, (s, e) => {
+			menu.Items.Add(new ToolStripMenuItem("Set as first message...", null, (s, e) => {
 				RestartChat(_selectedChatInstance, instanceId);
 			}) {
 				Enabled = bCanRestart,
