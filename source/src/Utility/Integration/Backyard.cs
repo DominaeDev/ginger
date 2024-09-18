@@ -139,10 +139,28 @@ namespace Ginger.Integration
 		public class Link : IXmlLoadable, IXmlSaveable
 		{
 			public string characterId;
-			public string filename;
 			public DateTime updateDate;
 			public bool isActive;
 			public bool isDirty;
+
+			public string filenameHash
+			{
+				get { return _filenameHash; }
+				set
+				{
+					if (string.IsNullOrEmpty(value))
+						_filenameHash = null;
+					else
+					{
+						using (var sha1 = new System.Security.Cryptography.SHA256CryptoServiceProvider())
+						{
+							byte[] bytes = Encoding.UTF8.GetBytes(value.ToLowerInvariant());
+							_filenameHash = string.Concat(sha1.ComputeHash(bytes).Select(x => x.ToString("X2")));
+						}
+					}
+				}
+			}
+			private string _filenameHash = null;
 
 			public struct Image
 			{
@@ -159,7 +177,7 @@ namespace Ginger.Integration
 				updateDate = DateTimeExtensions.FromUnixTime(xmlNode.GetAttributeLong("updated"));
 				isDirty = xmlNode.GetAttributeBool("dirty");
 
-				filename = xmlNode.GetValueElement("File");
+				_filenameHash = xmlNode.GetValueElement("File");
 
 				var imageNode = xmlNode.GetFirstElement("Image");
 				if (imageNode != null)
@@ -192,7 +210,7 @@ namespace Ginger.Integration
 				if (isActive)
 					xmlNode.AddAttribute("dirty", isDirty);
 
-				xmlNode.AddValueElement("File", filename);
+				xmlNode.AddValueElement("File", _filenameHash);
 
 				if (imageLinks != null)
 				{
@@ -221,8 +239,24 @@ namespace Ginger.Integration
 						isActive = false; 
 					}
 				}
-				if (string.Compare(Current.Link.filename, Current.Filename, true) != 0)
+
+				if (CompareFilename(Current.Filename) == false)
 					isActive = false; // Different file
+			}
+
+			public bool CompareFilename(string otherFilename)
+			{
+				if (string.IsNullOrEmpty(otherFilename))
+					return string.IsNullOrEmpty(_filenameHash);
+				else if (_filenameHash == null)
+					return false;
+
+				using (var sha1 = new System.Security.Cryptography.SHA256CryptoServiceProvider())
+				{
+					byte[] bytes = Encoding.UTF8.GetBytes(otherFilename.ToLowerInvariant());
+					string hash = string.Concat(sha1.ComputeHash(bytes).Select(x => x.ToString("X2")));
+					return hash.Equals(_filenameHash);
+				}
 			}
 		}
 

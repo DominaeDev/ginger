@@ -1078,9 +1078,9 @@ namespace Ginger
 			// Linking: Check filename
 			if (Current.HasLink)
 			{
-				if (string.IsNullOrEmpty(Current.Link.filename))
-					Current.Link.filename = filename;
-				else if (string.Compare(Current.Link.filename, filename, true) != 0)
+				if (string.IsNullOrEmpty(Current.Link.filenameHash))
+					Current.Link.filenameHash = filename;
+				else if (Current.Link.CompareFilename(filename) == false)
 					Current.Unlink(); // Saving as new
 			}
 
@@ -1723,7 +1723,7 @@ namespace Ginger
 				CharacterInstance characterInstance;
 				if (Backyard.GetCharacter(Current.Link.characterId, out characterInstance))
 				{
-					Current.Link.filename = Current.Filename;
+					Current.Link.filenameHash = Current.Filename;
 					Current.Link.isActive = true;
 					Current.IsFileDirty = true;
 					Current.IsLinkDirty = false;

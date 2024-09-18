@@ -665,7 +665,7 @@ namespace Ginger
 				characterId = characterInstance.instanceId,
 				updateDate = characterInstance.updateDate,
 				imageLinks = imageLinks,
-				filename = Current.Filename,
+				filenameHash = Current.Filename,
 				isActive = true,
 			};
 			IsFileDirty = true;
