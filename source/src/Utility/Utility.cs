@@ -11,7 +11,7 @@ using System.Xml;
 
 namespace Ginger
 {
-	public static class Utility
+	public static class Utility 
 	{
 		public static void Swap<T>(ref T a, ref T b)
 		{
@@ -1036,10 +1036,12 @@ namespace Ginger
 			char ch = text[pos];
 			bool bTermLeft = !left.HasValue
 				|| char.IsWhiteSpace(left.Value)
-				|| char.IsPunctuation(left.Value);
+				|| char.IsPunctuation(left.Value)
+				|| left.Value >= 0xfff0; // Special char
 			bool bTermRight = !right.HasValue
 				|| char.IsWhiteSpace(right.Value)
-				|| char.IsPunctuation(right.Value);
+				|| char.IsPunctuation(right.Value)
+				|| right.Value >= 0xfff0; // Special char
 
 			if (options.Contains(WholeWordOptions.CharacterSetBoundaries) && !(bTermLeft || bTermRight))
 			{ 

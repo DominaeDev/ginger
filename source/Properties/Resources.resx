@@ -734,7 +734,7 @@ Continue?</value>
 Do you want to overwrite those changes?</value>
   </data>
   <data name="msg_link_saved" xml:space="preserve">
-    <value>Successfully saved character to Backyard AI</value>
+    <value>Successfully saved character to Backyard AI.</value>
   </data>
   <data name="tooltip_link_autosave" xml:space="preserve">
     <value>Automatically save changes to Backyard AI when saving the file.</value>

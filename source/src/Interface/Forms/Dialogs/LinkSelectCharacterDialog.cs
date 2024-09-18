@@ -168,11 +168,6 @@ namespace Ginger
 				sbTooltip.NewLine();
 				sbTooltip.AppendFormat("Gender: {0} (Inferred)", inferredGender);
 			}
-			if (character.loreEntries > 0)
-			{
-				sbTooltip.NewLine();
-				sbTooltip.AppendFormat("Lore items: {0}", character.loreEntries);
-			}
 			sbTooltip.NewParagraph();
 			if (character.creator != null)
 			{
