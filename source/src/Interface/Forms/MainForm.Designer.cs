@@ -295,14 +295,14 @@ namespace Ginger {
 			// 
 			this.reestablishLinkMenuItem.Name = "reestablishLinkMenuItem";
 			this.reestablishLinkMenuItem.Size = new System.Drawing.Size(246, 22);
-			this.reestablishLinkMenuItem.Text = "Restore link";
+			this.reestablishLinkMenuItem.Text = "Restore character link";
 			this.reestablishLinkMenuItem.Click += new System.EventHandler(this.reestablishLinkMenuItem_Click);
 			// 
 			// breakLinkMenuItem
 			// 
 			this.breakLinkMenuItem.Name = "breakLinkMenuItem";
 			this.breakLinkMenuItem.Size = new System.Drawing.Size(246, 22);
-			this.breakLinkMenuItem.Text = "Break link";
+			this.breakLinkMenuItem.Text = "Break character link";
 			this.breakLinkMenuItem.Click += new System.EventHandler(this.breakLinkMenuItem_Click);
 			// 
 			// writeChatSettingsMenuItem

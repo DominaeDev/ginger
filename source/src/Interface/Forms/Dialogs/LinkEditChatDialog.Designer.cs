@@ -146,7 +146,7 @@ namespace Ginger
 			// 
 			// columnDate
 			// 
-			columnDate.Text = "Last messaged";
+			columnDate.Text = "Last message";
 			columnDate.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			columnDate.Width = 100;
 			// 

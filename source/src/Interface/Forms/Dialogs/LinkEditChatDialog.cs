@@ -234,7 +234,7 @@ namespace Ginger
 					sbTooltip.AppendLine($"Created: {chats[i].creationDate.ToString("g")}");
 					sbTooltip.AppendLine($"Updated: {chats[i].updateDate.ToString("g")}");
 					if (lastMessageTime != default(DateTime))
-						sbTooltip.AppendLine($"Last messaged: {lastMessageTime.ToString("g")}");
+						sbTooltip.AppendLine($"Last message: {lastMessageTime.ToString("g")}");
 					if (chat.parameters != null)
 					{
 						sbTooltip.NewParagraph();

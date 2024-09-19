@@ -1718,7 +1718,6 @@ namespace Ginger
 					Current.Link.filenameHash = Current.Filename;
 					Current.Link.isActive = true;
 					Current.IsFileDirty = true;
-					Current.IsLinkDirty = false;
 					Current.Link.RefreshState();
 					RefreshTitle();
 
