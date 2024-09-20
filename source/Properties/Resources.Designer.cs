@@ -290,8 +290,7 @@ namespace Ginger.Properties {
         ///								&quot;type&quot;: &quot;string&quot;
         ///							},
         ///							&quot;output&quot;: {
-        ///								&quot;required&quot;: true,
-        /// [rest of string was truncated]&quot;;.
+        ///								&quot;required&quot;: true,        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string cai_chat_v2_schema {
             get {
@@ -1075,6 +1074,17 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to connect to Backyard AI.
+        ///
+        ///Reason: {0}.
+        /// </summary>
+        internal static string error_link_failed_with_reason {
+            get {
+                return ResourceManager.GetString("error_link_failed_with_reason", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Something went wrong. Operation cancelled..
         /// </summary>
         internal static string error_link_general {
@@ -1102,6 +1112,17 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to connect to Backyard AI.
+        ///
+        ///Installation not found..
+        /// </summary>
+        internal static string error_link_not_found {
+            get {
+                return ResourceManager.GetString("error_link_not_found", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to get character data..
         /// </summary>
         internal static string error_link_open_character {
@@ -1116,6 +1137,17 @@ namespace Ginger.Properties {
         internal static string error_link_purge_chat {
             get {
                 return ResourceManager.GetString("error_link_purge_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to read character information.
+        ///
+        ///Reason: {0}.
+        /// </summary>
+        internal static string error_link_read_characters {
+            get {
+                return ResourceManager.GetString("error_link_read_characters", resourceCulture);
             }
         }
         
@@ -2071,7 +2103,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully saved character to Backyard AI.
+        ///   Looks up a localized string similar to Successfully saved character to Backyard AI..
         /// </summary>
         internal static string msg_link_saved {
             get {
@@ -2278,8 +2310,7 @@ namespace Ginger.Properties {
         ///	&lt;Text id=&quot;system&quot; style=&quot;component&quot;&gt;
         ///		&lt;Label&gt;Instructions&lt;/Label&gt;
         ///	&lt;/Text&gt;
-        ///	
-        /// [rest of string was truncated]&quot;;.
+        ///	        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string post_history_recipe {
             get {

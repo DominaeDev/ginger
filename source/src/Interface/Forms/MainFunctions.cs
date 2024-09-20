@@ -1528,8 +1528,8 @@ namespace Ginger
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_read_data, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return false;
+				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				AppSettings.BackyardLink.Enabled = false;
 			}
 
 			dlg.Characters = Backyard.Characters.ToArray();

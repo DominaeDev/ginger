@@ -143,18 +143,24 @@ namespace Ginger
 			}
 
 			// Create group nodes
-			IEnumerable<GroupInstance> sortedGroups;
-			if (AppSettings.User.SortGroupsAlphabetically)
+			IEnumerable<GroupInstance> sortedGroups = Groups;
+			if (AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByName)
 			{
-				sortedGroups = Groups
+				sortedGroups = sortedGroups
 					.OrderBy(g => GetGroupName(g))
 					.ThenByDescending(c => c.creationDate);
 			}
-			else
+			else if (AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByCreation)
 			{
-				sortedGroups = Groups
+				sortedGroups = sortedGroups
+					.OrderByDescending(g => g.creationDate);
+			}
+			else if (AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByLastMessage)
+			{
+				sortedGroups = sortedGroups
 					.OrderByDescending(g => GetLatestMessageTime(g));
 			}
+
 			foreach (var group in sortedGroups)
 				CreateGroupNode(group, nodesById);
 
@@ -316,27 +322,39 @@ namespace Ginger
 		private void ShowContextMenu(Control control, Point location)
 		{
 			ContextMenuStrip menu = new ContextMenuStrip();
-			menu.Items.Add(new ToolStripMenuItem("Sort alphabetically", null, (s, e) => {
-				if (AppSettings.User.SortGroupsAlphabetically == false)
+			menu.Items.Add(new ToolStripMenuItem("Sort by name", null, (s, e) => {
+				if (AppSettings.User.SortGroups != AppSettings.CharacterSortOrder.ByName)
 				{
-					AppSettings.User.SortGroupsAlphabetically = true;
+					AppSettings.User.SortGroups = AppSettings.CharacterSortOrder.ByName;
 					PopulateTree(true);
 				}
 			}) 
 			{
-				Checked = AppSettings.User.SortGroupsAlphabetically,
-			});
-				
+				Checked = AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByName,
+			});	
+			
+			menu.Items.Add(new ToolStripMenuItem("Sort by date", null, (s, e) => {
+				if (AppSettings.User.SortGroups != AppSettings.CharacterSortOrder.ByCreation)
+				{
+					AppSettings.User.SortGroups = AppSettings.CharacterSortOrder.ByCreation;
+					PopulateTree(true);
+				}
+			}) 
+			{
+				Checked = AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByCreation,
+			});	
+
 			menu.Items.Add(new ToolStripMenuItem("Sort by last message", null, (s, e) => {
-				if (AppSettings.User.SortGroupsAlphabetically)
+				if (AppSettings.User.SortGroups != AppSettings.CharacterSortOrder.ByLastMessage)
 				{
-					AppSettings.User.SortGroupsAlphabetically = false;
+					AppSettings.User.SortGroups = AppSettings.CharacterSortOrder.ByLastMessage;
 					PopulateTree(true);
 				}
 			}) 
 			{
-				Checked = !AppSettings.User.SortGroupsAlphabetically,
+				Checked = AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByLastMessage,
 			});
+
 			menu.Show(control, location);
 		}
 	}

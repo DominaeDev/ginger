@@ -1145,4 +1145,19 @@ Do you want to start the chat over from here?</value>
   <data name="tooltip_link_always_create" xml:space="preserve">
     <value>Always link characters when importing or saving to Backyard AI.</value>
   </data>
+  <data name="error_link_failed_with_reason" xml:space="preserve">
+    <value>Failed to connect to Backyard AI.
+
+Reason: {0}</value>
+  </data>
+  <data name="error_link_not_found" xml:space="preserve">
+    <value>Failed to connect to Backyard AI.
+
+Installation not found.</value>
+  </data>
+  <data name="error_link_read_characters" xml:space="preserve">
+    <value>Failed to read character information.
+
+Reason: {0}</value>
+  </data>
 </root>

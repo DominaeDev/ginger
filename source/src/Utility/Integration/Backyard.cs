@@ -6,6 +6,7 @@ using System.Linq;
 using System.Xml;
 using System.Text;
 using Ginger.Properties;
+using System.Globalization;
 
 namespace Ginger.Integration
 {
@@ -29,12 +30,14 @@ namespace Ginger.Integration
 
 	public struct GroupInstance
 	{
-		public string instanceId;       // GroupConfig.id
-		public string name;             // GroupConfig.name
-		public string folderId;         // GroupConfig.folderId
-		public DateTime creationDate;   // CharacterConfig.createdAt
-		public DateTime updateDate;     // CharacterConfig.updatedAt
-		public string[] members;        // CharacterConfigVersion.id ...
+		public string instanceId;			// GroupConfig.id
+		public string name;					// GroupConfig.name
+		public string folderId;				// GroupConfig.folderId
+		public string hubCharId;			// GroupConfig.hubCharId
+		public string hubAuthorUsername;	// GroupConfig.hubAuthorUsername
+		public DateTime creationDate;		// CharacterConfig.createdAt
+		public DateTime updateDate;			// CharacterConfig.updatedAt
+		public string[] members;			// CharacterConfigVersion.id ...
 
 		public bool isEmpty
 		{
@@ -136,6 +139,7 @@ namespace Ginger.Integration
 		private static Dictionary<string, CharacterInstance> _Characters = new Dictionary<string, CharacterInstance>();
 		private static Dictionary<string, GroupInstance> _Groups = new Dictionary<string, GroupInstance>();
 
+		public static string LastError;
 
 		public class Link : IXmlLoadable, IXmlSaveable
 		{
@@ -337,12 +341,18 @@ namespace Ginger.Integration
 						}
 
 						if (foundColumns.Count < expectedNames.Length)
+						{
+							LastError = "Validation failed";
 							return Error.ValidationFailed;
+						}
 
 						for (int j = 0; j < expectedNames.Length; ++j)
 						{
 							if (foundColumns.FindIndex(kvp => kvp.Key == expectedNames[j] && kvp.Value == expectedTypes[j]) == -1)
+							{
+								LastError = "Validation failed";
 								return Error.ValidationFailed;
+							}
 						}
 					}
 
@@ -366,22 +376,26 @@ namespace Ginger.Integration
 
 					connection.Close();
 					ConnectionEstablished = true;
+					LastError = null;
 					return Error.NoError;
 				}
 			}
 			catch (FileNotFoundException e)
 			{
 				Disconnect();
+				LastError = e.Message;
 				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
 				Disconnect();
+				LastError = e.Message;
 				return Error.SQLCommandFailed;
 			}
 			catch (Exception e)
 			{
 				Disconnect();
+				LastError = e.Message;
 				return Error.Unknown;
 			}
 		}
@@ -440,7 +454,10 @@ namespace Ginger.Integration
 		public static Error RefreshCharacters()
 		{
 			if (ConnectionEstablished == false)
+			{
+				LastError = "Not connected";
 				return Error.NotConnected;
+			}
 
 			_Folders.Clear();
 			_Characters.Clear();
@@ -452,141 +469,71 @@ namespace Ginger.Integration
 				{
 					connection.Open();
 
-					var characterToGroup = new List<Tuple<string, string>>();
-					using (var cmdCharacter = connection.CreateCommand())
+					// Fetch character-group memberships
+					var groupMembers = new Dictionary<string, HashSet<string>>();
+					var characterGroups = new Dictionary<string, string>();
+					using (var cmdGroup = connection.CreateCommand())
 					{
-						cmdCharacter.CommandText =
+						cmdGroup.CommandText =
 						@"
 							SELECT 
-								A.id, B.id, B.displayName, B.name, A.createdAt, B.updatedAt, B.persona,
-								( SELECT B FROM _CharacterConfigToGroupConfig WHERE A = A.id LIMIT 1 ),
-								( SELECT COUNT(*) FROM _AppCharacterLorebookItemToCharacterConfigVersion WHERE ""B"" = B.id )
-							FROM CharacterConfig as A
-							INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
-							WHERE A.isUserControlled=0
+								A, B
+							FROM _CharacterConfigToGroupConfig
 						";
-						using (var reader = cmdCharacter.ExecuteReader())
+
+						using (var reader = cmdGroup.ExecuteReader())
 						{
 							while (reader.Read())
 							{
-								string instanceId = reader.GetString(0);
-								string configId = reader.GetString(1);
-								if (string.IsNullOrEmpty(instanceId) || string.IsNullOrEmpty(configId))
-									continue;
+								string characterId = reader.GetString(0);
+								string groupId = reader.GetString(1);
 
-								string displayName = reader.GetString(2);
-								string name = reader.GetString(3);
-								DateTime createdAt = reader.GetUnixTime(4);
-								DateTime updatedAt = reader.GetUnixTime(5);
-								string persona = reader.GetString(6);
-								string groupId = reader.GetString(7);
-								int loreEntries = reader.GetInt32(8);
+								if (groupMembers.ContainsKey(groupId) == false)
+									groupMembers.Add(groupId, new HashSet<string>());
 
-								_Characters.TryAdd(instanceId, 
-									new CharacterInstance() {
-										instanceId = instanceId,
-										configId = configId,
-										groupId = groupId,
-										displayName = displayName,
-										name = name,
-										creationDate = createdAt,
-										updateDate = updatedAt,
-										isUser = false,
-										persona = persona,
-										loreEntries = loreEntries,
-									});
+								groupMembers[groupId].Add(characterId);
 
-								characterToGroup.Add(new Tuple<string, string>(instanceId, groupId));
+								characterGroups.TryAdd(characterId, groupId);
 							}
 						}
 					}
 
-					using (var cmdGroupInfo = connection.CreateCommand())
-					{
-						var sbCommand = new StringBuilder();
-						sbCommand.Append(
+					// Fetch group configs
+					using (var cmdGroupData = connection.CreateCommand())
+					{ 
+						cmdGroupData.CommandText =
 						@"
 							SELECT 
-								id, folderId, hubCharId
+								id, createdAt, updatedAt, name, folderId, hubCharId, hubAuthorUsername
 							FROM GroupConfig
-							WHERE id IN (
-						");
-
-						var characters = _Characters.Values.ToList();
-						int i = 0;
-						foreach (var groupId in characters.Select(c => c.groupId).NotNull().Distinct())
-						{
-							if (i++ > 0)
-								sbCommand.Append(", ");
-							sbCommand.AppendFormat("'{0}'", groupId);
-						}
-						sbCommand.AppendLine(");");
-
-						cmdGroupInfo.CommandText = sbCommand.ToString();
-						using (var reader = cmdGroupInfo.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string groupId = reader.GetString(0);
-								string folderId = reader.GetString(1);
-								string hubAuthorUsername = reader[2] as string;
-																
-								foreach (var character in characters.Where(c => c.groupId == groupId))
-								{
-									_Characters[character.instanceId] = new CharacterInstance() {
-										instanceId = character.instanceId,
-										configId = character.configId,
-										groupId = character.groupId,
-										displayName = character.displayName,
-										name = character.name,
-										creationDate = character.creationDate,
-										updateDate = character.updateDate,
-										isUser = character.isUser,
-										creator = hubAuthorUsername,
-										folderId = folderId,
-										persona = character.persona,
-										loreEntries = character.loreEntries,
-									};
-								}
-							}
-						}
-					}
-
-					// Fetch user characters
-					using (var cmdUser = connection.CreateCommand())
-					{
-						cmdUser.CommandText =
-						@"
-							SELECT 
-								A.id, 
-								B.id, B.displayName, B.name, A.createdAt, A.updatedAt
-							FROM CharacterConfig as A
-							INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
-							WHERE A.isUserControlled=1;
 						";
-						using (var reader = cmdUser.ExecuteReader())
+
+						using (var reader = cmdGroupData.ExecuteReader())
 						{
 							while (reader.Read())
 							{
 								string instanceId = reader.GetString(0);
-								string configId = reader.GetString(1);
-								if (string.IsNullOrEmpty(instanceId) || string.IsNullOrEmpty(configId))
-									continue;
-
-								string displayName = reader.GetString(2);
+								DateTime createdAt = reader.GetTimestamp(1);
+								DateTime updatedAt = reader.GetTimestamp(2);
 								string name = reader.GetString(3);
-								DateTime createdAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(4));
-								DateTime updatedAt = DateTimeExtensions.FromUnixTime(reader.GetInt64(5));
+								string folderId = reader.GetString(4);
+								string hubCharId = reader[5] as string;
+								string hubAuthorUsername = reader[6] as string;
 
-								_Characters.TryAdd(instanceId, 
-									new CharacterInstance() {
+								HashSet<string> members;
+								if (groupMembers.TryGetValue(instanceId, out members) == false)
+									continue; // No members?
+
+								_Groups.TryAdd(instanceId, 
+									new GroupInstance() {
 										instanceId = instanceId,
-										configId = configId,
-										displayName = displayName,
 										name = name,
 										creationDate = createdAt,
 										updateDate = updatedAt,
-										isUser = true,
+										folderId = folderId,
+										hubCharId = hubCharId,
+										hubAuthorUsername = hubAuthorUsername,
+										members = members.ToArray(),
 									});
 							}
 						}
@@ -622,86 +569,87 @@ namespace Ginger.Integration
 						}
 					}
 
-					// Fetch character-group memberships
-					var groupMembers = new Dictionary<string, HashSet<string>>();
-					using (var cmdGroup = connection.CreateCommand())
+					// Fetch character configs
+					using (var cmdCharacter = connection.CreateCommand())
 					{
-						cmdGroup.CommandText =
+						cmdCharacter.CommandText =
 						@"
 							SELECT 
-								A, B
-							FROM _CharacterConfigToGroupConfig
+								A.id, B.id, B.displayName, B.name, A.createdAt, B.updatedAt, B.persona, A.isUserControlled,
+								( SELECT COUNT(*) FROM _AppCharacterLorebookItemToCharacterConfigVersion WHERE ""B"" = B.id )
+							FROM CharacterConfig as A
+							INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id;
 						";
-
-						using (var reader = cmdGroup.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string configId = reader.GetString(0);
-								string groupId = reader.GetString(1);
-
-								if (groupMembers.ContainsKey(groupId) == false)
-									groupMembers.Add(groupId, new HashSet<string>());
-
-								groupMembers[groupId].Add(configId);
-							}
-						}
-					}
-
-					// Fetch chat groups
-					using (var cmdGroupData = connection.CreateCommand())
-					{ 
-						cmdGroupData.CommandText =
-						@"
-							SELECT 
-								id, createdAt, updatedAt, name, folderId
-							FROM GroupConfig
-						";
-
-						using (var reader = cmdGroupData.ExecuteReader())
+						using (var reader = cmdCharacter.ExecuteReader())
 						{
 							while (reader.Read())
 							{
 								string instanceId = reader.GetString(0);
-								DateTime createdAt = reader.GetUnixTime(1);
-								DateTime updatedAt = reader.GetUnixTime(2);
+								string configId = reader.GetString(1);
+								string displayName = reader.GetString(2);
 								string name = reader.GetString(3);
-								string folderId = reader.GetString(4);
+								DateTime createdAt = reader.GetTimestamp(4);
+								DateTime updatedAt = reader.GetTimestamp(5);
+								string persona = reader.GetString(6);
+								bool isUser = reader.GetBoolean(7);
+								int loreEntries = reader.GetInt32(8);
 
-								HashSet<string> members;
-								if (groupMembers.TryGetValue(instanceId, out members) == false)
-									continue; // No members?
+								string groupId;
+								if (characterGroups.TryGetValue(instanceId, out groupId) == false)
+									continue; // No group
 
-								_Groups.TryAdd(instanceId, 
-									new GroupInstance() {
+								// Get info from group
+								string folderId = null;
+								string hubCharId = null;
+								string hubAuthorUsername = null;
+								GroupInstance groupInstance;
+								if (_Groups.TryGetValue(groupId, out groupInstance))
+								{
+									folderId = groupInstance.folderId;
+									hubCharId = groupInstance.hubCharId;
+									hubAuthorUsername = groupInstance.hubAuthorUsername;
+								}
+
+								_Characters.TryAdd(instanceId, 
+									new CharacterInstance() {
 										instanceId = instanceId,
+										configId = configId,
+										groupId = groupId,
+										displayName = displayName,
 										name = name,
 										creationDate = createdAt,
 										updateDate = updatedAt,
+										isUser = isUser,
+										persona = persona,
+										loreEntries = loreEntries,
+										creator = hubAuthorUsername,
 										folderId = folderId,
-										members = members.ToArray(),
 									});
 							}
 						}
 					}
 
 					connection.Close();
+					LastError = null;
 					return Error.NoError;
 				}
 			}
 			catch (FileNotFoundException e)
 			{
 				Disconnect();
+				LastError = "File not found";
 				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
 			{
 				Disconnect();
+				LastError = "Sqlite returned: " + e.Message;
 				return Error.SQLCommandFailed;
 			}
 			catch (Exception e)
 			{
 				Disconnect();
+				LastError = "Exception thrown: " + e.Message;
 				return Error.Unknown;
 			}
 		}
@@ -715,6 +663,7 @@ namespace Ginger.Integration
 			{
 				card = null;
 				imageUrls = null;
+				LastError = "Not connected";
 				return Error.NotConnected;
 			}
 			try
@@ -724,23 +673,28 @@ namespace Ginger.Integration
 					connection.Open();
 
 					using (var cmdCharacterData = connection.CreateCommand())
-					{ 
-						cmdCharacterData.CommandText = 
+					{
+						var sbCommand = new StringBuilder();
+						sbCommand.AppendLine(
 						@"
 							SELECT 
-								A.id, A.createdAt, A.updatedAt,  A.displayName,  A.name,  A.persona, 
-								C.context, C.customDialogue, C.modelInstructions, C.greetingDialogue, C.grammar,
-								D.hubCharId, D.hubAuthorUsername
+								A.id, A.createdAt, A.updatedAt, A.displayName, A.name, A.persona, 
+								C.context, C.customDialogue, C.modelInstructions, C.greetingDialogue, C.grammar
 							FROM CharacterConfigVersion as A
 							INNER JOIN _CharacterConfigToGroupConfig AS B 
 								ON B.A = $charId
 							INNER JOIN Chat AS C 
-								ON C.groupConfigId = B.B
-							INNER JOIN GroupConfig AS D
-								ON D.id = B.B
+								ON C.groupConfigId = ""B"".B
 							WHERE A.id = $configId
-							ORDER BY C.createdAt DESC
-						";
+						");
+
+						if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.First)
+							sbCommand.AppendLine("ORDER BY C.createdAt ASC");
+						else
+							sbCommand.AppendLine("ORDER BY C.createdAt DESC");
+
+						cmdCharacterData.CommandText = sbCommand.ToString();
+						
 						cmdCharacterData.Parameters.AddWithValue("$charId", character.instanceId);
 						cmdCharacterData.Parameters.AddWithValue("$configId", character.configId);
 
@@ -756,8 +710,8 @@ namespace Ginger.Integration
 							}
 
 							string instanceId = reader.GetString(0);
-							DateTime createdAt = reader.GetUnixTime(1);
-							DateTime updatedAt = reader.GetUnixTime(2);
+							DateTime createdAt = reader.GetTimestamp(1);
+							DateTime updatedAt = reader.GetTimestamp(2);
 							string displayName = reader.GetString(3);
 							string name = reader.GetString(4);
 							string persona = reader.GetString(5);
@@ -767,8 +721,15 @@ namespace Ginger.Integration
 							string greeting = reader.GetString(9);
 							string grammar = reader[10] as string;
 
-							string hubCharId = reader[11] as string;
-							string hubAuthorName = reader[12] as string;
+							// Get info from group
+							string hubCharId = null;
+							string hubAuthorUsername = null;
+							GroupInstance groupInstance;
+							if (_Groups.TryGetValue(character.groupId, out groupInstance))
+							{
+								hubCharId = groupInstance.hubCharId;
+								hubAuthorUsername = groupInstance.hubAuthorUsername;
+							}
 
 							card = new FaradayCardV4();
 							card.data.displayName = displayName;
@@ -783,7 +744,7 @@ namespace Ginger.Integration
 							card.data.updateDate = updatedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
 
 							card.hubCharacterId = hubCharId;
-							card.hubAuthorUsername = hubAuthorName;
+							card.hubAuthorUsername = hubAuthorUsername;
 						}
 					}
 
@@ -860,8 +821,8 @@ namespace Ginger.Integration
 					}
 
 					imageUrls = lsImageUrls.ToArray();
-
 					connection.Close();
+					LastError = null;
 					return card == null ? Error.NotFound : Error.NoError;
 				}
 			}
@@ -870,6 +831,7 @@ namespace Ginger.Integration
 				Disconnect();
 				card = null;
 				imageUrls = null;
+				LastError = "File not found";
 				return Error.NotConnected;
 			}
 			catch (SQLiteException e)
@@ -877,6 +839,7 @@ namespace Ginger.Integration
 				Disconnect();
 				card = null;
 				imageUrls = null;
+				LastError = e.Message;
 				return Error.SQLCommandFailed;
 			}
 			catch (Exception e)
@@ -884,6 +847,7 @@ namespace Ginger.Integration
 				Disconnect();
 				card = null;
 				imageUrls = null;
+				LastError = e.Message;
 				return Error.Unknown;
 			}
 		}
@@ -1004,8 +968,8 @@ namespace Ginger.Integration
 							}
 
 							string configId = reader.GetString(0);
-							string groupId = reader.GetString(1);
-							DateTime updatedAt = reader.GetUnixTime(2);
+							string groupId = reader.GetString(1); // Primary group
+							DateTime updatedAt = reader.GetTimestamp(2);
 							newerChangesFound = updatedAt > linkInfo.updateDate;
 
 							connection.Close();
@@ -1058,7 +1022,6 @@ namespace Ginger.Integration
 					string configId = null;
 					string groupId = null;
 
-					// Get row ids
 					using (var cmdGetIds = connection.CreateCommand())
 					{
 						cmdGetIds.CommandText =
@@ -1127,8 +1090,8 @@ namespace Ginger.Integration
 							while (reader.Read())
 							{
 								string chatId = reader.GetString(0);
-								DateTime chatCreatedAt = reader.GetUnixTime(1);
-								DateTime chatUpdatedAt = reader.GetUnixTime(2);
+								DateTime chatCreatedAt = reader.GetTimestamp(1);
+								DateTime chatUpdatedAt = reader.GetTimestamp(2);
 
 								chats.Add(new _Chat() {
 									instanceId = chatId,
@@ -2059,7 +2022,7 @@ namespace Ginger.Integration
 							while (reader.Read())
 							{
 								string groupId = reader.GetString(0);
-								DateTime lastMessage = reader.IsDBNull(1) ? DateTime.MinValue : reader.GetUnixTime(1);
+								DateTime lastMessage = reader.IsDBNull(1) ? DateTime.MinValue : reader.GetTimestamp(1);
 
 								if (counts.ContainsKey(groupId) == false)
 								{
@@ -2186,8 +2149,8 @@ namespace Ginger.Integration
 							{
 								string chatId = reader.GetString(0);
 								string name = reader.GetString(1);
-								DateTime createdAt = reader.GetUnixTime(2);
-								DateTime updatedAt = reader.GetUnixTime(3);
+								DateTime createdAt = reader.GetTimestamp(2);
+								DateTime updatedAt = reader.GetTimestamp(3);
 
 								// Staging
 								string system = reader.GetString(4);
@@ -2344,8 +2307,8 @@ namespace Ginger.Integration
 							}
 							
 							string name = reader.GetString(0);
-							DateTime createdAt = reader.GetUnixTime(1);
-							DateTime updatedAt = reader.GetUnixTime(2);
+							DateTime createdAt = reader.GetTimestamp(1);
+							DateTime updatedAt = reader.GetTimestamp(2);
 
 							// Staging
 							string system = reader.GetString(3);
@@ -2474,9 +2437,9 @@ namespace Ginger.Integration
 					while (reader.Read())
 					{
 						string messageId = reader.GetString(0);
-						DateTime createdAt = reader.GetUnixTime(1);
-						DateTime updatedAt = reader.GetUnixTime(2);
-						DateTime activeAt = reader.GetUnixTime(3);
+						DateTime createdAt = reader.GetTimestamp(1);
+						DateTime updatedAt = reader.GetTimestamp(2);
+						DateTime activeAt = reader.GetTimestamp(3);
 						string characterId = reader.GetString(4);
 						string text = reader.GetString(5);
 
@@ -4194,9 +4157,43 @@ namespace Ginger.Integration
 
 	public static class SqlExtensions
 	{
-		public static DateTime GetUnixTime(this SQLiteDataReader reader, int index)
+		public static DateTime GetTimestamp(this SQLiteDataReader reader, int index)
 		{
-			return DateTimeExtensions.FromUnixTime(reader.GetInt64(index));
+			TypeAffinity typeAffinity = reader.GetFieldAffinity(index);
+
+			if (reader.IsDBNull(index))
+				return DateTime.MinValue;
+
+			try
+			{
+				if (typeAffinity == TypeAffinity.DateTime)
+					return reader.GetDateTime(index);
+				else if (typeAffinity == TypeAffinity.Text)	//	Text date
+				{
+					string value = reader.GetString(index);
+					DateTime dateTime;
+					if (DateTime.TryParseExact(value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+						return dateTime;
+					else if (DateTime.TryParseExact(value, "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+						return dateTime;
+					else if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+						return dateTime;
+				}
+				else if (typeAffinity == TypeAffinity.Int64)	// Unix date
+				{
+					long unixTime = reader.GetInt64(index);
+					return DateTimeExtensions.FromUnixTime(unixTime);
+				}
+				else if (typeAffinity == TypeAffinity.Double)	// Julian date
+				{
+					double julianDate = reader.GetDouble(index);
+					return DateTime.FromOADate(julianDate - 2415018.5);
+				}
+			}
+			catch
+			{
+			}
+			return DateTime.MinValue;
 		}
 	}
 }

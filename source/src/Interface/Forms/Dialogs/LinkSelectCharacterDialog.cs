@@ -103,13 +103,19 @@ namespace Ginger
 
 			// Create characters
 			IEnumerable<CharacterInstance> sortedCharacters = Characters.Where(c => c.isUser == false);
-			if (AppSettings.User.SortCharactersAlphabetically)
+			if (AppSettings.User.SortCharacters == AppSettings.CharacterSortOrder.ByName)
 			{
 				sortedCharacters = sortedCharacters
 					.OrderBy(c => c.displayName)
 					.ThenByDescending(c => c.creationDate);
 			}
-			else
+			else if (AppSettings.User.SortCharacters == AppSettings.CharacterSortOrder.ByCreation)
+			{
+				sortedCharacters = sortedCharacters
+					.OrderByDescending(c => c.creationDate)
+					.ThenBy(c => c.displayName);
+			}
+			else if (AppSettings.User.SortCharacters == AppSettings.CharacterSortOrder.ByLastMessage)
 			{
 				sortedCharacters = sortedCharacters
 					.OrderByDescending(c => GetLatestMessageTime(c))
@@ -163,18 +169,20 @@ namespace Ginger
 				sbTooltip.Append(character.name);
 				sbTooltip.Append("')");
 			}
+			if (character.creator != null)
+			{
+				sbTooltip.NewLine();
+				sbTooltip.Append("By: ");
+				sbTooltip.Append(character.creator);
+				sbTooltip.AppendLine();
+			}
 			if (string.IsNullOrEmpty(inferredGender) == false)
 			{
 				sbTooltip.NewLine();
 				sbTooltip.AppendFormat("Gender: {0} (Inferred)", inferredGender);
 			}
+
 			sbTooltip.NewParagraph();
-			if (character.creator != null)
-			{
-				sbTooltip.Append("By: ");
-				sbTooltip.Append(character.creator);
-				sbTooltip.AppendLine();
-			}
 			sbTooltip.AppendLine($"Created: {character.creationDate.ToShortDateString()}");
 			sbTooltip.AppendLine($"Last modified: {character.updateDate.ToShortDateString()}");
 
@@ -206,6 +214,8 @@ namespace Ginger
 
 		private DateTime GetLatestMessageTime(CharacterInstance characterInstance)
 		{
+			if (string.IsNullOrEmpty(characterInstance.groupId))
+				return DateTime.MinValue;
 			Backyard.ChatCount count;
 			if (_chatCounts.TryGetValue(characterInstance.groupId, out count))
 				return count.lastMessage;
@@ -263,26 +273,37 @@ namespace Ginger
 		private void ShowContextMenu(Control control, Point location)
 		{
 			ContextMenuStrip menu = new ContextMenuStrip();
-			menu.Items.Add(new ToolStripMenuItem("Sort alphabetically", null, (s, e) => {
-				if (AppSettings.User.SortCharactersAlphabetically == false)
+			menu.Items.Add(new ToolStripMenuItem("Sort by name", null, (s, e) => {
+				if (AppSettings.User.SortCharacters != AppSettings.CharacterSortOrder.ByName)
 				{
-					AppSettings.User.SortCharactersAlphabetically = true;
+					AppSettings.User.SortCharacters = AppSettings.CharacterSortOrder.ByName;
 					PopulateTree(true);
 				}
 			}) 
 			{
-				Checked = AppSettings.User.SortCharactersAlphabetically,
-			});
-				
+				Checked = AppSettings.User.SortCharacters == AppSettings.CharacterSortOrder.ByName,
+			});	
+			
+			menu.Items.Add(new ToolStripMenuItem("Sort by date", null, (s, e) => {
+				if (AppSettings.User.SortCharacters != AppSettings.CharacterSortOrder.ByCreation)
+				{
+					AppSettings.User.SortCharacters = AppSettings.CharacterSortOrder.ByCreation;
+					PopulateTree(true);
+				}
+			}) 
+			{
+				Checked = AppSettings.User.SortCharacters == AppSettings.CharacterSortOrder.ByCreation,
+			});	
+
 			menu.Items.Add(new ToolStripMenuItem("Sort by last message", null, (s, e) => {
-				if (AppSettings.User.SortCharactersAlphabetically)
+				if (AppSettings.User.SortCharacters != AppSettings.CharacterSortOrder.ByLastMessage)
 				{
-					AppSettings.User.SortCharactersAlphabetically = false;
+					AppSettings.User.SortCharacters = AppSettings.CharacterSortOrder.ByLastMessage;
 					PopulateTree(true);
 				}
 			}) 
 			{
-				Checked = !AppSettings.User.SortCharactersAlphabetically,
+				Checked = AppSettings.User.SortCharacters == AppSettings.CharacterSortOrder.ByLastMessage,
 			});
 			menu.Show(control, location);
 		}

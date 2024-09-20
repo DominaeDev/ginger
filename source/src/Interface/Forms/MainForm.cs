@@ -2157,9 +2157,14 @@ namespace Ginger
 					MessageBox.Show(Resources.error_link_unsupported, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					AppSettings.BackyardLink.Enabled = false;
 				}
+				else if (error == Backyard.Error.NotConnected)
+				{
+					MessageBox.Show(Resources.error_link_not_found, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					AppSettings.BackyardLink.Enabled = false;
+				}
 				else if (error != Backyard.Error.NoError)
 				{
-					MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show(string.Format(Resources.error_link_failed_with_reason, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					AppSettings.BackyardLink.Enabled = false;
 				}
 				else
@@ -2168,7 +2173,7 @@ namespace Ginger
 					if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 					{
 						// Error
-						MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+						MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 						AppSettings.BackyardLink.Enabled = false;
 					}
 					else

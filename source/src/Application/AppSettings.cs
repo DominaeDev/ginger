@@ -73,6 +73,15 @@ namespace Ginger
 			public static bool ShowRecipeCategory = false;
 		}
 
+		public enum CharacterSortOrder
+		{
+			ByName,
+			ByCreation,
+			ByLastMessage,
+
+			Default = ByName,
+		}
+
 		public static class User
 		{
 			public static int LastImportCharacterFilter = 0;
@@ -98,8 +107,8 @@ namespace Ginger
 
 			public static bool SnippetSwapPronouns = false;
 
-			public static bool SortCharactersAlphabetically = false;
-			public static bool SortGroupsAlphabetically = false;
+			public static CharacterSortOrder SortCharacters = CharacterSortOrder.Default;
+			public static CharacterSortOrder SortGroups = CharacterSortOrder.Default;
 		}
 		
 		public static class Paths
@@ -262,8 +271,8 @@ namespace Ginger
 				ReadBool(ref User.ReplaceWholeWords, userSection, "ReplaceWholeWords");
 				ReadBool(ref User.ReplaceLorebooks, userSection, "ReplaceLorebooks");
 				ReadBool(ref User.SnippetSwapPronouns, userSection, "SnippetSwapPronouns");
-				ReadBool(ref User.SortCharactersAlphabetically, userSection, "SortCharactersAlphabetically");
-				ReadBool(ref User.SortGroupsAlphabetically, userSection, "SortGroupsAlphabetically");
+				ReadEnum(ref User.SortCharacters, userSection, "SortCharacters");
+				ReadEnum(ref User.SortGroups, userSection, "SortGroups");
 			}
 
 			var writeSection = iniData.Sections["Write"];
@@ -398,8 +407,8 @@ namespace Ginger
 					Write(outputFile, "ReplaceWholeWords", User.ReplaceWholeWords);
 					Write(outputFile, "ReplaceLorebooks", User.ReplaceLorebooks);
 					Write(outputFile, "SnippetSwapPronouns", User.SnippetSwapPronouns);
-					Write(outputFile, "SortCharactersAlphabetically", User.SortCharactersAlphabetically);
-					Write(outputFile, "SortGroupsAlphabetically", User.SortGroupsAlphabetically);
+					Write(outputFile, "SortCharacters", User.SortCharacters);
+					Write(outputFile, "SortGroups", User.SortGroups);
 
 					// Write
 					WriteSection(outputFile, "Write");
