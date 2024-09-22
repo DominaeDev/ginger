@@ -592,7 +592,7 @@ namespace Ginger.Integration
 								DateTime updatedAt = reader.GetTimestamp(5);
 								string persona = reader.GetString(6);
 								bool isUser = reader.GetBoolean(7);
-								int loreEntries = reader.GetInt32(8);
+								int numLoreEntries = reader.GetInt32(8);
 
 								string groupId;
 								if (characterGroups.TryGetValue(instanceId, out groupId) == false)
@@ -621,8 +621,8 @@ namespace Ginger.Integration
 										updateDate = updatedAt,
 										isUser = isUser,
 										persona = persona,
-										loreEntries = loreEntries,
-										creator = hubAuthorUsername,
+										loreEntries = numLoreEntries,
+										creator = hubAuthorUsername ?? "",
 										folderId = folderId,
 									});
 							}

@@ -169,7 +169,7 @@ namespace Ginger
 				sbTooltip.Append(character.name);
 				sbTooltip.Append("')");
 			}
-			if (character.creator != null)
+			if (string.IsNullOrEmpty(character.creator) == false)
 			{
 				sbTooltip.NewLine();
 				sbTooltip.Append("By: ");
