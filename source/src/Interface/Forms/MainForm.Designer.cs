@@ -160,6 +160,8 @@ namespace Ginger {
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusBarActor = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
+			this.darkModeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -318,21 +320,21 @@ namespace Ginger {
 			// applyToFirstChatMenuItem
 			// 
 			this.applyToFirstChatMenuItem.Name = "applyToFirstChatMenuItem";
-			this.applyToFirstChatMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.applyToFirstChatMenuItem.Size = new System.Drawing.Size(163, 22);
 			this.applyToFirstChatMenuItem.Text = "Oldest chat";
 			this.applyToFirstChatMenuItem.Click += new System.EventHandler(this.applyToFirstChatMenuItem_Click);
 			// 
 			// applyToLastChatMenuItem
 			// 
 			this.applyToLastChatMenuItem.Name = "applyToLastChatMenuItem";
-			this.applyToLastChatMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.applyToLastChatMenuItem.Size = new System.Drawing.Size(163, 22);
 			this.applyToLastChatMenuItem.Text = "Most recent chat";
 			this.applyToLastChatMenuItem.Click += new System.EventHandler(this.applyToLastChatMenuItem_Click);
 			// 
 			// applyToAllChatsMenuItem
 			// 
 			this.applyToAllChatsMenuItem.Name = "applyToAllChatsMenuItem";
-			this.applyToAllChatsMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.applyToAllChatsMenuItem.Size = new System.Drawing.Size(163, 22);
 			this.applyToAllChatsMenuItem.Text = "All chats";
 			this.applyToAllChatsMenuItem.Click += new System.EventHandler(this.applyToAllChatsMenuItem_Click);
 			// 
@@ -1095,8 +1097,10 @@ namespace Ginger {
             this.checkSpellingMenuItem,
             this.linkOptionsMenuItem,
             toolStripMenuItem9,
-            this.autoConvertNameMenuItem,
+            this.darkModeMenuItem,
             this.autoBreakMenuItem,
+            this.toolStripMenuItem11,
+            this.autoConvertNameMenuItem,
             this.rearrangeLoreMenuItem,
             this.showNSFWRecipesMenuItem});
 			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
@@ -1498,6 +1502,18 @@ namespace Ginger {
 			this.statusConnectionIcon.Name = "statusConnectionIcon";
 			this.statusConnectionIcon.Size = new System.Drawing.Size(0, 17);
 			// 
+			// darkModeMenuItem
+			// 
+			this.darkModeMenuItem.Name = "darkModeMenuItem";
+			this.darkModeMenuItem.Size = new System.Drawing.Size(183, 22);
+			this.darkModeMenuItem.Text = "Dark theme";
+			this.darkModeMenuItem.Click += new System.EventHandler(this.darkModeMenuItem_Click);
+			// 
+			// toolStripMenuItem11
+			// 
+			this.toolStripMenuItem11.Name = "toolStripMenuItem11";
+			this.toolStripMenuItem11.Size = new System.Drawing.Size(180, 6);
+			// 
 			// MainForm
 			// 
 			this.AllowDrop = true;
@@ -1666,6 +1682,8 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem applyToLastChatMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem applyToAllChatsMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem alwaysLinkMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem darkModeMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
 	}
 }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -134,8 +135,7 @@ namespace Ginger
 			SendMessage(textBox.Handle, EM_SETTABSTOPS, 1, new int[] { tabWidth * 4 });
 		}
 
-
-		const int WM_KILLFOCUS = 0x0008;
+				const int WM_KILLFOCUS = 0x0008;
 
 		public static void KillFocus(this Control control)
 		{
@@ -151,5 +151,25 @@ namespace Ginger
 		{
 			ShowScrollBar(control.Handle, (int)ScrollBarDirection.SB_VERT, false); // Never draw horizontal scrollbar
 		}
+
+		public static List<T> FindAllControlsOfType<T>(this Control parent) where T : Control
+		{
+			var controls = new List<T>();
+			if (parent is T)
+				controls.Add(parent as T);
+			for (int i = 0; i < parent.Controls.Count; ++i)
+				controls.AddRange(FindAllControlsOfType<T>(parent.Controls[i]));
+			return controls;
+		}
+
+		public static List<T> FindAllControlsOfType<T>(this Form form) where T : Control
+		{
+			var controls = new List<T>();
+			for (int i = 0; i < form.Controls.Count; ++i)
+				controls.AddRange(FindAllControlsOfType<T>(form.Controls[i]));
+			return controls;
+		}
+
+
 	}
 }

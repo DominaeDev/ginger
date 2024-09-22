@@ -22,6 +22,7 @@ namespace Ginger
 			public static bool AutoBreakLine = true;
 			public static string Locale = Locales.DefaultLocale;
 			public static bool EnableFormLevelBuffering = true;
+			public static bool DarkTheme = true;
 
 			public static int LoreEntriesPerPage { get { return _loreEntriesPerPage > 0 ? Math.Max(_loreEntriesPerPage, 10) : int.MaxValue; } }
 			public static string LoreEntriesPerPageSerialize
@@ -242,6 +243,7 @@ namespace Ginger
 				ReadBool(ref Settings.EnableFormLevelBuffering, settingsSection, "FormBuffering");
 				Settings.LoreEntriesPerPageSerialize = settingsSection["LoreEntriesPerPage"];
 				ReadBool(ref Settings.EnableRearrangeLoreMode, settingsSection, "EnableRearrangeLoreMode");
+				ReadBool(ref Settings.DarkTheme, settingsSection, "DarkTheme");
 				
 				try
 				{
@@ -390,6 +392,7 @@ namespace Ginger
 					Write(outputFile, "ShowRecipeCategory", Settings.ShowRecipeCategory);
 					Write(outputFile, "LoreEntriesPerPage", Settings.LoreEntriesPerPageSerialize);
 					Write(outputFile, "EnableRearrangeLoreMode", Settings.EnableRearrangeLoreMode);
+					Write(outputFile, "DarkTheme", Settings.DarkTheme);
 
 					// User
 					WriteSection(outputFile, "User");

@@ -10,10 +10,11 @@ using Ginger.Properties;
 using Ginger.Integration;
 
 using Backyard = Ginger.Integration.Backyard;
+using System.Runtime.InteropServices;
 
 namespace Ginger
 {
-	public partial class MainForm : Form
+	public partial class MainForm : Form, IVisualThemed
 	{
 		public static readonly string AppTitle = "Ginger";
 
@@ -45,6 +46,8 @@ namespace Ginger
 		{
 			instance = this;
 			InitializeComponent();
+			ApplyVisualTheme();
+
 			Icon = Resources.icon;
 
 			Application.Idle += OnIdle;
@@ -90,6 +93,8 @@ namespace Ginger
 			_statusbarTimer.Elapsed += OnStatusBarTimerElapsed;
 			_statusbarTimer.AutoReset = false;
 			_statusbarTimer.SynchronizingObject = this;
+
+			_scrollbarBrush = CreateSolidBrush(ColorTranslator.ToWin32(Color.Red));
 		}
 
 		public void SetFirstLoad(string filename)
@@ -843,7 +848,8 @@ namespace Ginger
 		{
 			Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, true);
 
-			ContextMenuStrip menu = new ContextMenuStrip();
+			ContextMenuStrip menu = VisualTheme.CreateContextMenuStrip();
+
 			PopulateRecipeMenu(drawer, menu.Items, context);
 
 //			if (category == Recipe.Drawer.Components && RecipeBook.allRecipes.ContainsAny(r => r.category == Recipe.Category.Unknown))
@@ -1224,6 +1230,7 @@ namespace Ginger
 			autoBreakMenuItem.Checked = AppSettings.Settings.AutoBreakLine;
 			enableSpellCheckingMenuItem.Checked = AppSettings.Settings.SpellChecking;
 			rearrangeLoreMenuItem.Checked = AppSettings.Settings.EnableRearrangeLoreMode;
+			darkModeMenuItem.Checked = AppSettings.Settings.DarkTheme;
 
 			// Spell checking
 			foreach (var kvp in _spellCheckLangMenuItems)
@@ -2320,6 +2327,53 @@ namespace Ginger
 		private void alwaysLinkMenuItem_Click(object sender, EventArgs e)
 		{
 			AppSettings.BackyardLink.AlwaysLinkOnImport = !AppSettings.BackyardLink.AlwaysLinkOnImport;
+		}
+
+		private void darkModeMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.Settings.DarkTheme = !AppSettings.Settings.DarkTheme;
+			ApplyVisualTheme();
+		}
+
+		public void ApplyVisualTheme()
+		{
+			menuStrip.Renderer = VisualTheme.CreateToolStripRenderer();
+			menuStrip.ForeColor = VisualTheme.Theme.MenuForeground;
+			foreach (ToolStripMenuItem menuItem in menuStrip.Items)
+			{
+				menuItem.ForeColor = VisualTheme.Theme.MenuForeground;
+				if (menuItem.DropDownItems != null)
+				{
+					foreach (ToolStripItem dropDown in menuItem.DropDownItems)
+						dropDown.ForeColor = VisualTheme.Theme.MenuForeground;
+				}
+			}
+
+			this.BackColor = VisualTheme.Theme.ControlBackground;
+			this.ForeColor = VisualTheme.Theme.ControlForeground;
+
+			statusBar.BackColor = VisualTheme.Theme.ControlBackground;
+			statusBar.ForeColor = VisualTheme.Theme.ControlForeground;
+
+			sidePanel.ApplyVisualTheme();
+		}
+
+		private const int WM_CTLCOLORSCROLLBAR = 0x0137;
+
+		[DllImport("gdi32.dll")]
+		static extern IntPtr CreateSolidBrush(int crColor);
+
+		private IntPtr _scrollbarBrush;
+
+		protected override void WndProc(ref Message m)
+		{
+			if (m.Msg == WM_CTLCOLORSCROLLBAR)
+			{
+				m.Result = _scrollbarBrush;
+				return;
+			}
+
+			base.WndProc(ref m);
 		}
 	}
 

@@ -199,6 +199,7 @@
     <Compile Include="src\Interface\Controls\UserNotes.Designer.cs">
       <DependentUpon>UserNotes.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Interface\VisualTheme.cs" />
     <Compile Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.cs">
       <SubType>Form</SubType>
     </Compile>

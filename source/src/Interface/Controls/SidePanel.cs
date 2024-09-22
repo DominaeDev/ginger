@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class SidePanel : UserControl
+	public partial class SidePanel : UserControl, IVisualThemed
 	{
 		public event EventHandler<PortraitPreview.ChangePortraitImageEventArgs> ChangePortraitImage;
 		public event EventHandler ResizePortraitImage;
@@ -862,6 +862,29 @@ namespace Ginger
 		private void RefreshSettingsButton()
 		{
 			btn_More.Image = Current.Card.extraFlags != CardData.Flag.Default ? Resources.menu_edit : Resources.menu;
+		}
+
+		public void ApplyVisualTheme()
+		{
+			var groupBoxes = this.FindAllControlsOfType<GroupBox>();
+			foreach (var control in groupBoxes)
+			{
+				control.ForeColor = VisualTheme.Theme.ControlForeground;
+				control.BackColor = VisualTheme.Theme.ControlBackground;
+			}
+
+			var textBoxes = this.FindAllControlsOfType<TextBoxBase>();
+			foreach (var control in textBoxes)
+			{
+				control.ForeColor = VisualTheme.Theme.TextBoxForeground;
+				control.BackColor = VisualTheme.Theme.TextBoxBackground;
+			}
+
+			foreach (Control control in this.Controls)
+			{
+				control.ForeColor = VisualTheme.Theme.ControlForeground;
+				control.BackColor = VisualTheme.Theme.ControlBackground;
+			}
 		}
 	}
 }
