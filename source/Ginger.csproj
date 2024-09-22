@@ -199,6 +199,12 @@
     <Compile Include="src\Interface\Controls\UserNotes.Designer.cs">
       <DependentUpon>UserNotes.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\VariablesDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\VariablesDialog.Designer.cs">
+      <DependentUpon>VariablesDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -645,6 +651,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Controls\UserNotes.resx">
       <DependentUpon>UserNotes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\VariablesDialog.resx">
+      <DependentUpon>VariablesDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.resx">
       <DependentUpon>LinkEditChatDialog.cs</DependentUpon>

@@ -149,11 +149,12 @@ namespace Ginger
 			Comments		= 1 << 11,
 			Markdown		= 1 << 12,
 			HTML			= 1 << 13,
+			Variables		= 1 << 14,
 
-			Default = Names | Dialogue | Actions | Commands | Numbers | CodeBlock | Comments | Markdown | SpellChecking | HTML,
-			Limited = Names | Commands | Numbers | Comments | Markdown | SpellChecking,
-			Code	= Names | Commands | Numbers | Comments | Markdown,
-			LoreKey = Names | Commands | Numbers | Wildcards | SpellChecking,
+			Default = Names | Dialogue | Actions | Commands | Variables | Numbers | CodeBlock | Comments | Markdown | SpellChecking | HTML,
+			Limited = Names | Commands | Variables | Numbers | Comments | Markdown | SpellChecking,
+			Code	= Names | Commands | Variables | Numbers | Comments | Markdown,
+			LoreKey = Names | Commands | Variables | Numbers | Wildcards | SpellChecking,
 			LoreText = Limited | Decorators | SpellChecking,
 		}
 		public SyntaxFlags syntaxFlags
@@ -772,6 +773,7 @@ namespace Ginger
 			Color colorError = bLight ? Constants.Colors.Light.Error : Constants.Colors.Dark.Error;
 			Color colorWildcard = bLight ? Constants.Colors.Light.Wildcard : Constants.Colors.Dark.Wildcard;
 			Color colorDecorator = bLight ? Constants.Colors.Light.Decorator : Constants.Colors.Dark.Decorator;
+			Color colorVariable = bLight ? Constants.Colors.Light.Variable : Constants.Colors.Dark.Variable;
 
 			syntaxHighlighter.ClearPatterns();
 			
@@ -823,16 +825,17 @@ namespace Ginger
 			if (_syntaxFlags.Contains(SyntaxFlags.Commands))
 			{
 				// Invalid patterns
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\{(?i)\b(char|user|original)\b\}\}"), SyntaxStyle.Underlined(colorError), 2);
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{(?i)\bcharacter\b\}"), SyntaxStyle.Underlined(colorError), 2);
+//				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\{(?i)\b(char|user|original)\b\}\}"), SyntaxStyle.Underlined(colorError), 2);
+//				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{(?i)\bcharacter\b\}"), SyntaxStyle.Underlined(colorError), 2);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\$?\w*\}|\{\{\w*\}\}"), SyntaxStyle.Underlined(colorError), 2);
 
 				// character
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{(?i)\b(char|user|card|name|original|gender|they'll|they're|they've|they'd|they|them|theirs|their|themselves|he'll|he's|he's|he'd|he|him|his|his|himself|she'll|she's|she's|she'd|she|her|hers|her|herself|is|are|isn't|aren't|has|have|hasn't|haven't|was|were|wasn't|weren't|does|do|doesn't|don't|s|y|ies|es)\b\}"),
-					new SyntaxStyle(colorCommand), 1);
+					new SyntaxStyle(colorCommand), 3);
 
 				// user
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\#(?i)\b(gender|name|they'll|they're|they've|they'd|they|them|theirs|their|themselves|he'll|he's|he's|he'd|he|him|his|his|himself|she'll|she's|she's|she'd|she|her|hers|her|herself|is|are|isn't|aren't|has|have|hasn't|haven't|was|were|wasn't|weren't|does|do|doesn't|don't|s|y|ies|es)\b\}"),
-					new SyntaxStyle(colorCommand), 1);
+					new SyntaxStyle(colorCommand), 3);
 			}
 
 			// Pronouns
@@ -853,6 +856,15 @@ namespace Ginger
 				for (int i = 0; i < Current.Characters.Count; ++i)
 					names[i + 1] = Current.Characters[i].namePlaceholder;
 				syntaxHighlighter.SetCharacterNames(names, new SyntaxStyle(colorName), 1);
+			}
+
+			// Known variables
+			if (Current.Card.Variables.Count > 0)
+			{
+				string[] varNames = Current.Card.Variables.Keys
+					.Select(k => string.Format(@"{{${0}}}", k))
+					.ToArray();
+				syntaxHighlighter.SetVariableNames(varNames, new SyntaxStyle(colorVariable), 3);
 			}
 
 			if (!bLight)

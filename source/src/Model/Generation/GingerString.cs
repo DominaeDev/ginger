@@ -264,6 +264,7 @@ namespace Ginger
 				pos_comment = sb.IndexOf("<!--", pos_comment);
 			}
 
+			// Replace names
 			Utility.ReplaceWholeWord(sb, CharacterMarker, "__CCCC__", StringComparison.OrdinalIgnoreCase);
 			Utility.ReplaceWholeWord(sb, UserMarker, "__UUUU__", StringComparison.OrdinalIgnoreCase);
 			Utility.ReplaceWholeWord(sb, OriginalMarker, "__OOOO__", StringComparison.OrdinalIgnoreCase);
@@ -288,6 +289,26 @@ namespace Ginger
 			sb.Replace("__UUUU__", InternalUserMarker);
 			sb.Replace("__OOOO__", InternalOriginalMarker);
 			sb.Replace("__NNNN__", InternalNameMarker);
+
+			// Replace variables
+			var pos_var = sb.IndexOf("{$", 0);
+			while (pos_var != -1)
+			{
+				int pos_var_end = sb.IndexOf("}", pos_var + 2);
+				if (pos_var_end == -1)
+					break;
+
+				string varName = sb.Substring(pos_var + 2, pos_var_end - pos_var - 2).ToLowerInvariant();
+				string varValue;
+				if (string.IsNullOrEmpty(varName) == false && Current.Card.Variables.TryGetValue(varName, out varValue))
+				{
+					varValue = varValue.Replace("{$", ""); // Prevent recursion
+					sb.Replace(pos_var, pos_var_end - pos_var + 1, varValue);
+				}
+				else
+					sb.Remove(pos_var, pos_var_end - pos_var + 1);
+				pos_var = sb.IndexOf("{$", pos_var);
+			}
 
 			return FromString(sb.ToString());
 		}

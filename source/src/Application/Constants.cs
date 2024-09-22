@@ -180,6 +180,7 @@ namespace Ginger
 				public static readonly Color Error		= ColorTranslator.FromHtml("#C00000");
 				public static readonly Color Wildcard	= ColorTranslator.FromHtml("#008080");
 				public static readonly Color Decorator	= ColorTranslator.FromHtml("#800080");
+				public static readonly Color Variable	= ColorTranslator.FromHtml("#800000");
 			}
 
 			public static class Dark
@@ -197,6 +198,7 @@ namespace Ginger
 				public static readonly Color Error		= ColorTranslator.FromHtml("#D12640");
 				public static readonly Color Wildcard	= ColorTranslator.FromHtml("#00A0A0");
 				public static readonly Color Decorator	= ColorTranslator.FromHtml("#A000A0");
+				public static readonly Color Variable	= ColorTranslator.FromHtml("#C06000");
 			}
 		}
 	}

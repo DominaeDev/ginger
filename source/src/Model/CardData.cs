@@ -27,6 +27,10 @@ namespace Ginger
 		public HashSet<string> tags = new HashSet<string>();
 		public AssetCollection assets = new AssetCollection(); // ccv3/charx
 
+		public Dictionary<string, string> Variables = new Dictionary<string, string>() {
+			{ "test", "Testing" },
+		};
+
 		public DateTime? creationDate = null;
 		public JsonExtensionData extensionData = null; // Store extensions from imported json
 		public List<string> sources = null;

@@ -2321,6 +2321,18 @@ namespace Ginger
 		{
 			AppSettings.BackyardLink.AlwaysLinkOnImport = !AppSettings.BackyardLink.AlwaysLinkOnImport;
 		}
+
+		private void customVariablesMenuItem_Click(object sender, EventArgs e)
+		{
+			VariablesDialog dlg = new VariablesDialog();
+			if (dlg.ShowDialog() == DialogResult.OK && dlg.Changed)
+			{
+				Undo.Push(Undo.Kind.Parameter, "Changed custom variables");
+				
+				recipeList.RefreshSyntaxHighlighting(true);
+				Current.IsFileDirty = true;
+			}
+		}
 	}
 
 	public interface IIdleHandler

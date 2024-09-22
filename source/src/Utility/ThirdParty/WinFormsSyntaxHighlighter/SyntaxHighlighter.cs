@@ -108,7 +108,18 @@ namespace WinFormsSyntaxHighlighter
 			int index = _patternStyles.FindIndex(p => p.Name == "names");
 			if (index != -1)
 				_patternStyles.RemoveAt(index);
-			AddPattern("names", new PatternDefinition(names), syntaxStyle, Order);
+			AddPattern("names", new PatternDefinition(false, names), syntaxStyle, Order);
+		}
+
+		public void SetVariableNames(string[] variableNames, SyntaxStyle syntaxStyle, int Order = -1)
+		{
+			int index = _patternStyles.FindIndex(p => p.Name == "vars");
+			if (index != -1)
+				_patternStyles.RemoveAt(index);
+			
+			string pattern = string.Join("|", variableNames.Select(v => Regex.Escape(v.Trim())));
+            var regexOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase;
+			AddPattern("vars", new PatternDefinition(new Regex(pattern, regexOptions)), syntaxStyle, Order);
 		}
 
 		public void AddPattern(PatternDefinition patternDefinition, SyntaxStyle syntaxStyle, int Order = -1)
