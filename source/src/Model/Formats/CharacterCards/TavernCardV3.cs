@@ -366,7 +366,7 @@ namespace Ginger
 			if (string.IsNullOrWhiteSpace(Current.Card.comment) == false)
 			{
 				var creator_notes_by_language = new Dictionary<string, StringBuilder>();
-				var lines = Current.Card.comment
+				var lines = (Current.Card.comment ?? "")
 					.ConvertLinebreaks(Linebreak.LF)
 					.Split(new char[] { '\n' }, StringSplitOptions.None);
 

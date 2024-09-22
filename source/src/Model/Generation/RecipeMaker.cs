@@ -41,7 +41,7 @@ namespace Ginger
 			var sbXml = new StringBuilder(recipeXml);
 			sbXml.Replace("%%NAME%%", SecurityElement.Escape(name));
 			sbXml.Replace("%%TITLE%%", SecurityElement.Escape(title));
-			sbXml.Replace("%%AUTHOR%%", SecurityElement.Escape(Current.Card.creator.Trim()));
+			sbXml.Replace("%%AUTHOR%%", SecurityElement.Escape((Current.Card.creator ?? "").Trim()));
 			if (flags != null)
 				sbXml.Replace("%%FLAGS%%", Utility.ListToCommaSeparatedString(flags));
 			else
@@ -138,7 +138,7 @@ namespace Ginger
 			var sbXml = new StringBuilder(recipeXml);
 			sbXml.Replace("%%NAME%%", SecurityElement.Escape(name));
 			sbXml.Replace("%%TITLE%%", SecurityElement.Escape(title));
-			sbXml.Replace("%%AUTHOR%%", SecurityElement.Escape(Current.Card.creator.Trim()));
+			sbXml.Replace("%%AUTHOR%%", SecurityElement.Escape((Current.Card.creator ?? "").Trim()));
 			if (flags != null)
 				sbXml.Replace("%%FLAGS%%", Utility.ListToCommaSeparatedString(flags));
 			else
@@ -232,7 +232,7 @@ namespace Ginger
 
 			var sbXml = new StringBuilder(Resources.snippet_template);
 			sbXml.Replace("%%NAME%%", SecurityElement.Escape(snippetName));
-			sbXml.Replace("%%AUTHOR%%", SecurityElement.Escape(Current.Card.creator.Trim()));
+			sbXml.Replace("%%AUTHOR%%", SecurityElement.Escape((Current.Card.creator ?? "").Trim()));
 
 			var system = GingerString.Escape(Format(output.system));
 			var post_history = GingerString.Escape(Format(output.system_post_history));

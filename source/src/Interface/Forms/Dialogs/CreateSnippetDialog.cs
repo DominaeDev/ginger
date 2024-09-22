@@ -266,7 +266,7 @@ namespace Ginger
 					outputByChannel.TryAdd(panel.channel, text);
 			}
 
-			if (outputByChannel.Count == 0)
+			if (outputByChannel.Count == 0 && greetings.Count == 0 && group_greetings.Count == 0)
 			{
 				MessageBox.Show(Resources.error_empty_snippet, Resources.cap_save_snippet_error, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				return; // All text was erased by user

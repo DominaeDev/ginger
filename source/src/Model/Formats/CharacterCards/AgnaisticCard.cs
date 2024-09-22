@@ -251,7 +251,7 @@ namespace Ginger
 			card.kind = "character";
 			card.name = Current.Name;
 			card.creator = Current.Card.creator;
-			card.description = Current.Card.comment.ConvertLinebreaks(Linebreak.LF);
+			card.description = (Current.Card.comment ?? "").ConvertLinebreaks(Linebreak.LF);
 			card.character_version = Current.Card.versionString;
 			card.tags = Current.Card.tags.ToArray();
 			card.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToString("yyyy-MM-ddTHH:mm:ss.fffK");

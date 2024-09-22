@@ -124,7 +124,7 @@ namespace Ginger
 			card.metaData.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToUnixTimeMilliseconds();
 			card.metaData.updateDate = DateTime.UtcNow.ToUnixTimeMilliseconds();
 			card.metaData.creator = Current.Card.creator;
-			card.metaData.comment = Current.Card.comment.ConvertLinebreaks(Linebreak.LF);
+			card.metaData.comment = (Current.Card.comment ?? "").ConvertLinebreaks(Linebreak.LF);
 			card.metaData.source = string.Concat("ginger:", Current.Card.uuid);
 			return card;
 		}

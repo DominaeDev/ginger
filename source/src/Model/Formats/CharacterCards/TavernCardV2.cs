@@ -201,7 +201,7 @@ namespace Ginger
 			card.spec_version = "2.0";
 			card.data.name = Current.Name;
 			card.data.creator = Current.Card.creator;
-			card.data.creator_notes = Current.Card.comment.ConvertLinebreaks(Linebreak.LF);
+			card.data.creator_notes = (Current.Card.comment ?? "").ConvertLinebreaks(Linebreak.LF);
 			card.data.character_version = Current.Card.versionString;
 			card.data.tags = Current.Card.tags.ToArray();
 

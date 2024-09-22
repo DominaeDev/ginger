@@ -91,7 +91,7 @@ namespace Ginger
 			textBox_creator.InitUndo();
 
 			// Creator notes
-			textBox_creatorNotes.Text = Current.Card.comment.ConvertLinebreaks(Linebreak.CRLF);
+			textBox_creatorNotes.Text = (Current.Card.comment ?? "").ConvertLinebreaks(Linebreak.CRLF);
 			textBox_creatorNotes.InitUndo();
 
 			// Version string

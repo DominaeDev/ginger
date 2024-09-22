@@ -307,8 +307,8 @@ namespace Ginger
 				name = card.data.displayName,
 				userGender = null,
 				portraitImage = ImageRef.FromImage(portrait),
-				creator = card.hubAuthorUsername,
-				comment = card.comment,
+				creator = card.hubAuthorUsername ?? "",
+				comment = card.comment ?? "",
 			};
 
 			DateTime creationDate;
@@ -345,11 +345,11 @@ namespace Ginger
 
 			Reset();
 			Card = new CardData() {
-				name = card.data.name,
+				name = card.data.name ?? Constants.DefaultCharacterName,
 				userGender = null,
-				creator = card.data.creator,
-				comment = card.data.creator_notes.ConvertLinebreaks(Linebreak.Default),
-				versionString = card.data.character_version,
+				creator = card.data.creator ?? "",
+				comment = (card.data.creator_notes ?? "").ConvertLinebreaks(Linebreak.Default),
+				versionString = card.data.character_version ?? "",
 				portraitImage = ImageRef.FromImage(portrait),
 				extensionData = card.data.extensions,
 				creationDate = DateTime.UtcNow,
@@ -399,10 +399,10 @@ namespace Ginger
 
 			Reset();
 			Card = new CardData() {
-				name = card.data.name,
+				name = card.data.name ?? Constants.DefaultCharacterName,
 				userGender = null,
-				creator = card.data.creator,
-				versionString = card.data.character_version,
+				creator = card.data.creator ?? "",
+				versionString = card.data.character_version ?? "",
 				portraitImage = ImageRef.FromImage(portrait),
 				extensionData = card.data.extensions,
 				creationDate = DateTimeExtensions.FromUnixTime(card.data.creationDate ?? 0L),
@@ -459,7 +459,7 @@ namespace Ginger
 			}
 			
 			if (creator_notes_by_language.ContainsKey("en") && creator_notes_by_language.Count == 1)
-				Card.comment = creator_notes_by_language["en"].ConvertLinebreaks(Linebreak.Default);
+				Card.comment = (creator_notes_by_language["en"] ?? "").ConvertLinebreaks(Linebreak.Default);
 			else
 			{
 				var sbComment = new StringBuilder();
@@ -486,11 +486,11 @@ namespace Ginger
 
 			Reset();
 			Card = new CardData() {
-				name = card.name,
+				name = card.name ?? Constants.DefaultCharacterName,
 				userGender = null,
-				creator = card.creator,
-				comment = card.description.ConvertLinebreaks(Linebreak.Default),
-				versionString = card.character_version,
+				creator = card.creator ?? "",
+				comment = (card.description ?? "").ConvertLinebreaks(Linebreak.Default),
+				versionString = card.character_version ?? "",
 			};
 
 			DateTime creationDate;
@@ -542,7 +542,7 @@ namespace Ginger
 
 			Reset();
 			Card = new CardData() {
-				name = card.name,
+				name = card.name ?? Constants.DefaultCharacterName,
 				userGender = null,
 				creator = card.metaData != null ? (card.metaData.creator ?? "") : "",
 				comment = card.metaData != null ? (card.metaData.comment ?? "").ConvertLinebreaks(Linebreak.Default) : "",
