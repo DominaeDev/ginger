@@ -423,26 +423,18 @@ namespace Ginger
 		static extern IntPtr GetWindowDC(IntPtr hWnd);
 		[DllImport("user32.dll")]
 		static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
-		[DllImport("user32.dll")]
-		static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprc, IntPtr hrgn, uint flags);
-		Color borderColor = Color.Gray;
-		public Color BorderColor
-		{
-			get { return borderColor; }
-			set
-			{
-				borderColor = value;
-				RedrawWindow(Handle, IntPtr.Zero, IntPtr.Zero,
-					RDW_FRAME | RDW_IUPDATENOW | RDW_INVALIDATE);
-			}
-		}
+//		[DllImport("user32.dll")]
+//		static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprc, IntPtr hrgn, uint flags);
+	
 		protected override void WndProc(ref Message m)
 		{
-			base.WndProc(ref m);
-			if (m.Msg == WM_NCPAINT && BorderColor != Color.Transparent && BorderStyle == BorderStyle.Fixed3D)
+			if (m.Msg == WM_NCPAINT && BorderStyle == BorderStyle.Fixed3D)
 			{
 				DrawBorder();
+				return;
 			}
+
+			base.WndProc(ref m);
 		}
 
 		private void DrawBorder()
@@ -450,12 +442,13 @@ namespace Ginger
 			var hdc = GetWindowDC(this.Handle);
 			using (var g = Graphics.FromHdcInternal(hdc))
 			{
+				// Inner border
 				using (var p = new Pen(BackColor))
 				{
 					g.DrawRectangle(p, new Rectangle(1, 1, Width - 3, Height - 3));
 				}
-
-				using (var p = new Pen(Focused ? SystemColors.Highlight : BorderColor))
+				// Outer border / Highlight
+				using (var p = new Pen(Focused ? VisualTheme.Theme.Highlight : VisualTheme.Theme.TextBoxBorder))
 				{
 					g.DrawRectangle(p, new Rectangle(0, 0, Width - 1, Height - 1));
 				}
@@ -463,12 +456,11 @@ namespace Ginger
 			ReleaseDC(this.Handle, hdc);
 		}
 
-		protected override void OnSizeChanged(EventArgs e)
-		{
-			base.OnSizeChanged(e);
-			RedrawWindow(Handle, IntPtr.Zero, IntPtr.Zero,
-				   RDW_FRAME | RDW_IUPDATENOW | RDW_INVALIDATE);
-		}
+		//protected override void OnSizeChanged(EventArgs e)
+		//{
+		//	base.OnSizeChanged(e);
+		//	RedrawWindow(Handle, IntPtr.Zero, IntPtr.Zero, RDW_FRAME | RDW_IUPDATENOW | RDW_INVALIDATE);
+		//}
 
 	}
 }

@@ -119,61 +119,61 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="arrow_up" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\arrow_up.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\arrow_up.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="characteristic" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\characteristic.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\characteristic.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="arrow_down" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\arrow_down.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\arrow_down.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="model" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\model.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\model.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="lore" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\lore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\lore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="folder" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\folder.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\folder.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="checker" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\checker.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\checker.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="cross" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\cross.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\cross.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="collapsed" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\collapsed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\collapsed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="lore_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\lore_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\lore_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="delete_strike" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\delete_strike.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\delete_strike.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="snippet_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\snippet_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\snippet_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="snippet" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\snippet.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\snippet.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="delete" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\delete.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\delete.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="snippet_template" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Templates\snippet_template.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="component" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\component.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\component.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="delete_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\delete_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\delete_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="persona" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\persona.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\persona.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="write" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\write.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\write.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="recipe_template_empty" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Templates\recipe_template_empty.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
@@ -188,10 +188,10 @@
     <value>..\Resources\Templates\recipe_template_sample_3.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="lore_down" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\lore_down.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\lore_down.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="lore_up" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\lore_up.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\lore_up.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="cap_bake_no_result" xml:space="preserve">
     <value>No result</value>
@@ -303,7 +303,7 @@ Would you like to overwrite it?</value>
     <value>Save changes?</value>
   </data>
   <data name="personality" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\personality.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\personality.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="appicon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\appicon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -315,10 +315,7 @@ Would you like to overwrite it?</value>
     <value>This will allow "not safe for work" content, which can include mature themes and potentially offensive material. Continue?</value>
   </data>
   <data name="story" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\story.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="component_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\component_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\story.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="tooltip_character_gender" xml:space="preserve">
     <value>The gender of the character.
@@ -360,7 +357,7 @@ This setting affects generated text only.</value>
     <value>..\Resources\Templates\recipe_template_card.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="expanded" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\expanded.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\expanded.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="cap_load_with_error" xml:space="preserve">
     <value>Loaded with errors</value>
@@ -615,7 +612,7 @@ Some data may be missing.</value>
     <value>Right-click to change portrait.</value>
   </data>
   <data name="arrow_right" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\arrow_right.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\arrow_right.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="tavern_characterbook_v3_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Schemas\tavern_characterbook_v3.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
@@ -648,14 +645,14 @@ Some data may be missing.</value>
     <value>Import asset file</value>
   </data>
   <data name="arrow_left" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\arrow_left.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\arrow_left.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="tooltip_lore_order" xml:space="preserve">
     <value>Lore entries are sorted by this number, in ascending order.
 (Lower order = higher priority.)</value>
   </data>
   <data name="menu" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\menu.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\menu.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="tooltip_misc_settings" xml:space="preserve">
     <value>Click to view additional text generation settings.</value>
@@ -680,10 +677,10 @@ it to leave the context over time.</value>
     <value>If enabled, place the user persona inside the scenario.</value>
   </data>
   <data name="menu_edit" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\menu_edit.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\menu_edit.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="red_dot" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\red_dot.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Icons\Light\red_dot.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="tooltip_enable_attributes" xml:space="preserve">
     <value>Include attributes in the character persona.</value>
@@ -1159,5 +1156,92 @@ Installation not found.</value>
     <value>Failed to read character information.
 
 Reason: {0}</value>
+  </data>
+  <data name="dark_arrow_down" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_arrow_down.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_arrow_left" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_arrow_left.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_arrow_right" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_arrow_right.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_arrow_up" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_arrow_up.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_characteristic" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_characteristic.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_checker" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_checker.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_collapsed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_collapsed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_component" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_component.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_cross" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_cross.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_delete" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_delete.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_delete_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_delete_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_delete_strike" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_delete_strike.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_expanded" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_expanded.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_folder" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_folder.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_lore" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_lore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_lore_down" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_lore_down.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_lore_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_lore_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_lore_up" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_lore_up.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_menu" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_menu.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_menu_edit" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_menu_edit.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_model" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_model.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_persona" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_persona.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_personality" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_personality.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_red_dot" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_red_dot.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_snippet" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_snippet.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_snippet_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_snippet_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_story" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_story.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_tree_folder" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_tree_folder.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_write" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_write.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

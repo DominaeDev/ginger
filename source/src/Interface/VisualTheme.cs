@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using Ginger.Properties;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Ginger
@@ -39,10 +40,9 @@ namespace Ginger
 			}
 
 			var buttons = form.FindAllControlsOfType<Button>();
-			foreach (var control in buttons)
+			foreach (var button in buttons)
 			{
-				control.ForeColor = Theme.ControlForeground;
-				control.BackColor = Theme.ControlBackground;
+				ApplyVisualStyle(button);
 			}
 
 		}
@@ -71,17 +71,24 @@ namespace Ginger
 			}
 
 			var buttons = parentControl.FindAllControlsOfType<Button>();
-			foreach (var control in buttons)
-			{
-				control.ForeColor = Theme.ControlForeground;
-				control.BackColor = Theme.ControlBackground;
-			}
+			foreach (var button in buttons)
+				ApplyVisualStyle(button);
 
 			foreach (Control control in parentControl.Controls)
 			{
 				control.ForeColor = Theme.ControlForeground;
 				control.BackColor = Theme.ControlBackground;
 			}
+		}
+		
+		public static void ApplyVisualStyle(Button button)
+		{
+			button.FlatAppearance.BorderColor = Theme.ButtonBorder;
+			button.FlatAppearance.MouseDownBackColor = Theme.ButtonPressed;
+			button.FlatAppearance.MouseOverBackColor = Theme.ButtonHover;
+			button.FlatAppearance.BorderSize = 1;
+			button.ForeColor = Theme.ControlForeground;
+			button.BackColor = Theme.Button;
 		}
 
 		public static void ApplyTheme(ToolStripMenuItem menuItem)
@@ -194,6 +201,7 @@ namespace Ginger
 		
 		public Color TextBoxBackground => SystemColors.Window;
 		public Color TextBoxForeground => SystemColors.WindowText;
+		public Color TextBoxBorder => Color.Gray;
 		public Color TextBoxPlaceholder => Color.FromArgb(144, 144, 144);
 		
 		public Color MenuBackground => SystemColors.MenuBar;
@@ -205,7 +213,13 @@ namespace Ginger
 		public Color MenuGradientEnd => SystemColors.MenuBar;
 		public Color MenuSeparator => SystemColors.ControlDark;
 
+		public Color Border => Color.Gray;
 		public Color GroupBoxBorder => ColorTranslator.FromHtml("#d3d3d3");
+
+		public Color Button => Color.WhiteSmoke;
+		public Color ButtonBorder => Color.Silver;
+		public Color ButtonHover => Color.White;
+		public Color ButtonPressed => Color.White;
 
 		public Color WarningRed => Color.Red;
 		public Color Highlight => SystemColors.Highlight;
@@ -217,6 +231,24 @@ namespace Ginger
 		public Color TabBorder => Color.Silver;
 		public Color TabEdgeBorder => SystemColors.ControlDark;
 		public Color SelectedTabBorder => SystemColors.ControlDark;
+
+		// Icons
+		public Image MenuIcon => Resources.menu;
+		public Image MenuEditIcon => Resources.menu_edit;
+		public Image MenuFolder => Resources.folder;
+		public Image MenuRedDot => Resources.red_dot;
+		public Image MenuSnippet => Resources.snippet_small;
+		public Image MenuLore => Resources.lore_small;
+		
+		public Image ButtonModel => Resources.model;
+		public Image ButtonCharacter => Resources.persona;
+		public Image ButtonTraits => Resources.characteristic;
+		public Image ButtonMind => Resources.personality;
+		public Image ButtonStory => Resources.story;
+		public Image ButtonComponents => Resources.component;
+		public Image ButtonSnippets => Resources.snippet;
+		public Image ButtonLore => Resources.lore;
+		public Image Checker => Resources.checker;
 	}
 
 	public class DarkTheme : IColorTheme
@@ -226,6 +258,7 @@ namespace Ginger
 
 		public Color TextBoxBackground => ColorTranslator.FromHtml("#202020");
 		public Color TextBoxForeground => Color.White;
+		public Color TextBoxBorder => Color.Gray;
 		public Color TextBoxPlaceholder => Color.FromArgb(180, 180, 180);
 
 		public Color MenuBackground => ColorTranslator.FromHtml("#404040");
@@ -236,7 +269,12 @@ namespace Ginger
 		public Color MenuGradientEnd => ColorTranslator.FromHtml("#343434");
 		public Color MenuSeparator => ColorTranslator.FromHtml("#303030");
 
-		public Color Border => ColorTranslator.FromHtml("#606060");
+		public Color Button => ColorTranslator.FromHtml("#363636");
+		public Color ButtonHover => ColorTranslator.FromHtml("#2d2d2d");
+		public Color ButtonPressed => ColorTranslator.FromHtml("#2d2d2d");
+		public Color ButtonBorder => Color.Gray;
+
+		public Color Border => Color.Gray;
 		public Color GroupBoxBorder => ColorTranslator.FromHtml("#606060");
 
 		public Color WarningRed => ColorTranslator.FromHtml("#ff4040");
@@ -250,6 +288,25 @@ namespace Ginger
 
 		public Color SeletedTabButtonLight => ColorTranslator.FromHtml("#808080");
 		public Color SeletedTabButtonDark => ColorTranslator.FromHtml("#606060");
+
+		// Icons
+		public Image MenuIcon => Resources.dark_menu;
+		public Image MenuEditIcon => Resources.dark_menu_edit;
+		public Image MenuFolder => Resources.dark_folder;
+		public Image MenuRedDot => Resources.dark_red_dot;
+		public Image MenuSnippet => Resources.dark_snippet_small;
+		public Image MenuLore => Resources.dark_lore_small;
+
+		public Image ButtonModel => Resources.dark_model;
+		public Image ButtonCharacter => Resources.dark_persona;
+		public Image ButtonTraits => Resources.dark_characteristic;
+		public Image ButtonMind => Resources.dark_personality;
+		public Image ButtonStory => Resources.dark_story;
+		public Image ButtonComponents => Resources.dark_component;
+		public Image ButtonSnippets => Resources.dark_snippet;
+		public Image ButtonLore => Resources.dark_lore;
+
+		public Image Checker => Resources.dark_checker;
 	}
 
 	public interface IVisualThemed
@@ -264,6 +321,7 @@ namespace Ginger
 
 		Color TextBoxBackground { get; }
 		Color TextBoxForeground { get; }
+		Color TextBoxBorder { get; }
 		Color TextBoxPlaceholder { get; }
 
 		Color MenuBackground { get; }
@@ -274,6 +332,7 @@ namespace Ginger
 		Color MenuGradientEnd { get; }
 		Color MenuSeparator { get; }
 
+		Color Border { get; }
 		Color GroupBoxBorder { get; }
 		Color WarningRed { get; }
 		Color Highlight { get; }
@@ -285,5 +344,31 @@ namespace Ginger
 		Color TabInactiveText { get; }
 		Color TabEdgeBorder { get; }
 		Color SelectedTabBorder { get; }
+
+		Color Button { get; }
+		Color ButtonBorder { get; }
+		Color ButtonHover { get; }
+		Color ButtonPressed { get; }
+
+		// Icons
+		Image MenuIcon { get; }
+		Image MenuEditIcon { get; }
+		Image MenuFolder { get; }
+		Image MenuRedDot { get; }
+		Image MenuSnippet { get; }
+		Image MenuLore { get; }
+
+		Image ButtonModel { get; }
+		Image ButtonCharacter { get; }
+		Image ButtonTraits { get; }
+		Image ButtonMind { get; }
+		Image ButtonStory { get; }
+		Image ButtonComponents { get; }
+		Image ButtonSnippets { get; }
+		Image ButtonLore { get; }
+
+		Image Checker { get; }
+
+		
 	}
 }

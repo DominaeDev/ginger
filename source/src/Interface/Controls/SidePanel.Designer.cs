@@ -194,7 +194,6 @@
 			// 
 			// textBox_customGender
 			// 
-			this.textBox_customGender.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_customGender.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_customGender.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textBox_customGender.Location = new System.Drawing.Point(212, 23);
@@ -245,7 +244,6 @@
 			// 
 			// textBox_characterSpokenName
 			// 
-			this.textBox_characterSpokenName.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_characterSpokenName.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_characterSpokenName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textBox_characterSpokenName.Location = new System.Drawing.Point(1, 67);
@@ -274,7 +272,6 @@
 			// 
 			// textBox_characterName
 			// 
-			this.textBox_characterName.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_characterName.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_characterName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textBox_characterName.Location = new System.Drawing.Point(1, 21);
@@ -345,7 +342,6 @@
 			// 
 			// textBox_tags
 			// 
-			this.textBox_tags.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_tags.Collection = ((System.Collections.Generic.HashSet<string>)(resources.GetObject("textBox_tags.Collection")));
 			this.textBox_tags.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_tags.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -372,7 +368,6 @@
 			// 
 			// textBox_creatorNotes
 			// 
-			this.textBox_creatorNotes.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_creatorNotes.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_creatorNotes.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textBox_creatorNotes.Location = new System.Drawing.Point(6, 86);
@@ -424,7 +419,6 @@
 			// 
 			// textBox_creator
 			// 
-			this.textBox_creator.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_creator.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_creator.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textBox_creator.Location = new System.Drawing.Point(0, 21);
@@ -462,7 +456,6 @@
 			// 
 			// textBox_version
 			// 
-			this.textBox_version.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_version.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_version.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textBox_version.Location = new System.Drawing.Point(6, 21);
@@ -541,7 +534,6 @@
 			// 
 			// textBox_userPlaceholder
 			// 
-			this.textBox_userPlaceholder.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_userPlaceholder.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_userPlaceholder.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textBox_userPlaceholder.Location = new System.Drawing.Point(0, 21);
@@ -977,11 +969,13 @@
 			// btn_More
 			// 
 			this.btn_More.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.btn_More.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
+			this.btn_More.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btn_More.Image = global::Ginger.Properties.Resources.menu;
 			this.btn_More.Location = new System.Drawing.Point(0, 21);
 			this.btn_More.Margin = new System.Windows.Forms.Padding(0);
 			this.btn_More.Name = "btn_More";
-			this.btn_More.Size = new System.Drawing.Size(36, 24);
+			this.btn_More.Size = new System.Drawing.Size(36, 23);
 			this.btn_More.TabIndex = 3;
 			this.btn_More.UseVisualStyleBackColor = true;
 			this.btn_More.MouseClick += new System.Windows.Forms.MouseEventHandler(this.btn_More_MouseClick);

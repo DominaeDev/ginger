@@ -25,7 +25,7 @@ namespace Ginger
 			{
 				base.WndProc(ref m);
 
-				Color borderColor = Focused ? SystemColors.Highlight : this.BorderColor;
+				Color borderColor = Focused ? VisualTheme.Theme.Highlight : VisualTheme.Theme.TextBoxBorder;
 
 				using (var g = Graphics.FromHwnd(Handle))
 				{

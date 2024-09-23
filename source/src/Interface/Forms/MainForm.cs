@@ -563,7 +563,7 @@ namespace Ginger
 			foreach (var folder in folders)
 			{
 				var menuItem = new ToolStripMenuItem();
-				menuItem.Image = Resources.folder;
+				menuItem.Image = VisualTheme.Theme.MenuFolder;
 				menuItem.Text = Utility.EscapeMenu(folder);
 
 				if (string.IsNullOrEmpty(root))
@@ -594,7 +594,7 @@ namespace Ginger
 				menuItem.ToolTipText = tooltip;
 
 				if (recipeTemplate.type == Recipe.Type.Snippet)
-					menuItem.Image = Resources.snippet_small;
+					menuItem.Image = VisualTheme.Theme.MenuSnippet;
 				if (Current.Character.recipes.ContainsAny(r => r.uid == recipeTemplate.uid) && recipeTemplate.allowMultiple == false)
 				{
 					menuItem.Checked = true;
@@ -641,7 +641,7 @@ namespace Ginger
 					{
 						var menuItem = new ToolStripMenuItem();
 						menuItem.Text = Utility.EscapeMenu(book.name);
-						menuItem.Image = Resources.lore_small;
+						menuItem.Image = VisualTheme.Theme.MenuLore;
 						menuItem.Click += (s, e) => {
 							recipeList.AddLorebook(book);
 						};
@@ -2350,6 +2350,23 @@ namespace Ginger
 
 			this.splitContainer.Panel1.BackColor = VisualTheme.Theme.ControlBackground;
 			this.splitContainer.Panel2.BackColor = VisualTheme.Theme.ControlBackground;
+
+			VisualTheme.ApplyVisualStyle(btnAdd_Model);
+			VisualTheme.ApplyVisualStyle(btnAdd_Character);
+			VisualTheme.ApplyVisualStyle(btnAdd_Mind);
+			VisualTheme.ApplyVisualStyle(btnAdd_World);
+			VisualTheme.ApplyVisualStyle(btnAdd_Traits);
+			VisualTheme.ApplyVisualStyle(btnAdd_Other);
+			VisualTheme.ApplyVisualStyle(btnAdd_Snippets);
+			VisualTheme.ApplyVisualStyle(btnAdd_Lore);
+			btnAdd_Model.Image = VisualTheme.Theme.ButtonModel;
+			btnAdd_Character.Image = VisualTheme.Theme.ButtonCharacter;
+			btnAdd_Mind.Image = VisualTheme.Theme.ButtonMind;
+			btnAdd_World.Image = VisualTheme.Theme.ButtonStory;
+			btnAdd_Traits.Image = VisualTheme.Theme.ButtonTraits;
+			btnAdd_Other.Image = VisualTheme.Theme.ButtonComponents;
+			btnAdd_Snippets.Image = VisualTheme.Theme.ButtonSnippets;
+			btnAdd_Lore.Image = VisualTheme.Theme.ButtonLore;
 
 			statusBar.BackColor = VisualTheme.Theme.ControlBackground;
 			statusBar.ForeColor = VisualTheme.Theme.ControlForeground;

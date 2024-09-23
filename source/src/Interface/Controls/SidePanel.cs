@@ -827,7 +827,7 @@ namespace Ginger
 			var item = new ToolStripMenuItem(label);
 			menu.Items.Add(item);
 			if (Current.Card.extraFlags.ContainsAny(flags))
-				item.Image = Resources.red_dot;
+				item.Image = VisualTheme.Theme.MenuRedDot;
 			return item;
 		}
 
@@ -863,15 +863,18 @@ namespace Ginger
 
 		private void RefreshSettingsButton()
 		{
-			btn_More.Image = Current.Card.extraFlags != CardData.Flag.Default ? Resources.menu_edit : Resources.menu;
+			btn_More.Image = Current.Card.extraFlags != CardData.Flag.Default ? VisualTheme.Theme.MenuEditIcon : VisualTheme.Theme.MenuIcon;
 		}
 
 		public void ApplyVisualTheme()
 		{
 			VisualTheme.ApplyTheme(this);
 
-			if (Current.Characters != null)
-				RefreshValues();
+			if (Current.Characters == null)
+				return;
+
+			RefreshValues();
+			portraitImage.BackgroundImage = VisualTheme.Theme.Checker;
 		}
 	}
 }

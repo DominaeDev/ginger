@@ -980,14 +980,14 @@ namespace Ginger
 				MainForm.instance.PopulateComponentMenu("", menu.Items, context);
 				menu.Items.Add("-");
 
-				var model = new ToolStripMenuItem("Model", Resources.folder);
-				var character = new ToolStripMenuItem("Character", Resources.folder);
-				var mind = new ToolStripMenuItem("Mind", Resources.folder);
-				var traits = new ToolStripMenuItem("Traits", Resources.folder);
-				var story = new ToolStripMenuItem("Story", Resources.folder);
-				var snippets = new ToolStripMenuItem("Snippets", Resources.folder);
-				var lore = new ToolStripMenuItem("Lorebooks", Resources.folder);
-				var otherComponents = new ToolStripMenuItem("Other components", Resources.folder);
+				var model = new ToolStripMenuItem("Model", VisualTheme.Theme.MenuFolder);
+				var character = new ToolStripMenuItem("Character", VisualTheme.Theme.MenuFolder);
+				var mind = new ToolStripMenuItem("Mind", VisualTheme.Theme.MenuFolder);
+				var traits = new ToolStripMenuItem("Traits", VisualTheme.Theme.MenuFolder);
+				var story = new ToolStripMenuItem("Story", VisualTheme.Theme.MenuFolder);
+				var snippets = new ToolStripMenuItem("Snippets", VisualTheme.Theme.MenuFolder);
+				var lore = new ToolStripMenuItem("Lorebooks", VisualTheme.Theme.MenuFolder);
+				var otherComponents = new ToolStripMenuItem("Other components", VisualTheme.Theme.MenuFolder);
 
 				MainForm.instance.PopulateRecipeMenu(Recipe.Drawer.Model, model.DropDownItems, context);
 				MainForm.instance.PopulateRecipeMenu(Recipe.Drawer.Character, character.DropDownItems, context);
@@ -1010,7 +1010,7 @@ namespace Ginger
 					&& r.drawer == Recipe.Drawer.Undefined
 					&& r.isHidden == false))
 				{
-					var unknown = new ToolStripMenuItem("Uncategorized", Resources.folder);
+					var unknown = new ToolStripMenuItem("Uncategorized", VisualTheme.Theme.MenuFolder);
 					MainForm.instance.PopulateRecipeMenu(Recipe.Drawer.Undefined, unknown.DropDownItems, context);
 					menu.Items.Add(unknown);
 				}
