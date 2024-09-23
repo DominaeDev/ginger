@@ -422,9 +422,6 @@
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\NativeMethods.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyle.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProvider.cs" />
-    <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleChromeProvider.cs" />
-    <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleDarkProvider.cs" />
-    <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleDefaultProvider.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleNoneProvider.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleRoundedProvider.cs" />
     <Compile Include="src\Utility\Undo\UndoStack.cs" />

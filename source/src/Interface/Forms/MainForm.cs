@@ -46,7 +46,6 @@ namespace Ginger
 		{
 			instance = this;
 			InitializeComponent();
-			ApplyVisualTheme();
 
 			Icon = Resources.icon;
 
@@ -94,7 +93,7 @@ namespace Ginger
 			_statusbarTimer.AutoReset = false;
 			_statusbarTimer.SynchronizingObject = this;
 
-			_scrollbarBrush = CreateSolidBrush(ColorTranslator.ToWin32(Color.Red));
+//			_scrollbarBrush = CreateSolidBrush(ColorTranslator.ToWin32(Color.Red));
 		}
 
 		public void SetFirstLoad(string filename)
@@ -309,6 +308,8 @@ namespace Ginger
 				OpenFile(_shouldLoadFilename);
 				_shouldLoadFilename = null;
 			}
+
+			ApplyVisualTheme();
 		}
 
 		private void OnDragEnter(object sender, DragEventArgs e)
@@ -1225,7 +1226,8 @@ namespace Ginger
 			autoBreakMenuItem.Checked = AppSettings.Settings.AutoBreakLine;
 			enableSpellCheckingMenuItem.Checked = AppSettings.Settings.SpellChecking;
 			rearrangeLoreMenuItem.Checked = AppSettings.Settings.EnableRearrangeLoreMode;
-			darkModeMenuItem.Checked = AppSettings.Settings.DarkTheme;
+			lightThemeMenuItem.Checked = !AppSettings.Settings.DarkTheme;
+			darkThemeMenuItem.Checked = AppSettings.Settings.DarkTheme;
 
 			// Spell checking
 			foreach (var kvp in _spellCheckLangMenuItems)
@@ -2326,12 +2328,19 @@ namespace Ginger
 			AppSettings.BackyardLink.AlwaysLinkOnImport = !AppSettings.BackyardLink.AlwaysLinkOnImport;
 		}
 
-		private void darkModeMenuItem_Click(object sender, EventArgs e)
+
+		private void lightThemeMenuItem_Click(object sender, EventArgs e)
 		{
-			AppSettings.Settings.DarkTheme = !AppSettings.Settings.DarkTheme;
+			AppSettings.Settings.DarkTheme = false;
 			ApplyVisualTheme();
 		}
 
+		private void darkThemeMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.Settings.DarkTheme = true;
+			ApplyVisualTheme();
+		}
+		
 		public void ApplyVisualTheme()
 		{
 			VisualTheme.ApplyTheme(menuStrip);
@@ -2339,14 +2348,20 @@ namespace Ginger
 			this.BackColor = VisualTheme.Theme.ControlBackground;
 			this.ForeColor = VisualTheme.Theme.ControlForeground;
 
+			this.splitContainer.Panel1.BackColor = VisualTheme.Theme.ControlBackground;
+			this.splitContainer.Panel2.BackColor = VisualTheme.Theme.ControlBackground;
+
 			statusBar.BackColor = VisualTheme.Theme.ControlBackground;
 			statusBar.ForeColor = VisualTheme.Theme.ControlForeground;
 			sidePanel.ApplyVisualTheme();
+
+			tabControl.ApplyVisualTheme();
 
 			Dark.Net.DarkNet.Instance.SetCurrentProcessTheme(VisualTheme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
 			Dark.Net.DarkNet.Instance.SetWindowThemeForms(this, VisualTheme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
 		}
 
+		/*
 		private const int WM_CTLCOLORSCROLLBAR = 0x0137;
 
 		[DllImport("gdi32.dll")]
@@ -2363,7 +2378,7 @@ namespace Ginger
 			}
 
 			base.WndProc(ref m);
-		}
+		}*/
 	}
 
 	public interface IIdleHandler

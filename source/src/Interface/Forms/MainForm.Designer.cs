@@ -30,12 +30,12 @@ namespace Ginger {
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem8;
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem5;
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem7;
-			System.Windows.Forms.ToolStripSeparator toolStripMenuItem9;
 			System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
 			System.Windows.Forms.ToolStripMenuItem linkMenuItem;
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem10;
 			System.Windows.Forms.ToolStripMenuItem writeChatSettingsMenuItem;
+			System.Windows.Forms.ToolStripMenuItem themeMenuItem;
 			this.enableLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -137,8 +137,9 @@ namespace Ginger {
 			this.linkOptionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.alwaysLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.autoConvertNameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoBreakMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
+			this.autoConvertNameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.rearrangeLoreMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.showNSFWRecipesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -160,19 +161,19 @@ namespace Ginger {
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusBarActor = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
-			this.darkModeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
+			this.lightThemeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.darkThemeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
-			toolStripMenuItem9 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
 			linkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem10 = new System.Windows.Forms.ToolStripSeparator();
 			writeChatSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			themeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
 			this.splitContainer.Panel1.SuspendLayout();
 			this.splitContainer.Panel2.SuspendLayout();
@@ -213,11 +214,6 @@ namespace Ginger {
 			// 
 			toolStripMenuItem7.Name = "toolStripMenuItem7";
 			toolStripMenuItem7.Size = new System.Drawing.Size(216, 6);
-			// 
-			// toolStripMenuItem9
-			// 
-			toolStripMenuItem9.Name = "toolStripMenuItem9";
-			toolStripMenuItem9.Size = new System.Drawing.Size(180, 6);
 			// 
 			// toolStripSeparator1
 			// 
@@ -379,10 +375,6 @@ namespace Ginger {
 			this.tabControl.Controls.Add(this.tabRecipe);
 			this.tabControl.Controls.Add(this.tabOutput);
 			this.tabControl.Controls.Add(this.tabNotes);
-			this.tabControl.DisplayStyle = System.Windows.Forms.TabStyle.Rounded;
-			this.tabControl.DisplayStyleProvider.BorderColor = System.Drawing.Color.Silver;
-			this.tabControl.DisplayStyleProvider.BorderColorHot = System.Drawing.SystemColors.ControlDark;
-			this.tabControl.DisplayStyleProvider.BorderColorSelected = System.Drawing.SystemColors.ControlDark;
 			this.tabControl.DisplayStyleProvider.CloserColor = System.Drawing.Color.DarkGray;
 			this.tabControl.DisplayStyleProvider.FocusTrack = false;
 			this.tabControl.DisplayStyleProvider.HotTrack = true;
@@ -392,8 +384,6 @@ namespace Ginger {
 			this.tabControl.DisplayStyleProvider.Padding = new System.Drawing.Point(6, 3);
 			this.tabControl.DisplayStyleProvider.Radius = 10;
 			this.tabControl.DisplayStyleProvider.ShowTabCloser = false;
-			this.tabControl.DisplayStyleProvider.TextColor = System.Drawing.SystemColors.GrayText;
-			this.tabControl.DisplayStyleProvider.TextColorSelected = System.Drawing.SystemColors.ControlText;
 			this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabControl.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.tabControl.HotTrack = true;
@@ -635,6 +625,7 @@ namespace Ginger {
 			this.outputBox.AcceptsReturn = true;
 			this.outputBox.AcceptsTab = true;
 			this.outputBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+			this.outputBox.BorderColor = System.Drawing.Color.Gray;
 			this.outputBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.outputBox.CausesValidation = false;
 			this.outputBox.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -669,6 +660,7 @@ namespace Ginger {
 			this.outputBox_Raw2.AcceptsReturn = true;
 			this.outputBox_Raw2.AcceptsTab = true;
 			this.outputBox_Raw2.BackColor = System.Drawing.SystemColors.Window;
+			this.outputBox_Raw2.BorderColor = System.Drawing.Color.Gray;
 			this.outputBox_Raw2.Dock = System.Windows.Forms.DockStyle.Top;
 			this.outputBox_Raw2.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.outputBox_Raw2.Location = new System.Drawing.Point(3, 241);
@@ -687,6 +679,7 @@ namespace Ginger {
 			this.outputBox_Raw.AcceptsReturn = true;
 			this.outputBox_Raw.AcceptsTab = true;
 			this.outputBox_Raw.BackColor = System.Drawing.SystemColors.Window;
+			this.outputBox_Raw.BorderColor = System.Drawing.Color.Gray;
 			this.outputBox_Raw.Dock = System.Windows.Forms.DockStyle.Top;
 			this.outputBox_Raw.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.outputBox_Raw.Location = new System.Drawing.Point(3, 21);
@@ -1095,12 +1088,11 @@ namespace Ginger {
             this.tokenBudgetMenuItem,
             this.outputPreviewToolStripMenuItem,
             this.checkSpellingMenuItem,
+            themeMenuItem,
             this.linkOptionsMenuItem,
-            toolStripMenuItem9,
-            this.darkModeMenuItem,
-            this.autoBreakMenuItem,
             this.toolStripMenuItem11,
             this.autoConvertNameMenuItem,
+            this.autoBreakMenuItem,
             this.rearrangeLoreMenuItem,
             this.showNSFWRecipesMenuItem});
 			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
@@ -1316,6 +1308,18 @@ namespace Ginger {
 			this.alwaysLinkMenuItem.Text = "Always link characters";
 			this.alwaysLinkMenuItem.Click += new System.EventHandler(this.alwaysLinkMenuItem_Click);
 			// 
+			// autoBreakMenuItem
+			// 
+			this.autoBreakMenuItem.Name = "autoBreakMenuItem";
+			this.autoBreakMenuItem.Size = new System.Drawing.Size(183, 22);
+			this.autoBreakMenuItem.Text = "Limit line width";
+			this.autoBreakMenuItem.Click += new System.EventHandler(this.AutoBreakMenuItem_Click);
+			// 
+			// toolStripMenuItem11
+			// 
+			this.toolStripMenuItem11.Name = "toolStripMenuItem11";
+			this.toolStripMenuItem11.Size = new System.Drawing.Size(180, 6);
+			// 
 			// autoConvertNameMenuItem
 			// 
 			this.autoConvertNameMenuItem.Checked = true;
@@ -1326,13 +1330,6 @@ namespace Ginger {
 			this.autoConvertNameMenuItem.Text = "Auto-convert names";
 			this.autoConvertNameMenuItem.ToolTipText = global::Ginger.Properties.Resources.tooltip_option_use_placeholders;
 			this.autoConvertNameMenuItem.Click += new System.EventHandler(this.AutoconvertCharacterMarkersMenuItem_CheckedChanged);
-			// 
-			// autoBreakMenuItem
-			// 
-			this.autoBreakMenuItem.Name = "autoBreakMenuItem";
-			this.autoBreakMenuItem.Size = new System.Drawing.Size(183, 22);
-			this.autoBreakMenuItem.Text = "Limit line width";
-			this.autoBreakMenuItem.Click += new System.EventHandler(this.AutoBreakMenuItem_Click);
 			// 
 			// rearrangeLoreMenuItem
 			// 
@@ -1502,17 +1499,28 @@ namespace Ginger {
 			this.statusConnectionIcon.Name = "statusConnectionIcon";
 			this.statusConnectionIcon.Size = new System.Drawing.Size(0, 17);
 			// 
-			// darkModeMenuItem
+			// themeMenuItem
 			// 
-			this.darkModeMenuItem.Name = "darkModeMenuItem";
-			this.darkModeMenuItem.Size = new System.Drawing.Size(183, 22);
-			this.darkModeMenuItem.Text = "Dark theme";
-			this.darkModeMenuItem.Click += new System.EventHandler(this.darkModeMenuItem_Click);
+			themeMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.lightThemeMenuItem,
+            this.darkThemeMenuItem});
+			themeMenuItem.Name = "themeMenuItem";
+			themeMenuItem.Size = new System.Drawing.Size(183, 22);
+			themeMenuItem.Text = "Theme";
 			// 
-			// toolStripMenuItem11
+			// lightThemeMenuItem
 			// 
-			this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-			this.toolStripMenuItem11.Size = new System.Drawing.Size(180, 6);
+			this.lightThemeMenuItem.Name = "lightThemeMenuItem";
+			this.lightThemeMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.lightThemeMenuItem.Text = "Light";
+			this.lightThemeMenuItem.Click += new System.EventHandler(this.lightThemeMenuItem_Click);
+			// 
+			// darkThemeMenuItem
+			// 
+			this.darkThemeMenuItem.Name = "darkThemeMenuItem";
+			this.darkThemeMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.darkThemeMenuItem.Text = "Dark";
+			this.darkThemeMenuItem.Click += new System.EventHandler(this.darkThemeMenuItem_Click);
 			// 
 			// MainForm
 			// 
@@ -1682,8 +1690,9 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem applyToLastChatMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem applyToAllChatsMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem alwaysLinkMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem darkModeMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
+		private System.Windows.Forms.ToolStripMenuItem lightThemeMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem darkThemeMenuItem;
 	}
 }
 

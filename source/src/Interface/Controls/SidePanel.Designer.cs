@@ -28,23 +28,23 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			GroupBoxEx group_Character;
+			Ginger.GroupBoxEx group_Character;
 			System.Windows.Forms.Panel infoPanel;
 			System.Windows.Forms.TableLayoutPanel genderTable;
 			System.Windows.Forms.Panel portraitPanel;
-			GroupBoxEx group_CardInfo;
+			Ginger.GroupBoxEx group_CardInfo;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SidePanel));
 			System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 			System.Windows.Forms.Panel left;
 			System.Windows.Forms.Panel right;
 			System.Windows.Forms.Panel spacer_0;
-			GroupBoxEx group_User;
+			Ginger.GroupBoxEx group_User;
 			System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
 			System.Windows.Forms.Panel panel1;
 			System.Windows.Forms.Panel panel2;
 			System.Windows.Forms.Panel spacer_1;
 			System.Windows.Forms.Panel spacer_2;
-			GroupBoxEx group_Stats;
+			Ginger.GroupBoxEx group_Stats;
 			System.Windows.Forms.Panel panel_right;
 			System.Windows.Forms.Panel panel_left;
 			System.Windows.Forms.Label label_Context;
@@ -53,7 +53,7 @@
 			System.Windows.Forms.Label label_Tokens;
 			System.Windows.Forms.Label label_Lore;
 			System.Windows.Forms.Label label_Image;
-			GroupBoxEx group_Generation;
+			Ginger.GroupBoxEx group_Generation;
 			System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
 			System.Windows.Forms.Panel panel4;
 			System.Windows.Forms.Panel panel3;
@@ -91,22 +91,22 @@
 			this.label_Detail = new System.Windows.Forms.Label();
 			this.btn_More = new System.Windows.Forms.Button();
 			this.label_More = new System.Windows.Forms.Label();
-			group_Character = new GroupBoxEx();
+			group_Character = new Ginger.GroupBoxEx();
 			infoPanel = new System.Windows.Forms.Panel();
 			genderTable = new System.Windows.Forms.TableLayoutPanel();
 			portraitPanel = new System.Windows.Forms.Panel();
-			group_CardInfo = new GroupBoxEx();
+			group_CardInfo = new Ginger.GroupBoxEx();
 			tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			left = new System.Windows.Forms.Panel();
 			right = new System.Windows.Forms.Panel();
 			spacer_0 = new System.Windows.Forms.Panel();
-			group_User = new GroupBoxEx();
+			group_User = new Ginger.GroupBoxEx();
 			tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
 			panel1 = new System.Windows.Forms.Panel();
 			panel2 = new System.Windows.Forms.Panel();
 			spacer_1 = new System.Windows.Forms.Panel();
 			spacer_2 = new System.Windows.Forms.Panel();
-			group_Stats = new GroupBoxEx();
+			group_Stats = new Ginger.GroupBoxEx();
 			panel_right = new System.Windows.Forms.Panel();
 			panel_left = new System.Windows.Forms.Panel();
 			label_Context = new System.Windows.Forms.Label();
@@ -115,7 +115,7 @@
 			label_Tokens = new System.Windows.Forms.Label();
 			label_Lore = new System.Windows.Forms.Label();
 			label_Image = new System.Windows.Forms.Label();
-			group_Generation = new GroupBoxEx();
+			group_Generation = new Ginger.GroupBoxEx();
 			tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			panel4 = new System.Windows.Forms.Panel();
 			panel3 = new System.Windows.Forms.Panel();
@@ -146,6 +146,7 @@
 			// 
 			// group_Character
 			// 
+			group_Character.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
 			group_Character.Controls.Add(infoPanel);
 			group_Character.Controls.Add(portraitPanel);
 			group_Character.Dock = System.Windows.Forms.DockStyle.Top;
@@ -327,6 +328,7 @@
 			// group_CardInfo
 			// 
 			group_CardInfo.AutoSize = true;
+			group_CardInfo.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
 			group_CardInfo.Controls.Add(this.textBox_tags);
 			group_CardInfo.Controls.Add(this.label_tags);
 			group_CardInfo.Controls.Add(this.textBox_creatorNotes);
@@ -498,6 +500,7 @@
 			// group_User
 			// 
 			group_User.AutoSize = true;
+			group_User.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
 			group_User.Controls.Add(tableLayoutPanel2);
 			group_User.Dock = System.Windows.Forms.DockStyle.Top;
 			group_User.Location = new System.Drawing.Point(0, 470);
@@ -629,6 +632,7 @@
 			// 
 			// group_Stats
 			// 
+			group_Stats.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
 			group_Stats.Controls.Add(panel_right);
 			group_Stats.Controls.Add(panel_left);
 			group_Stats.Dock = System.Windows.Forms.DockStyle.Top;
@@ -839,6 +843,7 @@
 			// group_Generation
 			// 
 			group_Generation.AutoSize = true;
+			group_Generation.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
 			group_Generation.Controls.Add(tableLayoutPanel3);
 			group_Generation.Dock = System.Windows.Forms.DockStyle.Top;
 			group_Generation.Location = new System.Drawing.Point(0, 545);

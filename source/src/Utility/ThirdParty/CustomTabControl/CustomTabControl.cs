@@ -4,11 +4,12 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Security.Permissions;
+using Ginger;
 
 namespace System.Windows.Forms
 {
 	[ToolboxBitmap(typeof(TabControl))]
-	public class CustomTabControl : TabControl
+	public class CustomTabControl : TabControl, IVisualThemed
 	{
 		#region	Construction
 
@@ -784,15 +785,15 @@ namespace System.Windows.Forms
 					_BackImage = new Bitmap(Width, Height);
 
 					var backGraphics = Graphics.FromImage(_BackImage);
-					backGraphics.Clear(Color.Transparent);
+					backGraphics.Clear(VisualTheme.Theme.ControlBackground);
 
 					PaintTransparentBackground(backGraphics, ClientRectangle);
 				}
 
-				_BackBufferGraphics.Clear(Color.Transparent);
+				_BackBufferGraphics.Clear(VisualTheme.Theme.ControlBackground);
 				_BackBufferGraphics.DrawImageUnscaled(_BackImage, 0, 0);
 
-				_TabBufferGraphics.Clear(Color.Transparent);
+				_TabBufferGraphics.Clear(VisualTheme.Theme.ControlBackground);
 
 				if (TabCount > 0)
 				{
@@ -938,16 +939,21 @@ namespace System.Windows.Forms
 			else
 				borderColor = _StyleProvider.BorderColor;
 
+
+			using (var borderPen = new Pen(borderColor))
+			{
+				graphics.DrawPath(borderPen, path);
+			}
+				
 			using (var edge = new GraphicsPath())
 			{
 				Rectangle pageBounds = this.Bounds; // Right edge
 				pageBounds.Width -= 29;
 				edge.AddLine(pageBounds.Right, pageBounds.Top, pageBounds.Right, pageBounds.Bottom);
 
-				using (var borderPen = new Pen(borderColor))
+				using (var edgePen = new Pen(VisualTheme.Theme.TabEdgeBorder))
 				{
-					graphics.DrawPath(borderPen, path);
-					graphics.DrawPath(borderPen, edge);
+					graphics.DrawPath(edgePen, edge);
 				}
 			}
 		}
@@ -1532,6 +1538,18 @@ namespace System.Windows.Forms
 				return;
 			}
 			base.OnKeyDown(e);
+		}
+
+		public void ApplyVisualTheme()
+		{
+			this.BackColor = VisualTheme.Theme.ControlBackground;
+			this.ForeColor = VisualTheme.Theme.ControlForeground;
+
+			foreach (TabPage page in TabPages)
+			{
+				page.BackColor = VisualTheme.Theme.ControlBackground;
+				page.ForeColor = VisualTheme.Theme.ControlForeground;
+			}
 		}
 	}
 }

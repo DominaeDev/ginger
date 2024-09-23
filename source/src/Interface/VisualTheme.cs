@@ -198,7 +198,7 @@ namespace Ginger
 		
 		public Color MenuBackground => SystemColors.MenuBar;
 		public Color MenuForeground => SystemColors.MenuText;
-		public Color MenuBorder => SystemColors.ActiveBorder;
+		public Color MenuBorder => SystemColors.ControlDark;
 
 		public Color MenuGradientBegin => SystemColors.MenuBar;
 		public Color MenuGradientMiddle => SystemColors.MenuBar;
@@ -209,6 +209,14 @@ namespace Ginger
 
 		public Color WarningRed => Color.Red;
 		public Color Highlight => SystemColors.Highlight;
+		public Color GrayText => SystemColors.GrayText;
+
+		public Color SeletedTabButtonLight => Color.FromArgb(242, 242, 242);
+		public Color SeletedTabButtonDark => Color.FromArgb(207, 207, 207);
+		public Color TabInactiveText => SystemColors.GrayText;
+		public Color TabBorder => Color.Silver;
+		public Color TabEdgeBorder => SystemColors.ControlDark;
+		public Color SelectedTabBorder => SystemColors.ControlDark;
 	}
 
 	public class DarkTheme : IColorTheme
@@ -228,10 +236,20 @@ namespace Ginger
 		public Color MenuGradientEnd => ColorTranslator.FromHtml("#343434");
 		public Color MenuSeparator => ColorTranslator.FromHtml("#303030");
 
+		public Color Border => ColorTranslator.FromHtml("#606060");
 		public Color GroupBoxBorder => ColorTranslator.FromHtml("#606060");
 
 		public Color WarningRed => ColorTranslator.FromHtml("#ff4040");
 		public Color Highlight => SystemColors.Highlight;
+		public Color GrayText => SystemColors.GrayText;
+
+		public Color TabInactiveText => ColorTranslator.FromHtml("#c0c0c0");
+		public Color TabBorder => ColorTranslator.FromHtml("#808080");
+		public Color TabEdgeBorder => ColorTranslator.FromHtml("#606060");
+		public Color SelectedTabBorder => ColorTranslator.FromHtml("#c0c0c0");
+
+		public Color SeletedTabButtonLight => ColorTranslator.FromHtml("#808080");
+		public Color SeletedTabButtonDark => ColorTranslator.FromHtml("#606060");
 	}
 
 	public interface IVisualThemed
@@ -259,5 +277,13 @@ namespace Ginger
 		Color GroupBoxBorder { get; }
 		Color WarningRed { get; }
 		Color Highlight { get; }
+		Color GrayText { get; }
+
+		Color SeletedTabButtonLight { get; }
+		Color SeletedTabButtonDark{ get; }
+		Color TabBorder { get; }
+		Color TabInactiveText { get; }
+		Color TabEdgeBorder { get; }
+		Color SelectedTabBorder { get; }
 	}
 }
