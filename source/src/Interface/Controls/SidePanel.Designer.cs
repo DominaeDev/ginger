@@ -28,23 +28,23 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Windows.Forms.GroupBox group_Character;
+			GroupBoxEx group_Character;
 			System.Windows.Forms.Panel infoPanel;
 			System.Windows.Forms.TableLayoutPanel genderTable;
 			System.Windows.Forms.Panel portraitPanel;
-			System.Windows.Forms.GroupBox group_CardInfo;
+			GroupBoxEx group_CardInfo;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SidePanel));
 			System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 			System.Windows.Forms.Panel left;
 			System.Windows.Forms.Panel right;
 			System.Windows.Forms.Panel spacer_0;
-			System.Windows.Forms.GroupBox group_User;
+			GroupBoxEx group_User;
 			System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
 			System.Windows.Forms.Panel panel1;
 			System.Windows.Forms.Panel panel2;
 			System.Windows.Forms.Panel spacer_1;
 			System.Windows.Forms.Panel spacer_2;
-			System.Windows.Forms.GroupBox group_Stats;
+			GroupBoxEx group_Stats;
 			System.Windows.Forms.Panel panel_right;
 			System.Windows.Forms.Panel panel_left;
 			System.Windows.Forms.Label label_Context;
@@ -53,7 +53,7 @@
 			System.Windows.Forms.Label label_Tokens;
 			System.Windows.Forms.Label label_Lore;
 			System.Windows.Forms.Label label_Image;
-			System.Windows.Forms.GroupBox group_Generation;
+			GroupBoxEx group_Generation;
 			System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
 			System.Windows.Forms.Panel panel4;
 			System.Windows.Forms.Panel panel3;
@@ -91,22 +91,22 @@
 			this.label_Detail = new System.Windows.Forms.Label();
 			this.btn_More = new System.Windows.Forms.Button();
 			this.label_More = new System.Windows.Forms.Label();
-			group_Character = new System.Windows.Forms.GroupBox();
+			group_Character = new GroupBoxEx();
 			infoPanel = new System.Windows.Forms.Panel();
 			genderTable = new System.Windows.Forms.TableLayoutPanel();
 			portraitPanel = new System.Windows.Forms.Panel();
-			group_CardInfo = new System.Windows.Forms.GroupBox();
+			group_CardInfo = new GroupBoxEx();
 			tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			left = new System.Windows.Forms.Panel();
 			right = new System.Windows.Forms.Panel();
 			spacer_0 = new System.Windows.Forms.Panel();
-			group_User = new System.Windows.Forms.GroupBox();
+			group_User = new GroupBoxEx();
 			tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
 			panel1 = new System.Windows.Forms.Panel();
 			panel2 = new System.Windows.Forms.Panel();
 			spacer_1 = new System.Windows.Forms.Panel();
 			spacer_2 = new System.Windows.Forms.Panel();
-			group_Stats = new System.Windows.Forms.GroupBox();
+			group_Stats = new GroupBoxEx();
 			panel_right = new System.Windows.Forms.Panel();
 			panel_left = new System.Windows.Forms.Panel();
 			label_Context = new System.Windows.Forms.Label();
@@ -115,7 +115,7 @@
 			label_Tokens = new System.Windows.Forms.Label();
 			label_Lore = new System.Windows.Forms.Label();
 			label_Image = new System.Windows.Forms.Label();
-			group_Generation = new System.Windows.Forms.GroupBox();
+			group_Generation = new GroupBoxEx();
 			tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			panel4 = new System.Windows.Forms.Panel();
 			panel3 = new System.Windows.Forms.Panel();
@@ -193,6 +193,7 @@
 			// 
 			// textBox_customGender
 			// 
+			this.textBox_customGender.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_customGender.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_customGender.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textBox_customGender.Location = new System.Drawing.Point(212, 23);
@@ -243,6 +244,7 @@
 			// 
 			// textBox_characterSpokenName
 			// 
+			this.textBox_characterSpokenName.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_characterSpokenName.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_characterSpokenName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textBox_characterSpokenName.Location = new System.Drawing.Point(1, 67);
@@ -271,6 +273,7 @@
 			// 
 			// textBox_characterName
 			// 
+			this.textBox_characterName.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_characterName.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_characterName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textBox_characterName.Location = new System.Drawing.Point(1, 21);
@@ -340,6 +343,7 @@
 			// 
 			// textBox_tags
 			// 
+			this.textBox_tags.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_tags.Collection = ((System.Collections.Generic.HashSet<string>)(resources.GetObject("textBox_tags.Collection")));
 			this.textBox_tags.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_tags.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -366,6 +370,7 @@
 			// 
 			// textBox_creatorNotes
 			// 
+			this.textBox_creatorNotes.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_creatorNotes.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_creatorNotes.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textBox_creatorNotes.Location = new System.Drawing.Point(6, 86);
@@ -417,6 +422,7 @@
 			// 
 			// textBox_creator
 			// 
+			this.textBox_creator.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_creator.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_creator.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textBox_creator.Location = new System.Drawing.Point(0, 21);
@@ -454,6 +460,7 @@
 			// 
 			// textBox_version
 			// 
+			this.textBox_version.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_version.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_version.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textBox_version.Location = new System.Drawing.Point(6, 21);
@@ -531,6 +538,7 @@
 			// 
 			// textBox_userPlaceholder
 			// 
+			this.textBox_userPlaceholder.BorderColor = System.Drawing.Color.Gray;
 			this.textBox_userPlaceholder.Dock = System.Windows.Forms.DockStyle.Top;
 			this.textBox_userPlaceholder.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textBox_userPlaceholder.Location = new System.Drawing.Point(0, 21);

@@ -483,6 +483,7 @@ namespace Ginger
 					});
 				}
 
+				VisualTheme.ApplyTheme(menu);
 				menu.Show(sender as Control, new Point(args.X, args.Y));
 			}
 		}

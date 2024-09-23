@@ -586,6 +586,7 @@ namespace Ginger
 				menu.Items.Add(new ToolStripMenuItem("Edit source...", null, (s, e) => { MainForm.EditRecipeSource(recipe); }));
 			}
 
+			VisualTheme.ApplyTheme(menu);
 			menu.Show(control, location);
 		}
 

@@ -507,6 +507,7 @@ namespace Ginger
 				ToolTipText = "Remove all markdown images from the text. (E.g. ![](image.png))",
 			});
 
+			VisualTheme.ApplyTheme(menu);
 			menu.Show(this, location);
 		}
 
@@ -648,17 +649,15 @@ namespace Ginger
 				{
 					TextRenderer.DrawText(e.Graphics, _placeholder, this.Font,
 						new Point(ClientRectangle.Location.X, ClientRectangle.Location.Y + 2),
-						Color.FromArgb(144, 144, 144), Color.Empty);
+						VisualTheme.Theme.TextBoxPlaceholder, Color.Empty);
 				}
 				else
 				{
 					TextRenderer.DrawText(e.Graphics, _placeholder, this.Font,
 						new Point(ClientRectangle.Location.X - 3, ClientRectangle.Location.Y),
-						Color.FromArgb(144, 144, 144), Color.Empty);
+						VisualTheme.Theme.TextBoxPlaceholder, Color.Empty);
 				}
 			}
-			// Draw border
-//			e.Graphics.DrawRectangle(new Pen(Color.Green), new Rectangle(0, 0, Width - 1, Height - 1));
 		}
 
 		public void InitUndo()

@@ -105,6 +105,9 @@
     <NoWarn>168, 169, 618</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DarkNet, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\DarkNet.2.3.0\lib\net452\DarkNet.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -167,6 +170,9 @@
     </Compile>
     <Compile Include="src\Interface\Controls\FlatRichTextBox.Designer.cs">
       <DependentUpon>FlatRichTextBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Controls\GroupBoxEx.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="src\Interface\Controls\ISearchable.cs" />
     <Compile Include="src\Interface\Controls\OutputPreview.cs">

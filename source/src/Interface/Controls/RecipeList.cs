@@ -1045,6 +1045,7 @@ namespace Ginger
 					menu.Items.Add(new ToolStripMenuItem("Paste", null, (EventHandler)null) { Enabled = false });
 				}
 
+				VisualTheme.ApplyTheme(menu);
 				menu.Show(this, new Point(args.X, args.Y));
 			}
 		}

@@ -215,7 +215,7 @@ namespace Ginger
 					height);
 			}
 			if (width > Constants.MaxImageDimension || height > Constants.MaxImageDimension)
-				label_Image_Value.ForeColor = Color.Red;
+				label_Image_Value.ForeColor = VisualTheme.Theme.WarningRed;
 			else
 				label_Image_Value.ForeColor = this.ForeColor;
 		}
@@ -257,7 +257,7 @@ namespace Ginger
 				else
 				{
 					label_Tokens_Value.Text = string.Format("{0} ({1} over budget)", tokens, tokens - AppSettings.Settings.TokenBudget);
-					label_Tokens_Value.ForeColor = System.Drawing.Color.Red;
+					label_Tokens_Value.ForeColor = VisualTheme.Theme.WarningRed;
 				}
 
 				if (permanent_tokens <= AppSettings.Settings.TokenBudget)
@@ -274,7 +274,7 @@ namespace Ginger
 						label_Tokens_Permanent_Value.Text = string.Format("{0} ({1} over budget)", permanent_tokens, permanent_tokens - AppSettings.Settings.TokenBudget);
 					else
 						label_Tokens_Permanent_Value.Text = permanent_tokens.ToString(); 
-					label_Tokens_Permanent_Value.ForeColor = System.Drawing.Color.Red;
+					label_Tokens_Permanent_Value.ForeColor = VisualTheme.Theme.WarningRed;
 				}
 			}
 
@@ -503,6 +503,7 @@ namespace Ginger
 					Enabled = Current.Card.portraitImage != null,
 				});
 
+				VisualTheme.ApplyTheme(menu);
 				menu.Show(sender as Control, new System.Drawing.Point(args.X, args.Y));
 			}
 		}
@@ -817,6 +818,7 @@ namespace Ginger
 				RefreshSettingsButton();
 			}));
 
+			VisualTheme.ApplyTheme(menu);
 			menu.Show(sender, location);
 		}
 
@@ -866,25 +868,10 @@ namespace Ginger
 
 		public void ApplyVisualTheme()
 		{
-			var groupBoxes = this.FindAllControlsOfType<GroupBox>();
-			foreach (var control in groupBoxes)
-			{
-				control.ForeColor = VisualTheme.Theme.ControlForeground;
-				control.BackColor = VisualTheme.Theme.ControlBackground;
-			}
+			VisualTheme.ApplyTheme(this);
 
-			var textBoxes = this.FindAllControlsOfType<TextBoxBase>();
-			foreach (var control in textBoxes)
-			{
-				control.ForeColor = VisualTheme.Theme.TextBoxForeground;
-				control.BackColor = VisualTheme.Theme.TextBoxBackground;
-			}
-
-			foreach (Control control in this.Controls)
-			{
-				control.ForeColor = VisualTheme.Theme.ControlForeground;
-				control.BackColor = VisualTheme.Theme.ControlBackground;
-			}
+			if (Current.Characters != null)
+				RefreshValues();
 		}
 	}
 }

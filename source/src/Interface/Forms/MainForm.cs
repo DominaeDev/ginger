@@ -848,21 +848,16 @@ namespace Ginger
 		{
 			Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, true);
 
-			ContextMenuStrip menu = VisualTheme.CreateContextMenuStrip();
+			ContextMenuStrip menu = new ContextMenuStrip();
 
 			PopulateRecipeMenu(drawer, menu.Items, context);
 
-//			if (category == Recipe.Drawer.Components && RecipeBook.allRecipes.ContainsAny(r => r.category == Recipe.Category.Unknown))
-//			{
-//				menu.Items.Add("-");
-//				var unknown = new ToolStripMenuItem("Uncategorized", Resources.folder);
-//				PopulateRecipeMenu(Recipe.Drawer.Unknown, unknown.DropDownItems, context);
-//				menu.Items.Add(unknown);
-//			}
-
 			if (menu.Items.Count == 0)
 				menu.Items.Add("(Empty)").Enabled = false;
+
 			point.Offset(-16, 16);
+			
+			VisualTheme.ApplyTheme(menu);
 			menu.Show(control, point);
 			
 			StealFocus();
@@ -1294,6 +1289,8 @@ namespace Ginger
 			applyToAllChatsMenuItem.Checked = AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.All;
 			alwaysLinkMenuItem.Checked = AppSettings.BackyardLink.AlwaysLinkOnImport;
 			enableAutosaveMenuItem.Checked = AppSettings.BackyardLink.Autosave;
+
+			VisualTheme.ApplyTheme(menuStrip);
 		}
 
 		private void PopulateMRUMenu(ToolStripItemCollection items)
@@ -2337,25 +2334,17 @@ namespace Ginger
 
 		public void ApplyVisualTheme()
 		{
-			menuStrip.Renderer = VisualTheme.CreateToolStripRenderer();
-			menuStrip.ForeColor = VisualTheme.Theme.MenuForeground;
-			foreach (ToolStripMenuItem menuItem in menuStrip.Items)
-			{
-				menuItem.ForeColor = VisualTheme.Theme.MenuForeground;
-				if (menuItem.DropDownItems != null)
-				{
-					foreach (ToolStripItem dropDown in menuItem.DropDownItems)
-						dropDown.ForeColor = VisualTheme.Theme.MenuForeground;
-				}
-			}
+			VisualTheme.ApplyTheme(menuStrip);
 
 			this.BackColor = VisualTheme.Theme.ControlBackground;
 			this.ForeColor = VisualTheme.Theme.ControlForeground;
 
 			statusBar.BackColor = VisualTheme.Theme.ControlBackground;
 			statusBar.ForeColor = VisualTheme.Theme.ControlForeground;
-
 			sidePanel.ApplyVisualTheme();
+
+			Dark.Net.DarkNet.Instance.SetCurrentProcessTheme(VisualTheme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
+			Dark.Net.DarkNet.Instance.SetWindowThemeForms(this, VisualTheme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
 		}
 
 		private const int WM_CTLCOLORSCROLLBAR = 0x0137;

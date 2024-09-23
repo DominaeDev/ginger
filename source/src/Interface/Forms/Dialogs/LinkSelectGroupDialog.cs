@@ -355,6 +355,7 @@ namespace Ginger
 				Checked = AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByLastMessage,
 			});
 
+			VisualTheme.ApplyTheme(menu);
 			menu.Show(control, location);
 		}
 	}

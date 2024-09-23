@@ -1009,6 +1009,7 @@ namespace Ginger
 				Enabled = bCanScrub,
 				ToolTipText = bCanScrub ? Resources.tooltip_link_scrub_chat : Resources.tooltip_link_cannot_scrub_chat,
 			});
+			VisualTheme.ApplyTheme(menu);
 			menu.Show(chatView.listBox, location);
 		}
 
@@ -1246,6 +1247,7 @@ namespace Ginger
 				});
 			}
 
+			VisualTheme.ApplyTheme(menu);
 			menu.Show(chatInstanceList, location);
 		}
 
