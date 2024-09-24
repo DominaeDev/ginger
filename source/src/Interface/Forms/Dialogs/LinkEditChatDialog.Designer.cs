@@ -42,7 +42,7 @@ namespace Ginger
 			System.Windows.Forms.ColumnHeader columnDate;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkEditChatDialog));
 			System.Windows.Forms.Panel centerPanel;
-			this.groupBox = new System.Windows.Forms.GroupBox();
+			this.groupBox = new GroupBoxEx();
 			this.chatInstanceList = new Ginger.ChatListView();
 			this.imageList = new System.Windows.Forms.ImageList(this.components);
 			this.portraitPanel = new System.Windows.Forms.Panel();
@@ -433,7 +433,7 @@ namespace Ginger
 		private System.Windows.Forms.StatusStrip statusBar;
 		private System.Windows.Forms.ToolStripStatusLabel statusLabel;
 		private System.Windows.Forms.ToolStripStatusLabel statusChatLabel;
-		private System.Windows.Forms.GroupBox groupBox;
+		private GroupBoxEx groupBox;
 		private System.Windows.Forms.ToolStripMenuItem refreshMenuItem;
 		private System.Windows.Forms.Splitter splitter;
 		private System.Windows.Forms.ToolStripMenuItem createBackupMenuItem;

@@ -92,17 +92,16 @@ namespace Ginger
 
 		public void SetColor(Color color)
 		{
-			int kDarken = 20;
+			const int kDarken = 20;
+			var darkColor = Color.FromArgb(Math.Max(color.R - kDarken, 0), Math.Max(color.G - kDarken, 0), Math.Max(color.B - kDarken, 0));
 			
 			if (VisualTheme.DarkModeEnabled)
 			{
-				color = Utility.GetDarkerColor(color, 0.35f);
-				kDarken = 30;
+				color = Utility.GetDarkColor(color, 0.5f);
+				darkColor = Utility.GetDarkColor(color, 0.25f);
 			}
 
-			var darkColor = Color.FromArgb(Math.Max(color.R - kDarken, 0), Math.Max(color.G - kDarken, 0), Math.Max(color.B - kDarken, 0));
 			var contrastColor = Utility.GetContrastColor(color, true);
-
 			labelTitle.ForeColor = Utility.GetContrastColor(color, false);
 
 			header.BackColor = color;

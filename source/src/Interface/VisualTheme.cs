@@ -197,7 +197,9 @@ namespace Ginger
 		public Color TextBoxForeground => SystemColors.WindowText;
 		public Color TextBoxBorder => Color.Gray;
 		public Color TextBoxPlaceholder => Color.FromArgb(144, 144, 144);
-		
+		public Color TextBoxDisabledBackground => SystemColors.Control;
+		public Color TextBoxDisabledBorder => SystemColors.InactiveBorder;
+
 		public Color MenuBackground => SystemColors.MenuBar;
 		public Color MenuForeground => SystemColors.MenuText;
 		public Color MenuBorder => SystemColors.ControlDark;
@@ -264,6 +266,8 @@ namespace Ginger
 		public Color TextBoxBackground => ColorTranslator.FromHtml("#262626");
 		public Color TextBoxBorder => Color.Gray;
 		public Color TextBoxPlaceholder => ColorTranslator.FromHtml("#606060");
+		public Color TextBoxDisabledBackground => ColorTranslator.FromHtml("#363636");
+		public Color TextBoxDisabledBorder => Color.Gray;
 
 		public Color MenuForeground => Color.White;
 		public Color MenuBackground => ColorTranslator.FromHtml("#404040");
@@ -333,10 +337,13 @@ namespace Ginger
 		Color ControlForeground { get; }
 		Color ControlBackground { get; }
 
-		Color TextBoxBackground { get; }
 		Color TextBoxForeground { get; }
+		Color TextBoxBackground { get; }
 		Color TextBoxBorder { get; }
 		Color TextBoxPlaceholder { get; }
+
+		Color TextBoxDisabledBorder { get; }
+		Color TextBoxDisabledBackground { get; }
 
 		Color MenuBackground { get; }
 		Color MenuForeground { get; }

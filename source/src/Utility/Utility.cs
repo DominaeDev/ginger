@@ -1001,6 +1001,15 @@ namespace Ginger
 			return HSVToRGB(hsv).ToColor();
 		}
 
+		public static Color GetDarkColor(Color background, float fBrightness)
+		{
+			var hsv = RGBToHSV(new ColorF(background));
+			hsv.b = fBrightness;
+			if (hsv.g > 0.05f) // Boost saturation
+				hsv.g += 0.06f;
+			return HSVToRGB(hsv).ToColor();
+		}
+
 		public static string ReplaceWholeWord(string text, string word, string replace, StringComparison comparison = StringComparison.Ordinal, WholeWordOptions options = WholeWordOptions.Default)
 		{
 			if (string.IsNullOrEmpty(word))

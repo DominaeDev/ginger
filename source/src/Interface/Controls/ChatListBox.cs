@@ -73,31 +73,40 @@ namespace Ginger
 				e.DrawFocusRectangle();
 
 				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-				
+
 				// Name
-				e.Graphics.DrawString(
-					 entry.name,
-					 _nameFont,
-					 new SolidBrush(selected ? e.ForeColor : entry.color),
-					 new Point(e.Bounds.Left + NameLeft, e.Bounds.Top + NameTop));
+				using (var brush = new SolidBrush(selected ? e.ForeColor : entry.color))
+				{
+					e.Graphics.DrawString(
+						entry.name,
+						_nameFont,
+						brush,
+						new Point(e.Bounds.Left + NameLeft, e.Bounds.Top + NameTop));
+				}
 
 				// Timestamp
-				e.Graphics.DrawString(
-					 entry.timestamp,
-					 _timeFont,
-					 new SolidBrush(selected ? e.ForeColor : Color.DarkGray),
-					 new Rectangle(e.Bounds.Left, e.Bounds.Top + NameTop, e.Bounds.Width - 2, e.Bounds.Height),
-					 RightAligned);
-					
+				using (var brush = new SolidBrush(selected ? e.ForeColor : Color.DarkGray))
+				{
+					e.Graphics.DrawString(
+						entry.timestamp,
+						_timeFont,
+						brush,
+						new Rectangle(e.Bounds.Left, e.Bounds.Top + NameTop, e.Bounds.Width - 2, e.Bounds.Height),
+						RightAligned);
+				}
+
 				// Message
-				e.Graphics.DrawString(
-					 entry.message,
-					 e.Font,
-					 new SolidBrush(e.ForeColor),
-					 new Rectangle(
-						 new Point(MessageLeft, e.Bounds.Top + MessageTop),
-						 new Size(listBox.ClientSize.Width - MessageLeft - MessageRight - SystemInformation.VerticalScrollBarWidth, 0))
-					 );
+				using (var brush = new SolidBrush(e.ForeColor))
+				{
+					e.Graphics.DrawString(
+						entry.message,
+						e.Font,
+						brush,
+						new Rectangle(
+							new Point(MessageLeft, e.Bounds.Top + MessageTop),
+							new Size(listBox.ClientSize.Width - MessageLeft - MessageRight - SystemInformation.VerticalScrollBarWidth, 0))
+						);
+				}
 			}
 		}
 
