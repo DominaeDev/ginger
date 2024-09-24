@@ -19,6 +19,8 @@ namespace Ginger
 		public event EventHandler ControlAltEnterPressed;
 		public event EventHandler ValueChanged;
 		public event BeforeUndoState OnBeforeUndoState;
+		public event EventHandler InvalidVisualState;
+
 		public class BeforeUndoEventArgs : EventArgs
 		{
 			public UndoState State { get; set; }
@@ -324,6 +326,7 @@ namespace Ginger
 			_undo = new TextUndoStack<UndoState>(this);
 			_asyncSyntaxHighlighter = new AsyncSyntaxHighlighter();
 			_asyncSyntaxHighlighter.onResult += OnAsyncSyntaxHighlighterResult;
+
 		}
 
 		protected override void OnTextChanged(EventArgs e)
@@ -382,9 +385,15 @@ namespace Ginger
 		{
 			__Guard(() => {
 				if (Enabled)
+				{
 					ForeColor = VisualTheme.Theme.TextBoxForeground;
+					BackColor = VisualTheme.Theme.TextBoxBackground;
+				}
 				else
+				{
 					ForeColor = VisualTheme.Theme.GrayText;
+					BackColor = VisualTheme.Theme.TextBoxDisabledBackground;
+				}
 
 				RefreshPatterns();
 				RefreshSyntaxHighlight(true);
@@ -620,6 +629,12 @@ namespace Ginger
 			}
 			else if (m.Msg == WM_PAINT)
 			{
+				if (Visible == false)
+				{
+					InvalidVisualState?.Invoke(this, EventArgs.Empty);
+					return;
+				}
+
 				base.WndProc(ref m);
 
 				using (Graphics g = Graphics.FromHwnd(m.HWnd))

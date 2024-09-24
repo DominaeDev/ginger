@@ -86,14 +86,16 @@ namespace Ginger
 			richTextBox.VScroll += RichTextBox_VScroll;
 			richTextBox.TextChanged += RichTextBox_TextChanged;
 			richTextBox.ContentsResized += RichTextBox_ContentsResized;
-			
+			richTextBox.InvalidVisualState += RichTextBox_InvalidVisualState;
+
 			Resize += FlatRichTextBox_Resize;
 			FontChanged += FlatRichTextBox_FontChanged;
 			Load += FlatRichTextBox_Load;
 			VisibleChanged += FlatRichTextBox_VisibleChanged;
 			EnabledChanged += FlatRichTextBox_EnabledChanged;
-
+			
 			DoubleBuffered = true;
+			CausesValidation = true;
 		}
 
 		private void FlatRichTextBox_Load(object sender, EventArgs e)
@@ -163,24 +165,47 @@ namespace Ginger
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
-			using (var brush = new SolidBrush(Enabled ? VisualTheme.Theme.TextBoxBackground : SystemColors.Control))
+			Graphics g = e.Graphics;
+
+			using (var brush = new SolidBrush(Enabled ? VisualTheme.Theme.TextBoxBackground : VisualTheme.Theme.TextBoxDisabledBackground))
 			{
-				e.Graphics.FillRectangle(brush, new Rectangle(0, 0, Width - 1, Height - 1));
+				g.FillRectangle(brush, new Rectangle(0, 0, Width - 1, Height - 1));
 			}
 			
-			//if (Enabled == false)
-			//{
-			//	using (var brush = new SolidBrush(SystemColors.Window))
-			//	{
-			//		e.Graphics.FillRectangle(brush, new Rectangle(2, 2, Width - 4, Height - 4));
-			//	}
-			//}
-
 			// Border
-			using (var pen = new Pen(richTextBox.Focused ? VisualTheme.Theme.Highlight : VisualTheme.Theme.TextBoxBorder))
+			Color borderColor = Enabled ?
+				(richTextBox.Focused ? VisualTheme.Theme.MenuHighlight : VisualTheme.Theme.TextBoxBorder)
+				: VisualTheme.Theme.TextBoxDisabledBorder;
+			using (var pen = new Pen(borderColor))
 			{
-				e.Graphics.DrawRectangle(pen, new Rectangle(0, 0, Width - 1, Height - 1));
+				g.DrawRectangle(pen, new Rectangle(0, 0, Width - 1, Height - 1));
 			}
+
+			// Draw disabled text
+			if (Enabled == false)
+			{
+				using (var brush = new SolidBrush(VisualTheme.Theme.GrayText))
+				{
+					g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+
+					int width;
+					if (AppSettings.Settings.AutoBreakLine)
+						width = Math.Min((int)Math.Round(Constants.AutoWrapWidth * richTextBox.Font.SizeInPoints), Math.Max(this.Size.Width - 44, 0));
+					else
+						width = richTextBox.Width - 24;
+
+					g.DrawString(
+						richTextBox.Text,
+						richTextBox.Font,
+						brush,
+						new Rectangle(3, 4, width, richTextBox.Height));
+				}
+			}
+		}
+
+		protected override void OnPaintBackground(PaintEventArgs e)
+		{
+			// Do nothing
 		}
 
 		private void TextBox_Enter(object sender, EventArgs e)
@@ -249,6 +274,13 @@ namespace Ginger
 			this.BackColor = VisualTheme.Theme.TextBoxBackground;
 			richTextBox.ForeColor = VisualTheme.Theme.TextBoxForeground;
 			richTextBox.BackColor = VisualTheme.Theme.TextBoxBackground;
+
+			if (VisualTheme.DarkModeEnabled)
+				richTextBox.Visible = Enabled;
+			else if (richTextBox.Visible == false)
+				richTextBox.Visible = true;
+
+			Invalidate();
 		}
 
 		protected override void OnEnabledChanged(EventArgs e)
@@ -257,6 +289,20 @@ namespace Ginger
 
 			this.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : SystemColors.Control;
 			richTextBox.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : SystemColors.Control;
+
+			if (VisualTheme.DarkModeEnabled)
+				richTextBox.Visible = Enabled;
+			else if (richTextBox.Visible == false)
+				richTextBox.Visible = true;
+
+			Invalidate();
 		}
+
+		private void RichTextBox_InvalidVisualState(object sender, EventArgs e)
+		{
+			// Win forms bug!
+			richTextBox.Visible = false;
+			Refresh();
+		}	
 	}
 }

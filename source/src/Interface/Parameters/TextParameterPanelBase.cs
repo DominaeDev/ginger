@@ -79,14 +79,19 @@ namespace Ginger
 
 		protected override void OnSetParameter()
 		{
+			RichTextBoxEx.SyntaxFlags theme = RichTextBoxEx.SyntaxFlags.None;
+			if (VisualTheme.DarkModeEnabled)
+				theme = RichTextBoxEx.SyntaxFlags.DarkMode;
+
 			if (parameter.isRaw)
-				richTextBox.syntaxFlags = RichTextBoxEx.SyntaxFlags.None;
+				richTextBox.syntaxFlags = RichTextBoxEx.SyntaxFlags.None | theme;
 			else
-				richTextBox.syntaxFlags = RichTextBoxEx.SyntaxFlags.Default;
+				richTextBox.syntaxFlags = RichTextBoxEx.SyntaxFlags.Default | theme;
 
 			_textBox.Enabled = parameter.isEnabled || !parameter.isOptional;
 			_textBox.Placeholder = parameter.placeholder;
 			_textBox.InitUndo();
+			_textBox.ApplyVisualTheme();
 
 			// Tooltip
 			SetTooltip(_label, _textBox);
