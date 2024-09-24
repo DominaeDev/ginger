@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class CreateSnippetDialog : Form
+	public partial class CreateSnippetDialog : FormEx
 	{
 		List<SnippetPanel> panels = new List<SnippetPanel>();
 

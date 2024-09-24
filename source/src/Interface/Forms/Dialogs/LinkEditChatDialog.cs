@@ -14,7 +14,7 @@ using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
 {
-	public partial class LinkEditChatDialog : Form
+	public partial class LinkEditChatDialog : FormEx
 	{
 		public GroupInstance Group { set { _groupInstance = value; } }
 		private GroupInstance _groupInstance;

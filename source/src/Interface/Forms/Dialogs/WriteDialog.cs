@@ -10,7 +10,7 @@ using Text = Ginger.Text;
 
 namespace Ginger
 {
-	public partial class WriteDialog : Form
+	public partial class WriteDialog : FormEx
 	{
 		public string Value
 		{

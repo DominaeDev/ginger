@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class FindReplaceDialog : Form
+	public partial class FindReplaceDialog : FormEx
 	{
 		public enum Context
 		{

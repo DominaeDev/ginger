@@ -2372,8 +2372,13 @@ namespace Ginger
 			statusBar.ForeColor = VisualTheme.Theme.ControlForeground;
 			sidePanel.ApplyVisualTheme();
 			recipeList.ApplyVisualTheme();
-
 			tabControl.ApplyVisualTheme();
+
+			outputBox.ForeColor = VisualTheme.Theme.OutputForeground;
+			outputBox.BackColor = VisualTheme.Theme.OutputBackground;
+
+			userNotes.richTextBox.ForeColor = VisualTheme.Theme.NotesForeground;
+			userNotes.richTextBox.BackColor = VisualTheme.Theme.NotesBackground;
 
 			Dark.Net.DarkNet.Instance.SetCurrentProcessTheme(VisualTheme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
 			Dark.Net.DarkNet.Instance.SetWindowThemeForms(this, VisualTheme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);

@@ -25,6 +25,13 @@ namespace Ginger
 			foreach (var menuStrip in menuStrips)
 				ApplyTheme(menuStrip);
 
+			var statusStrips = form.FindAllControlsOfType<StatusStrip>();
+			foreach (var statusStrip in statusStrips)
+			{
+				statusStrip.BackColor = Theme.ControlBackground;
+				statusStrip.ForeColor = Theme.ControlForeground;
+			}
+
 			var textBoxes = form.FindAllControlsOfType<TextBoxBase>();
 			foreach (var control in textBoxes)
 			{
@@ -39,12 +46,25 @@ namespace Ginger
 				control.BackColor = Theme.TextBoxBackground;
 			}
 
-			var buttons = form.FindAllControlsOfType<Button>();
-			foreach (var button in buttons)
+			var treeViews = form.FindAllControlsOfType<TreeView>();
+			foreach (var control in treeViews)
 			{
-				ApplyVisualStyle(button);
+				control.ForeColor = Theme.MenuForeground;
+				control.BackColor = Theme.TextBoxBackground;
 			}
 
+			var listViews = form.FindAllControlsOfType<ListView>();
+			foreach (var control in listViews)
+			{
+				control.ForeColor = Theme.MenuForeground;
+				control.BackColor = Theme.TextBoxBackground;
+			}
+
+			var buttons = form.FindAllControlsOfType<Button>();
+			foreach (var button in buttons)
+				ApplyVisualStyle(button);
+
+			Dark.Net.DarkNet.Instance.SetWindowThemeForms(form, DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Light);
 		}
 
 		public static void ApplyTheme(Control parentControl)
@@ -210,6 +230,12 @@ namespace Ginger
 		public Color RecipeListBackground => Color.Gray;
 		public Color RecipeListGradient => Color.DarkGray;
 
+		public Color OutputForeground => Color.Beige;
+		public Color OutputBackground => Color.FromArgb(64, 64, 64);
+
+		public Color NotesForeground => Color.Black;
+		public Color NotesBackground => Color.FromArgb(255, 255, 248);
+
 		// Icons
 		public Image MenuIcon => Resources.menu;
 		public Image MenuEditIcon => Resources.menu_edit;
@@ -231,16 +257,16 @@ namespace Ginger
 
 	public class DarkTheme : IColorTheme
 	{
-		public Color ControlBackground => ColorTranslator.FromHtml("#404040");
 		public Color ControlForeground => ColorTranslator.FromHtml("#f0f0f0");
+		public Color ControlBackground => ColorTranslator.FromHtml("#404040");
 
-		public Color TextBoxBackground => ColorTranslator.FromHtml("#262626");
 		public Color TextBoxForeground => ColorTranslator.FromHtml("#DEDEDE");
+		public Color TextBoxBackground => ColorTranslator.FromHtml("#262626");
 		public Color TextBoxBorder => Color.Gray;
 		public Color TextBoxPlaceholder => ColorTranslator.FromHtml("#606060");
 
-		public Color MenuBackground => ColorTranslator.FromHtml("#404040");
 		public Color MenuForeground => Color.White;
+		public Color MenuBackground => ColorTranslator.FromHtml("#404040");
 		public Color MenuBorder => ColorTranslator.FromHtml("#202020");
 		public Color MenuGradientBegin =>  ColorTranslator.FromHtml("#404040");
 		public Color MenuGradientMiddle =>  ColorTranslator.FromHtml("#3c3c3c");
@@ -269,7 +295,13 @@ namespace Ginger
 		public Color SeletedTabButtonDark => ColorTranslator.FromHtml("#606060");
 
 		public Color RecipeListBackground => ColorTranslator.FromHtml("#282828");
-		public Color RecipeListGradient => ColorTranslator.FromHtml("#404040");
+		public Color RecipeListGradient => ColorTranslator.FromHtml("#3a3a3a");
+
+		public Color OutputForeground => ColorTranslator.FromHtml("#f9eeb9");
+		public Color OutputBackground => TextBoxBackground;
+
+		public Color NotesForeground => TextBoxForeground;
+		public Color NotesBackground => TextBoxBackground;
 
 		// Icons
 		public Image MenuIcon => Resources.dark_menu;
@@ -335,6 +367,12 @@ namespace Ginger
 
 		Color RecipeListBackground { get; }
 		Color RecipeListGradient { get; }
+
+		Color OutputForeground { get; }
+		Color OutputBackground { get; }
+
+		Color NotesForeground { get; }
+		Color NotesBackground { get; }
 
 		// Icons
 		Image MenuIcon { get; }

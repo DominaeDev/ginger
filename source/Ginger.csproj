@@ -171,6 +171,9 @@
     <Compile Include="src\Interface\Controls\FlatRichTextBox.Designer.cs">
       <DependentUpon>FlatRichTextBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Interface\Controls\FormEx.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="src\Interface\Controls\GroupBoxEx.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class EnterUrlDialog : Form
+	public partial class EnterUrlDialog : FormEx
 	{
 		public string Uri = "http://";
 

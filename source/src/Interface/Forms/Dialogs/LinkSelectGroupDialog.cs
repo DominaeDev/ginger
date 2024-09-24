@@ -10,7 +10,7 @@ using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
 {
-	public partial class LinkSelectGroupDialog : Form
+	public partial class LinkSelectGroupDialog : FormEx
 	{
 		public CharacterInstance[] Characters;
 		public GroupInstance[] Groups;

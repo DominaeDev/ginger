@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class AssetViewDialog : Form
+	public partial class AssetViewDialog : FormEx
 	{
 		public AssetCollection Assets;
 		public bool Changed = false;

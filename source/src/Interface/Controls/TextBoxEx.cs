@@ -415,10 +415,11 @@ namespace Ginger
 		}
 
 		// Border color
-		const int WM_NCPAINT = 0x85;
-		const uint RDW_INVALIDATE = 0x1;
-		const uint RDW_IUPDATENOW = 0x100;
-		const uint RDW_FRAME = 0x400;
+		private const int WM_PAINT = 0x000F;
+		private const int WM_NCPAINT = 0x85;
+		private const uint RDW_INVALIDATE = 0x1;
+		private const uint RDW_IUPDATENOW = 0x100;
+		private const uint RDW_FRAME = 0x400;
 		[DllImport("user32.dll")]
 		static extern IntPtr GetWindowDC(IntPtr hWnd);
 		[DllImport("user32.dll")]
@@ -428,7 +429,13 @@ namespace Ginger
 	
 		protected override void WndProc(ref Message m)
 		{
-			if (m.Msg == WM_NCPAINT)
+			if (m.Msg == WM_PAINT)
+			{
+				base.WndProc(ref m);
+				DrawBorder();
+				return;
+			}
+			else if (m.Msg == WM_NCPAINT)
 			{
 				DrawBorder();
 				return;

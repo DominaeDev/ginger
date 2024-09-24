@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class PasteTextDialog : Form
+	public partial class PasteTextDialog : FormEx
 	{
 		public string RecipeXml = null;
 

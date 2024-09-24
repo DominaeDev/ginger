@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	partial class AboutBox : Form
+	partial class AboutBox : FormEx
 	{
 		public AboutBox()
 		{

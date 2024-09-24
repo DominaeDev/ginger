@@ -11,7 +11,7 @@ using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
 {
-	public partial class LinkSelectCharacterDialog : Form
+	public partial class LinkSelectCharacterDialog : FormEx
 	{
 		public CharacterInstance[] Characters;
 		public FolderInstance[] Folders;
