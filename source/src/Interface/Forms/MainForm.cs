@@ -2371,6 +2371,7 @@ namespace Ginger
 			statusBar.BackColor = VisualTheme.Theme.ControlBackground;
 			statusBar.ForeColor = VisualTheme.Theme.ControlForeground;
 			sidePanel.ApplyVisualTheme();
+			recipeList.ApplyVisualTheme();
 
 			tabControl.ApplyVisualTheme();
 

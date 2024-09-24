@@ -9,7 +9,7 @@ using Ginger.Integration;
 
 namespace Ginger
 {
-	public partial class RecipePanel : UserControl
+	public partial class RecipePanel : UserControl, IVisualThemed
 	{
 		public event EventHandler OnParameterChanged;
 		public event EventHandler OnPanelSizeChanged;
@@ -92,7 +92,14 @@ namespace Ginger
 
 		public void SetColor(Color color)
 		{
-			const int kDarken = 20;
+			int kDarken = 20;
+			
+			if (VisualTheme.DarkModeEnabled)
+			{
+				color = Utility.GetDarkerColor(color, 0.35f);
+				kDarken = 30;
+			}
+
 			var darkColor = Color.FromArgb(Math.Max(color.R - kDarken, 0), Math.Max(color.G - kDarken, 0), Math.Max(color.B - kDarken, 0));
 			var contrastColor = Utility.GetContrastColor(color, true);
 
@@ -104,12 +111,6 @@ namespace Ginger
 			parameters.ForeColor = contrastColor;
 
 			BorderColor = Utility.GetDarkerColor(darkColor, 0.25f);
-		}
-
-		public void SetColor(Color[] colors)
-		{
-			header.BackColor = colors[0];
-			parameters.BackColor = colors[1];
 		}
 
 		public bool Collapse()
@@ -256,11 +257,14 @@ namespace Ginger
 			for (int i = 0; i < parameterPanels.Count; ++i)
 				(parameterPanels[i] as Control).TabIndex = i;
 
+			ApplyVisualTheme();
+
 //			RefreshTitle();
 			toolTip.SetToolTip(labelTitle, recipe.GetTooltip());
 			btnUp.Visible = !recipe.isBase;
 			btnDown.Visible = !recipe.isBase;
 			SetEnabled(recipe.isEnabled);
+
 
 			MainForm.ResumeGeneration();
 		}
@@ -727,7 +731,10 @@ namespace Ginger
 			else // Disabled
 			{
 				SetColor(Color.Gainsboro);
-				labelTitle.ForeColor = Color.Gray;
+				if (VisualTheme.DarkModeEnabled)
+					labelTitle.ForeColor = Color.Black;
+				else
+					labelTitle.ForeColor = Color.Gray;
 			}
 			TabStop = !Collapsed && recipe.isEnabled;
 			RefreshTitle();
@@ -921,10 +928,45 @@ namespace Ginger
 		}
 
 		public void RefreshSyntaxHighlighting(bool immediate)
-
 		{
 			foreach (var parameter in parameterPanels.OfType<ISyntaxHighlighted>())
 				parameter.RefreshSyntaxHighlight(immediate);
+		}
+
+		public void ApplyVisualTheme()
+		{
+			if (Enabled == false || recipe.isEnabled == false)
+			{
+				SetColor(Color.Gainsboro);
+				if (VisualTheme.DarkModeEnabled)
+					labelTitle.ForeColor = Color.Black;
+				else
+					labelTitle.ForeColor = Color.Gray;
+				return;
+			}
+
+			SetColor(recipe.color);
+
+			var textBoxes = parameterContainer.FindAllControlsOfType<TextBoxEx>();
+			foreach (var control in textBoxes)
+			{
+				control.ForeColor = VisualTheme.Theme.TextBoxForeground;
+				control.BackColor = VisualTheme.Theme.TextBoxBackground;
+			}
+
+			var flatTextBoxes = parameterContainer.FindAllControlsOfType<FlatRichTextBox>();
+			foreach (var control in flatTextBoxes)
+				control.ApplyVisualTheme();
+
+			var comboBoxes = parameterContainer.FindAllControlsOfType<ComboBox>();
+			foreach (var control in comboBoxes)
+			{
+				if (control.Enabled)
+				{
+					control.ForeColor = VisualTheme.Theme.TextBoxForeground;
+					control.BackColor = VisualTheme.Theme.TextBoxBackground;
+				}
+			}
 		}
 	}
 }

@@ -382,9 +382,9 @@ namespace Ginger
 		{
 			__Guard(() => {
 				if (Enabled)
-					ForeColor = SystemColors.WindowText;
+					ForeColor = VisualTheme.Theme.TextBoxForeground;
 				else
-					ForeColor = SystemColors.GrayText;
+					ForeColor = VisualTheme.Theme.GrayText;
 
 				RefreshPatterns();
 				RefreshSyntaxHighlight(true);

@@ -10,7 +10,7 @@ using Ginger.Integration;
 
 namespace Ginger
 {
-	public partial class RecipeList : UserControl, IIdleHandler
+	public partial class RecipeList : UserControl, IIdleHandler, IVisualThemed
 	{
 		[Category("Appearance"), Description("Gradient color")]
 		public Color GradientColor { get; set; }
@@ -69,7 +69,7 @@ namespace Ginger
 			var graphics = e.Graphics;
 
 			// Solid bg
-			using (var bgBrush = new SolidBrush(this.BackColor))
+			using (var bgBrush = new SolidBrush(VisualTheme.Theme.RecipeListBackground))
 			{
 				graphics.FillRectangle(bgBrush, panel.DisplayRectangle);
 			}
@@ -77,7 +77,7 @@ namespace Ginger
 			// Gradient
 			RectangleF rectBottom = new RectangleF(new PointF(0, panel.Height - panel.Height / 2), new SizeF(panel.Width, panel.Height / 2));
 			RectangleF drawBottom = new RectangleF(rectBottom.X, rectBottom.Y + 1, rectBottom.Width, rectBottom.Height - 1);
-			using (var bgGradient = new LinearGradientBrush(rectBottom, this.BackColor, this.GradientColor, LinearGradientMode.Vertical))
+			using (var bgGradient = new LinearGradientBrush(rectBottom, VisualTheme.Theme.RecipeListBackground, VisualTheme.Theme.RecipeListGradient, LinearGradientMode.Vertical))
 			{
 				graphics.FillRectangle(bgGradient, drawBottom);
 			}
@@ -1574,5 +1574,10 @@ namespace Ginger
 			});
 		}
 
+		public void ApplyVisualTheme()
+		{
+			foreach (var panel in _recipePanels)
+				panel.ApplyVisualTheme();
+		}
 	}
 }

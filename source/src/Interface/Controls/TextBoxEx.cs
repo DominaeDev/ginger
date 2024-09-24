@@ -423,12 +423,12 @@ namespace Ginger
 		static extern IntPtr GetWindowDC(IntPtr hWnd);
 		[DllImport("user32.dll")]
 		static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
-//		[DllImport("user32.dll")]
-//		static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprc, IntPtr hrgn, uint flags);
+		[DllImport("user32.dll")]
+		static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprc, IntPtr hrgn, uint flags);
 	
 		protected override void WndProc(ref Message m)
 		{
-			if (m.Msg == WM_NCPAINT && BorderStyle == BorderStyle.Fixed3D)
+			if (m.Msg == WM_NCPAINT)
 			{
 				DrawBorder();
 				return;
@@ -456,11 +456,18 @@ namespace Ginger
 			ReleaseDC(this.Handle, hdc);
 		}
 
-		//protected override void OnSizeChanged(EventArgs e)
-		//{
-		//	base.OnSizeChanged(e);
-		//	RedrawWindow(Handle, IntPtr.Zero, IntPtr.Zero, RDW_FRAME | RDW_IUPDATENOW | RDW_INVALIDATE);
-		//}
+		protected override void OnEnabledChanged(EventArgs e)
+		{
+			base.OnEnabledChanged(e);
+
+			this.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : SystemColors.Control;
+		}
+		
+		protected override void OnSizeChanged(EventArgs e)
+		{
+			base.OnSizeChanged(e);
+			RedrawWindow(Handle, IntPtr.Zero, IntPtr.Zero, RDW_FRAME | RDW_IUPDATENOW | RDW_INVALIDATE);
+		}
 
 	}
 }

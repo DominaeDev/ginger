@@ -186,8 +186,8 @@ namespace Ginger
 			{
 				public static readonly Color Foreground	= ColorTranslator.FromHtml("#DEDEDE");
 				public static readonly Color Background	= ColorTranslator.FromHtml("#222222");
-				public static readonly Color Dialogue	= ColorTranslator.FromHtml("#F0A400");
-				public static readonly Color Narration	= ColorTranslator.FromHtml("#93ACC4");
+				public static readonly Color Dialogue	= ColorTranslator.FromHtml("#ffcd62");
+				public static readonly Color Narration	= ColorTranslator.FromHtml("#97a2ac");
 				public static readonly Color Number		= ColorTranslator.FromHtml("#BE7BE3");
 				public static readonly Color Name		= ColorTranslator.FromHtml("#4FB0FF");
 				public static readonly Color Command	= ColorTranslator.FromHtml("#C06000");

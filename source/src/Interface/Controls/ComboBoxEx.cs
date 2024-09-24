@@ -1,6 +1,7 @@
 ﻿using System.Windows.Forms;
 using System.ComponentModel;
 using System.Drawing;
+using System;
 
 namespace Ginger
 {
@@ -25,7 +26,7 @@ namespace Ginger
 			{
 				base.WndProc(ref m);
 
-				Color borderColor = Focused ? VisualTheme.Theme.Highlight : VisualTheme.Theme.TextBoxBorder;
+				Color borderColor = (Focused ? VisualTheme.Theme.MenuHighlight : VisualTheme.Theme.TextBoxBorder);
 
 				using (var g = Graphics.FromHwnd(Handle))
 				{
@@ -45,6 +46,14 @@ namespace Ginger
 			}
 
 			base.WndProc(ref m);
+		}
+
+		protected override void OnEnabledChanged(EventArgs e)
+		{
+			base.OnEnabledChanged(e);
+
+			this.ForeColor = Enabled ? VisualTheme.Theme.TextBoxForeground : SystemColors.GrayText;
+			this.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : SystemColors.Control;
 		}
 	}
 }

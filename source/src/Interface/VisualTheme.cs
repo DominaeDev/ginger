@@ -142,38 +142,12 @@ namespace Ginger
 			public override Color ImageMarginGradientEnd => Theme.MenuGradientEnd;
 
 			public override Color MenuBorder => Theme.MenuBorder;
-			public override Color MenuItemBorder => Theme.Highlight;
+			public override Color MenuItemBorder => Theme.MenuHighlight;
 
 			public override Color MenuItemPressedGradientBegin => Theme.MenuBackground;
 			public override Color MenuItemPressedGradientEnd => Theme.MenuBackground;
 
-			/*
-			public override Color ButtonPressedBorder => Color.Fuchsia;
-			public override Color ButtonPressedHighlight => Color.Green;
-			public override Color ButtonPressedHighlightBorder => Color.Red;
-
-			public override Color RaftingContainerGradientBegin => Color.Orange;
-			public override Color OverflowButtonGradientBegin => Color.Beige;
-			public override Color ToolStripBorder => Color.BurlyWood;
-			public override Color ButtonCheckedGradientBegin => Color.Yellow;
-			public override Color ButtonPressedGradientBegin => Color.Fuchsia;
-
-			public override Color GripDark => Color.DarkBlue;
-			public override Color CheckPressedBackground => Color.Purple;
-
-			public override Color ButtonCheckedHighlight => Color.Green;
-			public override Color ButtonSelectedHighlightBorder => Color.Plum;
-			public override Color ToolStripPanelGradientBegin => Color.Green;
-			public override Color ToolStripGradientBegin => Color.Pink;
-			
-
-
-			public override Color ButtonSelectedGradientBegin => Color.Yellow;
-			public override Color ButtonSelectedGradientMiddle => Color.Yellow;
-			public override Color ButtonSelectedGradientEnd => Color.Yellow;
-			*/
-
-			public override Color ButtonSelectedBorder => Theme.Highlight;
+			public override Color ButtonSelectedBorder => Theme.MenuHighlight;
 
 			public override Color SeparatorLight => Theme.MenuSeparator;
 			public override Color SeparatorDark => Theme.MenuSeparator;
@@ -212,6 +186,7 @@ namespace Ginger
 		public Color MenuGradientMiddle => SystemColors.MenuBar;
 		public Color MenuGradientEnd => SystemColors.MenuBar;
 		public Color MenuSeparator => SystemColors.ControlDark;
+		public Color MenuHighlight => SystemColors.Highlight;
 
 		public Color Border => Color.Gray;
 		public Color GroupBoxBorder => ColorTranslator.FromHtml("#d3d3d3");
@@ -231,6 +206,9 @@ namespace Ginger
 		public Color TabBorder => Color.Silver;
 		public Color TabEdgeBorder => SystemColors.ControlDark;
 		public Color SelectedTabBorder => SystemColors.ControlDark;
+
+		public Color RecipeListBackground => Color.Gray;
+		public Color RecipeListGradient => Color.DarkGray;
 
 		// Icons
 		public Image MenuIcon => Resources.menu;
@@ -256,10 +234,10 @@ namespace Ginger
 		public Color ControlBackground => ColorTranslator.FromHtml("#404040");
 		public Color ControlForeground => ColorTranslator.FromHtml("#f0f0f0");
 
-		public Color TextBoxBackground => ColorTranslator.FromHtml("#202020");
-		public Color TextBoxForeground => Color.White;
+		public Color TextBoxBackground => ColorTranslator.FromHtml("#262626");
+		public Color TextBoxForeground => ColorTranslator.FromHtml("#DEDEDE");
 		public Color TextBoxBorder => Color.Gray;
-		public Color TextBoxPlaceholder => Color.FromArgb(180, 180, 180);
+		public Color TextBoxPlaceholder => ColorTranslator.FromHtml("#606060");
 
 		public Color MenuBackground => ColorTranslator.FromHtml("#404040");
 		public Color MenuForeground => Color.White;
@@ -268,6 +246,7 @@ namespace Ginger
 		public Color MenuGradientMiddle =>  ColorTranslator.FromHtml("#3c3c3c");
 		public Color MenuGradientEnd => ColorTranslator.FromHtml("#343434");
 		public Color MenuSeparator => ColorTranslator.FromHtml("#303030");
+		public Color MenuHighlight => SystemColors.Highlight;
 
 		public Color Button => ColorTranslator.FromHtml("#363636");
 		public Color ButtonHover => ColorTranslator.FromHtml("#2d2d2d");
@@ -278,7 +257,7 @@ namespace Ginger
 		public Color GroupBoxBorder => ColorTranslator.FromHtml("#606060");
 
 		public Color WarningRed => ColorTranslator.FromHtml("#ff4040");
-		public Color Highlight => SystemColors.Highlight;
+		public Color Highlight => Color.LightGray;
 		public Color GrayText => SystemColors.GrayText;
 
 		public Color TabInactiveText => ColorTranslator.FromHtml("#c0c0c0");
@@ -288,6 +267,9 @@ namespace Ginger
 
 		public Color SeletedTabButtonLight => ColorTranslator.FromHtml("#808080");
 		public Color SeletedTabButtonDark => ColorTranslator.FromHtml("#606060");
+
+		public Color RecipeListBackground => ColorTranslator.FromHtml("#282828");
+		public Color RecipeListGradient => ColorTranslator.FromHtml("#404040");
 
 		// Icons
 		public Image MenuIcon => Resources.dark_menu;
@@ -331,6 +313,7 @@ namespace Ginger
 		Color MenuGradientMiddle { get; }
 		Color MenuGradientEnd { get; }
 		Color MenuSeparator { get; }
+		Color MenuHighlight { get; }
 
 		Color Border { get; }
 		Color GroupBoxBorder { get; }
@@ -349,6 +332,9 @@ namespace Ginger
 		Color ButtonBorder { get; }
 		Color ButtonHover { get; }
 		Color ButtonPressed { get; }
+
+		Color RecipeListBackground { get; }
+		Color RecipeListGradient { get; }
 
 		// Icons
 		Image MenuIcon { get; }

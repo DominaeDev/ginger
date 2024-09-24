@@ -9,7 +9,7 @@ namespace Ginger
 	// Doing it this way may look really dumb, and it is, but it actually avoids a whole
 	// host of issues with WinForms' TERRIBLE native RichTextBox.
 
-	public partial class FlatRichTextBox : UserControl
+	public partial class FlatRichTextBox : UserControl, IVisualThemed
 	{
 		[Category("Behavior"), Description("Placeholder text")]
 		public string Placeholder
@@ -161,22 +161,26 @@ namespace Ginger
 			}
 		}
 
-		private static Brush s_SolidWhite = new SolidBrush(SystemColors.Window);
-		private static Brush s_SolidGray = new SolidBrush(SystemColors.Control);
-
 		protected override void OnPaint(PaintEventArgs e)
 		{
-			// BG
-			if (Enabled)
-				e.Graphics.FillRectangle(s_SolidWhite, new Rectangle(0, 0, Width - 1, Height - 1));
-			else
+			using (var brush = new SolidBrush(Enabled ? VisualTheme.Theme.TextBoxBackground : SystemColors.Control))
 			{
-				e.Graphics.FillRectangle(s_SolidWhite, new Rectangle(0, 0, Width - 1, Height - 1));
-				e.Graphics.FillRectangle(s_SolidGray, new Rectangle(2, 2, Width - 4, Height - 4));
+				e.Graphics.FillRectangle(brush, new Rectangle(0, 0, Width - 1, Height - 1));
 			}
+			
+			//if (Enabled == false)
+			//{
+			//	using (var brush = new SolidBrush(SystemColors.Window))
+			//	{
+			//		e.Graphics.FillRectangle(brush, new Rectangle(2, 2, Width - 4, Height - 4));
+			//	}
+			//}
 
 			// Border
-			e.Graphics.DrawRectangle(new Pen(BorderColor), new Rectangle(0, 0, Width - 1, Height - 1));
+			using (var pen = new Pen(richTextBox.Focused ? VisualTheme.Theme.Highlight : VisualTheme.Theme.TextBoxBorder))
+			{
+				e.Graphics.DrawRectangle(pen, new Rectangle(0, 0, Width - 1, Height - 1));
+			}
 		}
 
 		private void TextBox_Enter(object sender, EventArgs e)
@@ -193,8 +197,7 @@ namespace Ginger
 
 		private void FlatRichTextBox_EnabledChanged(object sender, EventArgs e)
 		{
-			if (HighlightBorder)
-				BorderColor = SystemColors.WindowFrame;
+			BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : SystemColors.Control;
 		}
 
 		private void RichTextBox_VScroll(object sender, EventArgs e)
@@ -233,6 +236,27 @@ namespace Ginger
 			_bIgnoreEvents = true;
 			richTextBox.SetTextSilent(text);
 			_bIgnoreEvents = false;
+		}
+
+		public void ApplyVisualTheme()
+		{
+			if (VisualTheme.DarkModeEnabled)
+				richTextBox.syntaxFlags |= RichTextBoxEx.SyntaxFlags.DarkMode;
+			else
+				richTextBox.syntaxFlags &= ~RichTextBoxEx.SyntaxFlags.DarkMode;
+
+			this.ForeColor = VisualTheme.Theme.TextBoxForeground;
+			this.BackColor = VisualTheme.Theme.TextBoxBackground;
+			richTextBox.ForeColor = VisualTheme.Theme.TextBoxForeground;
+			richTextBox.BackColor = VisualTheme.Theme.TextBoxBackground;
+		}
+
+		protected override void OnEnabledChanged(EventArgs e)
+		{
+			base.OnEnabledChanged(e);
+
+			this.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : SystemColors.Control;
+			richTextBox.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : SystemColors.Control;
 		}
 	}
 }
