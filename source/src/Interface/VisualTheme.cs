@@ -18,6 +18,9 @@ namespace Ginger
 
 		public static void ApplyTheme(Form form)
 		{
+			if (Utility.InDesignMode)
+				return;
+
 			form.BackColor = Theme.ControlBackground;
 			form.ForeColor = Theme.ControlForeground;
 
@@ -65,14 +68,14 @@ namespace Ginger
 			var treeViews = form.FindAllControlsOfType<TreeView>();
 			foreach (var control in treeViews)
 			{
-				control.ForeColor = Theme.MenuForeground;
-				control.BackColor = Theme.TextBoxBackground;
+				control.ForeColor = Theme.TextBoxForeground;
+				control.BackColor = Theme.TreeViewBackground;
 			}
 
 			var listViews = form.FindAllControlsOfType<ListView>();
 			foreach (var control in listViews)
 			{
-				control.ForeColor = Theme.MenuForeground;
+				control.ForeColor = Theme.TextBoxForeground;
 				control.BackColor = Theme.TextBoxBackground;
 			}
 
@@ -135,6 +138,7 @@ namespace Ginger
 		
 		public static void ApplyVisualStyle(Button button)
 		{
+			button.FlatStyle = FlatStyle.Flat;
 			button.FlatAppearance.BorderColor = Theme.ButtonBorder;
 			button.FlatAppearance.MouseDownBackColor = Theme.ButtonPressed;
 			button.FlatAppearance.MouseOverBackColor = Theme.ButtonHover;
@@ -244,6 +248,7 @@ namespace Ginger
 
 		public Color Border => Color.Gray;
 		public Color GroupBoxBorder => ColorTranslator.FromHtml("#d3d3d3");
+		public Color TreeViewBackground => Color.White;
 
 		public Color Button => Color.WhiteSmoke;
 		public Color ButtonBorder => Color.Silver;
@@ -323,6 +328,7 @@ namespace Ginger
 
 		public Color Border => Color.Gray;
 		public Color GroupBoxBorder => ColorTranslator.FromHtml("#606060");
+		public Color TreeViewBackground => ColorTranslator.FromHtml("#303030");
 
 		public Color WarningRed => ColorTranslator.FromHtml("#ff4040");
 		public Color Highlight => Color.LightGray;
@@ -400,6 +406,8 @@ namespace Ginger
 
 		Color Border { get; }
 		Color GroupBoxBorder { get; }
+		Color TreeViewBackground { get; }
+
 		Color WarningRed { get; }
 		Color Highlight { get; }
 		Color GrayText { get; }

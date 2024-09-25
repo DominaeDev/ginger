@@ -194,7 +194,7 @@ namespace Ginger
 				public static readonly Color Pronoun	= ColorTranslator.FromHtml("#D000D0");
 				public static readonly Color Comment	= ColorTranslator.FromHtml("#636363");
 				public static readonly Color Code		= ColorTranslator.FromHtml("#969696");
-				public static readonly Color Error		= ColorTranslator.FromHtml("#D12640");
+				public static readonly Color Error		= ColorTranslator.FromHtml("#ff5569");
 				public static readonly Color Wildcard	= ColorTranslator.FromHtml("#00A0A0");
 				public static readonly Color Decorator	= ColorTranslator.FromHtml("#A000A0");
 			}

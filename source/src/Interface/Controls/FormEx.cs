@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Ginger
@@ -13,8 +9,12 @@ namespace Ginger
 		{
 			base.OnLoad(e);
 
-			VisualTheme.ApplyTheme(this);
+			ApplyTheme();
 		}
 
+		protected virtual void ApplyTheme()
+		{
+			VisualTheme.ApplyTheme(this);
+		}
 	}
 }

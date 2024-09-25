@@ -358,5 +358,13 @@ namespace Ginger
 			VisualTheme.ApplyTheme(menu);
 			menu.Show(control, location);
 		}
+
+		protected override void ApplyTheme()
+		{
+			base.ApplyTheme();
+
+			listPanel.BackColor = VisualTheme.Theme.TextBoxBackground;
+			treeView.ImageList = VisualTheme.DarkModeEnabled ? imageList_Dark : imageList_Light;
+		}
 	}
 }

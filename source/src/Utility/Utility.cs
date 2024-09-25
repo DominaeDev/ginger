@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -1578,6 +1579,13 @@ namespace Ginger
 			}
 			return false;
 		}
+#if DEBUG
+		public static bool InDesignMode = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+#else
+		public static bool InDesignMode = false;
+		
+#endif
+
 	}
 
 }

@@ -2343,6 +2343,9 @@ namespace Ginger
 		
 		public void ApplyVisualTheme()
 		{
+			if (Utility.InDesignMode)
+				return;
+
 			VisualTheme.ApplyTheme(menuStrip);
 
 			this.BackColor = VisualTheme.Theme.ControlBackground;
@@ -2380,8 +2383,11 @@ namespace Ginger
 			userNotes.richTextBox.ForeColor = VisualTheme.Theme.NotesForeground;
 			userNotes.richTextBox.BackColor = VisualTheme.Theme.NotesBackground;
 
-			Dark.Net.DarkNet.Instance.SetCurrentProcessTheme(VisualTheme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
-			Dark.Net.DarkNet.Instance.SetWindowThemeForms(this, VisualTheme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
+			if (!Utility.InDesignMode)
+			{
+				Dark.Net.DarkNet.Instance.SetCurrentProcessTheme(VisualTheme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
+				Dark.Net.DarkNet.Instance.SetWindowThemeForms(this, VisualTheme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
+			}
 		}
 
 		/*
