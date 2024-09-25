@@ -2,8 +2,6 @@
 using System.ComponentModel;
 using System.Drawing;
 using System;
-using System.Drawing.Drawing2D;
-using System.Runtime.InteropServices;
 
 namespace Ginger
 {
@@ -14,10 +12,6 @@ namespace Ginger
 		[DefaultValue(typeof(Color), "WindowFrame")]
 		public Color BorderColor { get; set; }
 
-		private const int WM_PAINT = 0xF;
-		private const int WM_NCPAINT = 0x85;
-		private const int WM_MOUSEWHEEL = 0x20A;
-
 		public ComboBoxEx()
 		{
 			BorderColor = SystemColors.WindowFrame;
@@ -25,25 +19,20 @@ namespace Ginger
 			DoubleBuffered = false;
 		}
 
+		private const int WM_PAINT = 0xF;
+		private const int WM_NCPAINT = 0x85;
+		private const int WM_MOUSEWHEEL = 0x20A;
 		public const int WM_MOUSEFIRST = 0x0200;
         public const int WM_MOUSELEAVE = 0x02A3;
         public const int WM_MOUSEHOVER = 0x02A1;
+		private const int WM_ENABLE     = 0x0A;
 
 		protected override void WndProc(ref Message m)
 		{
 			if (m.Msg == WM_PAINT)
 			{
-				if (Enabled == false && VisualTheme.DarkModeEnabled)
-				{
-					base.WndProc(ref m);
-					DrawDisabled();
-					return;
-				}
-				else
-				{
-					base.WndProc(ref m);
-					DrawBorder();
-				}
+				base.WndProc(ref m);
+				DrawBorder();
 				return;
 			}
 			else if (m.Msg == WM_NCPAINT)
@@ -66,22 +55,27 @@ namespace Ginger
 				// with the mouse wheel can cause unwanted parameter changes otherwise.
 				return;
 			}
+			else if (m.Msg == WM_ENABLE)
+			{
+				return;
+			}
 
 			base.WndProc(ref m);
 		}
 
 		protected override void OnEnabledChanged(EventArgs e)
 		{
-			this.ForeColor = Enabled ? VisualTheme.Theme.TextBoxForeground : SystemColors.GrayText;
-			this.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : SystemColors.Control;
 			base.OnEnabledChanged(e);
+
+			this.ForeColor = Enabled ? VisualTheme.Theme.TextBoxForeground : SystemColors.GrayText;
+			this.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : VisualTheme.Theme.TextBoxDisabledBackground;
 		}
 		
 		private void DrawBorder()
 		{
 			Color borderColor = Enabled ?
 				(Focused ? VisualTheme.Theme.MenuHighlight : VisualTheme.Theme.TextBoxBorder)
-				: VisualTheme.Theme.TextBoxDisabledBorder;
+					: VisualTheme.Theme.TextBoxDisabledBorder;
 
 			using (var g = Graphics.FromHwnd(Handle))
 			{
@@ -89,47 +83,16 @@ namespace Ginger
 				{
 					g.DrawRectangle(p, 0, 0, Width, Height);
 				}
+
+				if (Enabled == false && VisualTheme.DarkModeEnabled)
+				{
+					// Cover inner gray rim
+					using (var p = new Pen(VisualTheme.Theme.TextBoxDisabledBackground, 2))
+					{
+						g.DrawRectangle(p, 2, 2, Width - 21, Height - 4);
+					}
+				}
 			}
 		}
-
-		private void DrawDisabled()
-		{
-			using (var g = Graphics.FromHwnd(Handle))
-			{
-				// Background
-				using (var brush = new SolidBrush(VisualTheme.Theme.TextBoxDisabledBackground))
-				{
-					g.FillRectangle(brush, new Rectangle(0, 0, Width, Height));
-				}
-
-				// Text
-				using (var brush = new SolidBrush(VisualTheme.Theme.GrayText))
-				{
-					g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-
-					g.DrawString(
-						this.Text,
-						this.Font,
-						brush,
-						new Point(2, 4));
-				}
-
-				// Border
-				using (var pen = new Pen(VisualTheme.Theme.TextBoxDisabledBorder, 2))
-				{
-					g.DrawRectangle(pen, 0, 0, Width, Height);
-				}
-
-				// Inner rim
-				using (var pen = new Pen(VisualTheme.Theme.TextBoxDisabledBackground))
-				{
-					g.DrawRectangle(pen, new Rectangle(1, 1, Width - 20, Height - 3));
-				}
-
-				// Combo box button
-				ComboBoxRenderer.DrawDropDownButton(g, new Rectangle(Width - 18, 1, 17, Height - 2), System.Windows.Forms.VisualStyles.ComboBoxState.Disabled);
-			}
-		}
-		
 	}
 }

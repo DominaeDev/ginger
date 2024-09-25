@@ -969,6 +969,11 @@ namespace Ginger
 					control.ForeColor = VisualTheme.Theme.TextBoxForeground;
 					control.BackColor = VisualTheme.Theme.TextBoxBackground;
 				}
+				else
+				{
+					control.ForeColor = VisualTheme.Theme.GrayText;
+					control.BackColor = VisualTheme.Theme.TextBoxDisabledBackground;
+				}
 			}
 
 			var themedControls = parameterContainer.FindAllControlsOfType<Control>().OfType<IVisualThemed>();

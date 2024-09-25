@@ -50,8 +50,16 @@ namespace Ginger
 			var comboBoxes = form.FindAllControlsOfType<ComboBox>();
 			foreach (var control in comboBoxes)
 			{
-				control.ForeColor = Theme.MenuForeground;
-				control.BackColor = Theme.TextBoxBackground;
+				if (control.Enabled)
+				{
+					control.ForeColor = Theme.TextBoxForeground;
+					control.BackColor = Theme.TextBoxBackground;
+				}
+				else
+				{
+					control.ForeColor = Theme.GrayText;
+					control.BackColor = Theme.TextBoxDisabledBackground;
+				}
 			}
 
 			var treeViews = form.FindAllControlsOfType<TreeView>();
@@ -102,8 +110,16 @@ namespace Ginger
 			var comboBoxes = parentControl.FindAllControlsOfType<ComboBox>();
 			foreach (var control in comboBoxes)
 			{
-				control.ForeColor = Theme.MenuForeground;
-				control.BackColor = Theme.TextBoxBackground;
+				if (control.Enabled)
+				{
+					control.ForeColor = Theme.TextBoxForeground;
+					control.BackColor = Theme.TextBoxBackground;
+				}
+				else
+				{
+					control.ForeColor = Theme.GrayText;
+					control.BackColor = Theme.TextBoxDisabledBackground;
+				}
 			}
 
 			var buttons = parentControl.FindAllControlsOfType<Button>();
