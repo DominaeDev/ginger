@@ -359,12 +359,15 @@ namespace Ginger
 			menu.Show(control, location);
 		}
 
-		protected override void ApplyTheme()
+		public override void ApplyTheme()
 		{
 			base.ApplyTheme();
+			
+			treeView.ForeColor = VisualTheme.Theme.TreeViewForeground;
+			treeView.BackColor = VisualTheme.Theme.TreeViewBackground;
+			treeView.ImageList = VisualTheme.DarkModeEnabled ? imageList_Dark : imageList_Light;
 
 			listPanel.BackColor = VisualTheme.Theme.TextBoxBackground;
-			treeView.ImageList = VisualTheme.DarkModeEnabled ? imageList_Dark : imageList_Light;
 		}
 	}
 }

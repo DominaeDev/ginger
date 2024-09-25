@@ -65,20 +65,6 @@ namespace Ginger
 				}
 			}
 
-			var treeViews = form.FindAllControlsOfType<TreeView>();
-			foreach (var control in treeViews)
-			{
-				control.ForeColor = Theme.TextBoxForeground;
-				control.BackColor = Theme.TreeViewBackground;
-			}
-
-			var listViews = form.FindAllControlsOfType<ListView>();
-			foreach (var control in listViews)
-			{
-				control.ForeColor = Theme.TextBoxForeground;
-				control.BackColor = Theme.TextBoxBackground;
-			}
-
 			var buttons = form.FindAllControlsOfType<Button>();
 			foreach (var button in buttons)
 				ApplyVisualStyle(button);
@@ -248,7 +234,8 @@ namespace Ginger
 
 		public Color Border => Color.Gray;
 		public Color GroupBoxBorder => ColorTranslator.FromHtml("#d3d3d3");
-		public Color TreeViewBackground => Color.White;
+		public Color TreeViewForeground => SystemColors.WindowText;
+		public Color TreeViewBackground => SystemColors.Window;
 
 		public Color Button => Color.WhiteSmoke;
 		public Color ButtonBorder => Color.Silver;
@@ -328,6 +315,7 @@ namespace Ginger
 
 		public Color Border => Color.Gray;
 		public Color GroupBoxBorder => ColorTranslator.FromHtml("#606060");
+		public Color TreeViewForeground =>TextBoxForeground;
 		public Color TreeViewBackground => ColorTranslator.FromHtml("#303030");
 
 		public Color WarningRed => ColorTranslator.FromHtml("#ff4040");
@@ -406,6 +394,7 @@ namespace Ginger
 
 		Color Border { get; }
 		Color GroupBoxBorder { get; }
+		Color TreeViewForeground { get; }
 		Color TreeViewBackground { get; }
 
 		Color WarningRed { get; }

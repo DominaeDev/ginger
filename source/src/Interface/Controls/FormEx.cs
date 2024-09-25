@@ -12,7 +12,7 @@ namespace Ginger
 			ApplyTheme();
 		}
 
-		protected virtual void ApplyTheme()
+		public virtual void ApplyTheme()
 		{
 			VisualTheme.ApplyTheme(this);
 		}

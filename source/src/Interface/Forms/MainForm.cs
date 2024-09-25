@@ -2383,6 +2383,11 @@ namespace Ginger
 			userNotes.richTextBox.ForeColor = VisualTheme.Theme.NotesForeground;
 			userNotes.richTextBox.BackColor = VisualTheme.Theme.NotesBackground;
 
+			if (_findDialog != null && _findDialog.IsDisposed == false)
+				_findDialog.ApplyTheme();
+			if (_editChatDialog != null && _editChatDialog.IsDisposed == false)
+				_editChatDialog.ApplyTheme();
+
 			if (!Utility.InDesignMode)
 			{
 				Dark.Net.DarkNet.Instance.SetCurrentProcessTheme(VisualTheme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
