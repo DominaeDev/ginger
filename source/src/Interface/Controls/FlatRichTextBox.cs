@@ -86,7 +86,6 @@ namespace Ginger
 			richTextBox.VScroll += RichTextBox_VScroll;
 			richTextBox.TextChanged += RichTextBox_TextChanged;
 			richTextBox.ContentsResized += RichTextBox_ContentsResized;
-			richTextBox.InvalidVisualState += RichTextBox_InvalidVisualState;
 
 			Resize += FlatRichTextBox_Resize;
 			FontChanged += FlatRichTextBox_FontChanged;
@@ -174,7 +173,7 @@ namespace Ginger
 			
 			// Border
 			Color borderColor = Enabled ?
-				(richTextBox.Focused ? VisualTheme.Theme.MenuHighlight : VisualTheme.Theme.TextBoxBorder)
+				(richTextBox.Focused ? VisualTheme.Theme.Highlight : VisualTheme.Theme.TextBoxBorder)
 				: VisualTheme.Theme.TextBoxDisabledBorder;
 			using (var pen = new Pen(borderColor))
 			{
@@ -211,13 +210,13 @@ namespace Ginger
 		private void TextBox_Enter(object sender, EventArgs e)
 		{
 			if (HighlightBorder)
-				BorderColor = SystemColors.Highlight;
+				BorderColor = VisualTheme.Theme.Highlight;
 		}
 
 		private void TextBox_Leave(object sender, EventArgs e)
 		{
 			if (HighlightBorder)
-				BorderColor = SystemColors.WindowFrame;
+				BorderColor = VisualTheme.Theme.TextBoxBorder;
 		}
 
 		private void FlatRichTextBox_EnabledChanged(object sender, EventArgs e)
@@ -270,16 +269,7 @@ namespace Ginger
 			else
 				richTextBox.syntaxFlags &= ~RichTextBoxEx.SyntaxFlags.DarkMode;
 
-			this.ForeColor = VisualTheme.Theme.TextBoxForeground;
-			this.BackColor = VisualTheme.Theme.TextBoxBackground;
-			richTextBox.ForeColor = VisualTheme.Theme.TextBoxForeground;
-			richTextBox.BackColor = VisualTheme.Theme.TextBoxBackground;
-
-			if (VisualTheme.DarkModeEnabled)
-				richTextBox.Visible = Enabled;
-			else if (richTextBox.Visible == false)
-				richTextBox.Visible = true;
-
+			richTextBox.RefreshSyntaxHighlight(false);
 			Invalidate();
 		}
 
@@ -287,22 +277,11 @@ namespace Ginger
 		{
 			base.OnEnabledChanged(e);
 
-			this.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : SystemColors.Control;
-			richTextBox.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : SystemColors.Control;
-
-			if (VisualTheme.DarkModeEnabled)
-				richTextBox.Visible = Enabled;
-			else if (richTextBox.Visible == false)
-				richTextBox.Visible = true;
+			this.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : VisualTheme.Theme.TextBoxDisabledBackground;
+			richTextBox.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : VisualTheme.Theme.TextBoxDisabledBackground;
 
 			Invalidate();
 		}
-
-		private void RichTextBox_InvalidVisualState(object sender, EventArgs e)
-		{
-			// Win forms bug!
-			richTextBox.Visible = false;
-			Refresh();
-		}	
+		
 	}
 }

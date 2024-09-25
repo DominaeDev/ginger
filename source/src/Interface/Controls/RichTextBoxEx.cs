@@ -19,7 +19,6 @@ namespace Ginger
 		public event EventHandler ControlAltEnterPressed;
 		public event EventHandler ValueChanged;
 		public event BeforeUndoState OnBeforeUndoState;
-		public event EventHandler InvalidVisualState;
 
 		public class BeforeUndoEventArgs : EventArgs
 		{
@@ -238,6 +237,8 @@ namespace Ginger
 		private const int SB_TOP = 6;
 		private const int SB_BOTTOM = 7;
 		private const int SB_ENDSCROLL = 8;
+		private const int WM_SETFOCUS   = 0x07;
+		private const int WM_ENABLE     = 0x0A;
 
 		struct SCROLLINFO
 		{
@@ -384,17 +385,6 @@ namespace Ginger
 		private void OnEnabledChanged(object sender, EventArgs e)
 		{
 			__Guard(() => {
-				if (Enabled)
-				{
-					ForeColor = VisualTheme.Theme.TextBoxForeground;
-					BackColor = VisualTheme.Theme.TextBoxBackground;
-				}
-				else
-				{
-					ForeColor = VisualTheme.Theme.GrayText;
-					BackColor = VisualTheme.Theme.TextBoxDisabledBackground;
-				}
-
 				RefreshPatterns();
 				RefreshSyntaxHighlight(true);
 			});
@@ -629,12 +619,6 @@ namespace Ginger
 			}
 			else if (m.Msg == WM_PAINT)
 			{
-				if (Visible == false)
-				{
-					InvalidVisualState?.Invoke(this, EventArgs.Empty);
-					return;
-				}
-
 				base.WndProc(ref m);
 
 				using (Graphics g = Graphics.FromHwnd(m.HWnd))
@@ -642,6 +626,13 @@ namespace Ginger
 					OnUserPaint(new PaintEventArgs(g, ClientRectangle));
 				}
 				return;
+			}
+
+			if (m.Msg == WM_ENABLE)
+			{
+				bool bEnabled = m.WParam == (IntPtr)1;
+				this.ForeColor = bEnabled ? VisualTheme.Theme.TextBoxForeground : VisualTheme.Theme.GrayText;
+				return; // Prevent background from being turned gray
 			}
 
 			base.WndProc(ref m);
@@ -919,7 +910,8 @@ namespace Ginger
 
 			if (_syntaxHighlighter == null 
 				|| _syntaxHighlighter.EnableHighlighting == false 
-				|| AllowSyntaxHighlighting == false)
+				|| AllowSyntaxHighlighting == false
+				|| !Enabled)
 				return;
 
 			_syntaxHighlighter.Font = this.Font;

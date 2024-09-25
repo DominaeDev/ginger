@@ -1578,6 +1578,7 @@ namespace Ginger
 		{
 			foreach (var panel in _recipePanels)
 				panel.ApplyVisualTheme();
+			RefreshSyntaxHighlighting(false);
 		}
 	}
 }

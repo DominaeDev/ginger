@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class PageChanger : UserControl
+	public partial class PageChanger : UserControl, IVisualThemed
 	{
 		public int currentPage	{ get; private set; }	// zero-based
 		public int maxPages		{ get; private set; }	// one-based
@@ -126,6 +126,12 @@ namespace Ginger
 			int clientHeight = (int)(this.Height / scaleFactor);
 			textBox_Page.Bounds = new Rectangle(clientWidth / 2 - textBox_Page.Width, (int)((this.Height - textBox_Page.Height) / (2 * scaleFactor)), textBox_Page.Width, textBox_Page.Height);
 			label_Pages.Bounds = new Rectangle(clientWidth / 2, textBox_Page.Top, label_Pages.Width, textBox_Page.Height);
+		}
+
+		public void ApplyVisualTheme()
+		{
+			btnNext.Image = VisualTheme.Theme.ArrowRight;
+			btnPrev.Image = VisualTheme.Theme.ArrowLeft;
 		}
 	}
 }

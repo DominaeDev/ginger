@@ -35,8 +35,16 @@ namespace Ginger
 			var textBoxes = form.FindAllControlsOfType<TextBoxBase>();
 			foreach (var control in textBoxes)
 			{
-				control.ForeColor = Theme.TextBoxForeground;
-				control.BackColor = Theme.TextBoxBackground;
+				if (control.Enabled)
+				{
+					control.ForeColor = Theme.TextBoxForeground;
+					control.BackColor = Theme.TextBoxBackground;
+				}
+				else
+				{
+					control.ForeColor = Theme.GrayText;
+					control.BackColor = Theme.TextBoxDisabledBackground;
+				}
 			}
 
 			var comboBoxes = form.FindAllControlsOfType<ComboBox>();
@@ -79,8 +87,16 @@ namespace Ginger
 			var textBoxes = parentControl.FindAllControlsOfType<TextBoxBase>();
 			foreach (var control in textBoxes)
 			{
-				control.ForeColor = Theme.TextBoxForeground;
-				control.BackColor = Theme.TextBoxBackground;
+				if (control.Enabled)
+				{
+					control.ForeColor = Theme.TextBoxForeground;
+					control.BackColor = Theme.TextBoxBackground;
+				}
+				else
+				{
+					control.ForeColor = Theme.GrayText;
+					control.BackColor = Theme.TextBoxDisabledBackground;
+				}
 			}
 
 			var comboBoxes = parentControl.FindAllControlsOfType<ComboBox>();
@@ -255,6 +271,12 @@ namespace Ginger
 		public Image ButtonSnippets => Resources.snippet;
 		public Image ButtonLore => Resources.lore;
 		public Image Checker => Resources.checker;
+		public Image Write => Resources.write;
+		public Image MoveLoreUp => Resources.lore_up;
+		public Image MoveLoreDown => Resources.lore_down;
+		public Image RemoveLore => Resources.delete;
+		public Image ArrowLeft => Resources.arrow_left;
+		public Image ArrowRight => Resources.arrow_right;
 	}
 
 	public class DarkTheme : IColorTheme
@@ -325,6 +347,12 @@ namespace Ginger
 		public Image ButtonLore => Resources.dark_lore;
 
 		public Image Checker => Resources.dark_checker;
+		public Image Write => Resources.dark_write;
+		public Image MoveLoreUp => Resources.dark_lore_up;
+		public Image MoveLoreDown => Resources.dark_lore_down;
+		public Image RemoveLore => Resources.dark_delete;
+		public Image ArrowLeft => Resources.dark_arrow_left;
+		public Image ArrowRight => Resources.dark_arrow_right;
 	}
 
 	public interface IVisualThemed
@@ -399,7 +427,12 @@ namespace Ginger
 		Image ButtonLore { get; }
 
 		Image Checker { get; }
-
+		Image Write { get; }
+		Image MoveLoreUp { get; }
+		Image MoveLoreDown { get; }
+		Image RemoveLore { get; }
+		Image ArrowLeft { get; }
+		Image ArrowRight { get; }
 		
 	}
 }

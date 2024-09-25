@@ -467,7 +467,8 @@ namespace Ginger
 		{
 			base.OnEnabledChanged(e);
 
-			this.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : SystemColors.Control;
+			this.ForeColor = Enabled ? VisualTheme.Theme.TextBoxForeground : VisualTheme.Theme.GrayText;
+			this.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : VisualTheme.Theme.TextBoxDisabledBackground;
 		}
 		
 		protected override void OnSizeChanged(EventArgs e)

@@ -97,7 +97,7 @@ namespace Ginger
 			
 			if (VisualTheme.DarkModeEnabled)
 			{
-				color = Utility.GetDarkColor(color, 0.5f);
+				color = Utility.GetDarkColor(color, 0.60f);
 				darkColor = Utility.GetDarkColor(color, 0.25f);
 			}
 
@@ -946,16 +946,20 @@ namespace Ginger
 
 			SetColor(recipe.color);
 
-			var textBoxes = parameterContainer.FindAllControlsOfType<TextBoxEx>();
+			var textBoxes = parameterContainer.FindAllControlsOfType<TextBoxBase>();
 			foreach (var control in textBoxes)
 			{
-				control.ForeColor = VisualTheme.Theme.TextBoxForeground;
-				control.BackColor = VisualTheme.Theme.TextBoxBackground;
+				if (control.Enabled)
+				{
+					control.ForeColor = VisualTheme.Theme.TextBoxForeground;
+					control.BackColor = VisualTheme.Theme.TextBoxBackground;
+				}
+				else
+				{
+					control.ForeColor = VisualTheme.Theme.GrayText;
+					control.BackColor = VisualTheme.Theme.TextBoxDisabledBackground;
+				}
 			}
-
-			var flatTextBoxes = parameterContainer.FindAllControlsOfType<FlatRichTextBox>();
-			foreach (var control in flatTextBoxes)
-				control.ApplyVisualTheme();
 
 			var comboBoxes = parameterContainer.FindAllControlsOfType<ComboBox>();
 			foreach (var control in comboBoxes)
@@ -966,6 +970,10 @@ namespace Ginger
 					control.BackColor = VisualTheme.Theme.TextBoxBackground;
 				}
 			}
+
+			var themedControls = parameterContainer.FindAllControlsOfType<Control>().OfType<IVisualThemed>();
+			foreach (var control in themedControls)
+				control.ApplyVisualTheme();
 		}
 	}
 }
