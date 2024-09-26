@@ -20,13 +20,14 @@ namespace Ginger
 		Color MenuGradientMiddle { get; }
 		Color MenuGradientEnd { get; }
 		Color MenuSeparator { get; }
-		Color MenuHighlight { get; }
+		Color Highlight { get; }
+		Color HighlightText { get; }
 		Color Border { get; }
 		Color GroupBoxBorder { get; }
 		Color TreeViewForeground { get; }
 		Color TreeViewBackground { get; }
 		Color WarningRed { get; }
-		Color Highlight { get; }
+		Color HighlightBorder { get; }
 		Color GrayText { get; }
 		Color SeletedTabButtonLight { get; }
 		Color SeletedTabButtonDark{ get; }

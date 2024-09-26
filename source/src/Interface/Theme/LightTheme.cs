@@ -24,7 +24,8 @@ namespace Ginger
 			public static readonly Color MenuGradientMiddle = SystemColors.MenuBar;
 			public static readonly Color MenuGradientEnd = SystemColors.MenuBar;
 			public static readonly Color MenuSeparator = SystemColors.ControlDark;
-			public static readonly Color MenuHighlight = SystemColors.Highlight;
+			public static readonly Color Highlight = SystemColors.Highlight;
+			public static readonly Color HighlightText = SystemColors.HighlightText;
 			public static readonly Color Border = Color.Gray;
 			public static readonly Color GroupBoxBorder = ColorTranslator.FromHtml("#d3d3d3");
 			public static readonly Color TreeViewForeground = SystemColors.WindowText;
@@ -34,7 +35,7 @@ namespace Ginger
 			public static readonly Color ButtonHover = Color.White;
 			public static readonly Color ButtonPressed = Color.White;
 			public static readonly Color WarningRed = Color.Red;
-			public static readonly Color Highlight = SystemColors.Highlight;
+			public static readonly Color HighlightBorder = SystemColors.Highlight;
 			public static readonly Color GrayText = SystemColors.GrayText;
 			public static readonly Color SeletedTabButtonLight = Color.FromArgb(242, 242, 242);
 			public static readonly Color SeletedTabButtonDark = Color.FromArgb(207, 207, 207);
@@ -81,7 +82,8 @@ namespace Ginger
 			public Color MenuGradientMiddle => ColorTable.MenuGradientMiddle;
 			public Color MenuGradientEnd => ColorTable.MenuGradientEnd;
 			public Color MenuSeparator => ColorTable.MenuSeparator;
-			public Color MenuHighlight => ColorTable.MenuHighlight;
+			public Color Highlight => ColorTable.Highlight;
+			public Color HighlightText => ColorTable.HighlightText;
 			public Color Button => ColorTable.Button;
 			public Color ButtonHover => ColorTable.ButtonHover;
 			public Color ButtonPressed => ColorTable.ButtonPressed;
@@ -91,7 +93,7 @@ namespace Ginger
 			public Color TreeViewForeground => ColorTable.TreeViewForeground;
 			public Color TreeViewBackground => ColorTable.TreeViewBackground;
 			public Color WarningRed => ColorTable.WarningRed;
-			public Color Highlight => ColorTable.Highlight;
+			public Color HighlightBorder => ColorTable.HighlightBorder;
 			public Color GrayText => ColorTable.GrayText;
 			public Color TabInactiveText => ColorTable.TabInactiveText;
 			public Color TabBorder => ColorTable.TabBorder;

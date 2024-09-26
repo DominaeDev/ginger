@@ -105,7 +105,7 @@ namespace Ginger
 					bounds = new Rectangle(bounds.Left + LeftMargin, bounds.Top, Columns[0].Width - LeftMargin, bounds.Height);
 
 				// Background
-				using (var brush = new SolidBrush(bSelected ? Theme.Current.MenuHighlight : BackColor))
+				using (var brush = new SolidBrush(bSelected ? Theme.Current.Highlight : BackColor))
 				{
 					e.Graphics.FillRectangle(brush, bounds);
 				}
@@ -126,7 +126,7 @@ namespace Ginger
 					rowBounds.Top,
 					rowBounds.Width - LeftMargin,
 					rowBounds.Height
-					), Color.White, bSelected ? Theme.Current.MenuHighlight : BackColor);
+					), Color.White, bSelected ? Theme.Current.Highlight : BackColor);
 			}
 
 		}

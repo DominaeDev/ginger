@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Drawing;
+using System.Windows.Forms;
 
 namespace Ginger
 {
@@ -156,6 +157,28 @@ namespace Ginger
 				if (menuItem is ToolStripMenuItem)
 					Apply(menuItem as ToolStripMenuItem);
 			}
+		}
+
+		public static void Apply(DataGridView dataGridView)
+		{
+			if (IsDarkModeEnabled)
+			{
+				dataGridView.DefaultCellStyle = new DataGridViewCellStyle() {
+					BackColor = Dark.TextBoxBackground,
+					ForeColor = Dark.TextBoxForeground,
+					SelectionBackColor = Dark.Highlight,
+					SelectionForeColor = Dark.HighlightText,
+				};
+				
+				dataGridView.GridColor = Dark.TextBoxBorder;
+			}
+			else
+			{
+				dataGridView.DefaultCellStyle = new DataGridViewCellStyle();
+				dataGridView.GridColor = SystemColors.ControlDark;
+			}
+			dataGridView.ForeColor = Current.ControlForeground;
+			dataGridView.BackgroundColor = Current.ControlBackground;
 		}
 
 		private static ToolStripRenderer CreateToolStripRenderer()

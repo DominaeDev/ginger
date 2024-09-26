@@ -24,7 +24,8 @@ namespace Ginger
 			public static readonly Color MenuGradientMiddle = ColorTranslator.FromHtml("#3c3c3c");
 			public static readonly Color MenuGradientEnd = ColorTranslator.FromHtml("#343434");
 			public static readonly Color MenuSeparator = ColorTranslator.FromHtml("#303030");
-			public static readonly Color MenuHighlight = SystemColors.Highlight;
+			public static readonly Color Highlight = SystemColors.Highlight;
+			public static readonly Color HighlightText = SystemColors.HighlightText;
 			public static readonly Color MenuItemSelectedBorder = Color.FromArgb(48, 78, 102);
 			public static readonly Color MenuItemSelected = Color.FromArgb(32, 92, 140);
 			public static readonly Color Button = ColorTranslator.FromHtml("#363636");
@@ -36,7 +37,7 @@ namespace Ginger
 			public static readonly Color TreeViewForeground = TextBoxForeground;
 			public static readonly Color TreeViewBackground = ColorTranslator.FromHtml("#303030");
 			public static readonly Color WarningRed = ColorTranslator.FromHtml("#ff4040");
-			public static readonly Color Highlight = Color.LightGray;
+			public static readonly Color HighlightBorder = Color.LightGray;
 			public static readonly Color GrayText = SystemColors.GrayText;
 			public static readonly Color TabInactiveText = ColorTranslator.FromHtml("#c0c0c0");
 			public static readonly Color TabBorder = ColorTranslator.FromHtml("#808080");
@@ -83,7 +84,8 @@ namespace Ginger
 			public Color MenuGradientMiddle => ColorTable.MenuGradientMiddle;
 			public Color MenuGradientEnd => ColorTable.MenuGradientEnd;
 			public Color MenuSeparator => ColorTable.MenuSeparator;
-			public Color MenuHighlight => ColorTable.MenuHighlight;
+			public Color Highlight => ColorTable.Highlight;
+			public Color HighlightText => ColorTable.HighlightText;
 			public Color Button => ColorTable.Button;
 			public Color ButtonHover => ColorTable.ButtonHover;
 			public Color ButtonPressed => ColorTable.ButtonPressed;
@@ -93,7 +95,7 @@ namespace Ginger
 			public Color TreeViewForeground => ColorTable.TreeViewForeground;
 			public Color TreeViewBackground => ColorTable.TreeViewBackground;
 			public Color WarningRed => ColorTable.WarningRed;
-			public Color Highlight => ColorTable.Highlight;
+			public Color HighlightBorder => ColorTable.HighlightBorder;
 			public Color GrayText => ColorTable.GrayText;
 			public Color TabInactiveText => ColorTable.TabInactiveText;
 			public Color TabBorder => ColorTable.TabBorder;
@@ -156,10 +158,10 @@ namespace Ginger
 			public override Color ImageMarginGradientMiddle => ColorTable.MenuGradientMiddle;
 			public override Color ImageMarginGradientEnd => ColorTable.MenuGradientEnd;
 			public override Color MenuBorder => ColorTable.MenuBorder;
-			public override Color MenuItemBorder => ColorTable.MenuHighlight;
+			public override Color MenuItemBorder => ColorTable.Highlight;
 			public override Color MenuItemPressedGradientBegin => ColorTable.MenuBackground;
 			public override Color MenuItemPressedGradientEnd => ColorTable.MenuBackground;
-			public override Color ButtonSelectedBorder => ColorTable.MenuHighlight;
+			public override Color ButtonSelectedBorder => ColorTable.Highlight;
 			public override Color SeparatorLight => ColorTable.MenuSeparator;
 			public override Color SeparatorDark => ColorTable.MenuSeparator;
 			public override Color MenuItemSelected => ColorTable.MenuItemSelectedBorder;

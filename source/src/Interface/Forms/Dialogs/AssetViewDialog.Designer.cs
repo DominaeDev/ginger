@@ -44,10 +44,10 @@ namespace Ginger
 			this.btnExport = new System.Windows.Forms.Button();
 			this.btnView = new System.Windows.Forms.Button();
 			this.btnRemove = new System.Windows.Forms.Button();
+			this.btnAddRemote = new System.Windows.Forms.Button();
 			this.btnAdd = new System.Windows.Forms.Button();
 			this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
-			this.btnAddRemote = new System.Windows.Forms.Button();
 			listPanel = new System.Windows.Forms.Panel();
 			leftPanel = new System.Windows.Forms.Panel();
 			label_ccv3 = new System.Windows.Forms.Label();
@@ -219,6 +219,16 @@ namespace Ginger
 			this.btnRemove.Text = "Remove selected";
 			this.btnRemove.UseVisualStyleBackColor = true;
 			// 
+			// btnAddRemote
+			// 
+			this.btnAddRemote.Dock = System.Windows.Forms.DockStyle.Top;
+			this.btnAddRemote.Location = new System.Drawing.Point(4, 35);
+			this.btnAddRemote.Name = "btnAddRemote";
+			this.btnAddRemote.Size = new System.Drawing.Size(192, 31);
+			this.btnAddRemote.TabIndex = 1;
+			this.btnAddRemote.Text = "Add remote asset...";
+			this.btnAddRemote.UseVisualStyleBackColor = true;
+			// 
 			// btnAdd
 			// 
 			this.btnAdd.Dock = System.Windows.Forms.DockStyle.Top;
@@ -232,16 +242,6 @@ namespace Ginger
 			// importFileDialog
 			// 
 			this.importFileDialog.Multiselect = true;
-			// 
-			// btnAddUrl
-			// 
-			this.btnAddRemote.Dock = System.Windows.Forms.DockStyle.Top;
-			this.btnAddRemote.Location = new System.Drawing.Point(4, 35);
-			this.btnAddRemote.Name = "btnAddUrl";
-			this.btnAddRemote.Size = new System.Drawing.Size(192, 31);
-			this.btnAddRemote.TabIndex = 1;
-			this.btnAddRemote.Text = "Add remote asset...";
-			this.btnAddRemote.UseVisualStyleBackColor = true;
 			// 
 			// AssetViewDialog
 			// 

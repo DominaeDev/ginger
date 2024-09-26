@@ -455,7 +455,7 @@ namespace Ginger
 					g.DrawRectangle(p, new Rectangle(1, 1, Width - 3, Height - 3));
 				}
 				// Outer border / Highlight
-				using (var p = new Pen(Focused ? Theme.Current.Highlight : Theme.Current.TextBoxBorder))
+				using (var p = new Pen(Focused ? Theme.Current.HighlightBorder : Theme.Current.TextBoxBorder))
 				{
 					g.DrawRectangle(p, new Rectangle(0, 0, Width - 1, Height - 1));
 				}

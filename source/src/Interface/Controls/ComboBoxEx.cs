@@ -39,7 +39,7 @@ namespace Ginger
 			{
 				base.WndProc(ref m);
 
-				Color borderColor = (Focused ? Theme.Current.MenuHighlight : Theme.Current.TextBoxBorder);
+				Color borderColor = (Focused ? Theme.Current.Highlight : Theme.Current.TextBoxBorder);
 
 				using (var g = Graphics.FromHwnd(Handle))
 				{
@@ -74,7 +74,7 @@ namespace Ginger
 		private void DrawBorder()
 		{
 			Color borderColor = Enabled ?
-				(Focused ? Theme.Current.MenuHighlight : Theme.Current.TextBoxBorder)
+				(Focused ? Theme.Current.Highlight : Theme.Current.TextBoxBorder)
 					: Theme.Current.TextBoxDisabledBorder;
 
 			using (var g = Graphics.FromHwnd(Handle))

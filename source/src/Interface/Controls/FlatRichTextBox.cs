@@ -173,7 +173,7 @@ namespace Ginger
 			
 			// Border
 			Color borderColor = Enabled ?
-				(richTextBox.Focused ? Theme.Current.Highlight : Theme.Current.TextBoxBorder)
+				(richTextBox.Focused ? Theme.Current.HighlightBorder : Theme.Current.TextBoxBorder)
 				: Theme.Current.TextBoxDisabledBorder;
 			using (var pen = new Pen(borderColor))
 			{
@@ -210,7 +210,7 @@ namespace Ginger
 		private void TextBox_Enter(object sender, EventArgs e)
 		{
 			if (HighlightBorder)
-				BorderColor = Theme.Current.Highlight;
+				BorderColor = Theme.Current.HighlightBorder;
 		}
 
 		private void TextBox_Leave(object sender, EventArgs e)

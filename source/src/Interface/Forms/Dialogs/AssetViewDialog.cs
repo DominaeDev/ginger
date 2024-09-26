@@ -679,5 +679,12 @@ namespace Ginger
 			foreach (var filename in files)
 				AddAsset(filename);
 		}
+
+		public override void ApplyTheme()
+		{
+			base.ApplyTheme();
+
+			Theme.Apply(assetsDataView);
+		}
 	}
 }
