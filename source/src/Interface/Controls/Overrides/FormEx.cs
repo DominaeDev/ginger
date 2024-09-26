@@ -14,7 +14,9 @@ namespace Ginger
 
 		public virtual void ApplyTheme()
 		{
+			Theme.BeginTheming();
 			Theme.Apply(this);
+			Theme.EndTheming();
 		}
 	}
 }

@@ -1,16 +1,39 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
+using DarkMode = Dark.Net.DarkNet;
+
 namespace Ginger
 {
 	public static class Theme
 	{
 		public static bool IsDarkModeEnabled { get { return AppSettings.Settings.DarkTheme; } }
 
+		public static IColorTheme Current { get { return IsDarkModeEnabled ? _darkTheme : _lightTheme; } }
+		public static IColorTheme Light { get { return _lightTheme; } }
+		public static IColorTheme Dark { get { return _darkTheme; } }
+
+		private static IColorTheme _lightTheme = new LightTheme.ThemeColors();
+		private static IColorTheme _darkTheme = new DarkTheme.ThemeColors();
+
+		public static bool IsTheming { get { return _isTheming > 0; } }
+		private static int _isTheming = 0;
+
+		public static void BeginTheming()
+		{
+			++_isTheming;
+		}
+		public static void EndTheming()
+		{
+			--_isTheming;
+		}
+
 		public static void Apply(Form form)
 		{
 			if (Utility.InDesignMode)
 				return;
+			
+			BeginTheming();
 
 			form.BackColor = Current.ControlBackground;
 			form.ForeColor = Current.ControlForeground;
@@ -28,43 +51,61 @@ namespace Ginger
 
 			var textBoxes = form.FindAllControlsOfType<TextBoxBase>();
 			foreach (var control in textBoxes)
-			{
-				if (control.Enabled)
-				{
-					control.ForeColor = Current.TextBoxForeground;
-					control.BackColor = Current.TextBoxBackground;
-				}
-				else
-				{
-					control.ForeColor = Current.GrayText;
-					control.BackColor = Current.TextBoxDisabledBackground;
-				}
-			}
+				Apply(control);
 
 			var comboBoxes = form.FindAllControlsOfType<ComboBox>();
 			foreach (var control in comboBoxes)
-			{
-				if (control.Enabled)
-				{
-					control.ForeColor = Current.TextBoxForeground;
-					control.BackColor = Current.TextBoxBackground;
-				}
-				else
-				{
-					control.ForeColor = Current.GrayText;
-					control.BackColor = Current.TextBoxDisabledBackground;
-				}
-			}
+				Apply(control);
 
 			var buttons = form.FindAllControlsOfType<Button>();
 			foreach (var button in buttons)
 				Apply(button);
 
-			global::Dark.Net.DarkNet.Instance.SetWindowThemeForms(form, IsDarkModeEnabled ? global::Dark.Net.Theme.Dark : global::Dark.Net.Theme.Light);
+			ApplyToTitleBar(form, false);
+			
+			EndTheming();
+		}
+
+		public static void Apply(TextBoxBase control)
+		{
+			BeginTheming();
+
+			if (control.Enabled)
+			{
+				control.ForeColor = Current.TextBoxForeground;
+				control.BackColor = Current.TextBoxBackground;
+			}
+			else
+			{
+				control.ForeColor = Current.GrayText;
+				control.BackColor = Current.TextBoxDisabledBackground;
+			}
+
+			EndTheming();
+		}
+
+		public static void Apply(ComboBox control)
+		{
+			BeginTheming();
+
+			if (control.Enabled)
+			{
+				control.ForeColor = Current.TextBoxForeground;
+				control.BackColor = Current.TextBoxBackground;
+			}
+			else
+			{
+				control.ForeColor = Current.GrayText;
+				control.BackColor = Current.TextBoxDisabledBackground;
+			}
+
+			EndTheming();
 		}
 
 		public static void Apply(Control parentControl)
 		{
+			BeginTheming();
+
 			var groupBoxes = parentControl.FindAllControlsOfType<GroupBox>();
 			foreach (var control in groupBoxes)
 			{
@@ -111,10 +152,14 @@ namespace Ginger
 				control.ForeColor = Current.ControlForeground;
 				control.BackColor = Current.ControlBackground;
 			}
+
+			EndTheming();
 		}
 
 		public static void Apply(Button button)
 		{
+			BeginTheming();
+
 			button.FlatStyle = FlatStyle.Flat;
 			button.FlatAppearance.BorderColor = Current.ButtonBorder;
 			button.FlatAppearance.MouseDownBackColor = Current.ImageButtonPressed;
@@ -122,10 +167,14 @@ namespace Ginger
 			button.FlatAppearance.BorderSize = 1;
 			button.ForeColor = Current.ButtonText;
 			button.BackColor = Current.ImageButton;
+
+			EndTheming();
 		}
 
 		public static void Apply(ToolStripMenuItem menuItem)
 		{
+			BeginTheming();
+
 			menuItem.ForeColor = Current.MenuForeground;
 			if (menuItem.DropDownItems != null)
 			{
@@ -135,10 +184,14 @@ namespace Ginger
 						Apply(item as ToolStripMenuItem);
 				}
 			}
+
+			EndTheming();
 		}
 
 		public static void Apply(ContextMenuStrip contextMenu)
 		{
+			BeginTheming();
+
 			contextMenu.Renderer = CreateToolStripRenderer();
 			contextMenu.ForeColor = Current.MenuForeground;
 			foreach (ToolStripItem menuItem in contextMenu.Items)
@@ -146,10 +199,13 @@ namespace Ginger
 				if (menuItem is ToolStripMenuItem)
 					Apply(menuItem as ToolStripMenuItem);
 			}
+			EndTheming();
 		}
 
 		public static void Apply(MenuStrip menuStrip)
 		{
+			BeginTheming();
+
 			menuStrip.Renderer = CreateToolStripRenderer();
 			menuStrip.ForeColor = Current.MenuForeground;
 			foreach (ToolStripItem menuItem in menuStrip.Items)
@@ -157,10 +213,14 @@ namespace Ginger
 				if (menuItem is ToolStripMenuItem)
 					Apply(menuItem as ToolStripMenuItem);
 			}
+
+			EndTheming();
 		}
 
 		public static void Apply(DataGridView dataGridView)
 		{
+			BeginTheming();
+
 			if (IsDarkModeEnabled)
 			{
 				dataGridView.DefaultCellStyle = new DataGridViewCellStyle() {
@@ -179,6 +239,8 @@ namespace Ginger
 			}
 			dataGridView.ForeColor = Current.ControlForeground;
 			dataGridView.BackgroundColor = Current.ControlBackground;
+
+			EndTheming();
 		}
 
 		private static ToolStripRenderer CreateToolStripRenderer()
@@ -189,12 +251,24 @@ namespace Ginger
 				return new ToolStripProfessionalRenderer();
 		}
 
-		public static IColorTheme Current { get { return IsDarkModeEnabled ? _darkTheme : _lightTheme; } }
-		public static IColorTheme Light { get { return _lightTheme; } }
-		public static IColorTheme Dark { get { return _darkTheme; } }
+		public static void ApplyToTitleBar(Form form, bool bSetForProcess = false)
+		{
+			if (Utility.InDesignMode)
+				return; // Ignore 
 
-		private static IColorTheme _lightTheme = new LightTheme.Colors();
-		private static IColorTheme _darkTheme = new DarkTheme.Colors();
+			try
+			{
+				var theme = IsDarkModeEnabled ? global::Dark.Net.Theme.Dark : global::Dark.Net.Theme.Auto;
+				if (bSetForProcess)
+					DarkMode.Instance.SetCurrentProcessTheme(theme);
+
+				DarkMode.Instance.SetWindowThemeForms(form, theme);
+			}
+			catch
+			{
+				// Do nothing
+			}
+		}
 	}
 
 	public interface IVisualThemed

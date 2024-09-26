@@ -23,8 +23,9 @@ namespace Ginger
 			public static readonly Color MenuGradientBegin = ColorTranslator.FromHtml("#404040");
 			public static readonly Color MenuGradientMiddle = ColorTranslator.FromHtml("#3c3c3c");
 			public static readonly Color MenuGradientEnd = ColorTranslator.FromHtml("#343434");
-			public static readonly Color MenuSeparator = ColorTranslator.FromHtml("#303030");
+			public static readonly Color MenuSeparator = ColorTranslator.FromHtml("#202020");
 			public static readonly Color Highlight = SystemColors.Highlight;
+			public static readonly Color HighlightInactive = ColorTranslator.FromHtml("#505050");
 			public static readonly Color HighlightText = SystemColors.HighlightText;
 			public static readonly Color MenuItemSelectedBorder = Color.FromArgb(48, 78, 102);
 			public static readonly Color MenuItemSelected = Color.FromArgb(32, 92, 140);
@@ -73,7 +74,7 @@ namespace Ginger
 			public static readonly Color Decorator = ColorTranslator.FromHtml("#A000A0");
 		}
 
-		public class Colors : IColorTheme
+		public class ThemeColors : IColorTheme
 		{
 			// Interface
 			public Color ControlForeground => ColorTable.ControlForeground;
@@ -92,6 +93,7 @@ namespace Ginger
 			public Color MenuGradientEnd => ColorTable.MenuGradientEnd;
 			public Color MenuSeparator => ColorTable.MenuSeparator;
 			public Color Highlight => ColorTable.Highlight;
+			public Color HighlightInactive => ColorTable.HighlightInactive;
 			public Color HighlightText => ColorTable.HighlightText;
 			
 			public Color Button => ColorTable.Button;

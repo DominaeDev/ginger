@@ -331,11 +331,8 @@ namespace Ginger
 
 		protected override void OnTextChanged(EventArgs e)
 		{
-			if (isHighlighting)
-			{
-//				base.OnTextChanged(e);
-				return;
-			}
+			if (isHighlighting || Theme.IsTheming)
+				return; // Ignore
 
 			if (_ignoreTextChanged > 0) // Guarded
 				return;

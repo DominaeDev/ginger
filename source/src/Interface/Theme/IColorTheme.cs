@@ -21,6 +21,7 @@ namespace Ginger
 		Color MenuGradientEnd { get; }
 		Color MenuSeparator { get; }
 		Color Highlight { get; }
+		Color HighlightInactive { get; }
 		Color HighlightText { get; }
 		Color Border { get; }
 		Color GroupBoxBorder { get; }

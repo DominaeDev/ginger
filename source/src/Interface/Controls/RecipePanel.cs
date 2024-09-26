@@ -948,33 +948,11 @@ namespace Ginger
 
 			var textBoxes = parameterContainer.FindAllControlsOfType<TextBoxBase>();
 			foreach (var control in textBoxes)
-			{
-				if (control.Enabled)
-				{
-					control.ForeColor = Theme.Current.TextBoxForeground;
-					control.BackColor = Theme.Current.TextBoxBackground;
-				}
-				else
-				{
-					control.ForeColor = Theme.Current.GrayText;
-					control.BackColor = Theme.Current.TextBoxDisabledBackground;
-				}
-			}
+				Theme.Apply(control);
 
 			var comboBoxes = parameterContainer.FindAllControlsOfType<ComboBox>();
 			foreach (var control in comboBoxes)
-			{
-				if (control.Enabled)
-				{
-					control.ForeColor = Theme.Current.TextBoxForeground;
-					control.BackColor = Theme.Current.TextBoxBackground;
-				}
-				else
-				{
-					control.ForeColor = Theme.Current.GrayText;
-					control.BackColor = Theme.Current.TextBoxDisabledBackground;
-				}
-			}
+				Theme.Apply(control);
 
 			var themedControls = parameterContainer.FindAllControlsOfType<Control>().OfType<IVisualThemed>();
 			foreach (var control in themedControls)

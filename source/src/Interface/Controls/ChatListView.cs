@@ -76,7 +76,7 @@ namespace Ginger
 				return;
 
 			bool bSelected = e.Item.Selected;
-			bool bFocused  = e.Item.Focused;
+			bool bFocused  = e.Item.Focused && this.ContainsFocus;
 
 			// Draw icon
 			if (e.Item.ImageIndex != -1)
@@ -105,7 +105,10 @@ namespace Ginger
 					bounds = new Rectangle(bounds.Left + LeftMargin, bounds.Top, Columns[0].Width - LeftMargin, bounds.Height);
 
 				// Background
-				using (var brush = new SolidBrush(bSelected ? Theme.Current.Highlight : BackColor))
+				Color background = bSelected ? 
+					(bFocused ? Theme.Current.Highlight : Theme.Current.HighlightInactive) 
+					: BackColor;
+				using (var brush = new SolidBrush(background))
 				{
 					e.Graphics.FillRectangle(brush, bounds);
 				}
@@ -113,11 +116,11 @@ namespace Ginger
 				// Text
 				if (i == 1)
 					bounds = new Rectangle(bounds.Left, bounds.Top, bounds.Width - RightMargin, bounds.Height);
-				TextRenderer.DrawText(e.Graphics, subItem.Text, this.Font, bounds, bSelected ? Color.White : ForeColor, tf);
+				TextRenderer.DrawText(e.Graphics, subItem.Text, this.Font, bounds, (bSelected && bFocused) ? Color.White : ForeColor, tf);
 			}
 
 			// Draw focus rectangle
-			if (bFocused)
+			/*if (bFocused)
 			{
 				Rectangle rowBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, this.ClientSize.Width, e.Bounds.Height);
 
@@ -127,7 +130,7 @@ namespace Ginger
 					rowBounds.Width - LeftMargin,
 					rowBounds.Height
 					), Color.White, bSelected ? Theme.Current.Highlight : BackColor);
-			}
+			}*/
 
 		}
 

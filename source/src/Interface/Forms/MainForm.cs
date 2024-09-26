@@ -10,7 +10,6 @@ using Ginger.Properties;
 using Ginger.Integration;
 
 using Backyard = Ginger.Integration.Backyard;
-using System.Runtime.InteropServices;
 
 namespace Ginger
 {
@@ -92,8 +91,6 @@ namespace Ginger
 			_statusbarTimer.Elapsed += OnStatusBarTimerElapsed;
 			_statusbarTimer.AutoReset = false;
 			_statusbarTimer.SynchronizingObject = this;
-
-//			_scrollbarBrush = CreateSolidBrush(ColorTranslator.ToWin32(Color.Red));
 		}
 
 		public void SetFirstLoad(string filename)
@@ -130,8 +127,6 @@ namespace Ginger
 			RefreshSpellChecking();
 
 			Regenerate();
-//			Current.IsFileDirty = false;
-//			RefreshTitle();
 
 #if DEBUG
 			stopWatch.Stop();
@@ -297,6 +292,8 @@ namespace Ginger
 //				changeLanguageSeparator.Visible = false;
 			}
 
+			ApplyVisualTheme();
+
 			if (_shouldLoadFilename != null) // Command-line argument
 			{
 				if (FileMutex.CanAcquire(_shouldLoadFilename) == false)
@@ -308,8 +305,6 @@ namespace Ginger
 				OpenFile(_shouldLoadFilename);
 				_shouldLoadFilename = null;
 			}
-
-			ApplyVisualTheme();
 		}
 
 		private void OnDragEnter(object sender, DragEventArgs e)
@@ -2348,6 +2343,8 @@ namespace Ginger
 			if (Utility.InDesignMode)
 				return;
 
+			Theme.BeginTheming();
+
 			Theme.Apply(menuStrip);
 
 			this.BackColor = Theme.Current.ControlBackground;
@@ -2390,31 +2387,10 @@ namespace Ginger
 			if (_editChatDialog != null && _editChatDialog.IsDisposed == false)
 				_editChatDialog.ApplyTheme();
 
-			if (!Utility.InDesignMode)
-			{
-				Dark.Net.DarkNet.Instance.SetCurrentProcessTheme(Theme.IsDarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
-				Dark.Net.DarkNet.Instance.SetWindowThemeForms(this, Theme.IsDarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
-			}
+			Theme.ApplyToTitleBar(this, true);
+			Theme.EndTheming();
 		}
 
-		/*
-		private const int WM_CTLCOLORSCROLLBAR = 0x0137;
-
-		[DllImport("gdi32.dll")]
-		static extern IntPtr CreateSolidBrush(int crColor);
-
-		private IntPtr _scrollbarBrush;
-
-		protected override void WndProc(ref Message m)
-		{
-			if (m.Msg == WM_CTLCOLORSCROLLBAR)
-			{
-				m.Result = _scrollbarBrush;
-				return;
-			}
-
-			base.WndProc(ref m);
-		}*/
 	}
 
 	public interface IIdleHandler
