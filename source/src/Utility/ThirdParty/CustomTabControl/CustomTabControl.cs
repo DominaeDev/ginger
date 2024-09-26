@@ -785,15 +785,15 @@ namespace System.Windows.Forms
 					_BackImage = new Bitmap(Width, Height);
 
 					var backGraphics = Graphics.FromImage(_BackImage);
-					backGraphics.Clear(VisualTheme.Theme.ControlBackground);
+					backGraphics.Clear(Theme.Current.ControlBackground);
 
 					PaintTransparentBackground(backGraphics, ClientRectangle);
 				}
 
-				_BackBufferGraphics.Clear(VisualTheme.Theme.ControlBackground);
+				_BackBufferGraphics.Clear(Theme.Current.ControlBackground);
 				_BackBufferGraphics.DrawImageUnscaled(_BackImage, 0, 0);
 
-				_TabBufferGraphics.Clear(VisualTheme.Theme.ControlBackground);
+				_TabBufferGraphics.Clear(Theme.Current.ControlBackground);
 
 				if (TabCount > 0)
 				{
@@ -951,7 +951,7 @@ namespace System.Windows.Forms
 				pageBounds.Width -= 29;
 				edge.AddLine(pageBounds.Right, pageBounds.Top, pageBounds.Right, pageBounds.Bottom);
 
-				using (var edgePen = new Pen(VisualTheme.Theme.TabEdgeBorder))
+				using (var edgePen = new Pen(Theme.Current.TabEdgeBorder))
 				{
 					graphics.DrawPath(edgePen, edge);
 				}
@@ -1542,13 +1542,13 @@ namespace System.Windows.Forms
 
 		public void ApplyVisualTheme()
 		{
-			this.BackColor = VisualTheme.Theme.ControlBackground;
-			this.ForeColor = VisualTheme.Theme.ControlForeground;
+			this.BackColor = Theme.Current.ControlBackground;
+			this.ForeColor = Theme.Current.ControlForeground;
 
 			foreach (TabPage page in TabPages)
 			{
-				page.BackColor = VisualTheme.Theme.ControlBackground;
-				page.ForeColor = VisualTheme.Theme.ControlForeground;
+				page.BackColor = Theme.Current.ControlBackground;
+				page.ForeColor = Theme.Current.ControlForeground;
 			}
 		}
 	}

@@ -193,13 +193,13 @@ namespace System.Windows.Forms
 			LinearGradientBrush fillBrush = null;
 
 			// Capture the colors dependant on selection state of the tab
-			Color dark = VisualTheme.Theme.ControlBackground;
-			Color light = VisualTheme.Theme.ControlBackground;
+			Color dark = Theme.Current.ControlBackground;
+			Color light = Theme.Current.ControlBackground;
 
 			if (_TabControl.SelectedIndex == index) // Active
 			{
-				dark = VisualTheme.Theme.SeletedTabButtonDark;
-				light = VisualTheme.Theme.SeletedTabButtonLight;
+				dark = Theme.Current.SeletedTabButtonDark;
+				light = Theme.Current.SeletedTabButtonLight;
 			}
 			else if (!_TabControl.TabPages[index].Enabled) // Disabled
 			{
@@ -364,7 +364,7 @@ namespace System.Windows.Forms
 		{
 			get 
 			{ 
-				return VisualTheme.Theme.SelectedTabBorder;
+				return Theme.Current.SelectedTabBorder;
 			}
 		}
 
@@ -373,7 +373,7 @@ namespace System.Windows.Forms
 		{
 			get
 			{
-				return VisualTheme.Theme.SelectedTabBorder;
+				return Theme.Current.SelectedTabBorder;
 			}
 		}
 
@@ -382,7 +382,7 @@ namespace System.Windows.Forms
 		{
 			get
 			{
-				return VisualTheme.Theme.TabBorder;
+				return Theme.Current.TabBorder;
 			}
 		}
 
@@ -391,7 +391,7 @@ namespace System.Windows.Forms
 		{
 			get
 			{
-				return VisualTheme.Theme.TabInactiveText;
+				return Theme.Current.TabInactiveText;
 			}
 		}
 
@@ -400,7 +400,7 @@ namespace System.Windows.Forms
 		{
 			get
 			{
-				return VisualTheme.Theme.ControlForeground;
+				return Theme.Current.ControlForeground;
 			}
 		}
 
@@ -409,7 +409,7 @@ namespace System.Windows.Forms
 		{
 			get
 			{
-				return VisualTheme.Theme.GrayText;
+				return Theme.Current.GrayText;
 			}
 		}
 

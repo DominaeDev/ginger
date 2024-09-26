@@ -215,7 +215,7 @@ namespace Ginger
 					height);
 			}
 			if (width > Constants.MaxImageDimension || height > Constants.MaxImageDimension)
-				label_Image_Value.ForeColor = VisualTheme.Theme.WarningRed;
+				label_Image_Value.ForeColor = Theme.Current.WarningRed;
 			else
 				label_Image_Value.ForeColor = this.ForeColor;
 		}
@@ -257,7 +257,7 @@ namespace Ginger
 				else
 				{
 					label_Tokens_Value.Text = string.Format("{0} ({1} over budget)", tokens, tokens - AppSettings.Settings.TokenBudget);
-					label_Tokens_Value.ForeColor = VisualTheme.Theme.WarningRed;
+					label_Tokens_Value.ForeColor = Theme.Current.WarningRed;
 				}
 
 				if (permanent_tokens <= AppSettings.Settings.TokenBudget)
@@ -274,7 +274,7 @@ namespace Ginger
 						label_Tokens_Permanent_Value.Text = string.Format("{0} ({1} over budget)", permanent_tokens, permanent_tokens - AppSettings.Settings.TokenBudget);
 					else
 						label_Tokens_Permanent_Value.Text = permanent_tokens.ToString(); 
-					label_Tokens_Permanent_Value.ForeColor = VisualTheme.Theme.WarningRed;
+					label_Tokens_Permanent_Value.ForeColor = Theme.Current.WarningRed;
 				}
 			}
 
@@ -503,7 +503,7 @@ namespace Ginger
 					Enabled = Current.Card.portraitImage != null,
 				});
 
-				VisualTheme.ApplyTheme(menu);
+				Theme.Apply(menu);
 				menu.Show(sender as Control, new System.Drawing.Point(args.X, args.Y));
 			}
 		}
@@ -818,7 +818,7 @@ namespace Ginger
 				RefreshSettingsButton();
 			}));
 
-			VisualTheme.ApplyTheme(menu);
+			Theme.Apply(menu);
 			menu.Show(sender, location);
 		}
 
@@ -827,7 +827,7 @@ namespace Ginger
 			var item = new ToolStripMenuItem(label);
 			menu.Items.Add(item);
 			if (Current.Card.extraFlags.ContainsAny(flags))
-				item.Image = VisualTheme.Theme.MenuRedDot;
+				item.Image = Theme.Current.MenuRedDot;
 			return item;
 		}
 
@@ -863,18 +863,18 @@ namespace Ginger
 
 		private void RefreshSettingsButton()
 		{
-			btn_More.Image = Current.Card.extraFlags != CardData.Flag.Default ? VisualTheme.Theme.MenuEditIcon : VisualTheme.Theme.MenuIcon;
+			btn_More.Image = Current.Card.extraFlags != CardData.Flag.Default ? Theme.Current.MenuEditIcon : Theme.Current.MenuIcon;
 		}
 
 		public void ApplyVisualTheme()
 		{
-			VisualTheme.ApplyTheme(this);
+			Theme.Apply(this);
 
 			if (Current.Characters == null)
 				return;
 
 			RefreshValues();
-			portraitImage.BackgroundImage = VisualTheme.Theme.Checker;
+			portraitImage.BackgroundImage = Theme.Current.Checker;
 		}
 	}
 }

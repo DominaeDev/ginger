@@ -455,7 +455,7 @@ namespace Ginger
 					g.DrawRectangle(p, new Rectangle(1, 1, Width - 3, Height - 3));
 				}
 				// Outer border / Highlight
-				using (var p = new Pen(Focused ? VisualTheme.Theme.Highlight : VisualTheme.Theme.TextBoxBorder))
+				using (var p = new Pen(Focused ? Theme.Current.Highlight : Theme.Current.TextBoxBorder))
 				{
 					g.DrawRectangle(p, new Rectangle(0, 0, Width - 1, Height - 1));
 				}
@@ -467,8 +467,8 @@ namespace Ginger
 		{
 			base.OnEnabledChanged(e);
 
-			this.ForeColor = Enabled ? VisualTheme.Theme.TextBoxForeground : VisualTheme.Theme.GrayText;
-			this.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : VisualTheme.Theme.TextBoxDisabledBackground;
+			this.ForeColor = Enabled ? Theme.Current.TextBoxForeground : Theme.Current.GrayText;
+			this.BackColor = Enabled ? Theme.Current.TextBoxBackground : Theme.Current.TextBoxDisabledBackground;
 		}
 		
 		protected override void OnSizeChanged(EventArgs e)

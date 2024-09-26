@@ -129,7 +129,6 @@ namespace Ginger
 			public static bool AutoBreakLine = true;
 			public static Point WindowSize = new Point(820, 660);
 			public static Point WindowLocation = default(Point);
-			public static bool DarkMode = false;
 
 			private static string DefaultFontFace = "Segoe UI";
 			private static Font _font = new Font(DefaultFontFace, 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -288,7 +287,6 @@ namespace Ginger
 				ReadBool(ref WriteDialog.AutoBreakLine, writeSection, "AutoBreakLine");
 				ReadPoint(ref WriteDialog.WindowLocation, userSection, "WindowLocation");
 				ReadPoint(ref WriteDialog.WindowSize, userSection, "WindowSize");
-				ReadBool(ref WriteDialog.DarkMode, writeSection, "DarkMode");
 
 				try
 				{
@@ -424,7 +422,6 @@ namespace Ginger
 					Write(outputFile, "AutoBreakLine", WriteDialog.AutoBreakLine);
 					Write(outputFile, "WindowLocation", WriteDialog.WindowLocation);
 					Write(outputFile, "WindowSize", WriteDialog.WindowSize);
-					Write(outputFile, "DarkMode", WriteDialog.DarkMode);
 
 					// Paths
 					WriteSection(outputFile, "Paths");

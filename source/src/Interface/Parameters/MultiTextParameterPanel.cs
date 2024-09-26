@@ -124,7 +124,7 @@ namespace Ginger
 
 		public void ApplyVisualTheme()
 		{
-			btnWrite.Image = VisualTheme.Theme.Write;
+			btnWrite.Image = Theme.Current.Write;
 		}
 	}
 }

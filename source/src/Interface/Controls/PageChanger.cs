@@ -130,8 +130,8 @@ namespace Ginger
 
 		public void ApplyVisualTheme()
 		{
-			btnNext.Image = VisualTheme.Theme.ArrowRight;
-			btnPrev.Image = VisualTheme.Theme.ArrowLeft;
+			btnNext.Image = Theme.Current.ArrowRight;
+			btnPrev.Image = Theme.Current.ArrowLeft;
 		}
 	}
 }

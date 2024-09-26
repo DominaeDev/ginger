@@ -66,7 +66,6 @@
 			this.fontDialog = new System.Windows.Forms.FontDialog();
 			this.labelTokens = new System.Windows.Forms.Label();
 			this.textBox = new Ginger.RichTextBoxEx();
-			this.darkModeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			buttonLayout = new System.Windows.Forms.FlowLayoutPanel();
 			buttonLayout.SuspendLayout();
 			this.menuStrip.SuspendLayout();
@@ -271,7 +270,6 @@
 			this.formatToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.wordWrapMenuItem,
             this.autoBreakMenuItem,
-            this.darkModeMenuItem,
             this.changeFontMenuItem});
 			this.formatToolStripMenuItem.Name = "formatToolStripMenuItem";
 			this.formatToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
@@ -418,15 +416,6 @@
 			this.textBox.TabIndex = 0;
 			this.textBox.Text = "";
 			// 
-			// darkModeMenuItem
-			// 
-			this.darkModeMenuItem.CheckOnClick = true;
-			this.darkModeMenuItem.Name = "darkModeMenuItem";
-			this.darkModeMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.darkModeMenuItem.Text = "&Dark mode";
-			this.darkModeMenuItem.ToolTipText = "Invert colors";
-			this.darkModeMenuItem.CheckStateChanged += new System.EventHandler(this.darkModeMenuItem_CheckStateChanged);
-			// 
 			// WriteDialog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
@@ -494,6 +483,5 @@
 		private System.Windows.Forms.ToolStripMenuItem highlightNamesMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem highlightPronounsMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem highlightNumbersMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem darkModeMenuItem;
 	}
 }

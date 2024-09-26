@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public static class VisualTheme
+	public static class Theme
 	{
 		public static bool DarkModeEnabled { get { return AppSettings.Settings.DarkTheme; } }
 
@@ -16,23 +16,23 @@ namespace Ginger
 				return new ToolStripProfessionalRenderer();
 		}
 
-		public static void ApplyTheme(Form form)
+		public static void Apply(Form form)
 		{
 			if (Utility.InDesignMode)
 				return;
 
-			form.BackColor = Theme.ControlBackground;
-			form.ForeColor = Theme.ControlForeground;
+			form.BackColor = Current.ControlBackground;
+			form.ForeColor = Current.ControlForeground;
 
 			var menuStrips = form.FindAllControlsOfType<MenuStrip>();
 			foreach (var menuStrip in menuStrips)
-				ApplyTheme(menuStrip);
+				Apply(menuStrip);
 
 			var statusStrips = form.FindAllControlsOfType<StatusStrip>();
 			foreach (var statusStrip in statusStrips)
 			{
-				statusStrip.BackColor = Theme.ControlBackground;
-				statusStrip.ForeColor = Theme.ControlForeground;
+				statusStrip.BackColor = Current.ControlBackground;
+				statusStrip.ForeColor = Current.ControlForeground;
 			}
 
 			var textBoxes = form.FindAllControlsOfType<TextBoxBase>();
@@ -40,13 +40,13 @@ namespace Ginger
 			{
 				if (control.Enabled)
 				{
-					control.ForeColor = Theme.TextBoxForeground;
-					control.BackColor = Theme.TextBoxBackground;
+					control.ForeColor = Current.TextBoxForeground;
+					control.BackColor = Current.TextBoxBackground;
 				}
 				else
 				{
-					control.ForeColor = Theme.GrayText;
-					control.BackColor = Theme.TextBoxDisabledBackground;
+					control.ForeColor = Current.GrayText;
+					control.BackColor = Current.TextBoxDisabledBackground;
 				}
 			}
 
@@ -55,30 +55,30 @@ namespace Ginger
 			{
 				if (control.Enabled)
 				{
-					control.ForeColor = Theme.TextBoxForeground;
-					control.BackColor = Theme.TextBoxBackground;
+					control.ForeColor = Current.TextBoxForeground;
+					control.BackColor = Current.TextBoxBackground;
 				}
 				else
 				{
-					control.ForeColor = Theme.GrayText;
-					control.BackColor = Theme.TextBoxDisabledBackground;
+					control.ForeColor = Current.GrayText;
+					control.BackColor = Current.TextBoxDisabledBackground;
 				}
 			}
 
 			var buttons = form.FindAllControlsOfType<Button>();
 			foreach (var button in buttons)
-				ApplyVisualStyle(button);
+				Apply(button);
 
-			Dark.Net.DarkNet.Instance.SetWindowThemeForms(form, DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Light);
+			global::Dark.Net.DarkNet.Instance.SetWindowThemeForms(form, DarkModeEnabled ? global::Dark.Net.Theme.Dark : global::Dark.Net.Theme.Light);
 		}
 
-		public static void ApplyTheme(Control parentControl)
+		public static void Apply(Control parentControl)
 		{
 			var groupBoxes = parentControl.FindAllControlsOfType<GroupBox>();
 			foreach (var control in groupBoxes)
 			{
-				control.ForeColor = Theme.ControlForeground;
-				control.BackColor = Theme.ControlBackground;
+				control.ForeColor = Current.ControlForeground;
+				control.BackColor = Current.ControlBackground;
 			}
 
 			var textBoxes = parentControl.FindAllControlsOfType<TextBoxBase>();
@@ -86,13 +86,13 @@ namespace Ginger
 			{
 				if (control.Enabled)
 				{
-					control.ForeColor = Theme.TextBoxForeground;
-					control.BackColor = Theme.TextBoxBackground;
+					control.ForeColor = Current.TextBoxForeground;
+					control.BackColor = Current.TextBoxBackground;
 				}
 				else
 				{
-					control.ForeColor = Theme.GrayText;
-					control.BackColor = Theme.TextBoxDisabledBackground;
+					control.ForeColor = Current.GrayText;
+					control.BackColor = Current.TextBoxDisabledBackground;
 				}
 			}
 
@@ -101,98 +101,98 @@ namespace Ginger
 			{
 				if (control.Enabled)
 				{
-					control.ForeColor = Theme.TextBoxForeground;
-					control.BackColor = Theme.TextBoxBackground;
+					control.ForeColor = Current.TextBoxForeground;
+					control.BackColor = Current.TextBoxBackground;
 				}
 				else
 				{
-					control.ForeColor = Theme.GrayText;
-					control.BackColor = Theme.TextBoxDisabledBackground;
+					control.ForeColor = Current.GrayText;
+					control.BackColor = Current.TextBoxDisabledBackground;
 				}
 			}
 
 			var buttons = parentControl.FindAllControlsOfType<Button>();
 			foreach (var button in buttons)
-				ApplyVisualStyle(button);
+				Apply(button);
 
 			foreach (Control control in parentControl.Controls)
 			{
-				control.ForeColor = Theme.ControlForeground;
-				control.BackColor = Theme.ControlBackground;
+				control.ForeColor = Current.ControlForeground;
+				control.BackColor = Current.ControlBackground;
 			}
 		}
 		
-		public static void ApplyVisualStyle(Button button)
+		public static void Apply(Button button)
 		{
 			button.FlatStyle = FlatStyle.Flat;
-			button.FlatAppearance.BorderColor = Theme.ButtonBorder;
-			button.FlatAppearance.MouseDownBackColor = Theme.ButtonPressed;
-			button.FlatAppearance.MouseOverBackColor = Theme.ButtonHover;
+			button.FlatAppearance.BorderColor = Current.ButtonBorder;
+			button.FlatAppearance.MouseDownBackColor = Current.ButtonPressed;
+			button.FlatAppearance.MouseOverBackColor = Current.ButtonHover;
 			button.FlatAppearance.BorderSize = 1;
-			button.ForeColor = Theme.ControlForeground;
-			button.BackColor = Theme.Button;
+			button.ForeColor = Current.ControlForeground;
+			button.BackColor = Current.Button;
 		}
 
-		public static void ApplyTheme(ToolStripMenuItem menuItem)
+		public static void Apply(ToolStripMenuItem menuItem)
 		{
-			menuItem.ForeColor = Theme.MenuForeground;
+			menuItem.ForeColor = Current.MenuForeground;
 			if (menuItem.DropDownItems != null)
 			{
 				foreach (ToolStripItem item in menuItem.DropDownItems)
 				{
 					if (item is ToolStripMenuItem)
-						ApplyTheme(item as ToolStripMenuItem);
+						Apply(item as ToolStripMenuItem);
 				}
 			}
 		}
 
-		
-		public static void ApplyTheme(ContextMenuStrip contextMenu)
+		public static void Apply(ContextMenuStrip contextMenu)
 		{
 			contextMenu.Renderer = CreateToolStripRenderer();
-			contextMenu.ForeColor = Theme.MenuForeground;
+			contextMenu.ForeColor = Current.MenuForeground;
 			foreach (ToolStripItem menuItem in contextMenu.Items)
 			{
 				if (menuItem is ToolStripMenuItem)
-					ApplyTheme(menuItem as ToolStripMenuItem);
+					Apply(menuItem as ToolStripMenuItem);
 			}
 		}
 
-
-		public static void ApplyTheme(MenuStrip menuStrip)
+		public static void Apply(MenuStrip menuStrip)
 		{
 			menuStrip.Renderer = CreateToolStripRenderer();
-			menuStrip.ForeColor = Theme.MenuForeground;
+			menuStrip.ForeColor = Current.MenuForeground;
 			foreach (ToolStripItem menuItem in menuStrip.Items)
 			{
 				if (menuItem is ToolStripMenuItem)
-					ApplyTheme(menuItem as ToolStripMenuItem);
+					Apply(menuItem as ToolStripMenuItem);
 			}
 		}
 
-		public static IColorTheme Theme { get { return DarkModeEnabled ? _darkTheme : _lightTheme; } }
+		public static IColorTheme Current { get { return DarkModeEnabled ? _darkTheme : _lightTheme; } }
+		public static IColorTheme Light { get { return _lightTheme; } }
+		public static IColorTheme Dark { get { return _darkTheme; } }
 
 		public class DarkToolStripColorTable : ProfessionalColorTable
 		{
-			public override Color ToolStripDropDownBackground => Theme.MenuBackground;
+			public override Color ToolStripDropDownBackground => Current.MenuBackground;
 
-			public override Color MenuStripGradientBegin => Theme.MenuBackground;
-			public override Color MenuStripGradientEnd => Theme.MenuBackground;
+			public override Color MenuStripGradientBegin => Current.MenuBackground;
+			public override Color MenuStripGradientEnd => Current.MenuBackground;
 
-			public override Color ImageMarginGradientBegin => Theme.MenuGradientBegin;
-			public override Color ImageMarginGradientMiddle => Theme.MenuGradientMiddle;
-			public override Color ImageMarginGradientEnd => Theme.MenuGradientEnd;
+			public override Color ImageMarginGradientBegin => Current.MenuGradientBegin;
+			public override Color ImageMarginGradientMiddle => Current.MenuGradientMiddle;
+			public override Color ImageMarginGradientEnd => Current.MenuGradientEnd;
 
-			public override Color MenuBorder => Theme.MenuBorder;
-			public override Color MenuItemBorder => Theme.MenuHighlight;
+			public override Color MenuBorder => Current.MenuBorder;
+			public override Color MenuItemBorder => Current.MenuHighlight;
 
-			public override Color MenuItemPressedGradientBegin => Theme.MenuBackground;
-			public override Color MenuItemPressedGradientEnd => Theme.MenuBackground;
+			public override Color MenuItemPressedGradientBegin => Current.MenuBackground;
+			public override Color MenuItemPressedGradientEnd => Current.MenuBackground;
 
-			public override Color ButtonSelectedBorder => Theme.MenuHighlight;
+			public override Color ButtonSelectedBorder => Current.MenuHighlight;
 
-			public override Color SeparatorLight => Theme.MenuSeparator;
-			public override Color SeparatorDark => Theme.MenuSeparator;
+			public override Color SeparatorLight => Current.MenuSeparator;
+			public override Color SeparatorDark => Current.MenuSeparator;
 
 			public static Color SelectedBackground = Color.FromArgb(48, 78, 102);
 			public static Color HighlightBackground = Color.FromArgb(32, 92, 140);
@@ -212,6 +212,7 @@ namespace Ginger
 
 	public class LightTheme : IColorTheme
 	{
+		// Interface
 		public Color ControlBackground => SystemColors.Control;
 		public Color ControlForeground => SystemColors.ControlText;
 		
@@ -262,6 +263,19 @@ namespace Ginger
 		public Color NotesForeground => Color.Black;
 		public Color NotesBackground => Color.FromArgb(255, 255, 248);
 
+		// Text
+		public Color Dialogue	=> ColorTranslator.FromHtml("#C06000");
+		public Color Narration	=> ColorTranslator.FromHtml("#406080");
+		public Color Number		=> ColorTranslator.FromHtml("#800080");
+		public Color Name		=> ColorTranslator.FromHtml("#0000C0");
+		public Color Command	=> ColorTranslator.FromHtml("#800000");
+		public Color Pronoun	=> ColorTranslator.FromHtml("#C000C0");
+		public Color Comment	=> ColorTranslator.FromHtml("#969696");
+		public Color Code		=> ColorTranslator.FromHtml("#606060");
+		public Color Error		=> ColorTranslator.FromHtml("#C00000");
+		public Color Wildcard	=> ColorTranslator.FromHtml("#008080");
+		public Color Decorator	=> ColorTranslator.FromHtml("#800080");
+
 		// Icons
 		public Image MenuIcon => Resources.menu;
 		public Image MenuEditIcon => Resources.menu_edit;
@@ -289,6 +303,7 @@ namespace Ginger
 
 	public class DarkTheme : IColorTheme
 	{
+		// Interface
 		public Color ControlForeground => ColorTranslator.FromHtml("#f0f0f0");
 		public Color ControlBackground => ColorTranslator.FromHtml("#404040");
 
@@ -339,6 +354,19 @@ namespace Ginger
 		public Color NotesForeground => TextBoxForeground;
 		public Color NotesBackground => TextBoxBackground;
 
+		// Text
+		public Color Dialogue	=> ColorTranslator.FromHtml("#ffcd62");
+		public Color Narration	=> ColorTranslator.FromHtml("#97a2ac");
+		public Color Number		=> ColorTranslator.FromHtml("#BE7BE3");
+		public Color Name		=> ColorTranslator.FromHtml("#4FB0FF");
+		public Color Command	=> ColorTranslator.FromHtml("#C06000");
+		public Color Pronoun	=> ColorTranslator.FromHtml("#D000D0");
+		public Color Comment	=> ColorTranslator.FromHtml("#636363");
+		public Color Code		=> ColorTranslator.FromHtml("#969696");
+		public Color Error		=> ColorTranslator.FromHtml("#ff5569");
+		public Color Wildcard	=> ColorTranslator.FromHtml("#00A0A0");
+		public Color Decorator	=> ColorTranslator.FromHtml("#A000A0");
+
 		// Icons
 		public Image MenuIcon => Resources.dark_menu;
 		public Image MenuEditIcon => Resources.dark_menu_edit;
@@ -372,6 +400,7 @@ namespace Ginger
 
 	public interface IColorTheme
 	{
+		// Interface
 		Color ControlForeground { get; }
 		Color ControlBackground { get; }
 
@@ -422,6 +451,19 @@ namespace Ginger
 		Color NotesForeground { get; }
 		Color NotesBackground { get; }
 
+		// Text
+		Color Dialogue	 { get; }
+		Color Narration	 { get; }
+		Color Number	 { get; }
+		Color Name		 { get; }
+		Color Command	 { get; }
+		Color Pronoun	 { get; }
+		Color Comment	 { get; }
+		Color Code		 { get; }
+		Color Error		 { get; }
+		Color Wildcard	 { get; }
+		Color Decorator	 { get; }
+
 		// Icons
 		Image MenuIcon { get; }
 		Image MenuEditIcon { get; }
@@ -446,6 +488,5 @@ namespace Ginger
 		Image RemoveLore { get; }
 		Image ArrowLeft { get; }
 		Image ArrowRight { get; }
-		
 	}
 }

@@ -95,7 +95,7 @@ namespace Ginger
 			const int kDarken = 20;
 			var darkColor = Color.FromArgb(Math.Max(color.R - kDarken, 0), Math.Max(color.G - kDarken, 0), Math.Max(color.B - kDarken, 0));
 			
-			if (VisualTheme.DarkModeEnabled)
+			if (Theme.DarkModeEnabled)
 			{
 				color = Utility.GetDarkColor(color, 0.60f);
 				darkColor = Utility.GetDarkColor(color, 0.25f);
@@ -589,7 +589,7 @@ namespace Ginger
 				menu.Items.Add(new ToolStripMenuItem("Edit source...", null, (s, e) => { MainForm.EditRecipeSource(recipe); }));
 			}
 
-			VisualTheme.ApplyTheme(menu);
+			Theme.Apply(menu);
 			menu.Show(control, location);
 		}
 
@@ -730,7 +730,7 @@ namespace Ginger
 			else // Disabled
 			{
 				SetColor(Color.Gainsboro);
-				if (VisualTheme.DarkModeEnabled)
+				if (Theme.DarkModeEnabled)
 					labelTitle.ForeColor = Color.Black;
 				else
 					labelTitle.ForeColor = Color.Gray;
@@ -937,7 +937,7 @@ namespace Ginger
 			if (Enabled == false || recipe.isEnabled == false)
 			{
 				SetColor(Color.Gainsboro);
-				if (VisualTheme.DarkModeEnabled)
+				if (Theme.DarkModeEnabled)
 					labelTitle.ForeColor = Color.Black;
 				else
 					labelTitle.ForeColor = Color.Gray;
@@ -951,13 +951,13 @@ namespace Ginger
 			{
 				if (control.Enabled)
 				{
-					control.ForeColor = VisualTheme.Theme.TextBoxForeground;
-					control.BackColor = VisualTheme.Theme.TextBoxBackground;
+					control.ForeColor = Theme.Current.TextBoxForeground;
+					control.BackColor = Theme.Current.TextBoxBackground;
 				}
 				else
 				{
-					control.ForeColor = VisualTheme.Theme.GrayText;
-					control.BackColor = VisualTheme.Theme.TextBoxDisabledBackground;
+					control.ForeColor = Theme.Current.GrayText;
+					control.BackColor = Theme.Current.TextBoxDisabledBackground;
 				}
 			}
 
@@ -966,13 +966,13 @@ namespace Ginger
 			{
 				if (control.Enabled)
 				{
-					control.ForeColor = VisualTheme.Theme.TextBoxForeground;
-					control.BackColor = VisualTheme.Theme.TextBoxBackground;
+					control.ForeColor = Theme.Current.TextBoxForeground;
+					control.BackColor = Theme.Current.TextBoxBackground;
 				}
 				else
 				{
-					control.ForeColor = VisualTheme.Theme.GrayText;
-					control.BackColor = VisualTheme.Theme.TextBoxDisabledBackground;
+					control.ForeColor = Theme.Current.GrayText;
+					control.BackColor = Theme.Current.TextBoxDisabledBackground;
 				}
 			}
 

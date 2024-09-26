@@ -18,13 +18,13 @@ namespace Ginger
 
 		public GroupBoxEx()
 		{
-			_borderColor = VisualTheme.Theme.GroupBoxBorder;
+			_borderColor = Theme.Current.GroupBoxBorder;
 		}
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
-			Brush textBrush = new SolidBrush(VisualTheme.Theme.ControlForeground);
-			Brush borderBrush = new SolidBrush(VisualTheme.Theme.GroupBoxBorder);
+			Brush textBrush = new SolidBrush(Theme.Current.ControlForeground);
+			Brush borderBrush = new SolidBrush(Theme.Current.GroupBoxBorder);
 			Pen borderPen = new Pen(borderBrush);
 			Graphics g = e.Graphics;
 			g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;

@@ -163,42 +163,6 @@ namespace Ginger
 			public static readonly int RecipesPerSplit = 20;
 		}
 
-		public static class Colors
-		{
-			public static class Light
-			{
-				public static readonly Color Foreground	= ColorTranslator.FromHtml("#202020");
-				public static readonly Color Background	= ColorTranslator.FromHtml("#FFFFFF");
-				public static readonly Color Dialogue	= ColorTranslator.FromHtml("#C06000");
-				public static readonly Color Narration	= ColorTranslator.FromHtml("#406080");
-				public static readonly Color Number		= ColorTranslator.FromHtml("#800080");
-				public static readonly Color Name		= ColorTranslator.FromHtml("#0000C0");
-				public static readonly Color Command	= ColorTranslator.FromHtml("#800000");
-				public static readonly Color Pronoun	= ColorTranslator.FromHtml("#C000C0");
-				public static readonly Color Comment	= ColorTranslator.FromHtml("#969696");
-				public static readonly Color Code		= ColorTranslator.FromHtml("#606060");
-				public static readonly Color Error		= ColorTranslator.FromHtml("#C00000");
-				public static readonly Color Wildcard	= ColorTranslator.FromHtml("#008080");
-				public static readonly Color Decorator	= ColorTranslator.FromHtml("#800080");
-			}
-
-			public static class Dark
-			{
-				public static readonly Color Foreground	= ColorTranslator.FromHtml("#DEDEDE");
-				public static readonly Color Background	= ColorTranslator.FromHtml("#222222");
-				public static readonly Color Dialogue	= ColorTranslator.FromHtml("#ffcd62");
-				public static readonly Color Narration	= ColorTranslator.FromHtml("#97a2ac");
-				public static readonly Color Number		= ColorTranslator.FromHtml("#BE7BE3");
-				public static readonly Color Name		= ColorTranslator.FromHtml("#4FB0FF");
-				public static readonly Color Command	= ColorTranslator.FromHtml("#C06000");
-				public static readonly Color Pronoun	= ColorTranslator.FromHtml("#D000D0");
-				public static readonly Color Comment	= ColorTranslator.FromHtml("#636363");
-				public static readonly Color Code		= ColorTranslator.FromHtml("#969696");
-				public static readonly Color Error		= ColorTranslator.FromHtml("#ff5569");
-				public static readonly Color Wildcard	= ColorTranslator.FromHtml("#00A0A0");
-				public static readonly Color Decorator	= ColorTranslator.FromHtml("#A000A0");
-			}
-		}
 	}
 
 	public static class ShortcutKeys

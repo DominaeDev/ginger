@@ -145,11 +145,10 @@ namespace Ginger
 			CodeBlock		= 1 << 6,
 			Wildcards		= 1 << 7,
 			SpellChecking	= 1 << 8,
-			DarkMode		= 1 << 9,
-			Decorators		= 1 << 10,
-			Comments		= 1 << 11,
-			Markdown		= 1 << 12,
-			HTML			= 1 << 13,
+			Decorators		= 1 << 9,
+			Comments		= 1 << 10,
+			Markdown		= 1 << 11,
+			HTML			= 1 << 12,
 
 			Default = Names | Dialogue | Actions | Commands | Numbers | CodeBlock | Comments | Markdown | SpellChecking | HTML,
 			Limited = Names | Commands | Numbers | Comments | Markdown | SpellChecking,
@@ -506,7 +505,7 @@ namespace Ginger
 				ToolTipText = "Remove all markdown images from the text. (E.g. ![](image.png))",
 			});
 
-			VisualTheme.ApplyTheme(menu);
+			Theme.Apply(menu);
 			menu.Show(this, location);
 		}
 
@@ -631,7 +630,7 @@ namespace Ginger
 			if (m.Msg == WM_ENABLE)
 			{
 				bool bEnabled = m.WParam == (IntPtr)1;
-				this.ForeColor = bEnabled ? VisualTheme.Theme.TextBoxForeground : VisualTheme.Theme.GrayText;
+				this.ForeColor = bEnabled ? Theme.Current.TextBoxForeground : Theme.Current.GrayText;
 				return; // Prevent background from being turned gray
 			}
 
@@ -655,13 +654,13 @@ namespace Ginger
 				{
 					TextRenderer.DrawText(e.Graphics, _placeholder, this.Font,
 						new Point(ClientRectangle.Location.X, ClientRectangle.Location.Y + 2),
-						VisualTheme.Theme.TextBoxPlaceholder, Color.Empty);
+						Theme.Current.TextBoxPlaceholder, Color.Empty);
 				}
 				else
 				{
 					TextRenderer.DrawText(e.Graphics, _placeholder, this.Font,
 						new Point(ClientRectangle.Location.X - 3, ClientRectangle.Location.Y),
-						VisualTheme.Theme.TextBoxPlaceholder, Color.Empty);
+						Theme.Current.TextBoxPlaceholder, Color.Empty);
 				}
 			}
 		}
@@ -765,18 +764,17 @@ namespace Ginger
 			_syntaxFlags = flags;
 
 			// Colors
-			bool bLight = _syntaxFlags.Contains(SyntaxFlags.DarkMode) == false;
-			Color colorDialogue = bLight ? Constants.Colors.Light.Dialogue : Constants.Colors.Dark.Dialogue;
-			Color colorNarration = bLight ? Constants.Colors.Light.Narration : Constants.Colors.Dark.Narration;
-			Color colorNumber = bLight ? Constants.Colors.Light.Number : Constants.Colors.Dark.Number;
-			Color colorName = bLight ? Constants.Colors.Light.Name : Constants.Colors.Dark.Name;
-			Color colorCommand = bLight ? Constants.Colors.Light.Command : Constants.Colors.Dark.Command;
-			Color colorPronoun = bLight ? Constants.Colors.Light.Pronoun : Constants.Colors.Dark.Pronoun;
-			Color colorComment = bLight ? Constants.Colors.Light.Comment : Constants.Colors.Dark.Comment;
-			Color colorCode = bLight ? Constants.Colors.Light.Code : Constants.Colors.Dark.Code;
-			Color colorError = bLight ? Constants.Colors.Light.Error : Constants.Colors.Dark.Error;
-			Color colorWildcard = bLight ? Constants.Colors.Light.Wildcard : Constants.Colors.Dark.Wildcard;
-			Color colorDecorator = bLight ? Constants.Colors.Light.Decorator : Constants.Colors.Dark.Decorator;
+			Color colorDialogue = Theme.Current.Dialogue;
+			Color colorNarration = Theme.Current.Narration;
+			Color colorNumber = Theme.Current.Number;
+			Color colorName = Theme.Current.Name;
+			Color colorCommand = Theme.Current.Command;
+			Color colorPronoun = Theme.Current.Pronoun;
+			Color colorComment = Theme.Current.Comment;
+			Color colorCode = Theme.Current.Code;
+			Color colorError = Theme.Current.Error;
+			Color colorWildcard = Theme.Current.Wildcard;
+			Color colorDecorator = Theme.Current.Decorator;
 
 			syntaxHighlighter.ClearPatterns();
 			
@@ -859,9 +857,6 @@ namespace Ginger
 					names[i + 1] = Current.Characters[i].namePlaceholder;
 				syntaxHighlighter.SetCharacterNames(names, new SyntaxStyle(colorName), 1);
 			}
-
-			if (!bLight)
-				syntaxHighlighter.darkMode = true;
 		}
 
 		public void InvalidateSyntaxHighlighting()
@@ -888,8 +883,7 @@ namespace Ginger
 			// Update names
 			if (Current.Characters != null && AppSettings.Settings.AutoConvertNames && _syntaxFlags.Contains(SyntaxFlags.Names))
 			{
-				bool bLight = _syntaxFlags.Contains(SyntaxFlags.DarkMode) == false;
-				Color colorName = bLight ? Constants.Colors.Light.Name : Constants.Colors.Dark.Name;
+				Color colorName = Theme.Current.Name;
 
 				string[] names = new string[Current.Characters.Count + 1];
 				names[0] = Current.Card.userPlaceholder;

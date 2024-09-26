@@ -108,7 +108,7 @@ namespace Ginger
 				}
 
 				// Timestamp
-				using (var brush = new SolidBrush(selected ? e.ForeColor : VisualTheme.Theme.GrayText))
+				using (var brush = new SolidBrush(selected ? e.ForeColor : Theme.Current.GrayText))
 				{
 					e.Graphics.DrawString(
 						entry.timestamp,

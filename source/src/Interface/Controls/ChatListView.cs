@@ -105,7 +105,7 @@ namespace Ginger
 					bounds = new Rectangle(bounds.Left + LeftMargin, bounds.Top, Columns[0].Width - LeftMargin, bounds.Height);
 
 				// Background
-				using (var brush = new SolidBrush(bSelected ? VisualTheme.Theme.MenuHighlight : BackColor))
+				using (var brush = new SolidBrush(bSelected ? Theme.Current.MenuHighlight : BackColor))
 				{
 					e.Graphics.FillRectangle(brush, bounds);
 				}
@@ -126,7 +126,7 @@ namespace Ginger
 					rowBounds.Top,
 					rowBounds.Width - LeftMargin,
 					rowBounds.Height
-					), Color.White, bSelected ? VisualTheme.Theme.MenuHighlight : BackColor);
+					), Color.White, bSelected ? Theme.Current.MenuHighlight : BackColor);
 			}
 
 		}
@@ -150,7 +150,7 @@ namespace Ginger
 				}
 
 				// Background
-				using (var brush = new SolidBrush(VisualTheme.Theme.MenuBackground))
+				using (var brush = new SolidBrush(Theme.Current.MenuBackground))
 				{
 					e.Graphics.FillRectangle(brush, e.Bounds);
 				}
@@ -167,7 +167,7 @@ namespace Ginger
 					break;
 				}
 
-				TextRenderer.DrawText(e.Graphics, e.Header.Text, this.Font, e.Bounds, VisualTheme.Theme.MenuForeground, tf);
+				TextRenderer.DrawText(e.Graphics, e.Header.Text, this.Font, e.Bounds, Theme.Current.MenuForeground, tf);
 			}
 		}
 	}

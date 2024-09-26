@@ -563,7 +563,7 @@ namespace Ginger
 			foreach (var folder in folders)
 			{
 				var menuItem = new ToolStripMenuItem();
-				menuItem.Image = VisualTheme.Theme.MenuFolder;
+				menuItem.Image = Theme.Current.MenuFolder;
 				menuItem.Text = Utility.EscapeMenu(folder);
 
 				if (string.IsNullOrEmpty(root))
@@ -594,7 +594,7 @@ namespace Ginger
 				menuItem.ToolTipText = tooltip;
 
 				if (recipeTemplate.type == Recipe.Type.Snippet)
-					menuItem.Image = VisualTheme.Theme.MenuSnippet;
+					menuItem.Image = Theme.Current.MenuSnippet;
 				if (Current.Character.recipes.ContainsAny(r => r.uid == recipeTemplate.uid) && recipeTemplate.allowMultiple == false)
 				{
 					menuItem.Checked = true;
@@ -641,7 +641,7 @@ namespace Ginger
 					{
 						var menuItem = new ToolStripMenuItem();
 						menuItem.Text = Utility.EscapeMenu(book.name);
-						menuItem.Image = VisualTheme.Theme.MenuLore;
+						menuItem.Image = Theme.Current.MenuLore;
 						menuItem.Click += (s, e) => {
 							recipeList.AddLorebook(book);
 						};
@@ -858,7 +858,7 @@ namespace Ginger
 
 			point.Offset(-16, 16);
 			
-			VisualTheme.ApplyTheme(menu);
+			Theme.Apply(menu);
 			menu.Show(control, point);
 			
 			StealFocus();
@@ -1292,7 +1292,7 @@ namespace Ginger
 			alwaysLinkMenuItem.Checked = AppSettings.BackyardLink.AlwaysLinkOnImport;
 			enableAutosaveMenuItem.Checked = AppSettings.BackyardLink.Autosave;
 
-			VisualTheme.ApplyTheme(menuStrip);
+			Theme.Apply(menuStrip);
 		}
 
 		private void PopulateMRUMenu(ToolStripItemCollection items)
@@ -2346,42 +2346,42 @@ namespace Ginger
 			if (Utility.InDesignMode)
 				return;
 
-			VisualTheme.ApplyTheme(menuStrip);
+			Theme.Apply(menuStrip);
 
-			this.BackColor = VisualTheme.Theme.ControlBackground;
-			this.ForeColor = VisualTheme.Theme.ControlForeground;
+			this.BackColor = Theme.Current.ControlBackground;
+			this.ForeColor = Theme.Current.ControlForeground;
 
-			this.splitContainer.Panel1.BackColor = VisualTheme.Theme.ControlBackground;
-			this.splitContainer.Panel2.BackColor = VisualTheme.Theme.ControlBackground;
+			this.splitContainer.Panel1.BackColor = Theme.Current.ControlBackground;
+			this.splitContainer.Panel2.BackColor = Theme.Current.ControlBackground;
 
-			VisualTheme.ApplyVisualStyle(btnAdd_Model);
-			VisualTheme.ApplyVisualStyle(btnAdd_Character);
-			VisualTheme.ApplyVisualStyle(btnAdd_Mind);
-			VisualTheme.ApplyVisualStyle(btnAdd_World);
-			VisualTheme.ApplyVisualStyle(btnAdd_Traits);
-			VisualTheme.ApplyVisualStyle(btnAdd_Other);
-			VisualTheme.ApplyVisualStyle(btnAdd_Snippets);
-			VisualTheme.ApplyVisualStyle(btnAdd_Lore);
-			btnAdd_Model.Image = VisualTheme.Theme.ButtonModel;
-			btnAdd_Character.Image = VisualTheme.Theme.ButtonCharacter;
-			btnAdd_Mind.Image = VisualTheme.Theme.ButtonMind;
-			btnAdd_World.Image = VisualTheme.Theme.ButtonStory;
-			btnAdd_Traits.Image = VisualTheme.Theme.ButtonTraits;
-			btnAdd_Other.Image = VisualTheme.Theme.ButtonComponents;
-			btnAdd_Snippets.Image = VisualTheme.Theme.ButtonSnippets;
-			btnAdd_Lore.Image = VisualTheme.Theme.ButtonLore;
+			Theme.Apply(btnAdd_Model);
+			Theme.Apply(btnAdd_Character);
+			Theme.Apply(btnAdd_Mind);
+			Theme.Apply(btnAdd_World);
+			Theme.Apply(btnAdd_Traits);
+			Theme.Apply(btnAdd_Other);
+			Theme.Apply(btnAdd_Snippets);
+			Theme.Apply(btnAdd_Lore);
+			btnAdd_Model.Image = Theme.Current.ButtonModel;
+			btnAdd_Character.Image = Theme.Current.ButtonCharacter;
+			btnAdd_Mind.Image = Theme.Current.ButtonMind;
+			btnAdd_World.Image = Theme.Current.ButtonStory;
+			btnAdd_Traits.Image = Theme.Current.ButtonTraits;
+			btnAdd_Other.Image = Theme.Current.ButtonComponents;
+			btnAdd_Snippets.Image = Theme.Current.ButtonSnippets;
+			btnAdd_Lore.Image = Theme.Current.ButtonLore;
 
-			statusBar.BackColor = VisualTheme.Theme.ControlBackground;
-			statusBar.ForeColor = VisualTheme.Theme.ControlForeground;
+			statusBar.BackColor = Theme.Current.ControlBackground;
+			statusBar.ForeColor = Theme.Current.ControlForeground;
 			sidePanel.ApplyVisualTheme();
 			recipeList.ApplyVisualTheme();
 			tabControl.ApplyVisualTheme();
 
-			outputBox.ForeColor = VisualTheme.Theme.OutputForeground;
-			outputBox.BackColor = VisualTheme.Theme.OutputBackground;
+			outputBox.ForeColor = Theme.Current.OutputForeground;
+			outputBox.BackColor = Theme.Current.OutputBackground;
 
-			userNotes.richTextBox.ForeColor = VisualTheme.Theme.NotesForeground;
-			userNotes.richTextBox.BackColor = VisualTheme.Theme.NotesBackground;
+			userNotes.richTextBox.ForeColor = Theme.Current.NotesForeground;
+			userNotes.richTextBox.BackColor = Theme.Current.NotesBackground;
 
 			if (_findDialog != null && _findDialog.IsDisposed == false)
 				_findDialog.ApplyTheme();
@@ -2390,8 +2390,8 @@ namespace Ginger
 
 			if (!Utility.InDesignMode)
 			{
-				Dark.Net.DarkNet.Instance.SetCurrentProcessTheme(VisualTheme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
-				Dark.Net.DarkNet.Instance.SetWindowThemeForms(this, VisualTheme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
+				Dark.Net.DarkNet.Instance.SetCurrentProcessTheme(Theme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
+				Dark.Net.DarkNet.Instance.SetWindowThemeForms(this, Theme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
 			}
 		}
 

@@ -39,7 +39,7 @@ namespace Ginger
 			{
 				base.WndProc(ref m);
 
-				Color borderColor = (Focused ? VisualTheme.Theme.MenuHighlight : VisualTheme.Theme.TextBoxBorder);
+				Color borderColor = (Focused ? Theme.Current.MenuHighlight : Theme.Current.TextBoxBorder);
 
 				using (var g = Graphics.FromHwnd(Handle))
 				{
@@ -67,15 +67,15 @@ namespace Ginger
 		{
 			base.OnEnabledChanged(e);
 
-			this.ForeColor = Enabled ? VisualTheme.Theme.TextBoxForeground : SystemColors.GrayText;
-			this.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : VisualTheme.Theme.TextBoxDisabledBackground;
+			this.ForeColor = Enabled ? Theme.Current.TextBoxForeground : SystemColors.GrayText;
+			this.BackColor = Enabled ? Theme.Current.TextBoxBackground : Theme.Current.TextBoxDisabledBackground;
 		}
 		
 		private void DrawBorder()
 		{
 			Color borderColor = Enabled ?
-				(Focused ? VisualTheme.Theme.MenuHighlight : VisualTheme.Theme.TextBoxBorder)
-					: VisualTheme.Theme.TextBoxDisabledBorder;
+				(Focused ? Theme.Current.MenuHighlight : Theme.Current.TextBoxBorder)
+					: Theme.Current.TextBoxDisabledBorder;
 
 			using (var g = Graphics.FromHwnd(Handle))
 			{
@@ -84,10 +84,10 @@ namespace Ginger
 					g.DrawRectangle(p, 0, 0, Width, Height);
 				}
 
-				if (Enabled == false && VisualTheme.DarkModeEnabled)
+				if (Enabled == false && Theme.DarkModeEnabled)
 				{
 					// Cover inner gray rim
-					using (var p = new Pen(VisualTheme.Theme.TextBoxDisabledBackground, 2))
+					using (var p = new Pen(Theme.Current.TextBoxDisabledBackground, 2))
 					{
 						g.DrawRectangle(p, 2, 2, Width - 21, Height - 4);
 					}

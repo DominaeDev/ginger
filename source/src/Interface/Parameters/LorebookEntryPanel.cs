@@ -364,13 +364,13 @@ namespace Ginger
 						&& lorebookEntry.tokenCount > faradayLoreLimit)
 					{
 						labelTokens.Text = string.Format("{0}/{1} tokens", lorebookEntry.tokenCount, faradayLoreLimit);
-						labelTokens.ForeColor = VisualTheme.Theme.WarningRed;
+						labelTokens.ForeColor = Theme.Current.WarningRed;
 					}
 					else
-						labelTokens.ForeColor = VisualTheme.Theme.ControlForeground;
+						labelTokens.ForeColor = Theme.Current.ControlForeground;
 				}
 				else
-					labelTokens.ForeColor = VisualTheme.Theme.ControlForeground;
+					labelTokens.ForeColor = Theme.Current.ControlForeground;
 			}
 		}
 
@@ -483,7 +483,7 @@ namespace Ginger
 					});
 				}
 
-				VisualTheme.ApplyTheme(menu);
+				Theme.Apply(menu);
 				menu.Show(sender as Control, new Point(args.X, args.Y));
 			}
 		}
@@ -708,20 +708,20 @@ namespace Ginger
 
 		public void ApplyVisualTheme()
 		{
-			btnMoveUp.Image = VisualTheme.Theme.MoveLoreUp;
-			btnMoveDown.Image = VisualTheme.Theme.MoveLoreDown;
-			btnRemove.Image = VisualTheme.Theme.RemoveLore;
-			btnWrite.Image = VisualTheme.Theme.Write;
+			btnMoveUp.Image = Theme.Current.MoveLoreUp;
+			btnMoveDown.Image = Theme.Current.MoveLoreDown;
+			btnRemove.Image = Theme.Current.RemoveLore;
+			btnWrite.Image = Theme.Current.Write;
 
 			if (textBox_Index.Enabled)
 			{
-				textBox_Index.ForeColor = VisualTheme.Theme.TextBoxForeground;
-				textBox_Index.BackColor = VisualTheme.Theme.TextBoxBackground;
+				textBox_Index.ForeColor = Theme.Current.TextBoxForeground;
+				textBox_Index.BackColor = Theme.Current.TextBoxBackground;
 			}
 			else
 			{
-				textBox_Index.ForeColor = VisualTheme.Theme.GrayText;
-				textBox_Index.BackColor = VisualTheme.Theme.TextBoxDisabledBackground;
+				textBox_Index.ForeColor = Theme.Current.GrayText;
+				textBox_Index.BackColor = Theme.Current.TextBoxDisabledBackground;
 			}
 
 			RefreshTokenCount();

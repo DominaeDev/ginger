@@ -166,15 +166,15 @@ namespace Ginger
 		{
 			Graphics g = e.Graphics;
 
-			using (var brush = new SolidBrush(Enabled ? VisualTheme.Theme.TextBoxBackground : VisualTheme.Theme.TextBoxDisabledBackground))
+			using (var brush = new SolidBrush(Enabled ? Theme.Current.TextBoxBackground : Theme.Current.TextBoxDisabledBackground))
 			{
 				g.FillRectangle(brush, new Rectangle(0, 0, Width - 1, Height - 1));
 			}
 			
 			// Border
 			Color borderColor = Enabled ?
-				(richTextBox.Focused ? VisualTheme.Theme.Highlight : VisualTheme.Theme.TextBoxBorder)
-				: VisualTheme.Theme.TextBoxDisabledBorder;
+				(richTextBox.Focused ? Theme.Current.Highlight : Theme.Current.TextBoxBorder)
+				: Theme.Current.TextBoxDisabledBorder;
 			using (var pen = new Pen(borderColor))
 			{
 				g.DrawRectangle(pen, new Rectangle(0, 0, Width - 1, Height - 1));
@@ -183,7 +183,7 @@ namespace Ginger
 			// Draw disabled text
 			if (Enabled == false)
 			{
-				using (var brush = new SolidBrush(VisualTheme.Theme.GrayText))
+				using (var brush = new SolidBrush(Theme.Current.GrayText))
 				{
 					g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
 
@@ -210,18 +210,18 @@ namespace Ginger
 		private void TextBox_Enter(object sender, EventArgs e)
 		{
 			if (HighlightBorder)
-				BorderColor = VisualTheme.Theme.Highlight;
+				BorderColor = Theme.Current.Highlight;
 		}
 
 		private void TextBox_Leave(object sender, EventArgs e)
 		{
 			if (HighlightBorder)
-				BorderColor = VisualTheme.Theme.TextBoxBorder;
+				BorderColor = Theme.Current.TextBoxBorder;
 		}
 
 		private void FlatRichTextBox_EnabledChanged(object sender, EventArgs e)
 		{
-			BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : SystemColors.Control;
+			BackColor = Enabled ? Theme.Current.TextBoxBackground : SystemColors.Control;
 		}
 
 		private void RichTextBox_VScroll(object sender, EventArgs e)
@@ -264,11 +264,7 @@ namespace Ginger
 
 		public void ApplyVisualTheme()
 		{
-			if (VisualTheme.DarkModeEnabled)
-				richTextBox.syntaxFlags |= RichTextBoxEx.SyntaxFlags.DarkMode;
-			else
-				richTextBox.syntaxFlags &= ~RichTextBoxEx.SyntaxFlags.DarkMode;
-
+			richTextBox.RefreshPatterns();
 			richTextBox.RefreshSyntaxHighlight(false);
 			Invalidate();
 		}
@@ -277,8 +273,8 @@ namespace Ginger
 		{
 			base.OnEnabledChanged(e);
 
-			this.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : VisualTheme.Theme.TextBoxDisabledBackground;
-			richTextBox.BackColor = Enabled ? VisualTheme.Theme.TextBoxBackground : VisualTheme.Theme.TextBoxDisabledBackground;
+			this.BackColor = Enabled ? Theme.Current.TextBoxBackground : Theme.Current.TextBoxDisabledBackground;
+			richTextBox.BackColor = Enabled ? Theme.Current.TextBoxBackground : Theme.Current.TextBoxDisabledBackground;
 
 			Invalidate();
 		}

@@ -355,7 +355,7 @@ namespace Ginger
 				Checked = AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByLastMessage,
 			});
 
-			VisualTheme.ApplyTheme(menu);
+			Theme.Apply(menu);
 			menu.Show(control, location);
 		}
 
@@ -363,11 +363,11 @@ namespace Ginger
 		{
 			base.ApplyTheme();
 			
-			treeView.ForeColor = VisualTheme.Theme.TreeViewForeground;
-			treeView.BackColor = VisualTheme.Theme.TreeViewBackground;
-			treeView.ImageList = VisualTheme.DarkModeEnabled ? imageList_Dark : imageList_Light;
+			treeView.ForeColor = Theme.Current.TreeViewForeground;
+			treeView.BackColor = Theme.Current.TreeViewBackground;
+			treeView.ImageList = Theme.DarkModeEnabled ? imageList_Dark : imageList_Light;
 
-			listPanel.BackColor = VisualTheme.Theme.TextBoxBackground;
+			listPanel.BackColor = Theme.Current.TextBoxBackground;
 		}
 	}
 }
