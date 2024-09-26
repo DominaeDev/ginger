@@ -208,7 +208,10 @@
     <Compile Include="src\Interface\Controls\UserNotes.Designer.cs">
       <DependentUpon>UserNotes.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\Interface\Theme.cs" />
+    <Compile Include="src\Interface\VisualTheme\DarkTheme.cs" />
+    <Compile Include="src\Interface\VisualTheme\IColorTheme.cs" />
+    <Compile Include="src\Interface\VisualTheme\LightTheme.cs" />
+    <Compile Include="src\Interface\VisualTheme\Theme.cs" />
     <Compile Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1009,6 +1012,7 @@
     <Content Include="Resources\Icons\Light\tree_folder.png" />
     <Content Include="Resources\Icons\Light\write.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Release (
