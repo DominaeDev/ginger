@@ -14,26 +14,16 @@ using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
 {
-	public partial class LinkEditChatDialog : Form
+	public partial class LinkEditChatDialog : FormEx
 	{
 		public GroupInstance Group { set { _groupInstance = value; } }
 		private GroupInstance _groupInstance;
 		private Dictionary<string, CharacterInstance> _charactersById;
 		private ChatInstance _selectedChatInstance = null;
 
-		private static readonly Color[] NameColors = new Color[] {
-			ColorTranslator.FromHtml("#0185b6"),
-			ColorTranslator.FromHtml("#b68e01"),
-			ColorTranslator.FromHtml("#c837c7"),
-			ColorTranslator.FromHtml("#2c3397"),
-			ColorTranslator.FromHtml("#76d244"),
-			ColorTranslator.FromHtml("#44d2af"),
-			ColorTranslator.FromHtml("#972c2c"),
-			ColorTranslator.FromHtml("#2aa02d"),
-		};
-
 		private FormWindowState _lastWindowState;
 		private System.Timers.Timer _statusbarTimer = new System.Timers.Timer();
+		private bool _bEditing = false;
 
 		#region Win32 stuff
 		public const uint LVM_SETHOTCURSOR = 4158;
@@ -51,6 +41,7 @@ namespace Ginger
 			this.ResizeEnd += LinkEditChatDialog_ResizeEnd;
 			chatInstanceList.Resize += ChatInstanceList_Resize;
 			chatInstanceList.ItemSelectionChanged += ChatInstanceList_ItemSelectionChanged;
+			chatInstanceList.BeforeLabelEdit += ChatInstanceList_BeforeLabelEdit;
 			chatView.ShowChat(false);
 
 			_statusbarTimer.Interval = 1000;
@@ -209,6 +200,7 @@ namespace Ginger
 			}
 
 			_selectedChatInstance = null;
+			_bEditing = false;
 			chatInstanceList.BeginUpdate();
 			chatInstanceList.Items.Clear();
 			chatInstanceList.Groups.Clear();
@@ -216,6 +208,7 @@ namespace Ginger
 			if (chats != null && chats.Length > 0)
 			{
 				var now = DateTime.Now;
+				bool bAddGroups = Theme.IsDarkModeEnabled == false; // Group header color is unchangeable
 				ListViewGroup groupToday = null;
 				ListViewGroup groupYesterday = null;
 				ListViewGroup groupLastWeek = null;
@@ -255,37 +248,52 @@ namespace Ginger
 					if (updateDate.Date == now.Date) // Today
 					{
 						item.SubItems.Add(updateDate.ToString("t", CultureInfo.InvariantCulture));
-						if (groupToday == null)
-							groupToday = chatInstanceList.Groups.Add("today", "Today");
-						item.Group = groupToday;
+						if (bAddGroups)
+						{
+							if (groupToday == null)
+								groupToday = chatInstanceList.Groups.Add("today", "Today");
+							item.Group = groupToday;
+						}
 					}
 					else if (updateDate.Date == now.Date - TimeSpan.FromDays(1)) // Yesterday
 					{
 						item.SubItems.Add(updateDate.ToString("t"));
-						if (groupYesterday == null)
-							groupYesterday = chatInstanceList.Groups.Add("yesterday", "Yesterday");
-						item.Group = groupYesterday;
+						if (bAddGroups)
+						{
+							if (groupYesterday == null)
+								groupYesterday = chatInstanceList.Groups.Add("yesterday", "Yesterday");
+							item.Group = groupYesterday;
+						}
 					}
 					else if ((now.Date - updateDate.Date) < TimeSpan.FromDays(7)) // Last week
 					{
 						item.SubItems.Add(updateDate.ToString("m", CultureInfo.InvariantCulture));
-						if (groupLastWeek == null)
-							groupLastWeek = chatInstanceList.Groups.Add("week", "Last week");
-						item.Group = groupLastWeek;
+						if (bAddGroups)
+						{
+							if (groupLastWeek == null)
+								groupLastWeek = chatInstanceList.Groups.Add("week", "Last week");
+							item.Group = groupLastWeek;
+						}
 					}		
 					else if ((now.Date - updateDate.Date) < TimeSpan.FromDays(31)) // Last month
 					{
 						item.SubItems.Add(updateDate.ToString("m", CultureInfo.InvariantCulture));
-						if (groupLastMonth == null)
-							groupLastMonth = chatInstanceList.Groups.Add("month", "Last month");
-						item.Group = groupLastMonth;
+						if (bAddGroups)
+						{
+							if (groupLastMonth == null)
+								groupLastMonth = chatInstanceList.Groups.Add("month", "Last month");
+							item.Group = groupLastMonth;
+						}
 					}
 					else // Older
 					{
 						item.SubItems.Add(updateDate.ToString("d"));
-						if (groupOlder == null)
-							groupOlder = chatInstanceList.Groups.Add("year", "Older chats");
-						item.Group = groupOlder;
+						if (bAddGroups)
+						{
+							if (groupOlder == null)
+								groupOlder = chatInstanceList.Groups.Add("year", "Older chats");
+							item.Group = groupOlder;
+						}
 					}
 				}
 			}
@@ -306,6 +314,7 @@ namespace Ginger
 			if (chatInstanceList.SelectedIndices.Count > 0)
 				chatInstanceList.Items[chatInstanceList.SelectedIndices[0]].Selected = false;
 			_selectedChatInstance = null;
+			_bEditing = false;
 			chatView.Items.Clear();
 		}
 
@@ -348,9 +357,15 @@ namespace Ginger
 					timestamp = entry.updateDate.ToString("T");
 				}
 
+				Color[] nameColors;
+				if (Theme.IsDarkModeEnabled)
+					nameColors = ChatListBox.NameColors_Dark;
+				else
+					nameColors = ChatListBox.NameColors_Light;
+
 				lines.Add(new ChatListBox.Entry() {
 					characterIndex = entry.speaker,
-					color = NameColors[entry.speaker % NameColors.Length],
+					color =nameColors[entry.speaker % nameColors.Length],
 					name = namesById[entry.speaker],
 					message = entry.text,
 					timestamp = timestamp,
@@ -709,9 +724,15 @@ namespace Ginger
 				e.Handled = true;
 			}
 		}
+		
+		private void ChatInstanceList_BeforeLabelEdit(object sender, LabelEditEventArgs e)
+		{
+			_bEditing = true;
+		}
 
 		private void chatInstanceList_AfterLabelEdit(object sender, LabelEditEventArgs e)
 		{
+			_bEditing = false;
 			if (e.Label == null) // Cancelled by user
 			{
 				e.CancelEdit = false;
@@ -1009,6 +1030,7 @@ namespace Ginger
 				Enabled = bCanScrub,
 				ToolTipText = bCanScrub ? Resources.tooltip_link_scrub_chat : Resources.tooltip_link_cannot_scrub_chat,
 			});
+			Theme.Apply(menu);
 			menu.Show(chatView.listBox, location);
 		}
 
@@ -1246,6 +1268,7 @@ namespace Ginger
 				});
 			}
 
+			Theme.Apply(menu);
 			menu.Show(chatInstanceList, location);
 		}
 
@@ -1628,8 +1651,11 @@ namespace Ginger
 		{
 			if (keyData == Keys.Escape)
 			{
-				Close();
-				return true;
+				if (_bEditing == false)
+				{
+					Close();
+					return true;
+				}
 			}
 			if (keyData == Keys.F5)
 			{
@@ -1692,6 +1718,23 @@ namespace Ginger
 			return error;
 		}
 
-		
+		public override void ApplyTheme()
+		{
+			base.ApplyTheme();
+
+			this.Suspend();
+			chatInstanceList.ForeColor = Theme.Current.TreeViewForeground;
+			chatInstanceList.BackColor = Theme.Current.TreeViewBackground;
+			chatInstanceList.Invalidate();
+
+			chatView.ForeColor = Theme.Current.TextBoxForeground;
+			chatView.BackColor = Theme.IsDarkModeEnabled ? Theme.Current.TextBoxBackground : Color.WhiteSmoke;
+			chatView.listBox.ForeColor = Theme.Current.TextBoxForeground;
+			chatView.listBox.BackColor = Theme.IsDarkModeEnabled ? Theme.Current.TextBoxBackground : Color.WhiteSmoke;
+			ViewChat(_selectedChatInstance);
+			chatView.Invalidate();
+			this.Resume();
+		}
+
 	}
 }

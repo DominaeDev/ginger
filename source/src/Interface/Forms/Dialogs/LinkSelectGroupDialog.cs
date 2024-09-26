@@ -10,7 +10,7 @@ using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
 {
-	public partial class LinkSelectGroupDialog : Form
+	public partial class LinkSelectGroupDialog : FormEx
 	{
 		public CharacterInstance[] Characters;
 		public GroupInstance[] Groups;
@@ -355,7 +355,19 @@ namespace Ginger
 				Checked = AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByLastMessage,
 			});
 
+			Theme.Apply(menu);
 			menu.Show(control, location);
+		}
+
+		public override void ApplyTheme()
+		{
+			base.ApplyTheme();
+			
+			treeView.ForeColor = Theme.Current.TreeViewForeground;
+			treeView.BackColor = Theme.Current.TreeViewBackground;
+			treeView.ImageList = Theme.IsDarkModeEnabled ? imageList_Dark : imageList_Light;
+
+			listPanel.BackColor = Theme.Current.TreeViewBackground;
 		}
 	}
 }

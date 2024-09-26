@@ -6,7 +6,7 @@ using WinFormsSyntaxHighlighter;
 
 namespace Ginger
 {
-	public partial class LorebookEntryPanel : UserControl, IFlexibleParameterPanel
+	public partial class LorebookEntryPanel : UserControl, IFlexibleParameterPanel, IVisualThemed
 	{
 		private bool _bIgnoreEvents = false;
 		private int _keyHash;
@@ -364,13 +364,13 @@ namespace Ginger
 						&& lorebookEntry.tokenCount > faradayLoreLimit)
 					{
 						labelTokens.Text = string.Format("{0}/{1} tokens", lorebookEntry.tokenCount, faradayLoreLimit);
-						labelTokens.ForeColor = Color.Crimson;
+						labelTokens.ForeColor = Theme.Current.WarningRed;
 					}
 					else
-						labelTokens.ForeColor = this.ForeColor;
+						labelTokens.ForeColor = Theme.Current.ControlForeground;
 				}
 				else
-					labelTokens.ForeColor = this.ForeColor;
+					labelTokens.ForeColor = Theme.Current.ControlForeground;
 			}
 		}
 
@@ -483,6 +483,7 @@ namespace Ginger
 					});
 				}
 
+				Theme.Apply(menu);
 				menu.Show(sender as Control, new Point(args.X, args.Y));
 			}
 		}
@@ -703,6 +704,27 @@ namespace Ginger
 				TextSizeChanged?.Invoke(this, EventArgs.Empty); // Notify parent the size has changed
 			}
 			_bIgnoreEvents = false;
+		}
+
+		public void ApplyVisualTheme()
+		{
+			btnMoveUp.Image = Theme.Current.MoveLoreUp;
+			btnMoveDown.Image = Theme.Current.MoveLoreDown;
+			btnRemove.Image = Theme.Current.RemoveLore;
+			btnWrite.Image = Theme.Current.Write;
+
+			if (textBox_Index.Enabled)
+			{
+				textBox_Index.ForeColor = Theme.Current.TextBoxForeground;
+				textBox_Index.BackColor = Theme.Current.TextBoxBackground;
+			}
+			else
+			{
+				textBox_Index.ForeColor = Theme.Current.GrayText;
+				textBox_Index.BackColor = Theme.Current.TextBoxDisabledBackground;
+			}
+
+			RefreshTokenCount();
 		}
 	}
 }

@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class SidePanel : UserControl
+	public partial class SidePanel : UserControl, IVisualThemed
 	{
 		public event EventHandler<PortraitPreview.ChangePortraitImageEventArgs> ChangePortraitImage;
 		public event EventHandler ResizePortraitImage;
@@ -215,7 +215,7 @@ namespace Ginger
 					height);
 			}
 			if (width > Constants.MaxImageDimension || height > Constants.MaxImageDimension)
-				label_Image_Value.ForeColor = Color.Red;
+				label_Image_Value.ForeColor = Theme.Current.WarningRed;
 			else
 				label_Image_Value.ForeColor = this.ForeColor;
 		}
@@ -257,7 +257,7 @@ namespace Ginger
 				else
 				{
 					label_Tokens_Value.Text = string.Format("{0} ({1} over budget)", tokens, tokens - AppSettings.Settings.TokenBudget);
-					label_Tokens_Value.ForeColor = System.Drawing.Color.Red;
+					label_Tokens_Value.ForeColor = Theme.Current.WarningRed;
 				}
 
 				if (permanent_tokens <= AppSettings.Settings.TokenBudget)
@@ -274,7 +274,7 @@ namespace Ginger
 						label_Tokens_Permanent_Value.Text = string.Format("{0} ({1} over budget)", permanent_tokens, permanent_tokens - AppSettings.Settings.TokenBudget);
 					else
 						label_Tokens_Permanent_Value.Text = permanent_tokens.ToString(); 
-					label_Tokens_Permanent_Value.ForeColor = System.Drawing.Color.Red;
+					label_Tokens_Permanent_Value.ForeColor = Theme.Current.WarningRed;
 				}
 			}
 
@@ -503,6 +503,7 @@ namespace Ginger
 					Enabled = Current.Card.portraitImage != null,
 				});
 
+				Theme.Apply(menu);
 				menu.Show(sender as Control, new System.Drawing.Point(args.X, args.Y));
 			}
 		}
@@ -817,6 +818,7 @@ namespace Ginger
 				RefreshSettingsButton();
 			}));
 
+			Theme.Apply(menu);
 			menu.Show(sender, location);
 		}
 
@@ -825,7 +827,7 @@ namespace Ginger
 			var item = new ToolStripMenuItem(label);
 			menu.Items.Add(item);
 			if (Current.Card.extraFlags.ContainsAny(flags))
-				item.Image = Resources.red_dot;
+				item.Image = Theme.Current.MenuRedDot;
 			return item;
 		}
 
@@ -861,7 +863,18 @@ namespace Ginger
 
 		private void RefreshSettingsButton()
 		{
-			btn_More.Image = Current.Card.extraFlags != CardData.Flag.Default ? Resources.menu_edit : Resources.menu;
+			btn_More.Image = Current.Card.extraFlags != CardData.Flag.Default ? Theme.Current.MenuEditIcon : Theme.Current.MenuIcon;
+		}
+
+		public void ApplyVisualTheme()
+		{
+			Theme.Apply(this);
+
+			if (Current.Characters == null)
+				return;
+
+			RefreshValues();
+			portraitImage.BackgroundImage = Theme.Current.Checker;
 		}
 	}
 }

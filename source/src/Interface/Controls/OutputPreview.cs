@@ -309,6 +309,7 @@ namespace Ginger
 				Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.PlainText,
 			});
 
+			Theme.Apply(menu);
 			menu.Show(this, location);
 		}
 

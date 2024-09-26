@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -412,5 +413,69 @@ namespace Ginger
 			Focus();
 			Select(start, length);
 		}
+
+		// Border color
+		private const int WM_PAINT = 0x000F;
+		private const int WM_NCPAINT = 0x85;
+		private const uint RDW_INVALIDATE = 0x1;
+		private const uint RDW_IUPDATENOW = 0x100;
+		private const uint RDW_FRAME = 0x400;
+		[DllImport("user32.dll")]
+		static extern IntPtr GetWindowDC(IntPtr hWnd);
+		[DllImport("user32.dll")]
+		static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
+		[DllImport("user32.dll")]
+		static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprc, IntPtr hrgn, uint flags);
+	
+		protected override void WndProc(ref Message m)
+		{
+			if (m.Msg == WM_PAINT)
+			{
+				base.WndProc(ref m);
+				DrawBorder();
+				return;
+			}
+			else if (m.Msg == WM_NCPAINT)
+			{
+				DrawBorder();
+				return;
+			}
+
+			base.WndProc(ref m);
+		}
+
+		private void DrawBorder()
+		{
+			var hdc = GetWindowDC(this.Handle);
+			using (var g = Graphics.FromHdcInternal(hdc))
+			{
+				// Inner border
+				using (var p = new Pen(BackColor))
+				{
+					g.DrawRectangle(p, new Rectangle(1, 1, Width - 3, Height - 3));
+				}
+				// Outer border / Highlight
+				using (var p = new Pen(Focused ? Theme.Current.HighlightBorder : Theme.Current.TextBoxBorder))
+				{
+					g.DrawRectangle(p, new Rectangle(0, 0, Width - 1, Height - 1));
+				}
+			}
+			ReleaseDC(this.Handle, hdc);
+		}
+
+		protected override void OnEnabledChanged(EventArgs e)
+		{
+			base.OnEnabledChanged(e);
+
+			this.ForeColor = Enabled ? Theme.Current.TextBoxForeground : Theme.Current.GrayText;
+			this.BackColor = Enabled ? Theme.Current.TextBoxBackground : Theme.Current.TextBoxDisabledBackground;
+		}
+		
+		protected override void OnSizeChanged(EventArgs e)
+		{
+			base.OnSizeChanged(e);
+			RedrawWindow(Handle, IntPtr.Zero, IntPtr.Zero, RDW_FRAME | RDW_IUPDATENOW | RDW_INVALIDATE);
+		}
+
 	}
 }

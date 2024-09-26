@@ -30,84 +30,25 @@ namespace Ginger
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Windows.Forms.Panel listPanel;
-			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Character", 1, 1);
-			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Group", 2, 2, new System.Windows.Forms.TreeNode[] {
-            treeNode1});
-			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
-            treeNode2});
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectCharacterDialog));
 			System.Windows.Forms.FlowLayoutPanel buttonLayout;
+			System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Character", 1, 1);
+			System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Group", 2, 2, new System.Windows.Forms.TreeNode[] {
+            treeNode4});
+			System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
+            treeNode5});
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectCharacterDialog));
+			this.btnCancel = new ButtonEx();
+			this.btnOk = new ButtonEx();
+			this.listPanel = new System.Windows.Forms.Panel();
 			this.treeView = new Ginger.TreeViewEx();
-			this.imageList = new System.Windows.Forms.ImageList(this.components);
-			this.btnCancel = new System.Windows.Forms.Button();
-			this.btnOk = new System.Windows.Forms.Button();
+			this.imageList_Light = new System.Windows.Forms.ImageList(this.components);
 			this.cbCreateLink = new System.Windows.Forms.CheckBox();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-			listPanel = new System.Windows.Forms.Panel();
+			this.imageList_Dark = new System.Windows.Forms.ImageList(this.components);
 			buttonLayout = new System.Windows.Forms.FlowLayoutPanel();
-			listPanel.SuspendLayout();
 			buttonLayout.SuspendLayout();
+			this.listPanel.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// listPanel
-			// 
-			listPanel.BackColor = System.Drawing.SystemColors.Window;
-			listPanel.Controls.Add(this.treeView);
-			listPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-			listPanel.Location = new System.Drawing.Point(0, 0);
-			listPanel.Name = "listPanel";
-			listPanel.Padding = new System.Windows.Forms.Padding(2, 4, 2, 2);
-			listPanel.Size = new System.Drawing.Size(484, 326);
-			listPanel.TabIndex = 0;
-			// 
-			// treeView
-			// 
-			this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.treeView.CausesValidation = false;
-			this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.treeView.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.treeView.FullRowSelect = true;
-			this.treeView.HideSelection = false;
-			this.treeView.ImageIndex = 0;
-			this.treeView.ImageList = this.imageList;
-			this.treeView.Location = new System.Drawing.Point(2, 4);
-			this.treeView.Name = "treeView";
-			treeNode1.ImageIndex = 1;
-			treeNode1.Name = "Node1";
-			treeNode1.SelectedImageIndex = 1;
-			treeNode1.Text = "Character";
-			treeNode2.ImageIndex = 2;
-			treeNode2.Name = "tmpNode1";
-			treeNode2.SelectedImageIndex = 2;
-			treeNode2.Text = "Group";
-			treeNode3.Name = "tmpNode1";
-			treeNode3.SelectedImageIndex = 0;
-			treeNode3.Text = "Folder";
-			this.treeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode3});
-			this.treeView.SelectedImageIndex = 0;
-			this.treeView.ShowLines = false;
-			this.treeView.ShowNodeToolTips = true;
-			this.treeView.Size = new System.Drawing.Size(480, 320);
-			this.treeView.TabIndex = 0;
-			this.treeView.OnRightClick += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseClick);
-			this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
-			this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseDoubleClick);
-			// 
-			// imageList
-			// 
-			this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
-			this.imageList.TransparentColor = System.Drawing.Color.Transparent;
-			this.imageList.Images.SetKeyName(0, "tree_folder.png");
-			this.imageList.Images.SetKeyName(1, "character_neutral.png");
-			this.imageList.Images.SetKeyName(2, "character_male.png");
-			this.imageList.Images.SetKeyName(3, "character_female.png");
-			this.imageList.Images.SetKeyName(4, "character_other.png");
-			this.imageList.Images.SetKeyName(5, "character_neutral_lore.png");
-			this.imageList.Images.SetKeyName(6, "character_male_lore.png");
-			this.imageList.Images.SetKeyName(7, "character_female_lore.png");
-			this.imageList.Images.SetKeyName(8, "character_other_lore.png");
 			// 
 			// buttonLayout
 			// 
@@ -148,6 +89,65 @@ namespace Ginger
 			this.btnOk.UseVisualStyleBackColor = true;
 			this.btnOk.Click += new System.EventHandler(this.BtnOk_Click);
 			// 
+			// listPanel
+			// 
+			this.listPanel.BackColor = System.Drawing.SystemColors.Window;
+			this.listPanel.Controls.Add(this.treeView);
+			this.listPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.listPanel.Location = new System.Drawing.Point(0, 0);
+			this.listPanel.Name = "listPanel";
+			this.listPanel.Padding = new System.Windows.Forms.Padding(2, 4, 2, 2);
+			this.listPanel.Size = new System.Drawing.Size(484, 326);
+			this.listPanel.TabIndex = 0;
+			// 
+			// treeView
+			// 
+			this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.treeView.CausesValidation = false;
+			this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.treeView.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.treeView.FullRowSelect = true;
+			this.treeView.HideSelection = false;
+			this.treeView.ImageIndex = 0;
+			this.treeView.ImageList = this.imageList_Light;
+			this.treeView.Location = new System.Drawing.Point(2, 4);
+			this.treeView.Name = "treeView";
+			treeNode4.ImageIndex = 1;
+			treeNode4.Name = "Node1";
+			treeNode4.SelectedImageIndex = 1;
+			treeNode4.Text = "Character";
+			treeNode5.ImageIndex = 2;
+			treeNode5.Name = "tmpNode1";
+			treeNode5.SelectedImageIndex = 2;
+			treeNode5.Text = "Group";
+			treeNode6.Name = "tmpNode1";
+			treeNode6.SelectedImageIndex = 0;
+			treeNode6.Text = "Folder";
+			this.treeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
+            treeNode6});
+			this.treeView.SelectedImageIndex = 0;
+			this.treeView.ShowLines = false;
+			this.treeView.ShowNodeToolTips = true;
+			this.treeView.Size = new System.Drawing.Size(480, 320);
+			this.treeView.TabIndex = 0;
+			this.treeView.OnRightClick += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseClick);
+			this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
+			this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseDoubleClick);
+			// 
+			// imageList_Light
+			// 
+			this.imageList_Light.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList_Light.ImageStream")));
+			this.imageList_Light.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageList_Light.Images.SetKeyName(0, "tree_folder.png");
+			this.imageList_Light.Images.SetKeyName(1, "character_neutral.png");
+			this.imageList_Light.Images.SetKeyName(2, "character_male.png");
+			this.imageList_Light.Images.SetKeyName(3, "character_female.png");
+			this.imageList_Light.Images.SetKeyName(4, "character_other.png");
+			this.imageList_Light.Images.SetKeyName(5, "character_neutral_lore.png");
+			this.imageList_Light.Images.SetKeyName(6, "character_male_lore.png");
+			this.imageList_Light.Images.SetKeyName(7, "character_female_lore.png");
+			this.imageList_Light.Images.SetKeyName(8, "character_other_lore.png");
+			// 
 			// cbCreateLink
 			// 
 			this.cbCreateLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -169,6 +169,20 @@ namespace Ginger
 			this.toolTip.UseAnimation = false;
 			this.toolTip.UseFading = false;
 			// 
+			// imageList_Dark
+			// 
+			this.imageList_Dark.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList_Dark.ImageStream")));
+			this.imageList_Dark.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageList_Dark.Images.SetKeyName(0, "dark_tree_folder.png");
+			this.imageList_Dark.Images.SetKeyName(1, "character_neutral.png");
+			this.imageList_Dark.Images.SetKeyName(2, "character_male.png");
+			this.imageList_Dark.Images.SetKeyName(3, "character_female.png");
+			this.imageList_Dark.Images.SetKeyName(4, "character_other.png");
+			this.imageList_Dark.Images.SetKeyName(5, "character_neutral_lore.png");
+			this.imageList_Dark.Images.SetKeyName(6, "character_male_lore.png");
+			this.imageList_Dark.Images.SetKeyName(7, "character_female_lore.png");
+			this.imageList_Dark.Images.SetKeyName(8, "character_other_lore.png");
+			// 
 			// LinkSelectCharacterDialog
 			// 
 			this.AcceptButton = this.btnOk;
@@ -177,7 +191,7 @@ namespace Ginger
 			this.CancelButton = this.btnCancel;
 			this.ClientSize = new System.Drawing.Size(484, 361);
 			this.Controls.Add(this.cbCreateLink);
-			this.Controls.Add(listPanel);
+			this.Controls.Add(this.listPanel);
 			this.Controls.Add(buttonLayout);
 			this.DoubleBuffered = true;
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -189,19 +203,21 @@ namespace Ginger
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Import character from Backyard AI";
-			listPanel.ResumeLayout(false);
 			buttonLayout.ResumeLayout(false);
+			this.listPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
 		}
 
 		#endregion
-		private System.Windows.Forms.Button btnCancel;
-		private System.Windows.Forms.Button btnOk;
+		private ButtonEx btnCancel;
+		private ButtonEx btnOk;
 		private TreeViewEx treeView;
-		private System.Windows.Forms.ImageList imageList;
+		private System.Windows.Forms.ImageList imageList_Light;
 		private System.Windows.Forms.CheckBox cbCreateLink;
 		private System.Windows.Forms.ToolTip toolTip;
+		private System.Windows.Forms.Panel listPanel;
+		private System.Windows.Forms.ImageList imageList_Dark;
 	}
 }

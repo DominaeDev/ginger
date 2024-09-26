@@ -40,14 +40,14 @@ namespace Ginger
 			this.columnFileExt = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.columnType = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.columnSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.btnApply = new System.Windows.Forms.Button();
-			this.btnExport = new System.Windows.Forms.Button();
-			this.btnView = new System.Windows.Forms.Button();
-			this.btnRemove = new System.Windows.Forms.Button();
-			this.btnAdd = new System.Windows.Forms.Button();
+			this.btnApply = new Ginger.ButtonEx();
+			this.btnExport = new Ginger.ButtonEx();
+			this.btnView = new Ginger.ButtonEx();
+			this.btnRemove = new Ginger.ButtonEx();
+			this.btnAddRemote = new Ginger.ButtonEx();
+			this.btnAdd = new Ginger.ButtonEx();
 			this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
-			this.btnAddRemote = new System.Windows.Forms.Button();
 			listPanel = new System.Windows.Forms.Panel();
 			leftPanel = new System.Windows.Forms.Panel();
 			label_ccv3 = new System.Windows.Forms.Label();
@@ -219,6 +219,16 @@ namespace Ginger
 			this.btnRemove.Text = "Remove selected";
 			this.btnRemove.UseVisualStyleBackColor = true;
 			// 
+			// btnAddRemote
+			// 
+			this.btnAddRemote.Dock = System.Windows.Forms.DockStyle.Top;
+			this.btnAddRemote.Location = new System.Drawing.Point(4, 35);
+			this.btnAddRemote.Name = "btnAddRemote";
+			this.btnAddRemote.Size = new System.Drawing.Size(192, 31);
+			this.btnAddRemote.TabIndex = 1;
+			this.btnAddRemote.Text = "Add remote asset...";
+			this.btnAddRemote.UseVisualStyleBackColor = true;
+			// 
 			// btnAdd
 			// 
 			this.btnAdd.Dock = System.Windows.Forms.DockStyle.Top;
@@ -232,16 +242,6 @@ namespace Ginger
 			// importFileDialog
 			// 
 			this.importFileDialog.Multiselect = true;
-			// 
-			// btnAddUrl
-			// 
-			this.btnAddRemote.Dock = System.Windows.Forms.DockStyle.Top;
-			this.btnAddRemote.Location = new System.Drawing.Point(4, 35);
-			this.btnAddRemote.Name = "btnAddUrl";
-			this.btnAddRemote.Size = new System.Drawing.Size(192, 31);
-			this.btnAddRemote.TabIndex = 1;
-			this.btnAddRemote.Text = "Add remote asset...";
-			this.btnAddRemote.UseVisualStyleBackColor = true;
 			// 
 			// AssetViewDialog
 			// 
@@ -269,17 +269,17 @@ namespace Ginger
 		#endregion
 
 		private System.Windows.Forms.DataGridView assetsDataView;
-		private System.Windows.Forms.Button btnRemove;
-		private System.Windows.Forms.Button btnAdd;
-		private System.Windows.Forms.Button btnApply;
-		private System.Windows.Forms.Button btnExport;
-		private System.Windows.Forms.Button btnView;
+		private ButtonEx btnRemove;
+		private ButtonEx btnAdd;
+		private ButtonEx btnApply;
+		private ButtonEx btnExport;
+		private ButtonEx btnView;
 		private System.Windows.Forms.SaveFileDialog exportFileDialog;
 		private System.Windows.Forms.OpenFileDialog importFileDialog;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnName;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnFileExt;
 		private System.Windows.Forms.DataGridViewComboBoxColumn columnType;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnSize;
-		private System.Windows.Forms.Button btnAddRemote;
+		private ButtonEx btnAddRemote;
 	}
 }

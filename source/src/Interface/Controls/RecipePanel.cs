@@ -9,7 +9,7 @@ using Ginger.Integration;
 
 namespace Ginger
 {
-	public partial class RecipePanel : UserControl
+	public partial class RecipePanel : UserControl, IVisualThemed
 	{
 		public event EventHandler OnParameterChanged;
 		public event EventHandler OnPanelSizeChanged;
@@ -94,8 +94,14 @@ namespace Ginger
 		{
 			const int kDarken = 20;
 			var darkColor = Color.FromArgb(Math.Max(color.R - kDarken, 0), Math.Max(color.G - kDarken, 0), Math.Max(color.B - kDarken, 0));
-			var contrastColor = Utility.GetContrastColor(color, true);
+			
+			if (Theme.IsDarkModeEnabled)
+			{
+				color = Utility.GetDarkColor(color, 0.60f);
+				darkColor = Utility.GetDarkColor(color, 0.25f);
+			}
 
+			var contrastColor = Utility.GetContrastColor(color, true);
 			labelTitle.ForeColor = Utility.GetContrastColor(color, false);
 
 			header.BackColor = color;
@@ -104,12 +110,6 @@ namespace Ginger
 			parameters.ForeColor = contrastColor;
 
 			BorderColor = Utility.GetDarkerColor(darkColor, 0.25f);
-		}
-
-		public void SetColor(Color[] colors)
-		{
-			header.BackColor = colors[0];
-			parameters.BackColor = colors[1];
 		}
 
 		public bool Collapse()
@@ -256,11 +256,14 @@ namespace Ginger
 			for (int i = 0; i < parameterPanels.Count; ++i)
 				(parameterPanels[i] as Control).TabIndex = i;
 
+			ApplyVisualTheme();
+
 //			RefreshTitle();
 			toolTip.SetToolTip(labelTitle, recipe.GetTooltip());
 			btnUp.Visible = !recipe.isBase;
 			btnDown.Visible = !recipe.isBase;
 			SetEnabled(recipe.isEnabled);
+
 
 			MainForm.ResumeGeneration();
 		}
@@ -586,6 +589,7 @@ namespace Ginger
 				menu.Items.Add(new ToolStripMenuItem("Edit source...", null, (s, e) => { MainForm.EditRecipeSource(recipe); }));
 			}
 
+			Theme.Apply(menu);
 			menu.Show(control, location);
 		}
 
@@ -726,7 +730,10 @@ namespace Ginger
 			else // Disabled
 			{
 				SetColor(Color.Gainsboro);
-				labelTitle.ForeColor = Color.Gray;
+				if (Theme.IsDarkModeEnabled)
+					labelTitle.ForeColor = Color.Black;
+				else
+					labelTitle.ForeColor = Color.Gray;
 			}
 			TabStop = !Collapsed && recipe.isEnabled;
 			RefreshTitle();
@@ -920,10 +927,36 @@ namespace Ginger
 		}
 
 		public void RefreshSyntaxHighlighting(bool immediate)
-
 		{
 			foreach (var parameter in parameterPanels.OfType<ISyntaxHighlighted>())
 				parameter.RefreshSyntaxHighlight(immediate);
+		}
+
+		public void ApplyVisualTheme()
+		{
+			if (Enabled == false || recipe.isEnabled == false)
+			{
+				SetColor(Color.Gainsboro);
+				if (Theme.IsDarkModeEnabled)
+					labelTitle.ForeColor = Color.Black;
+				else
+					labelTitle.ForeColor = Color.Gray;
+				return;
+			}
+
+			SetColor(recipe.color);
+
+			var textBoxes = parameterContainer.FindAllControlsOfType<TextBoxBase>();
+			foreach (var control in textBoxes)
+				Theme.Apply(control);
+
+			var comboBoxes = parameterContainer.FindAllControlsOfType<ComboBox>();
+			foreach (var control in comboBoxes)
+				Theme.Apply(control);
+
+			var themedControls = parameterContainer.FindAllControlsOfType<Control>().OfType<IVisualThemed>();
+			foreach (var control in themedControls)
+				control.ApplyVisualTheme();
 		}
 	}
 }

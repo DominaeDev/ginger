@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class MultiTextParameterPanel : MultiTextParameterPanelDummy, IFlexibleParameterPanel
+	public partial class MultiTextParameterPanel : MultiTextParameterPanelDummy, IFlexibleParameterPanel, IVisualThemed
 	{
 		public enum TextBoxSize
 		{
@@ -120,6 +120,11 @@ namespace Ginger
 		public override int GetParameterHeight()
 		{
 			return textBox.Location.Y + textBox.Height;
+		}
+
+		public void ApplyVisualTheme()
+		{
+			btnWrite.Image = Theme.Current.Write;
 		}
 	}
 }

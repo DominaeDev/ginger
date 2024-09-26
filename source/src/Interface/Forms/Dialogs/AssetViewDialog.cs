@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class AssetViewDialog : Form
+	public partial class AssetViewDialog : FormEx
 	{
 		public AssetCollection Assets;
 		public bool Changed = false;
@@ -18,6 +18,8 @@ namespace Ginger
 
 		private DataGridViewComboBoxColumn comboBoxColumn { get { return (DataGridViewComboBoxColumn)assetsDataView.Columns[2]; } }
 		private ComboBox _currentComboBox;
+
+		private bool _bEditing;
 
 		public AssetViewDialog()
 		{
@@ -42,6 +44,7 @@ namespace Ginger
 
 		private void AssetViewDialog_Load(object sender, EventArgs e)
 		{
+			assetsDataView.CellBeginEdit += AssetsDataView_CellBeginEdit;
 			assetsDataView.CellEndEdit += AssetsDataView_CellEndEdit;
 			assetsDataView.SelectionChanged += AssetsDataView_SelectionChanged;
 
@@ -204,8 +207,15 @@ namespace Ginger
 			return selection.ToArray();
 		}
 
+		private void AssetsDataView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+		{
+			_bEditing = true;
+		}
+
 		private void AssetsDataView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
 		{
+			_bEditing = false;
+
 			if (_bIgnoreEvents)
 				return;
 
@@ -679,5 +689,28 @@ namespace Ginger
 			foreach (var filename in files)
 				AddAsset(filename);
 		}
+
+		public override void ApplyTheme()
+		{
+			base.ApplyTheme();
+
+			Theme.Apply(assetsDataView);
+		}
+
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			if (keyData == Keys.Escape)
+			{
+				if (_bEditing == false)
+				{
+					DialogResult = DialogResult.Cancel;
+					Close();
+					return true;
+				}
+			}
+
+			return base.ProcessCmdKey(ref msg, keyData);
+		}
+
 	}
 }

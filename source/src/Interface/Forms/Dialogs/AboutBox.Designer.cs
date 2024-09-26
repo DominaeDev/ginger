@@ -34,7 +34,7 @@ namespace Ginger
 			this.labelVersion = new System.Windows.Forms.Label();
 			this.labelDeveloper = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
-			this.okButton = new System.Windows.Forms.Button();
+			this.okButton = new ButtonEx();
 			this.tableLayoutPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
 			this.SuspendLayout();
@@ -164,7 +164,7 @@ namespace Ginger
 		private System.Windows.Forms.Label labelProductName;
 		private System.Windows.Forms.Label labelVersion;
 		private System.Windows.Forms.Label labelDeveloper;
-		private System.Windows.Forms.Button okButton;
+		private ButtonEx okButton;
 		private System.Windows.Forms.Label label1;
 	}
 }

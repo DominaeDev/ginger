@@ -35,8 +35,8 @@
 			System.Windows.Forms.TableLayoutPanel userLayout;
 			System.Windows.Forms.Label label3;
 			System.Windows.Forms.Label label4;
-			this.btnCancel = new System.Windows.Forms.Button();
-			this.btnOk = new System.Windows.Forms.Button();
+			this.btnCancel = new ButtonEx();
+			this.btnOk = new ButtonEx();
 			this.cbCharacter = new System.Windows.Forms.CheckBox();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.cbUser = new System.Windows.Forms.CheckBox();
@@ -385,8 +385,8 @@
 		}
 
 		#endregion
-		private System.Windows.Forms.Button btnCancel;
-		private System.Windows.Forms.Button btnOk;
+		private ButtonEx btnCancel;
+		private ButtonEx btnOk;
 		private ComboBoxEx comboBox_CharacterTarget;
 		private ComboBoxEx comboBox_CharacterGender;
 		private ComboBoxEx comboBox_UserTarget;

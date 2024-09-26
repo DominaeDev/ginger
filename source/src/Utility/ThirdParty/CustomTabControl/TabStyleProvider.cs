@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Ginger;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
@@ -33,36 +34,7 @@ namespace System.Windows.Forms
 
 		public static TabStyleProvider CreateProvider(CustomTabControl tabControl)
 		{
-			TabStyleProvider provider;
-
-			// Depending on the display style of the tabControl generate an appropriate provider
-			switch (tabControl.DisplayStyle)
-			{
-				case TabStyle.None:
-					provider = new TabStyleNoneProvider(tabControl);
-					break;
-
-				case TabStyle.Default:
-					provider = new TabStyleDefaultProvider(tabControl);
-					break;
-
-				case TabStyle.Dark:
-					provider = new TabStyleDarkProvider(tabControl);
-					break;
-
-				case TabStyle.Chrome:
-					provider = new TabStyleChromeProvider(tabControl);
-					break;
-
-				case TabStyle.Rounded:
-					provider = new TabStyleRoundedProvider(tabControl);
-					break;
-
-				default:
-					provider = new TabStyleDefaultProvider(tabControl);
-					break;
-			}
-
+			TabStyleProvider provider = new TabStyleRoundedProvider(tabControl);
 			provider._Style = tabControl.DisplayStyle;
 			return provider;
 		}
@@ -221,13 +193,13 @@ namespace System.Windows.Forms
 			LinearGradientBrush fillBrush = null;
 
 			// Capture the colors dependant on selection state of the tab
-			var dark = SystemColors.Control;
-			var light = SystemColors.Control;
+			Color dark = Theme.Current.ControlBackground;
+			Color light = Theme.Current.ControlBackground;
 
 			if (_TabControl.SelectedIndex == index) // Active
 			{
-				dark = Color.FromArgb(207, 207, 207);
-				light = Color.FromArgb(242, 242, 242);
+				dark = Theme.Current.SeletedTabButtonDark;
+				light = Theme.Current.SeletedTabButtonLight;
 			}
 			else if (!_TabControl.TabPages[index].Enabled) // Disabled
 			{
@@ -390,11 +362,9 @@ namespace System.Windows.Forms
 		[Category("Appearance"), DefaultValue(typeof(Color), "")]
 		public Color BorderColorSelected
 		{
-			get { return _BorderColorSelected; }
-			set
-			{
-				_BorderColorSelected = value;
-				_TabControl.Invalidate();
+			get 
+			{ 
+				return Theme.Current.SelectedTabBorder;
 			}
 		}
 
@@ -403,19 +373,7 @@ namespace System.Windows.Forms
 		{
 			get
 			{
-				if (_BorderColorHot.IsEmpty)
-					return SystemColors.ControlDark;
-				else
-					return _BorderColorHot;
-			}
-			set
-			{
-				if (value.Equals(SystemColors.ControlDark))
-					_BorderColorHot = Color.Empty;
-				else
-					_BorderColorHot = value;
-
-				_TabControl.Invalidate();
+				return Theme.Current.SelectedTabBorder;
 			}
 		}
 
@@ -424,19 +382,7 @@ namespace System.Windows.Forms
 		{
 			get
 			{
-				if (_BorderColor.IsEmpty)
-					return SystemColors.ControlDark;
-				else
-					return _BorderColor;
-			}
-			set
-			{
-				if (value.Equals(SystemColors.ControlDark))
-					_BorderColor = Color.Empty;
-				else
-					_BorderColor = value;
-
-				_TabControl.Invalidate();
+				return Theme.Current.TabBorder;
 			}
 		}
 
@@ -445,19 +391,7 @@ namespace System.Windows.Forms
 		{
 			get
 			{
-				if (_TextColor.IsEmpty)
-					return SystemColors.ControlText;
-				else
-					return _TextColor;
-			}
-			set
-			{
-				if (value.Equals(SystemColors.ControlText))
-					_TextColor = Color.Empty;
-				else
-					_TextColor = value;
-
-				_TabControl.Invalidate();
+				return Theme.Current.TabInactiveText;
 			}
 		}
 
@@ -466,19 +400,7 @@ namespace System.Windows.Forms
 		{
 			get
 			{
-				if (_TextColorSelected.IsEmpty)
-					return SystemColors.ControlText;
-				else
-					return _TextColorSelected;
-			}
-			set
-			{
-				if (value.Equals(SystemColors.ControlText))
-					_TextColorSelected = Color.Empty;
-				else
-					_TextColorSelected = value;
-
-				_TabControl.Invalidate();
+				return Theme.Current.ControlForeground;
 			}
 		}
 
@@ -487,19 +409,7 @@ namespace System.Windows.Forms
 		{
 			get
 			{
-				if (_TextColor.IsEmpty)
-					return SystemColors.ControlDark;
-				else
-					return _TextColorDisabled;
-			}
-			set
-			{
-				if (value.Equals(SystemColors.ControlDark))
-					_TextColorDisabled = Color.Empty;
-				else
-					_TextColorDisabled = value;
-
-				_TabControl.Invalidate();
+				return Theme.Current.GrayText;
 			}
 		}
 

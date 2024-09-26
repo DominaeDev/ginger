@@ -79,14 +79,10 @@ namespace Ginger
 
 		protected override void OnSetParameter()
 		{
-			if (parameter.isRaw)
-				richTextBox.syntaxFlags = RichTextBoxEx.SyntaxFlags.None;
-			else
-				richTextBox.syntaxFlags = RichTextBoxEx.SyntaxFlags.Default;
-
 			_textBox.Enabled = parameter.isEnabled || !parameter.isOptional;
 			_textBox.Placeholder = parameter.placeholder;
 			_textBox.InitUndo();
+			_textBox.ApplyVisualTheme();
 
 			// Tooltip
 			SetTooltip(_label, _textBox);

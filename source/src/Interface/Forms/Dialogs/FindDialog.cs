@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class FindDialog : Form
+	public partial class FindDialog : FormEx
 	{
 		public string Match { get { return textBox_Find.Text; } set { textBox_Find.Text = value; } }
 		public bool MatchWholeWord { get { return cbWholeWords.Checked; } }

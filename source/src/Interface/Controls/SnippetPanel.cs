@@ -7,14 +7,13 @@ namespace Ginger
 {
 	public partial class SnippetPanel : UserControl
 	{
-		public Recipe.Component channel;
-
 		public string CurrentText { get { return _bSwapped ? SwappedText : OriginalText; } }
 		public string OriginalText { get; set; }
 		public string SwappedText { get; set; }
 		private bool _bSwapped = false;
 
 		private bool _bIgnoreEvents = false;
+		public Recipe.Component _channel = Recipe.Component.Invalid;
 
 		public bool isEnabled { get { return textBox_Text.Enabled; } }
 
@@ -26,7 +25,16 @@ namespace Ginger
 			textBox_Text.HighlightBorder = false;
 			textBox_Text.BorderColor = Color.White;
 			textBox_Text.TextChanged += TextBox_Text_TextChanged;
+			textBox_Text.ForeColor = Theme.Current.TextBoxForeground;
+			textBox_Text.BackColor = Theme.Current.TextBoxBackground;
+
 			this.FontChanged += FontDidChange;
+			this.Load += SnippetPanel_Load;
+		}
+
+		private void SnippetPanel_Load(object sender, EventArgs e)
+		{
+			textBox_Text.ApplyVisualTheme();
 		}
 
 		private void TextBox_Text_TextChanged(object sender, EventArgs e)
@@ -45,53 +53,45 @@ namespace Ginger
 			OriginalText = text;
 			SwappedText = swappedText;
 
-			this.channel = channel;
+			_channel = channel;
 
 			switch (channel)
 			{
 			case Recipe.Component.System:
 				labelChannel.Text = "Model instructions"; 
-				BackColor = Constants.RecipeColorByCategory[Recipe.Category.Model];
 				break;
 			case Recipe.Component.System_PostHistory:
 				labelChannel.Text = "Model instructions (Important)"; 
-				BackColor = Constants.RecipeColorByCategory[Recipe.Category.Model];
 				break;
 			case Recipe.Component.Persona:
 				labelChannel.Text = "Persona";
-				BackColor = Constants.RecipeColorByCategory[Recipe.Category.Character];
 				break;
 			case Recipe.Component.Scenario:
 				labelChannel.Text = "Scenario";
-				BackColor = Constants.RecipeColorByCategory[Recipe.Category.Story];
 				break;
 			case Recipe.Component.Greeting:
 				labelChannel.Text = "Greeting";
-				BackColor = Constants.RecipeColorByCategory[Recipe.Category.Chat];
 				break;
 			case Recipe.Component.Greeting_Group:
 				labelChannel.Text = "Greeting (Group)";
-				BackColor = Constants.RecipeColorByCategory[Recipe.Category.Chat];
 				break;
 			case Recipe.Component.Example:
 				labelChannel.Text = "Example";
-				BackColor = Constants.RecipeColorByCategory[Recipe.Category.Chat];
 				break;
 			case Recipe.Component.Grammar:
 				labelChannel.Text = "Grammar";
-				BackColor = Constants.RecipeColorByCategory[Recipe.Category.Model];
+				textBox_Text.SpellChecking = false;
+				textBox_Text.SyntaxHighlighting = false;
 				break;
 			case Recipe.Component.UserPersona:
 				labelChannel.Text = "User persona";
-				BackColor = Color.Azure;
 				break;
 			default:
 				labelChannel.Text = "Text";
-				BackColor = Constants.RecipeColorByCategory[Recipe.Category.Undefined];
 				break;
 			}
 
-			labelChannel.ForeColor = Utility.GetContrastColor(BackColor, false);
+			RefreshPanelColor();
 		}
 
 		public void SetSwapped(bool bSwapped)
@@ -100,8 +100,9 @@ namespace Ginger
 
 			_bIgnoreEvents = true;
 			textBox_Text.richTextBox.DisableThenDoThenEnable(() => {
-				textBox_Text.Text = bSwapped ? SwappedText : OriginalText;
-				textBox_Text.richTextBox.RefreshSyntaxHighlight(true); // Rehighlight
+				textBox_Text.SetTextSilent(bSwapped ? SwappedText : OriginalText);
+				textBox_Text.richTextBox.SpellCheck(true, false);
+				textBox_Text.richTextBox.RefreshSyntaxHighlight(true);
 				textBox_Text.InitUndo();
 			});
 			_bIgnoreEvents = false;
@@ -121,44 +122,69 @@ namespace Ginger
 				textBox_Text.Enabled = !textBox_Text.Enabled;
 				btn_Remove.Image = textBox_Text.Enabled ? Properties.Resources.delete_small : Properties.Resources.delete_strike;
 
-				// Change background color
-				if (textBox_Text.Enabled)
+				RefreshPanelColor();
+			}
+		}
+
+		private void RefreshPanelColor()
+		{
+			Color color;
+			if (textBox_Text.Enabled)
+			{
+				switch (_channel)
 				{
-					switch (channel)
-					{
-					case Recipe.Component.System:
-					case Recipe.Component.System_PostHistory:
-						BackColor = Constants.RecipeColorByCategory[Recipe.Category.Model];
-						break;
-					case Recipe.Component.Persona:
-						BackColor = Constants.RecipeColorByCategory[Recipe.Category.Character];
-						break;
-					case Recipe.Component.Scenario:
-						BackColor = Constants.RecipeColorByCategory[Recipe.Category.Story];
-						break;
-					case Recipe.Component.Greeting:
-					case Recipe.Component.Greeting_Group:
-						BackColor = Constants.RecipeColorByCategory[Recipe.Category.Chat];
-						break;
-					case Recipe.Component.Example:
-						BackColor = Constants.RecipeColorByCategory[Recipe.Category.Chat];
-						break;
-					case Recipe.Component.Grammar:
-						BackColor = Constants.RecipeColorByCategory[Recipe.Category.Model];
-						break;
-					case Recipe.Component.UserPersona:
-						BackColor = Color.Azure;
-						break;
-					default:
-						BackColor = Constants.RecipeColorByCategory[Recipe.Category.Undefined];
-						break;
-					}
+				case Recipe.Component.System:
+					color = Constants.RecipeColorByCategory[Recipe.Category.Model];
+					break;
+				case Recipe.Component.System_PostHistory:
+					color = Constants.RecipeColorByCategory[Recipe.Category.Model];
+					break;
+				case Recipe.Component.Persona:
+					color = Constants.RecipeColorByCategory[Recipe.Category.Character];
+					break;
+				case Recipe.Component.Scenario:
+					color = Constants.RecipeColorByCategory[Recipe.Category.Story];
+					break;
+				case Recipe.Component.Greeting:
+					color = Constants.RecipeColorByCategory[Recipe.Category.Chat];
+					break;
+				case Recipe.Component.Greeting_Group:
+					color = Constants.RecipeColorByCategory[Recipe.Category.Chat];
+					break;
+				case Recipe.Component.Example:
+					color = Constants.RecipeColorByCategory[Recipe.Category.Chat];
+					break;
+				case Recipe.Component.Grammar:
+					color = Constants.RecipeColorByCategory[Recipe.Category.Model];
+					break;
+				case Recipe.Component.UserPersona:
+					color = Color.Azure;
+					break;
+				default:
+					color = Constants.RecipeColorByCategory[Recipe.Category.Undefined];
+					break;
 				}
-				else
-				{
-					BackColor = Constants.RecipeColorByCategory[Recipe.Category.Undefined];
-				}
+			}
+			else
+			{
+				color = Constants.RecipeColorByCategory[Recipe.Category.Undefined];
+			}
+
+			if (Theme.IsDarkModeEnabled)
+			{
+				color = Utility.GetDarkColor(color, 0.60f);
+			}
+
+			BackColor = color;
+
+			if (textBox_Text.Enabled)
 				labelChannel.ForeColor = Utility.GetContrastColor(BackColor, false);
+			else
+			{
+				if (Theme.IsDarkModeEnabled)
+					labelChannel.ForeColor = Color.Black;
+				else
+					labelChannel.ForeColor = Color.Gray;
 			}
 		}
 	}

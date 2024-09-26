@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class VariablesDialog : Form
+	public partial class VariablesDialog : FormEx
 	{
 		public Dictionary<string, string> Variables;
 		public bool Changed = false;
@@ -113,6 +113,13 @@ namespace Ginger
 			// ...
 
 			_bIgnoreEvents = false;
+		}
+
+		public override void ApplyTheme()
+		{
+			base.ApplyTheme();
+
+			Theme.Apply(assetsDataView);
 		}
 
 		private void ResolveDuplicateNames()

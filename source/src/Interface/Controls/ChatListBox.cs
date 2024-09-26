@@ -26,6 +26,28 @@ namespace Ginger
 		private static readonly int MessageBottom = 6;
 		private static readonly int MinRowHeight = 22;
 
+		public static readonly Color[] NameColors_Light = new Color[] {
+			ColorTranslator.FromHtml("#0185b6"),
+			ColorTranslator.FromHtml("#b68e01"),
+			ColorTranslator.FromHtml("#c837c7"),
+			ColorTranslator.FromHtml("#76d244"),
+			ColorTranslator.FromHtml("#2c3397"),
+			ColorTranslator.FromHtml("#b62929"),
+			ColorTranslator.FromHtml("#44d2af"),
+			ColorTranslator.FromHtml("#f2aa39"),
+		};
+
+		public static readonly Color[] NameColors_Dark = new Color[] {
+			ColorTranslator.FromHtml("#41a4c8"),
+			ColorTranslator.FromHtml("#c8aa41"),
+			ColorTranslator.FromHtml("#d669d5"),
+			ColorTranslator.FromHtml("#98dd73"),
+			ColorTranslator.FromHtml("#6166b1"),
+			ColorTranslator.FromHtml("#c85f5f"),
+			ColorTranslator.FromHtml("#73ddc3"),
+			ColorTranslator.FromHtml("#f5bf6b"),
+		};
+
 		public ListBox.ObjectCollection Items { get { return listBox.Items; } }
 		
 		public class ContextMenuEventArgs : EventArgs
@@ -69,35 +91,45 @@ namespace Ginger
 				var entry = (Entry)listBox.Items[e.Index];
 
 				bool selected = e.State.Contains(DrawItemState.Selected);
+				
 				e.DrawBackground();
 				e.DrawFocusRectangle();
 
 				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-				
+
 				// Name
-				e.Graphics.DrawString(
-					 entry.name,
-					 _nameFont,
-					 new SolidBrush(selected ? e.ForeColor : entry.color),
-					 new Point(e.Bounds.Left + NameLeft, e.Bounds.Top + NameTop));
+				using (var brush = new SolidBrush(selected ? e.ForeColor : entry.color))
+				{
+					e.Graphics.DrawString(
+						entry.name,
+						_nameFont,
+						brush,
+						new Point(e.Bounds.Left + NameLeft, e.Bounds.Top + NameTop));
+				}
 
 				// Timestamp
-				e.Graphics.DrawString(
-					 entry.timestamp,
-					 _timeFont,
-					 new SolidBrush(selected ? e.ForeColor : Color.DarkGray),
-					 new Rectangle(e.Bounds.Left, e.Bounds.Top + NameTop, e.Bounds.Width - 2, e.Bounds.Height),
-					 RightAligned);
-					
+				using (var brush = new SolidBrush(selected ? e.ForeColor : Theme.Current.GrayText))
+				{
+					e.Graphics.DrawString(
+						entry.timestamp,
+						_timeFont,
+						brush,
+						new Rectangle(e.Bounds.Left, e.Bounds.Top + NameTop, e.Bounds.Width - 2, e.Bounds.Height),
+						RightAligned);
+				}
+
 				// Message
-				e.Graphics.DrawString(
-					 entry.message,
-					 e.Font,
-					 new SolidBrush(e.ForeColor),
-					 new Rectangle(
-						 new Point(MessageLeft, e.Bounds.Top + MessageTop),
-						 new Size(listBox.ClientSize.Width - MessageLeft - MessageRight - SystemInformation.VerticalScrollBarWidth, 0))
-					 );
+				using (var brush = new SolidBrush(e.ForeColor))
+				{
+					e.Graphics.DrawString(
+						entry.message,
+						e.Font,
+						brush,
+						new Rectangle(
+							new Point(MessageLeft, e.Bounds.Top + MessageTop),
+							new Size(listBox.ClientSize.Width - MessageLeft - MessageRight - SystemInformation.VerticalScrollBarWidth, 0))
+						);
+				}
 			}
 		}
 

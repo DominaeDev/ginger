@@ -7,7 +7,6 @@ using System.Drawing;
 
 namespace System.Windows.Forms
 {
-
 	[System.ComponentModel.ToolboxItem(false)]
 	public class TabStyleRoundedProvider : TabStyleProvider
 	{

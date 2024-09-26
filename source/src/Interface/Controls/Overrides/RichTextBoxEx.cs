@@ -19,6 +19,7 @@ namespace Ginger
 		public event EventHandler ControlAltEnterPressed;
 		public event EventHandler ValueChanged;
 		public event BeforeUndoState OnBeforeUndoState;
+
 		public class BeforeUndoEventArgs : EventArgs
 		{
 			public UndoState State { get; set; }
@@ -144,12 +145,11 @@ namespace Ginger
 			CodeBlock		= 1 << 6,
 			Wildcards		= 1 << 7,
 			SpellChecking	= 1 << 8,
-			DarkMode		= 1 << 9,
-			Decorators		= 1 << 10,
-			Comments		= 1 << 11,
-			Markdown		= 1 << 12,
-			HTML			= 1 << 13,
-			Variables		= 1 << 14,
+			Decorators		= 1 << 9,
+			Comments		= 1 << 10,
+			Markdown		= 1 << 11,
+			HTML			= 1 << 12,
+			Variables		= 1 << 13,
 
 			Default = Names | Dialogue | Actions | Commands | Variables | Numbers | CodeBlock | Comments | Markdown | SpellChecking | HTML,
 			Limited = Names | Commands | Variables | Numbers | Comments | Markdown | SpellChecking,
@@ -237,6 +237,8 @@ namespace Ginger
 		private const int SB_TOP = 6;
 		private const int SB_BOTTOM = 7;
 		private const int SB_ENDSCROLL = 8;
+		private const int WM_SETFOCUS   = 0x07;
+		private const int WM_ENABLE     = 0x0A;
 
 		struct SCROLLINFO
 		{
@@ -325,15 +327,13 @@ namespace Ginger
 			_undo = new TextUndoStack<UndoState>(this);
 			_asyncSyntaxHighlighter = new AsyncSyntaxHighlighter();
 			_asyncSyntaxHighlighter.onResult += OnAsyncSyntaxHighlighterResult;
+
 		}
 
 		protected override void OnTextChanged(EventArgs e)
 		{
-			if (isHighlighting)
-			{
-//				base.OnTextChanged(e);
-				return;
-			}
+			if (isHighlighting || Theme.IsTheming)
+				return; // Ignore
 
 			if (_ignoreTextChanged > 0) // Guarded
 				return;
@@ -382,11 +382,6 @@ namespace Ginger
 		private void OnEnabledChanged(object sender, EventArgs e)
 		{
 			__Guard(() => {
-				if (Enabled)
-					ForeColor = SystemColors.WindowText;
-				else
-					ForeColor = SystemColors.GrayText;
-
 				RefreshPatterns();
 				RefreshSyntaxHighlight(true);
 			});
@@ -508,6 +503,7 @@ namespace Ginger
 				ToolTipText = "Remove all markdown images from the text. (E.g. ![](image.png))",
 			});
 
+			Theme.Apply(menu);
 			menu.Show(this, location);
 		}
 
@@ -629,6 +625,13 @@ namespace Ginger
 				return;
 			}
 
+			if (m.Msg == WM_ENABLE)
+			{
+				bool bEnabled = m.WParam == (IntPtr)1;
+				this.ForeColor = bEnabled ? Theme.Current.TextBoxForeground : Theme.Current.GrayText;
+				return; // Prevent background from being turned gray
+			}
+
 			base.WndProc(ref m);
 		}
 		
@@ -649,17 +652,15 @@ namespace Ginger
 				{
 					TextRenderer.DrawText(e.Graphics, _placeholder, this.Font,
 						new Point(ClientRectangle.Location.X, ClientRectangle.Location.Y + 2),
-						Color.FromArgb(144, 144, 144), Color.Empty);
+						Theme.Current.TextBoxPlaceholder, Color.Empty);
 				}
 				else
 				{
 					TextRenderer.DrawText(e.Graphics, _placeholder, this.Font,
 						new Point(ClientRectangle.Location.X - 3, ClientRectangle.Location.Y),
-						Color.FromArgb(144, 144, 144), Color.Empty);
+						Theme.Current.TextBoxPlaceholder, Color.Empty);
 				}
 			}
-			// Draw border
-//			e.Graphics.DrawRectangle(new Pen(Color.Green), new Rectangle(0, 0, Width - 1, Height - 1));
 		}
 
 		public void InitUndo()
@@ -761,19 +762,18 @@ namespace Ginger
 			_syntaxFlags = flags;
 
 			// Colors
-			bool bLight = _syntaxFlags.Contains(SyntaxFlags.DarkMode) == false;
-			Color colorDialogue = bLight ? Constants.Colors.Light.Dialogue : Constants.Colors.Dark.Dialogue;
-			Color colorNarration = bLight ? Constants.Colors.Light.Narration : Constants.Colors.Dark.Narration;
-			Color colorNumber = bLight ? Constants.Colors.Light.Number : Constants.Colors.Dark.Number;
-			Color colorName = bLight ? Constants.Colors.Light.Name : Constants.Colors.Dark.Name;
-			Color colorCommand = bLight ? Constants.Colors.Light.Command : Constants.Colors.Dark.Command;
-			Color colorPronoun = bLight ? Constants.Colors.Light.Pronoun : Constants.Colors.Dark.Pronoun;
-			Color colorComment = bLight ? Constants.Colors.Light.Comment : Constants.Colors.Dark.Comment;
-			Color colorCode = bLight ? Constants.Colors.Light.Code : Constants.Colors.Dark.Code;
-			Color colorError = bLight ? Constants.Colors.Light.Error : Constants.Colors.Dark.Error;
-			Color colorWildcard = bLight ? Constants.Colors.Light.Wildcard : Constants.Colors.Dark.Wildcard;
-			Color colorDecorator = bLight ? Constants.Colors.Light.Decorator : Constants.Colors.Dark.Decorator;
-			Color colorVariable = bLight ? Constants.Colors.Light.Variable : Constants.Colors.Dark.Variable;
+			Color colorDialogue = Theme.Current.Dialogue;
+			Color colorNarration = Theme.Current.Narration;
+			Color colorNumber = Theme.Current.Number;
+			Color colorName = Theme.Current.Name;
+			Color colorCommand = Theme.Current.Command;
+			Color colorPronoun = Theme.Current.Pronoun;
+			Color colorComment = Theme.Current.Comment;
+			Color colorCode = Theme.Current.Code;
+			Color colorError = Theme.Current.Error;
+			Color colorWildcard = Theme.Current.Wildcard;
+			Color colorDecorator = Theme.Current.Decorator;
+			Color colorVariable = Theme.Current.Command;
 
 			syntaxHighlighter.ClearPatterns();
 			
@@ -827,7 +827,7 @@ namespace Ginger
 				// Invalid patterns
 //				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\{(?i)\b(char|user|original)\b\}\}"), SyntaxStyle.Underlined(colorError), 2);
 //				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{(?i)\bcharacter\b\}"), SyntaxStyle.Underlined(colorError), 2);
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\$?\w*\}|\{\{\w*\}\}"), SyntaxStyle.Underlined(colorError), 2);
+                syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\$?\w*\}|\{\{\w*\}\}"), SyntaxStyle.Underlined(colorError), 2);
 
 				// character
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{(?i)\b(char|user|card|name|original|gender|they'll|they're|they've|they'd|they|them|theirs|their|themselves|he'll|he's|he's|he'd|he|him|his|his|himself|she'll|she's|she's|she'd|she|her|hers|her|herself|is|are|isn't|aren't|has|have|hasn't|haven't|was|were|wasn't|weren't|does|do|doesn't|don't|s|y|ies|es)\b\}"),
@@ -867,8 +867,6 @@ namespace Ginger
 				syntaxHighlighter.SetVariableNames(varNames, new SyntaxStyle(colorVariable), 3);
 			}
 
-			if (!bLight)
-				syntaxHighlighter.darkMode = true;
 		}
 
 		public void InvalidateSyntaxHighlighting()
@@ -878,7 +876,7 @@ namespace Ginger
 
 		public void RefreshSyntaxHighlight(bool immediate = false)
 		{
-			if (syntaxHighlighter == null)
+			if (syntaxHighlighter == null || _bEnableSyntaxHighlighting == false)
 				return;
 
 			if (_syntaxFlags.Contains(SyntaxFlags.Names) != AppSettings.Settings.AutoConvertNames)
@@ -895,8 +893,7 @@ namespace Ginger
 			// Update names
 			if (Current.Characters != null && AppSettings.Settings.AutoConvertNames && _syntaxFlags.Contains(SyntaxFlags.Names))
 			{
-				bool bLight = _syntaxFlags.Contains(SyntaxFlags.DarkMode) == false;
-				Color colorName = bLight ? Constants.Colors.Light.Name : Constants.Colors.Dark.Name;
+				Color colorName = Theme.Current.Name;
 
 				string[] names = new string[Current.Characters.Count + 1];
 				names[0] = Current.Card.userPlaceholder;
@@ -917,7 +914,9 @@ namespace Ginger
 
 			if (_syntaxHighlighter == null 
 				|| _syntaxHighlighter.EnableHighlighting == false 
-				|| AllowSyntaxHighlighting == false)
+				|| _bEnableSyntaxHighlighting == false
+				|| AllowSyntaxHighlighting == false
+				|| !Enabled)
 				return;
 
 			_syntaxHighlighter.Font = this.Font;

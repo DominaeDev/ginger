@@ -9,7 +9,7 @@ namespace Ginger
 	// Doing it this way may look really dumb, and it is, but it actually avoids a whole
 	// host of issues with WinForms' TERRIBLE native RichTextBox.
 
-	public partial class FlatRichTextBox : UserControl
+	public partial class FlatRichTextBox : UserControl, IVisualThemed
 	{
 		[Category("Behavior"), Description("Placeholder text")]
 		public string Placeholder
@@ -86,14 +86,15 @@ namespace Ginger
 			richTextBox.VScroll += RichTextBox_VScroll;
 			richTextBox.TextChanged += RichTextBox_TextChanged;
 			richTextBox.ContentsResized += RichTextBox_ContentsResized;
-			
+
 			Resize += FlatRichTextBox_Resize;
 			FontChanged += FlatRichTextBox_FontChanged;
 			Load += FlatRichTextBox_Load;
 			VisibleChanged += FlatRichTextBox_VisibleChanged;
 			EnabledChanged += FlatRichTextBox_EnabledChanged;
-
+			
 			DoubleBuffered = true;
+			CausesValidation = true;
 		}
 
 		private void FlatRichTextBox_Load(object sender, EventArgs e)
@@ -161,40 +162,66 @@ namespace Ginger
 			}
 		}
 
-		private static Brush s_SolidWhite = new SolidBrush(SystemColors.Window);
-		private static Brush s_SolidGray = new SolidBrush(SystemColors.Control);
-
 		protected override void OnPaint(PaintEventArgs e)
 		{
-			// BG
-			if (Enabled)
-				e.Graphics.FillRectangle(s_SolidWhite, new Rectangle(0, 0, Width - 1, Height - 1));
-			else
+			Graphics g = e.Graphics;
+
+			using (var brush = new SolidBrush(Enabled ? Theme.Current.TextBoxBackground : Theme.Current.TextBoxDisabledBackground))
 			{
-				e.Graphics.FillRectangle(s_SolidWhite, new Rectangle(0, 0, Width - 1, Height - 1));
-				e.Graphics.FillRectangle(s_SolidGray, new Rectangle(2, 2, Width - 4, Height - 4));
+				g.FillRectangle(brush, new Rectangle(0, 0, Width - 1, Height - 1));
+			}
+			
+			// Border
+			Color borderColor = Enabled ?
+				(richTextBox.Focused ? Theme.Current.HighlightBorder : Theme.Current.TextBoxBorder)
+				: Theme.Current.TextBoxDisabledBorder;
+			using (var pen = new Pen(borderColor))
+			{
+				g.DrawRectangle(pen, new Rectangle(0, 0, Width - 1, Height - 1));
 			}
 
-			// Border
-			e.Graphics.DrawRectangle(new Pen(BorderColor), new Rectangle(0, 0, Width - 1, Height - 1));
+			// Draw disabled text
+			if (Enabled == false)
+			{
+				using (var brush = new SolidBrush(Theme.Current.GrayText))
+				{
+					g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+
+					int width;
+					if (AppSettings.Settings.AutoBreakLine)
+						width = Math.Min((int)Math.Round(Constants.AutoWrapWidth * richTextBox.Font.SizeInPoints), Math.Max(this.Size.Width - 44, 0));
+					else
+						width = richTextBox.Width - 24;
+
+					g.DrawString(
+						richTextBox.Text,
+						richTextBox.Font,
+						brush,
+						new Rectangle(3, 4, width, richTextBox.Height));
+				}
+			}
+		}
+
+		protected override void OnPaintBackground(PaintEventArgs e)
+		{
+			// Do nothing
 		}
 
 		private void TextBox_Enter(object sender, EventArgs e)
 		{
 			if (HighlightBorder)
-				BorderColor = SystemColors.Highlight;
+				BorderColor = Theme.Current.HighlightBorder;
 		}
 
 		private void TextBox_Leave(object sender, EventArgs e)
 		{
 			if (HighlightBorder)
-				BorderColor = SystemColors.WindowFrame;
+				BorderColor = Theme.Current.TextBoxBorder;
 		}
 
 		private void FlatRichTextBox_EnabledChanged(object sender, EventArgs e)
 		{
-			if (HighlightBorder)
-				BorderColor = SystemColors.WindowFrame;
+			BackColor = Enabled ? Theme.Current.TextBoxBackground : SystemColors.Control;
 		}
 
 		private void RichTextBox_VScroll(object sender, EventArgs e)
@@ -234,5 +261,23 @@ namespace Ginger
 			richTextBox.SetTextSilent(text);
 			_bIgnoreEvents = false;
 		}
+
+		public void ApplyVisualTheme()
+		{
+			richTextBox.RefreshPatterns();
+			richTextBox.RefreshSyntaxHighlight(false);
+			Invalidate();
+		}
+
+		protected override void OnEnabledChanged(EventArgs e)
+		{
+			base.OnEnabledChanged(e);
+
+			this.BackColor = Enabled ? Theme.Current.TextBoxBackground : Theme.Current.TextBoxDisabledBackground;
+			richTextBox.BackColor = Enabled ? Theme.Current.TextBoxBackground : Theme.Current.TextBoxDisabledBackground;
+
+			Invalidate();
+		}
+		
 	}
 }

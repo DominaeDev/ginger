@@ -10,7 +10,7 @@ using Ginger.Integration;
 
 namespace Ginger
 {
-	public partial class RecipeList : UserControl, IIdleHandler
+	public partial class RecipeList : UserControl, IIdleHandler, IVisualThemed
 	{
 		[Category("Appearance"), Description("Gradient color")]
 		public Color GradientColor { get; set; }
@@ -69,7 +69,7 @@ namespace Ginger
 			var graphics = e.Graphics;
 
 			// Solid bg
-			using (var bgBrush = new SolidBrush(this.BackColor))
+			using (var bgBrush = new SolidBrush(Theme.Current.RecipeListBackground))
 			{
 				graphics.FillRectangle(bgBrush, panel.DisplayRectangle);
 			}
@@ -77,7 +77,7 @@ namespace Ginger
 			// Gradient
 			RectangleF rectBottom = new RectangleF(new PointF(0, panel.Height - panel.Height / 2), new SizeF(panel.Width, panel.Height / 2));
 			RectangleF drawBottom = new RectangleF(rectBottom.X, rectBottom.Y + 1, rectBottom.Width, rectBottom.Height - 1);
-			using (var bgGradient = new LinearGradientBrush(rectBottom, this.BackColor, this.GradientColor, LinearGradientMode.Vertical))
+			using (var bgGradient = new LinearGradientBrush(rectBottom, Theme.Current.RecipeListBackground, Theme.Current.RecipeListGradient, LinearGradientMode.Vertical))
 			{
 				graphics.FillRectangle(bgGradient, drawBottom);
 			}
@@ -980,14 +980,14 @@ namespace Ginger
 				MainForm.instance.PopulateComponentMenu("", menu.Items, context);
 				menu.Items.Add("-");
 
-				var model = new ToolStripMenuItem("Model", Resources.folder);
-				var character = new ToolStripMenuItem("Character", Resources.folder);
-				var mind = new ToolStripMenuItem("Mind", Resources.folder);
-				var traits = new ToolStripMenuItem("Traits", Resources.folder);
-				var story = new ToolStripMenuItem("Story", Resources.folder);
-				var snippets = new ToolStripMenuItem("Snippets", Resources.folder);
-				var lore = new ToolStripMenuItem("Lorebooks", Resources.folder);
-				var otherComponents = new ToolStripMenuItem("Other components", Resources.folder);
+				var model = new ToolStripMenuItem("Model", Theme.Current.MenuFolder);
+				var character = new ToolStripMenuItem("Character", Theme.Current.MenuFolder);
+				var mind = new ToolStripMenuItem("Mind", Theme.Current.MenuFolder);
+				var traits = new ToolStripMenuItem("Traits", Theme.Current.MenuFolder);
+				var story = new ToolStripMenuItem("Story", Theme.Current.MenuFolder);
+				var snippets = new ToolStripMenuItem("Snippets", Theme.Current.MenuFolder);
+				var lore = new ToolStripMenuItem("Lorebooks", Theme.Current.MenuFolder);
+				var otherComponents = new ToolStripMenuItem("Other components", Theme.Current.MenuFolder);
 
 				MainForm.instance.PopulateRecipeMenu(Recipe.Drawer.Model, model.DropDownItems, context);
 				MainForm.instance.PopulateRecipeMenu(Recipe.Drawer.Character, character.DropDownItems, context);
@@ -1010,7 +1010,7 @@ namespace Ginger
 					&& r.drawer == Recipe.Drawer.Undefined
 					&& r.isHidden == false))
 				{
-					var unknown = new ToolStripMenuItem("Uncategorized", Resources.folder);
+					var unknown = new ToolStripMenuItem("Uncategorized", Theme.Current.MenuFolder);
 					MainForm.instance.PopulateRecipeMenu(Recipe.Drawer.Undefined, unknown.DropDownItems, context);
 					menu.Items.Add(unknown);
 				}
@@ -1045,6 +1045,7 @@ namespace Ginger
 					menu.Items.Add(new ToolStripMenuItem("Paste", null, (EventHandler)null) { Enabled = false });
 				}
 
+				Theme.Apply(menu);
 				menu.Show(this, new Point(args.X, args.Y));
 			}
 		}
@@ -1573,5 +1574,11 @@ namespace Ginger
 			});
 		}
 
+		public void ApplyVisualTheme()
+		{
+			foreach (var panel in _recipePanels)
+				panel.ApplyVisualTheme();
+			RefreshSyntaxHighlighting(false);
+		}
 	}
 }

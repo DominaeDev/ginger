@@ -31,8 +31,8 @@ namespace Ginger
 		{
 			System.Windows.Forms.FlowLayoutPanel buttonLayout;
 			System.Windows.Forms.Label label;
-			this.btnCancel = new System.Windows.Forms.Button();
-			this.btnOk = new System.Windows.Forms.Button();
+			this.btnCancel = new ButtonEx();
+			this.btnOk = new ButtonEx();
 			this.comboBox = new Ginger.ComboBoxEx();
 			buttonLayout = new System.Windows.Forms.FlowLayoutPanel();
 			label = new System.Windows.Forms.Label();
@@ -136,8 +136,8 @@ namespace Ginger
 
 		#endregion
 
-		private System.Windows.Forms.Button btnCancel;
-		private System.Windows.Forms.Button btnOk;
+		private ButtonEx btnCancel;
+		private ButtonEx btnOk;
 		private ComboBoxEx comboBox;
 	}
 }

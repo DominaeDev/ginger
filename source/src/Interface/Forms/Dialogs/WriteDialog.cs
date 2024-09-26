@@ -10,7 +10,7 @@ using Text = Ginger.Text;
 
 namespace Ginger
 {
-	public partial class WriteDialog : Form
+	public partial class WriteDialog : FormEx
 	{
 		public string Value
 		{
@@ -76,7 +76,6 @@ namespace Ginger
 				EnumHelper.Toggle(ref syntaxFlags, RichTextBoxEx.SyntaxFlags.Pronouns, AppSettings.WriteDialog.HighlightPronouns);
 			}
 			EnumHelper.Toggle(ref syntaxFlags, RichTextBoxEx.SyntaxFlags.SpellChecking, AppSettings.Settings.SpellChecking);
-			EnumHelper.Toggle(ref syntaxFlags, RichTextBoxEx.SyntaxFlags.DarkMode, AppSettings.WriteDialog.DarkMode);
 			textBox.syntaxFlags = syntaxFlags;
 			textBox.SetLineHeight(Constants.LineHeight);
 
@@ -133,16 +132,9 @@ namespace Ginger
 			textBox.ScrollToSelection();
 			textBox.SetInnerMargins(6, 3, 5, 2);
 
-			if (AppSettings.WriteDialog.DarkMode)
-			{
-				textBox.ForeColor = Constants.Colors.Dark.Foreground;
-				textBox.BackColor = Constants.Colors.Dark.Background;
-			}
-			else
-			{
-				textBox.ForeColor = Constants.Colors.Light.Foreground;
-				textBox.BackColor = Constants.Colors.Light.Background;
-			}
+			textBox.ForeColor = Theme.Current.TextBoxForeground;
+			textBox.BackColor = Theme.Current.TextBoxBackground;
+
 			textBox.RefreshSyntaxHighlight(true);
 
 			// Create dictionary menu items
@@ -318,7 +310,6 @@ namespace Ginger
 			highlightNumbersMenuItem.Enabled = AppSettings.WriteDialog.Highlight;
 			highlightPronounsMenuItem.Checked = AppSettings.WriteDialog.HighlightPronouns;
 			highlightPronounsMenuItem.Enabled = AppSettings.WriteDialog.Highlight;
-			darkModeMenuItem.Checked = AppSettings.WriteDialog.DarkMode;
 			pasteMenuItem.Enabled = textBox.CanPaste(DataFormats.GetFormat("UnicodeText"));
 			enableSpellCheckingMenuItem.Checked = AppSettings.Settings.SpellChecking;
 
@@ -501,25 +492,14 @@ namespace Ginger
 				EnumHelper.Toggle(ref syntaxFlags, RichTextBoxEx.SyntaxFlags.Pronouns, AppSettings.WriteDialog.HighlightPronouns);
 			}
 			EnumHelper.Toggle(ref syntaxFlags, RichTextBoxEx.SyntaxFlags.SpellChecking, AppSettings.Settings.SpellChecking);
-			EnumHelper.Toggle(ref syntaxFlags, RichTextBoxEx.SyntaxFlags.DarkMode, AppSettings.WriteDialog.DarkMode);
 			textBox.syntaxFlags = syntaxFlags;
-			
 
 			if ((AppSettings.WriteDialog.Highlight || AppSettings.Settings.SpellChecking) == false)
-			{
-				_bIgnoreEvents = true;
 				textBox.syntaxHighlighter.EnableHighlighting = false;
-				textBox.Text = textBox.Text;
-				_bIgnoreEvents = false;
-			}
 			else
-			{
-				_bIgnoreEvents = true;
 				textBox.syntaxHighlighter.EnableHighlighting = true;
-				_bIgnoreEvents = false;
-				textBox.RefreshSyntaxHighlight(true);
-			}
-			textBox.syntaxHighlighter.ReHighlight(true);
+
+			textBox.RefreshSyntaxHighlight(true);
 		}
 
 		private void highlightNamesMenuItem_CheckedChanged(object sender, EventArgs e)
@@ -578,19 +558,10 @@ namespace Ginger
 			MainForm.EnableSpellChecking(!enableSpellCheckingMenuItem.Checked);
 			textBox.EnableSpellCheck(!enableSpellCheckingMenuItem.Checked);
 			if ((AppSettings.WriteDialog.Highlight || AppSettings.Settings.SpellChecking) == false)
-			{
-				_bIgnoreEvents = true;
 				textBox.syntaxHighlighter.EnableHighlighting = false;
-				textBox.Text = textBox.Text;
-				_bIgnoreEvents = false;
-			}
 			else
-			{
-				_bIgnoreEvents = true;
 				textBox.syntaxHighlighter.EnableHighlighting = true;
-				_bIgnoreEvents = false;
-			}
-			textBox.syntaxHighlighter.ReHighlight(true);
+			textBox.RefreshSyntaxHighlight(true);
 		}
 
 		private void CalculateTokens()
@@ -614,31 +585,6 @@ namespace Ginger
 
 			labelTokens.Text = string.Format("Token count: {0}", result.tokens_total);
 		}
-
-		private void darkModeMenuItem_CheckStateChanged(object sender, EventArgs e)
-		{
-			if (_bIgnoreEvents)
-				return;
-
-			AppSettings.WriteDialog.DarkMode = darkModeMenuItem.Checked;
-
-			if (AppSettings.WriteDialog.DarkMode)
-				textBox.syntaxFlags = textBox.syntaxFlags | RichTextBoxEx.SyntaxFlags.DarkMode;
-			else
-				textBox.syntaxFlags = textBox.syntaxFlags & ~RichTextBoxEx.SyntaxFlags.DarkMode;
-
-			if (AppSettings.WriteDialog.DarkMode)
-			{
-				textBox.ForeColor = Constants.Colors.Dark.Foreground;
-				textBox.BackColor = Constants.Colors.Dark.Background;
-			}
-			else
-			{
-				textBox.ForeColor = Constants.Colors.Light.Foreground;
-				textBox.BackColor = Constants.Colors.Light.Background;
-			}
-
-			textBox.RefreshSyntaxHighlight(true);
-		}
+		
 	}
 }

@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class GenderSwapDialog : Form
+	public partial class GenderSwapDialog : FormEx
 	{
 		public GenderSwap.Pronouns CharacterFrom;
 		public GenderSwap.Pronouns CharacterTo = GenderSwap.Pronouns.VariableNeutral;

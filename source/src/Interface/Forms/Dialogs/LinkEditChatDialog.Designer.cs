@@ -30,6 +30,8 @@ namespace Ginger
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
+			System.Windows.Forms.ColumnHeader columnTitle;
+			System.Windows.Forms.ColumnHeader columnDate;
 			System.Windows.Forms.Panel leftPanel;
 			System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Today", System.Windows.Forms.HorizontalAlignment.Left);
 			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
@@ -38,11 +40,9 @@ namespace Ginger
 			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem(new string[] {
             "Untitled Chat #2",
             "15:30"}, 1);
-			System.Windows.Forms.ColumnHeader columnTitle;
-			System.Windows.Forms.ColumnHeader columnDate;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkEditChatDialog));
 			System.Windows.Forms.Panel centerPanel;
-			this.groupBox = new System.Windows.Forms.GroupBox();
+			this.groupBox = new Ginger.GroupBoxEx();
 			this.chatInstanceList = new Ginger.ChatListView();
 			this.imageList = new System.Windows.Forms.ImageList(this.components);
 			this.portraitPanel = new System.Windows.Forms.Panel();
@@ -70,9 +70,9 @@ namespace Ginger
 			this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusChatLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.splitter = new System.Windows.Forms.Splitter();
-			leftPanel = new System.Windows.Forms.Panel();
 			columnTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			columnDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			leftPanel = new System.Windows.Forms.Panel();
 			centerPanel = new System.Windows.Forms.Panel();
 			leftPanel.SuspendLayout();
 			this.groupBox.SuspendLayout();
@@ -82,6 +82,17 @@ namespace Ginger
 			this.menuBar.SuspendLayout();
 			this.statusBar.SuspendLayout();
 			this.SuspendLayout();
+			// 
+			// columnTitle
+			// 
+			columnTitle.Text = "Title";
+			columnTitle.Width = 118;
+			// 
+			// columnDate
+			// 
+			columnDate.Text = "Last message";
+			columnDate.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			columnDate.Width = 100;
 			// 
 			// leftPanel
 			// 
@@ -97,6 +108,7 @@ namespace Ginger
 			// 
 			// groupBox
 			// 
+			this.groupBox.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
 			this.groupBox.Controls.Add(this.chatInstanceList);
 			this.groupBox.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.groupBox.Location = new System.Drawing.Point(3, 204);
@@ -128,6 +140,7 @@ namespace Ginger
 			this.chatInstanceList.Location = new System.Drawing.Point(3, 19);
 			this.chatInstanceList.MultiSelect = false;
 			this.chatInstanceList.Name = "chatInstanceList";
+			this.chatInstanceList.OwnerDraw = true;
 			this.chatInstanceList.ShowItemToolTips = true;
 			this.chatInstanceList.Size = new System.Drawing.Size(249, 487);
 			this.chatInstanceList.SmallImageList = this.imageList;
@@ -138,17 +151,6 @@ namespace Ginger
 			this.chatInstanceList.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.chatInstanceList_AfterLabelEdit);
 			this.chatInstanceList.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.chatList_ColumnWidthChanging);
 			this.chatInstanceList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.chatInstanceList_KeyDown);
-			// 
-			// columnTitle
-			// 
-			columnTitle.Text = "Title";
-			columnTitle.Width = 118;
-			// 
-			// columnDate
-			// 
-			columnDate.Text = "Last message";
-			columnDate.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			columnDate.Width = 100;
 			// 
 			// imageList
 			// 
@@ -254,7 +256,7 @@ namespace Ginger
 			// selectCharacterMenuItem
 			// 
 			this.selectCharacterMenuItem.Name = "selectCharacterMenuItem";
-			this.selectCharacterMenuItem.Size = new System.Drawing.Size(166, 22);
+			this.selectCharacterMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.selectCharacterMenuItem.Text = "Select &character...";
 			this.selectCharacterMenuItem.Click += new System.EventHandler(this.selectCharacterMenuItem_Click);
 			// 
@@ -262,46 +264,46 @@ namespace Ginger
 			// 
 			this.refreshMenuItem.Name = "refreshMenuItem";
 			this.refreshMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-			this.refreshMenuItem.Size = new System.Drawing.Size(166, 22);
+			this.refreshMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.refreshMenuItem.Text = "Refresh";
 			this.refreshMenuItem.Click += new System.EventHandler(this.refreshMenuItem_Click);
 			// 
 			// toolStripMenuItem3
 			// 
 			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-			this.toolStripMenuItem3.Size = new System.Drawing.Size(163, 6);
+			this.toolStripMenuItem3.Size = new System.Drawing.Size(177, 6);
 			// 
 			// importMenuItem
 			// 
 			this.importMenuItem.Name = "importMenuItem";
-			this.importMenuItem.Size = new System.Drawing.Size(166, 22);
+			this.importMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.importMenuItem.Text = "&Import...";
 			this.importMenuItem.Click += new System.EventHandler(this.btnImport_Click);
 			// 
 			// exportMenuItem
 			// 
 			this.exportMenuItem.Name = "exportMenuItem";
-			this.exportMenuItem.Size = new System.Drawing.Size(166, 22);
+			this.exportMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.exportMenuItem.Text = "&Export...";
 			this.exportMenuItem.Click += new System.EventHandler(this.btnExport_Click);
 			// 
 			// duplicateMenuItem
 			// 
 			this.duplicateMenuItem.Name = "duplicateMenuItem";
-			this.duplicateMenuItem.Size = new System.Drawing.Size(166, 22);
+			this.duplicateMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.duplicateMenuItem.Text = "&Duplicate";
 			this.duplicateMenuItem.Click += new System.EventHandler(this.duplicateMenuItem_Click);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(163, 6);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
 			// 
 			// closeToolStripMenuItem
 			// 
 			this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
 			this.closeToolStripMenuItem.ShortcutKeyDisplayString = "Escape";
-			this.closeToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+			this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.closeToolStripMenuItem.Text = "&Close";
 			this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
 			// 
@@ -363,7 +365,7 @@ namespace Ginger
 			// statusChatLabel
 			// 
 			this.statusChatLabel.Name = "statusChatLabel";
-			this.statusChatLabel.Size = new System.Drawing.Size(759, 17);
+			this.statusChatLabel.Size = new System.Drawing.Size(728, 17);
 			this.statusChatLabel.Spring = true;
 			this.statusChatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
@@ -433,7 +435,7 @@ namespace Ginger
 		private System.Windows.Forms.StatusStrip statusBar;
 		private System.Windows.Forms.ToolStripStatusLabel statusLabel;
 		private System.Windows.Forms.ToolStripStatusLabel statusChatLabel;
-		private System.Windows.Forms.GroupBox groupBox;
+		private GroupBoxEx groupBox;
 		private System.Windows.Forms.ToolStripMenuItem refreshMenuItem;
 		private System.Windows.Forms.Splitter splitter;
 		private System.Windows.Forms.ToolStripMenuItem createBackupMenuItem;

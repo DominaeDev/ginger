@@ -105,6 +105,9 @@
     <NoWarn>168, 169, 618</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DarkNet, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\DarkNet.2.3.0\lib\net452\DarkNet.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -159,7 +162,13 @@
     <Compile Include="src\Interface\Controls\CollectionTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="src\Interface\Controls\ComboBoxEx.cs">
+    <Compile Include="src\Interface\Controls\Overrides\ButtonEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\Overrides\CheckBoxEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\Overrides\ComboBoxEx.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="src\Interface\Controls\FlatRichTextBox.cs">
@@ -167,6 +176,12 @@
     </Compile>
     <Compile Include="src\Interface\Controls\FlatRichTextBox.Designer.cs">
       <DependentUpon>FlatRichTextBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Controls\Overrides\FormEx.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\Overrides\GroupBoxEx.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="src\Interface\Controls\ISearchable.cs" />
     <Compile Include="src\Interface\Controls\OutputPreview.cs">
@@ -184,13 +199,13 @@
     <Compile Include="src\Interface\Controls\RecipeList.Designer.cs">
       <DependentUpon>RecipeList.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\Interface\Controls\RichTextBoxEx.cs">
+    <Compile Include="src\Interface\Controls\Overrides\RichTextBoxEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="src\Interface\Controls\TrackBarEx.cs">
+    <Compile Include="src\Interface\Controls\Overrides\TrackBarEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="src\Interface\Controls\TreeViewEx.cs">
+    <Compile Include="src\Interface\Controls\Overrides\TreeViewEx.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="src\Interface\Controls\UserNotes.cs">
@@ -205,6 +220,10 @@
     <Compile Include="src\Interface\Forms\Dialogs\VariablesDialog.Designer.cs">
       <DependentUpon>VariablesDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Interface\Theme\DarkTheme.cs" />
+    <Compile Include="src\Interface\Theme\IVisualTheme.cs" />
+    <Compile Include="src\Interface\Theme\LightTheme.cs" />
+    <Compile Include="src\Interface\Theme\Theme.cs" />
     <Compile Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -421,14 +440,11 @@
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\NativeMethods.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyle.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProvider.cs" />
-    <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleChromeProvider.cs" />
-    <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleDarkProvider.cs" />
-    <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleDefaultProvider.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleNoneProvider.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleRoundedProvider.cs" />
     <Compile Include="src\Utility\Undo\UndoStack.cs" />
     <Compile Include="src\Utility\Undo\TextUndoStack.cs" />
-    <Compile Include="src\Interface\Controls\TextBoxEx.cs">
+    <Compile Include="src\Interface\Controls\Overrides\TextBoxEx.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="src\Interface\Parameters\MultiTextParameterPanel.cs">
@@ -643,17 +659,14 @@
     <EmbeddedResource Include="src\Interface\Controls\RecipeList.resx">
       <DependentUpon>RecipeList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Interface\Controls\RichTextBoxEx.resx">
+    <EmbeddedResource Include="src\Interface\Controls\Overrides\RichTextBoxEx.resx">
       <DependentUpon>RichTextBoxEx.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Interface\Controls\TextBoxEx.resx">
+    <EmbeddedResource Include="src\Interface\Controls\Overrides\TextBoxEx.resx">
       <DependentUpon>TextBoxEx.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Controls\UserNotes.resx">
       <DependentUpon>UserNotes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="src\Interface\Forms\Dialogs\VariablesDialog.resx">
-      <DependentUpon>VariablesDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.resx">
       <DependentUpon>LinkEditChatDialog.cs</DependentUpon>
@@ -687,6 +700,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\PasteTextDialog.resx">
       <DependentUpon>PasteTextDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\VariablesDialog.resx">
+      <DependentUpon>VariablesDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\WriteDialog.resx">
       <DependentUpon>WriteDialog.cs</DependentUpon>
@@ -789,36 +805,6 @@
     <None Include="Resources\Templates\snippet_template.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Icons\arrow_right.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\arrow_down.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\arrow_up.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\cross.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\lore.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\model.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\persona.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\snippet.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\component.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\checker.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Schemas\faraday_charactercard_v4.schema.txt" />
     <None Include="Resources\Schemas\pygmalion_charactercard.schema.txt" />
     <None Include="Resources\Schemas\tavern_charactercard_v2.schema.txt" />
@@ -833,17 +819,8 @@
     <None Include="Resources\Templates\recipe_template_sample_2.txt" />
     <None Include="Resources\Templates\recipe_template_sample_1.txt" />
     <None Include="Resources\Templates\recipe_template_empty.txt" />
-    <None Include="Resources\Icons\delete_strike.png" />
-    <None Include="Resources\Icons\delete_small.png" />
-    <None Include="Resources\Icons\write.png" />
-    <None Include="Resources\Icons\lore_down.png" />
-    <None Include="Resources\Icons\lore_up.png" />
-    <None Include="Resources\Icons\personality.png" />
     <None Include="Resources\Icons\appicon.ico" />
     <None Include="Resources\Icons\appicon.png" />
-    <None Include="Resources\Icons\story.png" />
-    <None Include="Resources\Icons\component_small.png" />
-    <None Include="Resources\Icons\expanded.png" />
     <None Include="Resources\Recipes\Components\example_recipe.txt" />
     <None Include="Resources\Recipes\Components\greeting_recipe.txt" />
     <None Include="Resources\Recipes\Components\lorebook_recipe.txt" />
@@ -852,11 +829,6 @@
     <None Include="Resources\Recipes\Components\system_recipe.txt" />
     <None Include="Resources\Recipes\Components\user_recipe.txt" />
     <None Include="Resources\Recipes\internal_global_recipe.txt" />
-    <None Include="Resources\Icons\snippet_small.png" />
-    <None Include="Resources\Icons\lore_small.png" />
-    <None Include="Resources\Icons\folder.png" />
-    <None Include="Resources\Icons\characteristic.png" />
-    <None Include="Resources\Icons\delete.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Recipes\Other\attribute_recipe.txt" />
@@ -892,22 +864,10 @@
     <None Include="Resources\Schemas\tavern_characterbook_v2.schema.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Icons\arrow_left.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\menu.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Recipes\Other\prune_scenario_recipe.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Recipes\Other\group_greeting_recipe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\menu_edit.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\red_dot.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Icons\link_active.png" />
@@ -945,6 +905,134 @@
   <ItemGroup>
     <None Include="Resources\Schemas\tavern_chat_header_schema.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_arrow_down.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_arrow_left.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_arrow_right.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_arrow_up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_characteristic.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_checker.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_collapsed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_component.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_component_small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_cross.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_delete_small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_delete_strike.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_expanded.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_folder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_lore.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_lore_down.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_lore_small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_lore_up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_menu.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_menu_edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_model.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_persona.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_personality.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_red_dot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_snippet.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_snippet_small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_story.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_tree_folder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_write.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_link_active.png" />
+    <None Include="Resources\Icons\Dark\dark_link_broken.png" />
+    <None Include="Resources\Icons\Dark\dark_link_connected.png" />
+    <None Include="Resources\Icons\Dark\dark_link_disconnected.png" />
+    <None Include="Resources\Icons\Dark\dark_link_inactive.png" />
+    <Content Include="Resources\Icons\Light\arrow_down.png" />
+    <Content Include="Resources\Icons\Light\arrow_left.png" />
+    <Content Include="Resources\Icons\Light\arrow_right.png" />
+    <Content Include="Resources\Icons\Light\arrow_up.png" />
+    <Content Include="Resources\Icons\Light\characteristic.png" />
+    <Content Include="Resources\Icons\Light\checker.png" />
+    <Content Include="Resources\Icons\Light\collapsed.png" />
+    <Content Include="Resources\Icons\Light\component.png" />
+    <Content Include="Resources\Icons\Light\component_small.png" />
+    <Content Include="Resources\Icons\Light\cross.png" />
+    <Content Include="Resources\Icons\Light\delete.png" />
+    <Content Include="Resources\Icons\Light\delete_small.png" />
+    <Content Include="Resources\Icons\Light\delete_strike.png" />
+    <Content Include="Resources\Icons\Light\expanded.png" />
+    <Content Include="Resources\Icons\Light\folder.png" />
+    <Content Include="Resources\Icons\Light\lore.png" />
+    <Content Include="Resources\Icons\Light\lore_down.png" />
+    <Content Include="Resources\Icons\Light\lore_small.png" />
+    <Content Include="Resources\Icons\Light\lore_up.png" />
+    <Content Include="Resources\Icons\Light\menu.png" />
+    <Content Include="Resources\Icons\Light\menu_edit.png" />
+    <Content Include="Resources\Icons\Light\model.png" />
+    <Content Include="Resources\Icons\Light\persona.png" />
+    <Content Include="Resources\Icons\Light\personality.png" />
+    <Content Include="Resources\Icons\Light\red_dot.png" />
+    <Content Include="Resources\Icons\Light\snippet.png" />
+    <Content Include="Resources\Icons\Light\snippet_small.png" />
+    <Content Include="Resources\Icons\Light\story.png" />
+    <Content Include="Resources\Icons\Light\tree_folder.png" />
+    <Content Include="Resources\Icons\Light\write.png" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Release (

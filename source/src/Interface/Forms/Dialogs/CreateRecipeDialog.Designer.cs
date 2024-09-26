@@ -34,8 +34,8 @@
 			System.Windows.Forms.Label label_Type;
 			System.Windows.Forms.TableLayoutPanel centerLayout;
 			System.Windows.Forms.Label label_Template;
-			this.btnCancel = new System.Windows.Forms.Button();
-			this.btnOk = new System.Windows.Forms.Button();
+			this.btnCancel = new ButtonEx();
+			this.btnOk = new ButtonEx();
 			this.textBox_Name = new Ginger.TextBoxEx();
 			this.comboBox_Category = new Ginger.ComboBoxEx();
 			this.comboBox_Template = new Ginger.ComboBoxEx();
@@ -249,8 +249,8 @@
 		}
 
 		#endregion
-		private System.Windows.Forms.Button btnCancel;
-		private System.Windows.Forms.Button btnOk;
+		private ButtonEx btnCancel;
+		private ButtonEx btnOk;
 		private TextBoxEx textBox_Name;
 		private ComboBoxEx comboBox_Template;
 		private System.Windows.Forms.CheckBox checkBoxOpenTextEditor;

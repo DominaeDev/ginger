@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class CreateRecipeDialog : Form
+	public partial class CreateRecipeDialog : FormEx
 	{
 		public string RecipeName;
 		public string RecipeTitle;

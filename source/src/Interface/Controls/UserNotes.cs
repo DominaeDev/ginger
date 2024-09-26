@@ -17,7 +17,7 @@ namespace Ginger.Interface.Controls
 
 		private bool _bIgnoreEvents = false;
 
-		private RichTextBoxEx richTextBox { get { return textBox.richTextBox; } }
+		public RichTextBoxEx richTextBox { get { return textBox.richTextBox; } }
 
 		public UserNotes()
 		{
@@ -31,7 +31,6 @@ namespace Ginger.Interface.Controls
 
 		private void UserNotes_Load(object sender, System.EventArgs e)
 		{
-			richTextBox.BackColor = System.Drawing.Color.FromArgb(255, 255, 248);
 			richTextBox.AcceptsTab = true;
 			richTextBox.AutoWordSelection = false;
 			richTextBox.HideSelection = false;

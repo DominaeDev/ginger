@@ -78,7 +78,6 @@ namespace WinFormsSyntaxHighlighter
 		public static readonly char ErrorEnd = '\uFFF1';
 
 		private TextSpans _textSpans; // Spell checking
-		public bool darkMode { get; set; }
 
 		public SyntaxHighlighter(RichTextBoxEx richTextBox)
 		{
@@ -146,7 +145,6 @@ namespace WinFormsSyntaxHighlighter
 		{
 			_patternStyles.Clear();
 			_styleGroupPairs = null;
-			darkMode = false;
 		}
 
 		protected SyntaxStyle GetDefaultStyle()
@@ -156,7 +154,7 @@ namespace WinFormsSyntaxHighlighter
 
 		protected SyntaxStyle GetErrorStyle()
 		{
-			return new SyntaxStyle(!darkMode ? Constants.Colors.Light.Error : Constants.Colors.Dark.Error, false, false);
+			return new SyntaxStyle(Theme.Current.Error, false, false);
 		}
 
 		private PatternStyleMap FindPatternStyle(string name)

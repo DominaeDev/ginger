@@ -30,52 +30,24 @@ namespace Ginger
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Windows.Forms.Panel listPanel;
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectGroupDialog));
 			System.Windows.Forms.FlowLayoutPanel buttonLayout;
 			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Character", 1, 1);
 			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Group", 2, 2);
 			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
             treeNode1,
             treeNode2});
-			this.imageList = new System.Windows.Forms.ImageList(this.components);
-			this.btnCancel = new System.Windows.Forms.Button();
-			this.btnOk = new System.Windows.Forms.Button();
-			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectGroupDialog));
+			this.btnCancel = new ButtonEx();
+			this.btnOk = new ButtonEx();
+			this.listPanel = new System.Windows.Forms.Panel();
 			this.treeView = new Ginger.TreeViewEx();
-			listPanel = new System.Windows.Forms.Panel();
+			this.imageList_Light = new System.Windows.Forms.ImageList(this.components);
+			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+			this.imageList_Dark = new System.Windows.Forms.ImageList(this.components);
 			buttonLayout = new System.Windows.Forms.FlowLayoutPanel();
-			listPanel.SuspendLayout();
 			buttonLayout.SuspendLayout();
+			this.listPanel.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// listPanel
-			// 
-			listPanel.BackColor = System.Drawing.SystemColors.Window;
-			listPanel.Controls.Add(this.treeView);
-			listPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-			listPanel.Location = new System.Drawing.Point(0, 0);
-			listPanel.Name = "listPanel";
-			listPanel.Padding = new System.Windows.Forms.Padding(2, 4, 2, 2);
-			listPanel.Size = new System.Drawing.Size(484, 326);
-			listPanel.TabIndex = 0;
-			// 
-			// imageList
-			// 
-			this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
-			this.imageList.TransparentColor = System.Drawing.Color.Transparent;
-			this.imageList.Images.SetKeyName(0, "tree_folder.png");
-			this.imageList.Images.SetKeyName(1, "character_neutral.png");
-			this.imageList.Images.SetKeyName(2, "character_male.png");
-			this.imageList.Images.SetKeyName(3, "character_female.png");
-			this.imageList.Images.SetKeyName(4, "character_other.png");
-			this.imageList.Images.SetKeyName(5, "character_group.png");
-			this.imageList.Images.SetKeyName(6, "character_neutral_empty.png");
-			this.imageList.Images.SetKeyName(7, "character_male_empty.png");
-			this.imageList.Images.SetKeyName(8, "character_female_empty.png");
-			this.imageList.Images.SetKeyName(9, "character_other_empty.png");
-			this.imageList.Images.SetKeyName(10, "group_small_empty.png");
-			this.imageList.Images.SetKeyName(11, "broken_chat.png");
 			// 
 			// buttonLayout
 			// 
@@ -116,14 +88,16 @@ namespace Ginger
 			this.btnOk.UseVisualStyleBackColor = true;
 			this.btnOk.Click += new System.EventHandler(this.BtnOk_Click);
 			// 
-			// toolTip
+			// listPanel
 			// 
-			this.toolTip.AutomaticDelay = 250;
-			this.toolTip.AutoPopDelay = 3500;
-			this.toolTip.InitialDelay = 250;
-			this.toolTip.ReshowDelay = 50;
-			this.toolTip.UseAnimation = false;
-			this.toolTip.UseFading = false;
+			this.listPanel.BackColor = System.Drawing.SystemColors.Window;
+			this.listPanel.Controls.Add(this.treeView);
+			this.listPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.listPanel.Location = new System.Drawing.Point(0, 0);
+			this.listPanel.Name = "listPanel";
+			this.listPanel.Padding = new System.Windows.Forms.Padding(2, 4, 2, 2);
+			this.listPanel.Size = new System.Drawing.Size(484, 326);
+			this.listPanel.TabIndex = 0;
 			// 
 			// treeView
 			// 
@@ -134,7 +108,7 @@ namespace Ginger
 			this.treeView.FullRowSelect = true;
 			this.treeView.HideSelection = false;
 			this.treeView.ImageIndex = 0;
-			this.treeView.ImageList = this.imageList;
+			this.treeView.ImageList = this.imageList_Light;
 			this.treeView.Location = new System.Drawing.Point(2, 4);
 			this.treeView.Name = "treeView";
 			treeNode1.ImageIndex = 1;
@@ -159,6 +133,49 @@ namespace Ginger
 			this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
 			this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseDoubleClick);
 			// 
+			// imageList_Light
+			// 
+			this.imageList_Light.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList_Light.ImageStream")));
+			this.imageList_Light.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageList_Light.Images.SetKeyName(0, "tree_folder.png");
+			this.imageList_Light.Images.SetKeyName(1, "character_neutral.png");
+			this.imageList_Light.Images.SetKeyName(2, "character_male.png");
+			this.imageList_Light.Images.SetKeyName(3, "character_female.png");
+			this.imageList_Light.Images.SetKeyName(4, "character_other.png");
+			this.imageList_Light.Images.SetKeyName(5, "character_group.png");
+			this.imageList_Light.Images.SetKeyName(6, "character_neutral_empty.png");
+			this.imageList_Light.Images.SetKeyName(7, "character_male_empty.png");
+			this.imageList_Light.Images.SetKeyName(8, "character_female_empty.png");
+			this.imageList_Light.Images.SetKeyName(9, "character_other_empty.png");
+			this.imageList_Light.Images.SetKeyName(10, "group_small_empty.png");
+			this.imageList_Light.Images.SetKeyName(11, "broken_chat.png");
+			// 
+			// toolTip
+			// 
+			this.toolTip.AutomaticDelay = 250;
+			this.toolTip.AutoPopDelay = 3500;
+			this.toolTip.InitialDelay = 250;
+			this.toolTip.ReshowDelay = 50;
+			this.toolTip.UseAnimation = false;
+			this.toolTip.UseFading = false;
+			// 
+			// imageList_Dark
+			// 
+			this.imageList_Dark.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList_Dark.ImageStream")));
+			this.imageList_Dark.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageList_Dark.Images.SetKeyName(0, "dark_tree_folder.png");
+			this.imageList_Dark.Images.SetKeyName(1, "character_neutral.png");
+			this.imageList_Dark.Images.SetKeyName(2, "character_male.png");
+			this.imageList_Dark.Images.SetKeyName(3, "character_female.png");
+			this.imageList_Dark.Images.SetKeyName(4, "character_other.png");
+			this.imageList_Dark.Images.SetKeyName(5, "character_group.png");
+			this.imageList_Dark.Images.SetKeyName(6, "character_neutral_empty.png");
+			this.imageList_Dark.Images.SetKeyName(7, "character_male_empty.png");
+			this.imageList_Dark.Images.SetKeyName(8, "character_female_empty.png");
+			this.imageList_Dark.Images.SetKeyName(9, "character_other_empty.png");
+			this.imageList_Dark.Images.SetKeyName(10, "character_group_empty.png");
+			this.imageList_Dark.Images.SetKeyName(11, "broken_chat.png");
+			// 
 			// LinkSelectGroupDialog
 			// 
 			this.AcceptButton = this.btnOk;
@@ -166,7 +183,7 @@ namespace Ginger
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnCancel;
 			this.ClientSize = new System.Drawing.Size(484, 361);
-			this.Controls.Add(listPanel);
+			this.Controls.Add(this.listPanel);
 			this.Controls.Add(buttonLayout);
 			this.DoubleBuffered = true;
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -178,17 +195,19 @@ namespace Ginger
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Select a character";
-			listPanel.ResumeLayout(false);
 			buttonLayout.ResumeLayout(false);
+			this.listPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
-		private System.Windows.Forms.Button btnCancel;
-		private System.Windows.Forms.Button btnOk;
+		private ButtonEx btnCancel;
+		private ButtonEx btnOk;
 		private TreeViewEx treeView;
-		private System.Windows.Forms.ImageList imageList;
+		private System.Windows.Forms.ImageList imageList_Light;
 		private System.Windows.Forms.ToolTip toolTip;
+		private System.Windows.Forms.Panel listPanel;
+		private System.Windows.Forms.ImageList imageList_Dark;
 	}
 }

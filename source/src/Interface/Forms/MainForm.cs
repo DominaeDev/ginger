@@ -13,7 +13,7 @@ using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
 {
-	public partial class MainForm : Form
+	public partial class MainForm : Form, IVisualThemed
 	{
 		public static readonly string AppTitle = "Ginger";
 
@@ -45,6 +45,7 @@ namespace Ginger
 		{
 			instance = this;
 			InitializeComponent();
+
 			Icon = Resources.icon;
 
 			Application.Idle += OnIdle;
@@ -126,8 +127,6 @@ namespace Ginger
 			RefreshSpellChecking();
 
 			Regenerate();
-//			Current.IsFileDirty = false;
-//			RefreshTitle();
 
 #if DEBUG
 			stopWatch.Stop();
@@ -292,6 +291,8 @@ namespace Ginger
 				changeLanguageMenuItem.DropDownItems.Clear();
 //				changeLanguageSeparator.Visible = false;
 			}
+
+			ApplyVisualTheme();
 
 			if (_shouldLoadFilename != null) // Command-line argument
 			{
@@ -557,7 +558,7 @@ namespace Ginger
 			foreach (var folder in folders)
 			{
 				var menuItem = new ToolStripMenuItem();
-				menuItem.Image = Resources.folder;
+				menuItem.Image = Theme.Current.MenuFolder;
 				menuItem.Text = Utility.EscapeMenu(folder);
 
 				if (string.IsNullOrEmpty(root))
@@ -588,7 +589,7 @@ namespace Ginger
 				menuItem.ToolTipText = tooltip;
 
 				if (recipeTemplate.type == Recipe.Type.Snippet)
-					menuItem.Image = Resources.snippet_small;
+					menuItem.Image = Theme.Current.MenuSnippet;
 				if (Current.Character.recipes.ContainsAny(r => r.uid == recipeTemplate.uid) && recipeTemplate.allowMultiple == false)
 				{
 					menuItem.Checked = true;
@@ -635,7 +636,7 @@ namespace Ginger
 					{
 						var menuItem = new ToolStripMenuItem();
 						menuItem.Text = Utility.EscapeMenu(book.name);
-						menuItem.Image = Resources.lore_small;
+						menuItem.Image = Theme.Current.MenuLore;
 						menuItem.Click += (s, e) => {
 							recipeList.AddLorebook(book);
 						};
@@ -844,19 +845,15 @@ namespace Ginger
 			Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, true);
 
 			ContextMenuStrip menu = new ContextMenuStrip();
-			PopulateRecipeMenu(drawer, menu.Items, context);
 
-//			if (category == Recipe.Drawer.Components && RecipeBook.allRecipes.ContainsAny(r => r.category == Recipe.Category.Unknown))
-//			{
-//				menu.Items.Add("-");
-//				var unknown = new ToolStripMenuItem("Uncategorized", Resources.folder);
-//				PopulateRecipeMenu(Recipe.Drawer.Unknown, unknown.DropDownItems, context);
-//				menu.Items.Add(unknown);
-//			}
+			PopulateRecipeMenu(drawer, menu.Items, context);
 
 			if (menu.Items.Count == 0)
 				menu.Items.Add("(Empty)").Enabled = false;
+
 			point.Offset(-16, 16);
+			
+			Theme.Apply(menu);
 			menu.Show(control, point);
 			
 			StealFocus();
@@ -1099,25 +1096,25 @@ namespace Ginger
 			{
 				if (Current.HasActiveLink)
 				{
-					statusConnectionIcon.Image = Resources.link_active;
+					statusConnectionIcon.Image = Theme.Current.LinkActive;
 					statusConnectionIcon.ToolTipText = "Connected; Linked";
 				}
 				else if (Current.HasLink)
 				{
 					if (Backyard.HasCharacter(Current.Link.characterId))
 					{
-						statusConnectionIcon.Image = Resources.link_inactive;
+						statusConnectionIcon.Image = Theme.Current.LinkInactive;
 						statusConnectionIcon.ToolTipText = "Connected; Link broken";
 					}
 					else
 					{
-						statusConnectionIcon.Image = Resources.link_broken;
+						statusConnectionIcon.Image = Theme.Current.LinkBroken;
 						statusConnectionIcon.ToolTipText = "Connected; Link broken";
 					}
 				}
 				else
 				{
-					statusConnectionIcon.Image = Resources.link_connected;
+					statusConnectionIcon.Image = Theme.Current.LinkConnected;
 					statusConnectionIcon.ToolTipText = "Connected; Not linked";
 				}
 			}
@@ -1125,7 +1122,7 @@ namespace Ginger
 			{
 				if (Current.HasLink)
 				{
-					statusConnectionIcon.Image = Resources.link_disconnected;
+					statusConnectionIcon.Image = Theme.Current.LinkDisconnected;
 					statusConnectionIcon.ToolTipText = "Not connected";
 				}
 				else
@@ -1224,6 +1221,8 @@ namespace Ginger
 			autoBreakMenuItem.Checked = AppSettings.Settings.AutoBreakLine;
 			enableSpellCheckingMenuItem.Checked = AppSettings.Settings.SpellChecking;
 			rearrangeLoreMenuItem.Checked = AppSettings.Settings.EnableRearrangeLoreMode;
+			lightThemeMenuItem.Checked = !AppSettings.Settings.DarkTheme;
+			darkThemeMenuItem.Checked = AppSettings.Settings.DarkTheme;
 
 			// Spell checking
 			foreach (var kvp in _spellCheckLangMenuItems)
@@ -1287,6 +1286,8 @@ namespace Ginger
 			applyToAllChatsMenuItem.Checked = AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.All;
 			alwaysLinkMenuItem.Checked = AppSettings.BackyardLink.AlwaysLinkOnImport;
 			enableAutosaveMenuItem.Checked = AppSettings.BackyardLink.Autosave;
+
+			Theme.Apply(menuStrip);
 		}
 
 		private void PopulateMRUMenu(ToolStripItemCollection items)
@@ -1866,12 +1867,14 @@ namespace Ginger
 				var mr = MessageBox.Show("Replace names with placeholders?", Resources.cap_confirm, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
 				if (mr == DialogResult.Yes)
 					ConvertCharacterNameMarkers(bEnabled);
-				else
-					recipeList.RefreshSyntaxHighlighting(true);
 			}
 			else
 				ConvertCharacterNameMarkers(bEnabled);
-			Undo.Push(Undo.Kind.Parameter, "Change auto-convert");
+			
+			RefreshSpellChecking(false);
+			recipeList.RefreshSyntaxHighlighting(true);
+
+			Undo.Push(Undo.Kind.Parameter, "Change auto-convert option");
 		}
 
 		private void MainForm_ResizeBegin(object sender, EventArgs e)
@@ -2322,13 +2325,81 @@ namespace Ginger
 			AppSettings.BackyardLink.AlwaysLinkOnImport = !AppSettings.BackyardLink.AlwaysLinkOnImport;
 		}
 
+
+		private void lightThemeMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.Settings.DarkTheme = false;
+			ApplyVisualTheme();
+		}
+
+		private void darkThemeMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.Settings.DarkTheme = true;
+			ApplyVisualTheme();
+		}
+		
+		public void ApplyVisualTheme()
+		{
+			if (Utility.InDesignMode)
+				return;
+
+			Theme.BeginTheming();
+
+			Theme.Apply(menuStrip);
+
+			this.BackColor = Theme.Current.ControlBackground;
+			this.ForeColor = Theme.Current.ControlForeground;
+
+			this.splitContainer.Panel1.BackColor = Theme.Current.ControlBackground;
+			this.splitContainer.Panel2.BackColor = Theme.Current.ControlBackground;
+
+			Theme.Apply(btnAdd_Model);
+			Theme.Apply(btnAdd_Character);
+			Theme.Apply(btnAdd_Mind);
+			Theme.Apply(btnAdd_World);
+			Theme.Apply(btnAdd_Traits);
+			Theme.Apply(btnAdd_Other);
+			Theme.Apply(btnAdd_Snippets);
+			Theme.Apply(btnAdd_Lore);
+			btnAdd_Model.Image = Theme.Current.ButtonModel;
+			btnAdd_Character.Image = Theme.Current.ButtonCharacter;
+			btnAdd_Mind.Image = Theme.Current.ButtonMind;
+			btnAdd_World.Image = Theme.Current.ButtonStory;
+			btnAdd_Traits.Image = Theme.Current.ButtonTraits;
+			btnAdd_Other.Image = Theme.Current.ButtonComponents;
+			btnAdd_Snippets.Image = Theme.Current.ButtonSnippets;
+			btnAdd_Lore.Image = Theme.Current.ButtonLore;
+
+			statusBar.BackColor = Theme.Current.ControlBackground;
+			statusBar.ForeColor = Theme.Current.ControlForeground;
+			sidePanel.ApplyVisualTheme();
+			recipeList.ApplyVisualTheme();
+			tabControl.ApplyVisualTheme();
+
+			outputBox.ForeColor = Theme.Current.OutputForeground;
+			outputBox.BackColor = Theme.Current.OutputBackground;
+
+			userNotes.richTextBox.ForeColor = Theme.Current.NotesForeground;
+			userNotes.richTextBox.BackColor = Theme.Current.NotesBackground;
+
+			if (_findDialog != null && _findDialog.IsDisposed == false)
+				_findDialog.ApplyTheme();
+			if (_editChatDialog != null && _editChatDialog.IsDisposed == false)
+				_editChatDialog.ApplyTheme();
+
+			Theme.ApplyToTitleBar(this, true);
+			Theme.EndTheming();
+
+			RefreshTitle();
+		}
+
 		private void customVariablesMenuItem_Click(object sender, EventArgs e)
 		{
 			VariablesDialog dlg = new VariablesDialog();
 			if (dlg.ShowDialog() == DialogResult.OK && dlg.Changed)
 			{
 				Undo.Push(Undo.Kind.Parameter, "Changed custom variables");
-				
+
 				recipeList.RefreshSyntaxHighlighting(true);
 				Current.IsFileDirty = true;
 			}
