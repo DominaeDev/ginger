@@ -84,7 +84,7 @@ namespace Ginger
 					g.DrawRectangle(p, 0, 0, Width, Height);
 				}
 
-				if (Enabled == false && Theme.DarkModeEnabled)
+				if (Enabled == false && Theme.IsDarkModeEnabled)
 				{
 					// Cover inner gray rim
 					using (var p = new Pen(Theme.Current.TextBoxDisabledBackground, 2))

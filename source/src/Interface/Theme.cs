@@ -6,15 +6,7 @@ namespace Ginger
 {
 	public static class Theme
 	{
-		public static bool DarkModeEnabled { get { return AppSettings.Settings.DarkTheme; } }
-
-		public static ToolStripRenderer CreateToolStripRenderer()
-		{
-			if (DarkModeEnabled)
-				return new ToolStripProfessionalRenderer(new DarkToolStripColorTable());
-			else
-				return new ToolStripProfessionalRenderer();
-		}
+		public static bool IsDarkModeEnabled { get { return AppSettings.Settings.DarkTheme; } }
 
 		public static void Apply(Form form)
 		{
@@ -69,7 +61,7 @@ namespace Ginger
 			foreach (var button in buttons)
 				Apply(button);
 
-			global::Dark.Net.DarkNet.Instance.SetWindowThemeForms(form, DarkModeEnabled ? global::Dark.Net.Theme.Dark : global::Dark.Net.Theme.Light);
+			global::Dark.Net.DarkNet.Instance.SetWindowThemeForms(form, IsDarkModeEnabled ? global::Dark.Net.Theme.Dark : global::Dark.Net.Theme.Light);
 		}
 
 		public static void Apply(Control parentControl)
@@ -168,7 +160,15 @@ namespace Ginger
 			}
 		}
 
-		public static IColorTheme Current { get { return DarkModeEnabled ? _darkTheme : _lightTheme; } }
+		private static ToolStripRenderer CreateToolStripRenderer()
+		{
+			if (IsDarkModeEnabled)
+				return new ToolStripProfessionalRenderer(new DarkToolStripColorTable());
+			else
+				return new ToolStripProfessionalRenderer();
+		}
+
+		public static IColorTheme Current { get { return IsDarkModeEnabled ? _darkTheme : _lightTheme; } }
 		public static IColorTheme Light { get { return _lightTheme; } }
 		public static IColorTheme Dark { get { return _darkTheme; } }
 
@@ -359,7 +359,7 @@ namespace Ginger
 		public Color Narration	=> ColorTranslator.FromHtml("#97a2ac");
 		public Color Number		=> ColorTranslator.FromHtml("#BE7BE3");
 		public Color Name		=> ColorTranslator.FromHtml("#4FB0FF");
-		public Color Command	=> ColorTranslator.FromHtml("#C06000");
+		public Color Command	=> ColorTranslator.FromHtml("#c2814c");
 		public Color Pronoun	=> ColorTranslator.FromHtml("#D000D0");
 		public Color Comment	=> ColorTranslator.FromHtml("#636363");
 		public Color Code		=> ColorTranslator.FromHtml("#969696");

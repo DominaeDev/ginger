@@ -1872,12 +1872,14 @@ namespace Ginger
 				var mr = MessageBox.Show("Replace names with placeholders?", Resources.cap_confirm, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
 				if (mr == DialogResult.Yes)
 					ConvertCharacterNameMarkers(bEnabled);
-				else
-					recipeList.RefreshSyntaxHighlighting(true);
 			}
 			else
 				ConvertCharacterNameMarkers(bEnabled);
-			Undo.Push(Undo.Kind.Parameter, "Change auto-convert");
+			
+			RefreshSpellChecking(false);
+			recipeList.RefreshSyntaxHighlighting(true);
+
+			Undo.Push(Undo.Kind.Parameter, "Change auto-convert option");
 		}
 
 		private void MainForm_ResizeBegin(object sender, EventArgs e)
@@ -2390,8 +2392,8 @@ namespace Ginger
 
 			if (!Utility.InDesignMode)
 			{
-				Dark.Net.DarkNet.Instance.SetCurrentProcessTheme(Theme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
-				Dark.Net.DarkNet.Instance.SetWindowThemeForms(this, Theme.DarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
+				Dark.Net.DarkNet.Instance.SetCurrentProcessTheme(Theme.IsDarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
+				Dark.Net.DarkNet.Instance.SetWindowThemeForms(this, Theme.IsDarkModeEnabled ? Dark.Net.Theme.Dark : Dark.Net.Theme.Auto);
 			}
 		}
 

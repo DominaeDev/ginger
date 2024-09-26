@@ -258,12 +258,12 @@ namespace Ginger
 				if (string.IsNullOrEmpty(text))
 					continue;
 
-				if (panel.channel == Recipe.Component.Greeting)
+				if (panel._channel == Recipe.Component.Greeting)
 					greetings.Add(text);
-				else if (panel.channel == Recipe.Component.Greeting_Group)
+				else if (panel._channel == Recipe.Component.Greeting_Group)
 					group_greetings.Add(text);
 				else
-					outputByChannel.TryAdd(panel.channel, text);
+					outputByChannel.TryAdd(panel._channel, text);
 			}
 
 			if (outputByChannel.Count == 0 && greetings.Count == 0 && group_greetings.Count == 0)

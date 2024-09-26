@@ -315,9 +315,9 @@ namespace Ginger
 
 			treeView.ForeColor = Theme.Current.TreeViewForeground;
 			treeView.BackColor = Theme.Current.TreeViewBackground;
-			treeView.ImageList = Theme.DarkModeEnabled ? imageList_Dark : imageList_Light;
+			treeView.ImageList = Theme.IsDarkModeEnabled ? imageList_Dark : imageList_Light;
 
-			listPanel.BackColor = Theme.Current.TextBoxBackground;
+			listPanel.BackColor = Theme.Current.TreeViewBackground;
 		}
 	}
 }

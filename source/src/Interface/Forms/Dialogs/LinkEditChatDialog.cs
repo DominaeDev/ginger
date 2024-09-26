@@ -208,7 +208,7 @@ namespace Ginger
 			if (chats != null && chats.Length > 0)
 			{
 				var now = DateTime.Now;
-				bool bAddGroups = Theme.DarkModeEnabled == false; // Group header color is unchangeable
+				bool bAddGroups = Theme.IsDarkModeEnabled == false; // Group header color is unchangeable
 				ListViewGroup groupToday = null;
 				ListViewGroup groupYesterday = null;
 				ListViewGroup groupLastWeek = null;
@@ -358,7 +358,7 @@ namespace Ginger
 				}
 
 				Color[] nameColors;
-				if (Theme.DarkModeEnabled)
+				if (Theme.IsDarkModeEnabled)
 					nameColors = ChatListBox.NameColors_Dark;
 				else
 					nameColors = ChatListBox.NameColors_Light;
@@ -1728,9 +1728,9 @@ namespace Ginger
 			chatInstanceList.Invalidate();
 
 			chatView.ForeColor = Theme.Current.TextBoxForeground;
-			chatView.BackColor = Theme.DarkModeEnabled ? Theme.Current.TextBoxBackground : Color.WhiteSmoke;
+			chatView.BackColor = Theme.IsDarkModeEnabled ? Theme.Current.TextBoxBackground : Color.WhiteSmoke;
 			chatView.listBox.ForeColor = Theme.Current.TextBoxForeground;
-			chatView.listBox.BackColor = Theme.DarkModeEnabled ? Theme.Current.TextBoxBackground : Color.WhiteSmoke;
+			chatView.listBox.BackColor = Theme.IsDarkModeEnabled ? Theme.Current.TextBoxBackground : Color.WhiteSmoke;
 			ViewChat(_selectedChatInstance);
 			chatView.Invalidate();
 			this.Resume();

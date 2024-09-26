@@ -95,7 +95,7 @@ namespace Ginger
 			const int kDarken = 20;
 			var darkColor = Color.FromArgb(Math.Max(color.R - kDarken, 0), Math.Max(color.G - kDarken, 0), Math.Max(color.B - kDarken, 0));
 			
-			if (Theme.DarkModeEnabled)
+			if (Theme.IsDarkModeEnabled)
 			{
 				color = Utility.GetDarkColor(color, 0.60f);
 				darkColor = Utility.GetDarkColor(color, 0.25f);
@@ -730,7 +730,7 @@ namespace Ginger
 			else // Disabled
 			{
 				SetColor(Color.Gainsboro);
-				if (Theme.DarkModeEnabled)
+				if (Theme.IsDarkModeEnabled)
 					labelTitle.ForeColor = Color.Black;
 				else
 					labelTitle.ForeColor = Color.Gray;
@@ -937,7 +937,7 @@ namespace Ginger
 			if (Enabled == false || recipe.isEnabled == false)
 			{
 				SetColor(Color.Gainsboro);
-				if (Theme.DarkModeEnabled)
+				if (Theme.IsDarkModeEnabled)
 					labelTitle.ForeColor = Color.Black;
 				else
 					labelTitle.ForeColor = Color.Gray;
