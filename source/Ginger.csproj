@@ -215,7 +215,7 @@
       <DependentUpon>UserNotes.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Interface\Theme\DarkTheme.cs" />
-    <Compile Include="src\Interface\Theme\IColorTheme.cs" />
+    <Compile Include="src\Interface\Theme\IVisualTheme.cs" />
     <Compile Include="src\Interface\Theme\LightTheme.cs" />
     <Compile Include="src\Interface\Theme\Theme.cs" />
     <Compile Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.cs">
@@ -987,6 +987,11 @@
     <None Include="Resources\Icons\Dark\dark_write.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Icons\Dark\dark_link_active.png" />
+    <None Include="Resources\Icons\Dark\dark_link_broken.png" />
+    <None Include="Resources\Icons\Dark\dark_link_connected.png" />
+    <None Include="Resources\Icons\Dark\dark_link_disconnected.png" />
+    <None Include="Resources\Icons\Dark\dark_link_inactive.png" />
     <Content Include="Resources\Icons\Light\arrow_down.png" />
     <Content Include="Resources\Icons\Light\arrow_left.png" />
     <Content Include="Resources\Icons\Light\arrow_right.png" />

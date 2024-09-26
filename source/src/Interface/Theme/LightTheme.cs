@@ -72,7 +72,7 @@ namespace Ginger
 			public static readonly Color Decorator	= ColorTranslator.FromHtml("#800080");
 		}
 
-		public class ThemeColors : IColorTheme
+		public class ThemeColors : IVisualTheme
 		{
 			// Interface
 			public Color ControlForeground => ColorTable.ControlForeground;
@@ -163,6 +163,12 @@ namespace Ginger
 			public Image RemoveLore => Resources.delete;
 			public Image ArrowLeft => Resources.arrow_left;
 			public Image ArrowRight => Resources.arrow_right;
+
+			public Image LinkConnected => Resources.link_connected;
+			public Image LinkDisconnected => Resources.link_disconnected;
+			public Image LinkActive => Resources.link_active;
+			public Image LinkInactive => Resources.link_inactive;
+			public Image LinkBroken => Resources.link_broken;
 		}
 
 	}

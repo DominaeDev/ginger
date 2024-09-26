@@ -9,12 +9,12 @@ namespace Ginger
 	{
 		public static bool IsDarkModeEnabled { get { return AppSettings.Settings.DarkTheme; } }
 
-		public static IColorTheme Current { get { return IsDarkModeEnabled ? _darkTheme : _lightTheme; } }
-		public static IColorTheme Light { get { return _lightTheme; } }
-		public static IColorTheme Dark { get { return _darkTheme; } }
+		public static IVisualTheme Current { get { return IsDarkModeEnabled ? _darkTheme : _lightTheme; } }
+		public static IVisualTheme Light { get { return _lightTheme; } }
+		public static IVisualTheme Dark { get { return _darkTheme; } }
 
-		private static IColorTheme _lightTheme = new LightTheme.ThemeColors();
-		private static IColorTheme _darkTheme = new DarkTheme.ThemeColors();
+		private static IVisualTheme _lightTheme = new LightTheme.ThemeColors();
+		private static IVisualTheme _darkTheme = new DarkTheme.ThemeColors();
 
 		public static bool IsTheming { get { return _isTheming > 0; } }
 		private static int _isTheming = 0;

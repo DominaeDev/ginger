@@ -2,7 +2,7 @@
 
 namespace Ginger
 {
-	public interface IColorTheme
+	public interface IVisualTheme
 	{
 		// Interface
 		Color ControlForeground { get; }
@@ -89,5 +89,10 @@ namespace Ginger
 		Image RemoveLore { get; }
 		Image ArrowLeft { get; }
 		Image ArrowRight { get; }
+		Image LinkConnected { get; }
+		Image LinkDisconnected { get; }
+		Image LinkActive { get; }
+		Image LinkInactive { get; }
+		Image LinkBroken { get; }
 	}
 }

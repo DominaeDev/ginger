@@ -1096,25 +1096,25 @@ namespace Ginger
 			{
 				if (Current.HasActiveLink)
 				{
-					statusConnectionIcon.Image = Resources.link_active;
+					statusConnectionIcon.Image = Theme.Current.LinkActive;
 					statusConnectionIcon.ToolTipText = "Connected; Linked";
 				}
 				else if (Current.HasLink)
 				{
 					if (Backyard.HasCharacter(Current.Link.characterId))
 					{
-						statusConnectionIcon.Image = Resources.link_inactive;
+						statusConnectionIcon.Image = Theme.Current.LinkInactive;
 						statusConnectionIcon.ToolTipText = "Connected; Link broken";
 					}
 					else
 					{
-						statusConnectionIcon.Image = Resources.link_broken;
+						statusConnectionIcon.Image = Theme.Current.LinkBroken;
 						statusConnectionIcon.ToolTipText = "Connected; Link broken";
 					}
 				}
 				else
 				{
-					statusConnectionIcon.Image = Resources.link_connected;
+					statusConnectionIcon.Image = Theme.Current.LinkConnected;
 					statusConnectionIcon.ToolTipText = "Connected; Not linked";
 				}
 			}
@@ -1122,7 +1122,7 @@ namespace Ginger
 			{
 				if (Current.HasLink)
 				{
-					statusConnectionIcon.Image = Resources.link_disconnected;
+					statusConnectionIcon.Image = Theme.Current.LinkDisconnected;
 					statusConnectionIcon.ToolTipText = "Not connected";
 				}
 				else
@@ -2389,6 +2389,8 @@ namespace Ginger
 
 			Theme.ApplyToTitleBar(this, true);
 			Theme.EndTheming();
+
+			RefreshTitle();
 		}
 
 	}
