@@ -866,7 +866,7 @@ namespace Ginger
 
 		public void RefreshSyntaxHighlight(bool immediate = false)
 		{
-			if (syntaxHighlighter == null)
+			if (syntaxHighlighter == null || _bEnableSyntaxHighlighting == false)
 				return;
 
 			if (_syntaxFlags.Contains(SyntaxFlags.Names) != AppSettings.Settings.AutoConvertNames)
@@ -904,6 +904,7 @@ namespace Ginger
 
 			if (_syntaxHighlighter == null 
 				|| _syntaxHighlighter.EnableHighlighting == false 
+				|| _bEnableSyntaxHighlighting == false
 				|| AllowSyntaxHighlighting == false
 				|| !Enabled)
 				return;

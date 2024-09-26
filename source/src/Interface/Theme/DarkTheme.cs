@@ -31,7 +31,14 @@ namespace Ginger
 			public static readonly Color Button = ColorTranslator.FromHtml("#363636");
 			public static readonly Color ButtonHover = ColorTranslator.FromHtml("#2d2d2d");
 			public static readonly Color ButtonPressed = ColorTranslator.FromHtml("#2d2d2d");
-			public static readonly Color ButtonBorder = Color.Gray;
+			public static readonly Color ButtonText = ControlForeground;
+			public static readonly Color ButtonDisabled = ColorTranslator.FromHtml("#484848");
+			public static readonly Color ButtonDisabledText = ColorTranslator.FromHtml("#606060");
+			public static readonly Color ImageButton = ColorTranslator.FromHtml("#363636");
+			public static readonly Color ImageButtonHover = ColorTranslator.FromHtml("#2d2d2d");
+			public static readonly Color ImageButtonPressed = ColorTranslator.FromHtml("#2d2d2d");
+			public static readonly Color ButtonBorder = ColorTranslator.FromHtml("#adadad");
+			public static readonly Color ButtonDisabledBorder = ColorTranslator.FromHtml("#808080");
 			public static readonly Color Border = Color.Gray;
 			public static readonly Color GroupBoxBorder = ColorTranslator.FromHtml("#606060");
 			public static readonly Color TreeViewForeground = TextBoxForeground;
@@ -86,10 +93,19 @@ namespace Ginger
 			public Color MenuSeparator => ColorTable.MenuSeparator;
 			public Color Highlight => ColorTable.Highlight;
 			public Color HighlightText => ColorTable.HighlightText;
+			
 			public Color Button => ColorTable.Button;
+			public Color ButtonBorder => ColorTable.ButtonBorder;
+			public Color ButtonDisabledBorder => ColorTable.ButtonDisabledBorder;
+			public Color ButtonDisabled => ColorTable.ButtonDisabled;
+			public Color ButtonDisabledText => ColorTable.ButtonDisabledText;
+			public Color ButtonText => ColorTable.ButtonText;
 			public Color ButtonHover => ColorTable.ButtonHover;
 			public Color ButtonPressed => ColorTable.ButtonPressed;
-			public Color ButtonBorder => ColorTable.ButtonBorder;
+
+			public Color ImageButton => ColorTable.ImageButton;
+			public Color ImageButtonHover => ColorTable.ImageButtonHover;
+			public Color ImageButtonPressed => ColorTable.ImageButtonPressed;
 			public Color Border => ColorTable.Border;
 			public Color GroupBoxBorder => ColorTable.GroupBoxBorder;
 			public Color TreeViewForeground => ColorTable.TreeViewForeground;

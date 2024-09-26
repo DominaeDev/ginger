@@ -117,11 +117,11 @@ namespace Ginger
 		{
 			button.FlatStyle = FlatStyle.Flat;
 			button.FlatAppearance.BorderColor = Current.ButtonBorder;
-			button.FlatAppearance.MouseDownBackColor = Current.ButtonPressed;
-			button.FlatAppearance.MouseOverBackColor = Current.ButtonHover;
+			button.FlatAppearance.MouseDownBackColor = Current.ImageButtonPressed;
+			button.FlatAppearance.MouseOverBackColor = Current.ImageButtonHover;
 			button.FlatAppearance.BorderSize = 1;
-			button.ForeColor = Current.ControlForeground;
-			button.BackColor = Current.Button;
+			button.ForeColor = Current.ButtonText;
+			button.BackColor = Current.ImageButton;
 		}
 
 		public static void Apply(ToolStripMenuItem menuItem)

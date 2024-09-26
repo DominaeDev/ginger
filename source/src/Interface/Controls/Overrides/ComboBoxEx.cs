@@ -73,9 +73,7 @@ namespace Ginger
 		
 		private void DrawBorder()
 		{
-			Color borderColor = Enabled ?
-				(Focused ? Theme.Current.Highlight : Theme.Current.TextBoxBorder)
-					: Theme.Current.TextBoxDisabledBorder;
+			Color borderColor = Focused ? Theme.Current.Highlight : Theme.Current.TextBoxBorder;
 
 			using (var g = Graphics.FromHwnd(Handle))
 			{
@@ -84,10 +82,10 @@ namespace Ginger
 					g.DrawRectangle(p, 0, 0, Width, Height);
 				}
 
-				if (Enabled == false && Theme.IsDarkModeEnabled)
+				if (Enabled == false)
 				{
 					// Cover inner gray rim
-					using (var p = new Pen(Theme.Current.TextBoxDisabledBackground, 2))
+					using (var p = new Pen(this.BackColor, 2))
 					{
 						g.DrawRectangle(p, 2, 2, Width - 21, Height - 4);
 					}

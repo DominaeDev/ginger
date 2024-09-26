@@ -64,6 +64,10 @@ namespace Ginger
 					this.ClientRectangle.Height - (int)(strSize.Height / 2) - 1);
 				g.DrawRectangle(borderPen, rect);
 			}
+
+			textBrush.Dispose();
+			borderBrush.Dispose();
+			borderPen.Dispose();
 		}
 	}
 }

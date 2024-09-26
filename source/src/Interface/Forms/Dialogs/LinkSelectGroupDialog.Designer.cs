@@ -37,8 +37,8 @@ namespace Ginger
             treeNode1,
             treeNode2});
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectGroupDialog));
-			this.btnCancel = new System.Windows.Forms.Button();
-			this.btnOk = new System.Windows.Forms.Button();
+			this.btnCancel = new ButtonEx();
+			this.btnOk = new ButtonEx();
 			this.listPanel = new System.Windows.Forms.Panel();
 			this.treeView = new Ginger.TreeViewEx();
 			this.imageList_Light = new System.Windows.Forms.ImageList(this.components);
@@ -202,8 +202,8 @@ namespace Ginger
 		}
 
 		#endregion
-		private System.Windows.Forms.Button btnCancel;
-		private System.Windows.Forms.Button btnOk;
+		private ButtonEx btnCancel;
+		private ButtonEx btnOk;
 		private TreeViewEx treeView;
 		private System.Windows.Forms.ImageList imageList_Light;
 		private System.Windows.Forms.ToolTip toolTip;

@@ -7,7 +7,6 @@ namespace Ginger
 {
 	public partial class SnippetPanel : UserControl
 	{
-
 		public string CurrentText { get { return _bSwapped ? SwappedText : OriginalText; } }
 		public string OriginalText { get; set; }
 		public string SwappedText { get; set; }
@@ -26,7 +25,16 @@ namespace Ginger
 			textBox_Text.HighlightBorder = false;
 			textBox_Text.BorderColor = Color.White;
 			textBox_Text.TextChanged += TextBox_Text_TextChanged;
+			textBox_Text.ForeColor = Theme.Current.TextBoxForeground;
+			textBox_Text.BackColor = Theme.Current.TextBoxBackground;
+
 			this.FontChanged += FontDidChange;
+			this.Load += SnippetPanel_Load;
+		}
+
+		private void SnippetPanel_Load(object sender, EventArgs e)
+		{
+			textBox_Text.ApplyVisualTheme();
 		}
 
 		private void TextBox_Text_TextChanged(object sender, EventArgs e)
@@ -45,7 +53,7 @@ namespace Ginger
 			OriginalText = text;
 			SwappedText = swappedText;
 
-			this._channel = channel;
+			_channel = channel;
 
 			switch (channel)
 			{
@@ -72,6 +80,8 @@ namespace Ginger
 				break;
 			case Recipe.Component.Grammar:
 				labelChannel.Text = "Grammar";
+				textBox_Text.SpellChecking = false;
+				textBox_Text.SyntaxHighlighting = false;
 				break;
 			case Recipe.Component.UserPersona:
 				labelChannel.Text = "User persona";
@@ -81,7 +91,7 @@ namespace Ginger
 				break;
 			}
 
-			RefreshColor();
+			RefreshPanelColor();
 		}
 
 		public void SetSwapped(bool bSwapped)
@@ -90,8 +100,9 @@ namespace Ginger
 
 			_bIgnoreEvents = true;
 			textBox_Text.richTextBox.DisableThenDoThenEnable(() => {
-				textBox_Text.Text = bSwapped ? SwappedText : OriginalText;
-				textBox_Text.richTextBox.RefreshSyntaxHighlight(true); // Rehighlight
+				textBox_Text.SetTextSilent(bSwapped ? SwappedText : OriginalText);
+				textBox_Text.richTextBox.SpellCheck(true, false);
+				textBox_Text.richTextBox.RefreshSyntaxHighlight(true);
 				textBox_Text.InitUndo();
 			});
 			_bIgnoreEvents = false;
@@ -111,11 +122,11 @@ namespace Ginger
 				textBox_Text.Enabled = !textBox_Text.Enabled;
 				btn_Remove.Image = textBox_Text.Enabled ? Properties.Resources.delete_small : Properties.Resources.delete_strike;
 
-				RefreshColor();
+				RefreshPanelColor();
 			}
 		}
 
-		private void RefreshColor()
+		private void RefreshPanelColor()
 		{
 			Color color;
 			if (textBox_Text.Enabled)

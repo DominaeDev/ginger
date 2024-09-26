@@ -162,7 +162,13 @@
     <Compile Include="src\Interface\Controls\CollectionTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="src\Interface\Controls\ComboBoxEx.cs">
+    <Compile Include="src\Interface\Controls\Overrides\ButtonEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\Overrides\CheckBoxEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\Overrides\ComboBoxEx.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="src\Interface\Controls\FlatRichTextBox.cs">
@@ -171,10 +177,10 @@
     <Compile Include="src\Interface\Controls\FlatRichTextBox.Designer.cs">
       <DependentUpon>FlatRichTextBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\Interface\Controls\FormEx.cs">
+    <Compile Include="src\Interface\Controls\Overrides\FormEx.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\Interface\Controls\GroupBoxEx.cs">
+    <Compile Include="src\Interface\Controls\Overrides\GroupBoxEx.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="src\Interface\Controls\ISearchable.cs" />
@@ -193,13 +199,13 @@
     <Compile Include="src\Interface\Controls\RecipeList.Designer.cs">
       <DependentUpon>RecipeList.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\Interface\Controls\RichTextBoxEx.cs">
+    <Compile Include="src\Interface\Controls\Overrides\RichTextBoxEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="src\Interface\Controls\TrackBarEx.cs">
+    <Compile Include="src\Interface\Controls\Overrides\TrackBarEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="src\Interface\Controls\TreeViewEx.cs">
+    <Compile Include="src\Interface\Controls\Overrides\TreeViewEx.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="src\Interface\Controls\UserNotes.cs">
@@ -432,7 +438,7 @@
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleRoundedProvider.cs" />
     <Compile Include="src\Utility\Undo\UndoStack.cs" />
     <Compile Include="src\Utility\Undo\TextUndoStack.cs" />
-    <Compile Include="src\Interface\Controls\TextBoxEx.cs">
+    <Compile Include="src\Interface\Controls\Overrides\TextBoxEx.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="src\Interface\Parameters\MultiTextParameterPanel.cs">
@@ -647,10 +653,10 @@
     <EmbeddedResource Include="src\Interface\Controls\RecipeList.resx">
       <DependentUpon>RecipeList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Interface\Controls\RichTextBoxEx.resx">
+    <EmbeddedResource Include="src\Interface\Controls\Overrides\RichTextBoxEx.resx">
       <DependentUpon>RichTextBoxEx.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Interface\Controls\TextBoxEx.resx">
+    <EmbeddedResource Include="src\Interface\Controls\Overrides\TextBoxEx.resx">
       <DependentUpon>TextBoxEx.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Controls\UserNotes.resx">

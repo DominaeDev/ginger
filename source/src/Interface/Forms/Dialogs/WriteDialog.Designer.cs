@@ -30,7 +30,7 @@
 		{
 			System.Windows.Forms.FlowLayoutPanel buttonLayout;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WriteDialog));
-			this.btnOk = new System.Windows.Forms.Button();
+			this.btnOk = new ButtonEx();
 			this.menuStrip = new System.Windows.Forms.MenuStrip();
 			this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveAndCloseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -447,7 +447,7 @@
 		}
 
 		#endregion
-		private System.Windows.Forms.Button btnOk;
+		private ButtonEx btnOk;
 		private System.Windows.Forms.MenuStrip menuStrip;
 		private System.Windows.Forms.ToolStripMenuItem fileMenu;
 		private System.Windows.Forms.ToolStripMenuItem editMenu;

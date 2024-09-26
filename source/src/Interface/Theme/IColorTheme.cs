@@ -36,9 +36,16 @@ namespace Ginger
 		Color TabEdgeBorder { get; }
 		Color SelectedTabBorder { get; }
 		Color Button { get; }
-		Color ButtonBorder { get; }
 		Color ButtonHover { get; }
 		Color ButtonPressed { get; }
+		Color ButtonText { get; }
+		Color ButtonDisabled { get; }
+		Color ButtonDisabledText { get; }
+		Color ButtonBorder { get; }
+		Color ButtonDisabledBorder { get; }
+		Color ImageButton { get; }
+		Color ImageButtonHover { get; }
+		Color ImageButtonPressed { get; }
 		Color RecipeListBackground { get; }
 		Color RecipeListGradient { get; }
 		Color OutputForeground { get; }

@@ -15,7 +15,7 @@ namespace Ginger
 			public static readonly Color TextBoxForeground = SystemColors.WindowText;
 			public static readonly Color TextBoxBorder = Color.Gray;
 			public static readonly Color TextBoxPlaceholder = Color.FromArgb(144, 144, 144);
-			public static readonly Color TextBoxDisabledBackground = SystemColors.Control;
+			public static readonly Color TextBoxDisabledBackground = SystemColors.ControlLight;
 			public static readonly Color TextBoxDisabledBorder = SystemColors.InactiveBorder;
 			public static readonly Color MenuBackground = SystemColors.MenuBar;
 			public static readonly Color MenuForeground = SystemColors.MenuText;
@@ -30,10 +30,17 @@ namespace Ginger
 			public static readonly Color GroupBoxBorder = ColorTranslator.FromHtml("#d3d3d3");
 			public static readonly Color TreeViewForeground = SystemColors.WindowText;
 			public static readonly Color TreeViewBackground = SystemColors.Window;
-			public static readonly Color Button = Color.WhiteSmoke;
-			public static readonly Color ButtonBorder = Color.Silver;
-			public static readonly Color ButtonHover = Color.White;
-			public static readonly Color ButtonPressed = Color.White;
+			public static readonly Color Button = ColorTranslator.FromHtml("#e1e1e1");
+			public static readonly Color ButtonText = SystemColors.ControlText;
+			public static readonly Color ButtonDisabled = ColorTranslator.FromHtml("#cccccc");
+			public static readonly Color ButtonDisabledText = ColorTranslator.FromHtml("#a0a0a0");
+			public static readonly Color ButtonHover = ColorTranslator.FromHtml("#cacaca");
+			public static readonly Color ButtonPressed = ColorTranslator.FromHtml("#d8d8d8");
+			public static readonly Color ImageButton = Color.WhiteSmoke;
+			public static readonly Color ButtonBorder = ColorTranslator.FromHtml("#adadad");
+			public static readonly Color ButtonDisabledBorder = ColorTranslator.FromHtml("#bfbfbf");
+			public static readonly Color ImageButtonHover = Color.White;
+			public static readonly Color ImageButtonPressed = Color.White;
 			public static readonly Color WarningRed = Color.Red;
 			public static readonly Color HighlightBorder = SystemColors.Highlight;
 			public static readonly Color GrayText = SystemColors.GrayText;
@@ -84,10 +91,20 @@ namespace Ginger
 			public Color MenuSeparator => ColorTable.MenuSeparator;
 			public Color Highlight => ColorTable.Highlight;
 			public Color HighlightText => ColorTable.HighlightText;
+
 			public Color Button => ColorTable.Button;
+			public Color ButtonBorder => ColorTable.ButtonBorder;
+			public Color ButtonDisabledBorder => ColorTable.ButtonDisabledBorder;
+			public Color ButtonDisabled => ColorTable.ButtonDisabled;
+			public Color ButtonDisabledText => ColorTable.ButtonDisabledText;
+			public Color ButtonText => ColorTable.ButtonText;
 			public Color ButtonHover => ColorTable.ButtonHover;
 			public Color ButtonPressed => ColorTable.ButtonPressed;
-			public Color ButtonBorder => ColorTable.ButtonBorder;
+
+			public Color ImageButton => ColorTable.ImageButton;
+			public Color ImageButtonHover => ColorTable.ImageButtonHover;
+			public Color ImageButtonPressed => ColorTable.ImageButtonPressed;
+
 			public Color Border => ColorTable.Border;
 			public Color GroupBoxBorder => ColorTable.GroupBoxBorder;
 			public Color TreeViewForeground => ColorTable.TreeViewForeground;

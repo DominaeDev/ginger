@@ -32,10 +32,10 @@
 			System.Windows.Forms.Label labelText;
 			System.Windows.Forms.FlowLayoutPanel buttonLayout;
 			System.Windows.Forms.TableLayoutPanel topLayout;
-			this.btnCancel = new System.Windows.Forms.Button();
-			this.btnOk = new System.Windows.Forms.Button();
+			this.btnCancel = new ButtonEx();
+			this.btnOk = new ButtonEx();
 			this.panelList = new System.Windows.Forms.Panel();
-			this.cbSwapPronouns = new System.Windows.Forms.CheckBox();
+			this.cbSwapPronouns = new CheckBoxEx();
 			this.bottomPanel = new System.Windows.Forms.Panel();
 			this.textBox = new Ginger.TextBoxEx();
 			labelName = new System.Windows.Forms.Label();
@@ -210,11 +210,11 @@
 		}
 
 		#endregion
-		private System.Windows.Forms.Button btnOk;
-		private System.Windows.Forms.Button btnCancel;
+		private ButtonEx btnOk;
+		private ButtonEx btnCancel;
 		private System.Windows.Forms.Panel panelList;
 		private TextBoxEx textBox;
-		private System.Windows.Forms.CheckBox cbSwapPronouns;
+		private CheckBoxEx cbSwapPronouns;
 		private System.Windows.Forms.Panel bottomPanel;
 	}
 }
