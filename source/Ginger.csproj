@@ -208,10 +208,10 @@
     <Compile Include="src\Interface\Controls\UserNotes.Designer.cs">
       <DependentUpon>UserNotes.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\Interface\VisualTheme\DarkTheme.cs" />
-    <Compile Include="src\Interface\VisualTheme\IColorTheme.cs" />
-    <Compile Include="src\Interface\VisualTheme\LightTheme.cs" />
-    <Compile Include="src\Interface\VisualTheme\Theme.cs" />
+    <Compile Include="src\Interface\Theme\DarkTheme.cs" />
+    <Compile Include="src\Interface\Theme\IColorTheme.cs" />
+    <Compile Include="src\Interface\Theme\LightTheme.cs" />
+    <Compile Include="src\Interface\Theme\Theme.cs" />
     <Compile Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.cs">
       <SubType>Form</SubType>
     </Compile>
