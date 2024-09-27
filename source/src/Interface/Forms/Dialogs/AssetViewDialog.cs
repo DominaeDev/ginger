@@ -34,6 +34,7 @@ namespace Ginger
 			btnView.Click += BtnView_Click;
 			btnExport.Click += BtnExport_Click;
 			btnApply.Click += BtnApply_Click;
+			btnCancel.Click += BtnCancel_Click;
 
 			DragEnter += OnDragEnter;
 			DragDrop += OnDragDrop;
@@ -389,6 +390,13 @@ namespace Ginger
 		{
 			assetsDataView.EndEdit();
 			DialogResult = DialogResult.OK;
+			Close();
+		}
+
+		private void BtnCancel_Click(object sender, EventArgs e)
+		{
+			assetsDataView.EndEdit();
+			DialogResult = DialogResult.Cancel;
 			Close();
 		}
 

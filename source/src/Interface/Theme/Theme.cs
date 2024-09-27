@@ -221,24 +221,17 @@ namespace Ginger
 		{
 			BeginTheming();
 
-			if (IsDarkModeEnabled)
-			{
-				dataGridView.RowsDefaultCellStyle = new DataGridViewCellStyle() {
-					BackColor = Dark.TextBoxBackground,
-					ForeColor = Dark.TextBoxForeground,
-					SelectionBackColor = Dark.HighlightInactive,
-					SelectionForeColor = Dark.HighlightText,
-				};
+			dataGridView.RowsDefaultCellStyle = new DataGridViewCellStyle() {
+				BackColor = Current.TextBoxBackground,
+				ForeColor = Current.TextBoxForeground,
+				SelectionBackColor = Current.Highlight,
+				SelectionForeColor = Current.HighlightText,
+			};
 			
-				dataGridView.GridColor = Dark.TextBoxBorder;
-			}
-			else
-			{
-				dataGridView.DefaultCellStyle = new DataGridViewCellStyle();
-				dataGridView.GridColor = SystemColors.ControlDark;
-			}
+			dataGridView.GridColor = Current.Grid;
+			
 			dataGridView.ForeColor = Current.ControlForeground;
-			dataGridView.BackgroundColor = Current.ControlBackground;
+			dataGridView.BackgroundColor = Current.Workspace;
 
 			EndTheming();
 		}

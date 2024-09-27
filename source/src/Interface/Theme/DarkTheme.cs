@@ -59,6 +59,8 @@ namespace Ginger
 			public static readonly Color OutputBackground = TextBoxBackground;
 			public static readonly Color NotesForeground = TextBoxForeground;
 			public static readonly Color NotesBackground = TextBoxBackground;
+			public static readonly Color Grid = Border;
+			public static readonly Color Workspace = ColorTranslator.FromHtml("#202020");
 
 			// Text
 			public static readonly Color Dialogue = ColorTranslator.FromHtml("#ffcd62");
@@ -127,6 +129,8 @@ namespace Ginger
 			public Color OutputBackground => ColorTable.OutputBackground;
 			public Color NotesForeground => ColorTable.NotesForeground;
 			public Color NotesBackground => ColorTable.NotesBackground;
+			public Color Grid => ColorTable.Grid;
+			public Color Workspace => ColorTable.Workspace;
 
 			// Text
 			public Color Dialogue => ColorTable.Dialogue;
