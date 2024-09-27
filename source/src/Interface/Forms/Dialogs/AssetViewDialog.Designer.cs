@@ -48,6 +48,7 @@ namespace Ginger
 			this.btnAdd = new Ginger.ButtonEx();
 			this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
+			this.btnCancel = new Ginger.ButtonEx();
 			listPanel = new System.Windows.Forms.Panel();
 			leftPanel = new System.Windows.Forms.Panel();
 			label_ccv3 = new System.Windows.Forms.Label();
@@ -138,6 +139,7 @@ namespace Ginger
 			leftPanel.Controls.Add(label_ccv3);
 			leftPanel.Controls.Add(spacer_2);
 			leftPanel.Controls.Add(this.btnApply);
+			leftPanel.Controls.Add(this.btnCancel);
 			leftPanel.Controls.Add(this.btnExport);
 			leftPanel.Controls.Add(this.btnView);
 			leftPanel.Controls.Add(spacer_1);
@@ -174,7 +176,7 @@ namespace Ginger
 			// btnApply
 			// 
 			this.btnApply.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.btnApply.Location = new System.Drawing.Point(4, 379);
+			this.btnApply.Location = new System.Drawing.Point(4, 348);
 			this.btnApply.Name = "btnApply";
 			this.btnApply.Size = new System.Drawing.Size(192, 31);
 			this.btnApply.TabIndex = 5;
@@ -243,6 +245,16 @@ namespace Ginger
 			// 
 			this.importFileDialog.Multiselect = true;
 			// 
+			// btnCancel
+			// 
+			this.btnCancel.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.btnCancel.Location = new System.Drawing.Point(4, 379);
+			this.btnCancel.Name = "btnCancel";
+			this.btnCancel.Size = new System.Drawing.Size(192, 31);
+			this.btnCancel.TabIndex = 8;
+			this.btnCancel.Text = "Cancel";
+			this.btnCancel.UseVisualStyleBackColor = true;
+			// 
 			// AssetViewDialog
 			// 
 			this.AllowDrop = true;
@@ -281,5 +293,6 @@ namespace Ginger
 		private System.Windows.Forms.DataGridViewComboBoxColumn columnType;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnSize;
 		private ButtonEx btnAddRemote;
+		private ButtonEx btnCancel;
 	}
 }

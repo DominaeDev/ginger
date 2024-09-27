@@ -57,6 +57,8 @@ namespace Ginger
 			public static readonly Color OutputBackground = Color.FromArgb(64, 64, 64);
 			public static readonly Color NotesForeground = Color.Black;
 			public static readonly Color NotesBackground = Color.FromArgb(255, 255, 248);
+			public static readonly Color Grid = SystemColors.Control;
+			public static readonly Color Workspace = SystemColors.ControlDark;
 
 			// Text
 			public static readonly Color Dialogue	= ColorTranslator.FromHtml("#C06000");
@@ -126,6 +128,8 @@ namespace Ginger
 			public Color OutputBackground => ColorTable.OutputBackground;
 			public Color NotesForeground => ColorTable.NotesForeground;
 			public Color NotesBackground => ColorTable.NotesBackground;
+			public Color Grid => ColorTable.Grid;
+			public Color Workspace => ColorTable.Workspace;
 
 			// Text
 			public Color Dialogue => ColorTable.Dialogue;

@@ -53,6 +53,8 @@ namespace Ginger
 		Color OutputBackground { get; }
 		Color NotesForeground { get; }
 		Color NotesBackground { get; }
+		Color Grid { get; }
+		Color Workspace { get; }
 
 		// Text
 		Color Dialogue	 { get; }
