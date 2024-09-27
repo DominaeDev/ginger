@@ -223,13 +223,13 @@ namespace Ginger
 
 			if (IsDarkModeEnabled)
 			{
-				dataGridView.DefaultCellStyle = new DataGridViewCellStyle() {
+				dataGridView.RowsDefaultCellStyle = new DataGridViewCellStyle() {
 					BackColor = Dark.TextBoxBackground,
 					ForeColor = Dark.TextBoxForeground,
-					SelectionBackColor = Dark.Highlight,
+					SelectionBackColor = Dark.HighlightInactive,
 					SelectionForeColor = Dark.HighlightText,
 				};
-				
+			
 				dataGridView.GridColor = Dark.TextBoxBorder;
 			}
 			else
