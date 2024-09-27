@@ -821,13 +821,19 @@ namespace Ginger
 			if (_syntaxFlags.Contains(SyntaxFlags.Decorators))
 				syntaxHighlighter.AddPattern(new PatternDefinition("(^|\\n+)@@.*"), new SyntaxStyle(colorDecorator, false, true), -1);
 
+			// Variables
+			if (_syntaxFlags.Contains(SyntaxFlags.Variables))
+			{
+				// Unknown variables
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\$[\w-_]*\}"), SyntaxStyle.Underlined(colorError), 3);
+			}
+
 			// Commands {char}, {user}, {they}, etc.
 			if (_syntaxFlags.Contains(SyntaxFlags.Commands))
 			{
 				// Invalid patterns
-//				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\{(?i)\b(char|user|original)\b\}\}"), SyntaxStyle.Underlined(colorError), 2);
-//				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{(?i)\bcharacter\b\}"), SyntaxStyle.Underlined(colorError), 2);
-                syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\$?\w*\}|\{\{\w*\}\}"), SyntaxStyle.Underlined(colorError), 2);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\{\w+\}\}"), SyntaxStyle.Underlined(colorError), 4);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\bcharacter\b\}"), SyntaxStyle.Underlined(colorError), 4);
 
 				// character
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{(?i)\b(char|user|card|name|original|gender|they'll|they're|they've|they'd|they|them|theirs|their|themselves|he'll|he's|he's|he'd|he|him|his|his|himself|she'll|she's|she's|she'd|she|her|hers|her|herself|is|are|isn't|aren't|has|have|hasn't|haven't|was|were|wasn't|weren't|does|do|doesn't|don't|s|y|ies|es)\b\}"),
@@ -836,6 +842,7 @@ namespace Ginger
 				// user
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\#(?i)\b(gender|name|they'll|they're|they've|they'd|they|them|theirs|their|themselves|he'll|he's|he's|he'd|he|him|his|his|himself|she'll|she's|she's|she'd|she|her|hers|her|herself|is|are|isn't|aren't|has|have|hasn't|haven't|was|were|wasn't|weren't|does|do|doesn't|don't|s|y|ies|es)\b\}"),
 					new SyntaxStyle(colorCommand), 3);
+
 			}
 
 			// Pronouns
@@ -859,12 +866,12 @@ namespace Ginger
 			}
 
 			// Known variables
-			if (Current.Card.customVariables.Count > 0)
+			if (Current.Card.customVariables.Count > 0 && _syntaxFlags.Contains(SyntaxFlags.Variables))
 			{
 				string[] varNames = Current.Card.customVariables
 					.Select(v => string.Format(@"{{${0}}}", v.Name))
 					.ToArray();
-				syntaxHighlighter.SetVariableNames(varNames, new SyntaxStyle(colorVariable), 3);
+				syntaxHighlighter.SetVariableNames(varNames, new SyntaxStyle(colorVariable), 5);
 			}
 
 		}

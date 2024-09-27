@@ -74,6 +74,7 @@ namespace Ginger
 			public static readonly Color Error = ColorTranslator.FromHtml("#ff5569");
 			public static readonly Color Wildcard = ColorTranslator.FromHtml("#00A0A0");
 			public static readonly Color Decorator = ColorTranslator.FromHtml("#A000A0");
+			public static readonly Color Variable = ColorTranslator.FromHtml("#BE7BE3");
 		}
 
 		public class ThemeColors : IVisualTheme
@@ -144,6 +145,7 @@ namespace Ginger
 			public Color Error => ColorTable.Error;
 			public Color Wildcard => ColorTable.Wildcard;
 			public Color Decorator => ColorTable.Decorator;
+			public Color Variable => ColorTable.Variable;
 
 			// Icons
 			public Image MenuIcon => Resources.dark_menu;

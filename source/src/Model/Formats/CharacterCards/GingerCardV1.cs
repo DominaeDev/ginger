@@ -207,7 +207,7 @@ namespace Ginger
 
 			// Variables
 			var variableNode = xmlNode.GetFirstElement("Variable");
-			if (variableNode != null)
+			while (variableNode != null)
 			{
 				string name = variableNode.GetAttribute("id", null);
 				string value = variableNode.GetTextValue(null);

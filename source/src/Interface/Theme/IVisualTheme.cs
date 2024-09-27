@@ -68,6 +68,7 @@ namespace Ginger
 		Color Error		 { get; }
 		Color Wildcard	 { get; }
 		Color Decorator	 { get; }
+		Color Variable	 { get; }
 
 		// Icons
 		Image MenuIcon { get; }

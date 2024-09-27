@@ -293,16 +293,20 @@ namespace Ginger
 						string text = template.text;
 						GenderSwap.FromNeutralMarkers(ref text); // {them} -> him
 
-						(editRecipe.parameters[0] as TextParameter).value =
-							GingerString.FromString(
-								Text.Eval(text, context,
-									new ContextString.EvaluationConfig() {
-										macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
-										referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
-										ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
-									},
-								Text.EvalOption.Minimal))
-							.ToBaked();
+						text = GingerString.FromString(
+							Text.Eval(text, context,
+								new ContextString.EvaluationConfig() {
+									macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
+									referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
+									ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
+								},
+							Text.EvalOption.Minimal))
+						.ToBaked();
+
+						(editRecipe.parameters[0] as TextParameter).value = text;
+
+						// Detect and add variables
+						Current.Card.AddVariablesFromText(text);
 
 						instances.Add(editRecipe);
 					}

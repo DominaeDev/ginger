@@ -41,8 +41,10 @@ namespace Ginger
 			for (int i = 0; i < value.Length; ++i)
 			{
 				char c = value[i];
-				if (char.IsWhiteSpace(c) || c == '-')
+				if (char.IsWhiteSpace(c))
 					sbFormat.Append('-');
+				else if (c == '_' || c == '-')
+					sbFormat.Append(c);
 				else if (char.IsControl(c) || char.IsPunctuation(c) || char.IsSymbol(c))
 					continue;
 				else if (char.IsLetterOrDigit(c))

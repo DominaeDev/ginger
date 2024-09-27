@@ -36,10 +36,10 @@ namespace Ginger
 			this.dataGridView = new Ginger.DataGridViewEx();
 			this.columnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.columnValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.btnApply = new ButtonEx();
-			this.btnRemove = new ButtonEx();
-			this.btnAdd = new ButtonEx();
-			this.btnCancel = new ButtonEx();
+			this.btnApply = new Ginger.ButtonEx();
+			this.btnCancel = new Ginger.ButtonEx();
+			this.btnRemove = new Ginger.ButtonEx();
+			this.btnAdd = new Ginger.ButtonEx();
 			listPanel = new System.Windows.Forms.Panel();
 			leftPanel = new System.Windows.Forms.Panel();
 			listPanel.SuspendLayout();
@@ -64,7 +64,7 @@ namespace Ginger
 			this.dataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
 			this.dataGridView.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
 			this.dataGridView.CausesValidation = false;
-			this.dataGridView.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
+			this.dataGridView.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
 			this.dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
 			this.dataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.columnName,
@@ -76,7 +76,7 @@ namespace Ginger
 			this.dataGridView.RowHeadersWidth = 32;
 			this.dataGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
 			this.dataGridView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.dataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+			this.dataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
 			this.dataGridView.ShowCellErrors = false;
 			this.dataGridView.ShowCellToolTips = false;
 			this.dataGridView.ShowRowErrors = false;
@@ -125,6 +125,16 @@ namespace Ginger
 			this.btnApply.Text = "Apply";
 			this.btnApply.UseVisualStyleBackColor = true;
 			// 
+			// btnCancel
+			// 
+			this.btnCancel.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.btnCancel.Location = new System.Drawing.Point(4, 379);
+			this.btnCancel.Name = "btnCancel";
+			this.btnCancel.Size = new System.Drawing.Size(192, 31);
+			this.btnCancel.TabIndex = 6;
+			this.btnCancel.Text = "Cancel";
+			this.btnCancel.UseVisualStyleBackColor = true;
+			// 
 			// btnRemove
 			// 
 			this.btnRemove.Dock = System.Windows.Forms.DockStyle.Top;
@@ -144,16 +154,6 @@ namespace Ginger
 			this.btnAdd.TabIndex = 0;
 			this.btnAdd.Text = "Add variable...";
 			this.btnAdd.UseVisualStyleBackColor = true;
-			// 
-			// btnCancel
-			// 
-			this.btnCancel.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.btnCancel.Location = new System.Drawing.Point(4, 379);
-			this.btnCancel.Name = "btnCancel";
-			this.btnCancel.Size = new System.Drawing.Size(192, 31);
-			this.btnCancel.TabIndex = 6;
-			this.btnCancel.Text = "Cancel";
-			this.btnCancel.UseVisualStyleBackColor = true;
 			// 
 			// VariablesDialog
 			// 

@@ -910,6 +910,7 @@ namespace Ginger
 				return; // Error
 
 			(recipe.parameters[0] as TextParameter).value = content;
+			Current.Card.AddVariablesFromText(content);
 
 			this.Suspend();
 			this.DisableRedrawAndDo(() => {

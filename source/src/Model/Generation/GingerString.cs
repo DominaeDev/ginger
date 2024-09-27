@@ -290,32 +290,6 @@ namespace Ginger
 			sb.Replace("__OOOO__", InternalOriginalMarker);
 			sb.Replace("__NNNN__", InternalNameMarker);
 
-			// Replace variables
-			var pos_var = sb.IndexOf("{$", 0);
-			while (pos_var != -1)
-			{
-				int pos_var_end = sb.IndexOf("}", pos_var + 2);
-				if (pos_var_end == -1)
-					break;
-
-				string varName = sb.Substring(pos_var + 2, pos_var_end - pos_var - 2).ToLowerInvariant();
-				string varValue;
-
-				if (Current.Card.TryGetVariable(varName, out varValue))
-				{
-					sb.Remove(pos_var, pos_var_end - pos_var + 1);
-					sb.Insert(pos_var, varValue ?? "");
-
-					pos_var = pos_var + (varValue ?? "").Length;
-					continue;
-				}
-				else
-				{
-					sb.Remove(pos_var, pos_var_end - pos_var + 1);
-					pos_var = sb.IndexOf("{$", pos_var);
-				}
-			}
-
 			return FromString(sb.ToString());
 		}
 
@@ -579,8 +553,33 @@ namespace Ginger
 			if (text.Contains('{') == false)
 				return text; // No possible replacement
 
+			// Replace variables
+			StringBuilder sb = new StringBuilder(text);
+			var pos_var = sb.IndexOf("{$", 0);
+			while (pos_var != -1)
+			{
+				int pos_var_end = sb.IndexOf("}", pos_var + 2);
+				if (pos_var_end == -1)
+					break;
+
+				string varName = sb.Substring(pos_var + 2, pos_var_end - pos_var - 2).ToLowerInvariant();
+				string varValue;
+
+				if (Current.Card.TryGetVariable(varName, out varValue))
+				{
+					sb.Remove(pos_var, pos_var_end - pos_var + 1);
+					sb.Insert(pos_var, varValue ?? "");
+					pos_var = sb.IndexOf("{$", pos_var + (varValue ?? "").Length);
+				}
+				else
+				{
+					sb.Remove(pos_var, pos_var_end - pos_var + 1);
+					pos_var = sb.IndexOf("{$", pos_var);
+				}
+			}
+
 			// Find possible replacements
-			string findText = text.ToLowerInvariant();
+			string findText = sb.ToString().ToLowerInvariant();
 			List<Replacement> foundReplacements = new List<Replacement>(4);
 			for (int i = 0; i < replacements.Length; ++i)
 			{
@@ -595,10 +594,9 @@ namespace Ginger
 			}
 
 			if (foundReplacements.Count == 0)
-				return text;
+				return sb.ToString();
 
 			// Apply replacements
-			var sb = new StringBuilder(text);
 			for (int i = 0; i < foundReplacements.Count; ++i)
 			{
 				string evaluatedText = foundReplacements[i].fn.Invoke(context, evalConfig);
