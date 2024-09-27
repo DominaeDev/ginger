@@ -273,6 +273,9 @@ namespace Ginger
 			if (card.sources != null && card.sources.Length > 0)
 				Card.sources = new List<string>(card.sources);
 
+			if (card.customVariables != null && card.customVariables.Count > 0)
+				Card.customVariables = new List<CustomVariable>(card.customVariables);
+
 			if (card.characters.Count > 0)
 			{
 				Characters = new List<CharacterData>();

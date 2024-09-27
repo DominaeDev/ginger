@@ -30,26 +30,26 @@ namespace Ginger
 		private void InitializeComponent()
 		{
 			System.Windows.Forms.Panel listPanel;
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
 			System.Windows.Forms.Panel leftPanel;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(VariablesDialog));
-			this.assetsDataView = new System.Windows.Forms.DataGridView();
-			this.btnApply = new System.Windows.Forms.Button();
-			this.btnRemove = new System.Windows.Forms.Button();
-			this.btnAdd = new System.Windows.Forms.Button();
-			this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
-			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
+			this.dataGridView = new Ginger.DataGridViewEx();
 			this.columnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.columnValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.btnApply = new ButtonEx();
+			this.btnRemove = new ButtonEx();
+			this.btnAdd = new ButtonEx();
+			this.btnCancel = new ButtonEx();
 			listPanel = new System.Windows.Forms.Panel();
 			leftPanel = new System.Windows.Forms.Panel();
 			listPanel.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.assetsDataView)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
 			leftPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// listPanel
 			// 
-			listPanel.Controls.Add(this.assetsDataView);
+			listPanel.Controls.Add(this.dataGridView);
 			listPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			listPanel.Location = new System.Drawing.Point(0, 0);
 			listPanel.Name = "listPanel";
@@ -57,34 +57,55 @@ namespace Ginger
 			listPanel.Size = new System.Drawing.Size(514, 414);
 			listPanel.TabIndex = 0;
 			// 
-			// assetsDataView
+			// dataGridView
 			// 
-			this.assetsDataView.AllowUserToAddRows = false;
-			this.assetsDataView.AllowUserToDeleteRows = false;
-			this.assetsDataView.AllowUserToResizeColumns = false;
-			this.assetsDataView.AllowUserToResizeRows = false;
-			this.assetsDataView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-			this.assetsDataView.CausesValidation = false;
-			this.assetsDataView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-			this.assetsDataView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+			this.dataGridView.AllowUserToAddRows = false;
+			this.dataGridView.AllowUserToDeleteRows = false;
+			this.dataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+			this.dataGridView.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+			this.dataGridView.CausesValidation = false;
+			this.dataGridView.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
+			this.dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+			this.dataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.columnName,
             this.columnValue});
-			this.assetsDataView.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.assetsDataView.Location = new System.Drawing.Point(4, 4);
-			this.assetsDataView.Name = "assetsDataView";
-			this.assetsDataView.RowHeadersWidth = 32;
-			this.assetsDataView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-			this.assetsDataView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.assetsDataView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.assetsDataView.ShowCellErrors = false;
-			this.assetsDataView.ShowCellToolTips = false;
-			this.assetsDataView.ShowRowErrors = false;
-			this.assetsDataView.Size = new System.Drawing.Size(510, 406);
-			this.assetsDataView.TabIndex = 0;
+			this.dataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.dataGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnKeystroke;
+			this.dataGridView.Location = new System.Drawing.Point(4, 4);
+			this.dataGridView.Name = "dataGridView";
+			this.dataGridView.RowHeadersWidth = 32;
+			this.dataGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+			this.dataGridView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.dataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+			this.dataGridView.ShowCellErrors = false;
+			this.dataGridView.ShowCellToolTips = false;
+			this.dataGridView.ShowRowErrors = false;
+			this.dataGridView.Size = new System.Drawing.Size(510, 406);
+			this.dataGridView.TabIndex = 0;
+			// 
+			// columnName
+			// 
+			this.columnName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+			dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+			this.columnName.DefaultCellStyle = dataGridViewCellStyle1;
+			this.columnName.HeaderText = "Name";
+			this.columnName.MinimumWidth = 100;
+			this.columnName.Name = "columnName";
+			this.columnName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+			this.columnName.Width = 160;
+			// 
+			// columnValue
+			// 
+			this.columnValue.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+			this.columnValue.HeaderText = "Value";
+			this.columnValue.MinimumWidth = 100;
+			this.columnValue.Name = "columnValue";
+			this.columnValue.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
 			// 
 			// leftPanel
 			// 
 			leftPanel.Controls.Add(this.btnApply);
+			leftPanel.Controls.Add(this.btnCancel);
 			leftPanel.Controls.Add(this.btnRemove);
 			leftPanel.Controls.Add(this.btnAdd);
 			leftPanel.Dock = System.Windows.Forms.DockStyle.Right;
@@ -97,7 +118,7 @@ namespace Ginger
 			// btnApply
 			// 
 			this.btnApply.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.btnApply.Location = new System.Drawing.Point(4, 379);
+			this.btnApply.Location = new System.Drawing.Point(4, 348);
 			this.btnApply.Name = "btnApply";
 			this.btnApply.Size = new System.Drawing.Size(192, 31);
 			this.btnApply.TabIndex = 5;
@@ -124,26 +145,15 @@ namespace Ginger
 			this.btnAdd.Text = "Add variable...";
 			this.btnAdd.UseVisualStyleBackColor = true;
 			// 
-			// importFileDialog
+			// btnCancel
 			// 
-			this.importFileDialog.Multiselect = true;
-			// 
-			// columnName
-			// 
-			this.columnName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-			this.columnName.HeaderText = "Name";
-			this.columnName.MinimumWidth = 100;
-			this.columnName.Name = "columnName";
-			this.columnName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-			this.columnName.Width = 206;
-			// 
-			// columnValue
-			// 
-			this.columnValue.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-			this.columnValue.HeaderText = "Value";
-			this.columnValue.MinimumWidth = 100;
-			this.columnValue.Name = "columnValue";
-			this.columnValue.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+			this.btnCancel.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.btnCancel.Location = new System.Drawing.Point(4, 379);
+			this.btnCancel.Name = "btnCancel";
+			this.btnCancel.Size = new System.Drawing.Size(192, 31);
+			this.btnCancel.TabIndex = 6;
+			this.btnCancel.Text = "Cancel";
+			this.btnCancel.UseVisualStyleBackColor = true;
 			// 
 			// VariablesDialog
 			// 
@@ -162,7 +172,7 @@ namespace Ginger
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Custom variables";
 			listPanel.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.assetsDataView)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
 			leftPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 
@@ -170,13 +180,12 @@ namespace Ginger
 
 		#endregion
 
-		private System.Windows.Forms.DataGridView assetsDataView;
-		private System.Windows.Forms.Button btnRemove;
-		private System.Windows.Forms.Button btnAdd;
-		private System.Windows.Forms.Button btnApply;
-		private System.Windows.Forms.SaveFileDialog exportFileDialog;
-		private System.Windows.Forms.OpenFileDialog importFileDialog;
+		private DataGridViewEx dataGridView;
+		private ButtonEx btnRemove;
+		private ButtonEx btnAdd;
+		private ButtonEx btnApply;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnName;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnValue;
+		private ButtonEx btnCancel;
 	}
 }

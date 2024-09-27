@@ -40,6 +40,8 @@ namespace Ginger
 		public Backyard.Link backyardLinkInfo = null;
 		public List<AssetFile> assets = new List<AssetFile>(); // Meta only. Actual data is stored in the ccv3 chunk
 
+		public List<CustomVariable> customVariables = new List<CustomVariable>();
+
 		public bool LoadFromXml(XmlNode xmlNode)
 		{
 			id = xmlNode.GetValueElement("ID", null);
@@ -202,6 +204,17 @@ namespace Ginger
 				if (backyardLinkInfo.LoadFromXml(linkNode) == false)
 					backyardLinkInfo = null;
 			}
+
+			// Variables
+			var variableNode = xmlNode.GetFirstElement("Variable");
+			if (variableNode != null)
+			{
+				string name = variableNode.GetAttribute("id", null);
+				string value = variableNode.GetTextValue(null);
+				if (string.IsNullOrEmpty(name) == false)
+					customVariables.Add(new CustomVariable(name, value));
+				variableNode = variableNode.GetNextSibling();
+			}
 			return true;
 		}
 
@@ -298,6 +311,16 @@ namespace Ginger
 				}
 			}
 
+			// Variables
+			if (customVariables.Count > 0)
+			{
+				foreach (var variable in customVariables)
+				{
+					var variableNode = xmlNode.AddElement("Variable");
+					variableNode.AddAttribute("id", variable.Name);
+					variableNode.AddTextValue(variable.Value);
+				}
+			}
 		}
 
 		public string ToXml()
@@ -394,6 +417,9 @@ namespace Ginger
 
 			if (Current.Card.assets != null)
 				card.assets = Current.Card.assets.ToList();
+
+			if (Current.Card.customVariables != null && Current.Card.customVariables.Count > 0)
+				card.customVariables = Current.Card.customVariables.ToList();
 
 			card.backyardLinkInfo = Current.Link;
 			return card;

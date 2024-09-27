@@ -1,8 +1,6 @@
 ﻿using Ginger.Properties;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -10,40 +8,38 @@ namespace Ginger
 {
 	public partial class VariablesDialog : FormEx
 	{
-		public Dictionary<string, string> Variables;
+		public List<CustomVariable> Variables;
 		public bool Changed = false;
-		private bool _bIgnoreEvents = false;
+
+		private string _editVarName = null;
+		private bool _bEditing = false;
 
 		public VariablesDialog()
 		{
 			InitializeComponent();
 
-			this.Load += AssetViewDialog_Load;
-			this.FormClosing += AssetViewDialog_FormClosing;
+			this.Load += VariablesDialog_Load;
+			this.FormClosing += VariablesDialog_FormClosing;
 
 			btnAdd.Click += BtnAdd_Click;
 			btnRemove.Click += BtnRemove_Click;
 			btnApply.Click += BtnApply_Click;
+			btnCancel.Click += BtnCancel_Click;
 
-
-			assetsDataView.EditingControlShowing += AssetsDataView_EditingControlShowing;
-			assetsDataView.DataError += AssetsDataView_DataError;
+			dataGridView.CellBeginEdit += DataGridView_CellBeginEdit;
+			dataGridView.CellEndEdit += DataGridView_CellEndEdit;
+			dataGridView.SelectionChanged += DataGridView_SelectionChanged;
 		}
 
-		private void AssetViewDialog_Load(object sender, EventArgs e)
+		private void VariablesDialog_Load(object sender, EventArgs e)
 		{
-			assetsDataView.CellEndEdit += AssetsDataView_CellEndEdit;
-			assetsDataView.SelectionChanged += AssetsDataView_SelectionChanged;
-
-			Variables = new Dictionary<string, string>(Current.Card.Variables);
-
 			PopulateTable();
-			assetsDataView.ClearSelection();
+			dataGridView.ClearSelection();
 		}
 
-		private void AssetViewDialog_FormClosing(object sender, FormClosingEventArgs e)
+		private void VariablesDialog_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			assetsDataView.EndEdit();
+			dataGridView.EndEdit();
 			if (DialogResult == DialogResult.Cancel && Changed)
 			{
 				var mr = MessageBox.Show(Resources.msg_dismiss_changes, Resources.cap_confirm, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
@@ -52,138 +48,183 @@ namespace Ginger
 			}
 		}
 
-		private void AssetsDataView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+		private void DataGridView_SelectionChanged(object sender, EventArgs e)
 		{
-		}
-
-		private void AssetsDataView_DataError(object sender, DataGridViewDataErrorEventArgs e)
-		{
-		}
-
-		private void AssetsDataView_SelectionChanged(object sender, EventArgs e)
-		{
-			btnRemove.Enabled = assetsDataView.SelectedRows.Count > 0;
+			btnRemove.Enabled = dataGridView.SelectedRows.Count > 0;
 		}
 
 		private void PopulateTable()
 		{
-			_bIgnoreEvents = true;
-			assetsDataView.Rows.Clear();
+			dataGridView.EndEdit();
+			dataGridView.ClearSelection();
+			dataGridView.Rows.Clear();
 
-			foreach (var kvp in Variables)
-				AddRow(kvp.Key, kvp.Value);
-			_bIgnoreEvents = false;
+			foreach (var variable in Variables)
+				dataGridView.Rows.Add(string.Concat("$", variable.Name), variable.Value);
 		}
 
-		private void AddRow(string name, string value)
+
+		private void DataGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
 		{
-			assetsDataView.Rows.Add(name, value);
+			_bEditing = true;
+			if (e.ColumnIndex == 0)
+			{
+				string value = _editVarName = dataGridView.CurrentCell.Value as string ?? "";
+				if (value.BeginsWith("$"))
+					dataGridView.CurrentCell.Value = value.Substring(1, value.Length - 1);
+			}
 		}
 
-		private void AssetsDataView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+		private void DataGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
 		{
-			if (_bIgnoreEvents)
-				return;
+			_bEditing = false;
+			if (e.ColumnIndex == 0) // Name
+			{
+				string varName = (dataGridView.CurrentCell.EditedFormattedValue as string ?? "").Trim();
+				if (varName.BeginsWith("$"))
+					varName = varName.Substring(1);
+				varName = new CustomVariableName(varName).ToString();
+				if (string.IsNullOrEmpty(varName))
+				{
+					dataGridView.CurrentCell.Value = _editVarName;
+					return;
+				}
+
+				dataGridView.CurrentCell.Value = string.Concat("$", varName);
+				Variables[e.RowIndex] = new CustomVariable(varName, Variables[e.RowIndex].Value);
+				ResolveDuplicateNames();
+				Changed = true;
+			}
+			else // Value
+			{
+				Variables[e.RowIndex] = new CustomVariable(Variables[e.RowIndex].Name,(dataGridView.CurrentCell.EditedFormattedValue as string ?? "").Trim());
+				Changed = true;
+			}
 		}
 
 		private void BtnApply_Click(object sender, EventArgs e)
 		{
-			assetsDataView.EndEdit();
+			dataGridView.EndEdit();
+			Variables = Variables
+				.Where(v => string.IsNullOrWhiteSpace(v.Name.ToString()) == false)
+				.ToList();
 			DialogResult = DialogResult.OK;
+			Close();
+		}
+		
+		private void BtnCancel_Click(object sender, EventArgs e)
+		{
+			dataGridView.EndEdit();
+			DialogResult = DialogResult.Cancel;
 			Close();
 		}
 
 		private void BtnRemove_Click(object sender, EventArgs e)
 		{
-			assetsDataView.EndEdit();
+			dataGridView.EndEdit();
 
-			_bIgnoreEvents = true;
+			List<int> removeRows = new List<int>();
+			for (int i = dataGridView.RowCount - 1; i >= 0; --i)
+			{
+				if (dataGridView.Rows[i].Selected)
+					removeRows.Add(i);
+			}
 
-			// ...
+			for (int i = 0; i < removeRows.Count; ++i)
+			{
+				dataGridView.Rows.RemoveAt(removeRows[i]);
+				Variables.RemoveAt(removeRows[i]);
+			}
 
-			assetsDataView.ClearSelection();
-			_bIgnoreEvents = false;
+			dataGridView.ClearSelection();
+			Changed = true;
 		}
 
 		private void BtnAdd_Click(object sender, EventArgs e)
 		{
-			assetsDataView.EndEdit();
+			dataGridView.EndEdit();
 
-			_bIgnoreEvents = true;
-			// ...
+			if (dataGridView.RowCount > 0 
+				&& string.IsNullOrEmpty(dataGridView.Rows[dataGridView.RowCount - 1].Cells[0].Value as string)
+				&& string.IsNullOrEmpty(dataGridView.Rows[dataGridView.RowCount - 1].Cells[1].Value as string))
+			{
+				// Edit bottom empty row
+				dataGridView.SelectRow(dataGridView.Rows.Count - 1);
+				dataGridView.BeginEdit(true);
+				return;
+			}
 
-			_bIgnoreEvents = false;
+			// Add new row
+			dataGridView.Rows.Add("", "");
+			Variables.Add(new CustomVariable("", ""));
+			dataGridView.SelectRow(dataGridView.Rows.Count - 1);
+			dataGridView.BeginEdit(true);
+			Changed = true;
 		}
 
 		public override void ApplyTheme()
 		{
 			base.ApplyTheme();
 
-			Theme.Apply(assetsDataView);
+			Theme.Apply(dataGridView);
+
+			dataGridView.Columns[0].DefaultCellStyle.WrapMode = DataGridViewTriState.False;
+			dataGridView.Columns[1].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
 		}
 
 		private void ResolveDuplicateNames()
 		{
-			/*
-			var types = Assets.Select(a => a.type).Distinct();
+			var used_names = new Dictionary<string, int>();
 
-			foreach (var type in types)
+			for (int i = 0; i < Variables.Count; ++i)
 			{
-				var assetType = AssetFile.AssetTypeFromString(type);
-				var used_names = new Dictionary<string, int>();
-				if (assetType == AssetFile.AssetType.Icon && Current.Card.portraitImage != null)
-					used_names.Add("main", 1); // Reserve name for main portrait
+				string name = Variables[i].Name;
+				if (name == "")
+					continue;
 
-				for (int i = 0; i < Assets.Count; ++i)
+				if (used_names.ContainsKey(name.ToLower()) == false)
 				{
-					var asset = Assets[i];
-					if (asset.type != type || asset.isEmbeddedAsset == false)
-						continue;
-
-					string name = (Assets[i].name ?? "").ToLowerInvariant().Trim();
-					if (name == "")
-						Assets[i].name = name = "untitled"; // Name mustn't be empty
-
-					if (used_names.ContainsKey(name) == false)
-					{
-						used_names.Add(name, 1);
-						continue;
-					}
-
-					int count = used_names[name];
-					string testName = string.Format("{0}_{1:00}", name, ++count);
-					while (used_names.ContainsKey(testName))
-						testName = string.Format("{0}_{1:00}", name, ++count);
-					used_names.Add(testName, 1);
-					used_names[name] = count;
-					Assets[i].name = testName;
+					used_names.Add(name.ToLower(), 1);
+					continue;
 				}
+
+				int count = used_names[name.ToLower()];
+				string testName = string.Format("{0}{1}", name, ++count);
+				while (used_names.ContainsKey(testName.ToLower()))
+					testName = string.Format("{0}{1}", name, ++count);
+				used_names.Add(testName.ToLower(), 1);
+				used_names[name] = count;
+				Variables[i] = new CustomVariable(testName, Variables[i].Value);
 			}
 
 			// Refresh data table
 			int row = 0;
-			for (int i = 0; i < Assets.Count; ++i)
+			for (int i = 0; i < Variables.Count; ++i)
 			{
-				var asset = Assets[i];
-				if ((asset.isEmbeddedAsset || asset.isRemoteAsset) == false)
-					continue;
+				var variable = Variables[i];
+				var varName = string.Concat("$", variable.Name);
 
-				string value = assetsDataView.Rows[row].Cells[0].Value as string;
-				if (value != asset.name && asset.isEmbeddedAsset)
-					assetsDataView.Rows[row].Cells[0].Value = asset.name;
-				else if (asset.isRemoteAsset)
-				{
-					assetsDataView.Rows[row].Cells[0].Value = asset.fullUri;
-					string assetExt = (asset.ext ?? "N/A").ToUpperInvariant();
-					if (assetExt == "")
-						assetExt = "N/A";
-					else if (assetExt == "JPG")
-						assetExt = "JPEG";
-					assetsDataView.Rows[row].Cells[1].Value = assetExt;
-				}
+				string value = dataGridView.Rows[row].Cells[0].Value as string;
+				if (value != varName)
+					dataGridView.Rows[row].Cells[0].Value = varName;
 				++row;
-			}*/
+			}
 		}
-	
+
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			if (keyData == Keys.Escape)
+			{
+				if (_bEditing == false)
+				{
+					DialogResult = DialogResult.Cancel;
+					Close();
+					return true;
+				}
+			}
+
+			return base.ProcessCmdKey(ref msg, keyData);
+		}
+
 	}
 }

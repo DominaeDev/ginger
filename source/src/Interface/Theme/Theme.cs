@@ -7,7 +7,7 @@ namespace Ginger
 {
 	public static class Theme
 	{
-		public static bool IsDarkModeEnabled { get { return AppSettings.Settings.DarkTheme; } }
+		public static bool IsDarkModeEnabled { get { return AppSettings.Settings.DarkTheme && !Utility.InDesignMode; } }
 
 		public static IVisualTheme Current { get { return IsDarkModeEnabled ? _darkTheme : _lightTheme; } }
 		public static IVisualTheme Light { get { return _lightTheme; } }
@@ -68,6 +68,9 @@ namespace Ginger
 
 		public static void Apply(TextBoxBase control)
 		{
+			if (Utility.InDesignMode)
+				return;
+
 			BeginTheming();
 
 			if (control.Enabled)
@@ -86,6 +89,8 @@ namespace Ginger
 
 		public static void Apply(ComboBox control)
 		{
+			if (Utility.InDesignMode)
+				return;
 			BeginTheming();
 
 			if (control.Enabled)
@@ -104,6 +109,9 @@ namespace Ginger
 
 		public static void Apply(Control parentControl)
 		{
+			if (Utility.InDesignMode)
+				return;
+			
 			BeginTheming();
 
 			var groupBoxes = parentControl.FindAllControlsOfType<GroupBox>();
@@ -158,6 +166,9 @@ namespace Ginger
 
 		public static void Apply(Button button)
 		{
+			if (Utility.InDesignMode)
+				return;
+			
 			BeginTheming();
 
 			button.FlatStyle = FlatStyle.Flat;
@@ -173,6 +184,9 @@ namespace Ginger
 
 		public static void Apply(ToolStripMenuItem menuItem)
 		{
+			if (Utility.InDesignMode)
+				return;
+			
 			BeginTheming();
 
 			menuItem.ForeColor = Current.MenuForeground;
@@ -190,6 +204,9 @@ namespace Ginger
 
 		public static void Apply(ContextMenuStrip contextMenu)
 		{
+			if (Utility.InDesignMode)
+				return;
+			
 			BeginTheming();
 
 			contextMenu.Renderer = CreateToolStripRenderer();
@@ -204,6 +221,9 @@ namespace Ginger
 
 		public static void Apply(MenuStrip menuStrip)
 		{
+			if (Utility.InDesignMode)
+				return;
+			
 			BeginTheming();
 
 			menuStrip.Renderer = CreateToolStripRenderer();
@@ -219,6 +239,9 @@ namespace Ginger
 
 		public static void Apply(DataGridView dataGridView)
 		{
+			if (Utility.InDesignMode)
+				return;
+			
 			BeginTheming();
 
 			if (IsDarkModeEnabled)

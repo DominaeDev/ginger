@@ -27,9 +27,7 @@ namespace Ginger
 		public HashSet<string> tags = new HashSet<string>();
 		public AssetCollection assets = new AssetCollection(); // ccv3/charx
 
-		public Dictionary<string, string> Variables = new Dictionary<string, string>() {
-			{ "test", "Testing" },
-		};
+		public List<CustomVariable> customVariables = new List<CustomVariable>();
 
 		public DateTime? creationDate = null;
 		public JsonExtensionData extensionData = null; // Store extensions from imported json
@@ -99,8 +97,32 @@ namespace Ginger
 			CardData clone = (CardData)this.MemberwiseClone();
 			clone.tags = new HashSet<string>(this.tags);
 			clone.assets = (AssetCollection)this.assets.Clone();
+			clone.customVariables = new List<CustomVariable>(this.customVariables);
 			clone.sources = this.sources != null ? new List<string>(this.sources) : null;
 			return clone;
+		}
+
+		public bool TryGetVariable(string name, out string value)
+		{
+			if (string.IsNullOrEmpty(name))
+			{
+				value = default(string);
+				return false;
+			}
+
+			name = name.Trim();
+
+			CustomVariable variable;
+			for (int i = 0; i < customVariables.Count; ++i)
+			{
+				if (string.Compare(customVariables[i].Name, name, StringComparison.OrdinalIgnoreCase) == 0)
+				{
+					value = customVariables[i].Value;
+					return true;
+				}
+			}
+			value = default(string);
+			return false;
 		}
 	}
 

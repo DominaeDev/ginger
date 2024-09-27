@@ -2396,12 +2396,19 @@ namespace Ginger
 		private void customVariablesMenuItem_Click(object sender, EventArgs e)
 		{
 			VariablesDialog dlg = new VariablesDialog();
+			dlg.Variables = new List<CustomVariable>(Current.Card.customVariables);
+
 			if (dlg.ShowDialog() == DialogResult.OK && dlg.Changed)
 			{
+				Current.Card.customVariables = new List<CustomVariable>(dlg.Variables);
 				Undo.Push(Undo.Kind.Parameter, "Changed custom variables");
 
-				recipeList.RefreshSyntaxHighlighting(true);
-				Current.IsFileDirty = true;
+				var textBoxes = recipeList.FindAllControlsOfType<RichTextBoxEx>();
+				foreach (var textBox in textBoxes)
+					textBox.RefreshPatterns();
+
+				recipeList.RefreshSyntaxHighlighting(false);
+				Current.IsDirty = true;
 			}
 		}
 	}

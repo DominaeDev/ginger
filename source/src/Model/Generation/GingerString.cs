@@ -300,14 +300,20 @@ namespace Ginger
 
 				string varName = sb.Substring(pos_var + 2, pos_var_end - pos_var - 2).ToLowerInvariant();
 				string varValue;
-				if (string.IsNullOrEmpty(varName) == false && Current.Card.Variables.TryGetValue(varName, out varValue))
+
+				if (Current.Card.TryGetVariable(varName, out varValue))
 				{
-					varValue = varValue.Replace("{$", ""); // Prevent recursion
-					sb.Replace(pos_var, pos_var_end - pos_var + 1, varValue);
+					sb.Remove(pos_var, pos_var_end - pos_var + 1);
+					sb.Insert(pos_var, varValue ?? "");
+
+					pos_var = pos_var + (varValue ?? "").Length;
+					continue;
 				}
 				else
+				{
 					sb.Remove(pos_var, pos_var_end - pos_var + 1);
-				pos_var = sb.IndexOf("{$", pos_var);
+					pos_var = sb.IndexOf("{$", pos_var);
+				}
 			}
 
 			return FromString(sb.ToString());

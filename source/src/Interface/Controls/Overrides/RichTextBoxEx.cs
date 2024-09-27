@@ -773,7 +773,7 @@ namespace Ginger
 			Color colorError = Theme.Current.Error;
 			Color colorWildcard = Theme.Current.Wildcard;
 			Color colorDecorator = Theme.Current.Decorator;
-			Color colorVariable = Theme.Current.Command;
+			Color colorVariable = Theme.Current.Number;
 
 			syntaxHighlighter.ClearPatterns();
 			
@@ -859,10 +859,10 @@ namespace Ginger
 			}
 
 			// Known variables
-			if (Current.Card.Variables.Count > 0)
+			if (Current.Card.customVariables.Count > 0)
 			{
-				string[] varNames = Current.Card.Variables.Keys
-					.Select(k => string.Format(@"{{${0}}}", k))
+				string[] varNames = Current.Card.customVariables
+					.Select(v => string.Format(@"{{${0}}}", v.Name))
 					.ToArray();
 				syntaxHighlighter.SetVariableNames(varNames, new SyntaxStyle(colorVariable), 3);
 			}
