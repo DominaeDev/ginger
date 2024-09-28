@@ -53,10 +53,14 @@ namespace Ginger
 			set { richTextBox.SyntaxHighlighting = value; }
 		}
 
+		[DefaultValue(true)]
 		[Browsable(true)]
-		[Category("Appearance")]
-		[DefaultValue(typeof(Color), "WindowFrame")]
-		public Color BorderColor = SystemColors.WindowFrame;
+		public bool HighlightBorder
+		{
+			get { return _bHighlightBorder; }
+			set { _bHighlightBorder = value; }
+		}
+		private bool _bHighlightBorder = true;	
 
 		public int SelectionStart
 		{
@@ -70,7 +74,6 @@ namespace Ginger
 			set { richTextBox.SelectionLength = value; }
 		}
 
-		public bool HighlightBorder = true;
 		private bool _bIgnoreEvents = false;
 
 		public new event EventHandler TextChanged;
@@ -166,14 +169,15 @@ namespace Ginger
 		{
 			Graphics g = e.Graphics;
 
-			using (var brush = new SolidBrush(Enabled ? Theme.Current.TextBoxBackground : Theme.Current.TextBoxDisabledBackground))
+			// Background
+			using (var brush = new SolidBrush(Enabled ? richTextBox.BackColor : Theme.Current.TextBoxDisabledBackground))
 			{
 				g.FillRectangle(brush, new Rectangle(0, 0, Width - 1, Height - 1));
 			}
 			
 			// Border
 			Color borderColor = Enabled ?
-				(richTextBox.Focused ? Theme.Current.HighlightBorder : Theme.Current.TextBoxBorder)
+				(richTextBox.Focused && _bHighlightBorder ? Theme.Current.HighlightBorder : Theme.Current.TextBoxBorder)
 				: Theme.Current.TextBoxDisabledBorder;
 			using (var pen = new Pen(borderColor))
 			{
@@ -205,18 +209,6 @@ namespace Ginger
 		protected override void OnPaintBackground(PaintEventArgs e)
 		{
 			// Do nothing
-		}
-
-		private void TextBox_Enter(object sender, EventArgs e)
-		{
-			if (HighlightBorder)
-				BorderColor = Theme.Current.HighlightBorder;
-		}
-
-		private void TextBox_Leave(object sender, EventArgs e)
-		{
-			if (HighlightBorder)
-				BorderColor = Theme.Current.TextBoxBorder;
 		}
 
 		private void FlatRichTextBox_EnabledChanged(object sender, EventArgs e)

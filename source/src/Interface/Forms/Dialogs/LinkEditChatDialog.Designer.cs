@@ -108,7 +108,6 @@ namespace Ginger
 			// 
 			// groupBox
 			// 
-			this.groupBox.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
 			this.groupBox.Controls.Add(this.chatInstanceList);
 			this.groupBox.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.groupBox.Location = new System.Drawing.Point(3, 204);

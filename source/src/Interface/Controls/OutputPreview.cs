@@ -18,6 +18,8 @@ namespace Ginger
 		{
 			MouseLeave += OnMouseLeave;
 			LostFocus += OnMouseLeave;
+			HighlightBorder = false;
+			InnerBorder = false;
 		}
 
 		public void SetOutput(Generator.Output output)

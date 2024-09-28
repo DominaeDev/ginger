@@ -44,8 +44,6 @@
 			this.richTextBox.SyntaxHighlighting = false;
 			this.richTextBox.TabIndex = 0;
 			this.richTextBox.Text = "";
-			this.richTextBox.Enter += new System.EventHandler(this.TextBox_Enter);
-			this.richTextBox.Leave += new System.EventHandler(this.TextBox_Leave);
 			// 
 			// FlatRichTextBox
 			// 

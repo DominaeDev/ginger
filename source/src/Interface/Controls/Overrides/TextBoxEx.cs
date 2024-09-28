@@ -39,6 +39,24 @@ namespace Ginger
 			set { base.AutoSize = value; }
 		}
 
+		[DefaultValue(true)]
+		[Browsable(true)]
+		public bool HighlightBorder
+		{
+			get { return _bHighlightBorder; }
+			set { _bHighlightBorder = value; }
+		}
+		private bool _bHighlightBorder = true;	
+		
+		[DefaultValue(true)]
+		[Browsable(true)]
+		public bool InnerBorder
+		{
+			get { return _bInnerBorder; }
+			set { _bInnerBorder = value; }
+		}
+		private bool _bInnerBorder = true;
+
 		public event EventHandler EnterPressed;
 
 		public class BeforeUndoEventArgs : EventArgs
@@ -450,12 +468,15 @@ namespace Ginger
 			using (var g = Graphics.FromHdcInternal(hdc))
 			{
 				// Inner border
-				using (var p = new Pen(BackColor))
+				if (_bInnerBorder)
 				{
-					g.DrawRectangle(p, new Rectangle(1, 1, Width - 3, Height - 3));
+					using (var p = new Pen(BackColor))
+					{
+						g.DrawRectangle(p, new Rectangle(1, 1, Width - 3, Height - 3));
+					}
 				}
 				// Outer border / Highlight
-				using (var p = new Pen(Focused ? Theme.Current.HighlightBorder : Theme.Current.TextBoxBorder))
+				using (var p = new Pen(Focused && _bHighlightBorder ? Theme.Current.HighlightBorder : Theme.Current.TextBoxBorder))
 				{
 					g.DrawRectangle(p, new Rectangle(0, 0, Width - 1, Height - 1));
 				}

@@ -56,7 +56,7 @@ namespace Ginger
 			public static readonly Color OutputForeground = Color.Beige;
 			public static readonly Color OutputBackground = Color.FromArgb(64, 64, 64);
 			public static readonly Color NotesForeground = Color.Black;
-			public static readonly Color NotesBackground = Color.FromArgb(255, 255, 248);
+			public static readonly Color NotesBackground = Color.WhiteSmoke;
 			public static readonly Color Grid = SystemColors.Control;
 			public static readonly Color Workspace = SystemColors.ControlDark;
 

@@ -23,7 +23,6 @@ namespace Ginger
 
 			textBox_Text.richTextBox.syntaxFlags = RichTextBoxEx.SyntaxFlags.Default & ~RichTextBoxEx.SyntaxFlags.Names;
 			textBox_Text.HighlightBorder = false;
-			textBox_Text.BorderColor = Color.White;
 			textBox_Text.TextChanged += TextBox_Text_TextChanged;
 			textBox_Text.ForeColor = Theme.Current.TextBoxForeground;
 			textBox_Text.BackColor = Theme.Current.TextBoxBackground;

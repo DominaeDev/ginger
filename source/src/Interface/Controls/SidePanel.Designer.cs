@@ -146,7 +146,6 @@
 			// 
 			// group_Character
 			// 
-			group_Character.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
 			group_Character.Controls.Add(infoPanel);
 			group_Character.Controls.Add(portraitPanel);
 			group_Character.Dock = System.Windows.Forms.DockStyle.Top;
@@ -325,7 +324,6 @@
 			// group_CardInfo
 			// 
 			group_CardInfo.AutoSize = true;
-			group_CardInfo.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
 			group_CardInfo.Controls.Add(this.textBox_tags);
 			group_CardInfo.Controls.Add(this.label_tags);
 			group_CardInfo.Controls.Add(this.textBox_creatorNotes);
@@ -493,7 +491,6 @@
 			// group_User
 			// 
 			group_User.AutoSize = true;
-			group_User.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
 			group_User.Controls.Add(tableLayoutPanel2);
 			group_User.Dock = System.Windows.Forms.DockStyle.Top;
 			group_User.Location = new System.Drawing.Point(0, 470);
@@ -624,7 +621,6 @@
 			// 
 			// group_Stats
 			// 
-			group_Stats.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
 			group_Stats.Controls.Add(panel_right);
 			group_Stats.Controls.Add(panel_left);
 			group_Stats.Dock = System.Windows.Forms.DockStyle.Top;
@@ -835,7 +831,6 @@
 			// group_Generation
 			// 
 			group_Generation.AutoSize = true;
-			group_Generation.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
 			group_Generation.Controls.Add(tableLayoutPanel3);
 			group_Generation.Dock = System.Windows.Forms.DockStyle.Top;
 			group_Generation.Location = new System.Drawing.Point(0, 545);

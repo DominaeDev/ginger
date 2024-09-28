@@ -8,19 +8,6 @@ namespace Ginger
 {
 	public class GroupBoxEx : GroupBox
 	{
-		[Browsable(true)]
-		public Color BorderColor
-		{
-			get { return this._borderColor; }
-			set { this._borderColor = value; }
-		}
-		private Color _borderColor = SystemColors.ButtonShadow;
-
-		public GroupBoxEx()
-		{
-			_borderColor = Theme.Current.GroupBoxBorder;
-		}
-
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			Brush textBrush = new SolidBrush(Theme.Current.ControlForeground);

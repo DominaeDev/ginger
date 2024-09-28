@@ -1,5 +1,4 @@
 ﻿using System.Windows.Forms;
-using System.ComponentModel;
 using System.Drawing;
 using System;
 
@@ -7,14 +6,8 @@ namespace Ginger
 {
 	public class ComboBoxEx : ComboBox
 	{
-		[Browsable(true)]
-		[Category("Appearance")]
-		[DefaultValue(typeof(Color), "WindowFrame")]
-		public Color BorderColor { get; set; }
-
 		public ComboBoxEx()
 		{
-			BorderColor = SystemColors.WindowFrame;
 			DropDownStyle = ComboBoxStyle.DropDownList;
 			DoubleBuffered = false;
 		}

@@ -12,7 +12,6 @@ namespace Ginger
 		public bool Changed = false;
 
 		private string _previousCellValue = null;
-		private bool _bEditing = false;
 
 		public VariablesDialog()
 		{
@@ -76,7 +75,6 @@ namespace Ginger
 
 		private void DataGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
 		{
-			_bEditing = true;
 			_previousCellValue = dataGridView.CurrentCell.Value as string ?? "";
 			if (e.ColumnIndex == 0)
 			{
@@ -88,7 +86,6 @@ namespace Ginger
 
 		private void DataGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
 		{
-			_bEditing = false;
 			if (e.ColumnIndex == 0) // Name
 			{
 				string varName = (dataGridView.CurrentCell.EditedFormattedValue as string ?? "").Trim();
