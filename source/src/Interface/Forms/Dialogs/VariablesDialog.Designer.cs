@@ -170,7 +170,7 @@ namespace Ginger
 			this.Name = "VariablesDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Custom variables";
+			this.Text = "User-defined variables";
 			listPanel.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
 			leftPanel.ResumeLayout(false);

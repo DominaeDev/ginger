@@ -121,31 +121,6 @@ namespace Ginger
 			value = default(string);
 			return false;
 		}
-
-		public void AddVariablesFromText(string text)
-		{
-			List<CustomVariableName> varNames = new List<CustomVariableName>();
-			var pos_var = text.IndexOf("{$", 0);
-			while (pos_var != -1)
-			{
-				int pos_var_end = text.IndexOf("}", pos_var + 2);
-				if (pos_var_end == -1)
-					break;
-
-				CustomVariableName varName = text.Substring(pos_var + 2, pos_var_end - pos_var - 2);
-				if (string.IsNullOrWhiteSpace(varName.ToString()) == false)
-					varNames.Add(varName);
-
-				pos_var = text.IndexOf("{$", pos_var + 2);
-			}
-
-			foreach (var varName in varNames)
-			{
-				string tmp;
-				if (TryGetVariable(varName, out tmp) == false)
-					customVariables.Add(new CustomVariable(varName));
-			}
-		}
 	}
 
 	/// <summary>

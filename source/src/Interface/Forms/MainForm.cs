@@ -2396,12 +2396,41 @@ namespace Ginger
 		private void customVariablesMenuItem_Click(object sender, EventArgs e)
 		{
 			VariablesDialog dlg = new VariablesDialog();
-			dlg.Variables = new List<CustomVariable>(Current.Card.customVariables);
+			var variables = new List<CustomVariable>(Current.Card.customVariables);
+
+			// Find unknown variables and add them
+			List<CustomVariableName> varNames = new List<CustomVariableName>();
+
+			foreach (var parameter in Current.AllRecipes.SelectMany(r => r.parameters).OfType<TextParameter>())
+			{
+				var text = parameter.value;
+				if (text == null)
+					continue;
+				ExtractVariableNames(ref varNames, text);
+			}
+
+			foreach (var parameter in Current.AllRecipes.SelectMany(r => r.parameters).OfType<LorebookParameter>())
+			{
+				var lorebook = parameter.value;
+				if (lorebook == null)
+					continue;
+				foreach (var entry in lorebook.entries)
+					ExtractVariableNames(ref varNames, entry.value);
+			}
+
+			foreach (var varName in varNames)
+			{
+				string tmp;
+				if (Current.Card.TryGetVariable(varName, out tmp) == false)
+					variables.Add(new CustomVariable(varName));
+			}
+
+			dlg.Variables = variables;
 
 			if (dlg.ShowDialog() == DialogResult.OK && dlg.Changed)
 			{
 				Current.Card.customVariables = new List<CustomVariable>(dlg.Variables);
-				Undo.Push(Undo.Kind.Parameter, "Changed custom variables");
+				Undo.Push(Undo.Kind.Parameter, "Changed user-defined variables");
 
 				var textBoxes = recipeList.FindAllControlsOfType<RichTextBoxEx>();
 				foreach (var textBox in textBoxes)
@@ -2409,6 +2438,23 @@ namespace Ginger
 
 				recipeList.RefreshSyntaxHighlighting(false);
 				Current.IsDirty = true;
+			}
+
+			void ExtractVariableNames(ref List<CustomVariableName> names, string text)
+			{
+				var pos_var = text.IndexOf("{$", 0);
+				while (pos_var != -1)
+				{
+					int pos_var_end = text.IndexOf("}", pos_var + 2);
+					if (pos_var_end == -1)
+						break;
+
+					CustomVariableName varName = text.Substring(pos_var + 2, pos_var_end - pos_var - 2);
+					if (string.IsNullOrWhiteSpace(varName.ToString()) == false)
+						names.Add(varName);
+
+					pos_var = text.IndexOf("{$", pos_var + 2);
+				}
 			}
 		}
 	}

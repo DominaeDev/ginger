@@ -305,9 +305,6 @@ namespace Ginger
 
 						(editRecipe.parameters[0] as TextParameter).value = text;
 
-						// Detect and add variables
-						Current.Card.AddVariablesFromText(text);
-
 						instances.Add(editRecipe);
 					}
 				}

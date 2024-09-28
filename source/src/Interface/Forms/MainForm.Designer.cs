@@ -1052,7 +1052,7 @@ namespace Ginger {
 			// 
 			this.customVariablesMenuItem.Name = "customVariablesMenuItem";
 			this.customVariablesMenuItem.Size = new System.Drawing.Size(219, 22);
-			this.customVariablesMenuItem.Text = "Custom &variables...";
+			this.customVariablesMenuItem.Text = "User-defined &variables...";
 			this.customVariablesMenuItem.Click += new System.EventHandler(this.customVariablesMenuItem_Click);
 			// 
 			// embeddedAssetsMenuItem

@@ -741,9 +741,10 @@ namespace Ginger
 			}
 
 			// Known variables
-			if (Current.Card.customVariables.Count > 0 && _syntaxFlags.Contains(SyntaxFlags.Variables))
+			if (_syntaxFlags.Contains(SyntaxFlags.Variables))
 			{
 				string[] varNames = Current.Card.customVariables
+					.Where(v => string.IsNullOrWhiteSpace(v.Value) == false)
 					.Select(v => string.Format(@"{{${0}}}", v.Name))
 					.ToArray();
 				syntaxHighlighter.SetVariableNames(varNames, new SyntaxStyle(colorVariable), 5);
