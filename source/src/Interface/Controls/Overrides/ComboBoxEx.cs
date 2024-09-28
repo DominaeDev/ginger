@@ -12,23 +12,15 @@ namespace Ginger
 			DoubleBuffered = false;
 		}
 
-		private const int WM_PAINT = 0xF;
-		private const int WM_NCPAINT = 0x85;
-		private const int WM_MOUSEWHEEL = 0x20A;
-		public const int WM_MOUSEFIRST = 0x0200;
-        public const int WM_MOUSELEAVE = 0x02A3;
-        public const int WM_MOUSEHOVER = 0x02A1;
-		private const int WM_ENABLE     = 0x0A;
-
 		protected override void WndProc(ref Message m)
 		{
-			if (m.Msg == WM_PAINT)
+			if (m.Msg == Win32.WM_PAINT)
 			{
 				base.WndProc(ref m);
 				DrawBorder();
 				return;
 			}
-			else if (m.Msg == WM_NCPAINT)
+			else if (m.Msg == Win32.WM_NCPAINT)
 			{
 				base.WndProc(ref m);
 
@@ -42,13 +34,13 @@ namespace Ginger
 					}
 				}
 			}
-			else if (m.Msg == WM_MOUSEWHEEL)
+			else if (m.Msg == Win32.WM_MOUSEWHEEL)
 			{
 				// Eat scroll wheel events, because casually scrolling down the recipe list 
 				// with the mouse wheel can cause unwanted parameter changes otherwise.
 				return;
 			}
-			else if (m.Msg == WM_ENABLE)
+			else if (m.Msg == Win32.WM_ENABLE)
 			{
 				return;
 			}

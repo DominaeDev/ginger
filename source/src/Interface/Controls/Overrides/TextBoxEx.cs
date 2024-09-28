@@ -432,28 +432,15 @@ namespace Ginger
 			Select(start, length);
 		}
 
-		// Border color
-		private const int WM_PAINT = 0x000F;
-		private const int WM_NCPAINT = 0x85;
-		private const uint RDW_INVALIDATE = 0x1;
-		private const uint RDW_IUPDATENOW = 0x100;
-		private const uint RDW_FRAME = 0x400;
-		[DllImport("user32.dll")]
-		static extern IntPtr GetWindowDC(IntPtr hWnd);
-		[DllImport("user32.dll")]
-		static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
-		[DllImport("user32.dll")]
-		static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprc, IntPtr hrgn, uint flags);
-	
 		protected override void WndProc(ref Message m)
 		{
-			if (m.Msg == WM_PAINT)
+			if (m.Msg == Win32.WM_PAINT)
 			{
 				base.WndProc(ref m);
 				DrawBorder();
 				return;
 			}
-			else if (m.Msg == WM_NCPAINT)
+			else if (m.Msg == Win32.WM_NCPAINT)
 			{
 				DrawBorder();
 				return;
@@ -464,7 +451,7 @@ namespace Ginger
 
 		private void DrawBorder()
 		{
-			var hdc = GetWindowDC(this.Handle);
+			var hdc = Win32.GetWindowDC(this.Handle);
 			using (var g = Graphics.FromHdcInternal(hdc))
 			{
 				// Inner border
@@ -481,7 +468,7 @@ namespace Ginger
 					g.DrawRectangle(p, new Rectangle(0, 0, Width - 1, Height - 1));
 				}
 			}
-			ReleaseDC(this.Handle, hdc);
+			Win32.ReleaseDC(this.Handle, hdc);
 		}
 
 		protected override void OnEnabledChanged(EventArgs e)
@@ -495,7 +482,7 @@ namespace Ginger
 		protected override void OnSizeChanged(EventArgs e)
 		{
 			base.OnSizeChanged(e);
-			RedrawWindow(Handle, IntPtr.Zero, IntPtr.Zero, RDW_FRAME | RDW_IUPDATENOW | RDW_INVALIDATE);
+			Win32.RedrawWindow(Handle, IntPtr.Zero, IntPtr.Zero, Win32.RDW_FRAME | Win32.RDW_IUPDATENOW | Win32.RDW_INVALIDATE);
 		}
 
 	}

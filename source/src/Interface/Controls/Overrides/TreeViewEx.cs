@@ -9,24 +9,8 @@ namespace Ginger
 	{
 		public event MouseEventHandler OnRightClick;
 
-		private const int WM_RBUTTONDOWN = 0x0204;
-		private const int WM_RBUTTONUP = 0x0205;
-
 		private Point _rightDownLocation;
 		private bool _bRightDown = false;
-
-		private static int LoWord(IntPtr dWord)
-		{
-			return dWord.ToInt32() & 0xffff;
-		}
-
-		private static int HiWord(IntPtr dWord)
-		{
-			if ((dWord.ToInt32() & 0x80000000) == 0x80000000)
-				return dWord.ToInt32() >> 16;
-			else
-				return (dWord.ToInt32() >> 16) & 0xffff;
-		}
 
 		protected override void OnMouseLeave(EventArgs e)
 		{
@@ -36,19 +20,19 @@ namespace Ginger
 
 		protected override void WndProc(ref Message m)
 		{
-			if (m.Msg == WM_RBUTTONUP)
+			if (m.Msg == Win32.WM_RBUTTONUP)
 			{
-				int x = LoWord(m.LParam);
-				int y = HiWord(m.LParam);
+				int x = Win32.LoWord(m.LParam);
+				int y = Win32.HiWord(m.LParam);
 				if (_bRightDown && (Math.Abs(x - _rightDownLocation.X) < 10 && Math.Abs(y - _rightDownLocation.Y) < 10))
 					OnRightClick?.Invoke(this, new MouseEventArgs(MouseButtons.Right, 1, x, y, 0));
 				_bRightDown = false;
 				return;
 			}
-			if (m.Msg == WM_RBUTTONDOWN)
+			if (m.Msg == Win32.WM_RBUTTONDOWN)
 			{
-				int x = LoWord(m.LParam);
-				int y = HiWord(m.LParam);
+				int x = Win32.LoWord(m.LParam);
+				int y = Win32.HiWord(m.LParam);
 				_rightDownLocation = new Point(x, y);
 				_bRightDown = true;
 				return;

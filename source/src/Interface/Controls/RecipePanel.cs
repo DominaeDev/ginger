@@ -844,60 +844,15 @@ namespace Ginger
 			}
 		}
 
-		[StructLayout(LayoutKind.Sequential)]
-		private struct RECT
-		{
-			public readonly int Left;
-			public readonly int Top;
-			public readonly int Right;
-			public readonly int Bottom;
-
-			private RECT(int left, int top, int right, int bottom)
-			{
-				Left = left;
-				Top = top;
-				Right = right;
-				Bottom = bottom;
-			}
-
-			public RECT(Rectangle r) : this(r.Left, r.Top, r.Right, r.Bottom)
-			{
-			}
-
-			public Rectangle ToRectangle()
-			{
-				return new Rectangle(this.Left, this.Top, this.Right - this.Left, this.Bottom - this.Top);
-			}
-		}
-
-		private const int WM_PAINT = 0x000F;
-		private const int WM_NCPAINT = 0x0085;
-		[StructLayout(LayoutKind.Sequential)]
-		struct PAINTSTRUCT
-		{
-			public IntPtr hdc;
-			public bool fErase;
-			public RECT rcPaint;
-			public bool fRestore;
-			public bool fIncUpdate;
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)] public byte[] rgbReserved;
-		}
-
-		[DllImport("user32.dll")]
-		extern static IntPtr BeginPaint(IntPtr hwnd, out PAINTSTRUCT lpPaint);
-
-		[DllImport("user32.dll")]
-		extern static bool EndPaint(IntPtr hWnd, [In] ref PAINTSTRUCT lpPaint);
-
-		private PAINTSTRUCT _ps;
+		private Win32.PAINTSTRUCT _ps;
 
 		protected override void WndProc(ref System.Windows.Forms.Message m)
 		{
 			IntPtr hdc = IntPtr.Zero;
 
-			if (m.Msg == WM_PAINT)
+			if (m.Msg == Win32.WM_PAINT)
 			{
-				hdc = BeginPaint(Handle, out _ps);
+				hdc = Win32.BeginPaint(Handle, out _ps);
 			}
 
 			base.WndProc(ref m);
@@ -909,7 +864,7 @@ namespace Ginger
 					OnPaint(new PaintEventArgs(graphic, _ps.rcPaint.ToRectangle()));
 				}
 
-				EndPaint(Handle, ref _ps);
+				Win32.EndPaint(Handle, ref _ps);
 			}
 		}
 

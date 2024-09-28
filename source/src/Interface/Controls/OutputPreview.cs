@@ -11,9 +11,6 @@ namespace Ginger
 		private bool _bRightDown = false; // Context menu
 		public Generator.Output output;
 
-		private const int WM_RBUTTONDOWN = 0x0204;
-		private const int WM_RBUTTONUP = 0x0205;
-
 		public OutputPreview() : base()
 		{
 			MouseLeave += OnMouseLeave;
@@ -520,35 +517,22 @@ namespace Ginger
 			Clipboard.SetText(text, TextDataFormat.UnicodeText);
 		}
 
-		private static int LoWord(IntPtr dWord)
-		{
-			return dWord.ToInt32() & 0xffff;
-		}
-
-		private static int HiWord(IntPtr dWord)
-		{
-			if ((dWord.ToInt32() & 0x80000000) == 0x80000000)
-				return dWord.ToInt32() >> 16;
-			else
-				return (dWord.ToInt32() >> 16) & 0xffff;
-		}
-
 		protected override void WndProc(ref Message m)
 		{
-			if (m.Msg == WM_RBUTTONDOWN)
+			if (m.Msg == Win32.WM_RBUTTONDOWN)
 			{
 				_bRightDown = true;
 				return;
 			}
 
-			if (m.Msg == WM_RBUTTONUP)
+			if (m.Msg == Win32.WM_RBUTTONUP)
 			{
 				if (_bRightDown)
 				{
 					unchecked
 					{
-						short x = (short)LoWord(m.LParam);
-						short y = (short)HiWord(m.LParam);
+						short x = (short)Win32.LoWord(m.LParam);
+						short y = (short)Win32.HiWord(m.LParam);
 						if (x == (short)0xFFFF) // Is negative
 							x = 0;
 						if (y == (short)0xFFFF) // Is negative

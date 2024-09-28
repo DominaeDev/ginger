@@ -181,127 +181,6 @@ namespace Ginger
 		private bool _bHasIncompleteWords = false;
 		#endregion
 
-		#region DLL imports
-
-		[DllImport("user32.dll")]
-		private static extern int SendMessage(HandleRef hWnd, int msg, int wParam, int lParam);
-
-		[DllImport("user32.dll")]
-		private static extern int SendMessage(HandleRef hWnd, int msg, int wParam, ref PARAFORMAT lp);
-
-		[DllImport("user32.dll")]
-		private static extern Int32 SendMessage(IntPtr hWnd, int msg, int wParam, [MarshalAs(UnmanagedType.LPWStr)] string lParam);
-
-		[DllImport("user32.dll")]
-		private static extern int SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, IntPtr lParam);
-
-		[DllImport("user32.dll")]
-		private static extern IntPtr SendMessage(IntPtr hWnd, Int32 wMsg, Int32 wParam, ref Point lParam);
-
-		[DllImport("user32.dll")]
-		private extern static IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, IntPtr lParam);
-
-		[DllImport("user32.dll")]
-		public static extern int SetCursor(IntPtr cursor);
-
-		[DllImport("user32.dll")]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		extern static bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
-
-		[DllImport("user32.dll")]
-		extern static int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
-
-		// Constants from the Platform SDK
-		private const int WM_SETCURSOR = 0x20;
-		private const int WM_MOUSEWHEEL = 0x20A;
-		private const int WM_VSCROLL = 0x115;
-		private const int WM_SETREDRAW = 0x000B;
-		private const int WM_PAINT = 0x000F;
-		private const int WM_USER = 0x400;
-		private const int EM_GETEVENTMASK = (WM_USER + 59);
-		private const int EM_SETEVENTMASK = (WM_USER + 69);
-		private const int EM_GETSCROLLPOS = WM_USER + 221;
-		private const int SB_PAGEBOTTOM = 7;
-		private const int EM_GETPARAFORMAT = 1085;
-		private const int EM_SETPARAFORMAT = 1095;
-		private const int EM_SETTYPOGRAPHYOPTIONS = 1226;
-		private const int TO_ADVANCEDTYPOGRAPHY = 1;
-		private const int PFM_ALIGNMENT = 0x8;
-		private const int PFM_LINESPACING = 0x100;
-		private const int SCF_DEFAULT = 0x0;
-		private const int SCF_SELECTION = 0x1;
-		private const int SB_LINEUP = 0;
-		private const int SB_LINEDOWN = 1;
-		private const int SB_THUMBPOSITION = 4;
-		private const int SB_THUMBTRACK = 5;
-		private const int SB_TOP = 6;
-		private const int SB_BOTTOM = 7;
-		private const int SB_ENDSCROLL = 8;
-		private const int WM_SETFOCUS   = 0x07;
-		private const int WM_ENABLE     = 0x0A;
-
-		struct SCROLLINFO
-		{
-			public uint cbSize;
-			public uint fMask;
-			public int nMin;
-			public int nMax;
-			public uint nPage;
-			public int nPos;
-			public int nTrackPos;
-		}
-
-		enum ScrollBarDirection
-		{
-			SB_HORZ = 0,
-			SB_VERT = 1,
-			SB_CTL = 2,
-			SB_BOTH = 3
-		}
-
-		enum ScrollInfoMask
-		{
-			SIF_RANGE = 0x1,
-			SIF_PAGE = 0x2,
-			SIF_POS = 0x4,
-			SIF_DISABLENOSCROLL = 0x8,
-			SIF_TRACKPOS = 0x10,
-			SIF_ALL = SIF_RANGE + SIF_PAGE + SIF_POS + SIF_TRACKPOS
-		}
-
-		[StructLayout(LayoutKind.Sequential)]
-		private struct PARAFORMAT
-		{
-			public int cbSize;
-			public uint dwMask;
-			public short wNumbering;
-			public short wReserved;
-			public int dxStartIndent;
-			public int dxRightIndent;
-			public int dxOffset;
-			public short wAlignment;
-			public short cTabCount;
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-			public int[] rgxTabs;
-
-			// PARAFORMAT2 from here onwards.
-			public int dySpaceBefore;
-			public int dySpaceAfter;
-			public int dyLineSpacing;
-			public short sStyle;
-			public byte bLineSpacingRule;
-			public byte bOutlineLevel;
-			public short wShadingWeight;
-			public short wShadingStyle;
-			public short wNumberingStart;
-			public short wNumberingStyle;
-			public short wNumberingTab;
-			public short wBorderSpace;
-			public short wBorderWidth;
-			public short wBorders;
-		}
-		#endregion
-
 		private int _ignoreTextChanged = 0;
 		private bool _bLocked = false;
 		private bool _bRightDown = false; // Context menu
@@ -346,12 +225,8 @@ namespace Ginger
 
 			// Scroll to bottom when typing on the bottom row
 			// This prevents text from jumping around
-			IntPtr handle = Handle;
-			SCROLLINFO si = new SCROLLINFO();
-			si.cbSize = (uint)Marshal.SizeOf(si);
-			si.fMask = (uint)ScrollInfoMask.SIF_ALL;
-			GetScrollInfo(handle, (int)ScrollBarDirection.SB_VERT, ref si);
-			if (SelectionStart == this.Text.Length || si.nPage + si.nPos >= si.nMax - 16) // Scrollbar at bottom
+			int scrollY, scrollMax;
+			if (SelectionStart == this.Text.Length || (Win32.GetVerticalScrollbarPosition(this, out scrollY, out scrollMax) && scrollY >= scrollMax - 16)) // Scrollbar at bottom
 				ScrollToBottom();
 
 			PushUndo(new UndoState(
@@ -590,31 +465,31 @@ namespace Ginger
 
 		protected override void WndProc(ref Message m)
 		{
-			if (m.Msg == WM_MOUSEWHEEL) // Override mouse wheel scroll to remove awkward and slow smooth scrolling
+			if (m.Msg == Win32.WM_MOUSEWHEEL) // Override mouse wheel scroll to remove awkward and slow smooth scrolling
 			{
 				int scrollLines = SystemInformation.MouseWheelScrollLines;
 				for (int i = 0; i < scrollLines; i++)
 				{
 					long delta = (m.WParam.ToInt64() & 0xff000000) >> 24;
 					if (delta > 0) // when wParam is greater than 0
-						SendMessage(this.Handle, WM_VSCROLL, (IntPtr)1, IntPtr.Zero); // else scroll down
+						Win32.SendMessage(this.Handle, Win32.WM_VSCROLL, (IntPtr)1, IntPtr.Zero); // else scroll down
 					else
-						SendMessage(this.Handle, WM_VSCROLL, (IntPtr)0, IntPtr.Zero); // scroll up 
+						Win32.SendMessage(this.Handle, Win32.WM_VSCROLL, (IntPtr)0, IntPtr.Zero); // scroll up 
 				}
 				return;
 			}
-			else if (m.Msg == WM_SETCURSOR) // Fixes a bug where cursor flicker between i-bar and arrow
+			else if (m.Msg == Win32.WM_SETCURSOR) // Fixes a bug where cursor flicker between i-bar and arrow
 			{
 				var scrollbarWidth = System.Windows.Forms.SystemInformation.VerticalScrollBarWidth;
 				var x = PointToClient(Control.MousePosition).X;
 				var inScrollbar = x > this.Width - scrollbarWidth;
 
 				var cursor = inScrollbar ? Cursors.Arrow : Cursors.IBeam;
-				SetCursor(cursor.Handle);
+				Win32.SetCursor(cursor.Handle);
 				m.Result = new IntPtr(1);
 				return;
 			}
-			else if (m.Msg == WM_PAINT)
+			else if (m.Msg == Win32.WM_PAINT)
 			{
 				base.WndProc(ref m);
 
@@ -625,7 +500,7 @@ namespace Ginger
 				return;
 			}
 
-			if (m.Msg == WM_ENABLE)
+			if (m.Msg == Win32.WM_ENABLE)
 			{
 				bool bEnabled = m.WParam == (IntPtr)1;
 				this.ForeColor = bEnabled ? Theme.Current.TextBoxForeground : Theme.Current.GrayText;
@@ -640,7 +515,7 @@ namespace Ginger
 			base.OnHandleCreated(e);
 
 			// Enable support for adjusting lineheight
-			SendMessage(new HandleRef(this, Handle), EM_SETTYPOGRAPHYOPTIONS, TO_ADVANCEDTYPOGRAPHY, TO_ADVANCEDTYPOGRAPHY);
+			Win32.SendMessage(new HandleRef(this, Handle), Win32.EM_SETTYPOGRAPHYOPTIONS, Win32.TO_ADVANCEDTYPOGRAPHY, Win32.TO_ADVANCEDTYPOGRAPHY);
 		}
 
 		private void OnUserPaint(PaintEventArgs e)
@@ -1433,9 +1308,16 @@ namespace Ginger
 			_bBreakUndoMerge = true;
 		}
 
+		public int GetScrollPos()
+		{
+			Point rtfPoint = Point.Empty;
+			Win32.SendMessage(this.Handle, Win32.EM_GETSCROLLPOS, 0, ref rtfPoint);
+			return rtfPoint.Y;
+		}
+
 		public void ScrollToBottom()
 		{
-			SendMessage(this.Handle, WM_VSCROLL, (IntPtr)SB_PAGEBOTTOM, IntPtr.Zero);
+			Win32.ScrollToBottom(this);
 		}
 
 		public int Find(string match, bool matchCase, bool matchWord, bool reverse, int startIndex = -1)
@@ -1506,9 +1388,9 @@ namespace Ginger
 
 			_bLocked = true;
 			// Stop redrawing:  
-			SendMessage(this.Handle, WM_SETREDRAW, 0, IntPtr.Zero);
+			Win32.SendMessage(this.Handle, Win32.WM_SETREDRAW, 0, IntPtr.Zero);
 			// Stop sending of events:  
-			stateLocked = SendMessage(this.Handle, EM_GETEVENTMASK, 0, IntPtr.Zero);
+			stateLocked = Win32.SendMessage(this.Handle, Win32.EM_GETEVENTMASK, 0, IntPtr.Zero);
 			// change colors and stuff in the RichTextBox 
 		}
 
@@ -1516,9 +1398,9 @@ namespace Ginger
 		{
 			_bLocked = false;
 			// turn on events  
-			SendMessage(this.Handle, EM_SETEVENTMASK, 0, stateLocked);
+			Win32.SendMessage(this.Handle, Win32.EM_SETEVENTMASK, 0, stateLocked);
 			// turn on redrawing  
-			SendMessage(this.Handle, WM_SETREDRAW, 1, IntPtr.Zero);
+			Win32.SendMessage(this.Handle, Win32.WM_SETREDRAW, 1, IntPtr.Zero);
 
 			stateLocked = IntPtr.Zero;
 			this.Invalidate();
@@ -1534,32 +1416,11 @@ namespace Ginger
 			if (Multiline)
 			{
 				__Guard(() => {
-					var fmt = new PARAFORMAT();
-					fmt.cbSize = Marshal.SizeOf(fmt);
-					fmt.dwMask = PFM_LINESPACING;
-					fmt.dyLineSpacing = Convert.ToInt32(Math.Max(lineHeight * 240, 0));
-					fmt.bLineSpacingRule = 0x3;
-					SendMessage(new HandleRef(this, Handle), EM_SETPARAFORMAT, SCF_DEFAULT, ref fmt);
-
+					Win32.SetLineHeight(this, lineHeight);
 					if (_syntaxHighlighter != null)
 						_syntaxHighlighter.LineHeight = Constants.LineHeight;
 				});
 			}
-		}
-
-		public float GetLineHeight()
-		{
-			var fmt = new PARAFORMAT();
-			fmt.cbSize = Marshal.SizeOf(fmt);
-			SendMessage(new HandleRef(this, Handle), EM_GETPARAFORMAT, SCF_DEFAULT, ref fmt);
-			return fmt.dyLineSpacing / 240.0f;
-		}
-
-		public int GetScrollPos()
-		{
-			Point rtfPoint = Point.Empty;
-			SendMessage(this.Handle, EM_GETSCROLLPOS, 0, ref rtfPoint);
-			return rtfPoint.Y;
 		}
 
 		public void RefreshScrollbar(int height)
@@ -1579,25 +1440,24 @@ namespace Ginger
 			IntPtr handle = Handle;
 
 			// Get current scroller position
-
-			SCROLLINFO si = new SCROLLINFO();
+			Win32.SCROLLINFO si = new Win32.SCROLLINFO();
 			si.cbSize = (uint)Marshal.SizeOf(si);
-			si.fMask = (uint)ScrollInfoMask.SIF_ALL;
-			GetScrollInfo(handle, (int)ScrollBarDirection.SB_VERT, ref si);
+			si.fMask = (uint)Win32.ScrollInfoMask.SIF_ALL;
+			Win32.GetScrollInfo(handle, (int)Win32.ScrollBarDirection.SB_VERT, ref si);
 
 			// Increase position by pixels
 			si.nPos += cPos.Y - 2; // Inner margin
 //			si.nPos = Math.Min(si.nPos, si)
 
 			// Reposition scroller
-			SetScrollInfo(handle, (int)ScrollBarDirection.SB_VERT, ref si, true);
+			Win32.SetScrollInfo(handle, (int)Win32.ScrollBarDirection.SB_VERT, ref si, true);
 
 			// Send a WM_VSCROLL scroll message using SB_THUMBTRACK as wParam
-			// SB_THUMBTRACK: low-order word of wParam, si.nPos high-order word of  wParam
+			// SB_THUMBTRACK: low-order word of wParam, si.nPos high-order word of wParam
 
-			IntPtr ptrWparam = new IntPtr(SB_THUMBTRACK + 0x10000 * si.nPos);
+			IntPtr ptrWparam = new IntPtr(Win32.SB_THUMBTRACK + 0x10000 * si.nPos);
 			IntPtr ptrLparam = new IntPtr(0);
-			SendMessage(handle, WM_VSCROLL, ptrWparam, ptrLparam);
+			Win32.SendMessage(handle, Win32.WM_VSCROLL, ptrWparam, ptrLparam);
 		}
 
 		public TextBoxBase SearchableControl { get { return this; } }
