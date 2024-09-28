@@ -666,7 +666,7 @@ namespace Ginger
 					panel = this,
 					entry = entry,
 					valueType = LorebookSearchable.ValueType.Value,
-					text = entry.value,
+					text = entry.value.ConvertLinebreaks(Linebreak.LF),
 					SearchableControl = panel != null ? panel.textBox_Text.richTextBox : null,
 					Enabled =this.parameter.isEnabled && entry.isEnabled,
 				});

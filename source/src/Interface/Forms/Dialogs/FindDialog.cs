@@ -86,6 +86,7 @@ namespace Ginger
 				match = textBox_Find.Text,
 				wholeWord = cbWholeWords.Checked,
 				matchCase = cbMatchCase.Checked,
+				reverse = ModifierKeys == Keys.Shift,
 			});
 		}
 
