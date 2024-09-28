@@ -28,6 +28,8 @@ namespace Ginger
 			dataGridView.CellBeginEdit += DataGridView_CellBeginEdit;
 			dataGridView.CellEndEdit += DataGridView_CellEndEdit;
 			dataGridView.SelectionChanged += DataGridView_SelectionChanged;
+
+			dataGridView.MouseClick += DataGridView_MouseClick;
 		}
 
 		private void VariablesDialog_Load(object sender, EventArgs e)
@@ -54,7 +56,7 @@ namespace Ginger
 			dataGridView.Rows.Clear();
 
 			foreach (var variable in Variables)
-				dataGridView.Rows.Add(string.Concat("$", variable.Name), variable.Value);
+				dataGridView.Rows.Add(variable.Name, variable.Value);
 		}
 
 		private List<int> GetSelectedVariables()
@@ -62,7 +64,7 @@ namespace Ginger
 			var selected = new List<int>();
 			for (int i = 0; i < dataGridView.RowCount; ++i)
 			{
-				if (dataGridView.Rows[i].Cells[0].Selected)
+				if (dataGridView.Rows[i].Cells[0].Selected && dataGridView.Rows[i].Cells[1].Selected)
 					selected.Add(i);
 			}
 			return selected;
@@ -79,7 +81,7 @@ namespace Ginger
 			if (e.ColumnIndex == 0)
 			{
 				string value = _previousCellValue;
-				if (value.BeginsWith("$"))
+				if (value.BeginsWith("$")) // Remove prefix
 					dataGridView.CurrentCell.Value = value.Substring(1, value.Length - 1);
 			}
 		}
@@ -89,8 +91,6 @@ namespace Ginger
 			if (e.ColumnIndex == 0) // Name
 			{
 				string varName = (dataGridView.CurrentCell.EditedFormattedValue as string ?? "").Trim();
-				if (varName.BeginsWith("$"))
-					varName = varName.Substring(1);
 				varName = new CustomVariableName(varName).ToString();
 				
 				if (string.IsNullOrEmpty(varName))
@@ -99,7 +99,7 @@ namespace Ginger
 					return;
 				}
 
-				dataGridView.CurrentCell.Value = string.Concat("$", varName);
+				dataGridView.CurrentCell.Value = varName;
 				Variables[e.RowIndex] = new CustomVariable(varName, Variables[e.RowIndex].Value);
 				ResolveDuplicateNames();
 				Changed |= (string)dataGridView.CurrentCell.Value != _previousCellValue;
@@ -222,8 +222,7 @@ namespace Ginger
 			for (int i = 0; i < Variables.Count; ++i)
 			{
 				var variable = Variables[i];
-				var varName = string.Concat("$", variable.Name);
-
+				string varName = variable.Name;
 				string value = dataGridView.Rows[row].Cells[0].Value as string;
 				if (value != varName)
 					dataGridView.Rows[row].Cells[0].Value = varName;
@@ -282,7 +281,7 @@ namespace Ginger
 			foreach (var variable in variables)
 			{
 				Variables.Add(variable);
-				dataGridView.Rows.Add(string.Concat("$", variable.Name), variable.Value);
+				dataGridView.Rows.Add(variable.Name, variable.Value);
 				dataGridView.Rows[dataGridView.RowCount - 1].Selected = true;
 			}
 			ResolveDuplicateNames();
@@ -296,5 +295,46 @@ namespace Ginger
 
 			dataGridView.Columns[0].DefaultCellStyle.WrapMode = DataGridViewTriState.False;
 			dataGridView.Columns[1].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-		}	}
+		}	
+
+		private void DataGridView_MouseClick(object sender, MouseEventArgs args)
+		{
+			dataGridView.EndEdit();
+
+			bool bCanCopy = GetSelectedVariables().Count > 0;
+			bool bCanPaste = false;
+			if (Clipboard.ContainsText())
+			{
+				string text = Clipboard.GetText();
+				string[] rows = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+				var variables = new List<CustomVariable>();
+				foreach (var row in rows)
+				{
+					if (row.BeginsWith("$") && row.IndexOf('\t') != -1)
+					{
+						bCanPaste = true;
+						break;
+					}
+				}
+			}
+
+			if (args.Button == MouseButtons.Right)
+			{
+				var menu = new ContextMenuStrip();
+				menu.Items.Add(new ToolStripMenuItem("Copy", null, (s, e) => {
+					Clipboard.SetDataObject(dataGridView.GetClipboardContent(), true);
+				}) {
+					Enabled = bCanCopy,
+				});
+				menu.Items.Add(new ToolStripMenuItem("Paste", null, (s, e) => {
+					PasteVariables();
+				}) {
+					Enabled = bCanPaste,
+				});
+
+				Theme.Apply(menu);
+				menu.Show(sender as Control, args.Location);
+			}
+		}		
+	}
 }

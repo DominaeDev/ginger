@@ -2399,14 +2399,14 @@ namespace Ginger
 			var variables = new List<CustomVariable>(Current.Card.customVariables);
 
 			// Find unknown variables and add them
-			List<CustomVariableName> varNames = new List<CustomVariableName>();
+			var foundNames = new HashSet<CustomVariableName>();
 
 			foreach (var parameter in Current.AllRecipes.SelectMany(r => r.parameters).OfType<TextParameter>())
 			{
 				var text = parameter.value;
 				if (text == null)
 					continue;
-				ExtractVariableNames(ref varNames, text);
+				ExtractVariableNames(ref foundNames, text);
 			}
 
 			foreach (var parameter in Current.AllRecipes.SelectMany(r => r.parameters).OfType<LorebookParameter>())
@@ -2415,10 +2415,10 @@ namespace Ginger
 				if (lorebook == null)
 					continue;
 				foreach (var entry in lorebook.entries)
-					ExtractVariableNames(ref varNames, entry.value);
+					ExtractVariableNames(ref foundNames, entry.value);
 			}
 
-			foreach (var varName in varNames)
+			foreach (var varName in foundNames)
 			{
 				string tmp;
 				if (Current.Card.TryGetVariable(varName, out tmp) == false)
@@ -2440,7 +2440,7 @@ namespace Ginger
 				Current.IsDirty = true;
 			}
 
-			void ExtractVariableNames(ref List<CustomVariableName> names, string text)
+			void ExtractVariableNames(ref HashSet<CustomVariableName> names, string text)
 			{
 				var pos_var = text.IndexOf("{$", 0);
 				while (pos_var != -1)
@@ -2449,7 +2449,7 @@ namespace Ginger
 					if (pos_var_end == -1)
 						break;
 
-					CustomVariableName varName = text.Substring(pos_var + 2, pos_var_end - pos_var - 2);
+					CustomVariableName varName = text.Substring(pos_var + 1, pos_var_end - pos_var - 1);
 					if (string.IsNullOrWhiteSpace(varName.ToString()) == false)
 						names.Add(varName);
 

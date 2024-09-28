@@ -34,6 +34,9 @@ namespace Ginger
 			if (string.IsNullOrEmpty(value))
 				return null;
 
+			if (value.BeginsWith("$"))
+				value = value.Substring(1);
+
 			// Collapse whitespace
 			value = string.Join(" ", value.Split(new char[] { ' ', '\r', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries));
 
@@ -50,6 +53,7 @@ namespace Ginger
 				else if (char.IsLetterOrDigit(c))
 					sbFormat.Append(c);
 			}
+			sbFormat.Insert(0, '$');
 			return sbFormat.ToString();
 		}
 
