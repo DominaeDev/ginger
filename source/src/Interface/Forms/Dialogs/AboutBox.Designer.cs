@@ -132,7 +132,7 @@ namespace Ginger
 			this.okButton.Name = "okButton";
 			this.okButton.Size = new System.Drawing.Size(85, 28);
 			this.okButton.TabIndex = 24;
-			this.okButton.Text = "&OK";
+			this.okButton.Text = "OK";
 			// 
 			// AboutBox
 			// 

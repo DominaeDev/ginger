@@ -2418,7 +2418,7 @@ namespace Ginger
 					ExtractVariableNames(ref foundNames, entry.value);
 			}
 
-			foreach (var varName in foundNames)
+			foreach (var varName in foundNames.OrderBy(s => s))
 			{
 				string tmp;
 				if (Current.Card.TryGetVariable(varName, out tmp) == false)
