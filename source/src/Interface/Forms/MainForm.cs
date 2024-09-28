@@ -2445,8 +2445,8 @@ namespace Ginger
 				var pos_var = text.IndexOf("{$", 0);
 				while (pos_var != -1)
 				{
-					int pos_var_end = text.IndexOf("}", pos_var + 2);
-					if (pos_var_end == -1)
+					int pos_var_end = text.IndexOfAny(new char[] { '}', ' ', '\r', '\n', '\t' }, pos_var + 2);
+					if (pos_var_end == -1 || char.IsWhiteSpace(text[pos_var_end]))
 						break;
 
 					CustomVariableName varName = text.Substring(pos_var + 1, pos_var_end - pos_var - 1);

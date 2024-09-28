@@ -558,8 +558,8 @@ namespace Ginger
 			var pos_var = sb.IndexOf("{$", 0);
 			while (pos_var != -1)
 			{
-				int pos_var_end = sb.IndexOf("}", pos_var + 2);
-				if (pos_var_end == -1)
+				int pos_var_end = sb.IndexOfAny(pos_var + 2, '}', ' ', '\r', '\n', '\t');
+				if (pos_var_end == -1 || char.IsWhiteSpace(sb[pos_var_end]))
 					break;
 
 				string varName = sb.Substring(pos_var + 2, pos_var_end - pos_var - 2).ToLowerInvariant();
