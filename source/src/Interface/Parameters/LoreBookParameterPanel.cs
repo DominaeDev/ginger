@@ -137,6 +137,8 @@ namespace Ginger
 			NotifyValueChanged(string.Format("entry-{0}-{1}", _entryPanels.Count - 1, _entryPanels.Count));
 			Undo.Resume();
 			Undo.Push(Undo.Kind.Parameter, "Add lore entry");
+
+			RefreshVisualTheme();
 		}
 
 		private void OnChangedEntry(object sender, LorebookEntryPanel.LorebookChangedEventArgs e)
@@ -424,6 +426,8 @@ namespace Ginger
 			NotifyValueChanged(string.Format("entry-{0}-{1}", insertionIndex, _entryPanels.Count));
 			Undo.Resume();
 			Undo.Push(Undo.Kind.Parameter, "Duplicate lore");
+
+			RefreshVisualTheme();
 		}
 
 		protected override void OnRefreshValue()
@@ -466,6 +470,7 @@ namespace Ginger
 			RefreshFlexibleSize();
 			RefreshLayout();
 			NotifySizeChanged();
+			RefreshVisualTheme();
 
 			RichTextBoxEx.AllowSyntaxHighlighting = bSyntaxHighlightingWasEnabled;
 			RefreshSyntaxHighlight(true, true);
@@ -582,7 +587,7 @@ namespace Ginger
 		public void ChangePage(int page)
 		{
 			this.DisableRedrawAndDo(() => {
-				foreach (var panel in _entryPanels)
+				foreach (var panel in _entryPanels.ToList())
 					panel.CommitChange();
 
 				int pageIndex = Math.Min(Math.Max(page, 0), numPages - 1);
@@ -673,6 +678,12 @@ namespace Ginger
 			}
 
 			return searchables.ToArray();
+		}
+
+		private void RefreshVisualTheme()
+		{
+			foreach (var panel in _entryPanels)
+				panel.ApplyVisualTheme();
 		}
 
 	}

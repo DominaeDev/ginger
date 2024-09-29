@@ -185,7 +185,7 @@ namespace Ginger
 			textBox_Keys.Enabled = lorebookEntry.isEnabled;
 
 			// Text box
-			textBox_Text.richTextBox.SetText(lorebookEntry.value.Trim());
+			textBox_Text.richTextBox.SetText((lorebookEntry.value ?? "").Trim());
 			textBox_Text.InitUndo();
 			textBox_Text.Enabled = lorebookEntry.isEnabled;
 			
@@ -713,16 +713,11 @@ namespace Ginger
 			btnRemove.Image = Theme.Current.RemoveLore;
 			btnWrite.Image = Theme.Current.Write;
 
-			if (textBox_Index.Enabled)
-			{
-				textBox_Index.ForeColor = Theme.Current.TextBoxForeground;
-				textBox_Index.BackColor = Theme.Current.TextBoxBackground;
-			}
-			else
-			{
-				textBox_Index.ForeColor = Theme.Current.GrayText;
-				textBox_Index.BackColor = Theme.Current.TextBoxDisabledBackground;
-			}
+			Theme.Apply(textBox_Index);
+			textBox_Keys.ApplyVisualTheme();
+			Theme.Apply(textBox_Keys.richTextBox);
+			textBox_Text.ApplyVisualTheme();
+			Theme.Apply(textBox_Text.richTextBox);
 
 			RefreshTokenCount();
 		}
