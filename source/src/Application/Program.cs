@@ -44,8 +44,11 @@ namespace Ginger
 			{
 				// Check last version
 				VersionNumber appVersion;
-				if (Backyard.GetAppVersion(out appVersion) && AppSettings.BackyardLink.LastVersion != appVersion)
-					AppSettings.BackyardLink.Enabled = false; // Do not auto-connect to newer versions
+				if (Backyard.GetAppVersion(out appVersion)
+					&& (AppSettings.BackyardLink.LastVersion.Major != appVersion.Major || AppSettings.BackyardLink.LastVersion.Minor != appVersion.Minor))
+				{
+					AppSettings.BackyardLink.Enabled = false; // Do not auto-connect to newer versions (ignoring beta builds)
+				}
 				else
 				{
 					if (Backyard.EstablishConnection() == Backyard.Error.NoError)

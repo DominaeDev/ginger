@@ -22,7 +22,7 @@ namespace Ginger
 			public static bool AutoBreakLine = true;
 			public static string Locale = Locales.DefaultLocale;
 			public static bool EnableFormLevelBuffering = true;
-			public static bool DarkTheme = true;
+			public static bool DarkTheme = false;
 
 			public static int LoreEntriesPerPage { get { return _loreEntriesPerPage > 0 ? Math.Max(_loreEntriesPerPage, 10) : int.MaxValue; } }
 			public static string LoreEntriesPerPageSerialize
