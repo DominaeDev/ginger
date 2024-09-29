@@ -158,9 +158,25 @@ namespace Ginger
 			if (type == ContextType.Full)
 			{
 				ParameterStates parameterStates = new ParameterStates(recipes);
-				Context[] localContexts = new Context[recipes.Count];
-
 				Context evalContext = Context.Copy(context);
+
+				// Collect global flags
+				var globalFlags = new HashSet<StringHandle>();
+				for (int i = 0; i < recipes.Count; ++i)
+				{
+					if (recipes[i].isEnabled)
+						globalFlags.UnionWith(recipes[i].flags);
+				}
+
+				// Create parameter states
+				for (int i = 0; i < recipes.Count; ++i)
+				{
+					var state = new ParameterState();
+					state.evalContext = evalContext;
+					state.SetFlags(globalFlags, ParameterScope.Global);
+					parameterStates[i] = state;
+				}
+
 				for (int i = 0; i < recipes.Count; ++i)
 				{
 					var recipe = recipes[i];

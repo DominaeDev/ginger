@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class SidePanel : UserControl, IVisualThemed
+	public partial class SidePanel : UserControl, IThemedControl
 	{
 		public event EventHandler<PortraitPreview.ChangePortraitImageEventArgs> ChangePortraitImage;
 		public event EventHandler ResizePortraitImage;

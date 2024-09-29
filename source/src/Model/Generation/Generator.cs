@@ -594,7 +594,11 @@ namespace Ginger
 							channel = Recipe.Component.Greeting_Group;
 
 						if (channel == Recipe.Component.Grammar)
+						{
+							if (options.Contains(Option.Snippet) == false)
+								text = GingerString.RemoveComments(text);
 							lsOutputsByChannel[(int)channel].Add(Text.DontProcess(Utility.Unindent(Text.Process(text, Text.EvalOption.Minimal))));
+						}
 						else if (channel == Recipe.Component.Example || channel == Recipe.Component.Greeting || channel == Recipe.Component.Greeting_Group)
 							lsOutputsByChannel[(int)channel].Add(Text.DontProcess(Utility.Unindent(Text.Process(text, Text.EvalOption.ExampleFormatting))));
 						else if (template.isRaw)
@@ -895,6 +899,23 @@ namespace Ginger
 			ParameterStates parameterStates = new ParameterStates(recipes);
 			Context[] localContexts = new Context[recipes.Length];
 
+			// Collect global flags
+			var globalFlags = new HashSet<StringHandle>();
+			for (int i = 0; i < recipes.Length; ++i)
+			{
+				if (recipes[i].isEnabled)
+					globalFlags.UnionWith(recipes[i].flags);
+			}
+
+			// Create parameter states
+			for (int i = 0; i < recipes.Length; ++i)
+			{
+				var state = new ParameterState();
+				state.evalContext = evalContext;
+				state.SetFlags(globalFlags, ParameterScope.Global);
+				parameterStates[i] = state;
+			}
+
 			// Resolve parameters
 			for (int i = 0; i < recipes.Length; ++i)
 			{
@@ -902,10 +923,7 @@ namespace Ginger
 				if (recipe.isEnabled == false)
 					continue; // Skip
 
-				var state = new ParameterState();
-				parameterStates[i] = state;
-
-				state.evalContext = evalContext;
+				var state = parameterStates[i];
 				state.evalConfig = new ContextString.EvaluationConfig() {
 					macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
 					referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },

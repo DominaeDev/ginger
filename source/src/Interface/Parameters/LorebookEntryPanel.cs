@@ -6,7 +6,7 @@ using WinFormsSyntaxHighlighter;
 
 namespace Ginger
 {
-	public partial class LorebookEntryPanel : UserControl, IFlexibleParameterPanel, IVisualThemed
+	public partial class LorebookEntryPanel : UserControl, IFlexibleParameterPanel, IThemedControl
 	{
 		private bool _bIgnoreEvents = false;
 		private int _keyHash;

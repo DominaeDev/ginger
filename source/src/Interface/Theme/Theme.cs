@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 using DarkMode = Dark.Net.DarkNet;
 
@@ -287,7 +286,7 @@ namespace Ginger
 		}
 	}
 
-	public interface IVisualThemed
+	public interface IThemedControl
 	{
 		void ApplyVisualTheme();
 	}

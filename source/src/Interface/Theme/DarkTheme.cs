@@ -63,8 +63,8 @@ namespace Ginger
 			public static readonly Color Workspace = ColorTranslator.FromHtml("#202020");
 
 			// Text
-			public static readonly Color Dialogue = ColorTranslator.FromHtml("#ffcd62");
-			public static readonly Color Narration = ColorTranslator.FromHtml("#97a2ac");
+			public static readonly Color Dialogue = ColorTranslator.FromHtml("#ffac60");
+			public static readonly Color Narration = ColorTranslator.FromHtml("#a7b7c5");
 			public static readonly Color Number = ColorTranslator.FromHtml("#BE7BE3");
 			public static readonly Color Name = ColorTranslator.FromHtml("#4FB0FF");
 			public static readonly Color Command = ColorTranslator.FromHtml("#c2814c");

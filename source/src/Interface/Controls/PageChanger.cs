@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class PageChanger : UserControl, IVisualThemed
+	public partial class PageChanger : UserControl, IThemedControl
 	{
 		public int currentPage	{ get; private set; }	// zero-based
 		public int maxPages		{ get; private set; }	// one-based

@@ -1,0 +1,93 @@
+﻿<Ginger id="format-chat-short" version="1.0">
+	<!-- Preamble -->
+	<Name>Format/Chat format (short)</Name>
+	<Title>Chat format (short)</Title>
+	<Author>Ginger</Author>
+	<Category>Modifier</Category>
+	<Flags>model-format</Flags>
+	<Requires>not model-format</Requires>
+	
+	<Description>
+		A grammar that limits the model output to follow a brief chat format.
+		(Backyard AI only)
+	</Description>
+		
+	<!-- Chat (or default) -->
+	<Grammar rule="__support-grammar and (not text-style or text-style eq 1)"><![CDATA[
+		root ::= patterns "\n"
+		patterns ::= (action | dialogue | pa | pb | pc | pd )
+		pa ::= action " " dialogue
+		pb ::= dialogue " " action
+		pc ::= action " " dialogue " " action
+		pd ::= dialogue " " action " " dialogue
+		dialogue ::= [[^<\n*#\"]]+
+		action ::= "*" [[a-z .,'?!:;0-9-]]+ "*"
+	]]></Grammar>
+	<!-- Novel -->
+	<Grammar rule="__support-grammar and text-style eq 2"><![CDATA[
+		root ::= patterns "\n"
+		patterns ::= (action | dialogue | pa | pb | pc | pd )
+		pa ::= action " " dialogue
+		pb ::= dialogue " " action
+		pc ::= action " " dialogue " " action
+		pd ::= dialogue " " action " " dialogue
+		dialogue ::= "\"" [[^<\n*#\"]]+ "\""
+		action ::= [[^<\n*#\"]]+
+	]]></Grammar>
+	<!-- Mixed -->
+	<Grammar rule="__support-grammar and text-style eq 3"><![CDATA[
+		root ::= patterns "\n"
+		patterns ::= (action | dialogue | pa | pb | pc | pd )
+		pa ::= action " " dialogue
+		pb ::= dialogue " " action
+		pc ::= action " " dialogue " " action
+		pd ::= dialogue " " action " " dialogue
+		dialogue ::= "\"" [[^<\n*#\"]]+ "\""
+		action ::= "*" [[a-z .,'?!:;0-9-]]+ "*"
+	]]></Grammar>
+	<!-- Decorative -->
+	<Grammar rule="__support-grammar and text-style eq 4"><![CDATA[
+		root ::= patterns "\n"
+		patterns ::= (action | dialogue | pa | pb | pc | pd )
+		pa ::= action " " dialogue
+		pb ::= dialogue " " action
+		pc ::= action " " dialogue " " action
+		pd ::= dialogue " " action " " dialogue
+		dialogue ::= "“" [[^<\n*#\"]]+ "”"
+		action ::= [[^<\n*#\"]]+
+	]]></Grammar>
+	<!-- Bold -->
+	<Grammar rule="__support-grammar and text-style eq 5"><![CDATA[
+		root ::= patterns "\n"
+		patterns ::= (action | dialogue | pa | pb | pc | pd )
+		pa ::= action " " dialogue
+		pb ::= dialogue " " action
+		pc ::= action " " dialogue " " action
+		pd ::= dialogue " " action " " dialogue
+		dialogue ::= [[^<\n*#\"]]+
+		action ::= "**" [[a-z .,'?!:;0-9-]]+ "**"
+	]]></Grammar>
+	<!-- Brackets -->
+	<Grammar rule="__support-grammar and text-style eq 6"><![CDATA[
+		root ::= patterns "\n"
+		patterns ::= (action | dialogue | pa | pb | pc | pd )
+		pa ::= action " " dialogue
+		pb ::= dialogue " " action
+		pc ::= action " " dialogue " " action
+		pd ::= dialogue " " action " " dialogue
+		dialogue ::= [[^<\n*#\"]]+
+		action ::= "(" [[^ *]][[a-z .,'?!:;0-9-]]+[[^ *]] ")"
+	]]></Grammar>
+	<!-- CJK -->
+	<Grammar rule="__support-grammar and text-style eq 7"><![CDATA[
+		root ::= patterns "\n"
+		patterns ::= (action | dialogue | pa | pb | pc | pd )
+		pa ::= action " " dialogue
+		pb ::= dialogue " " action
+		pc ::= action " " dialogue " " action
+		pd ::= dialogue " " action " " dialogue
+		dialogue ::= "「" [[^<\n*#\"]]+ "」"
+		action ::= [[^<\n*#\"]]+
+	]]></Grammar>
+
+</Ginger>

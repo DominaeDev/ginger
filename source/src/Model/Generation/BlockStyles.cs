@@ -53,6 +53,7 @@ namespace Ginger
 				return Block.Style.PlusGroup;
 			case "semi-group":
 				return Block.Style.SemiGroup;
+			case "number":
 			case "number-list":
 				return Block.Style.Number;
 			case "bullet-list":

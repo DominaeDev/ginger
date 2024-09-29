@@ -241,28 +241,7 @@ namespace Ginger
 			}
 
 			// Remove comments
-			int pos_comment = sb.IndexOf("/*", 0);
-			while (pos_comment != -1)
-			{
-				int pos_comment_end = Utility.ScopedIndexOf(sb, "*/", pos_comment, "/*", "*/", -1, '\0');
-				if (pos_comment_end == -1)
-					break;
-
-				sb.Remove(pos_comment, pos_comment_end - pos_comment + 2);
-				pos_comment = sb.IndexOf("/*", pos_comment);
-			}
-
-			// Remove comments (Html)
-			pos_comment = sb.IndexOf("<!--", 0);
-			while (pos_comment != -1)
-			{
-				int pos_comment_end = sb.IndexOf("-->", pos_comment + 4);
-				if (pos_comment_end == -1)
-					break;
-
-				sb.Remove(pos_comment, pos_comment_end - pos_comment + 3);
-				pos_comment = sb.IndexOf("<!--", pos_comment);
-			}
+			RemoveComments(sb);
 
 			// Replace names
 			Utility.ReplaceWholeWord(sb, CharacterMarker, "__CCCC__", StringComparison.OrdinalIgnoreCase);
@@ -291,6 +270,40 @@ namespace Ginger
 			sb.Replace("__NNNN__", InternalNameMarker);
 
 			return FromString(sb.ToString());
+		}
+		
+		public static string RemoveComments(string text)
+		{
+			StringBuilder sb = new StringBuilder(text);
+			RemoveComments(sb);
+			return sb.ToString();
+		}
+
+		public static void RemoveComments(StringBuilder sb)
+		{
+			// Remove comments
+			int pos_comment = sb.IndexOf("/*", 0);
+			while (pos_comment != -1)
+			{
+				int pos_comment_end = Utility.ScopedIndexOf(sb, "*/", pos_comment, "/*", "*/", -1, '\0');
+				if (pos_comment_end == -1)
+					break;
+
+				sb.Remove(pos_comment, pos_comment_end - pos_comment + 2);
+				pos_comment = sb.IndexOf("/*", pos_comment);
+			}
+
+			// Remove comments (Html)
+			pos_comment = sb.IndexOf("<!--", 0);
+			while (pos_comment != -1)
+			{
+				int pos_comment_end = sb.IndexOf("-->", pos_comment + 4);
+				if (pos_comment_end == -1)
+					break;
+
+				sb.Remove(pos_comment, pos_comment_end - pos_comment + 3);
+				pos_comment = sb.IndexOf("<!--", pos_comment);
+			}
 		}
 
 		public static GingerString Join(string separator, IEnumerable<GingerString> texts)

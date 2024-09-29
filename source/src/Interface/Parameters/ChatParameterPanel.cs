@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class ChatParameterPanel : ChatParameterPanelDummy, IFlexibleParameterPanel
+	public partial class ChatParameterPanel : ChatParameterPanelDummy, IFlexibleParameterPanel, IThemedControl
 	{
 		public bool FlexibleHeight { get; set; }
 
@@ -144,6 +144,11 @@ namespace Ginger
 		public override int GetParameterHeight()
 		{
 			return textBox.Location.Y + textBox.Height + bottomPanel.Height;
+		}
+		
+		public void ApplyVisualTheme()
+		{
+			btnWrite.Image = Theme.Current.Write;
 		}
 	}
 }

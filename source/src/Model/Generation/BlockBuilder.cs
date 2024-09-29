@@ -854,7 +854,7 @@ namespace Ginger
 								}
 								innerBlock = sb.ToString();
 							}
-							else if (style == Block.Style.Bullet/* && innerEntries.Count > 1*/ || (style == Block.Style.Number && innerEntries.Count == 1))
+							else if (style == Block.Style.Bullet && innerEntries.Count > 1)
 							{
 								StringBuilder sb = new StringBuilder();
 								for (int n = 0; n < innerEntries.Count; ++n)

@@ -9,7 +9,7 @@ using Ginger;
 namespace System.Windows.Forms
 {
 	[ToolboxBitmap(typeof(TabControl))]
-	public class CustomTabControl : TabControl, IVisualThemed
+	public class CustomTabControl : TabControl, IThemedControl
 	{
 		#region	Construction
 

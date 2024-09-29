@@ -10,7 +10,7 @@ using Ginger.Integration;
 
 namespace Ginger
 {
-	public partial class RecipeList : UserControl, IIdleHandler, IVisualThemed
+	public partial class RecipeList : UserControl, IIdleHandler, IThemedControl
 	{
 		[Category("Appearance"), Description("Gradient color")]
 		public Color GradientColor { get; set; }

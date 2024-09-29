@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class CodeParameterPanel : CodeParameterPanelDummy
+	public partial class CodeParameterPanel : CodeParameterPanelDummy, IThemedControl
 	{
 		protected override CheckBox parameterCheckBox { get { return cbEnabled; } }
 		protected override Label parameterLabel { get { return label; } }
@@ -56,6 +56,11 @@ namespace Ginger
 		public override int GetParameterHeight()
 		{
 			return textBox.Location.Y + textBox.Height;
+		}
+
+		public void ApplyVisualTheme()
+		{
+			btnWrite.Image = Theme.Current.Write;
 		}
 	}
 }

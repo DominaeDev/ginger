@@ -9,7 +9,7 @@ namespace Ginger
 	// Doing it this way may look really dumb, and it is, but it actually avoids a whole
 	// host of issues with WinForms' TERRIBLE native RichTextBox.
 
-	public partial class FlatRichTextBox : UserControl, IVisualThemed
+	public partial class FlatRichTextBox : UserControl, IThemedControl
 	{
 		[Category("Behavior"), Description("Placeholder text")]
 		public string Placeholder

@@ -1011,6 +1011,14 @@ namespace Ginger
 			return HSVToRGB(hsv).ToColor();
 		}
 
+		public static Color BoostSaturation(Color background, float fAmount = 0.05f)
+		{
+			var hsv = RGBToHSV(new ColorF(background));
+			if (hsv.g > 0.05f) // Boost saturation
+				hsv.g += fAmount;
+			return HSVToRGB(hsv).ToColor();
+		}
+
 		public static string ReplaceWholeWord(string text, string word, string replace, StringComparison comparison = StringComparison.Ordinal, WholeWordOptions options = WholeWordOptions.Default)
 		{
 			if (string.IsNullOrEmpty(word))

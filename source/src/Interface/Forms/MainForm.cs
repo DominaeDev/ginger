@@ -13,7 +13,7 @@ using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
 {
-	public partial class MainForm : Form, IVisualThemed
+	public partial class MainForm : Form, IThemedControl
 	{
 		public static readonly string AppTitle = "Ginger";
 

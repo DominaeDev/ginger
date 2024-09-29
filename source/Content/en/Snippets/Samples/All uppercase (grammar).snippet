@@ -1,7 +1,9 @@
-﻿<Ginger format="1">
+<Ginger format="1">
 	<Name>Samples/All uppercase (grammar)</Name>
 
-	<Grammar><![CDATA[root ::= text "\n#"
+	<Grammar><![CDATA[/* Root */
+root ::= text "\n#"
+/* Only upper case characters */
 text ::= [[A-Z .,'?!:;0-9-]]+]]></Grammar>
 
 </Ginger>

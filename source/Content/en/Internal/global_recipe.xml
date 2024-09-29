@@ -9,13 +9,13 @@
 <Ginger id="__global">
 
 	<!-- System prompt guidelines -->
-	<Node path="system/guidelines" style="default" mode="exclude" order="-200">
+	<Node path="system/guidelines" style="number-list" mode="exclude" order="-200">
 		GUIDELINES:  
 		{inner}
 	</Node>
 
 	<!-- Exceptions block -->
-	<Node path="system/exceptions" style="default" mode="exclude" order="-100">
+	<Node path="system/exceptions" style="number-list" mode="exclude" order="-100">
 		EXCEPTIONS:  
 		{inner}  
 	</Node>

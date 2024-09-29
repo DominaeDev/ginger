@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Ginger.Properties;
 using Ginger.Integration;
 
 namespace Ginger
 {
-	public partial class RecipePanel : UserControl, IVisualThemed
+	public partial class RecipePanel : UserControl, IThemedControl
 	{
 		public event EventHandler OnParameterChanged;
 		public event EventHandler OnPanelSizeChanged;
@@ -97,8 +96,9 @@ namespace Ginger
 			
 			if (Theme.IsDarkModeEnabled)
 			{
-				color = Utility.GetDarkColor(color, 0.60f);
-				darkColor = Utility.GetDarkColor(color, 0.25f);
+				darkColor = Utility.GetDarkColor(color, 0.30f);
+				color = Utility.GetDarkColor(color, 0.65f);
+				color = Utility.BoostSaturation(color);
 			}
 
 			var contrastColor = Utility.GetContrastColor(color, true);
@@ -614,6 +614,23 @@ namespace Ginger
 			Context evalContext = Current.Character.GetContext(CharacterData.ContextType.None);
 			ParameterStates parameterStates = new ParameterStates(recipes);
 
+			// Collect global flags
+			var globalFlags = new HashSet<StringHandle>();
+			for (int i = 0; i < recipes.Length; ++i)
+			{
+				if (recipes[i].isEnabled)
+					globalFlags.UnionWith(recipes[i].flags);
+			}
+
+			// Create parameter states
+			for (int i = 0; i < recipes.Length; ++i)
+			{
+				var state = new ParameterState();
+				state.evalContext = evalContext;
+				state.SetFlags(globalFlags, ParameterScope.Global);
+				parameterStates[i] = state;
+			}
+
 			// Resolve prior recipes
 			for (int i = 0; i < recipes.Length; ++i)
 			{
@@ -624,10 +641,7 @@ namespace Ginger
 				if (recipe.isEnabled == false)
 					continue; // Skip
 
-				var state = new ParameterState();
-				parameterStates[i] = state;
-
-				state.evalContext = evalContext;
+				var state = parameterStates[i];
 				state.evalConfig = new ContextString.EvaluationConfig() {
 					macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
 					referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
@@ -640,7 +654,7 @@ namespace Ginger
 			}
 
 			// Resolve parameters
-			var parameterState = new ParameterState();
+			var parameterState = parameterStates[recipeIdx];
 			parameterState.evalContext = evalContext;
 			parameterState.evalConfig = new ContextString.EvaluationConfig() {
 				macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
@@ -909,7 +923,7 @@ namespace Ginger
 			foreach (var control in comboBoxes)
 				Theme.Apply(control);
 
-			var themedControls = parameterContainer.FindAllControlsOfType<Control>().OfType<IVisualThemed>();
+			var themedControls = parameterContainer.FindAllControlsOfType<Control>().OfType<IThemedControl>();
 			foreach (var control in themedControls)
 				control.ApplyVisualTheme();
 		}

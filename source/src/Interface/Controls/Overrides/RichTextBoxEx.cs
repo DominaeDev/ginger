@@ -153,7 +153,7 @@ namespace Ginger
 
 			Default = Names | Dialogue | Actions | Commands | Variables | Numbers | CodeBlock | Comments | Markdown | SpellChecking | HTML,
 			Limited = Names | Commands | Variables | Numbers | Comments | Markdown | SpellChecking,
-			Code	= Names | Commands | Variables | Numbers | Comments | Markdown,
+			Code	= Comments,
 			LoreKey = Names | Commands | Variables | Numbers | Wildcards | SpellChecking,
 			LoreText = Limited | Decorators | SpellChecking,
 		}

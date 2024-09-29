@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
-	public partial class MultiTextParameterPanel : MultiTextParameterPanelDummy, IFlexibleParameterPanel, IVisualThemed
+	public partial class MultiTextParameterPanel : MultiTextParameterPanelDummy, IFlexibleParameterPanel, IThemedControl
 	{
 		public enum TextBoxSize
 		{

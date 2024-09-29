@@ -1,0 +1,18 @@
+﻿<Ginger id="format-paragraphs" version="1.0">
+	<!-- Preamble -->
+	<Name>Format/Paragraph format</Name>
+	<Title>Paragraph format</Title>
+	<Author>Ginger</Author>
+	<Category>Modifier</Category>
+	<Requires>not model-format</Requires>
+	<Flags>model-format</Flags>
+	<Description>Instruct the model to write at least a few paragraphs.</Description>
+	
+	<!-- Output -->
+	<Node path="system/guidelines/paragraph">Respond to the [user]'s input in the style of an immersive fictional narrative as [char].</Node>
+	<Node path="system/guidelines/paragraph">[user] will provide his or her own responses and you mustn't speak for [user].</Node>
+	<Node path="system/guidelines/paragraph">Keep your responses long and descriptive, about 2 to 4 paragraphs in length, but no longer than 4 paragraphs.</Node>
+		
+	<Grammar><![CDATA[root ::= text ("\n" text)* ("\n#" | "<")
+text ::= [[^\n#]][[^\n]]*]]></Grammar>
+</Ginger>

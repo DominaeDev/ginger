@@ -1,4 +1,4 @@
-﻿<Ginger id="companion-base" version="1.1">
+﻿<Ginger id="companion-base" version="1.2">
 	<Name>Base/Virtual companion</Name>
 	<Title>Virtual companion</Title>
 	<Description>A base recipe for a one-on-one conversation in the style of a virtual AI companion.</Description>
@@ -28,12 +28,12 @@
 	</Choice>
 	<SetFlag rule="erotic">nsfw</SetFlag>
 	
-	<Toggle id="use-grammar">
+	<Toggle id="use-grammar" rule="not model-format">
 		<Label>Use grammar</Label>
 		<Default>Yes</Default>
 		<Description>
 			Enforce the chat format using a grammar.
-			(Backyard.ai only)
+			(Backyard AI only)
 		</Description>
 	</Toggle>	
 		

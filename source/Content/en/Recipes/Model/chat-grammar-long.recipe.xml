@@ -1,80 +1,21 @@
-﻿<Ginger id="chat-bot" version="1.2">
-	<Name>Base/Chat bot</Name>
-	<Title>Chat bot</Title>
-	<Description>
-		A base recipe for a bot in the style of a one-on-one online chat.
-		
-		(For best result, supply a chat-like example chat and/or greeting.)
-	</Description>
+﻿<Ginger id="format-chat-long" version="1.0">
+	<!-- Preamble -->
+	<Name>Format/Chat format (long)</Name>
+	<Title>Chat format (long)</Title>
 	<Author>Ginger</Author>
-	<Category>Base</Category>
-	<Requires>not base</Requires>
-	<Flags>base, chat</Flags>
-	<Order>0</Order>
+	<Category>Modifier</Category>
+	<Flags>model-format</Flags>
+	<Requires>not model-format</Requires>
 	
-	<!-- Complementary recipes -->
-	<Include>basic-info</Include>
-	<Include>appearance</Include>
-	<Include>personality</Include>
+	<Description>
+		A grammar that limits the model output to follow a brief chat format.
+		(Backyard AI only)
+	</Description>
 	
-	<!-- Parameters -->
-	<Choice id="theme-sfw" required="yes" rule="not allow-nsfw">
-		<Label>Theme</Label>
-		<Option id="friendly">Friendly</Option>
-		<Option id="romantic">Romantic</Option>
-	</Choice>
-
-	<Choice id="theme-nsfw" required="yes" rule="allow-nsfw">
-		<Label>Theme</Label>
-		<Option id="friendly">Friendly</Option>
-		<Option id="romantic">Romantic</Option>
-		<Option id="erotic">Erotic</Option>
-	</Choice>
-	<SetFlag rule="erotic">nsfw</SetFlag>
-	
-	<Toggle id="use-grammar" rule="not model-format">
-		<Label>Use grammar</Label>
-		<Default>Yes</Default>
-		<Description>
-			Enforce the chat format using a grammar.
-			(Backyard.ai only)
-		</Description>
-	</Toggle>		
-		
 	<!-- Output -->
-	<System>
-		Transcript of a never-ending chat between [user] and [char] in the style of a private online chat room; each response a sentence or two at most, without narration and exposition. 
-		Reactions and verbs should be written between asterisks ([!abbr:e.g.], *smiles*).
-		
-		Incorporate the following in your response: {{
-		[!bulletlist:
-		You are '[char]'.
-		[if friendly]
-			You are engaging in an fun and creative conversation with your friend, [user].
-		[elif romantic]
-			You are engaging in an flirty, romantic conversation with [user], your love interest.
-		[elif erotic]
-			You are engaged in [user's] sexual fantasy of [char], in an intimate and erotic conversation, tinged with profoundly vulgar depictions of eroticism and perversions.
-		[endif]
-		
-		Write [char]'s replies only, using first-person present-tense.
-		Address [user] by name or in the second person ('you').
-		Assuming any action of [user] is strictly forbidden.
-		All of [user]'s responses will be preceded by "[__backyard?#][user]:"
-		These instructions are for your eyes only.
-		Follow [char]'s personality as described below.
-		]  
-		}}
-	</System>
-
-	<Example>
-		[user]: "Hi, I'm [user]."
-		[char]: "Hi there!" *smiles*
-	</Example>
-
-	<!-- Grammar to enforce chat style -->
+	
 	<!-- Chat (or default) -->
-	<Grammar rule="use-grammar and __support-grammar and (not text-style or text-style eq 1)"><![CDATA[
+	<Grammar rule="__support-grammar and (not text-style or text-style eq 1)"><![CDATA[
 		root ::= patterns "\n"
 		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
 		pa ::= action " " dialogue
@@ -87,7 +28,7 @@
 		action ::= "*" [[a-z .,'?!:;0-9-]]+ "*"
 	]]></Grammar>
 	<!-- Novel -->
-	<Grammar rule="use-grammar and __support-grammar and text-style eq 2"><![CDATA[
+	<Grammar rule="__support-grammar and text-style eq 2"><![CDATA[
 		root ::= patterns "\n"
 		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
 		pa ::= action " " dialogue
@@ -100,7 +41,7 @@
 		action ::= [[^<\n*#\"]]+
 	]]></Grammar>
 	<!-- Mixed -->
-	<Grammar rule="use-grammar and __support-grammar and text-style eq 3"><![CDATA[
+	<Grammar rule="__support-grammar and text-style eq 3"><![CDATA[
 		root ::= patterns "\n"
 		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
 		pa ::= action " " dialogue
@@ -113,7 +54,7 @@
 		action ::= "*" [[a-z .,'?!:;0-9-]]+ "*"
 	]]></Grammar>
 	<!-- Decorative -->
-	<Grammar rule="use-grammar and __support-grammar and text-style eq 4"><![CDATA[
+	<Grammar rule="__support-grammar and text-style eq 4"><![CDATA[
 		root ::= patterns "\n"
 		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
 		pa ::= action " " dialogue
@@ -126,7 +67,7 @@
 		action ::= [[^<\n*#\"]]+
 	]]></Grammar>
 	<!-- Bold -->
-	<Grammar rule="use-grammar and __support-grammar and text-style eq 5"><![CDATA[
+	<Grammar rule="__support-grammar and text-style eq 5"><![CDATA[
 		root ::= patterns "\n"
 		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
 		pa ::= action " " dialogue
@@ -139,7 +80,7 @@
 		action ::= "**" [[a-z .,'?!:;0-9-]]+ "**"
 	]]></Grammar>
 	<!-- Brackets -->
-	<Grammar rule="use-grammar and __support-grammar and text-style eq 6"><![CDATA[
+	<Grammar rule="__support-grammar and text-style eq 6"><![CDATA[
 		root ::= patterns "\n"
 		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
 		pa ::= action " " dialogue
@@ -152,7 +93,7 @@
 		action ::= "(" [[^ *]][[a-z .,'?!:;0-9-]]+[[^ *]] ")"
 	]]></Grammar>
 	<!-- CJK -->
-	<Grammar rule="use-grammar and __support-grammar and text-style eq 7"><![CDATA[
+	<Grammar rule="__support-grammar and text-style eq 7"><![CDATA[
 		root ::= patterns "\n"
 		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
 		pa ::= action " " dialogue
@@ -164,4 +105,5 @@
 		dialogue ::= "「" [[^<\n*#\"]]+ "」"
 		action ::= [[^<\n*#\"]]+
 	]]></Grammar>
+
 </Ginger>
