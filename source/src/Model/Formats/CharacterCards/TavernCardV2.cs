@@ -13,13 +13,17 @@ namespace Ginger
 	{
 		private static JsonSchema _tavernCharacterCardV1Schema;
 		private static JsonSchema _tavernCharacterCardV2Schema;
+		private static JsonSchema _tavernCharacterCardV2FilterSchema;
 		private static JsonSchema _tavernCharacterBookV2Schema;
+		private static JsonSchema _tavernCharacterBookV2FilterSchema;
 
 		static TavernCardV2()
 		{
 			_tavernCharacterCardV1Schema = JsonSchema.Parse(Resources.tavern_charactercard_v1_schema);
 			_tavernCharacterCardV2Schema = JsonSchema.Parse(Resources.tavern_charactercard_v2_schema);
+			_tavernCharacterCardV2FilterSchema = JsonSchema.Parse(Resources.tavern_charactercard_v2_filter_schema);
 			_tavernCharacterBookV2Schema = JsonSchema.Parse(Resources.tavern_characterbook_v2_schema);
+			_tavernCharacterBookV2FilterSchema = JsonSchema.Parse(Resources.tavern_characterbook_v2_filter_schema);
 		}
 
 		public TavernCardV2()
@@ -110,6 +114,7 @@ namespace Ginger
 			public class Entry
 			{
 				[JsonProperty("id")]
+				[JsonConverter(typeof(JsonIgnoreTypeConverter<int>))]
 				public int id;
 				
 				[JsonProperty("keys")]
@@ -152,17 +157,45 @@ namespace Ginger
 				public JsonExtensionData extensions = new JsonExtensionData();
 			}
 
-			public static CharacterBook FromJson(string json)
+			public static CharacterBook FromJson(string json, out int errors)
 			{
+				List<string> lsErrors = new List<string>();
+				JsonSerializerSettings settings = new JsonSerializerSettings() {
+					Error = delegate (object sender, ErrorEventArgs args) {
+						if (args.ErrorContext.Error.Message.Contains(".extensions")) // Inconsequential
+						{
+							args.ErrorContext.Handled = true;
+							return;
+						}
+						if (args.ErrorContext.Error.Message.Contains("Required")) // Required field
+							return; // Throw
+
+						lsErrors.Add(args.ErrorContext.Error.Message);
+						args.ErrorContext.Handled = true;
+					},
+				};
+
 				try
 				{
 					JObject jObject = JObject.Parse(json);
-					if (jObject.IsValid(_tavernCharacterBookV2Schema))
-						return JsonConvert.DeserializeObject<CharacterBook>(json);
+					if (jObject.IsValid(_tavernCharacterBookV2FilterSchema))
+					{
+						IList<string> validationErrors;
+						if (jObject.IsValid(_tavernCharacterBookV2Schema, out validationErrors) == false)
+							lsErrors.AddRange(validationErrors.Distinct());
+
+						var lorebook = JsonConvert.DeserializeObject<CharacterBook>(json, settings);
+						if (lorebook != null)
+						{
+							errors = lsErrors.Count;
+							return lorebook;
+						}
+					}
 				}
 				catch
 				{
 				}
+				errors = 0;
 				return null;
 			}
 
@@ -171,7 +204,7 @@ namespace Ginger
 				try
 				{
 					JObject jObject = JObject.Parse(jsonData);
-					return jObject.IsValid(_tavernCharacterBookV2Schema);
+					return jObject.IsValid(_tavernCharacterBookV2FilterSchema);
 				}
 				catch
 				{
@@ -294,15 +327,22 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_tavernCharacterCardV2Schema))
+				if (jObject.IsValid(_tavernCharacterCardV2FilterSchema))
 				{
+					IList<string> validationErrors;
+					if (jObject.IsValid(_tavernCharacterCardV2Schema, out validationErrors) == false)
+						lsErrors.AddRange(validationErrors.Distinct());
+
 					var card = JsonConvert.DeserializeObject<TavernCardV2>(json, settings);
-					errors = lsErrors.Count;
-					if (Validate(card))
-						return card;
+					if (card != null)
+					{
+						errors = lsErrors.Count;
+						if (Validate(card))
+							return card;
+					}
 				}
 			}
-			catch
+			catch (Exception e)
 			{
 			}
 
@@ -348,9 +388,26 @@ namespace Ginger
 		{
 			if (card == null || card.data == null)
 				return false;
-			if (card.data.name == null)
-				return false;
-			return card.spec == "chara_card_v2";
+
+			if (card.spec != "chara_card_v2")
+				return true;
+
+			if (string.IsNullOrEmpty(card.data.name))
+				card.data.name = Constants.DefaultCharacterName;
+
+			if (card.data.character_book != null)
+			{
+				if (card.data.character_book.entries == null)
+					card.data.character_book.entries = new CharacterBook.Entry[0];
+
+				foreach (var entry in card.data.character_book.entries)
+				{
+					if (entry.position != "before_char" && entry.position != "after_char")
+						entry.position = "before_char";
+				}
+			}
+
+			return true;
 		}
 
 		private static bool Validate(TavernCardV1 card)
@@ -369,7 +426,7 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(jsonData);
-				if (jObject.IsValid(_tavernCharacterCardV2Schema))
+				if (jObject.IsValid(_tavernCharacterCardV2FilterSchema))
 				{
 					var card = JsonConvert.DeserializeObject<TavernCardV2>(jsonData);
 					return Validate(card);

@@ -1,0 +1,18 @@
+{
+	"type": "object",
+	"properties": {
+		"data": {
+			"required": false,
+			"type": "object",
+			"properties": {}
+		},
+		"spec": {
+			"required": true,
+			"const": "chara_card_v2"
+		},
+		"spec_version": {
+			"required": true,
+			"const": 2.0
+		}
+	}
+}

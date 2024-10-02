@@ -88,29 +88,61 @@ namespace Ginger
 			[JsonProperty("group")]
 			public string group = "";
 
-
 			[JsonProperty("extensions")]
 			public JsonExtensionData extensions = new JsonExtensionData();
 		}
 
 		private static JsonSchema _tavernWorldBookSchema;
+		private static JsonSchema _tavernWorldBookFilterSchema;
 
 		static TavernWorldBook()
 		{
 			_tavernWorldBookSchema = JsonSchema.Parse(Resources.tavern_worldbook_schema);
+			_tavernWorldBookFilterSchema = JsonSchema.Parse(Resources.tavern_worldbook_filter_schema);
 		}
 
-		public static TavernWorldBook FromJson(string json)
+		public static TavernWorldBook FromJson(string json, out int errors)
 		{
+			List<string> lsErrors = new List<string>();
+			JsonSerializerSettings settings = new JsonSerializerSettings() {
+				Error = delegate (object sender, ErrorEventArgs args) {
+					if (args.ErrorContext.Error.Message.Contains(".extensions")) // Inconsequential
+					{
+						args.ErrorContext.Handled = true;
+						return;
+					}
+					if (args.ErrorContext.Error.Message.Contains("Required")) // Required field
+						return; // Throw
+
+					lsErrors.Add(args.ErrorContext.Error.Message);
+					args.ErrorContext.Handled = true;
+				},
+			};
+
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_tavernWorldBookSchema))
-					return JsonConvert.DeserializeObject<TavernWorldBook>(json);
+				if (jObject.IsValid(_tavernWorldBookFilterSchema))
+				{
+					IList<string> validationErrors;
+					if (jObject.IsValid(_tavernWorldBookSchema, out validationErrors) == false)
+						lsErrors.AddRange(validationErrors.Distinct());
+
+					var lorebook = JsonConvert.DeserializeObject<TavernWorldBook>(json, settings);
+					if (lorebook != null)
+					{
+						errors = lsErrors.Count;
+						return lorebook;
+					}
+
+				}
+				
 			}
 			catch
 			{
 			}
+
+			errors = 0;
 			return null;
 		}
 
@@ -119,7 +151,7 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(jsonData);
-				return jObject.IsValid(_tavernWorldBookSchema);
+				return jObject.IsValid(_tavernWorldBookFilterSchema);
 			}
 			catch
 			{

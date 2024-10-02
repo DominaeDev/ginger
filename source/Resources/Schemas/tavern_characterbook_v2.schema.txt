@@ -17,17 +17,11 @@
 		},
 		"scan_depth": {
 			"required": false,
-			"type": [
-				"integer",
-				"string"
-			]
+			"type": "integer"
 		},
 		"token_budget": {
 			"required": false,
-			"type": [
-				"integer",
-				"string"
-			]
+			"type": "integer"
 		},
 		"recursive_scanning": {
 			"required": false,
@@ -47,10 +41,7 @@
 				"properties": {
 					"id": {
 						"required": false,
-						"type": [
-							"integer",
-							"string"
-						]
+						"type": "integer"
 					},
 					"keys": {
 						"required": true,
@@ -102,10 +93,7 @@
 					},
 					"insertion_order": {
 						"required": false,
-						"type": [
-							"integer",
-							"string"
-						]
+						"type": "integer"
 					},
 					"enabled": {
 						"required": false,
@@ -113,9 +101,9 @@
 					},
 					"position": {
 						"required": false,
-						"type": [
-							"string",
-							"null"
+						"enum": [
+							"before_char",
+							"after_char"
 						]
 					},
 					"case_sensitive": {
@@ -131,10 +119,7 @@
 					},
 					"priority": {
 						"required": false,
-						"type": [
-							"integer",
-							"string"
-						]
+						"type": "integer"
 					},
 					"extensions": {
 						"required": false,

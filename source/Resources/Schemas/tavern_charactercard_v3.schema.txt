@@ -361,7 +361,7 @@
 		},
 		"spec": {
 			"required": true,
-			"type": "string"
+			"const": "chara_card_v3"
 		},
 		"spec_version": {
 			"required": true,

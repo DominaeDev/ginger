@@ -16,7 +16,8 @@ namespace Ginger
 				var lorebook = new Lorebook() {
 					filename = files[i],
 				};
-				if (lorebook.LoadFromJson(files[i]))
+				int nErrors;
+				if (lorebook.LoadFromJson(files[i], out nErrors) == Lorebook.LoadError.NoError)
 					books.Add(lorebook);
 			}
 

@@ -428,9 +428,8 @@ Higher detail increases token count.</value>
   <data name="error_load_dictionary" xml:space="preserve">
     <value>Failed to load dictionary.</value>
   </data>
-  <data name="msg_load_with_error" xml:space="preserve">
-    <value>The card loaded successfully, but with {0} error(s).
-Some data may be missing.</value>
+  <data name="msg_load_with_errors" xml:space="preserve">
+    <value>Loaded character card with {0} error(s) due to invalid or corrupt JSON data. Some content may be incomplete or missing.</value>
   </data>
   <data name="example_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Recipes\Components\example_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
@@ -1258,5 +1257,32 @@ Reason: {0}</value>
   </data>
   <data name="dark_link_inactive" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Dark\dark_link_inactive.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tavern_charactercard_v2_filter_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\tavern_charactercard_v2_filter.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="tavern_charactercard_v3_filter_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\tavern_charactercard_v3_filter.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="tavern_worldbook_filter_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\tavern_worldbook_filter.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="error_invalid_json_file" xml:space="preserve">
+    <value>This is not a valid JSON file.</value>
+  </data>
+  <data name="error_load_lorebook" xml:space="preserve">
+    <value>Failed to read from file.</value>
+  </data>
+  <data name="msg_import_character_with_errors" xml:space="preserve">
+    <value>Imported character card with {0} error(s) due to invalid or corrupt JSON data. Some content may be incomplete or missing.</value>
+  </data>
+  <data name="msg_import_lorebook_with_errors" xml:space="preserve">
+    <value>Imported lorebook with {0} error(s) due to invalid or corrupt JSON data. Some content may be incomplete or missing.</value>
+  </data>
+  <data name="tavern_characterbook_v2_filter_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\tavern_characterbook_v2_filter.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="tavern_characterbook_v3_filter_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\tavern_characterbook_v3_filter.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

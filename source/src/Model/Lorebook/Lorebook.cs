@@ -237,53 +237,72 @@ namespace Ginger
 		{
 		}
 
-		public bool LoadFromJson(string filename)
+		public enum LoadError
+		{
+			NoError = 0,
+			UnknownFormat,
+			NoData,
+			FileError,
+			InvalidJson,
+		}
+
+		public LoadError LoadFromJson(string filename, out int errors)
 		{
 			string json;
 			if (FileUtil.ReadTextFile(filename, out json) == false)
-				return false;
+			{
+				errors = 0;
+				return LoadError.FileError;
+			}
+
+			if (FileUtil.IsValidJson(json) == false)
+			{
+				errors = 0;
+				return LoadError.InvalidJson;
+			}
 
 			// Try to read Tavern format (World book)
-			TavernWorldBook worldBook = TavernWorldBook.FromJson(json);
+			TavernWorldBook worldBook = TavernWorldBook.FromJson(json, out errors);
 			if (worldBook != null)
 			{ 
 				ReadTavernBook(worldBook);
 				if (string.IsNullOrEmpty(name))
 					name = Path.GetFileNameWithoutExtension(filename);
-				return entries.Count > 0;
+				return entries.Count > 0 ? LoadError.NoError : LoadError.NoData;
 			}
 
 			// Try to read Tavern format (Characterbook)
-			TavernCardV2.CharacterBook characterBook = TavernCardV2.CharacterBook.FromJson(json);
+			TavernCardV2.CharacterBook characterBook = TavernCardV2.CharacterBook.FromJson(json, out errors);
 			if (characterBook != null)
 			{
 				ReadTavernBook(characterBook);
 				if (string.IsNullOrEmpty(name))
 					name = Path.GetFileNameWithoutExtension(filename);
-				return entries.Count > 0;
+				return entries.Count > 0 ? LoadError.NoError : LoadError.NoData;
 			}
 
 			// Try to read Tavern format (v3)
-			TavernLorebookV3 lorebookV3 = TavernLorebookV3.FromJson(json);
+			TavernLorebookV3 lorebookV3 = TavernLorebookV3.FromJson(json, out errors);
 			if (lorebookV3 != null)
 			{
 				ReadTavernBook(lorebookV3.data);
 				if (string.IsNullOrEmpty(name))
 					name = Path.GetFileNameWithoutExtension(filename);
-				return entries.Count > 0;
+				return entries.Count > 0 ? LoadError.NoError : LoadError.NoData;
 			}
 
 			// Try to read Agnaistic format
+			errors = 0;
 			AgnaisticCard.CharacterBook agnaiBook = AgnaisticCard.CharacterBook.FromJson(json);
 			if (agnaiBook != null)
 			{
 				ReadAgnaisticBook(agnaiBook);
 				if (string.IsNullOrEmpty(name))
 					name = Path.GetFileNameWithoutExtension(filename);
-				return entries.Count > 0;
+				return entries.Count > 0 ? LoadError.NoError : LoadError.NoData;
 			}
 
-			return false;
+			return LoadError.UnknownFormat;
 		}
 
 #pragma warning restore 0618

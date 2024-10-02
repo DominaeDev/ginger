@@ -354,24 +354,29 @@ namespace Ginger
 
 			if (error == FileUtil.Error.FileNotFound)
 			{
-				MessageBox.Show(Resources.error_file_not_found, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_file_not_found, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 			else if (error == FileUtil.Error.FileReadError)
 			{
-				MessageBox.Show(Resources.error_read_json, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_read_json, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+			else if (error == FileUtil.Error.InvalidJson)
+			{
+				MessageBox.Show(Resources.error_invalid_json_file, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 			else if (error == FileUtil.Error.UnrecognizedFormat)
 			{
-				MessageBox.Show(Resources.error_unrecognized_character_format, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_unrecognized_character_format, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
 			FileMutex.Release();
 
 			if (jsonErrors > 0)
-				MessageBox.Show(string.Format(Resources.msg_load_with_error, jsonErrors), Resources.cap_load_with_error, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				MessageBox.Show(string.Format(Resources.msg_import_character_with_errors, jsonErrors), Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			return true;
 		}
 
@@ -395,9 +400,25 @@ namespace Ginger
 			if (ext == ".json")
 			{
 				lorebook = new Lorebook();
-				if (lorebook.LoadFromJson(importFileDialog.FileName) == false)
+				int nErrors;
+				var loadError = lorebook.LoadFromJson(importFileDialog.FileName, out nErrors);
+				switch (loadError)
 				{
-					MessageBox.Show(Resources.error_unrecognized_lorebook_format, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				case Lorebook.LoadError.NoError:
+					if (nErrors > 0)
+						MessageBox.Show(string.Format(Resources.msg_import_lorebook_with_errors, nErrors), Resources.cap_import_lorebook, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					break;
+				case Lorebook.LoadError.UnknownFormat:
+					MessageBox.Show(Resources.error_unrecognized_lorebook_format, Resources.cap_import_lorebook, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
+				case Lorebook.LoadError.NoData:
+					MessageBox.Show(Resources.error_no_lorebook, Resources.cap_import_lorebook, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
+				case Lorebook.LoadError.FileError:
+					MessageBox.Show(Resources.error_load_lorebook, Resources.cap_import_lorebook, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
+				case Lorebook.LoadError.InvalidJson:
+					MessageBox.Show(Resources.error_invalid_json_file, Resources.cap_import_lorebook, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return false;
 				}
 			}

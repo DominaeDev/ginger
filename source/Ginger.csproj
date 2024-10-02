@@ -1001,6 +1001,11 @@
     <None Include="Resources\Icons\Dark\dark_write.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Schemas\tavern_characterbook_v2_filter.schema.txt" />
+    <None Include="Resources\Schemas\tavern_characterbook_v3_filter.schema.txt" />
+    <None Include="Resources\Schemas\tavern_worldbook_filter.schema.txt" />
+    <None Include="Resources\Schemas\tavern_charactercard_v3_filter.schema.txt" />
+    <None Include="Resources\Schemas\tavern_charactercard_v2_filter.schema.txt" />
     <None Include="Resources\Icons\Dark\dark_link_active.png" />
     <None Include="Resources\Icons\Dark\dark_link_broken.png" />
     <None Include="Resources\Icons\Dark\dark_link_connected.png" />

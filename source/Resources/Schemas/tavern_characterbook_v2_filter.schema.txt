@@ -1,0 +1,29 @@
+{
+	"type": "object",
+	"properties": {
+		"name": {
+			"required": true,
+			"type": "string"
+		},
+		"entries": {
+			"required": true,
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"keys": {
+						"required": true,
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"content": {
+						"required": true,
+						"type": "string"
+					}
+				}
+			}
+		}
+	}
+}

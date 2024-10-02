@@ -17,6 +17,7 @@ namespace Ginger
 		{
 			NoError,
 			InvalidData,
+			InvalidJson,
 			NoDataFound,
 			FileReadError,
 			FileNotFound,
@@ -1009,6 +1010,12 @@ namespace Ginger
 				return Error.FileReadError;
 			}
 
+			if (FileUtil.IsValidJson(json) == false)
+			{
+				jsonErrors = 0;
+				return Error.InvalidJson;
+			}	
+
 			var fileType = DetectJsonFileType(json);
 
 			// Tavern (v3)
@@ -1433,6 +1440,19 @@ namespace Ginger
 					return false;
 
 				return ExportTextFile(filename, json);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+				
+		public static bool IsValidJson(string json)
+		{
+			try
+			{
+				Newtonsoft.Json.Linq.JObject.Parse(json);
+				return true;
 			}
 			catch
 			{

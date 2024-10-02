@@ -14,17 +14,11 @@
 		},
 		"scan_depth": {
 			"required": false,
-			"type": [
-				"integer",
-				"string"
-			]
+			"type": "integer"
 		},
 		"token_budget": {
 			"required": false,
-			"type": [
-				"integer",
-				"string"
-			]
+			"type": "integer"
 		},
 		"recursive_scanning": {
 			"required": false,
@@ -41,10 +35,7 @@
 				"properties": {
 					"uid": {
 						"required": false,
-						"type": [
-							"integer",
-							"string"
-						]
+						"type": "integer"
 					},
 					"key": {
 						"required": true,
@@ -96,10 +87,7 @@
 					},
 					"selectiveLogic": {
 						"required": false,
-						"type": [
-							"integer",
-							"string"
-						]
+						"type": "integer"
 					},
 					"addMemo": {
 						"required": false,
@@ -107,17 +95,11 @@
 					},
 					"order": {
 						"required": false,
-						"type": [
-							"integer",
-							"string"
-						]
+						"type": "integer"
 					},
 					"position": {
 						"required": false,
-						"type": [
-							"integer",
-							"string"
-						]
+						"type": "integer"
 					},
 					"disable": {
 						"required": false,
@@ -129,10 +111,7 @@
 					},
 					"probability": {
 						"required": false,
-						"type": [
-							"integer",
-							"string"
-						]
+						"type": "integer"
 					},
 					"useProbability": {
 						"required": false,
@@ -140,10 +119,7 @@
 					},
 					"depth": {
 						"required": false,
-						"type": [
-							"integer",
-							"string"
-						]
+						"type": "integer"
 					},
 					"group": {
 						"required": false,
@@ -154,10 +130,7 @@
 					},
 					"displayIndex": {
 						"required": false,
-						"type": [
-							"integer",
-							"string"
-						]
+						"type": "integer"
 					},
 					"extensions": {
 						"required": false,

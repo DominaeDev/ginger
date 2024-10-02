@@ -1,0 +1,45 @@
+{
+	"type": "object",
+	"properties": {
+		"name": {
+			"required": false,
+			"type": "string"
+		},
+		"entries": {
+			"required": true,
+			"type": "object",
+			"additionalProperties": {
+				"type": [
+					"object",
+					"null"
+				],
+				"properties": {
+					"uid": {
+						"required": false,
+						"type": "integer"
+					},
+					"key": {
+						"required": true,
+						"type": [
+							"array",
+							"null"
+						],
+						"items": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"content": {
+						"required": true,
+						"type": [
+							"string",
+							"null"
+						]
+					}					
+				}
+			}
+		}
+	}
+}

@@ -6,7 +6,7 @@
 			"type": "object",
 			"properties": {
 				"name": {
-					"required": false,
+					"required": true,
 					"type": "string"
 				},
 				"description": {
@@ -192,9 +192,9 @@
 									},
 									"position": {
 										"required": false,
-										"type": [
-											"string",
-											"null"
+										"enum": [
+											"before_char",
+											"after_char"
 										]
 									},
 									"case_sensitive": {

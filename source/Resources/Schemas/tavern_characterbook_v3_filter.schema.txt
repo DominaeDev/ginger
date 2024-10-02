@@ -1,0 +1,14 @@
+{
+	"type": "object",
+	"properties": {
+		"spec": {
+			"required": true,
+			"const": "lorebook_v3"
+		},
+		"data": {
+			"required": true,
+			"type": "object",
+			"properties": {}
+		}
+	}
+}

@@ -1305,6 +1305,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This is not a valid JSON file..
+        /// </summary>
+        internal static string error_invalid_json_file {
+            get {
+                return ResourceManager.GetString("error_invalid_json_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to launch text editor.
         /// </summary>
         internal static string error_launch_text_editor {
@@ -1561,6 +1570,15 @@ namespace Ginger.Properties {
         internal static string error_load_image {
             get {
                 return ResourceManager.GetString("error_load_image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to read from file..
+        /// </summary>
+        internal static string error_load_lorebook {
+            get {
+                return ResourceManager.GetString("error_load_lorebook", resourceCulture);
             }
         }
         
@@ -2250,6 +2268,24 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Imported character card with {0} error(s) due to invalid or corrupt JSON data. Some content may be incomplete or missing..
+        /// </summary>
+        internal static string msg_import_character_with_errors {
+            get {
+                return ResourceManager.GetString("msg_import_character_with_errors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imported lorebook with {0} error(s) due to invalid or corrupt JSON data. Some content may be incomplete or missing..
+        /// </summary>
+        internal static string msg_import_lorebook_with_errors {
+            get {
+                return ResourceManager.GetString("msg_import_lorebook_with_errors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Would you also like to add {0} complementary recipe?.
         /// </summary>
         internal static string msg_include_recipe {
@@ -2453,12 +2489,11 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The card loaded successfully, but with {0} error(s).
-        ///Some data may be missing..
+        ///   Looks up a localized string similar to Loaded character card with {0} error(s) due to invalid or corrupt JSON data. Some content may be incomplete or missing..
         /// </summary>
-        internal static string msg_load_with_error {
+        internal static string msg_load_with_errors {
             get {
-                return ResourceManager.GetString("msg_load_with_error", resourceCulture);
+                return ResourceManager.GetString("msg_load_with_errors", resourceCulture);
             }
         }
         
@@ -3206,6 +3241,43 @@ namespace Ginger.Properties {
         ///	&quot;type&quot;: &quot;object&quot;,
         ///	&quot;properties&quot;: {
         ///		&quot;name&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;string&quot;
+        ///		},
+        ///		&quot;entries&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;array&quot;,
+        ///			&quot;items&quot;: {
+        ///				&quot;type&quot;: &quot;object&quot;,
+        ///				&quot;properties&quot;: {
+        ///					&quot;keys&quot;: {
+        ///						&quot;required&quot;: true,
+        ///						&quot;type&quot;: &quot;array&quot;,
+        ///						&quot;items&quot;: {
+        ///							&quot;type&quot;: &quot;string&quot;
+        ///						}
+        ///					},
+        ///					&quot;content&quot;: {
+        ///						&quot;required&quot;: true,
+        ///						&quot;type&quot;: &quot;string&quot;
+        ///					}
+        ///				}
+        ///			}
+        ///		}
+        ///	}
+        ///}.
+        /// </summary>
+        internal static string tavern_characterbook_v2_filter_schema {
+            get {
+                return ResourceManager.GetString("tavern_characterbook_v2_filter_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;name&quot;: {
         ///			&quot;required&quot;: false,
         ///			&quot;type&quot;: [
         ///				&quot;string&quot;,
@@ -3221,23 +3293,21 @@ namespace Ginger.Properties {
         ///		},
         ///		&quot;scan_depth&quot;: {
         ///			&quot;required&quot;: false,
-        ///			&quot;type&quot;: [
-        ///				&quot;integer&quot;,
-        ///				&quot;string&quot;
-        ///			]
+        ///			&quot;type&quot;: &quot;integer&quot;
         ///		},
         ///		&quot;token_budget&quot;: {
         ///			&quot;required&quot;: false,
-        ///			&quot;type&quot;: [
-        ///				&quot;integer&quot;,
-        ///				&quot;string&quot;
-        ///			]
+        ///			&quot;type&quot;: &quot;integer&quot;
         ///		},
         ///		&quot;recursive_scanning&quot;: {
         ///			&quot;required&quot;: false,
         ///			&quot;type&quot;: &quot;boolean&quot;
         ///		},
-        ///		&quot;entries [rest of string was truncated]&quot;;.
+        ///		&quot;entries&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: [
+        ///				&quot;array&quot;,
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string tavern_characterbook_v2_schema {
             get {
@@ -3251,7 +3321,30 @@ namespace Ginger.Properties {
         ///	&quot;properties&quot;: {
         ///		&quot;spec&quot;: {
         ///			&quot;required&quot;: true,
-        ///			&quot;type&quot;: &quot;string&quot;
+        ///			&quot;const&quot;: &quot;lorebook_v3&quot;
+        ///		},
+        ///		&quot;data&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;object&quot;,
+        ///			&quot;properties&quot;: {}
+        ///		}
+        ///	}
+        ///}
+        ///.
+        /// </summary>
+        internal static string tavern_characterbook_v3_filter_schema {
+            get {
+                return ResourceManager.GetString("tavern_characterbook_v3_filter_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;spec&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;const&quot;: &quot;lorebook_v3&quot;
         ///		},
         ///		&quot;data&quot;: {
         ///			&quot;required&quot;: true,
@@ -3276,7 +3369,7 @@ namespace Ginger.Properties {
         ///					&quot;type&quot;: &quot;integer&quot;
         ///				},
         ///				&quot;token_budget&quot;: {
-        ///					&quot;required&quot;: f [rest of string was truncated]&quot;;.
+        ///					&quot;requir [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string tavern_characterbook_v3_schema {
             get {
@@ -3327,11 +3420,38 @@ namespace Ginger.Properties {
         ///	&quot;type&quot;: &quot;object&quot;,
         ///	&quot;properties&quot;: {
         ///		&quot;data&quot;: {
+        ///			&quot;required&quot;: false,
+        ///			&quot;type&quot;: &quot;object&quot;,
+        ///			&quot;properties&quot;: {}
+        ///		},
+        ///		&quot;spec&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;const&quot;: &quot;chara_card_v2&quot;
+        ///		},
+        ///		&quot;spec_version&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;const&quot;: 2.0
+        ///		}
+        ///	}
+        ///}
+        ///.
+        /// </summary>
+        internal static string tavern_charactercard_v2_filter_schema {
+            get {
+                return ResourceManager.GetString("tavern_charactercard_v2_filter_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;data&quot;: {
         ///			&quot;required&quot;: true,
         ///			&quot;type&quot;: &quot;object&quot;,
         ///			&quot;properties&quot;: {
         ///				&quot;name&quot;: {
-        ///					&quot;required&quot;: false,
+        ///					&quot;required&quot;: true,
         ///					&quot;type&quot;: &quot;string&quot;
         ///				},
         ///				&quot;description&quot;: {
@@ -3354,11 +3474,38 @@ namespace Ginger.Properties {
         ///						&quot;string&quot;,
         ///						&quot;null&quot;
         ///					]
-        ///				 [rest of string was truncated]&quot;;.
+        ///				} [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string tavern_charactercard_v2_schema {
             get {
                 return ResourceManager.GetString("tavern_charactercard_v2_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;data&quot;: {
+        ///			&quot;required&quot;: false,
+        ///			&quot;type&quot;: &quot;object&quot;,
+        ///			&quot;properties&quot;: {}
+        ///		},
+        ///		&quot;spec&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;const&quot;: &quot;chara_card_v3&quot;
+        ///		},
+        ///		&quot;spec_version&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;const&quot;: 3.0
+        ///		}
+        ///	}
+        ///}
+        ///.
+        /// </summary>
+        internal static string tavern_charactercard_v3_filter_schema {
+            get {
+                return ResourceManager.GetString("tavern_charactercard_v3_filter_schema", resourceCulture);
             }
         }
         
@@ -3475,6 +3622,45 @@ namespace Ginger.Properties {
         ///			&quot;required&quot;: false,
         ///			&quot;type&quot;: &quot;string&quot;
         ///		},
+        ///		&quot;entries&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;object&quot;,
+        ///			&quot;additionalProperties&quot;: {
+        ///				&quot;type&quot;: [
+        ///					&quot;object&quot;,
+        ///					&quot;null&quot;
+        ///				],
+        ///				&quot;properties&quot;: {
+        ///					&quot;uid&quot;: {
+        ///						&quot;required&quot;: false,
+        ///						&quot;type&quot;: &quot;integer&quot;
+        ///					},
+        ///					&quot;key&quot;: {
+        ///						&quot;required&quot;: true,
+        ///						&quot;type&quot;: [
+        ///							&quot;array&quot;,
+        ///							&quot;null&quot;
+        ///						],
+        ///						&quot;items&quot;: {
+        ///							&quot;type&quot;: [
+        ///								&quot;string&quot;,
+        ///								&quot;null&quot;
+        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string tavern_worldbook_filter_schema {
+            get {
+                return ResourceManager.GetString("tavern_worldbook_filter_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;name&quot;: {
+        ///			&quot;required&quot;: false,
+        ///			&quot;type&quot;: &quot;string&quot;
+        ///		},
         ///		&quot;description&quot;: {
         ///			&quot;required&quot;: false,
         ///			&quot;type&quot;: [
@@ -3484,24 +3670,21 @@ namespace Ginger.Properties {
         ///		},
         ///		&quot;scan_depth&quot;: {
         ///			&quot;required&quot;: false,
-        ///			&quot;type&quot;: [
-        ///				&quot;integer&quot;,
-        ///				&quot;string&quot;
-        ///			]
+        ///			&quot;type&quot;: &quot;integer&quot;
         ///		},
         ///		&quot;token_budget&quot;: {
         ///			&quot;required&quot;: false,
-        ///			&quot;type&quot;: [
-        ///				&quot;integer&quot;,
-        ///				&quot;string&quot;
-        ///			]
+        ///			&quot;type&quot;: &quot;integer&quot;
         ///		},
         ///		&quot;recursive_scanning&quot;: {
         ///			&quot;required&quot;: false,
         ///			&quot;type&quot;: &quot;boolean&quot;
         ///		},
         ///		&quot;entries&quot;: {
-        ///			&quot;required&quot;: true, [rest of string was truncated]&quot;;.
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;object&quot;,
+        ///			&quot;additionalProperties&quot;: {
+        ///		 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string tavern_worldbook_schema {
             get {

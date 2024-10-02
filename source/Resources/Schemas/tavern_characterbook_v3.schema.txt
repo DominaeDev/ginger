@@ -3,7 +3,7 @@
 	"properties": {
 		"spec": {
 			"required": true,
-			"type": "string"
+			"const": "lorebook_v3"
 		},
 		"data": {
 			"required": true,

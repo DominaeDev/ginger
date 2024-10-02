@@ -13,7 +13,8 @@ namespace Ginger
 {
 	public class TavernCardV3
 	{
-		private static JsonSchema _tavernCharacterCardSchemaV3;
+		private static JsonSchema _tavernCharacterCardV3Schema;
+		private static JsonSchema _tavernCharacterCardV3FilterSchema;
 
 		static TavernCardV3()
 		{
@@ -21,7 +22,8 @@ namespace Ginger
 		//	JsonSchema schema = generator.Generate(typeof(TavernCardV3));
 		//	string jsonSchema = schema.ToString();
 
-			_tavernCharacterCardSchemaV3 = JsonSchema.Parse(Resources.tavern_charactercard_v3_schema);
+			_tavernCharacterCardV3Schema = JsonSchema.Parse(Resources.tavern_charactercard_v3_schema);
+			_tavernCharacterCardV3FilterSchema = JsonSchema.Parse(Resources.tavern_charactercard_v3_filter_schema);
 		}
 
 		public TavernCardV3()
@@ -444,12 +446,19 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_tavernCharacterCardSchemaV3))
+				if (jObject.IsValid(_tavernCharacterCardV3FilterSchema))
 				{
+					IList<string> validationErrors;
+					if (jObject.IsValid(_tavernCharacterCardV3Schema, out validationErrors) == false)
+						lsErrors.AddRange(validationErrors.Distinct());
+
 					var card = JsonConvert.DeserializeObject<TavernCardV3>(json, settings);
-					errors = lsErrors.Count;
-					if (Validate(card))
-						return card;
+					if (card != null)
+					{
+						errors = lsErrors.Count;
+						if (Validate(card))
+							return card;
+					}
 				}
 			}
 			catch
@@ -489,7 +498,7 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(jsonData);
-				if (jObject.IsValid(_tavernCharacterCardSchemaV3))
+				if (jObject.IsValid(_tavernCharacterCardV3FilterSchema))
 				{
 					var card = JsonConvert.DeserializeObject<TavernCardV3>(jsonData);
 					return Validate(card);
@@ -510,28 +519,56 @@ namespace Ginger
 		[JsonProperty("data", Required = Required.Always)]
 		public TavernCardV3.CharacterBook data;
 
-		private static JsonSchema _tavernLorebookSchemaV3;
+		private static JsonSchema _tavernLorebookV3Schema;
+		private static JsonSchema _tavernLorebookV3FilterSchema;
 
 		static TavernLorebookV3()
 		{
-			_tavernLorebookSchemaV3 = JsonSchema.Parse(Resources.tavern_characterbook_v3_schema);
+			_tavernLorebookV3Schema = JsonSchema.Parse(Resources.tavern_characterbook_v3_schema);
+			_tavernLorebookV3FilterSchema = JsonSchema.Parse(Resources.tavern_characterbook_v3_filter_schema);
 		}
 
-		public static TavernLorebookV3 FromJson(string json)
+		public static TavernLorebookV3 FromJson(string json, out int errors)
 		{
+			List<string> lsErrors = new List<string>();
+			JsonSerializerSettings settings = new JsonSerializerSettings() {
+				Error = delegate (object sender, ErrorEventArgs args) {
+					if (args.ErrorContext.Error.Message.Contains(".extensions")) // Inconsequential
+					{
+						args.ErrorContext.Handled = true;
+						return;
+					}
+					if (args.ErrorContext.Error.Message.Contains("Required")) // Required field
+						return; // Throw
+
+					lsErrors.Add(args.ErrorContext.Error.Message);
+					args.ErrorContext.Handled = true;
+				},
+			};
+
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_tavernLorebookSchemaV3))
+				if (jObject.IsValid(_tavernLorebookV3FilterSchema))
 				{
-					var lorebook = JsonConvert.DeserializeObject<TavernLorebookV3>(json);
-					if (Validate(lorebook))
-						return lorebook;
+					IList<string> validationErrors;
+					if (jObject.IsValid(_tavernLorebookV3Schema, out validationErrors) == false)
+						lsErrors.AddRange(validationErrors.Distinct());
+
+					var lorebook = JsonConvert.DeserializeObject<TavernLorebookV3>(json, settings);
+					if (lorebook != null)
+					{
+						errors = lsErrors.Count;
+						if (Validate(lorebook))
+							return lorebook;
+					}
 				}
 			}
 			catch
 			{
 			}
+
+			errors = 0;
 			return null;
 		}
 
@@ -562,7 +599,7 @@ namespace Ginger
 			try
 			{
 				JObject jObject = JObject.Parse(jsonData);
-				return jObject.IsValid(_tavernLorebookSchemaV3);
+				return jObject.IsValid(_tavernLorebookV3FilterSchema);
 			}
 			catch
 			{
