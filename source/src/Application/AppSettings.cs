@@ -183,6 +183,7 @@ namespace Ginger
 		public static class BackyardLink
 		{
 			public static bool Enabled = false;
+			public static bool Strict = true;
 			public static string Location = null;
 			public static bool Autosave = true;
 			public static bool AlwaysLinkOnImport = false;
@@ -326,6 +327,7 @@ namespace Ginger
 			if (linkSection != null)
 			{
 				ReadBool(ref BackyardLink.Enabled, linkSection, "Enabled");
+				ReadBool(ref BackyardLink.Strict, linkSection, "Strict");
 				BackyardLink.LastVersion = VersionNumber.Parse(linkSection["LastVersion"]);
 				ReadBool(ref BackyardLink.Autosave, linkSection, "Autosave");
 				ReadBool(ref BackyardLink.AlwaysLinkOnImport, linkSection, "AlwaysLinkOnImport");
@@ -447,6 +449,7 @@ namespace Ginger
 					if (BackyardLink.LastVersion.isDefined)
 						Write(outputFile, "LastVersion", BackyardLink.LastVersion.ToFullString());
 					Write(outputFile, "Enabled", BackyardLink.Enabled);
+					Write(outputFile, "Strict", BackyardLink.Strict);
 					Write(outputFile, "Autosave", BackyardLink.Autosave);
 					Write(outputFile, "AlwaysLinkOnImport", BackyardLink.AlwaysLinkOnImport);
 					Write(outputFile, "ApplyChatSettings", BackyardLink.ApplyChatSettings);

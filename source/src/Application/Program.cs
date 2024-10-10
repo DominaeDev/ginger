@@ -39,22 +39,24 @@ namespace Ginger
 			if (args.Length > 0 && File.Exists(args[0]))
 				MainForm.instance.SetFirstLoad(args[0]);
 
-			// Initialize link
+			// Auto-connect
 			if (AppSettings.BackyardLink.Enabled)
 			{
-				// Check last version
+				// Check if Backyard version has changed (beta builds ignored)
 				VersionNumber appVersion;
 				if (Backyard.GetAppVersion(out appVersion)
-					&& (AppSettings.BackyardLink.LastVersion.Major != appVersion.Major || AppSettings.BackyardLink.LastVersion.Minor != appVersion.Minor))
-				{
-					AppSettings.BackyardLink.Enabled = false; // Do not auto-connect to newer versions (ignoring beta builds)
-				}
-				else
+					&& AppSettings.BackyardLink.LastVersion.Major == appVersion.Major 
+					&& AppSettings.BackyardLink.LastVersion.Minor == appVersion.Minor)
 				{
 					if (Backyard.EstablishConnection() == Backyard.Error.NoError)
 						Backyard.RefreshCharacters();
 					else
 						AppSettings.BackyardLink.Enabled = false;
+				}
+				else
+				{
+					// Do not auto-connect to newer versions
+					AppSettings.BackyardLink.Enabled = false;
 				}
 			}
 

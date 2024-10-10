@@ -1547,7 +1547,9 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to connect to Backyard AI. Unsupported version..
+        ///   Looks up a localized string similar to Failed to connect to Backyard AI. Unsupported version.
+        ///
+        ///Please check the Ginger GitHub for updates..
         /// </summary>
         internal static string error_link_unsupported {
             get {

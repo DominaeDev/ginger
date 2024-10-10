@@ -141,6 +141,26 @@ namespace Ginger.Integration
 
 		public static string LastError;
 
+		public enum Feature
+		{
+			Undefined = 0,
+			ChatBackground = 1,
+		}
+
+		public static bool CheckFeature(Feature feature)
+		{
+			VersionNumber appVersion;
+			if (GetAppVersion(out appVersion) == false)
+				return false;
+
+			switch (feature)
+			{
+			case Feature.ChatBackground:
+				return appVersion >= new VersionNumber(0, 28, 27);
+			}
+			return false;
+		}
+
 		public class Link : IXmlLoadable, IXmlSaveable
 		{
 			public string characterId;
@@ -311,6 +331,32 @@ namespace Ginger.Integration
 
 					var result = new List<CharacterInstance>();
 
+					// Match tables
+					if (AppSettings.BackyardLink.Strict)
+					{
+						var foundTables = new HashSet<string>();
+						using (var cmdTable = connection.CreateCommand())
+						{
+							cmdTable.CommandText =
+							@"
+								SELECT name 
+								FROM sqlite_schema
+								WHERE type = 'table' AND name NOT LIKE 'sqlite_%';
+							";
+
+							using (var reader = cmdTable.ExecuteReader())
+							{
+								while (reader.Read())
+								{
+									foundTables.Add(reader.GetString(0));
+								}
+							}
+						}
+
+						if (foundTables.Count != BackyardValidation.Tables.Length)
+							return Error.ValidationFailed;
+					}
+
 					// Check table names and columns
 					for (int i = 0; i < BackyardValidation.Tables.Length; ++i)
 					{
@@ -340,7 +386,15 @@ namespace Ginger.Integration
 							}
 						}
 
-						if (foundColumns.Count < expectedNames.Length)
+						if (AppSettings.BackyardLink.Strict == false
+							&& BackyardValidation.Exceptions.Contains(tableName))
+							continue; // Ignored
+
+						if (expectedNames.Length == 0 && foundColumns.Count > 0)
+							continue; // A table we want to make sure exists but don't care what it contains
+
+						if ((AppSettings.BackyardLink.Strict && foundColumns.Count != expectedNames.Length)
+							|| foundColumns.Count < expectedNames.Length)
 						{
 							LastError = "Validation failed";
 							return Error.ValidationFailed;
@@ -348,7 +402,7 @@ namespace Ginger.Integration
 
 						for (int j = 0; j < expectedNames.Length; ++j)
 						{
-							if (foundColumns.FindIndex(kvp => kvp.Key == expectedNames[j] && kvp.Value == expectedTypes[j]) == -1)
+							if (foundColumns[j].Key != expectedNames[j] || foundColumns[j].Value != expectedTypes[j])
 							{
 								LastError = "Validation failed";
 								return Error.ValidationFailed;
@@ -390,7 +444,7 @@ namespace Ginger.Integration
 			{
 				Disconnect();
 				LastError = e.Message;
-				return Error.SQLCommandFailed;
+				return Error.ValidationFailed;
 			}
 			catch (Exception e)
 			{
