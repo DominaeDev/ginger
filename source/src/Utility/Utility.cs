@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -14,6 +13,12 @@ namespace Ginger
 {
 	public static class Utility 
 	{
+#if DEBUG
+		public static bool InDesignMode = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+#else
+		public static bool InDesignMode = false;
+#endif
+
 		public static void Swap<T>(ref T a, ref T b)
 		{
 			T tmp = a;
@@ -1587,13 +1592,16 @@ namespace Ginger
 			}
 			return false;
 		}
-#if DEBUG
-		public static bool InDesignMode = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
-#else
-		public static bool InDesignMode = false;
-		
-#endif
 
+		public static string CreateRandomFilename(string ext)
+		{
+			if (ext == null)
+				ext = "";
+			else if (ext.Length > 0 && ext[0] == '.')
+				ext = ext.Substring(1);
+
+			return string.Concat(Guid.NewGuid().ToString().Replace("-", "").ToLowerInvariant(), ".", ext);
+		}
 	}
 
 }
