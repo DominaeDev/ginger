@@ -3,7 +3,7 @@
 	<Macro id="characters, bots">[names.list]</Macro>
 	<Macro id="everyone">[!list:[user];[char];[actors]]</Macro>
 	<Wrapper id="abbr">[noparse]_[parse][nocap]</Wrapper>
-	<Wrapper id="raw">[noparse]_[parse]</Wrapper>
+	<Wrapper id="raw, ignore">[noparse]_[parse]</Wrapper>
 	<Macro id="the">[..the?|the]</Macro>
 	<Wrapper id="__attrib, attrib">_:[sp]</Wrapper>
 
@@ -15,12 +15,12 @@
 	<Wrapper id="#chat">[__faraday or __backyard?#][user]: [!dialogue:_]</Wrapper>
 
 	<String id="dialogue-symbol-open">
-		<String rule="__style-quotes" priority="1">&quot;</String>
+		<String rule="__style-quotes or text-style is 0" priority="1">&quot;</String>
 		<String rule="__style-quotes-decorative">&#8220;</String>
 		<String rule="__style-quotes-cjk">&#12300;</String>
 	</String>
 	<String id="dialogue-symbol-close">
-		<String rule="__style-quotes" priority="1">&quot;</String>
+		<String rule="__style-quotes or text-style is 0" priority="1">&quot;</String>
 		<String rule="__style-quotes-decorative">&#8221;</String>
 		<String rule="__style-quotes-cjk">&#12301;</String>
 	</String>

@@ -343,6 +343,20 @@ namespace Ginger
 				}
 			}
 
+			else if (_textSpans != null && _textSpans.GetTagAt(pos_cursor) == TextSpan.Word.Tag.Variable)
+			{
+				int start, length;
+				string word = _textSpans.GetWordAt(pos_cursor, out start, out length);
+				if (word != null)
+				{
+					word = word.Substring(2, word.Length - 3);
+					menu.Items.Add(new ToolStripMenuItem("Edit variable...", null, (s, e) => {
+						EditVariable(word);
+					}));
+					menu.Items.Add(new ToolStripSeparator());
+				}
+			}
+
 			menu.Items.Add(new ToolStripMenuItem("Undo", null,
 				(s, e) => { Undo(); }) {
 				Enabled = _undo.CanUndo(),
@@ -700,7 +714,7 @@ namespace Ginger
 			if (_syntaxFlags.Contains(SyntaxFlags.Variables))
 			{
 				// Unknown variables
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\$[\w-_]*\}"), SyntaxStyle.Underlined(colorVariable), 5);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\$[\w-_]*\}"), SyntaxStyle.Underlined(colorVariable), 4);
 			}
 
 			// Commands {char}, {user}, {they}, etc.
@@ -981,6 +995,11 @@ namespace Ginger
 			ClearSpellCheck();
 			SpellCheck();
 			Rehighlight(true);
+		}
+				
+		private void EditVariable(string variableName)
+		{
+			MainForm.instance.ShowCustomVariablesDialog(variableName);
 		}
 
 		public void CheckIncompleteWords()

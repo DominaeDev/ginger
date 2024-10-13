@@ -118,37 +118,34 @@ namespace Ginger
 			context.SetValue("detail", EnumHelper.ToInt(Current.Card.detailLevel));
 
 			// Text style
-			if (Current.Card.textStyle != CardData.TextStyle.None)
-			{
-				context.SetValue("text-style", EnumHelper.ToInt(Current.Card.textStyle));
+			context.SetValue("text-style", EnumHelper.ToInt(Current.Card.textStyle));
 
-				switch (Current.Card.textStyle)
-				{
-				case CardData.TextStyle.None:
-					break;
-				case CardData.TextStyle.Novel:
-					context.AddTag("__style-quotes");
-					break;
-				case CardData.TextStyle.Chat:
-					context.AddTag("__style-action-asterisks");
-					break;
-				case CardData.TextStyle.Mixed:
-					context.AddTag("__style-quotes");
-					context.AddTag("__style-action-asterisks");
-					break;
-				case CardData.TextStyle.Decorative:
-					context.AddTag("__style-quotes-decorative");
-					break;
-				case CardData.TextStyle.Japanese:
-					context.AddTag("__style-quotes-cjk");
-					break;
-				case CardData.TextStyle.Parentheses:
-					context.AddTag("__style-action-brackets");
-					break;
-				case CardData.TextStyle.Bold:
-					context.AddTag("__style-action-bold");
-					break;
-				}
+			switch (Current.Card.textStyle)
+			{
+			case CardData.TextStyle.None:
+				break;
+			case CardData.TextStyle.Novel:
+				context.AddTag("__style-quotes");
+				break;
+			case CardData.TextStyle.Chat:
+				context.AddTag("__style-action-asterisks");
+				break;
+			case CardData.TextStyle.Mixed:
+				context.AddTag("__style-quotes");
+				context.AddTag("__style-action-asterisks");
+				break;
+			case CardData.TextStyle.Decorative:
+				context.AddTag("__style-quotes-decorative");
+				break;
+			case CardData.TextStyle.Japanese:
+				context.AddTag("__style-quotes-cjk");
+				break;
+			case CardData.TextStyle.Parentheses:
+				context.AddTag("__style-action-brackets");
+				break;
+			case CardData.TextStyle.Bold:
+				context.AddTag("__style-action-bold");
+				break;
 			}
 
 			// Flags

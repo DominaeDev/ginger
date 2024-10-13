@@ -1,8 +1,8 @@
 <Ginger id="__prune-scenario">
 	<Name>__prune-scenario</Name>
 	<Flags>__nobake, __internal, __hidden</Flags>
-		
+	
 	<Node path="example/__scenario" order="-0" format="none">
-		[__faraday or __backyard?#[user]: ][[[[{inner}]]]]
+		[__faraday or __backyard?#[user]: ][!dialogue:{inner}]
 	</Node>
 </Ginger>

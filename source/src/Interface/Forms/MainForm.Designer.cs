@@ -106,8 +106,8 @@ namespace Ginger {
 			this.viewRecipeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.viewOutputMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.viewNotesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.customVariablesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.embeddedAssetsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.customVariablesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.chatHistoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.collapseAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.expandAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1050,19 +1050,19 @@ namespace Ginger {
 			this.viewNotesMenuItem.Text = "&Notes";
 			this.viewNotesMenuItem.Click += new System.EventHandler(this.ViewNotesMenuItem_Click);
 			// 
-			// customVariablesMenuItem
-			// 
-			this.customVariablesMenuItem.Name = "customVariablesMenuItem";
-			this.customVariablesMenuItem.Size = new System.Drawing.Size(219, 22);
-			this.customVariablesMenuItem.Text = "User-defined &variables...";
-			this.customVariablesMenuItem.Click += new System.EventHandler(this.customVariablesMenuItem_Click);
-			// 
 			// embeddedAssetsMenuItem
 			// 
 			this.embeddedAssetsMenuItem.Name = "embeddedAssetsMenuItem";
 			this.embeddedAssetsMenuItem.Size = new System.Drawing.Size(219, 22);
 			this.embeddedAssetsMenuItem.Text = "Embedded &assets...";
 			this.embeddedAssetsMenuItem.Click += new System.EventHandler(this.embeddedAssetsMenuItem_Click);
+			// 
+			// customVariablesMenuItem
+			// 
+			this.customVariablesMenuItem.Name = "customVariablesMenuItem";
+			this.customVariablesMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.customVariablesMenuItem.Text = "User-defined &variables...";
+			this.customVariablesMenuItem.Click += new System.EventHandler(this.customVariablesMenuItem_Click);
 			// 
 			// chatHistoryMenuItem
 			// 
@@ -1270,28 +1270,28 @@ namespace Ginger {
 			this.outputPreviewDefaultMenuItem.Checked = true;
 			this.outputPreviewDefaultMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.outputPreviewDefaultMenuItem.Name = "outputPreviewDefaultMenuItem";
-			this.outputPreviewDefaultMenuItem.Size = new System.Drawing.Size(136, 22);
-			this.outputPreviewDefaultMenuItem.Text = "Default";
+			this.outputPreviewDefaultMenuItem.Size = new System.Drawing.Size(157, 22);
+			this.outputPreviewDefaultMenuItem.Text = "Ginger (default)";
 			this.outputPreviewDefaultMenuItem.Click += new System.EventHandler(this.outputPreviewDefaultMenuItem_Click);
 			// 
 			// outputPreviewSillyTavernMenuItem
 			// 
 			this.outputPreviewSillyTavernMenuItem.Name = "outputPreviewSillyTavernMenuItem";
-			this.outputPreviewSillyTavernMenuItem.Size = new System.Drawing.Size(136, 22);
+			this.outputPreviewSillyTavernMenuItem.Size = new System.Drawing.Size(157, 22);
 			this.outputPreviewSillyTavernMenuItem.Text = "SillyTavern";
 			this.outputPreviewSillyTavernMenuItem.Click += new System.EventHandler(this.outputPreviewSillyTavernMenuItem_Click);
 			// 
 			// outputPreviewFaradayMenuItem
 			// 
 			this.outputPreviewFaradayMenuItem.Name = "outputPreviewFaradayMenuItem";
-			this.outputPreviewFaradayMenuItem.Size = new System.Drawing.Size(136, 22);
+			this.outputPreviewFaradayMenuItem.Size = new System.Drawing.Size(157, 22);
 			this.outputPreviewFaradayMenuItem.Text = "Backyard AI";
 			this.outputPreviewFaradayMenuItem.Click += new System.EventHandler(this.outputPreviewFaradayMenuItem_Click);
 			// 
 			// outputPreviewPlainTextMenuItem
 			// 
 			this.outputPreviewPlainTextMenuItem.Name = "outputPreviewPlainTextMenuItem";
-			this.outputPreviewPlainTextMenuItem.Size = new System.Drawing.Size(136, 22);
+			this.outputPreviewPlainTextMenuItem.Size = new System.Drawing.Size(157, 22);
 			this.outputPreviewPlainTextMenuItem.Text = "Plain text";
 			this.outputPreviewPlainTextMenuItem.Click += new System.EventHandler(this.outputPreviewPlainTextMenuItem_Click);
 			// 
@@ -1307,14 +1307,14 @@ namespace Ginger {
 			// enableSpellCheckingMenuItem
 			// 
 			this.enableSpellCheckingMenuItem.Name = "enableSpellCheckingMenuItem";
-			this.enableSpellCheckingMenuItem.Size = new System.Drawing.Size(116, 22);
+			this.enableSpellCheckingMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.enableSpellCheckingMenuItem.Text = "Enabled";
 			this.enableSpellCheckingMenuItem.Click += new System.EventHandler(this.EnableSpellCheckingMenuItem_Click);
 			// 
 			// toolStripMenuItem4
 			// 
 			this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-			this.toolStripMenuItem4.Size = new System.Drawing.Size(113, 6);
+			this.toolStripMenuItem4.Size = new System.Drawing.Size(177, 6);
 			// 
 			// linkOptionsMenuItem
 			// 
@@ -1331,6 +1331,7 @@ namespace Ginger {
 			this.enableAutosaveMenuItem.Name = "enableAutosaveMenuItem";
 			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(190, 22);
 			this.enableAutosaveMenuItem.Text = "Synchronized saving";
+			this.enableAutosaveMenuItem.Click += new System.EventHandler(this.enableAutosaveMenuItem_Click);
 			// 
 			// alwaysLinkMenuItem
 			// 

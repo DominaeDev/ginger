@@ -150,7 +150,7 @@ namespace Ginger
 						if (end_variable != -1)
 						{
 							spans.Add(TextSpan.FromString(text.Substring(pos, pos_end - pos), pos));
-							spans.Add(TextSpan.Ignore(text.Substring(pos_end, end_variable - pos_end + 1), pos_end));
+							spans.Add(TextSpan.Variable(text.Substring(pos_end, end_variable - pos_end + 1), pos_end));
 							pos = end_variable + 1;
 							pos_end = text.IndexOfAny(SpanBreakChars, pos);
 							continue;
@@ -253,6 +253,7 @@ namespace Ginger
 				Correct,
 				Misspelled,
 				Incomplete,
+				Variable,
 			}
 
 			public Word(int start, int length, Tag tag = Tag.Undefined)
@@ -355,6 +356,16 @@ namespace Ginger
 				text = text,
 				offset = offset,
 				words = new Word[0],
+				length = text.Length,
+			};
+		}
+
+		public static TextSpan Variable(string text, int offset)
+		{
+			return new TextSpan() {
+				text = text,
+				offset = offset,
+				words = new Word[1] { new Word(0, text.Length, Word.Tag.Variable) },
 				length = text.Length,
 			};
 		}

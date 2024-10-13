@@ -1,4 +1,4 @@
-﻿<Ginger id="outfit" version="1.0">
+﻿<Ginger id="outfit" version="1.1">
 	<Name>Outfit // Clothes</Name>
 	<Description>Describe what the character is wearing.</Description>
 	<Author>Ginger</Author>
@@ -37,31 +37,38 @@
 	
 	<Rule id="has-outfit">top or bottom or accessories or glasses</Rule>
 	<Rule id="has-underwear">underwear</Rule>
+	<Rule id="in-persona">placement is persona</Rule>
 	
 	<!-- Output -->
 	<Attribute style="list" order="450" rule="less-detail and has-outfit">
 		<Name>Outfit</Name>
 		<Value>[!commalist:{top.lower}; {bottom.lower}; {accessories.lower}; {glasses?glasses}]</Value>
 	</Attribute>
+	<Attribute style="list" order="450" rule="less-detail and has-underwear">
+		<Name>Underwear</Name>
+		<Value>{underwear.lower}</Value>
+	</Attribute>
 	
-	<Node path="persona/appearance/outfit" order="600" rule="normal-detail and has-outfit and placement is persona">Today, [char] is wearing [!list:{top.lower}; {bottom.lower}; {accessories.lower}; {glasses?glasses}].</Node>
-	<Node path="persona/appearance/outfit" order="600" rule="more and placement is persona">{more}.</Node>
+	<Node path="persona/appearance/outfit" order="600" rule="has-outfit and in-persona and normal-detail">
+		Today, [char] is wearing [!list:{top.lower}; {bottom.lower}; {accessories.lower}; {glasses?glasses}; [has-underwear and placement?{underwear} underneath]].
+	</Node>
+	<Node path="persona/appearance/outfit" order="600" rule="not has-outfit and has-underwear and in-persona and normal-detail">Today, [char] is wearing {underwear.lower}.</Node>
+	<Node path="persona/appearance/outfit" order="600" rule="more and in-persona">{more}.</Node>
 	
-	<String id="outfit">
-		[if has-outfit]
-			Outfit: {{
-			[char] is wearing [!list:{top.lower}; {bottom.lower}; {accessories.lower}; {glasses?glasses}].
-			[more?{more}, as well.]
-			}}  
-		[if has-underwear]
-			Underwear: {{ {underwear}. }}
-		[endif]
+	<String id="outfit" rule="has-outfit">
+		Today, [char] is wearing [!list:{top.lower}; {bottom.lower}; {accessories.lower}; {glasses?glasses}; [has-underwear and placement?{underwear} underneath]].
+		[more?{more}.]
+	</String>
+	
+	<String id="outfit" rule="not has-outfit and has-underwear">
+		Today, [char] is wearing {underwear.lower}.
+		[more?{more}.]
 	</String>
 	
 	<String id="lore-key">
 		[!commalist:
 		[__support-lore-wildcards?clothe*|clothes];
-		outfit, looks, appearance, wear, wearing, wears, put on, dress, dressed, 
+		outfit; looks; appearance; wear; wearing; wears; put on; dress; dressed;
 		[__support-lore-wildcards?look * [char]; look *[char]; looked * [char]; looked *[char]|look at [char]; looked at [char]]; 
 		[if has-underwear]
 			underwear; unmentionables; panties;
@@ -78,7 +85,7 @@
 		]
 	</String>
 	
-	<Lore rule="placement is lore and has-outfit">
+	<Lore rule="not in-persona and (has-outfit or has-underwear)">
 		<Name>[@lore-key]</Name>
 		<Value>[@outfit]</Value>
 	</Lore>	

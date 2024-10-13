@@ -9,6 +9,7 @@ namespace Ginger
 	public partial class VariablesDialog : FormEx
 	{
 		public List<CustomVariable> Variables;
+		public CustomVariableName EditOnLoad;
 		public bool Changed = false;
 
 		private string _previousCellValue = null;
@@ -19,6 +20,7 @@ namespace Ginger
 
 			this.Load += VariablesDialog_Load;
 			this.FormClosing += VariablesDialog_FormClosing;
+			this.Shown += VariablesDialog_Shown;
 
 			btnAdd.Click += BtnAdd_Click;
 			btnRemove.Click += BtnRemove_Click;
@@ -28,8 +30,22 @@ namespace Ginger
 			dataGridView.CellBeginEdit += DataGridView_CellBeginEdit;
 			dataGridView.CellEndEdit += DataGridView_CellEndEdit;
 			dataGridView.SelectionChanged += DataGridView_SelectionChanged;
-
 			dataGridView.MouseClick += DataGridView_MouseClick;
+		}
+
+		private void VariablesDialog_Shown(object sender, EventArgs e)
+		{
+			if (EditOnLoad.IsEmpty == false)
+			{
+				int index = Variables.FindIndex(v => string.Compare(v.Name, EditOnLoad, StringComparison.OrdinalIgnoreCase) == 0);
+				if (index >= 0 && index < dataGridView.RowCount)
+				{
+					dataGridView.Select();
+					dataGridView.SelectRow(index);
+					dataGridView.CurrentCell = dataGridView.CurrentRow.Cells[1];
+					dataGridView.BeginEdit(true);
+				}
+			}
 		}
 
 		private void VariablesDialog_Load(object sender, EventArgs e)

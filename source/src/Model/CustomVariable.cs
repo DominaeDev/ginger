@@ -63,6 +63,7 @@ namespace Ginger
 		}
 
 		public int Length { get { return string.IsNullOrEmpty(_name) ? 0 : _name.Length; } }
+		public bool IsEmpty { get { return Length == 0; } }
 
 		public static implicit operator CustomVariableName(string s)
 		{

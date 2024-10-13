@@ -50,8 +50,8 @@
 	<Node path="persona/attributes/height" order="50" style="space" mode="replace">Height: {inner}</Node>
 	<Node path="persona/attributes/height/extra" style="space" rule="height and size-mouse">[nocap](mouse-sized)</Node>
 	<Node path="persona/attributes/height/extra" style="space" rule="height and size-doll">[nocap](doll-sized)</Node>
-	<Node path="persona/attributes/height/extra" style="space" rule="height and size-half">[nocap](child-sized)</Node>
-	<Node path="persona/attributes/height/extra" style="space" rule="height and size-giant">[nocap](doll-sized)</Node>
+	<Node path="persona/attributes/height/extra" style="space" rule="height and size-half">[nocap](dwarf-sized)</Node>
+	<Node path="persona/attributes/height/extra" style="space" rule="height and size-giant">[nocap](giant-sized)</Node>
 	<Node path="persona/attributes/height/extra" style="space" rule="height and size-house">[nocap](house-sized)</Node>
 	<Node path="persona/attributes/height/extra" style="space" rule="height and size-mountain">[nocap](mountain-sized)</Node>
 	
@@ -73,19 +73,19 @@
 	
 	<Persona rule="size-giant">
 		Compared to [user], [char] is practically a giant [height?, towering at about {height}]. 
-		[more-detail?From [char's] perspective, [user] is no bigger than a child.]
+		[more-detail?From [char's] perspective, [user] is very small in comparison.]
 	</Persona>
 
 	<Persona rule="size-house">
 		The first thing anyone notices and remembers about [char] is their enormous size, which rivals that of a two story house [height?, towering at about {height}].
 		Everything beneath [their] feet is enveloped in [their] shadow, which can span for miles.
-		From [char's] perspective, [user] is no bigger nor threatening than a mouse.
+		[more-detail?From [char's] perspective, [user] is no bigger or more threatening than a mouse.]
 	</Persona>
 
 	<Persona rule="size-mountain">
 		[char] is the size of a colossus, as tall as a mountain by no exaggeration, [height?, towering at about {height}].
 		Everything beneath [their] feet is enveloped in [their] shadow, which can span for miles.
-		From [char's] perspective, [user] is no bigger nor threatening than an ant.
+		[more-detail?From [char's] perspective, [user] is no bigger or more threatening than an ant.]
 	</Persona>
 	
 </Ginger>

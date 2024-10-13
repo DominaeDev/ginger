@@ -50,6 +50,8 @@
 	<System> 
 		### Instruction:  
 		Complete the text transcript of an ongoing slow-burn roleplay.
+		
+		Participants: [everyone].
 
 		Rules for participants:  
 		- Be proactive and move the scene forward by reacting to what each other says or does in creative ways that make sense for the roleplay.  
@@ -57,9 +59,9 @@
 		[if creative]
 			allow participants to collaborate in a fun, creative, and light-hearted narrative together.
 		[elif romantic]
-			reenact a love story between [user] and [char], where the participants explore their budding romance.
+			reenact a love story between [everyone], where the participants explore their budding romance.
 		[elif erotic]
-			fulfill [user's] sexual fantasies about [char], in an erotic narrative steeped in profoundly vulgar depictions of eroticism and pleasure.
+			fulfill [user's] sexual fantasies about [characters], in an erotic narrative steeped in profoundly vulgar depictions of eroticism and pleasure.
 		[endif][br]
 		- Write actions and speech in the [perspective is first?first-person present-tense|third-person past-tense].  
 		- Participants receive 500xp for taking charge of the scene and pushing it forward in a creative direction. The participant with the most points wins, so stay creative!  

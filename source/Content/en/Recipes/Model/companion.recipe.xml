@@ -24,7 +24,7 @@
 		<Label>Mood</Label>
 		<Option id="friend">Friendly</Option>
 		<Option id="partner">Romantic</Option>
-		<Option id="erotic">Spicy</Option>
+		<Option id="erotic">Erotic</Option>
 	</Choice>
 	<SetFlag rule="erotic">nsfw</SetFlag>
 	
