@@ -700,7 +700,7 @@ namespace Ginger
 			if (_syntaxFlags.Contains(SyntaxFlags.Variables))
 			{
 				// Unknown variables
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\$[\w-_]*\}"), SyntaxStyle.Underlined(colorError), 3);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\$[\w-_]*\}"), SyntaxStyle.Underlined(colorVariable), 5);
 			}
 
 			// Commands {char}, {user}, {they}, etc.
@@ -737,7 +737,7 @@ namespace Ginger
 				names[0] = Current.Card.userPlaceholder;
 				for (int i = 0; i < Current.Characters.Count; ++i)
 					names[i + 1] = Current.Characters[i].namePlaceholder;
-				syntaxHighlighter.SetCharacterNames(names, new SyntaxStyle(colorName), 1);
+				syntaxHighlighter.SetCharacterNames(names, new SyntaxStyle(colorName), 3);
 			}
 
 			// Known variables
@@ -776,13 +776,21 @@ namespace Ginger
 			// Update names
 			if (Current.Characters != null && AppSettings.Settings.AutoConvertNames && _syntaxFlags.Contains(SyntaxFlags.Names))
 			{
-				Color colorName = Theme.Current.Name;
-
 				string[] names = new string[Current.Characters.Count + 1];
 				names[0] = Current.Card.userPlaceholder;
 				for (int i = 0; i < Current.Characters.Count; ++i)
 					names[i + 1] = Current.Characters[i].namePlaceholder;
-				syntaxHighlighter.SetCharacterNames(names, new SyntaxStyle(colorName), 1);
+				syntaxHighlighter.SetCharacterNames(names, new SyntaxStyle(Theme.Current.Name), 3);
+			}
+
+			// Update variables
+			if (_syntaxFlags.Contains(SyntaxFlags.Variables))
+			{
+				string[] varNames = Current.Card.customVariables
+					.Where(v => string.IsNullOrWhiteSpace(v.Value) == false)
+					.Select(v => string.Concat("{", v.Name, "}"))
+					.ToArray();
+				syntaxHighlighter.SetVariableNames(varNames, new SyntaxStyle(Theme.Current.Variable), 5);
 			}
 
 			Rehighlight(immediate);

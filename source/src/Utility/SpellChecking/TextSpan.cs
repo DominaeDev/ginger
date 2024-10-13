@@ -9,7 +9,7 @@ namespace Ginger
 		public TextSpan[] spans;
 		public int Count { get { return spans != null ? spans.Length : 0; } }
 
-		private static readonly char[] SpanBreakChars = new char[] { '\n', '/', '`', '<', '!', '@' };
+		private static readonly char[] SpanBreakChars = new char[] { '\n', '/', '`', '<', '!', '@', '{' };
 
 		private static readonly string[] HtmlTags = new string[] { "!doctype", "a", "abbr", "acronym", "address", "applet", "area", "article", "aside", "audio", "b", "base", "basefont", "bb", "bdo", "big", "blockquote", "body", "br", "button", "canvas", "caption", "center", "cite", "code", "col", "colgroup", "command", "datagrid", "datalist", "dd", "del", "details", "dfn", "dialog", "dir", "div", "dl", "dt", "em", "embed", "eventsource", "fieldset", "figcaption", "figure", "font", "footer", "form", "frame", "frameset", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr", "html", "i", "iframe", "img", "input", "ins", "isindex", "kbd", "keygen", "label", "legend", "li", "link", "map", "mark", "menu", "meta", "meter", "nav", "noframes", "noscript", "object", "ol", "optgroup", "option", "output", "p", "param", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "sup", "table", "tbody", "td", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track", "tt", "u", "ul", "var", "video", "wbr" };
 
@@ -21,14 +21,8 @@ namespace Ginger
 			while (pos_end != -1)
 			{
 				char ch = text[pos_end];
-				bool eol = ch == '\n';
-				bool isComment = ch == '/';
-				bool isHtml = ch == '<';
-				bool isCode = ch == '`';
-				bool isMarkdownImage = ch == '!';
-				bool isDecorator = ch == '@';
 
-				if (isComment) // /* ... */
+				if (ch == '/') // /* ... */
 				{
 					if (pos_end + 1 < text.Length && text[pos_end + 1] == '*')
 					{
@@ -46,7 +40,8 @@ namespace Ginger
 					pos_end = text.IndexOfAny(SpanBreakChars, pos_end + 1);
 					continue;
 				}
-				if (isHtml)
+
+				if (ch == '<')
 				{
 					// HTML comment <!-- ... -->
 					if (pos_end + 3 < text.Length && text[pos_end + 1] == '!' && text[pos_end + 2] == '-' && text[pos_end + 3] == '-')
@@ -84,7 +79,8 @@ namespace Ginger
 					pos_end = text.IndexOfAny(SpanBreakChars, pos_end + 1);
 					continue;
 				}
-				if (isMarkdownImage) // ![]()
+
+				if (ch == '!') // ![]()
 				{
 					if (pos_end + 1 < text.Length && text[pos_end + 1] == '[')
 					{
@@ -109,7 +105,8 @@ namespace Ginger
 					pos_end = text.IndexOfAny(SpanBreakChars, pos_end + 1);
 					continue;
 				}
-				if (isCode) // ` ... `
+
+				if (ch == '`') // ` ... `
 				{
 					int end_code = text.IndexOf('`', pos_end + 1);
 					if (end_code != -1)
@@ -124,7 +121,8 @@ namespace Ginger
 					pos_end = text.IndexOfAny(SpanBreakChars, pos_end + 1);
 					continue;
 				}
-				if (isDecorator) // @@ ... \n
+
+				if (ch == '@') // @@ ... \n
 				{
 					if (pos_end + 1 < text.Length && text[pos_end + 1] == '@' && (pos_end == 0 || text[pos_end - 1] == '\n'))
 					{
@@ -142,10 +140,31 @@ namespace Ginger
 					pos_end = text.IndexOfAny(SpanBreakChars, pos_end + 1);
 					continue;
 				}
+
+				if (ch == '{') // {$variable}
+				{
+					// Custom variable
+					if (pos_end + 1 < text.Length && text[pos_end + 1] == '$')
+					{
+						int end_variable = text.IndexOf('}', pos_end + 2);
+						if (end_variable != -1)
+						{
+							spans.Add(TextSpan.FromString(text.Substring(pos, pos_end - pos), pos));
+							spans.Add(TextSpan.Ignore(text.Substring(pos_end, end_variable - pos_end + 1), pos_end));
+							pos = end_variable + 1;
+							pos_end = text.IndexOfAny(SpanBreakChars, pos);
+							continue;
+						}
+					}
+					// Wasn't a variable. Continue...
+					pos_end = text.IndexOfAny(SpanBreakChars, pos_end + 1);
+					continue;
+				}
+
 				var span = TextSpan.FromString(text.Substring(pos, pos_end - pos), pos);
 				spans.Add(span);
 
-				if (eol)
+				if (ch == '\n')
 				{
 					span.length += 1;
 					pos = pos_end + 1;

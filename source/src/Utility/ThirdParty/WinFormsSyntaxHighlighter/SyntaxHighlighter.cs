@@ -107,7 +107,7 @@ namespace WinFormsSyntaxHighlighter
 			int index = _patternStyles.FindIndex(p => p.Name == "names");
 			if (index != -1)
 				_patternStyles.RemoveAt(index);
-			AddPattern("names", new PatternDefinition(false, names), syntaxStyle, Order);
+			AddPattern("names", new PatternDefinition(true, names), syntaxStyle, Order);
 		}
 
 		public void SetVariableNames(string[] variableNames, SyntaxStyle syntaxStyle, int Order = -1)
