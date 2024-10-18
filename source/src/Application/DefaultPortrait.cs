@@ -12,7 +12,8 @@ namespace Ginger
 			{
 				if (_image == null)
 					ReadImage();
-				var imageRef = ImageRef.FromImage(_image);
+
+				var imageRef = ImageRef.FromImage(_image, false);
 				imageRef.uid = "__default";
 				return imageRef;
 			} 
