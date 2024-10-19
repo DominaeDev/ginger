@@ -683,7 +683,7 @@ namespace Ginger
 			}
 		}
 
-		public static void ImportImages(string[] images, out Backyard.Link.Image[] imageLinks) // Backyard import
+		public static void ImportImages(string[] images, out Backyard.Link.Image[] imageLinks, AssetFile.AssetType imageType = AssetFile.AssetType.Icon) // Backyard import
 		{
 			if (images == null || images.Length == 0)
 			{
@@ -693,17 +693,23 @@ namespace Ginger
 
 			var lsImageLinks = new List<Backyard.Link.Image>();
 
-			Image image;
-			if (Utility.LoadImageFromFile(images[0], out image))
+			int i = 0;
+
+			if (imageType == AssetFile.AssetType.Icon)
 			{
-				Card.portraitImage = ImageRef.FromImage(image);
-				lsImageLinks.Add(new Backyard.Link.Image() {
-					filename = Path.GetFileName(images[0]),
-					uid = Card.portraitImage.uid,
-				});
+				Image image;
+				if (Utility.LoadImageFromFile(images[0], out image))
+				{
+					Card.portraitImage = ImageRef.FromImage(image);
+					lsImageLinks.Add(new Backyard.Link.Image() {
+						filename = Path.GetFileName(images[0]),
+						uid = Card.portraitImage.uid,
+					});
+				}
+				++i;
 			}
 
-			for (int i = 1; i < images.Length; ++i)
+			for (; i < images.Length; ++i)
 			{
 				string name = Path.GetFileNameWithoutExtension(images[i]);
 				string ext = Path.GetExtension(images[i]);
@@ -715,7 +721,7 @@ namespace Ginger
 				{
 					var asset = new AssetFile() {
 						name = name,
-						assetType = AssetFile.AssetType.Icon,
+						assetType = imageType,
 						data = AssetData.FromBytes(bytes),
 						ext = ext,
 						uriType = AssetFile.UriType.Embedded,

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -13,23 +14,14 @@ namespace Ginger.Integration
 	{
 		public FaradayCardV4 characterCard;
 		public List<Image> images;
+		public List<Image> backgrounds;
 		public List<Chat> chats;
 		
 		public class Image
 		{
 			public string filename;
 			public byte[] data;
-
-			public string ext
-			{
-				get
-				{
-					var ext = Path.GetExtension(filename ?? "");
-					if (ext.BeginsWith('.'))
-						ext = ext.Substring(1);
-					return ext;
-				}
-			}
+			public string ext { get { return Utility.GetFileExt(filename); } }
 		}
 
 		public class Chat
@@ -40,6 +32,7 @@ namespace Ginger.Integration
 			public ChatHistory history;
 			public ChatStaging staging = new ChatStaging();
 			public ChatParameters parameters = new ChatParameters();
+			public string backgroundName;
 		}
 
 		public bool hasParameters { get { return chats != null && chats.ContainsAny(c => c.parameters != null); } }
@@ -66,23 +59,49 @@ namespace Ginger.Integration
 				return error;
 			}
 
+			var backgrounds = chatInstances
+				.Where(c => c.hasBackground)
+				.Select(c => c.staging.background)
+				.DistinctBy(b => b.imageUrl)
+				.ToList();
+
 			// Create backup
 			backupInfo = new BackupData();
 			backupInfo.characterCard = card;
 			backupInfo.chats = chatInstances
 				.Where(c => c.history.isEmpty == false)
-				.Select(c => new BackupData.Chat() { 
-					name = c.name,
-					history = c.history,
-					staging = c.staging,
-					parameters = c.parameters,
-					creationDate = c.creationDate,
-					updateDate = c.updateDate,
+				.Select(c => 
+				{
+					string bgName = null;
+					if (c.hasBackground)
+					{
+						int index = backgrounds.FindIndex(b => b.imageUrl == c.staging.background.imageUrl);
+						if (index != -1)
+							bgName = string.Format("background_{0:00}.{1}", index + 1, Utility.GetFileExt(c.staging.background.imageUrl));
+					}
+
+					return new BackupData.Chat() {
+						name = c.name,
+						history = c.history,
+						staging = c.staging,
+						parameters = c.parameters,
+						creationDate = c.creationDate,
+						updateDate = c.updateDate,
+						backgroundName = bgName,
+					};
 				})
 				.ToList();
+			
+			// Images
 			backupInfo.images = imageUrls.Select(url => new BackupData.Image() { 
 				filename = Path.GetFileName(url),
 				data = Utility.LoadFile(url),
+			}).ToList();
+
+			// Background images
+			backupInfo.backgrounds = backgrounds.Select(b => new BackupData.Image() {
+				filename = Path.GetFileName(b.imageUrl),
+				data = Utility.LoadFile(b.imageUrl),
 			}).ToList();
 
 			return Backyard.Error.NoError;
@@ -146,6 +165,7 @@ namespace Ginger.Integration
 						updateDate = chat.updateDate,
 						staging = chat.staging,
 						parameters = chat.parameters,
+						backgroundName = chat.backgroundName,
 						history = ChatHistory.LegacyFix(chat.history),
 					});
 					string json = chatBackup.ToJson();
@@ -170,9 +190,7 @@ namespace Ginger.Integration
 						if (backup.images[i].data == null || backup.images[i].data.Length == 0)
 							continue; // No file data
 
-						string ext = Path.GetExtension(backup.images[i].filename);
-						if (ext.BeginsWith('.'))
-							ext = ext.Substring(1);
+						string ext = Utility.GetFileExt(backup.images[i].filename);
 						string entryName = string.Format("images/image_{0:00}.{1}", i, ext);
 
 						var fileEntry = zip.CreateEntry(string.Format(entryName, CompressionLevel.NoCompression));
@@ -182,6 +200,27 @@ namespace Ginger.Integration
 							{
 								int length = (int)Math.Min(n, (long)int.MaxValue);
 								writer.Write(backup.images[i].data, 0, length);
+								n -= (long)length;
+							}
+						}
+					}
+
+					// Write background files
+					for (int i = 0; i < backup.backgrounds.Count; ++i)
+					{
+						if (backup.backgrounds[i].data == null || backup.backgrounds[i].data.Length == 0)
+							continue; // No file data
+
+						string ext = Utility.GetFileExt(backup.backgrounds[i].filename);
+						string entryName = string.Format("backgrounds/background_{0:00}.{1}", i + 1, ext);
+
+						var fileEntry = zip.CreateEntry(string.Format(entryName, CompressionLevel.NoCompression));
+						using (Stream writer = fileEntry.Open())
+						{
+							for (long n = backup.backgrounds[i].data.Length; n > 0;)
+							{
+								int length = (int)Math.Min(n, (long)int.MaxValue);
+								writer.Write(backup.backgrounds[i].data, 0, length);
 								n -= (long)length;
 							}
 						}
@@ -217,6 +256,7 @@ namespace Ginger.Integration
 		{
 			FaradayCardV4 characterCard = null;
 			List<BackupData.Image> images = new List<BackupData.Image>();
+			List<BackupData.Image> backgrounds = new List<BackupData.Image>();
 			List<BackupData.Chat> chats = new List<BackupData.Chat>();
 
 			try
@@ -260,6 +300,7 @@ namespace Ginger.Integration
 									}
 								}
 							}
+
 							// Read chat log
 							if ((entryPath == "chats" || entryPath == "logs") && entryExt == ".json")
 							{
@@ -271,19 +312,19 @@ namespace Ginger.Integration
 									dataStream.Read(buffer, 0, (int)dataSize);
 									string chatJson = new string(Encoding.UTF8.GetChars(buffer));
 
-									var chatBackup = BackyardChatBackup.FromJson(chatJson).ToChat();
+									var chatBackup = BackyardChatBackup.FromJson(chatJson);
+									if (chatBackup != null)
+									{
+										var chat = chatBackup.ToChat();
+										if (chat.name == null)
+											chat.name = ChatInstance.DefaultName;
 
-									chats.Add(new BackupData.Chat() {
-										creationDate = chatBackup.creationDate,
-										updateDate = chatBackup.updateDate,
-										name = chatBackup.name ?? ChatInstance.DefaultName,
-										staging = chatBackup.staging,
-										parameters = chatBackup.parameters,
-										history = chatBackup.history,
-									});
+										chats.Add(chat);
+									}
 								}
 								continue;
 							}
+
 							// Images
 							if (entryPath == "images"
 								&& (entryExt == ".png" || entryExt == ".apng" || entryExt == ".jpeg" || entryExt == ".jpg" 
@@ -295,8 +336,25 @@ namespace Ginger.Integration
 									var dataStream = entry.Open();
 									byte[] buffer = new byte[dataSize];
 									dataStream.Read(buffer, 0, (int)dataSize);
-
 									images.Add(new BackupData.Image() {
+										filename = entryFullName,
+										data = buffer,
+									});
+								}
+							}
+
+							// Backgrounds
+							if (entryPath == "backgrounds"
+								&& (entryExt == ".png" || entryExt == ".apng" || entryExt == ".jpeg" || entryExt == ".jpg" 
+								|| entryExt == ".gif" || entryExt == ".webp" || entryExt == ".avif" ))
+							{
+								long dataSize = entry.Length;
+								if (dataSize > 0)
+								{
+									var dataStream = entry.Open();
+									byte[] buffer = new byte[dataSize];
+									dataStream.Read(buffer, 0, (int)dataSize);
+									backgrounds.Add(new BackupData.Image() {
 										filename = entryFullName,
 										data = buffer,
 									});
@@ -316,6 +374,7 @@ namespace Ginger.Integration
 					characterCard = characterCard,
 					chats = chats,
 					images = images,
+					backgrounds = backgrounds,
 				};
 				return FileUtil.Error.NoError;
 			}

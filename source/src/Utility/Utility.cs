@@ -11,7 +11,7 @@ using System.Xml;
 
 namespace Ginger
 {
-	public static class Utility 
+	public static class Utility
 	{
 #if DEBUG
 		public static bool InDesignMode = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
@@ -86,8 +86,8 @@ namespace Ginger
 				image = default(Image);
 				return false;
 			}
-		}		
-		
+		}
+
 		public static bool LoadImageFromMemory(byte[] bytes, out Image image)
 		{
 			if (bytes == null || bytes.Length == 0)
@@ -1601,6 +1601,17 @@ namespace Ginger
 				ext = ext.Substring(1);
 
 			return string.Concat(Guid.NewGuid().ToString().Replace("-", "").ToLowerInvariant(), ".", ext);
+		}
+
+		public static string GetFileExt(string filename)
+		{
+			if (string.IsNullOrWhiteSpace(filename))
+				return "";
+
+			string ext = Path.GetExtension(filename);
+			if (ext.BeginsWith('.'))
+				ext = ext.Substring(1);
+			return ext;
 		}
 	}
 

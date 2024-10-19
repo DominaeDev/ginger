@@ -1566,7 +1566,8 @@ namespace Ginger
 			// Import...
 			FaradayCardV4 faradayData;
 			string[] images;
-			var importError = Backyard.ImportCharacter(dlg.SelectedCharacter, out faradayData, out images);
+			string[] backgrounds;
+			var importError = Backyard.ImportCharacter(dlg.SelectedCharacter, out faradayData, out images, out backgrounds);
 			if (importError == Backyard.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1584,7 +1585,14 @@ namespace Ginger
 			Current.ReadFaradayCard(faradayData, null);
 
 			Backyard.Link.Image[] imageLinks;
-			Current.ImportImages(images, out imageLinks);
+			Current.ImportImages(images, out imageLinks, AssetFile.AssetType.Icon);
+			
+			if (backgrounds != null && backgrounds.Length > 0)
+			{
+				Backyard.Link.Image[] backgroundsLinks;
+				Current.ImportImages(backgrounds, out backgroundsLinks, AssetFile.AssetType.Background);
+				imageLinks = Utility.ConcatenateArrays(imageLinks, backgroundsLinks);
+			}
 
 			ClearStatusBarMessage();
 
@@ -1715,7 +1723,17 @@ namespace Ginger
 						fileExt = asset.ext,
 					});
 				}
+
+				var backgroundAsset = Current.Card.assets.FirstOrDefault(a => a.assetType == AssetFile.AssetType.Background);
+				if (backgroundAsset != null)
+				{
+					lsImages.Add(new Backyard.ImageInput() {
+						asset = backgroundAsset,
+						fileExt = backgroundAsset.ext,
+					});
+				}
 			}
+
 			return lsImages.ToArray();
 		}
 

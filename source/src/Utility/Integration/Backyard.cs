@@ -135,6 +135,7 @@ namespace Ginger.Integration
 
 		public string name { get { return history.name; } }
 		public bool hasGreeting { get { return staging != null && string.IsNullOrEmpty(staging.greeting) == false; } }
+		public bool hasBackground { get { return staging != null && staging.background != null && string.IsNullOrEmpty(staging.background.imageUrl) == false; } }
 
 		public static string DefaultName = "Untitled chat";
 	}
@@ -156,7 +157,7 @@ namespace Ginger.Integration
 		public enum Feature
 		{
 			Undefined = 0,
-			ChatBackground = 1,
+			ChatBackgrounds = 1,
 		}
 
 		public static bool CheckFeature(Feature feature)
@@ -166,8 +167,8 @@ namespace Ginger.Integration
 
 			switch (feature)
 			{
-			case Feature.ChatBackground:
-				return DatabaseVersion >= BackyardDatabaseVersion.Version_0_28_27;
+			case Feature.ChatBackgrounds:
+				return DatabaseVersion >= BackyardDatabaseVersion.Version_0_29_0;
 			}
 			return false;
 		}
@@ -311,13 +312,6 @@ namespace Ginger.Integration
 
 		public static bool ConnectionEstablished = false;
 
-		public enum BackyardDatabaseVersion
-		{
-			Unknown,
-			Version_0_28_0,		// Groups
-			Version_0_28_27,	// Background
-		}
-
 		public static BackyardDatabaseVersion DatabaseVersion = BackyardDatabaseVersion.Unknown;
 
 		private static SQLiteConnection CreateSQLiteConnection()
@@ -371,9 +365,9 @@ namespace Ginger.Integration
 						}
 					}
 
-
+					// Detect database version
 					if (foundTables.Contains("BackgroundChatImage"))
-						DatabaseVersion = BackyardDatabaseVersion.Version_0_28_27;
+						DatabaseVersion = BackyardDatabaseVersion.Version_0_29_0;
 					else if (foundTables.Contains("GroupConfig"))
 						DatabaseVersion = BackyardDatabaseVersion.Version_0_28_0;
 					else // Outdated or unknown
@@ -382,8 +376,8 @@ namespace Ginger.Integration
 						return Error.ValidationFailed;
 					}
 
+					// Compare database structure with known tables
 					var validationTable = BackyardValidation.TablesByVersion[DatabaseVersion];
-
 					if (AppSettings.BackyardLink.Strict && foundTables.Count != validationTable.Length)
 					{
 						LastError = "Validation failed";
@@ -420,7 +414,7 @@ namespace Ginger.Integration
 						}
 
 						if (expectedNames.Length == 0 && foundColumns.Count > 0)
-							continue; // A table we want to exist, but don't care what it contains
+							continue; // A table we want to exist, but don't care about its columns/contents
 
 						if ((AppSettings.BackyardLink.Strict && foundColumns.Count != expectedNames.Length)
 							|| foundColumns.Count < expectedNames.Length)
@@ -447,13 +441,9 @@ namespace Ginger.Integration
 						using (var reader = cmdSettings.ExecuteReader())
 						{
 							if (reader.Read())
-							{
 								DefaultModel = reader[0] as string;
-							}
 							else
-							{
 								DefaultModel = null;
-							}
 						}
 					}
 
@@ -740,13 +730,19 @@ namespace Ginger.Integration
 		#endregion
 
 		#region Characters
-
 		public static Error ImportCharacter(CharacterInstance character, out FaradayCardV4 card, out string[] imageUrls)
+		{
+			string[] tmp;
+			return ImportCharacter(character, out card, out imageUrls, out tmp);
+		}
+
+		public static Error ImportCharacter(CharacterInstance character, out FaradayCardV4 card, out string[] imageUrls, out string[] backgroundUrls)
 		{
 			if (ConnectionEstablished == false)
 			{
 				card = null;
 				imageUrls = null;
+				backgroundUrls = null;
 				LastError = "Not connected";
 				return Error.NotConnected;
 			}
@@ -790,6 +786,7 @@ namespace Ginger.Integration
 							if (!reader.Read())
 							{
 								imageUrls = null;
+								backgroundUrls = null;
 								return Error.NotFound; // No character
 							}
 
@@ -874,7 +871,7 @@ namespace Ginger.Integration
 						}
 					}
 
-					// Find portrait image file
+					// Gather portrait image files
 					var lsImageUrls = new List<string>();
 					using (var cmdImageLookup = connection.CreateCommand())
 					{ 
@@ -904,7 +901,33 @@ namespace Ginger.Integration
 						}
 					}
 
+					// Gather background image files
+					var lsBackgroundUrls = new List<string>();
+					if (CheckFeature(Feature.ChatBackgrounds))
+					{
+						// Get existing chats
+						List<_Chat> chats;
+						List<_Background> backgrounds;
+						if (FetchChatInstances(connection, character.groupId, out chats) == Error.NoError
+							&& FetchChatBackgrounds(connection, out backgrounds) == Error.NoError)
+						{
+							foreach (var chat in chats)
+							{
+								int idxBackground = backgrounds.FindIndex(b => b.chatId == chat.instanceId);
+								if (idxBackground == -1)
+									continue;
+
+								lsBackgroundUrls.Add(backgrounds[idxBackground].imageUrl);
+							}
+						}
+						lsBackgroundUrls = lsBackgroundUrls
+							.Distinct()
+							.Where(s => string.IsNullOrEmpty(s) == false && File.Exists(s))
+							.ToList();
+					}
+
 					imageUrls = lsImageUrls.ToArray();
+					backgroundUrls = lsBackgroundUrls.ToArray();
 					connection.Close();
 					LastError = null;
 					return card == null ? Error.NotFound : Error.NoError;
@@ -915,6 +938,7 @@ namespace Ginger.Integration
 				Disconnect();
 				card = null;
 				imageUrls = null;
+				backgroundUrls = null;
 				LastError = "File not found";
 				return Error.NotConnected;
 			}
@@ -923,6 +947,7 @@ namespace Ginger.Integration
 				Disconnect();
 				card = null;
 				imageUrls = null;
+				backgroundUrls = null;
 				LastError = e.Message;
 				return Error.SQLCommandFailed;
 			}
@@ -931,6 +956,7 @@ namespace Ginger.Integration
 				Disconnect();
 				card = null;
 				imageUrls = null;
+				backgroundUrls = null;
 				LastError = e.Message;
 				return Error.Unknown;
 			}
@@ -1158,32 +1184,13 @@ namespace Ginger.Integration
 					}
 
 					// Get existing chats
-					var chats = new List<_Chat>();
-					using (var cmdConfirm = connection.CreateCommand())
-					{ 
-						cmdConfirm.CommandText =
-						@"
-							SELECT id, createdAt, updatedAt
-							FROM Chat
-							WHERE groupConfigId = $groupId
-						";
-						cmdConfirm.Parameters.AddWithValue("$groupId", groupId);
-
-						using (var reader = cmdConfirm.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string chatId = reader.GetString(0);
-								DateTime chatCreatedAt = reader.GetTimestamp(1);
-								DateTime chatUpdatedAt = reader.GetTimestamp(2);
-
-								chats.Add(new _Chat() {
-									instanceId = chatId,
-									creationDate = chatCreatedAt,
-									updateDate = chatUpdatedAt,
-								});
-							}
-						}
+					List<_Chat> chats;
+					var error = FetchChatInstances(connection, groupId, out chats);
+					if (error != Error.NoError)
+					{
+						updateDate = default(DateTime);
+						updatedImageLinks = null;
+						return error;
 					}
 
 					// Get image ids
@@ -1393,11 +1400,7 @@ namespace Ginger.Integration
 									cmdImage.Parameters.AddWithValue($"$imageId{i:000}", sortedImageIds[i]);
 									cmdImage.Parameters.AddWithValue($"$imageUrl{i:000}", images[i].imageUrl);
 									cmdImage.Parameters.AddWithValue($"$label{i:000}", images[i].label ?? "");
-									if (images[i].width > 0 && images[i].height > 0)
-										cmdImage.Parameters.AddWithValue($"$aspectRatio{i:000}", string.Format("{0}/{1}", images[i].width, images[i].height));
-									else 
-										cmdImage.Parameters.AddWithValue($"$aspectRatio{i:000}", "");
-
+									cmdImage.Parameters.AddWithValue($"$aspectRatio{i:000}", images[i].aspectRatio);
 								}
 								sbCommand.Append(";");
 
@@ -1661,10 +1664,35 @@ namespace Ginger.Integration
 				return Error.Unknown;
 			}
 
+			// Remove backgrounds if unsupported
+			bool bUseBackgrounds = CheckFeature(Feature.ChatBackgrounds);
+			if (imageInput != null && bUseBackgrounds == false) 
+				imageInput = imageInput.Where(i => i.asset == null || i.asset.assetType != AssetFile.AssetType.Background).ToArray();
+
 			// Prepare image information
+			List<ImageOutput> images = new List<ImageOutput>();
+			List<ImageOutput> backgrounds = new List<ImageOutput>();
 			ImageOutput[] imageOutput;
-			PrepareImages(imageInput, out imageOutput, out imageLinks);
-						
+			Dictionary<string, ImageOutput> backgroundUrlByName = new Dictionary<string, ImageOutput>();
+			if (PrepareImages(imageInput, out imageOutput, out imageLinks))
+			{
+				for (int i = 0; i < imageOutput.Length && i < imageInput.Length; ++i)
+				{
+					if (imageInput[i].asset != null && imageInput[i].asset.assetType == AssetFile.AssetType.Background)
+					{
+						backgrounds.Add(imageOutput[i]);
+						backgroundUrlByName.TryAdd(imageInput[i].asset.name ?? "", imageOutput[i]);
+					}
+					else
+						images.Add(imageOutput[i]);
+				}
+
+				if (chats == null || chats.Length == 0)
+					backgrounds = backgrounds.Take(1).ToList();
+
+				imageOutput = Utility.ConcatenateArrays(images.ToArray(), backgrounds.ToArray());
+			}
+
 			try
 			{
 				using (var connection = CreateSQLiteConnection())
@@ -1768,7 +1796,9 @@ namespace Ginger.Integration
 
 								if (chats == null || chats.Length == 0)
 								{
-									// Chat
+									string chatId = Cuid.NewCuid();
+
+									// Create first chat
 									sbCommand.AppendLine(
 									@"
 										INSERT INTO Chat
@@ -1785,7 +1815,7 @@ namespace Ginger.Integration
 												$repeatPenalty, $repeatLastN, $promptTemplate, $pruneExample);
 									");
 	
-									cmdCreate.Parameters.AddWithValue("$chatId", Cuid.NewCuid());
+									cmdCreate.Parameters.AddWithValue("$chatId", chatId);
 									cmdCreate.Parameters.AddWithValue("$system", card.data.system);
 									cmdCreate.Parameters.AddWithValue("$scenario", card.data.scenario);
 									cmdCreate.Parameters.AddWithValue("$example", card.data.example);
@@ -1803,6 +1833,25 @@ namespace Ginger.Integration
 									cmdCreate.Parameters.AddWithValue("$pruneExample", AppSettings.Faraday.PruneExampleChat);
 
 									expectedUpdates += 1;
+
+									// Add background image
+									if (bUseBackgrounds && backgrounds.Count > 0)
+									{
+										// BackgroundChatImage
+										sbCommand.AppendLine(
+										$@"
+											INSERT INTO BackgroundChatImage
+												(id, imageUrl, aspectRatio, chatId)
+											VALUES 
+												($backgroundId, $backgroundImageUrl, $backgroundAspectRatio, $chatId);
+										");
+
+										cmdCreate.Parameters.AddWithValue($"$backgroundId", Cuid.NewCuid());
+										cmdCreate.Parameters.AddWithValue($"$backgroundImageUrl", backgrounds[0].imageUrl);
+										cmdCreate.Parameters.AddWithValue($"$backgroundAspectRatio", backgrounds[0].aspectRatio);
+
+										expectedUpdates += 1;
+									}
 								}
 								else
 								{
@@ -1861,44 +1910,64 @@ namespace Ginger.Integration
 										cmdCreate.Parameters.AddWithValue($"$authorNote{i:000}", parameters.authorNote);
 										cmdCreate.Parameters.AddWithValue($"$ttsAutoPlay{i:000}", parameters.ttsAutoPlay);
 										cmdCreate.Parameters.AddWithValue($"$ttsInputFilter{i:000}", parameters.ttsInputFilter);
+
+										// Add background images
+										if (bUseBackgrounds)
+										{
+											if (string.IsNullOrEmpty(chats[i].backgroundName))
+												continue;
+
+											ImageOutput background;
+											if (backgroundUrlByName.TryGetValue(chats[i].backgroundName, out background) == false)
+												continue;
+
+											// BackgroundChatImage
+											sbCommand.AppendLine(
+											$@"
+												INSERT INTO BackgroundChatImage
+													(id, imageUrl, aspectRatio, chatId)
+												VALUES 
+													($backgroundId{i:000}, $backgroundImageUrl{i:000}, $backgroundAspectRatio{i:000}, $chatId{i:000});
+											");
+
+											cmdCreate.Parameters.AddWithValue($"$backgroundId{i:000}", Cuid.NewCuid());
+											cmdCreate.Parameters.AddWithValue($"$backgroundImageUrl{i:000}", background.imageUrl);
+											cmdCreate.Parameters.AddWithValue($"$backgroundAspectRatio{i:000}", background.aspectRatio);
+
+											expectedUpdates += 1;
+										}
 									}
 
 									expectedUpdates += chats.Length;
 								}
 
 								// Add images
-								if (imageOutput != null)
+								for (int i = 0; i < images.Count; ++i)
 								{
-									for (int i = 0; i < imageOutput.Length; ++i)
-									{
-										// AppImage
-										sbCommand.AppendLine(
-										$@"
-											INSERT INTO AppImage
-												(id, createdAt, updatedAt, imageUrl, label, ""order"", aspectRatio)
-											VALUES 
-												($imageId{i:000}, $timestamp, $timestamp, $imageUrl{i:000}, $label{i:000}, {i}, $aspectRatio{i:000});
-										");
+									// AppImage
+									sbCommand.AppendLine(
+									$@"
+										INSERT INTO AppImage
+											(id, createdAt, updatedAt, imageUrl, label, ""order"", aspectRatio)
+										VALUES 
+											($imageId{i:000}, $timestamp, $timestamp, $imageUrl{i:000}, $label{i:000}, {i}, $aspectRatio{i:000});
+									");
 
-										// _AppImageToCharacterConfigVersion
-										sbCommand.AppendLine(
-										$@"
-											INSERT INTO _AppImageToCharacterConfigVersion
-												(A, B)
-											VALUES 
-												($imageId{i:000}, $configId);
-										");
+									// _AppImageToCharacterConfigVersion
+									sbCommand.AppendLine(
+									$@"
+										INSERT INTO _AppImageToCharacterConfigVersion
+											(A, B)
+										VALUES 
+											($imageId{i:000}, $configId);
+									");
 
-										cmdCreate.Parameters.AddWithValue($"$imageId{i:000}", imageOutput[i].instanceId);
-										cmdCreate.Parameters.AddWithValue($"$imageUrl{i:000}", imageOutput[i].imageUrl);
-										cmdCreate.Parameters.AddWithValue($"$label{i:000}", imageOutput[i].label ?? "");
-										if (imageOutput[i].width > 0 && imageOutput[i].height > 0)
-											cmdCreate.Parameters.AddWithValue($"$aspectRatio{i:000}", string.Format("{0}/{1}", imageOutput[i].width, imageOutput[i].height));
-										else 
-											cmdCreate.Parameters.AddWithValue($"$aspectRatio{i:000}", "");
+									cmdCreate.Parameters.AddWithValue($"$imageId{i:000}", imageOutput[i].instanceId);
+									cmdCreate.Parameters.AddWithValue($"$imageUrl{i:000}", imageOutput[i].imageUrl);
+									cmdCreate.Parameters.AddWithValue($"$label{i:000}", imageOutput[i].label ?? "");
+									cmdCreate.Parameters.AddWithValue($"$aspectRatio{i:000}", imageOutput[i].aspectRatio);
 
-										expectedUpdates += 2;
-									}
+									expectedUpdates += 2;
 								}
 
 								cmdCreate.CommandText = sbCommand.ToString();
@@ -2174,6 +2243,15 @@ namespace Ginger.Integration
 			public DateTime activeAt;
 		}
 
+		private struct _Background
+		{
+			public string instanceId;
+			public string chatId;
+			public string imageUrl;
+			public int width;
+			public int height;
+		}
+
 		public static Error GetChats(string groupId, out ChatInstance[] chatInstances)
 		{
 			if (ConnectionEstablished == false)
@@ -2201,6 +2279,7 @@ namespace Ginger.Integration
 						chatInstances = null;
 						return error;
 					}
+
 					List<_Character> groupMembers;
 					error = FetchGroupMembers(connection, groupId, null, out groupMembers);
 					if (error != Error.NoError)
@@ -2208,6 +2287,10 @@ namespace Ginger.Integration
 						chatInstances = null;
 						return error;
 					}
+
+					List<_Background> backgrounds;
+					FetchChatBackgrounds(connection, out backgrounds);
+
 					var lsChatInstances = new List<ChatInstance>();
 					var chats = new List<_Chat>();
 					using (var cmdChat = connection.CreateCommand())
@@ -2266,6 +2349,19 @@ namespace Ginger.Integration
 										name = ChatInstance.DefaultName;
 								}
 
+								ChatBackground background = null;
+								int idxBackground = backgrounds.FindIndex(b => b.chatId == chatId);
+								if (idxBackground != -1)
+								{
+									var bg = backgrounds[idxBackground];
+									background = new ChatBackground() {
+										instanceId = bg.instanceId,
+										imageUrl = bg.imageUrl,
+										width = bg.width,
+										height = bg.height,
+									};
+								}
+
 								chats.Add(new _Chat() {
 									instanceId = chatId,
 									creationDate = createdAt,
@@ -2277,6 +2373,7 @@ namespace Ginger.Integration
 										greeting = greeting,
 										example = example,
 										grammar = grammar,
+										background = background,
 									},
 									parameters = new ChatParameters() {
 										model = model,
@@ -2456,7 +2553,7 @@ namespace Ginger.Integration
 					}
 
 					// Get background image
-					if (CheckFeature(Feature.ChatBackground))
+					if (CheckFeature(Feature.ChatBackgrounds))
 					{
 						using (var cmdBackground = connection.CreateCommand())
 						{
@@ -2713,18 +2810,11 @@ namespace Ginger.Integration
 					var defaultParameters = new ChatParameters();
 
 					// Background image
-					bool hasBackground = CheckFeature(Feature.ChatBackground)
+					bool hasBackground = CheckFeature(Feature.ChatBackgrounds)
 						&& args.staging != null 
 						&& args.staging.background != null
 						&& string.IsNullOrEmpty(args.staging.background.imageUrl) == false
 						&& File.Exists(args.staging.background.imageUrl);
-					
-					string originalBackgroundImageUrl = null;
-					if (hasBackground)
-					{
-						originalBackgroundImageUrl = args.staging.background.imageUrl;
-						args.staging.background.imageUrl = Path.Combine(Path.GetDirectoryName(originalBackgroundImageUrl), Utility.CreateRandomFilename(Path.GetExtension(originalBackgroundImageUrl)));
-					}
 
 					// Read default chat settings (latest)
 					using (var cmdGroupInfo = connection.CreateCommand())
@@ -2894,19 +2984,6 @@ namespace Ginger.Integration
 								},
 								participants = groupMembers.Select(c => c.instanceId).ToArray(),
 							};
-
-							// Copy background image
-							if (originalBackgroundImageUrl != null)
-							{
-								try
-								{
-									File.Copy(originalBackgroundImageUrl, args.staging.background.imageUrl);
-								}
-								catch
-								{
-									// Do nothing
-								}
-							}
 
 							transaction.Commit();
 							return Error.NoError;
@@ -3169,7 +3246,7 @@ namespace Ginger.Integration
 						try
 						{
 							// Delete background (if any)
-							if (CheckFeature(Feature.ChatBackground))
+							if (CheckFeature(Feature.ChatBackgrounds))
 							{
 								using (var cmdDeleteBackground = connection.CreateCommand())
 								{
@@ -3993,6 +4070,15 @@ namespace Ginger.Integration
 			public int width;
 			public int height;
 			public AssetData data;
+			public string aspectRatio 
+			{ 
+				get
+				{
+					if (width > 0 && height > 0)
+						return string.Format("{0}/{1}", width, height);
+					return "";
+				} 
+			}
 		}
 
 		public struct ImageInput
@@ -4169,6 +4255,7 @@ namespace Ginger.Integration
 
 			// Prepare image information
 			string destPath = Path.Combine(AppSettings.BackyardLink.Location, "images");
+			bool bUseBackgrounds = CheckFeature(Feature.ChatBackgrounds);
 
 			List<ImageOutput> results = new List<ImageOutput>();
 			List<Link.Image> lsImageLinks = new List<Link.Image>();
@@ -4329,6 +4416,122 @@ namespace Ginger.Integration
 			catch (Exception e)
 			{
 				members = null;
+				return Error.Unknown;
+			}
+		}
+
+		private static Error FetchChatBackgrounds(SQLiteConnection connection, out List<_Background> backgrounds)
+		{
+			backgrounds = new List<_Background>();
+			if (CheckFeature(Feature.ChatBackgrounds) == false)
+				return Error.NoError;
+
+			try
+			{
+				using (var cmdBackgrounds = connection.CreateCommand())
+				{
+					cmdBackgrounds.CommandText =
+					@"
+						SELECT 
+							id, chatId, imageUrl, aspectRatio
+						FROM BackgroundChatImage
+					";
+
+					using (var reader = cmdBackgrounds.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							string id = reader.GetString(0);
+							string chatId = reader.GetString(1);
+							string imageUrl = reader.GetString(2);
+							string aspectRatio = reader.GetString(3);
+							int width, height;
+
+							if (string.IsNullOrEmpty(aspectRatio) == false)
+							{
+								int pos_slash = aspectRatio.IndexOf('/');
+								if (pos_slash != -1)
+								{
+									int.TryParse(aspectRatio.Substring(0, pos_slash), out width);
+									int.TryParse(aspectRatio.Substring(pos_slash + 1), out height);
+								}
+								else
+								{
+									width = 0;
+									height = 0;
+								}
+							}
+							else
+							{
+								width = 0;
+								height = 0;
+							}
+
+							backgrounds.Add(new _Background() {
+								instanceId = id,
+								chatId = chatId,
+								imageUrl = imageUrl,
+								width = width,
+								height = height,
+							});
+						}
+					}
+				}
+
+				return Error.NoError;
+			}
+			catch (SQLiteException e)
+			{
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				return Error.Unknown;
+			}
+		}
+
+		private static Error FetchChatInstances(SQLiteConnection connection, string groupId, out List<_Chat> chats)
+		{
+			try
+			{
+				chats = new List<_Chat>();
+				using (var cmdConfirm = connection.CreateCommand())
+				{ 
+					cmdConfirm.CommandText =
+					@"
+						SELECT id, createdAt, updatedAt
+						FROM Chat
+						WHERE groupConfigId = $groupId
+					";
+					cmdConfirm.Parameters.AddWithValue("$groupId", groupId);
+
+					using (var reader = cmdConfirm.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							string chatId = reader.GetString(0);
+							DateTime chatCreatedAt = reader.GetTimestamp(1);
+							DateTime chatUpdatedAt = reader.GetTimestamp(2);
+
+							chats.Add(new _Chat() {
+								instanceId = chatId,
+								creationDate = chatCreatedAt,
+								updateDate = chatUpdatedAt,
+							});
+						}
+					}
+				}
+
+				return Error.NoError;
+			}
+			catch (SQLiteException e)
+			{
+				chats = null;
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				chats = null;
 				return Error.Unknown;
 			}
 		}

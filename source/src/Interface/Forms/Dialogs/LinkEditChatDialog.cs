@@ -234,13 +234,15 @@ namespace Ginger
 						sbTooltip.AppendLine($"Model: {chat.parameters.model ?? Backyard.DefaultModel }");
 					}
 
+					sbTooltip.AppendLine($"Background: {(chat.hasBackground ? "Yes" : "No")}");
+
 					item.ToolTipText = sbTooltip.ToString();
 
 					var updateDate = DateTimeExtensions.Max(lastMessageTime, chats[i].creationDate);
 
 					if (chats[i].history.count >= 20)
 						item.ImageIndex = 2;	// Long chat icon
-					else if (chats[i].history.count >= 2)
+					else if (chats[i].history.count >= 4)
 						item.ImageIndex = 1;	// Short chat icon
 					else 
 						item.ImageIndex = 0;	// Empty chat icon
@@ -1442,8 +1444,7 @@ namespace Ginger
 					chat.parameters = null;
 			}
 
-			Backyard.Link.Image[] imageLinks; // Ignored
-			Backyard.ImageInput[] images = backup.images
+			IEnumerable<Backyard.ImageInput> images = backup.images
 				.Select(i => new Backyard.ImageInput {
 					asset = new AssetFile() {
 						name = i.filename,
@@ -1452,11 +1453,22 @@ namespace Ginger
 						assetType = AssetFile.AssetType.Icon,
 					},
 					fileExt = i.ext,
-				})
-				.ToArray();
+				});
 
+			images = images.Union(backup.backgrounds
+				.Select(i => new Backyard.ImageInput {
+					asset = new AssetFile() {
+						name = i.filename,
+						data = AssetData.FromBytes(i.data),
+						ext = i.ext,
+						assetType = AssetFile.AssetType.Background,
+					},
+					fileExt = i.ext,
+				}));
+
+			Backyard.Link.Image[] imageLinks; // Ignored
 			CharacterInstance returnedCharacter = default(CharacterInstance);
-			Backyard.Error error = RunTask(() => Backyard.CreateNewCharacter(backup.characterCard, images, backup.chats.ToArray(), out returnedCharacter, out imageLinks), "Restoring backup...");
+			Backyard.Error error = RunTask(() => Backyard.CreateNewCharacter(backup.characterCard, images.ToArray(), backup.chats.ToArray(), out returnedCharacter, out imageLinks), "Restoring backup...");
 			characterInstance = returnedCharacter;
 			if (error != Backyard.Error.NoError)
 			{

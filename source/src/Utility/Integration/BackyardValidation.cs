@@ -2,11 +2,18 @@
 
 namespace Ginger.Integration
 {
+	public enum BackyardDatabaseVersion
+	{
+		Unknown,
+		Version_0_28_0,		// Groups
+		Version_0_29_0,		// Background (Canary 0.28.27)
+	}
+
 	public static class BackyardValidation
 	{
-		public static Dictionary<Backyard.BackyardDatabaseVersion, string[][]> TablesByVersion = new Dictionary<Backyard.BackyardDatabaseVersion, string[][]> {
+		public static Dictionary<BackyardDatabaseVersion, string[][]> TablesByVersion = new Dictionary<BackyardDatabaseVersion, string[][]> {
 			{ 
-				Backyard.BackyardDatabaseVersion.Version_0_28_0,
+				BackyardDatabaseVersion.Version_0_28_0,
 				new string[][]
 				{
 					new string[]
@@ -165,9 +172,9 @@ namespace Ginger.Integration
 						"ScratchBufferSize",
 					},
 				}
-			},
+			}, // 0.28.0
 			{ 
-				Backyard.BackyardDatabaseVersion.Version_0_28_27,
+				BackyardDatabaseVersion.Version_0_29_0,
 				new string[][]
 				{
 					new string[]
@@ -334,8 +341,8 @@ namespace Ginger.Integration
 						"ScratchBufferSize",
 					},
 				}
-			},
-		};
-
-	}
+			}, // 0.29.0
+		
+		}; // TablesByVersion
+	} // class
 }

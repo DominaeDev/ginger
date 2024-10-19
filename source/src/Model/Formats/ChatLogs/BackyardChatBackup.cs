@@ -32,6 +32,9 @@ namespace Ginger
 		[JsonProperty("parameters", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
 		public Parameters parameters = null;
 
+		[JsonProperty("background", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+		public string backgroundName = null;
+
 		// Same as Backyard chat
 		[JsonProperty("chat", Required = Required.Always)]
 		public Chat chat = new Chat();
@@ -156,7 +159,7 @@ namespace Ginger
 			backup.name = chat.name;
 			backup.createdAt = chat.creationDate.ToUnixTimeMilliseconds();
 			backup.updatedAt = chat.updateDate.ToUnixTimeMilliseconds();
-
+			backup.backgroundName = chat.backgroundName;
 			if (chat.staging != null)
 			{
 				backup.staging = new Staging() {
@@ -269,6 +272,7 @@ namespace Ginger
 				updateDate = updatedAt.HasValue ? DateTimeExtensions.FromUnixTime(updatedAt.Value) : DateTime.Now,
 				staging = staging,
 				parameters = parameters,
+				backgroundName = backgroundName,
 				history = new ChatHistory() {
 					messages = messages.ToArray(),
 				},
