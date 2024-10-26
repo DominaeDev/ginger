@@ -89,7 +89,10 @@ namespace Ginger.Integration
 	{
 		public ChatParameters()
 		{
-			model = Backyard.DefaultModel;
+			if (string.IsNullOrEmpty(AppSettings.Faraday.ModelName) == false)
+				model = AppSettings.Faraday.ModelName;
+			else
+				model = Backyard.DefaultModel;
 			temperature = AppSettings.Faraday.Temperature;
 			topP = AppSettings.Faraday.TopP;
 			minP = AppSettings.Faraday.MinP;
@@ -1664,10 +1667,7 @@ namespace Ginger.Integration
 				return Error.Unknown;
 			}
 
-			// Remove backgrounds if unsupported
-			bool bUseBackgrounds = CheckFeature(Feature.ChatBackgrounds);
-			if (imageInput != null && bUseBackgrounds == false) 
-				imageInput = imageInput.Where(i => i.asset == null || i.asset.assetType != AssetFile.AssetType.Background).ToArray();
+			bool bAllowBackgrounds = CheckFeature(Feature.ChatBackgrounds);
 
 			// Prepare image information
 			List<ImageOutput> images = new List<ImageOutput>();
@@ -1687,8 +1687,13 @@ namespace Ginger.Integration
 						images.Add(imageOutput[i]);
 				}
 
-				if (chats == null || chats.Length == 0)
-					backgrounds = backgrounds.Take(1).ToList();
+				if (bAllowBackgrounds)
+				{
+					if (chats == null || chats.Length == 0)
+						backgrounds = backgrounds.Take(1).ToList();
+				}
+				else
+					backgrounds.Clear();
 
 				imageOutput = Utility.ConcatenateArrays(images.ToArray(), backgrounds.ToArray());
 			}
@@ -1821,7 +1826,10 @@ namespace Ginger.Integration
 									cmdCreate.Parameters.AddWithValue("$example", card.data.example);
 									cmdCreate.Parameters.AddWithValue("$greeting", card.data.greeting);
 									cmdCreate.Parameters.AddWithValue("$grammar", card.data.grammar ?? "");
-									cmdCreate.Parameters.AddWithValue("$model", DefaultModel);
+									if (string.IsNullOrEmpty(AppSettings.Faraday.ModelName) == false)
+										cmdCreate.Parameters.AddWithValue("$model", AppSettings.Faraday.ModelName);
+									else
+										cmdCreate.Parameters.AddWithValue("$model", DefaultModel);
 									cmdCreate.Parameters.AddWithValue("$temperature", AppSettings.Faraday.Temperature);
 									cmdCreate.Parameters.AddWithValue("$topP", AppSettings.Faraday.TopP);
 									cmdCreate.Parameters.AddWithValue("$minP", AppSettings.Faraday.MinP);
@@ -1835,7 +1843,7 @@ namespace Ginger.Integration
 									expectedUpdates += 1;
 
 									// Add background image
-									if (bUseBackgrounds && backgrounds.Count > 0)
+									if (bAllowBackgrounds && backgrounds.Count > 0)
 									{
 										// BackgroundChatImage
 										sbCommand.AppendLine(
@@ -1912,7 +1920,7 @@ namespace Ginger.Integration
 										cmdCreate.Parameters.AddWithValue($"$ttsInputFilter{i:000}", parameters.ttsInputFilter);
 
 										// Add background images
-										if (bUseBackgrounds)
+										if (bAllowBackgrounds)
 										{
 											if (string.IsNullOrEmpty(chats[i].backgroundName))
 												continue;

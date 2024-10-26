@@ -215,14 +215,14 @@ namespace Ginger
 			// exportFileDialog
 			// 
 			this.exportFileDialog.Filter = "Json file|*.json";
-			this.exportFileDialog.Title = "Export";
+			this.exportFileDialog.Title = "Export chat";
 			// 
 			// importFileDialog
 			// 
 			this.importFileDialog.DefaultExt = "png";
 			this.importFileDialog.Filter = "Json file|*.json";
 			this.importFileDialog.SupportMultiDottedExtensions = true;
-			this.importFileDialog.Title = "Import";
+			this.importFileDialog.Title = "Import chat";
 			// 
 			// menuBar
 			// 
@@ -276,21 +276,21 @@ namespace Ginger
 			// 
 			this.importMenuItem.Name = "importMenuItem";
 			this.importMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.importMenuItem.Text = "&Import...";
+			this.importMenuItem.Text = "&Import chat...";
 			this.importMenuItem.Click += new System.EventHandler(this.btnImport_Click);
 			// 
 			// exportMenuItem
 			// 
 			this.exportMenuItem.Name = "exportMenuItem";
 			this.exportMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.exportMenuItem.Text = "&Export...";
+			this.exportMenuItem.Text = "&Export chat...";
 			this.exportMenuItem.Click += new System.EventHandler(this.btnExport_Click);
 			// 
 			// duplicateMenuItem
 			// 
 			this.duplicateMenuItem.Name = "duplicateMenuItem";
 			this.duplicateMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.duplicateMenuItem.Text = "&Duplicate";
+			this.duplicateMenuItem.Text = "&Duplicate chat...";
 			this.duplicateMenuItem.Click += new System.EventHandler(this.duplicateMenuItem_Click);
 			// 
 			// toolStripMenuItem1

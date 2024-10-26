@@ -154,6 +154,7 @@ namespace Ginger
 
 		public static class Faraday
 		{
+			public static string ModelName = null;
 			public static int RepeatPenaltyTokens = 256;
 			public static decimal RepeatPenalty = 1.05m;
 			public static decimal Temperature = 1.2m;
@@ -176,6 +177,54 @@ namespace Ginger
 				case 6: return "MistralInstruct";
 				default: 
 					return null;
+				}
+			}
+
+			public static void SetPromptTemplate(string value)
+			{
+				value = (value ?? "").Trim().ToLowerInvariant();
+				int iValue;
+				if (value == "")
+					PromptTemplate = 0;
+				else if (int.TryParse(value, out iValue))
+				{
+					if (iValue >= 0 && iValue <= 6)
+						PromptTemplate = iValue;
+					else
+						PromptTemplate = 0;
+				}
+				else
+				{
+					switch (value)
+					{
+					case "text":
+					case "plain":
+					case "general":				
+						PromptTemplate = 1; 
+						break;
+					case "chatml":				
+						PromptTemplate = 2; 
+						break;
+					case "llama3":				
+						PromptTemplate = 3; 
+						break;
+					case "gemma":
+					case "gemma2":				
+						PromptTemplate = 4; 
+						break;
+					case "commandr":
+					case "command-r":			
+						PromptTemplate = 5; 
+						break;
+					case "mistral":
+					case "mistralinstruct":
+					case "mistral-instruct":	
+						PromptTemplate = 6; 
+						break;
+					default:
+						PromptTemplate = 0; 
+						break;
+					}
 				}
 			}
 		}
@@ -312,6 +361,10 @@ namespace Ginger
 			var faradaySection = iniData.Sections["BackyardAI"];
 			if (faradaySection != null)
 			{
+				ReadString(ref Faraday.ModelName, faradaySection, "Model");
+				if (string.Compare(Faraday.ModelName, "default", StringComparison.OrdinalIgnoreCase) == 0)
+					Faraday.ModelName = null;
+
 				ReadInt(ref Faraday.RepeatPenaltyTokens, faradaySection, "RepeatPenaltyTokens", 16, 512);
 				ReadDecimal(ref Faraday.RepeatPenalty, faradaySection, "RepeatPenalty", 0.5m, 2.0m);
 				ReadDecimal(ref Faraday.Temperature, faradaySection, "Temperature", 0m, 5m);
@@ -319,7 +372,7 @@ namespace Ginger
 				ReadDecimal(ref Faraday.TopP, faradaySection, "TopP", 0m, 1m);
 				ReadDecimal(ref Faraday.MinP, faradaySection, "MinP", 0m, 1m);
 				ReadBool(ref Faraday.MinPEnabled, faradaySection, "MinPEnabled");
-				ReadInt(ref Faraday.PromptTemplate, faradaySection, "PromptTemplate", 0, 6);
+				Faraday.SetPromptTemplate(faradaySection["PromptTemplate"]);
 				ReadBool(ref Faraday.PruneExampleChat, faradaySection, "PruneExampleChat");
 			}
 
@@ -433,6 +486,10 @@ namespace Ginger
 
 					// Faraday
 					WriteSection(outputFile, "BackyardAI");
+					if (string.IsNullOrEmpty(Faraday.ModelName) == false)
+						Write(outputFile, "Model", Faraday.ModelName);
+					else
+						Write(outputFile, "Model", "Default");
 					Write(outputFile, "RepeatPenaltyTokens", Faraday.RepeatPenaltyTokens);
 					Write(outputFile, "RepeatPenalty", Faraday.RepeatPenalty);
 					Write(outputFile, "Temperature", Faraday.Temperature);

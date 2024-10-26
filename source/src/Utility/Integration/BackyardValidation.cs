@@ -6,7 +6,7 @@ namespace Ginger.Integration
 	{
 		Unknown,
 		Version_0_28_0,		// Groups
-		Version_0_29_0,		// Background (Canary 0.28.27)
+		Version_0_29_0,		// Chat backgrounds (Canary 0.28.27)
 	}
 
 	public static class BackyardValidation

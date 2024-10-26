@@ -307,8 +307,8 @@ namespace Ginger {
 			// writeChatSettingsMenuItem
 			// 
 			writeChatSettingsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.applyToFirstChatMenuItem,
             this.applyToLastChatMenuItem,
+            this.applyToFirstChatMenuItem,
             this.applyToAllChatsMenuItem});
 			writeChatSettingsMenuItem.Name = "writeChatSettingsMenuItem";
 			writeChatSettingsMenuItem.Size = new System.Drawing.Size(190, 22);
@@ -347,14 +347,14 @@ namespace Ginger {
 			// lightThemeMenuItem
 			// 
 			this.lightThemeMenuItem.Name = "lightThemeMenuItem";
-			this.lightThemeMenuItem.Size = new System.Drawing.Size(101, 22);
+			this.lightThemeMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.lightThemeMenuItem.Text = "Light";
 			this.lightThemeMenuItem.Click += new System.EventHandler(this.lightThemeMenuItem_Click);
 			// 
 			// darkThemeMenuItem
 			// 
 			this.darkThemeMenuItem.Name = "darkThemeMenuItem";
-			this.darkThemeMenuItem.Size = new System.Drawing.Size(101, 22);
+			this.darkThemeMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.darkThemeMenuItem.Text = "Dark";
 			this.darkThemeMenuItem.Click += new System.EventHandler(this.darkThemeMenuItem_Click);
 			// 
@@ -1119,8 +1119,8 @@ namespace Ginger {
             this.tokenBudgetMenuItem,
             this.outputPreviewToolStripMenuItem,
             this.checkSpellingMenuItem,
-            this.linkOptionsMenuItem,
             themeMenuItem,
+            this.linkOptionsMenuItem,
             this.toolStripMenuItem11,
             this.autoConvertNameMenuItem,
             this.autoBreakMenuItem,
@@ -1307,14 +1307,14 @@ namespace Ginger {
 			// enableSpellCheckingMenuItem
 			// 
 			this.enableSpellCheckingMenuItem.Name = "enableSpellCheckingMenuItem";
-			this.enableSpellCheckingMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.enableSpellCheckingMenuItem.Size = new System.Drawing.Size(116, 22);
 			this.enableSpellCheckingMenuItem.Text = "Enabled";
 			this.enableSpellCheckingMenuItem.Click += new System.EventHandler(this.EnableSpellCheckingMenuItem_Click);
 			// 
 			// toolStripMenuItem4
 			// 
 			this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-			this.toolStripMenuItem4.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem4.Size = new System.Drawing.Size(113, 6);
 			// 
 			// linkOptionsMenuItem
 			// 

@@ -53,10 +53,12 @@ namespace Ginger
 					else
 						AppSettings.BackyardLink.Enabled = false;
 				}
-				else
+				else // New version
 				{
 					// Do not auto-connect to newer versions
 					AppSettings.BackyardLink.Enabled = false;
+					// (Re-)enable strict validation
+					AppSettings.BackyardLink.Strict = true;
 				}
 			}
 
