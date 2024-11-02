@@ -1711,6 +1711,24 @@ namespace Ginger
 				});
 			}
 
+			// Portrait as background?
+			if (AppSettings.BackyardLink.UsePortraitAsBackground
+				&& Current.Card.portraitImage != null 
+				&& (Current.Card.assets == null || Current.Card.assets.ContainsNoneOf(a => a.assetType == AssetFile.AssetType.Background)))
+			{
+				if (Current.Card.assets == null)
+					Current.Card.assets = new AssetCollection();
+
+				Current.Card.assets.Add(new AssetFile() {
+					name = "Portrait",
+					ext = "jpeg",
+					assetType = AssetFile.AssetType.Background,
+					data = AssetData.FromBytes(Utility.ImageToMemory(Current.Card.portraitImage, Utility.ImageFileFormat.Jpeg)),
+					uriType = AssetFile.UriType.Embedded,
+				});
+				Current.IsFileDirty = true;
+			}
+
 			if (Current.Card.assets != null)
 			{
 				foreach (var asset in Current.Card.assets

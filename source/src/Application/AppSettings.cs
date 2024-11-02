@@ -238,13 +238,9 @@ namespace Ginger
 			public static bool AlwaysLinkOnImport = false;
 			public static VersionNumber LastVersion;
 
-			public enum ActiveChatSetting 
-			{
-				First,
-				Last,
-				All,
-			}
+			public enum ActiveChatSetting { First, Last, All }
 			public static ActiveChatSetting ApplyChatSettings = ActiveChatSetting.Last;
+			public static bool UsePortraitAsBackground = false;
 		}
 
 		public static bool LoadFromIni(string filePath)
@@ -386,6 +382,7 @@ namespace Ginger
 				ReadBool(ref BackyardLink.AlwaysLinkOnImport, linkSection, "AlwaysLinkOnImport");
 				ReadString(ref BackyardLink.Location, linkSection, "Location");
 				ReadEnum(ref BackyardLink.ApplyChatSettings, linkSection, "ApplyChatSettings");
+				ReadBool(ref BackyardLink.UsePortraitAsBackground, linkSection, "UsePortraitAsBackground");
 			}
 
 			var mruSection = iniData.Sections["MRU"];
@@ -510,6 +507,7 @@ namespace Ginger
 					Write(outputFile, "Autosave", BackyardLink.Autosave);
 					Write(outputFile, "AlwaysLinkOnImport", BackyardLink.AlwaysLinkOnImport);
 					Write(outputFile, "ApplyChatSettings", BackyardLink.ApplyChatSettings);
+					Write(outputFile, "UsePortraitAsBackground", BackyardLink.UsePortraitAsBackground);
 
 					// MRU list
 					WriteSection(outputFile, "MRU");

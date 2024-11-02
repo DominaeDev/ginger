@@ -2079,13 +2079,13 @@ namespace Ginger.Properties {
         ///	&lt;Macro id=&quot;characters, bots&quot;&gt;[names.list]&lt;/Macro&gt;
         ///	&lt;Macro id=&quot;everyone&quot;&gt;[!list:[user];[char];[actors]]&lt;/Macro&gt;
         ///	&lt;Wrapper id=&quot;abbr&quot;&gt;[noparse]_[parse][nocap]&lt;/Wrapper&gt;
-        ///	&lt;Wrapper id=&quot;raw&quot;&gt;[noparse]_[parse]&lt;/Wrapper&gt;
+        ///	&lt;Wrapper id=&quot;raw, ignore&quot;&gt;[noparse]_[parse]&lt;/Wrapper&gt;
         ///	&lt;Macro id=&quot;the&quot;&gt;[..the?|the]&lt;/Macro&gt;
         ///	&lt;Wrapper id=&quot;__attrib, attrib&quot;&gt;_:[sp]&lt;/Wrapper&gt;
         ///
         ///	&lt;!-- Chat style --&gt;
         ///	&lt;Rule id=&quot;is-faraday, is-backyard&quot;&gt;__faraday or __backyard&lt;/Rule&gt;
-        ///	&lt;Wrapper id=&quot;dialogue, dialog&quot;&gt;[@dialogue-symbol-open]_[@dialogue-symbol-close]&lt;/Wra [rest of string was truncated]&quot;;.
+        ///	&lt;Wrapper id=&quot;dialogue, dialog&quot;&gt;[@dialogue-symbol-open]_[@dialogue-symbol-clo [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string internal_macros {
             get {
@@ -2689,9 +2689,9 @@ namespace Ginger.Properties {
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__prune-scenario&quot;&gt;
         ///	&lt;Name&gt;__prune-scenario&lt;/Name&gt;
         ///	&lt;Flags&gt;__nobake, __internal, __hidden&lt;/Flags&gt;
-        ///		
+        ///	
         ///	&lt;Node path=&quot;example/__scenario&quot; order=&quot;-0&quot; format=&quot;none&quot;&gt;
-        ///		[__faraday or __backyard?#[user]: ][[[[{inner}]]]]
+        ///		[__faraday or __backyard?#[user]: ][!dialogue:{inner}]
         ///	&lt;/Node&gt;
         ///&lt;/Ginger&gt;.
         /// </summary>
@@ -2999,7 +2999,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Saved file.
+        ///   Looks up a localized string similar to File saved.
         /// </summary>
         internal static string status_file_save {
             get {
@@ -3202,6 +3202,15 @@ namespace Ginger.Properties {
         internal static string status_refreshing_list {
             get {
                 return ResourceManager.GetString("status_refreshing_list", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saved to file and Backyard AI.
+        /// </summary>
+        internal static string status_save_file_and_link {
+            get {
+                return ResourceManager.GetString("status_save_file_and_link", resourceCulture);
             }
         }
         
@@ -4181,6 +4190,15 @@ namespace Ginger.Properties {
         internal static string tooltip_link_scrub_chat {
             get {
                 return ResourceManager.GetString("tooltip_link_scrub_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When saving the character to Backyard AI, set the portrait as the background image if no other background is assigned..
+        /// </summary>
+        internal static string tooltip_link_use_portrait_as_background {
+            get {
+                return ResourceManager.GetString("tooltip_link_use_portrait_as_background", resourceCulture);
             }
         }
         

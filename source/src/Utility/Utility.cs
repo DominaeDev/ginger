@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+
+
 
 namespace Ginger
 {
@@ -1401,33 +1404,27 @@ namespace Ginger
 			return sb.ToString();
 		}
 		
-		public enum ImageFormat { Png, Jpeg, Gif };
-		public static byte[] ImageToMemory(Image image, ImageFormat format = ImageFormat.Png)
+		public enum ImageFileFormat { Png, Jpeg, Gif };
+		public static byte[] ImageToMemory(Image image, ImageFileFormat format = ImageFileFormat.Png)
 		{
 			if (image == null)
 				return null;
 
 			try
 			{
-				System.Drawing.Imaging.ImageFormat imageFormat;
+				ImageFormat imageFormat;
 				switch (format)
 				{
 				default:
-				case ImageFormat.Png:
-					imageFormat = System.Drawing.Imaging.ImageFormat.Png;
-					break;
-				case ImageFormat.Jpeg:
-					imageFormat = System.Drawing.Imaging.ImageFormat.Jpeg;
-					break;
-				case ImageFormat.Gif:
-					imageFormat = System.Drawing.Imaging.ImageFormat.Gif;
-					break;
+				case ImageFileFormat.Png: imageFormat = ImageFormat.Png; break;
+				case ImageFileFormat.Jpeg: imageFormat = ImageFormat.Jpeg; break;
+				case ImageFileFormat.Gif: imageFormat = ImageFormat.Gif; break;
 				}
 
 				using (var stream = new MemoryStream())
 				{
 					if (image.RawFormat.Equals(imageFormat) 
-						&& format != ImageFormat.Jpeg) // Jpeg throws
+						&& format != ImageFileFormat.Jpeg) // Jpeg throws
 					{
 						image.Save(stream, imageFormat);
 					}
@@ -1435,14 +1432,26 @@ namespace Ginger
 					{
 						using (Image bmpNewImage = new Bitmap(image.Width, image.Height))
 						{
-							Graphics gfxNewImage = Graphics.FromImage(bmpNewImage);
-							gfxNewImage.DrawImage(image, new Rectangle(0, 0, bmpNewImage.Width, bmpNewImage.Height),
-													0, 0,
-													image.Width, image.Height,
-													GraphicsUnit.Pixel);
-							gfxNewImage.Dispose();
+							using (Graphics gfxNewImage = Graphics.FromImage(bmpNewImage))
+							{
+								gfxNewImage.DrawImage(image, new Rectangle(0, 0, bmpNewImage.Width, bmpNewImage.Height),
+									0, 0,
+									image.Width, image.Height,
+									GraphicsUnit.Pixel);
+							}
 
-							bmpNewImage.Save(stream, imageFormat);
+							if (imageFormat == ImageFormat.Jpeg)
+							{
+								// Jpeg quality level
+								ImageCodecInfo jpegEncoder = GetEncoder(ImageFormat.Jpeg);
+								EncoderParameters encoderParams = new EncoderParameters(1);
+								encoderParams.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 100L);
+								bmpNewImage.Save(stream, jpegEncoder, encoderParams);
+							}
+							else
+							{
+								bmpNewImage.Save(stream, imageFormat);
+							}
 						}
 					}
 
@@ -1453,6 +1462,17 @@ namespace Ginger
 			{
 				return null;
 			}
+		}
+
+		private static ImageCodecInfo GetEncoder(System.Drawing.Imaging.ImageFormat format)
+		{
+			ImageCodecInfo[] codecs = ImageCodecInfo.GetImageEncoders();
+			foreach (ImageCodecInfo codec in codecs)
+			{
+				if (codec.FormatID == format.Guid)
+					return codec;
+			}
+			return null;
 		}
 
 		public static string ImageToBase64(Image image)

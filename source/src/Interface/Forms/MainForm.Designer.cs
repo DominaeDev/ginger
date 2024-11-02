@@ -44,8 +44,8 @@ namespace Ginger {
 			this.reestablishLinkSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.reestablishLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.breakLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.applyToFirstChatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.applyToLastChatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.applyToFirstChatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.applyToAllChatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.lightThemeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.darkThemeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -140,6 +140,7 @@ namespace Ginger {
 			this.linkOptionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.alwaysLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.usePortraitAsBackgroundMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
 			this.autoConvertNameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoBreakMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -311,27 +312,27 @@ namespace Ginger {
             this.applyToFirstChatMenuItem,
             this.applyToAllChatsMenuItem});
 			writeChatSettingsMenuItem.Name = "writeChatSettingsMenuItem";
-			writeChatSettingsMenuItem.Size = new System.Drawing.Size(190, 22);
+			writeChatSettingsMenuItem.Size = new System.Drawing.Size(216, 22);
 			writeChatSettingsMenuItem.Text = "Apply chat settings to";
-			// 
-			// applyToFirstChatMenuItem
-			// 
-			this.applyToFirstChatMenuItem.Name = "applyToFirstChatMenuItem";
-			this.applyToFirstChatMenuItem.Size = new System.Drawing.Size(163, 22);
-			this.applyToFirstChatMenuItem.Text = "Oldest chat";
-			this.applyToFirstChatMenuItem.Click += new System.EventHandler(this.applyToFirstChatMenuItem_Click);
 			// 
 			// applyToLastChatMenuItem
 			// 
 			this.applyToLastChatMenuItem.Name = "applyToLastChatMenuItem";
-			this.applyToLastChatMenuItem.Size = new System.Drawing.Size(163, 22);
+			this.applyToLastChatMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.applyToLastChatMenuItem.Text = "Most recent chat";
 			this.applyToLastChatMenuItem.Click += new System.EventHandler(this.applyToLastChatMenuItem_Click);
+			// 
+			// applyToFirstChatMenuItem
+			// 
+			this.applyToFirstChatMenuItem.Name = "applyToFirstChatMenuItem";
+			this.applyToFirstChatMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.applyToFirstChatMenuItem.Text = "Oldest chat";
+			this.applyToFirstChatMenuItem.Click += new System.EventHandler(this.applyToFirstChatMenuItem_Click);
 			// 
 			// applyToAllChatsMenuItem
 			// 
 			this.applyToAllChatsMenuItem.Name = "applyToAllChatsMenuItem";
-			this.applyToAllChatsMenuItem.Size = new System.Drawing.Size(163, 22);
+			this.applyToAllChatsMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.applyToAllChatsMenuItem.Text = "All chats";
 			this.applyToAllChatsMenuItem.Click += new System.EventHandler(this.applyToAllChatsMenuItem_Click);
 			// 
@@ -347,14 +348,14 @@ namespace Ginger {
 			// lightThemeMenuItem
 			// 
 			this.lightThemeMenuItem.Name = "lightThemeMenuItem";
-			this.lightThemeMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.lightThemeMenuItem.Size = new System.Drawing.Size(101, 22);
 			this.lightThemeMenuItem.Text = "Light";
 			this.lightThemeMenuItem.Click += new System.EventHandler(this.lightThemeMenuItem_Click);
 			// 
 			// darkThemeMenuItem
 			// 
 			this.darkThemeMenuItem.Name = "darkThemeMenuItem";
-			this.darkThemeMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.darkThemeMenuItem.Size = new System.Drawing.Size(101, 22);
 			this.darkThemeMenuItem.Text = "Dark";
 			this.darkThemeMenuItem.Click += new System.EventHandler(this.darkThemeMenuItem_Click);
 			// 
@@ -1321,6 +1322,7 @@ namespace Ginger {
 			this.linkOptionsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.enableAutosaveMenuItem,
             this.alwaysLinkMenuItem,
+            this.usePortraitAsBackgroundMenuItem,
             writeChatSettingsMenuItem});
 			this.linkOptionsMenuItem.Name = "linkOptionsMenuItem";
 			this.linkOptionsMenuItem.Size = new System.Drawing.Size(183, 22);
@@ -1329,16 +1331,23 @@ namespace Ginger {
 			// enableAutosaveMenuItem
 			// 
 			this.enableAutosaveMenuItem.Name = "enableAutosaveMenuItem";
-			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(190, 22);
+			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(216, 22);
 			this.enableAutosaveMenuItem.Text = "Synchronized saving";
 			this.enableAutosaveMenuItem.Click += new System.EventHandler(this.enableAutosaveMenuItem_Click);
 			// 
 			// alwaysLinkMenuItem
 			// 
 			this.alwaysLinkMenuItem.Name = "alwaysLinkMenuItem";
-			this.alwaysLinkMenuItem.Size = new System.Drawing.Size(190, 22);
+			this.alwaysLinkMenuItem.Size = new System.Drawing.Size(216, 22);
 			this.alwaysLinkMenuItem.Text = "Always link characters";
 			this.alwaysLinkMenuItem.Click += new System.EventHandler(this.alwaysLinkMenuItem_Click);
+			// 
+			// usePortraitAsBackgroundMenuItem
+			// 
+			this.usePortraitAsBackgroundMenuItem.Name = "usePortraitAsBackgroundMenuItem";
+			this.usePortraitAsBackgroundMenuItem.Size = new System.Drawing.Size(216, 22);
+			this.usePortraitAsBackgroundMenuItem.Text = "Use portrait as background";
+			this.usePortraitAsBackgroundMenuItem.Click += new System.EventHandler(this.usePortraitAsBackgroundMenuItem_Click);
 			// 
 			// toolStripMenuItem11
 			// 
@@ -1703,6 +1712,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem lightThemeMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem darkThemeMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem customVariablesMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem usePortraitAsBackgroundMenuItem;
 	}
 }
 

@@ -243,6 +243,7 @@ namespace Ginger
 			applyToLastChatMenuItem.ToolTipText = Resources.tooltip_link_apply_to_last;
 			applyToAllChatsMenuItem.ToolTipText = Resources.tooltip_link_apply_to_all;
 			alwaysLinkMenuItem.ToolTipText = Resources.tooltip_link_always_create;
+			usePortraitAsBackgroundMenuItem.ToolTipText = Resources.tooltip_link_use_portrait_as_background;
 
 			RegisterIdleHandler(recipeList);
 
@@ -1305,6 +1306,7 @@ namespace Ginger
 			applyToAllChatsMenuItem.Checked = AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.All;
 			alwaysLinkMenuItem.Checked = AppSettings.BackyardLink.AlwaysLinkOnImport;
 			enableAutosaveMenuItem.Checked = AppSettings.BackyardLink.Autosave;
+			usePortraitAsBackgroundMenuItem.Checked = AppSettings.BackyardLink.UsePortraitAsBackground;
 
 			Theme.Apply(menuStrip);
 		}
@@ -2343,7 +2345,11 @@ namespace Ginger
 		{
 			AppSettings.BackyardLink.AlwaysLinkOnImport = !AppSettings.BackyardLink.AlwaysLinkOnImport;
 		}
-
+		
+		private void usePortraitAsBackgroundMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.BackyardLink.UsePortraitAsBackground = !AppSettings.BackyardLink.UsePortraitAsBackground;
+		}
 
 		private void lightThemeMenuItem_Click(object sender, EventArgs e)
 		{

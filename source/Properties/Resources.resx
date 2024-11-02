@@ -975,7 +975,7 @@ Do you want to scrub the chat from here?</value>
     <value>Delete this message and any messages below it.</value>
   </data>
   <data name="status_file_save" xml:space="preserve">
-    <value>Saved file</value>
+    <value>File saved</value>
   </data>
   <data name="cap_link_create_backup" xml:space="preserve">
     <value>Create backup</value>
@@ -1286,5 +1286,11 @@ Reason: {0}</value>
   </data>
   <data name="tavern_characterbook_v3_filter_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Schemas\tavern_characterbook_v3_filter.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="tooltip_link_use_portrait_as_background" xml:space="preserve">
+    <value>When saving the character to Backyard AI, set the portrait as the background image if no other background is assigned.</value>
+  </data>
+  <data name="status_save_file_and_link" xml:space="preserve">
+    <value>Saved to file and Backyard AI</value>
   </data>
 </root>
