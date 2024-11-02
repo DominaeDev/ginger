@@ -28,6 +28,12 @@
 		<Option id="twin">Twin</Option>
 	</Choice>
 	
+	<Choice id="side" style="radio" rule="family-member is grandparent or family-member is grandchild or family-member is uncle">
+		<Label>Side</Label>
+		<Option id="paternal-side">Paternal side</Option>
+		<Option id="maternal-side">Maternal side</Option>
+	</Choice>
+		
 	<Toggle id="identical-twin" rule="twin" label="Identical twin" default="yes"/>
 	
 	<Choice id="kinship" style="radio" required="yes" rule="(parent or child or sibling) and not twin">
@@ -66,9 +72,9 @@
 		<String rule="is-man and younger" priority="1">[@kinship] little brother</String>
 		<String rule="is-man and older" priority="1">[@kinship] older brother</String>
 		<String rule="is-man and not-sibling-age" priority="1">[@kinship] brother</String>
-		<String rule="is-woman and twin" priority="1">twin sister</String>
-		<String rule="is-man and twin" priority="1">twin brother</String>
-		<String rule="twin">twin</String>
+		<String rule="is-woman and twin" priority="1">[identical-twin?identical] twin sister</String>
+		<String rule="is-man and twin" priority="1">[identical-twin?identical] twin brother</String>
+		<String rule="twin">[identical-twin?identical] twin</String>
 		<String rule="younger">[@kinship] younger sibling</String>
 		<String rule="older">[@kinship] older sibling</String>
 		<String>[@kinship] sibling</String>
@@ -97,18 +103,67 @@
 		<String rule="is-man">grandson</String>
 		<String>grandchild</String>
 	</String>
+	
+	<String id="uncle">
+		<String rule="not is-man">aunt</String>
+		<String rule="is-man">uncle</String>
+	</String>
+	
+	<Rule id="first-order">not (cousin or second-cousin or grandparent or grandchild)</Rule>
+	
+	<Node path="persona/relationship/academic" rule="first-order">[char] and [user] are family.</Node>
+	<Node path="persona/relationship/kin" rule="not family-member">[char] is a close relative to [user].</Node>
+	
+	<Node path="persona/relationship/kin" rule="parent">[char] is [user's] [@parent] and loves [#them] dearly.</Node>
+	<Node path="persona/relationship/kin" rule="child">[char] is [user]'s [@child] and loves [#them] dearly.</Node>
+	<Node path="persona/relationship/kin" rule="half-sibling">[char] is [user]'s [@half-sibling].</Node>
+	<Node path="persona/relationship/kin" rule="sibling">[char] is [user]'s [@sibling].</Node>
+	
+	<Node path="persona/relationship/kin" rule="cousin">
+		[char] and [user] are cousins. 
+		They used to play with each other when they were both kids.
+	</Node>
+	<Node path="persona/relationship/kin" rule="second-cousin">
+		[char] and [user] are second-cousins. 
+		They hardly know each other at all except from the occasional family reunion.
+	</Node>
+	
+	<Node path="persona/relationship/kin" rule="grandparent">
+		[char] is [user]'s [@grandparent].
+		[They] still remember[s] [#them] from when [#they] were just a baby.
+	</Node>
+	<Node path="persona/relationship/kin" rule="grandparent and paternal-side">
+		[char's] son is [user's] father.
+	</Node>
+	<Node path="persona/relationship/kin" rule="grandparent and maternal-side">
+		[char's] daughter is [user's] mother.
+	</Node>
+	<Node path="persona/relationship/kin" rule="grandparent">
+		[They] still remember[s] [#them] from when [#they] were just a baby.
+	</Node>
+		
+	<Node path="persona/relationship/kin" rule="grandchild">
+		[char] is [user]'s [@grandchild]. How [they've] grown!
+	</Node>
+	<Node path="persona/relationship/kin" rule="grandchild and paternal-side">
+		[user's] son is [char's] father.
+	</Node>
+	<Node path="persona/relationship/kin" rule="grandchild and maternal-side">
+		[user's] daughter is [char's] mother.
+	</Node>	
 
-	<Node path="description/family" order="150"/>
-	<Node path="description/family/kin" rule="parent">[char] is [user's] [@parent].</Node>
-	<Node path="description/family/kin" rule="child">[char] is [user]'s [@child].</Node>
-	<Node path="description/family/kin" rule="half-sibling">[char] is [user]'s [@half-sibling].</Node>
-	<Node path="description/family/kin" rule="sibling">[char] is [user]'s [@sibling].</Node>
-	<Node path="description/family/kin" rule="cousin">[char] is [user]'s cousin.</Node>
-	<Node path="description/family/kin" rule="second-cousin">[char] is [user]'s second-cousin.</Node>
-	<Node path="description/family/kin" rule="grandparent">[char] is [user]'s [@grandparent].</Node>
-	<Node path="description/family/kin" rule="grandchild">[char] is [user]'s [@grandchild].</Node>
-	<Node path="description/family/kin" rule="not family-member">[char] is a close relative to [user].</Node>
-	<Node path="description/family/kin" rule="twin">[char] and [user] are [identical-twin?identical|fraternal] twins.</Node>
-	<Node path="description/family/more" rule="more">{more}.</Node>
+	<Node path="persona/relationship/kin" rule="uncle">
+		[char] is
+		[is-woman and paternal-side? sister to [user's] father and] [is-man and paternal-side? brother to [user's] father and] [is-woman and maternal-side? sister to [user's] mother and] [is-man and maternal-side? brother to [user's] mother and]
+		[clr][sp][user]'s [@uncle].
+	</Node>
+	
+	<Node path="persona/relationship/kin" rule="twin">
+		They don't always get along, but they've literally known each other for their entire lives.
+	</Node>
+	
+	<Node path="persona/relationship/kin" rule="identical-twin">They look so alike, some people have trouble telling them apart.</Node>
+	
+	<Node path="persona/relationship/more" rule="more">{more}.</Node>
 
 </Ginger>

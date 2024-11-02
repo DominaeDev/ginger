@@ -18,15 +18,16 @@
 	<String id="spouse">
 		<String rule="gender is male">[char] is [user]'s husband.</String>
 		<String rule="gender is female or gender is futanari">[char] is [user]'s wife.</String>
-		<String>[char] and [user] are married.</String>
 	</String>
 	
 	<String id="dating">
 		<String rule="gender is male">[char] is [user]'s boyfriend.</String>
 		<String rule="gender is female or gender is futanari">[char] is [user]'s girlfriend.</String>
-		<String>[char] and [user] are dating.</String>
+		<String>They're currently dating.</String>
 	</String>
 
-	<Persona rule="dating">{@dating}</Persona>
-	<Persona rule="spouse">{@spouse}</Persona>
+	<Node path="persona/relationship/romantic">[char] and [user] are in a relationship. They are in love.</Node>
+
+	<Node path="persona/relationship/romantic" rule="dating">[@dating]</Node>
+	<Node path="persona/relationship/romantic" rule="spouse">They're married. [@spouse]</Node>
 </Ginger>

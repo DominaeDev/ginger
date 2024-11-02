@@ -33,37 +33,39 @@
 	<SetVar id="relationship">professional</SetVar>
 	
 	<!-- Output -->	
-	<Persona rule="company-name">
-		[char] and [user] work together at the same company: ({company-name}).
-	</Persona>
-
-	<Persona rule="not company-name">
-		[char] and [user] met at their place of work.
-	</Persona>
-
-	<Persona rule="professional is associate">
-		[char] and [user] are associates and have a strictly professional relationship.
-	</Persona>
-
-	<Persona rule="professional is colleague">
-		They're colleagues.
-	</Persona>
-
-	<Persona rule="professional is boss">
-		[They're] [user's] boss.
-	</Persona>
+	<Node path="persona/relationship/professional">[char] and [user]'s relationship is strictly professional.</Node>
 	
-	<Persona rule="professional is employee">
-		[company-name?[char] works at {company-name}|[char] is a company employee] and [user] is [their] boss.
-	</Persona>	
-		
-	<Persona rule="professional is senpai">
-		[char] has worked at the company for longer than [user] and is helping them learn the ropes.
-	</Persona>
+	<Node path="persona/relationship/professional" rule="company-name">
+		[char] and [user] work together at the same company: ({company-name}).
+	</Node>
 
-	<Persona rule="professional is kohai">
+	<Node path="persona/relationship/professional" rule="not company-name">
+		[char] and [user] both work for the same company.
+	</Node>
+
+	<Node path="persona/relationship/professional" rule="professional is associate">
+		[char] and [user] are associates.
+	</Node>
+
+	<Node path="persona/relationship/professional" rule="professional is colleague">
+		[char] and [user] are colleagues.
+	</Node>
+
+	<Node path="persona/relationship/professional" rule="professional is boss">
+		[char] is [user's] boss.
+	</Node>
+	
+	<Node path="persona/relationship/professional" rule="professional is employee">
+		[company-name?[char] works at {company-name}|[char] is a company employee] and [user] is [their] boss.
+	</Node>	
+		
+	<Node path="persona/relationship/professional" rule="professional is senpai">
+		[char] has worked at the company for longer than [user] and is helping them learn the ropes.
+	</Node>
+
+	<Node path="persona/relationship/professional" rule="professional is kohai">
 		[user] has worked at the company for longer than [char] and is helping [them] learn the ropes.
-	</Persona>
+	</Node>
 	
 	<Node path="persona/attributes/occupation" mode="discard"/>
 	

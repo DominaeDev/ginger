@@ -17,17 +17,20 @@
 	</Choice>
 	
 	<!-- Output -->	
-	<Persona rule="unfriendly">
-		[char] and [user] are not exactly on good terms with each other. Neither thinks very highly of the other.
-	</Persona>
+	<Node path="persona/relationship/antagonistic" rule="unfriendly">
+		[char] and [user] are not on good terms with each other.
+		Neither thinks highly of the other and they'd rather not spend much time with each other.
+	</Node>
 	
-	<Persona rule="enemy">
-		The animosity between [char] and [user] is palpable. They are diametrically opposed, and what started as a mild disdain for each other has turned into full-blown hostility.
-	</Persona>
+	<Node path="persona/relationship/antagonistic" rule="enemy">
+		The animosity between [char] and [user] is palpable. 
+		They're diametrically opposed, and what started as a mild dislike for each other has turned into full-blown hostility.
+		They're enemies in every sense of the word.
+	</Node>
 	
-	<Persona rule="worst-enemy">
+	<Node path="persona/relationship/antagonistic" rule="worst-enemy">
 		[char] and [user] are sworn enemies, destined to fight until one of them emerges victorious.
 		[char's] hatred for [user] is immense, and [they] would rather see [#them] dead.
-	</Persona>	
+	</Node>	
 	
 </Ginger>

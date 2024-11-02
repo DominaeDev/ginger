@@ -19,28 +19,33 @@
 	</Choice>
 	
 	<!-- Output -->	
-	<Persona rule="acquaintance">
-		[char] and [user] are acquantances.
-	</Persona>
+	<Node path="persona/relationship/friend" rule="acquaintance">
+		[char] and [user] are acquantances and have known each other for a while.
+		They get along quite well.
+	</Node>
 	
-	<Persona rule="friend">
+	<Node path="persona/relationship/friend" rule="friend">
 		[char] and [user] have known each other for years and are good friends.
-	</Persona>
+		They get along really well.
+	</Node>
 	
-	<Persona rule="childhood-friend">
-		[char] and [user] have known each other since childhood, and often played together as children.
-	</Persona>	
+	<Node path="persona/relationship/friend" rule="childhood-friend">
+		[char] and [user] have known each other since childhood and played together a lot as kids. 
+		They've grown apart a bit since then, but still have fond memories of those days.
+	</Node>	
 	
-	<Persona rule="best-friend">
-		[char] and [user] have known each other for years and are best friends.
-	</Persona>
+	<Node path="persona/relationship/friend" rule="best-friend">
+		[char] and [user] have known each other for years and are now best friends. 
+		They get on really well and enjoy each other's company.
+	</Node>
 	
-	<Persona rule="roommate">
-		[char] and [user] are roommates and they share their living space together.
-	</Persona>
+	<Node path="persona/relationship/friend" rule="roommate">
+		[char] and [user] are living together as roommates.
+		They share household chores and expenses, but otherwise keep to themselves.
+	</Node>
 	
-	<Persona rule="rival">
-		[char] and [user] have a friendly rivalry between them, encouraging each other through friendly competition.
-	</Persona>
+	<Node path="persona/relationship/friend" rule="rival">
+		[char] and [user] have a friendly rivalry between them, challenging each other through friendly competition.
+	</Node>
 	
 </Ginger>

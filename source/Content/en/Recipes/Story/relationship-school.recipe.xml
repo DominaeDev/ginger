@@ -10,8 +10,8 @@
 	<!-- Parameters -->
 	<Choice id="classmate" required="yes">
 		<Label>Role</Label>
-		<Option id="same-class">In the same class</Option>
-		<Option id="other-class">In a different class</Option>
+		<Option id="same-class">Classmate (same class)</Option>
+		<Option id="other-class">Classmate (different class)</Option>
 		<Option id="senpai">Senpai (Upperclassman)</Option>
 		<Option id="kohai">Kohai (Lowerclassman)</Option>
 		<Option id="club">Club member</Option>
@@ -20,17 +20,56 @@
 		<Option id="tutor">Private tutor</Option>
 		<Option id="tutoring">Tutoring (User is the tutor)</Option>
 	</Choice>
+	
+	<Text id="club-name" rule="club">
+		<Label>Club name</Label>
+		<Placeholder>Book club</Placeholder>
+	</Text>
+
+	<Rule id="both-students">not (tutor or tutoring or teacher or student)</Rule>
 
 	<!-- Output -->	
-	<Persona rule="not (tutor or tutoring)">[char] and [user] know each other from school.</Persona>
-	<Persona rule="senpai">[char] is [user's] Senpai, in a grade above them.</Persona>
-	<Persona rule="kohai">[char] is [user's] Kohai, in a grade below them.</Persona>
-	<Persona rule="same-class">They're classmates.</Persona>
-	<Persona rule="other-class">They're in the same grade but in different classes.</Persona>
-	<Persona rule="club">They're in the same club together.</Persona>
-	<Persona rule="teacher">[char] works as a teacher and [user] is one of [their] students.</Persona>
-	<Persona rule="student">[user] works as a teacher and [char] is one of [#their] students.</Persona>
+	<Node path="persona/relationship/academic" rule="both-students">
+		[char] and [user] go to the same school and don't know each other very well yet.
+	</Node>
 	
-	<Persona rule="tutor">[char] is [user's] private tutor. They meet regularly for private study sessions.</Persona>
-	<Persona rule="tutoring">[user] is [char's] private tutor. They meet regularly for private study sessions.</Persona>
+	<Node path="persona/relationship/academic" rule="not both-students">
+		[char] and [user]'s relationship is purely academic.
+	</Node>
+	
+	<Node path="persona/relationship/academic" rule="senpai">
+		[char] is [user's] senpai, or upperclassman, and is in a grade above [#them].
+	</Node>
+	<Node path="persona/relationship/academic" rule="kohai">
+		[char] is [user's] kohai, or junior, and is in a grade below [#them].
+	</Node>
+	<Node path="persona/relationship/academic" rule="same-class">
+		[char] and [user] are in the same class together.
+	</Node>
+	<Node path="persona/relationship/academic" rule="other-class">
+		[char] and [user] are in the same grade but in different classes.
+	</Node>
+	<Node path="persona/relationship/academic" rule="club and not club-name">
+		Both [char] and [user] are in the same club together.
+	</Node>
+	<Node path="persona/relationship/academic" rule="club and club-name">
+		[char] and [user] mostly know each other from [club-name.lower], which they both frequent on weekdays after school.
+	</Node>
+	<Node path="persona/relationship/academic" rule="teacher">
+		[char] is a teacher and [user] is one of [their] students. 
+		[They] know[s] [user] reasonably well from class.
+	</Node>
+	<Node path="persona/relationship/academic" rule="student">
+		[user] is a teacher and [char] is one of [#their] students.
+		[#They] know[s] [char] reasonably well from class.
+	</Node>
+	
+	<Node path="persona/relationship/academic" rule="tutor">
+		[char] a private tutor and is tutoring [user].
+		They see each other regularly during their private tutoring sessions.
+	</Node>
+	<Node path="persona/relationship/academic" rule="tutoring">
+		[user] a private tutor and is tutoring [char].
+		They see each other regularly during their private tutoring sessions.
+	</Node>
 </Ginger>
