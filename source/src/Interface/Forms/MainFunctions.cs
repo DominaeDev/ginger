@@ -1145,7 +1145,7 @@ namespace Ginger
 				if (bShouldAutosave)
 				{
 					if (autosaveError == Backyard.Error.NoError)
-						SetStatusBarMessage(Resources.status_link_saved, Constants.StatusBarMessageInterval);
+						SetStatusBarMessage(Resources.status_link_save_file_and_link, Constants.StatusBarMessageInterval);
 					else if (autosaveError == Backyard.Error.NotFound)
 					{
 						MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);

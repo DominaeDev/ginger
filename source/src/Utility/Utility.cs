@@ -968,7 +968,12 @@ namespace Ginger
 			float fB = background.B;
 
 			var luminance = (0.299f * fR + 0.587f * fG + 0.114f * fB) / 255;
-			Color contrastColor = luminance > 0.65 ? Color.Black : Color.White;
+
+			Color contrastColor;
+			if (Theme.IsDarkModeEnabled)
+				contrastColor = luminance > 0.70 ? Color.Black : Color.White;
+			else
+				contrastColor = luminance > 0.65 ? Color.Black : Color.White;
 
 			if (!soften)
 				return contrastColor;

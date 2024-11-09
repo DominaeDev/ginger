@@ -818,7 +818,7 @@ Do you want to continue?</value>
     <value>Reimported character from Backyard AI</value>
   </data>
   <data name="status_link_saved" xml:space="preserve">
-    <value>Changes saved to Backyard AI</value>
+    <value>Saved changes to Backyard AI</value>
   </data>
   <data name="status_open_character" xml:space="preserve">
     <value>Reading character card...</value>
@@ -1290,7 +1290,16 @@ Reason: {0}</value>
   <data name="tooltip_link_use_portrait_as_background" xml:space="preserve">
     <value>When saving the character to Backyard AI, set the portrait as the background image if no other background is assigned.</value>
   </data>
-  <data name="status_save_file_and_link" xml:space="preserve">
+  <data name="status_link_save_file_and_link" xml:space="preserve">
     <value>Saved to file and Backyard AI</value>
+  </data>
+  <data name="msg_link_save_and_link_new" xml:space="preserve">
+    <value>Successfully saved and linked character to Backyard AI.</value>
+  </data>
+  <data name="status_link_save_and_link_new" xml:space="preserve">
+    <value>Saved and linked new character to Backyard AI</value>
+  </data>
+  <data name="status_reload_recipes" xml:space="preserve">
+    <value>Recipes reloaded</value>
   </data>
 </root>

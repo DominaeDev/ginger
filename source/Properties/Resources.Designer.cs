@@ -2471,6 +2471,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Successfully saved and linked character to Backyard AI..
+        /// </summary>
+        internal static string msg_link_save_and_link_new {
+            get {
+                return ResourceManager.GetString("msg_link_save_and_link_new", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Successfully saved character to Backyard AI..
         /// </summary>
         internal static string msg_link_saved {
@@ -3170,7 +3179,25 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Changes saved to Backyard AI.
+        ///   Looks up a localized string similar to Saved and linked new character to Backyard AI.
+        /// </summary>
+        internal static string status_link_save_and_link_new {
+            get {
+                return ResourceManager.GetString("status_link_save_and_link_new", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saved to file and Backyard AI.
+        /// </summary>
+        internal static string status_link_save_file_and_link {
+            get {
+                return ResourceManager.GetString("status_link_save_file_and_link", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saved changes to Backyard AI.
         /// </summary>
         internal static string status_link_saved {
             get {
@@ -3206,11 +3233,11 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Saved to file and Backyard AI.
+        ///   Looks up a localized string similar to Recipes reloaded.
         /// </summary>
-        internal static string status_save_file_and_link {
+        internal static string status_reload_recipes {
             get {
-                return ResourceManager.GetString("status_save_file_and_link", resourceCulture);
+                return ResourceManager.GetString("status_reload_recipes", resourceCulture);
             }
         }
         

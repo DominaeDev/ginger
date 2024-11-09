@@ -281,7 +281,7 @@ namespace Ginger
 
 			menu.Items.Add(new ToolStripSeparator());
 
-			var formatMenu = new ToolStripMenuItem("Format");
+			var formatMenu = new ToolStripMenuItem("Preview format");
 			menu.Items.Add(formatMenu);
 			formatMenu.DropDownItems.Add(new ToolStripMenuItem("Ginger (default)", null, (s, e) => {
 				AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Default;

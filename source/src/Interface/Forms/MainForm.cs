@@ -1054,6 +1054,7 @@ namespace Ginger
 			else
 				Regenerate(); // For testing
 #endif
+			SetStatusBarMessage(Resources.status_reload_recipes, Constants.StatusBarMessageInterval);
 		}
 
 		private void OnRenamedCharacter(object sender, SidePanel.EditNameEventArgs e)
@@ -2251,7 +2252,8 @@ namespace Ginger
 			}
 			else
 			{
-				MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				SetStatusBarMessage(Resources.status_link_saved, Constants.StatusBarMessageInterval);
+				//MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 		}
 		
@@ -2269,15 +2271,16 @@ namespace Ginger
 				MessageBox.Show(Resources.error_link_save, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			else
 			{
-				MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-				if (MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+				if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
 				{
 					Current.LinkWith(createdCharacter, images);
 					Current.IsLinkDirty = false;
-					SetStatusBarMessage(Resources.status_link_create, Constants.StatusBarMessageInterval);
+					SetStatusBarMessage(Resources.status_link_save_and_link_new, Constants.StatusBarMessageInterval);
 					RefreshTitle();
+					MessageBox.Show(Resources.msg_link_save_and_link_new, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
+				else
+					MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 		}
 

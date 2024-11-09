@@ -112,6 +112,9 @@ namespace WinFormsSyntaxHighlighter
 
 		public void SetVariableNames(string[] variableNames, SyntaxStyle syntaxStyle, int Order = -1)
 		{
+			if (variableNames == null || variableNames.Length == 0)
+				return;
+
 			int index = _patternStyles.FindIndex(p => p.Name == "vars");
 			if (index != -1)
 				_patternStyles.RemoveAt(index);

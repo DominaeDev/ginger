@@ -1264,7 +1264,7 @@ namespace Ginger {
             this.outputPreviewPlainTextMenuItem});
 			this.outputPreviewToolStripMenuItem.Name = "outputPreviewToolStripMenuItem";
 			this.outputPreviewToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-			this.outputPreviewToolStripMenuItem.Text = "Output preview";
+			this.outputPreviewToolStripMenuItem.Text = "Preview format";
 			// 
 			// outputPreviewDefaultMenuItem
 			// 
