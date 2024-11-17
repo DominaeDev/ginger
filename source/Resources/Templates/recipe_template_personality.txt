@@ -2,31 +2,27 @@
 	<!-- Preamble -->
 	<Name>%%NAME%%</Name>
 	<Title>%%TITLE%%</Title>
-	<Author>%%AUTHOR%%</Author>
 	<Category>%%CATEGORY%%</Category>
-	<Description>
-		<!-- Recipe information here -->
-	</Description>
+	<Description></Description>
+	<Author>%%AUTHOR%%</Author>
 
 	<!-- Output -->
-	
 	<Attribute>
 		<Name>Personality</Name>
-		<Value><!-- Personality traits, separated by commas --></Value>
+		<Value></Value>
 	</Attribute>
 
 	<Attribute>
 		<Name>Likes</Name>
-		<Value><!-- Likes, separated by commas --></Value>
+		<Value></Value>
 	</Attribute>
 
 	<Attribute>
 		<Name>Dislikes</Name>
-		<Value><!-- Dislikes, separated by commas --></Value>
+		<Value></Value>
 	</Attribute>
 
 	<Persona>
-		<!-- Personality description here -->
+		
 	</Persona>
-
 </Ginger>

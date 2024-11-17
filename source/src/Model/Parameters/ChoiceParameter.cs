@@ -134,6 +134,7 @@ namespace Ginger
 			{
 				state.SetValue(id + ":id", "custom", scope);
 				state.SetValue(id + ":value", value, scope);
+				state.SetValue(id + ":text", value, scope);
 				if (scope == ParameterScope.Local)
 					state.SetFlag(id + ":custom", scope);
 			}
@@ -141,6 +142,7 @@ namespace Ginger
 			{
 				state.SetValue(id + ":id", items[selectedIndex].id.ToString(), scope);
 				state.SetValue(id + ":value", items[selectedIndex].label, scope);
+				state.SetValue(id + ":text", items[selectedIndex].label, scope);
 			}
 		}
 

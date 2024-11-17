@@ -1346,7 +1346,7 @@ namespace Ginger {
 			// 
 			this.usePortraitAsBackgroundMenuItem.Name = "usePortraitAsBackgroundMenuItem";
 			this.usePortraitAsBackgroundMenuItem.Size = new System.Drawing.Size(216, 22);
-			this.usePortraitAsBackgroundMenuItem.Text = "Use portrait as background";
+			this.usePortraitAsBackgroundMenuItem.Text = "Set portrait as background";
 			this.usePortraitAsBackgroundMenuItem.Click += new System.EventHandler(this.usePortraitAsBackgroundMenuItem_Click);
 			// 
 			// toolStripMenuItem11

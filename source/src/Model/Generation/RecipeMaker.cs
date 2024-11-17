@@ -53,13 +53,13 @@ namespace Ginger
 				category = Recipe.Category.Custom;
 			sbXml.Replace("%%CATEGORY%%", EnumHelper.ToString(category));
 
-			var system = GingerString.Escape(Format(output.system));
-			var post_history = GingerString.Escape(Format(output.system_post_history));
-			var persona = GingerString.Escape(Format(output.persona));
-			var scenario = GingerString.Escape(Format(output.scenario));
+			var system = GingerString.Escape(Format(output.system, true));
+			var post_history = GingerString.Escape(Format(output.system_post_history, true));
+			var persona = GingerString.Escape(Format(output.persona, true));
+			var scenario = GingerString.Escape(Format(output.scenario, true));
+			var userPersona = GingerString.Escape(Format(output.userPersona, true));
 			var example = GingerString.Escape(Format(output.example));
 			var grammar = GingerString.Escape(Format(output.grammar));
-			var userPersona = GingerString.Escape(Format(output.userPersona));
 
 			AddRecipeComponent("System", system, null, sbXml);
 			AddRecipeComponent("PostHistory", post_history, "important=\"true\"", sbXml);
@@ -148,13 +148,13 @@ namespace Ginger
 				category = Recipe.Category.Custom;
 			sbXml.Replace("%%CATEGORY%%", EnumHelper.ToString(category));
 
-			var system = GingerString.Escape(Format(output.system));
-			var post_history = GingerString.Escape(Format(output.system_post_history));
-			var persona = GingerString.Escape(Format(output.persona));
-			var scenario = GingerString.Escape(Format(output.scenario));
+			var system = GingerString.Escape(Format(output.system, true));
+			var post_history = GingerString.Escape(Format(output.system_post_history, true));
+			var persona = GingerString.Escape(Format(output.persona, true));
+			var scenario = GingerString.Escape(Format(output.scenario, true));
+			var userPersona = GingerString.Escape(Format(output.userPersona, true));
 			var example = GingerString.Escape(Format(output.example));
 			var grammar = GingerString.Escape(Format(output.grammar));
-			var userPersona = GingerString.Escape(Format(output.userPersona));
 
 			AddRecipeComponent("System", system, null, sbXml);
 			AddRecipeComponent("PostHistory", post_history, "important=\"true\"", sbXml);
@@ -234,13 +234,13 @@ namespace Ginger
 			sbXml.Replace("%%NAME%%", SecurityElement.Escape(snippetName));
 			sbXml.Replace("%%AUTHOR%%", SecurityElement.Escape((Current.Card.creator ?? "").Trim()));
 
-			var system = GingerString.Escape(Format(output.system));
-			var post_history = GingerString.Escape(Format(output.system_post_history));
-			var persona = GingerString.Escape(Format(output.persona));
-			var scenario = GingerString.Escape(Format(output.scenario));
+			var system = GingerString.Escape(Format(output.system, true));
+			var post_history = GingerString.Escape(Format(output.system_post_history, true));
+			var persona = GingerString.Escape(Format(output.persona, true));
+			var scenario = GingerString.Escape(Format(output.scenario, true));
+			var userPersona = GingerString.Escape(Format(output.userPersona, true));
 			var example = GingerString.Escape(Format(output.example));
 			var grammar = GingerString.Escape(Format(output.grammar));
-			var userPersona = GingerString.Escape(Format(output.userPersona));
 
 			AddRecipeComponent("System", system, null, sbXml);
 			AddRecipeComponent("PostHistory", post_history, "important=\"true\"", sbXml);
@@ -305,7 +305,8 @@ namespace Ginger
 				}
 				else
 				{
-					var lines = SecurityElement.Escape(value).Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+					var lines = SecurityElement.Escape(value)
+						.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
 
 					sb.Append($"\t<{element}");
 					if (string.IsNullOrEmpty(arguments) == false)
@@ -503,7 +504,7 @@ namespace Ginger
 				sbXml.Insert(pos_insert, sb.ToString());
 			}
 		}
-		private static string Format(GingerString gingerString)
+		private static string Format(GingerString gingerString, bool bKeepLinebreaks = false)
 		{
 			string text = gingerString.ToString();
 			if (string.IsNullOrWhiteSpace(text))
@@ -516,6 +517,12 @@ namespace Ginger
 
 			sb.Trim();
 			sb.ConvertLinebreaks(Linebreak.CRLF);
+			if (bKeepLinebreaks)
+			{
+				sb.Replace("\r\n", "  \r\n"); // Keep linebreaks
+				sb.Replace("\r\n  \r\n", "\r\n\r\n"); // Empty row
+			}
+
 			text = sb.ToString();
 			GenderSwap.ToNeutralMarkers(ref text);
 			return text;

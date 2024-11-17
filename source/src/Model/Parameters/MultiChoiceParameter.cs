@@ -80,15 +80,17 @@ namespace Ginger
 			{
 				var list = new HashSet<string>(value
 					.Select(t => GingerString.FromParameter(t).ToString()));
-
-				string sList = Utility.ListToDelimitedString(list, Text.Delimiter);
-				state.SetValue(id, sList, scope);
-				state.SetValue(id + ":value", Utility.ListToDelimitedString(list.Select(itemID => {
+				var text = Utility.ListToDelimitedString(list.Select(itemID => {
 					int index = items.FindIndex(ii => ii.id == itemID);
 					if (index != -1)
 						return items[index].label;
 					return itemID;
-				}), Text.Delimiter), scope);
+				}), Text.Delimiter);
+
+				string sList = Utility.ListToDelimitedString(list, Text.Delimiter);
+				state.SetValue(id, sList, scope);
+				state.SetValue(id + ":value", text, scope);
+				state.SetValue(id + ":text", text, scope);
 
 				if (scope == ParameterScope.Local)
 					state.SetFlags(list.Select(s => new StringHandle(s)), scope);

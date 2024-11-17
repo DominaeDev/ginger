@@ -2,20 +2,16 @@
 	<!-- Preamble -->
 	<Name>%%NAME%%</Name>
 	<Title>%%TITLE%%</Title>
-	<Author>%%AUTHOR%%</Author>
 	<Category>%%CATEGORY%%</Category>
 	<Requires>not base</Requires>
 	<Flags>base</Flags>
-	<Description>
-		<!-- Recipe information here -->
-	</Description>
-	
-	<!-- Parameters? -->
+	<Description></Description>
+	<Author>%%AUTHOR%%</Author>
 	
 	<!-- Output -->
-
-	<System> 
-		<!-- Model instructions here -->
+	<System>
+		Text transcript of a never-ending conversation between [user] and [char]. 
+		In the transcript, gestures and other non-verbal actions are written between asterisks (for example, *waves hello* or *moves closer*).
 	</System>
 	
 </Ginger>

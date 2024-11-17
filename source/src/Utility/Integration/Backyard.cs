@@ -428,7 +428,8 @@ namespace Ginger.Integration
 
 						for (int j = 0; j < expectedNames.Length; ++j)
 						{
-							if (foundColumns[j].Key != expectedNames[j] || foundColumns[j].Value != expectedTypes[j])
+							int idxFound = foundColumns.FindIndex(kvp => kvp.Key == expectedNames[j]);
+							if (idxFound == -1 || foundColumns[idxFound].Value != expectedTypes[j])
 							{
 								LastError = "Validation failed";
 								return Error.ValidationFailed;

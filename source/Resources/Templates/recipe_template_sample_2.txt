@@ -2,15 +2,11 @@
 	<!-- Preamble -->
 	<Name>%%NAME%%</Name>
 	<Title>%%TITLE%%</Title>
-	<Author>%%AUTHOR%%</Author>
+	<Description>Sample recipe with parameters.</Description>
 	<Category>%%CATEGORY%%</Category>
-	<Description>
-		Sample recipe with parameters.
-	</Description>
+	<Author>%%AUTHOR%%</Author>
 	
-	<!-- Parameters -->
-
-	<!-- A drop-down list -->
+	<!-- Input -->
 	<Choice id="my-choice">
 		<Label>A choice</Label>
 		<Option id="choice-1">Choice #1</Option>
@@ -18,23 +14,19 @@
 		<Option id="choice-3">Choice #3</Option>
 	</Choice>
 	
-	<!-- A text field -->
 	<Text id="my-text">
 		<Label>A text field</Label>
 		<Placeholder>Please enter some text</Placeholder>
 	</Text>
 	
-	<!-- A checkbox -->
 	<Toggle id="my-toggle">
 		<Label>A toggle</Label>
 		<Default>No</Default>
 	</Toggle>
 	
-	<!-- A hint label -->
 	<Hint rule="my-toggle">Hello there!</Hint>
 
 	<!-- Output -->
-
 	<Persona rule="not my-choice">
 		No choice has been made.
 	</Persona>

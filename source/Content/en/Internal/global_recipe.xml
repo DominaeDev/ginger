@@ -63,7 +63,7 @@
 	
 	<!-- Relationship block -->
 	<Node path="persona/relationship" style="block" order="800" rule="not less-detail">
-		[multi-character?[char's] relationship to [user]|Relationship to [user]]:  
+		[char's] relationship to [user]:  
 		{inner}
 	</Node>
 	<Node path="persona/relationship" style="block" order="800" rule="less-detail"/>

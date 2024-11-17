@@ -2,14 +2,11 @@
 	<!-- Preamble -->
 	<Name>%%NAME%%</Name>
 	<Title>%%TITLE%%</Title>
-	<Author>%%AUTHOR%%</Author>
 	<Category>%%CATEGORY%%</Category>
-	<Description>
-		Sample recipe of a character trait
-	</Description>
-		
-	<!-- Output -->
+	<Description>Sample recipe of a character trait.</Description>
+	<Author>%%AUTHOR%%</Author>
 	
+	<!-- Output -->
 	<Persona>
 		Two large horns, like those of a ram, protrude from [char's] forehead, curling up and around her head.
 	</Persona>

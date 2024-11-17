@@ -1,15 +1,12 @@
 <Ginger version="1.0">
 	<!-- Preamble -->
 	<Name>%%NAME%%</Name>
-	<Title>%%TITLE%%</Title>
-	<Author>%%AUTHOR%%</Author>
 	<Category>%%CATEGORY%%</Category>
-	<Description>
-		<!-- Recipe details here -->
-	</Description>
+	<Description></Description>
+	<Author>%%AUTHOR%%</Author>
 	
 	<!-- Output -->
-	<Persona> 
-		<!-- Character description here -->
+	<Persona>
+	
 	</Persona>
 </Ginger>

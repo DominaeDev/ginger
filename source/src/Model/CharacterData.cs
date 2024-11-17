@@ -120,6 +120,9 @@ namespace Ginger
 			// Text style
 			context.SetValue("text-style", EnumHelper.ToInt(Current.Card.textStyle));
 
+			// Language
+			context.SetValue("__locale", AppSettings.Settings.Locale);
+
 			switch (Current.Card.textStyle)
 			{
 			case CardData.TextStyle.None:

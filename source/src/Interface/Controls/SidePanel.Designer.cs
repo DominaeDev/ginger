@@ -336,7 +336,7 @@
 			group_CardInfo.Size = new System.Drawing.Size(600, 220);
 			group_CardInfo.TabIndex = 1;
 			group_CardInfo.TabStop = false;
-			group_CardInfo.Text = "Meta data";
+			group_CardInfo.Text = "Card information";
 			// 
 			// textBox_tags
 			// 

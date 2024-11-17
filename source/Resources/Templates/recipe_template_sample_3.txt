@@ -2,14 +2,11 @@
 	<!-- Preamble -->
 	<Name>%%NAME%%</Name>
 	<Title>%%TITLE%%</Title>
-	<Author>%%AUTHOR%%</Author>
+	<Description>Sample recipe with lore book entries.</Description>
 	<Category>%%CATEGORY%%</Category>
-	<Description>
-		Sample recipe with lore book entries.
-	</Description>
+	<Author>%%AUTHOR%%</Author>
 	
-	<!-- Parameters -->
-
+	<!-- Input -->
 	<Choice id="lore-kind" mandatory="true">
 		<Label>Lore kind</Label>
 		<Option id="fruits">Fruits</Option>
@@ -17,7 +14,6 @@
 	</Choice>
 	
 	<!-- Output -->
-
 	<Lore rule="fruits">
 		<Name>Apple</Name>
 		<Value>An apple is a sweet, edible fruit produced by an apple tree (Malus domestica). It is one of the most widely cultivated tree fruits.</Value>

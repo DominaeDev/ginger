@@ -195,6 +195,7 @@ namespace Ginger
 			if (index <= -1 && parameter.isOptional)
 			{
 				this.parameter.value = "";
+				this.parameter.selectedIndex = -1;
 			}
 			else
 			{
@@ -202,9 +203,15 @@ namespace Ginger
 					index -= 1; // (not set)
 
 				if (index >= 0 && index < radioButtons.Count)
+				{
 					this.parameter.value = parameter.items[index].value;
+					this.parameter.selectedIndex = index;
+				}
 				else
+				{
 					this.parameter.value = "";
+					this.parameter.selectedIndex = -1;
+				}
 			}
 			NotifyValueChanged();
 		}

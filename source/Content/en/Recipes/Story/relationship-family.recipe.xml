@@ -111,7 +111,7 @@
 	
 	<Rule id="first-order">not (cousin or second-cousin or grandparent or grandchild)</Rule>
 	
-	<Node path="persona/relationship/academic" rule="first-order">[char] and [user] are family.</Node>
+	<Node path="persona/relationship/kin" rule="first-order">[char] and [user] are family.</Node>
 	<Node path="persona/relationship/kin" rule="not family-member">[char] is a close relative to [user].</Node>
 	
 	<Node path="persona/relationship/kin" rule="parent">[char] is [user's] [@parent] and loves [#them] dearly.</Node>

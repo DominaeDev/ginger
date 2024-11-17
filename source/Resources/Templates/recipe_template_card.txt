@@ -2,14 +2,10 @@
 	<!-- Preamble -->
 	<Name>%%NAME%%</Name>
 	<Title>%%TITLE%%</Title>
-	<Author>%%AUTHOR%%</Author>
 	<Category>%%CATEGORY%%</Category>
 	<Flags>%%FLAGS%%</Flags>
-	<Description>
-		<!-- Recipe information here -->
-	</Description>
-	
-	<!-- Parameters? -->
+	<Description></Description>
+	<Author>%%AUTHOR%%</Author>
 	
 	<!-- Output -->
 %%NODES%%%%ATTRIBUTES%%%%SYSTEM%%%%POSTHISTORY%%%%PERSONA%%%%USER%%%%SCENARIO%%%%GREETING%%%%GROUPGREETING%%%%EXAMPLE%%%%GRAMMAR%%%%LORE%%</Ginger>
