@@ -571,8 +571,8 @@ namespace Ginger
 
 		private void ExportCharacter()
 		{
-			ConfirmName(); 
-			
+			ConfirmName();
+
 			string filename = null;
 			if (string.IsNullOrWhiteSpace(Current.Card.name) == false)
 				filename = Current.Card.name;
@@ -581,7 +581,7 @@ namespace Ginger
 
 			if (string.IsNullOrEmpty(filename) == false)
 			{
-				if (AppSettings.User.LastExportCharacterFilter == 5 
+				if (AppSettings.User.LastExportCharacterFilter == 5
 					|| AppSettings.User.LastExportCharacterFilter == 6
 					|| AppSettings.User.LastExportCharacterFilter == 7) // png
 					filename = string.Concat(filename, ".png");
@@ -607,114 +607,52 @@ namespace Ginger
 			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
 			AppSettings.User.LastExportCharacterFilter = exportFileDialog.FilterIndex;
 
-			var output = Generator.Generate(Generator.Option.Export);
-			var gingerExt = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
-
-
-			if (exportFileDialog.FilterIndex == 1) // Tavern V2
+			FileUtil.FileType fileType;
+			switch (exportFileDialog.FilterIndex)
 			{
-				var card = TavernCardV2.FromOutput(output);
-				card.data.extensions.ginger = gingerExt;
-
-				string tavernJson = card.ToJson();
-				if (tavernJson != null && FileUtil.ExportTextFile(exportFileDialog.FileName, tavernJson))
-					return; // Success
+			case 1: // Tavern V2
+				fileType = FileUtil.FileType.TavernV2 | FileUtil.FileType.Json;
+				break;
+			case 2: // Tavern V3
+				fileType = FileUtil.FileType.TavernV3 | FileUtil.FileType.Json;
+				break;
+			case 3: // Agnaistic
+				fileType = FileUtil.FileType.Agnaistic | FileUtil.FileType.Json;
+				break;
+			case 4: // Pygmalion / CAI
+				fileType = FileUtil.FileType.Pygmalion | FileUtil.FileType.Json;
+				break;
+			case 5: // PNGv2
+				fileType = FileUtil.FileType.TavernV2 | FileUtil.FileType.Png;
+				break;
+			case 6: // PNGv3
+				fileType = FileUtil.FileType.TavernV3 | FileUtil.FileType.Png;
+				break;
+			case 7: // Faraday PNG
+				fileType = FileUtil.FileType.Faraday | FileUtil.FileType.Png;
+				break;
+			case 8: // CharX
+				fileType = FileUtil.FileType.TavernV3 | FileUtil.FileType.CharX;
+				break;
+			case 9: // Text Generation WebUI Yaml
+				fileType = FileUtil.FileType.TextGenWebUI | FileUtil.FileType.Yaml;
+				break;
+			default:
+				fileType = FileUtil.FileType.Unknown;
+				break;
 			}
-			else if (exportFileDialog.FilterIndex == 2) // Tavern V3
+
+			// Open in another instance?
+			if (fileType.Contains(FileUtil.FileType.Png) && FileMutex.CanAcquire(exportFileDialog.FileName) == false)
 			{
-				var card = TavernCardV3.FromOutput(output);
-				card.data.extensions.ginger = gingerExt;
-
-				var assets = (AssetCollection)Current.Card.assets.Clone();
-				
-				assets.AddPortraitImage(FileUtil.FileType.Json);
-				assets.Validate();
-
-				card.data.assets = assets
-					.Select(a => a.ToV3Asset(AssetFile.UriFormat.Data))
-					.ToArray();
-
-				string tavernJson = card.ToJson();
-				if (tavernJson != null && FileUtil.ExportTextFile(exportFileDialog.FileName, tavernJson))
-					return; // Success
+				MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(exportFileDialog.FileName)), Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
 			}
-			else if (exportFileDialog.FilterIndex == 3) // Agnaistic
+
+			if (FileUtil.Export(Current.Instance, exportFileDialog.FileName, fileType) == false)
 			{
-				var card = AgnaisticCard.FromOutput(output);
-				card.extensions.ginger = gingerExt;
-
-				// Avatar image
-				if (Current.Card.portraitImage != null)
-					card.avatar = Utility.ImageToBase64(Current.Card.portraitImage);
-
-				string agnaisticJson = card.ToJson();
-				if (agnaisticJson != null && FileUtil.ExportTextFile(exportFileDialog.FileName, agnaisticJson))
-					return; // Success
+				MessageBox.Show(Resources.error_write_json, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-			else if (exportFileDialog.FilterIndex == 4) // Pygmalion / CAI
-			{
-				var card = PygmalionCard.FromOutput(output);
-				string json = card.ToJson();
-				if (json != null && FileUtil.ExportTextFile(exportFileDialog.FileName, json))
-					return; // Success
-			}
-			else if (exportFileDialog.FilterIndex == 5) // PNGv2
-			{
-				// Open in another instance?
-				if (FileMutex.CanAcquire(exportFileDialog.FileName) == false)
-				{
-					MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(exportFileDialog.FileName)), Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return;
-				}
-
-				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.SillyTavernV2))
-					return; // Success
-			}
-			else if (exportFileDialog.FilterIndex == 6) // PNGv3
-			{
-				// Open in another instance?
-				if (FileMutex.CanAcquire(exportFileDialog.FileName) == false)
-				{
-					MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(exportFileDialog.FileName)), Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return;
-				}
-
-				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.SillyTavernV3))
-					return; // Success
-			}
-			else if (exportFileDialog.FilterIndex == 7) // Faraday PNG
-			{
-				// Open in another instance?
-				if (FileMutex.CanAcquire(exportFileDialog.FileName) == false)
-				{
-					MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(exportFileDialog.FileName)), Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return;
-				}
-
-				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.Faraday))
-					return; // Success
-			}
-			else if (exportFileDialog.FilterIndex == 8) // CharX
-			{
-				if (FileUtil.ExportToCharX(exportFileDialog.FileName))
-					return; // Success
-			}
-			else if (exportFileDialog.FilterIndex == 9) // Text Generation WebUI Yaml
-			{
-				var card = TextGenWebUICard.FromOutput(output);
-				string yaml = card.ToYaml();
-				if (yaml != null && FileUtil.ExportTextFile(exportFileDialog.FileName, yaml))
-				{
-					// Save portrait
-					if (Current.Card.portraitImage != null)
-					{
-						var pngFilename = Path.Combine(Path.GetDirectoryName(exportFileDialog.FileName), string.Concat(Path.GetFileNameWithoutExtension(exportFileDialog.FileName), ".png"));
-						FileUtil.ExportPNG(pngFilename, Current.Card.portraitImage, false);
-					}
-					return; // Success
-				}
-			}
-			MessageBox.Show(Resources.error_write_json, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
 		private void ExportLorebook(Generator.Output output, bool saveLocal)
@@ -1986,36 +1924,64 @@ namespace Ginger
 			var result = exportFileDialog.ShowDialog();
 
 			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
-				return false;
-
-			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
-			AppSettings.User.LastExportCharacterFilter = exportFileDialog.FilterIndex;*/
-
+				return false;*/
 
 			var folderDialog = new WinAPICodePack.CommonOpenFileDialog();
 			folderDialog.Title = Resources.cap_export_many_characters;
 			folderDialog.IsFolderPicker = true;
 			folderDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			folderDialog.EnsurePathExists = true;
+			folderDialog.AllowNonFileSystemItems = false;
+			folderDialog.EnsureFileExists = true;
+			folderDialog.EnsureReadOnly = false;
+			folderDialog.EnsureValidNames = true;
+			folderDialog.Multiselect = false;
+			folderDialog.AddToMostRecentlyUsedList = false;
+			folderDialog.ShowPlacesList = true;
 
-//			folderDialog.AddToMostRecentlyUsedList = false;
-//			folderDialog.AllowNonFileSystemItems = false;
-//			folderDialog.EnsureFileExists = true;
-//			folderDialog.EnsurePathExists = true;
-//			folderDialog.EnsureReadOnly = false;
-//			folderDialog.EnsureValidNames = true;
-//			folderDialog.Multiselect = false;
-//			folderDialog.ShowPlacesList = true;
+			if (folderDialog.ShowDialog() != WinAPICodePack.CommonFileDialogResult.Ok)
+				return false;
 
-			if (folderDialog.ShowDialog() == WinAPICodePack.CommonFileDialogResult.Ok)
-			{
-				var folder = folderDialog.FileName;
-				// Do something with selected folder string
-			}
+			var outputDirectory = folderDialog.FileName;
+			if (Directory.Exists(outputDirectory) == false)
+				return false;
+
+			AppSettings.Paths.LastImportExportPath = outputDirectory;
 
 			var formatDialog = new FileFormatDialog();
-			formatDialog.ShowDialog();
+			if (formatDialog.ShowDialog() != DialogResult.OK)
+				return false;
+
+			string ext;
+			if (formatDialog.FileFormat.Contains(FileUtil.FileType.Json))
+				ext = "json";
+			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.Png))
+				ext = "png";
+			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.CharX))
+				ext = "charx";
+			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.Yaml))
+				ext = "yaml";
+			else
+				return false; // Error
+
+			var filenames = new List<string>(dlg.Characters.Length);
+			foreach (var character in dlg.Characters)
+			{
+				filenames.Add(Path.Combine(outputDirectory, 
+					Utility.MakeUniqueFilename(string.Format("{0}_{1}.{2}",
+						character.displayName,
+						character.creationDate.ToFileTimeUtc() / 1000L,
+						ext))
+				));
+			}
+
+			var exporter = new BulkExporter();
+			for (int i = 0; i < filenames.Count; ++i)
+				exporter.Enqueue(dlg.Characters[i]);
+			exporter.Start(formatDialog.FileFormat);
 
 			return true;
 		}
+
 	}
 }

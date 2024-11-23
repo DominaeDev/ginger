@@ -406,6 +406,7 @@
       <DependentUpon>RecipePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Model\CardData.cs" />
+    <Compile Include="src\Model\GingerCharacter.cs" />
     <Compile Include="src\Model\Clipboard\ChatClipboard.cs" />
     <Compile Include="src\Model\Clipboard\ChatParametersClipboard.cs" />
     <Compile Include="src\Model\Clipboard\ChatStagingClipboard.cs" />
@@ -419,6 +420,7 @@
     <Compile Include="src\Model\Formats\Lorebooks\TavernWorldbook.cs" />
     <Compile Include="src\Model\CustomVariable.cs" />
     <Compile Include="src\Utility\Integration\BackyardValidation.cs" />
+    <Compile Include="src\Utility\Integration\BulkExporter.cs" />
     <Compile Include="src\Utility\Integration\ChatHistory.cs" />
     <Compile Include="src\Model\Formats\CharacterCards\TavernCardV3.cs" />
     <Compile Include="src\Model\Formats\CharacterCards\TextGenWebUICard.cs" />

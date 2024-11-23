@@ -24,6 +24,8 @@ namespace Ginger
 			"Text generation web ui YAML (*.yaml)",
 		};
 
+		public FileUtil.FileType FileFormat { get; private set; }
+
 		private FileUtil.FileType[] FileTypes = new FileUtil.FileType[] {
 			FileUtil.FileType.TavernV2 | FileUtil.FileType.Json | FileUtil.FileType.Character,
 			FileUtil.FileType.TavernV3 | FileUtil.FileType.Json | FileUtil.FileType.Character,
@@ -39,6 +41,7 @@ namespace Ginger
 		public FileFormatDialog()
 		{
 			InitializeComponent();
+			FileFormat = FileUtil.FileType.Unknown;
 			Load += FileFormatDialog_Load;
 		}
 
@@ -50,17 +53,26 @@ namespace Ginger
 
 			if (AppSettings.User.LastExportCharacterFilter >= 0 && AppSettings.User.LastExportCharacterFilter < comboBox.Items.Count)
 				comboBox.SelectedIndex = AppSettings.User.LastExportCharacterFilter;
+			else
+				comboBox.SelectedIndex = 0;
 			comboBox.EndUpdate();
 		}
 
 		private void btnOk_Click(object sender, EventArgs e)
 		{
+			if (comboBox.SelectedIndex < 0 || comboBox.SelectedIndex >= FileTypes.Length)
+				return; // Error
+
+			AppSettings.User.LastExportCharacterFilter = comboBox.SelectedIndex;
+			FileFormat = FileTypes[comboBox.SelectedIndex];
+			
 			DialogResult = DialogResult.OK;
 			Close();
 		}
 
 		private void btnCancel_Click(object sender, EventArgs e)
 		{
+			FileFormat = FileUtil.FileType.Unknown;
 			DialogResult = DialogResult.Cancel;
 			Close();
 		}

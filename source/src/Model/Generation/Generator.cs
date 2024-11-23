@@ -192,6 +192,11 @@ namespace Ginger
 
 		public static Output Generate(Option option = Option.Export)
 		{
+			return Generate(Current.Instance, option);
+		}
+
+		public static Output Generate(GingerCharacter instance, Option option = Option.Export)
+		{
 			List<Output> outputPerCharacter = new List<Output>();
 			option |= Option.All;
 			int numChannels = EnumHelper.ToInt(Recipe.Component.Count);
@@ -199,16 +204,16 @@ namespace Ginger
 			Recipe externalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalExternal)?.Instantiate();
 			Recipe pruneScenarioRecipe = RecipeBook.GetRecipeByID(RecipeBook.PruneScenario)?.Instantiate();
 
-			for (int index = 0; index < Current.Characters.Count; ++index)
+			for (int index = 0; index < instance.Characters.Count; ++index)
 			{
-				var character = Current.Characters[index];
+				var character = instance.Characters[index];
 
 				var recipes = new List<Recipe>(character.recipes.Count + 1);
 				if (externalGlobalRecipe != null)
 					recipes.Insert(0, externalGlobalRecipe);
 				if (internalGlobalRecipe != null)
 					recipes.Insert(0, internalGlobalRecipe);
-				if (pruneScenarioRecipe != null && Current.Card.extraFlags.Contains(CardData.Flag.PruneScenario))
+				if (pruneScenarioRecipe != null && instance.Data.extraFlags.Contains(CardData.Flag.PruneScenario))
 					recipes.Insert(0, pruneScenarioRecipe);
 				recipes.AddRange(character.recipes);
 
@@ -247,7 +252,7 @@ namespace Ginger
 					}
 				}
 
-				var characterOutput = Generate(recipes, index, context, option);
+				var characterOutput = Generate(instance, recipes, index, context, option);
 				outputPerCharacter.Add(characterOutput);
 			}
 
@@ -328,15 +333,20 @@ namespace Ginger
 			var recipes = RecipeBook.WithInternal(new Recipe[] { recipe });
 
 			var context = Current.Character.GetContextForRecipe(recipe);
-			return Generate(recipes, Current.SelectedCharacter, context, option | Option.Single);
+			return Generate(Current.Instance, recipes, Current.SelectedCharacter, context, option | Option.Single);
 		}
 
 		public static Output Generate(List<Recipe> recipes, int characterIndex, Context context, Option options)
 		{
-			var partialOutput = BuildGraph(recipes, characterIndex, context, options);
+			return Generate(Current.Instance, recipes, characterIndex, context, options);
+		}
+
+		public static Output Generate(GingerCharacter instance, List<Recipe> recipes, int characterIndex, Context context, Option options)
+		{
+			var partialOutput = BuildGraph(instance, recipes, characterIndex, context, options);
 			var blockBuilder = partialOutput.blockBuilder;
 
-			bool bMain = (characterIndex == 0 && Current.Characters.Count == 1) || options.Contains(Option.Single);
+			bool bMain = (characterIndex == 0 && instance.Characters.Count == 1) || options.Contains(Option.Single);
 
 			// (Silly tavern) Build important block separately
 			GingerString postHistory = GingerString.Empty;
@@ -365,7 +375,7 @@ namespace Ginger
 					|| blockBuilder.BlockHasChildren("system/output", true));
 
 			// Omit attributes block
-			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitAttributes))
+			if (instance.Data.extraFlags.Contains(CardData.Flag.OmitAttributes))
 				blockBuilder.RemoveBlock("persona/attributes");
 
 			// Build blocks
@@ -390,23 +400,23 @@ namespace Ginger
 			}
 
 			// Omit outputs
-			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitSystemPrompt))
+			if (instance.Data.extraFlags.Contains(CardData.Flag.OmitSystemPrompt))
 			{
 				systemOutput = GingerString.Empty;
 				postHistory = GingerString.Empty;
 			}
-			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitScenario))
+			if (instance.Data.extraFlags.Contains(CardData.Flag.OmitScenario))
 				scenarioOutput = GingerString.Empty;
-			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitExample))
+			if (instance.Data.extraFlags.Contains(CardData.Flag.OmitExample))
 				exampleOutput = GingerString.Empty;
-			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitGrammar))
+			if (instance.Data.extraFlags.Contains(CardData.Flag.OmitGrammar))
 				grammar = GingerString.Empty;
-			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitGreeting))
+			if (instance.Data.extraFlags.Contains(CardData.Flag.OmitGreeting))
 			{
 				greetings = null;
 				group_greetings = null;
 			}
-			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitLore))
+			if (instance.Data.extraFlags.Contains(CardData.Flag.OmitLore))
 				lore = null;
 
 			// Strip lorebook decorators
@@ -441,7 +451,7 @@ namespace Ginger
 			public Lorebook lore;
 		}
 
-		private static PartialOutput BuildGraph(List<Recipe> recipes, int characterIndex, Context context, Option options)
+		private static PartialOutput BuildGraph(GingerCharacter instance, List<Recipe> recipes, int characterIndex, Context context, Option options)
 		{
 			BlockBuilder blockBuilder = new BlockBuilder();
 			List<Lorebook> loreEntries = new List<Lorebook>();
@@ -460,7 +470,7 @@ namespace Ginger
 			if (options.Contains(Option.Single))
 				globalContext.AddTag("__single");
 
-			bool bMain = (characterIndex == 0 && Current.Characters.Count == 1) || options.Contains(Option.Single);
+			bool bMain = (characterIndex == 0 && instance.Characters.Count == 1) || options.Contains(Option.Single);
 
 			// Prepare contexts
 			Context[] recipeContexts = GetRecipeContexts(recipes.ToArray(), globalContext);
@@ -721,7 +731,7 @@ namespace Ginger
 							}
 							else
 							{
-								lsGreetings.Add(GingerString.FromString(sbGreeting.ToString()).ApplyTextStyle(Current.Card.textStyle));
+								lsGreetings.Add(GingerString.FromString(sbGreeting.ToString()).ApplyTextStyle(instance.Data.textStyle));
 								sbGreeting.Clear();
 								sbGreeting.Append(text);
 							}
@@ -731,7 +741,7 @@ namespace Ginger
 					if (sbGreeting.Length > 0)
 					{
 						sbGreeting.Replace(GingerString.InternalContinueMarker, "");
-						lsGreetings.Add(GingerString.FromString(sbGreeting.ToString()).ApplyTextStyle(Current.Card.textStyle));
+						lsGreetings.Add(GingerString.FromString(sbGreeting.ToString()).ApplyTextStyle(instance.Data.textStyle));
 					}
 
 					if (channel == Recipe.Component.Greeting)
@@ -743,7 +753,7 @@ namespace Ginger
 				{
 					string text = string.Join(Text.ParagraphBreak, lsOutputsByChannel[iChannel]);
 					text = GingerString.FromOutput(text, characterIndex, bMain, Text.EvalOption.Minimal)
-						.ApplyTextStyle(Current.Card.textStyle)
+						.ApplyTextStyle(instance.Data.textStyle)
 						.ToString();
 
 					blockBuilder.Add(new Block() {
@@ -817,9 +827,9 @@ namespace Ginger
 
 		public static OutputWithNodes GenerateSeparately(List<Recipe> recipes, int characterIndex, Context context, Option options)
 		{
-			var partialOutput = BuildGraph(recipes, characterIndex, context, options);
+			var partialOutput = BuildGraph(Current.Instance, recipes, characterIndex, context, options);
 			var blockBuilder = partialOutput.blockBuilder;
-			bool bMain = (characterIndex == 0 && Current.Characters.Count == 1) || options.Contains(Option.Single);
+			bool bMain = (characterIndex == 0 && Current.Instance.Characters.Count == 1) || options.Contains(Option.Single);
 			
 			var nodes = new Dictionary<BlockID, string>();
 			var attributes = new List<AttributeBlock>();

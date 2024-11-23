@@ -1361,6 +1361,53 @@ namespace Ginger
 			return sbFilename.ToString().Trim();
 		}
 
+		public static string MakeUniqueFilename(string filename)
+		{
+			return NextAvailableFilename(ValidFilename(filename));
+		}
+
+		private static string NumberPattern = " ({0})";
+
+		public static string NextAvailableFilename(string filePath)
+		{
+			// Short-cut if already available
+			if (!File.Exists(filePath))
+				return filePath;
+
+			// If path has extension then insert the number pattern just before the extension and return next filename
+			if (Path.HasExtension(filePath))
+				return GetNextFilename(filePath.Insert(filePath.LastIndexOf(Path.GetExtension(filePath)), NumberPattern));
+
+			// Otherwise just append the pattern to the path and return next filename
+			return GetNextFilename(filePath + NumberPattern);
+		}
+
+		private static string GetNextFilename(string pattern)
+		{
+			string tmp = string.Format(pattern, 1);
+			if (!File.Exists(tmp))
+				return tmp; // short-circuit if no matches
+
+			int min = 1, max = 2; // min is inclusive, max is exclusive/untested
+
+			while (File.Exists(string.Format(pattern, max)))
+			{
+				min = max;
+				max *= 2;
+			}
+
+			while (max != min + 1)
+			{
+				int pivot = (max + min) / 2;
+				if (File.Exists(string.Format(pattern, pivot)))
+					min = pivot;
+				else
+					max = pivot;
+			}
+
+			return string.Format(pattern, max);
+		}
+
 		public static void OpenUrl(string url)
 		{
 			try
