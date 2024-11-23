@@ -25,7 +25,7 @@
 	
 	<Attribute>
 		<Name>Speech pattern</Name>
-		<Value>Eloquent and commanding</Value>
+		<Value>Eloquent, commanding, politely, refraining from foul language</Value>
 	</Attribute>
 	
 	<Attribute rule="nsfw">
