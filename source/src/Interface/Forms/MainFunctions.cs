@@ -9,6 +9,8 @@ using System.Xml;
 using Ginger.Properties;
 using Ginger.Integration;
 
+using WinAPICodePack = Microsoft.WindowsAPICodePack.Dialogs;
+
 using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
@@ -597,6 +599,7 @@ namespace Ginger
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			exportFileDialog.FilterIndex = AppSettings.User.LastExportCharacterFilter;
+			exportFileDialog.OverwritePrompt = true;
 			var result = exportFileDialog.ShowDialog();
 			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
 				return;
@@ -745,6 +748,7 @@ namespace Ginger
 			else
 				exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.ContentPath("Lorebooks");
 			exportFileDialog.FilterIndex = AppSettings.User.LastExportLorebookFilter;
+			exportFileDialog.OverwritePrompt = true;
 
 			var result = exportFileDialog.ShowDialog();
 			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
@@ -1954,6 +1958,64 @@ namespace Ginger
 					pos_var = text.IndexOf("{$", pos_var + 2);
 				}
 			}
+		}
+
+		public bool ExportManyFromBackyard()
+		{
+			var dlg = new LinkSelectMultipleCharactersDialog();
+
+			// Refresh character list
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+			{
+				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				AppSettings.BackyardLink.Enabled = false;
+			}
+
+			dlg.Characters = Backyard.Characters.ToArray();
+			dlg.Folders = Backyard.Folders.ToArray();
+			if (dlg.ShowDialog() != DialogResult.OK || dlg.Characters.Length == 0)
+				return false;
+
+			// Save as...
+			/*exportFileDialog.Title = Resources.cap_export_many_characters;
+			exportFileDialog.Filter = "Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard AI PNG|*.png|CharX file|*.charx|Text generation web ui YAML|*.yaml";
+			exportFileDialog.FileName = "Character export";
+			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			exportFileDialog.FilterIndex = AppSettings.User.LastExportCharacterFilter;
+			exportFileDialog.OverwritePrompt = false;
+			var result = exportFileDialog.ShowDialog();
+
+			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
+				return false;
+
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
+			AppSettings.User.LastExportCharacterFilter = exportFileDialog.FilterIndex;*/
+
+
+			var folderDialog = new WinAPICodePack.CommonOpenFileDialog();
+			folderDialog.Title = Resources.cap_export_many_characters;
+			folderDialog.IsFolderPicker = true;
+			folderDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+
+//			folderDialog.AddToMostRecentlyUsedList = false;
+//			folderDialog.AllowNonFileSystemItems = false;
+//			folderDialog.EnsureFileExists = true;
+//			folderDialog.EnsurePathExists = true;
+//			folderDialog.EnsureReadOnly = false;
+//			folderDialog.EnsureValidNames = true;
+//			folderDialog.Multiselect = false;
+//			folderDialog.ShowPlacesList = true;
+
+			if (folderDialog.ShowDialog() == WinAPICodePack.CommonFileDialogResult.Ok)
+			{
+				var folder = folderDialog.FileName;
+				// Do something with selected folder string
+			}
+
+			var formatDialog = new FileFormatDialog();
+			formatDialog.ShowDialog();
+
+			return true;
 		}
 	}
 }

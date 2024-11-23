@@ -1302,4 +1302,7 @@ Reason: {0}</value>
   <data name="status_reload_recipes" xml:space="preserve">
     <value>Recipes reloaded</value>
   </data>
+  <data name="cap_export_many_characters" xml:space="preserve">
+    <value>Choose export folder and format (filename is ignored)</value>
+  </data>
 </root>

@@ -11,18 +11,23 @@ using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
 {
-	public partial class LinkSelectCharacterDialog : FormEx
+	public partial class LinkSelectMultipleCharactersDialog : FormEx
 	{
 		public CharacterInstance[] Characters;
 		public FolderInstance[] Folders;
-		public CharacterInstance SelectedCharacter { get; private set; }
+
+		private struct NodeState {
+			public CharacterInstance character;
+			public bool bChecked;
+		}
+		private NodeState[] Nodes;
 
 		public Dictionary<string, int> _folderCounts = new Dictionary<string, int>();
 		private Dictionary<string, Backyard.ChatCount> _chatCounts;
 
-		public bool ShouldLink { get { return cbCreateLink.Checked; } }
+		private bool _bIgnoreEvents = false;
 
-		public LinkSelectCharacterDialog()
+		public LinkSelectMultipleCharactersDialog()
 		{
 			InitializeComponent();
 
@@ -34,26 +39,33 @@ namespace Ginger
 			if (Backyard.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
 				_chatCounts = new Dictionary<string, Backyard.ChatCount>(); // Empty
 
+			Nodes = Characters.Select(c => new NodeState() {
+				bChecked = false,
+				character = c,
+			}).ToArray();
+
 			PopulateTree(false);
 
 			treeView.SelectedNode = null;
-			SelectedCharacter = default(CharacterInstance);
 
-			btnOk.Enabled = false;
-			cbCreateLink.Checked = AppSettings.BackyardLink.AlwaysLinkOnImport;
-			
-			// Tooltips
-			toolTip.SetToolTip(cbCreateLink, Resources.tooltip_link_about_linking);
+			RefreshSelectAllCheckbox();
+			RefreshConfirmButton();
 		}
 
 		private void PopulateTree(bool bRefresh)
 		{
 			var expandedFolders = new HashSet<string>();
 			var expandingNodes = new List<TreeNode>();
+			var checkedFolders = new HashSet<string>();
 			foreach (var node in treeView.AllNodes())
 			{
-				if (node.IsExpanded && node.Tag is string)
-					expandedFolders.Add(node.Tag as string);
+				if (node.Tag is string) // Folder
+				{
+					if (node.IsExpanded)
+						expandedFolders.Add(node.Tag as string);
+					if (node.Checked)
+						checkedFolders.Add(node.Tag as string);
+				}
 			}
 
 			treeView.BeginUpdate();
@@ -67,7 +79,10 @@ namespace Ginger
 				_folderCounts.Clear();
 				// Sum character counts
 				for (int i = 0; i < Folders.Length; ++i)
-					_folderCounts.Add(Folders[i].instanceId, Characters.Count(c => c.isUser == false && c.folderId == Folders[i].instanceId));  
+				{
+					_folderCounts.Add(Folders[i].instanceId, Characters.Count(c => c.isUser == false && c.folderId == Folders[i].instanceId));
+				}
+
 				for (int i = Folders.Length - 1; i >= 0; --i)
 				{
 					if (string.IsNullOrEmpty(Folders[i].parentId) == false)
@@ -84,6 +99,7 @@ namespace Ginger
 				.Select(f => f.instanceId)
 				.Distinct());
 
+			_bIgnoreEvents = true;
 			while (openList.Count > 0)
 			{
 				string parentId = openList[0];
@@ -96,33 +112,36 @@ namespace Ginger
 					var folderNode = CreateFolderNode(folder, nodesById, _folderCounts[folder.instanceId]);
 					if (expandedFolders.Contains(folder.instanceId))
 						expandingNodes.Add(folderNode);
+					if (checkedFolders.Contains(folder.instanceId))
+						folderNode.Checked = true;
 				}
 				
 				openList.Remove(parentId);
 			}
 
 			// Create characters
-			IEnumerable<CharacterInstance> sortedCharacters = Characters.Where(c => c.isUser == false);
+			IEnumerable<NodeState> sortedNodes = Nodes.Where(n => n.character.isUser == false);
 			if (AppSettings.User.SortCharacters == AppSettings.CharacterSortOrder.ByName)
 			{
-				sortedCharacters = sortedCharacters
-					.OrderBy(c => c.displayName)
-					.ThenByDescending(c => c.creationDate);
+				sortedNodes = sortedNodes
+					.OrderBy(n => n.character.displayName)
+					.ThenByDescending(n => n.character.creationDate);
 			}
 			else if (AppSettings.User.SortCharacters == AppSettings.CharacterSortOrder.ByCreation)
 			{
-				sortedCharacters = sortedCharacters
-					.OrderByDescending(c => c.creationDate)
-					.ThenBy(c => c.displayName);
+				sortedNodes = sortedNodes
+					.OrderByDescending(n => n.character.creationDate)
+					.ThenBy(n => n.character.displayName);
 			}
 			else if (AppSettings.User.SortCharacters == AppSettings.CharacterSortOrder.ByLastMessage)
 			{
-				sortedCharacters = sortedCharacters
-					.OrderByDescending(c => GetLatestMessageTime(c))
-					.ThenBy(c => c.displayName);
+				sortedNodes = sortedNodes
+					.OrderByDescending(n => GetLatestMessageTime(n.character))
+					.ThenBy(n => n.character.displayName);
 			}
-			foreach (var character in sortedCharacters)
-				CreateCharacterNode(character, nodesById);
+
+			foreach (var node in sortedNodes)
+				CreateCharacterNode(node, nodesById);
 
 			if (bRefresh)
 			{
@@ -130,6 +149,7 @@ namespace Ginger
 					expandingNodes[i].Expand();
 			}
 			treeView.EndUpdate();
+			_bIgnoreEvents = false;
 		}
 
 		private TreeNode CreateFolderNode(FolderInstance folder, Dictionary<string, TreeNode> nodes, int count)
@@ -147,9 +167,10 @@ namespace Ginger
 			return node;
 		}
 
-		private TreeNode CreateCharacterNode(CharacterInstance character, Dictionary<string, TreeNode> nodes)
+		private TreeNode CreateCharacterNode(NodeState nodeState, Dictionary<string, TreeNode> nodes)
 		{
 			TreeNode parentNode;
+			var character = nodeState.character;
 			if (character.folderId != null)
 				nodes.TryGetValue(character.folderId, out parentNode);
 			else
@@ -205,6 +226,7 @@ namespace Ginger
 			var node = new TreeNode(label, icon, icon);
 			node.Tag = character;
 			node.ToolTipText = sbTooltip.ToString();
+			node.Checked = nodeState.bChecked;
 			if (parentNode != null)
 				parentNode.Nodes.Add(node);
 			else
@@ -224,7 +246,10 @@ namespace Ginger
 
 		private void BtnOk_Click(object sender, EventArgs e)
 		{
-			AppSettings.BackyardLink.AlwaysLinkOnImport = cbCreateLink.Checked;
+			Characters = Nodes
+				.Where(n => n.bChecked)
+				.Select(n => n.character)
+				.ToArray();
 			DialogResult = DialogResult.OK;
 			Close();
 		}
@@ -235,39 +260,17 @@ namespace Ginger
 			Close();
 		}
 
-		private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
-		{
-			if (e.Node != null && e.Node.Tag is CharacterInstance)
-			{
-				SelectedCharacter = (CharacterInstance)e.Node.Tag;
-				btnOk.Enabled = true;
-			}
-			else
-			{
-				SelectedCharacter = default(CharacterInstance);
-				btnOk.Enabled = false;
-			}
-		}
-
 		private void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
-			if (e.Node != null && e.Node.Tag is CharacterInstance && e.Node == treeView.SelectedNode)
-			{
-				SelectedCharacter = (CharacterInstance)e.Node.Tag;
-				BtnOk_Click(this, EventArgs.Empty);
-			}
-			else
-			{
-				return; // Double-clicked folder: Do nothing
-			}
+			if (e.Button == MouseButtons.Left 
+				&& e.Node != null && e.Node.Tag is CharacterInstance && e.Node == treeView.SelectedNode)
+				e.Node.Checked = !e.Node.Checked;
 		}
 
 		private void treeView_MouseClick(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Right)
-			{
 				ShowContextMenu(sender as Control, new Point(e.X, e.Y));
-			}
 		}
 
 		private void ShowContextMenu(Control control, Point location)
@@ -318,6 +321,117 @@ namespace Ginger
 			treeView.ImageList = Theme.IsDarkModeEnabled ? imageList_Dark : imageList_Light;
 
 			listPanel.BackColor = Theme.Current.TreeViewBackground;
+		}
+
+		private void treeView_AfterCheck(object sender, TreeViewEventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			_bIgnoreEvents = true;
+			if (e.Node.Tag is string) // Is folder
+			{
+				foreach (TreeNode node in e.Node.Nodes)
+					node.Checked = e.Node.Checked;
+				CheckChildren(e.Node, e.Node.Checked);
+			}
+			else if (e.Node.Tag is CharacterInstance) // Character
+			{
+				var characterId = ((CharacterInstance)e.Node.Tag).instanceId;
+				int index = Array.FindIndex(Nodes, n => n.character.instanceId == characterId);
+				if (index != -1)
+					Nodes[index].bChecked = e.Node.Checked;
+			}
+
+			RefreshParentNode(e.Node);
+
+			_bIgnoreEvents = false;
+
+			RefreshSelectAllCheckbox();
+			RefreshConfirmButton();
+		}
+
+		private static void RefreshParentNode(TreeNode node)
+		{
+			if (node == null || node.Parent == null)
+				return;
+
+			bool bAllChecked = true;
+			foreach (TreeNode sibling in node.Parent.Nodes)
+			{
+				if (sibling.Checked == false)
+				{
+					bAllChecked = false;
+					break;
+				}
+			}
+
+			node.Parent.Checked = bAllChecked;
+			RefreshParentNode(node.Parent);
+		}
+
+		private void CheckChildren(TreeNode parent, bool bChecked)
+		{
+			foreach (TreeNode node in parent.Nodes)
+			{
+				node.Checked = bChecked;
+				CheckChildren(node, bChecked);
+
+				if (node.Tag is CharacterInstance)
+				{
+					var characterId = ((CharacterInstance)node.Tag).instanceId;
+					int index = Array.FindIndex(Nodes, n => n.character.instanceId == characterId);
+					if (index != -1)
+						Nodes[index].bChecked = bChecked;
+				}
+			}
+		}
+
+		private void cbSelectAll_CheckedChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			bool bChecked = cbSelectAll.Checked;
+			foreach (TreeNode node in treeView.AllNodes())
+				node.Checked = bChecked;
+
+			for (int i = 0; i < Nodes.Length; ++i)
+				Nodes[i].bChecked = bChecked;
+		}
+
+		private void RefreshSelectAllCheckbox()
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			var checkState = CheckState.Unchecked;
+
+			foreach (TreeNode node in treeView.AllNodes())
+			{
+				if (node.Checked == false)
+				{
+					if (checkState == CheckState.Checked)
+					{
+						checkState = CheckState.Indeterminate;
+						break;
+					}
+				}
+				else
+					checkState = CheckState.Checked;
+			}
+
+			_bIgnoreEvents = true;
+			cbSelectAll.CheckState = checkState;
+			_bIgnoreEvents = false;
+		}
+
+		private void RefreshConfirmButton()
+		{
+			int count = treeView.AllNodes().Count(n => n.Tag is CharacterInstance && n.Checked);
+
+			btnOk.Text = count > 0 ? $"Export ({count})" : "Export";
+			btnOk.Enabled = cbSelectAll.CheckState != CheckState.Unchecked;
 		}
 	}
 }

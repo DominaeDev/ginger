@@ -37,6 +37,21 @@ namespace Ginger
 				_bRightDown = true;
 				return;
 			}
+			if (m.Msg == Win32.WM_LBUTTONDBLCLK && CheckBoxes) // Doubleclicked checkbox
+			{
+				int x = Win32.LoWord(m.LParam);
+				int y = Win32.HiWord(m.LParam);
+				TreeViewHitTestInfo hitTestInfo = HitTest(x, y);
+
+				if (hitTestInfo.Node != null && hitTestInfo.Location == TreeViewHitTestLocations.StateImage)
+				{
+					OnBeforeCheck(new TreeViewCancelEventArgs(hitTestInfo.Node, false, TreeViewAction.ByMouse));
+					hitTestInfo.Node.Checked = !hitTestInfo.Node.Checked;
+					OnAfterCheck(new TreeViewEventArgs(hitTestInfo.Node, TreeViewAction.ByMouse));
+					m.Result = IntPtr.Zero;
+					return;
+				}
+			}
 
 			base.WndProc(ref m);
 		}

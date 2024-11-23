@@ -10,8 +10,10 @@ namespace Ginger
 		#region Constants
 		public const int WM_LBUTTONDOWN = 0x0201;
 		public const int WM_LBUTTONUP = 0x0202;
+		public const int WM_LBUTTONDBLCLK = 0x0203;
 		public const int WM_RBUTTONDOWN = 0x0204;
 		public const int WM_RBUTTONUP = 0x0205;
+		public const int WM_RBUTTONDBLCLK = 0x0206;
 		
 		public const int WM_PAINT = 0x0F;
 		public const int WM_NCPAINT = 0x85;

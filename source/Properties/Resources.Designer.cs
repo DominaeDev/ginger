@@ -389,6 +389,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Choose export folder and format (filename is ignored).
+        /// </summary>
+        internal static string cap_export_many_characters {
+            get {
+                return ResourceManager.GetString("cap_export_many_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Find.
         /// </summary>
         internal static string cap_find {
@@ -2754,23 +2763,19 @@ namespace Ginger.Properties {
         ///	&lt;!-- Preamble --&gt;
         ///	&lt;Name&gt;%%NAME%%&lt;/Name&gt;
         ///	&lt;Title&gt;%%TITLE%%&lt;/Title&gt;
-        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	&lt;Category&gt;%%CATEGORY%%&lt;/Category&gt;
         ///	&lt;Requires&gt;not base&lt;/Requires&gt;
         ///	&lt;Flags&gt;base&lt;/Flags&gt;
-        ///	&lt;Description&gt;
-        ///		&lt;!-- Recipe information here --&gt;
-        ///	&lt;/Description&gt;
-        ///	
-        ///	&lt;!-- Parameters? --&gt;
+        ///	&lt;Description&gt;&lt;/Description&gt;
+        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	
         ///	&lt;!-- Output --&gt;
-        ///
-        ///	&lt;System&gt; 
-        ///		&lt;!-- Model instructions here --&gt;
+        ///	&lt;System&gt;
+        ///		Text transcript of a never-ending conversation between [user] and [char]. 
+        ///		In the transcript, gestures and other non-verbal actions are written between asterisks (for example, *waves hello* or *moves closer*).
         ///	&lt;/System&gt;
         ///	
-        ///&lt;/Ginger&gt;.
+        ///&lt;/Gi [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string recipe_template_base {
             get {
@@ -2783,14 +2788,10 @@ namespace Ginger.Properties {
         ///	&lt;!-- Preamble --&gt;
         ///	&lt;Name&gt;%%NAME%%&lt;/Name&gt;
         ///	&lt;Title&gt;%%TITLE%%&lt;/Title&gt;
-        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	&lt;Category&gt;%%CATEGORY%%&lt;/Category&gt;
         ///	&lt;Flags&gt;%%FLAGS%%&lt;/Flags&gt;
-        ///	&lt;Description&gt;
-        ///		&lt;!-- Recipe information here --&gt;
-        ///	&lt;/Description&gt;
-        ///	
-        ///	&lt;!-- Parameters? --&gt;
+        ///	&lt;Description&gt;&lt;/Description&gt;
+        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	
         ///	&lt;!-- Output --&gt;
         ///%%NODES%%%%ATTRIBUTES%%%%SYSTEM%%%%POSTHISTORY%%%%PERSONA%%%%USER%%%%SCENARIO%%%%GREETING%%%%GROUPGREETING%%%%EXAMPLE%%%%GRAMMAR%%%%LORE%%&lt;/Ginger&gt;.
@@ -2805,16 +2806,13 @@ namespace Ginger.Properties {
         ///   Looks up a localized string similar to &lt;Ginger version=&quot;1.0&quot;&gt;
         ///	&lt;!-- Preamble --&gt;
         ///	&lt;Name&gt;%%NAME%%&lt;/Name&gt;
-        ///	&lt;Title&gt;%%TITLE%%&lt;/Title&gt;
-        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	&lt;Category&gt;%%CATEGORY%%&lt;/Category&gt;
-        ///	&lt;Description&gt;
-        ///		&lt;!-- Recipe details here --&gt;
-        ///	&lt;/Description&gt;
+        ///	&lt;Description&gt;&lt;/Description&gt;
+        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	
         ///	&lt;!-- Output --&gt;
-        ///	&lt;Persona&gt; 
-        ///		&lt;!-- Character description here --&gt;
+        ///	&lt;Persona&gt;
+        ///	
         ///	&lt;/Persona&gt;
         ///&lt;/Ginger&gt;.
         /// </summary>
@@ -2829,26 +2827,30 @@ namespace Ginger.Properties {
         ///	&lt;!-- Preamble --&gt;
         ///	&lt;Name&gt;%%NAME%%&lt;/Name&gt;
         ///	&lt;Title&gt;%%TITLE%%&lt;/Title&gt;
-        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	&lt;Category&gt;%%CATEGORY%%&lt;/Category&gt;
-        ///	&lt;Description&gt;
-        ///		&lt;!-- Recipe information here --&gt;
-        ///	&lt;/Description&gt;
+        ///	&lt;Description&gt;&lt;/Description&gt;
+        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///
         ///	&lt;!-- Output --&gt;
-        ///	
         ///	&lt;Attribute&gt;
         ///		&lt;Name&gt;Personality&lt;/Name&gt;
-        ///		&lt;Value&gt;&lt;!-- Personality traits, separated by commas --&gt;&lt;/Value&gt;
+        ///		&lt;Value&gt;&lt;/Value&gt;
         ///	&lt;/Attribute&gt;
         ///
         ///	&lt;Attribute&gt;
         ///		&lt;Name&gt;Likes&lt;/Name&gt;
-        ///		&lt;Value&gt;&lt;!-- Likes, separated by commas --&gt;&lt;/Value&gt;
+        ///		&lt;Value&gt;&lt;/Value&gt;
         ///	&lt;/Attribute&gt;
         ///
         ///	&lt;Attribute&gt;
-        ///		&lt;Name&gt;Disl [rest of string was truncated]&quot;;.
+        ///		&lt;Name&gt;Dislikes&lt;/Name&gt;
+        ///		&lt;Value&gt;&lt;/Value&gt;
+        ///	&lt;/Attribute&gt;
+        ///
+        ///	&lt;Persona&gt;
+        ///		
+        ///	&lt;/Persona&gt;
+        ///&lt;/Ginger&gt;.
         /// </summary>
         internal static string recipe_template_personality {
             get {
@@ -2861,14 +2863,11 @@ namespace Ginger.Properties {
         ///	&lt;!-- Preamble --&gt;
         ///	&lt;Name&gt;%%NAME%%&lt;/Name&gt;
         ///	&lt;Title&gt;%%TITLE%%&lt;/Title&gt;
-        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	&lt;Category&gt;%%CATEGORY%%&lt;/Category&gt;
-        ///	&lt;Description&gt;
-        ///		Sample recipe of a character trait
-        ///	&lt;/Description&gt;
-        ///		
-        ///	&lt;!-- Output --&gt;
+        ///	&lt;Description&gt;Sample recipe of a character trait.&lt;/Description&gt;
+        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	
+        ///	&lt;!-- Output --&gt;
         ///	&lt;Persona&gt;
         ///		Two large horns, like those of a ram, protrude from [char&apos;s] forehead, curling up and around her head.
         ///	&lt;/Persona&gt;
@@ -2886,15 +2885,11 @@ namespace Ginger.Properties {
         ///	&lt;!-- Preamble --&gt;
         ///	&lt;Name&gt;%%NAME%%&lt;/Name&gt;
         ///	&lt;Title&gt;%%TITLE%%&lt;/Title&gt;
-        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
+        ///	&lt;Description&gt;Sample recipe with parameters.&lt;/Description&gt;
         ///	&lt;Category&gt;%%CATEGORY%%&lt;/Category&gt;
-        ///	&lt;Description&gt;
-        ///		Sample recipe with parameters.
-        ///	&lt;/Description&gt;
+        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	
-        ///	&lt;!-- Parameters --&gt;
-        ///
-        ///	&lt;!-- A drop-down list --&gt;
+        ///	&lt;!-- Input --&gt;
         ///	&lt;Choice id=&quot;my-choice&quot;&gt;
         ///		&lt;Label&gt;A choice&lt;/Label&gt;
         ///		&lt;Option id=&quot;choice-1&quot;&gt;Choice #1&lt;/Option&gt;
@@ -2902,8 +2897,9 @@ namespace Ginger.Properties {
         ///		&lt;Option id=&quot;choice-3&quot;&gt;Choice #3&lt;/Option&gt;
         ///	&lt;/Choice&gt;
         ///	
-        ///	&lt;!-- A text field --&gt;
-        ///	&lt;Tex [rest of string was truncated]&quot;;.
+        ///	&lt;Text id=&quot;my-text&quot;&gt;
+        ///		&lt;Label&gt;A text field&lt;/Label&gt;
+        ///		&lt;Placeholder&gt;Ple [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string recipe_template_sample_2 {
             get {
@@ -2916,14 +2912,11 @@ namespace Ginger.Properties {
         ///	&lt;!-- Preamble --&gt;
         ///	&lt;Name&gt;%%NAME%%&lt;/Name&gt;
         ///	&lt;Title&gt;%%TITLE%%&lt;/Title&gt;
-        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
+        ///	&lt;Description&gt;Sample recipe with lore book entries.&lt;/Description&gt;
         ///	&lt;Category&gt;%%CATEGORY%%&lt;/Category&gt;
-        ///	&lt;Description&gt;
-        ///		Sample recipe with lore book entries.
-        ///	&lt;/Description&gt;
+        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	
-        ///	&lt;!-- Parameters --&gt;
-        ///
+        ///	&lt;!-- Input --&gt;
         ///	&lt;Choice id=&quot;lore-kind&quot; mandatory=&quot;true&quot;&gt;
         ///		&lt;Label&gt;Lore kind&lt;/Label&gt;
         ///		&lt;Option id=&quot;fruits&quot;&gt;Fruits&lt;/Option&gt;
@@ -2931,10 +2924,9 @@ namespace Ginger.Properties {
         ///	&lt;/Choice&gt;
         ///	
         ///	&lt;!-- Output --&gt;
-        ///
         ///	&lt;Lore rule=&quot;fruits&quot;&gt;
         ///		&lt;Name&gt;Apple&lt;/Name&gt;
-        ///		&lt;Value&gt;An a [rest of string was truncated]&quot;;.
+        ///		&lt;Value&gt;An apple is a sweet, [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string recipe_template_sample_3 {
             get {

@@ -2425,6 +2425,11 @@ namespace Ginger
 		{
 			ShowCustomVariablesDialog();
 		}
+
+		private void bulkExportMenuItem_Click(object sender, EventArgs e)
+		{
+			ExportManyFromBackyard();
+		}
 	}
 
 	public interface IIdleHandler

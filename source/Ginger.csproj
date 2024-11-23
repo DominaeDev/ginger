@@ -108,6 +108,12 @@
     <Reference Include="DarkNet, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\DarkNet.2.3.0\lib\net452\DarkNet.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\WindowsAPICodePack-Core.1.1.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\WindowsAPICodePack-Shell.1.1.1\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -216,6 +222,18 @@
     </Compile>
     <Compile Include="src\Interface\Controls\UserNotes.Designer.cs">
       <DependentUpon>UserNotes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\FileFormatDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\FileFormatDialog.Designer.cs">
+      <DependentUpon>FileFormatDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectMultipleCharactersDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectMultipleCharactersDialog.Designer.cs">
+      <DependentUpon>LinkSelectMultipleCharactersDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\VariablesDialog.cs">
       <SubType>Form</SubType>
@@ -673,8 +691,14 @@
     <EmbeddedResource Include="src\Interface\Controls\UserNotes.resx">
       <DependentUpon>UserNotes.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\FileFormatDialog.resx">
+      <DependentUpon>FileFormatDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.resx">
       <DependentUpon>LinkEditChatDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectMultipleCharactersDialog.resx">
+      <DependentUpon>LinkSelectMultipleCharactersDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectGroupDialog.resx">
       <DependentUpon>LinkSelectGroupDialog.cs</DependentUpon>
