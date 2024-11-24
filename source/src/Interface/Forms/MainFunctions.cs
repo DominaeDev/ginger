@@ -1932,7 +1932,7 @@ namespace Ginger
 				return false; // Error
 
 			var folderDialog = new WinAPICodePack.CommonOpenFileDialog();
-			folderDialog.Title = Resources.cap_export_many_characters;
+			folderDialog.Title = Resources.cap_export_folder;
 			folderDialog.IsFolderPicker = true;
 			folderDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			folderDialog.EnsurePathExists = true;

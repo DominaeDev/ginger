@@ -244,6 +244,8 @@ namespace Ginger
 			applyToAllChatsMenuItem.ToolTipText = Resources.tooltip_link_apply_to_all;
 			alwaysLinkMenuItem.ToolTipText = Resources.tooltip_link_always_create;
 			usePortraitAsBackgroundMenuItem.ToolTipText = Resources.tooltip_link_use_portrait_as_background;
+			bulkExportMenuItem.ToolTipText = Resources.tooltip_export_many;
+			bulkImportMenuItem.ToolTipText = Resources.tooltip_import_many;
 
 			RegisterIdleHandler(recipeList);
 
@@ -1299,6 +1301,9 @@ namespace Ginger
 			breakLinkMenuItem.Enabled = Backyard.ConnectionEstablished;
 			breakLinkMenuItem.Visible = Backyard.ConnectionEstablished && Current.HasActiveLink;
 			chatHistoryMenuItem.Visible = Backyard.ConnectionEstablished;
+			
+			bulkExportMenuItem.Enabled = Backyard.ConnectionEstablished;
+			bulkImportMenuItem.Enabled = Backyard.ConnectionEstablished;
 			
 			// Link options
 			linkOptionsMenuItem.Visible = Backyard.ConnectionEstablished;

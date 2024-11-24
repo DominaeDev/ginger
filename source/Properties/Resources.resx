@@ -1326,4 +1326,13 @@ Reason: {0}</value>
   <data name="msg_export_some_characters" xml:space="preserve">
     <value>Successfully exported {0} character(s). (Skipped {1}.)</value>
   </data>
+  <data name="cap_export_folder" xml:space="preserve">
+    <value>Choose export folder</value>
+  </data>
+  <data name="tooltip_export_many" xml:space="preserve">
+    <value>Export multiple characters from Backyard AI at once.</value>
+  </data>
+  <data name="tooltip_import_many" xml:space="preserve">
+    <value>Import multiple characters into Backyard AI at once.</value>
+  </data>
 </root>

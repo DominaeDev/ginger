@@ -252,28 +252,28 @@ namespace Ginger {
 			// enableLinkMenuItem
 			// 
 			this.enableLinkMenuItem.Name = "enableLinkMenuItem";
-			this.enableLinkMenuItem.Size = new System.Drawing.Size(246, 22);
+			this.enableLinkMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.enableLinkMenuItem.Text = "Connect to Backyard AI";
 			this.enableLinkMenuItem.Click += new System.EventHandler(this.enableLinkMenuItem_Click);
 			// 
 			// toolStripMenuItem10
 			// 
 			toolStripMenuItem10.Name = "toolStripMenuItem10";
-			toolStripMenuItem10.Size = new System.Drawing.Size(243, 6);
+			toolStripMenuItem10.Size = new System.Drawing.Size(236, 6);
 			// 
 			// importLinkedMenuItem
 			// 
 			this.importLinkedMenuItem.Name = "importLinkedMenuItem";
 			this.importLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+O";
-			this.importLinkedMenuItem.Size = new System.Drawing.Size(246, 22);
-			this.importLinkedMenuItem.Text = "Import character...";
+			this.importLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.importLinkedMenuItem.Text = "Open character...";
 			this.importLinkedMenuItem.Click += new System.EventHandler(this.importLinkedMenuItem_Click);
 			// 
 			// saveLinkedMenuItem
 			// 
 			this.saveLinkedMenuItem.Name = "saveLinkedMenuItem";
 			this.saveLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+U";
-			this.saveLinkedMenuItem.Size = new System.Drawing.Size(246, 22);
+			this.saveLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.saveLinkedMenuItem.Text = "Save changes";
 			this.saveLinkedMenuItem.Click += new System.EventHandler(this.saveLinkedMenuItem_Click);
 			// 
@@ -281,52 +281,54 @@ namespace Ginger {
 			// 
 			this.saveNewLinkedMenuItem.Name = "saveNewLinkedMenuItem";
 			this.saveNewLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+U";
-			this.saveNewLinkedMenuItem.Size = new System.Drawing.Size(246, 22);
+			this.saveNewLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.saveNewLinkedMenuItem.Text = "Save as new";
 			this.saveNewLinkedMenuItem.Click += new System.EventHandler(this.saveNewLinkedMenuItem_Click);
 			// 
 			// revertLinkedMenuItem
 			// 
 			this.revertLinkedMenuItem.Name = "revertLinkedMenuItem";
-			this.revertLinkedMenuItem.Size = new System.Drawing.Size(246, 22);
-			this.revertLinkedMenuItem.Text = "Reimport...";
+			this.revertLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.revertLinkedMenuItem.Text = "Revert...";
 			this.revertLinkedMenuItem.Click += new System.EventHandler(this.revertLinkedMenuItem_Click);
 			// 
 			// reestablishLinkSeparator
 			// 
 			this.reestablishLinkSeparator.Name = "reestablishLinkSeparator";
-			this.reestablishLinkSeparator.Size = new System.Drawing.Size(243, 6);
+			this.reestablishLinkSeparator.Size = new System.Drawing.Size(236, 6);
 			// 
 			// reestablishLinkMenuItem
 			// 
 			this.reestablishLinkMenuItem.Name = "reestablishLinkMenuItem";
-			this.reestablishLinkMenuItem.Size = new System.Drawing.Size(246, 22);
+			this.reestablishLinkMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.reestablishLinkMenuItem.Text = "Restore character link";
 			this.reestablishLinkMenuItem.Click += new System.EventHandler(this.reestablishLinkMenuItem_Click);
 			// 
 			// breakLinkMenuItem
 			// 
 			this.breakLinkMenuItem.Name = "breakLinkMenuItem";
-			this.breakLinkMenuItem.Size = new System.Drawing.Size(246, 22);
+			this.breakLinkMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.breakLinkMenuItem.Text = "Break character link";
 			this.breakLinkMenuItem.Click += new System.EventHandler(this.breakLinkMenuItem_Click);
 			// 
 			// toolStripMenuItem9
 			// 
 			this.toolStripMenuItem9.Name = "toolStripMenuItem9";
-			this.toolStripMenuItem9.Size = new System.Drawing.Size(243, 6);
+			this.toolStripMenuItem9.Size = new System.Drawing.Size(236, 6);
 			// 
 			// bulkImportMenuItem
 			// 
 			this.bulkImportMenuItem.Name = "bulkImportMenuItem";
-			this.bulkImportMenuItem.Size = new System.Drawing.Size(246, 22);
-			this.bulkImportMenuItem.Text = "Bulk import";
+			this.bulkImportMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.bulkImportMenuItem.Text = "Import many characters...";
+			this.bulkImportMenuItem.ToolTipText = "Bulk import characters to Backyard AI.";
 			// 
 			// bulkExportMenuItem
 			// 
 			this.bulkExportMenuItem.Name = "bulkExportMenuItem";
-			this.bulkExportMenuItem.Size = new System.Drawing.Size(246, 22);
-			this.bulkExportMenuItem.Text = "Bulk export";
+			this.bulkExportMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.bulkExportMenuItem.Text = "Export many characters...";
+			this.bulkExportMenuItem.ToolTipText = "Bulk export characters from Backyard AI.";
 			this.bulkExportMenuItem.Click += new System.EventHandler(this.bulkExportMenuItem_Click);
 			// 
 			// writeChatSettingsMenuItem

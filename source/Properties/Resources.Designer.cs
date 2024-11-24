@@ -380,6 +380,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Choose export folder.
+        /// </summary>
+        internal static string cap_export_folder {
+            get {
+                return ResourceManager.GetString("cap_export_folder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Export lorebook.
         /// </summary>
         internal static string cap_export_lorebook {
@@ -3983,6 +3992,24 @@ namespace Ginger.Properties {
         internal static string tooltip_enable_scenario {
             get {
                 return ResourceManager.GetString("tooltip_enable_scenario", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export multiple characters from Backyard AI at once..
+        /// </summary>
+        internal static string tooltip_export_many {
+            get {
+                return ResourceManager.GetString("tooltip_export_many", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import multiple characters into Backyard AI at once..
+        /// </summary>
+        internal static string tooltip_import_many {
+            get {
+                return ResourceManager.GetString("tooltip_import_many", resourceCulture);
             }
         }
         

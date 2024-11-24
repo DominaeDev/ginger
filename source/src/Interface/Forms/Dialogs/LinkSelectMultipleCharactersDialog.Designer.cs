@@ -204,7 +204,7 @@ namespace Ginger
 			this.Name = "LinkSelectMultipleCharactersDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Export characters from Backyard AI";
+			this.Text = "Choose Backyard AI characters to export";
 			buttonLayout.ResumeLayout(false);
 			this.listPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
