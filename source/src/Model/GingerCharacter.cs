@@ -9,14 +9,12 @@ namespace Ginger
 {
 	public class GingerCharacter
 	{
-		public CardData Data = new CardData();
+		public CardData Card = new CardData();
 		public List<CharacterData> Characters = null;
-
-		public ImageRef PortraitImage { get { return Data.portraitImage; } }
 
 		public void Reset()
 		{
-			Data = new CardData();
+			Card = new CardData();
 			Characters = new List<CharacterData> { new CharacterData() };
 		}
 
@@ -26,7 +24,7 @@ namespace Ginger
 				return;
 
 			Reset();
-			Data = new CardData() {
+			Card = new CardData() {
 				uuid = card.id,
 				name = card.name,
 				creator = card.creator,
@@ -42,13 +40,13 @@ namespace Ginger
 			};
 
 			if (card.tags != null)
-				Data.tags = new HashSet<string>(card.tags);
+				Card.tags = new HashSet<string>(card.tags);
 
 			if (card.sources != null && card.sources.Length > 0)
-				Data.sources = new List<string>(card.sources);
+				Card.sources = new List<string>(card.sources);
 
 			if (card.customVariables != null && card.customVariables.Count > 0)
-				Data.customVariables = new List<CustomVariable>(card.customVariables);
+				Card.customVariables = new List<CustomVariable>(card.customVariables);
 
 			if (card.characters.Count > 0)
 			{
@@ -68,8 +66,8 @@ namespace Ginger
 				}
 			}
 
-			if (Data.portraitImage != null && string.IsNullOrEmpty(card.portraitUID) == false)
-				Data.portraitImage.uid = card.portraitUID;
+			if (Card.portraitImage != null && string.IsNullOrEmpty(card.portraitUID) == false)
+				Card.portraitImage.uid = card.portraitUID;
 		}
 
 		public void ReadFaradayCard(FaradayCardV4 card, Image portrait)
@@ -78,7 +76,7 @@ namespace Ginger
 				return;
 
 			Reset();
-			Data = new CardData() {
+			Card = new CardData() {
 				name = card.data.displayName,
 				userGender = null,
 				portraitImage = ImageRef.FromImage(portrait),
@@ -89,7 +87,7 @@ namespace Ginger
 			DateTime creationDate;
 			if (DateTime.TryParse(card.data.creationDate, out creationDate) == false)
 				creationDate = DateTime.UtcNow;
-			Data.creationDate = creationDate;
+			Card.creationDate = creationDate;
 
 			var character = new CharacterData() {
 				spokenName = card.data.name,
@@ -97,14 +95,14 @@ namespace Ginger
 			Characters = new List<CharacterData> { character };
 
 			character.gender = Utility.InferGender(GingerString.FromFaraday(card.data.persona).ToString());
-			Data.textStyle = DetectTextStyle(card.data.example, card.data.greeting);
+			Card.textStyle = DetectTextStyle(card.data.example, card.data.greeting);
 
-			AddChannel(GingerString.FromFaraday(card.data.system).ToParameter(), Resources.system_recipe);
-			AddChannel(GingerString.FromFaraday(card.data.persona).ToParameter(), Resources.persona_recipe);
-			AddChannel(GingerString.FromFaraday(card.data.scenario).ToParameter(), Resources.scenario_recipe);
-			AddChannel(GingerString.FromFaraday(card.data.greeting).ToParameter(), Resources.greeting_recipe);
-			AddChannel(GingerString.FromFaraday(card.data.example).ToParameter(), Resources.example_recipe);
-			AddChannel(card.data.grammar, Resources.grammar_recipe);
+			AddChannel(character, GingerString.FromFaraday(card.data.system).ToParameter(), Resources.system_recipe);
+			AddChannel(character, GingerString.FromFaraday(card.data.persona).ToParameter(), Resources.persona_recipe);
+			AddChannel(character, GingerString.FromFaraday(card.data.scenario).ToParameter(), Resources.scenario_recipe);
+			AddChannel(character, GingerString.FromFaraday(card.data.greeting).ToParameter(), Resources.greeting_recipe);
+			AddChannel(character, GingerString.FromFaraday(card.data.example).ToParameter(), Resources.example_recipe);
+			AddChannel(character, card.data.grammar, Resources.grammar_recipe);
 
 			if (card.data.loreItems != null && card.data.loreItems.Length > 0)
 			{
@@ -120,7 +118,7 @@ namespace Ginger
 				return false;
 
 			Reset();
-			Data = new CardData() {
+			Card = new CardData() {
 				name = card.data.name ?? Constants.DefaultCharacterName,
 				userGender = null,
 				creator = card.data.creator ?? "",
@@ -136,28 +134,28 @@ namespace Ginger
 			Characters = new List<CharacterData> { character };
 
 			if (card.data.tags != null)
-				Data.tags = new HashSet<string>(card.data.tags);
+				Card.tags = new HashSet<string>(card.data.tags);
 
 			character.gender = Utility.InferGender(GingerString.FromTavern(card.data.persona).ToString());
-			Data.textStyle = DetectTextStyle(card.data.example, card.data.greeting);
+			Card.textStyle = DetectTextStyle(card.data.example, card.data.greeting);
 
-			AddChannel(GingerString.FromTavern(card.data.system).ToParameter(), Resources.system_recipe);
-			AddChannel(GingerString.FromTavern(card.data.post_history_instructions).ToParameter(), Resources.post_history_recipe);
-			AddChannel(GingerString.FromTavern(card.data.persona).ToParameter(), Resources.persona_recipe);
+			AddChannel(character, GingerString.FromTavern(card.data.system).ToParameter(), Resources.system_recipe);
+			AddChannel(character, GingerString.FromTavern(card.data.post_history_instructions).ToParameter(), Resources.post_history_recipe);
+			AddChannel(character, GingerString.FromTavern(card.data.persona).ToParameter(), Resources.persona_recipe);
 			if (string.IsNullOrEmpty(card.data.personality) == false)
-				AddChannel(GingerString.FromTavern(card.data.personality).ToParameter(), Resources.personality_recipe);
+				AddChannel(character, GingerString.FromTavern(card.data.personality).ToParameter(), Resources.personality_recipe);
 
-			AddChannel(GingerString.FromTavern(card.data.scenario).ToParameter(), Resources.scenario_recipe);
-			AddChannel(GingerString.FromTavern(card.data.greeting).ToParameter(), Resources.greeting_recipe);
+			AddChannel(character, GingerString.FromTavern(card.data.scenario).ToParameter(), Resources.scenario_recipe);
+			AddChannel(character, GingerString.FromTavern(card.data.greeting).ToParameter(), Resources.greeting_recipe);
 			if (card.data.alternate_greetings != null)
 			{
 				for (int i = 0; i < card.data.alternate_greetings.Length; ++i)
-					AddChannel(GingerString.FromTavern(card.data.alternate_greetings[i]).ToParameter(), Resources.greeting_recipe);
+					AddChannel(character, GingerString.FromTavern(card.data.alternate_greetings[i]).ToParameter(), Resources.greeting_recipe);
 			}
 
 
 			if (string.IsNullOrEmpty(card.data.example) == false)
-				AddChannel(GingerString.FromTavernChat(card.data.example).ToParameter(), Resources.example_recipe);
+				AddChannel(character, GingerString.FromTavernChat(card.data.example).ToParameter(), Resources.example_recipe);
 
 			if (card.data.character_book != null && card.data.character_book.entries.Length > 0)
 			{
@@ -175,7 +173,7 @@ namespace Ginger
 				return false;
 
 			Reset();
-			Data = new CardData() {
+			Card = new CardData() {
 				name = card.data.name ?? Constants.DefaultCharacterName,
 				userGender = null,
 				creator = card.data.creator ?? "",
@@ -186,7 +184,7 @@ namespace Ginger
 			};
 
 			if (card.data.source != null && card.data.source.Length > 0)
-				Data.sources = new List<string>(card.data.source);
+				Card.sources = new List<string>(card.data.source);
 
 			var character = new CharacterData() {
 				spokenName = null,
@@ -194,32 +192,32 @@ namespace Ginger
 			Characters = new List<CharacterData> { character };
 
 			if (card.data.tags != null)
-				Data.tags = new HashSet<string>(card.data.tags);
+				Card.tags = new HashSet<string>(card.data.tags);
 
 			character.gender = Utility.InferGender(GingerString.FromTavern(card.data.persona).ToString());
-			Data.textStyle = DetectTextStyle(card.data.example, card.data.greeting);
+			Card.textStyle = DetectTextStyle(card.data.example, card.data.greeting);
 
-			AddChannel(GingerString.FromTavern(card.data.system).ToParameter(), Resources.system_recipe);
-			AddChannel(GingerString.FromTavern(card.data.post_history_instructions).ToParameter(), Resources.post_history_recipe);
-			AddChannel(GingerString.FromTavern(card.data.persona).ToParameter(), Resources.persona_recipe);
+			AddChannel(character, GingerString.FromTavern(card.data.system).ToParameter(), Resources.system_recipe);
+			AddChannel(character, GingerString.FromTavern(card.data.post_history_instructions).ToParameter(), Resources.post_history_recipe);
+			AddChannel(character, GingerString.FromTavern(card.data.persona).ToParameter(), Resources.persona_recipe);
 			if (string.IsNullOrEmpty(card.data.personality) == false)
-				AddChannel(GingerString.FromTavern(card.data.personality).ToParameter(), Resources.personality_recipe);
+				AddChannel(character, GingerString.FromTavern(card.data.personality).ToParameter(), Resources.personality_recipe);
 
-			AddChannel(GingerString.FromTavern(card.data.scenario).ToParameter(), Resources.scenario_recipe);
-			AddChannel(GingerString.FromTavern(card.data.greeting).ToParameter(), Resources.greeting_recipe);
+			AddChannel(character, GingerString.FromTavern(card.data.scenario).ToParameter(), Resources.scenario_recipe);
+			AddChannel(character, GingerString.FromTavern(card.data.greeting).ToParameter(), Resources.greeting_recipe);
 			if (card.data.alternate_greetings != null)
 			{
 				for (int i = 0; i < card.data.alternate_greetings.Length; ++i)
-					AddChannel(GingerString.FromTavern(card.data.alternate_greetings[i]).ToParameter(), Resources.greeting_recipe);
+					AddChannel(character, GingerString.FromTavern(card.data.alternate_greetings[i]).ToParameter(), Resources.greeting_recipe);
 			}
 			if (card.data.group_greetings != null)
 			{
 				for (int i = 0; i < card.data.group_greetings.Length; ++i)
-					AddChannel(GingerString.FromTavern(card.data.group_greetings[i]).ToParameter(), Resources.group_greeting_recipe);
+					AddChannel(character, GingerString.FromTavern(card.data.group_greetings[i]).ToParameter(), Resources.group_greeting_recipe);
 			}
 
 			if (string.IsNullOrEmpty(card.data.example) == false)
-				AddChannel(GingerString.FromTavernChat(card.data.example).ToParameter(), Resources.example_recipe);
+				AddChannel(character, GingerString.FromTavernChat(card.data.example).ToParameter(), Resources.example_recipe);
 
 			if (card.data.character_book != null && card.data.character_book.entries.Length > 0)
 			{
@@ -237,7 +235,7 @@ namespace Ginger
 			}
 			
 			if (creator_notes_by_language.ContainsKey("en") && creator_notes_by_language.Count == 1)
-				Data.comment = (creator_notes_by_language["en"] ?? "").ConvertLinebreaks(Linebreak.Default);
+				Card.comment = (creator_notes_by_language["en"] ?? "").ConvertLinebreaks(Linebreak.Default);
 			else
 			{
 				var sbComment = new StringBuilder();
@@ -251,7 +249,7 @@ namespace Ginger
 				}
 
 				sbComment.ConvertLinebreaks(Linebreak.Default);
-				Data.comment = sbComment.ToString();
+				Card.comment = sbComment.ToString();
 			}
 
 			return true;
@@ -263,7 +261,7 @@ namespace Ginger
 				return false;
 
 			Reset();
-			Data = new CardData() {
+			Card = new CardData() {
 				name = card.name ?? Constants.DefaultCharacterName,
 				userGender = null,
 				creator = card.creator ?? "",
@@ -274,7 +272,7 @@ namespace Ginger
 			DateTime creationDate;
 			if (DateTime.TryParse(card.creationDate, out creationDate) == false)
 				creationDate = DateTime.UtcNow;
-			Data.creationDate = creationDate;
+			Card.creationDate = creationDate;
 
 			var character = new CharacterData() {
 				spokenName = null,
@@ -282,27 +280,27 @@ namespace Ginger
 			Characters = new List<CharacterData> { character };
 
 			if (card.tags != null)
-				Data.tags = new HashSet<string>(card.tags);
+				Card.tags = new HashSet<string>(card.tags);
 
 			character.gender = Utility.InferGender(GingerString.FromTavern(card.persona).ToString());
-			Data.textStyle = DetectTextStyle(card.example, card.greeting);
+			Card.textStyle = DetectTextStyle(card.example, card.greeting);
 
 			if (string.IsNullOrEmpty(card.avatar) == false)
-				Data.portraitImage = ImageRef.FromImage(Utility.ImageFromBase64(card.avatar));
+				Card.portraitImage = ImageRef.FromImage(Utility.ImageFromBase64(card.avatar));
 
-			AddChannel(GingerString.FromTavern(card.system_prompt).ToParameter(), Resources.system_recipe);
-			AddChannel(GingerString.FromTavern(card.postHistoryInstructions).ToParameter(), Resources.post_history_recipe);
-			AddChannel(GingerString.FromTavern(card.persona).ToParameter(), Resources.persona_recipe);
-			AddChannel(GingerString.FromTavern(card.scenario).ToParameter(), Resources.scenario_recipe);
-			AddChannel(GingerString.FromTavern(card.greeting).ToParameter(), Resources.greeting_recipe);
+			AddChannel(character, GingerString.FromTavern(card.system_prompt).ToParameter(), Resources.system_recipe);
+			AddChannel(character, GingerString.FromTavern(card.postHistoryInstructions).ToParameter(), Resources.post_history_recipe);
+			AddChannel(character, GingerString.FromTavern(card.persona).ToParameter(), Resources.persona_recipe);
+			AddChannel(character, GingerString.FromTavern(card.scenario).ToParameter(), Resources.scenario_recipe);
+			AddChannel(character, GingerString.FromTavern(card.greeting).ToParameter(), Resources.greeting_recipe);
 			if (card.alternateGreetings != null)
 			{ 
 				for (int i = 0; i < card.alternateGreetings.Length; ++i)
-					AddChannel(GingerString.FromTavern(card.alternateGreetings[i]).ToParameter(), Resources.greeting_recipe);
+					AddChannel(character, GingerString.FromTavern(card.alternateGreetings[i]).ToParameter(), Resources.greeting_recipe);
 			}
 
 			if (string.IsNullOrEmpty(card.example) == false)
-				AddChannel(GingerString.FromTavernChat(card.example).ToParameter(), Resources.example_recipe);
+				AddChannel(character, GingerString.FromTavernChat(card.example).ToParameter(), Resources.example_recipe);
 
 			if (card.character_book != null && card.character_book.entries.Length > 0)
 			{
@@ -320,7 +318,7 @@ namespace Ginger
 				return false;
 
 			Reset();
-			Data = new CardData() {
+			Card = new CardData() {
 				name = card.name ?? Constants.DefaultCharacterName,
 				userGender = null,
 				creator = card.metaData != null ? (card.metaData.creator ?? "") : "",
@@ -329,7 +327,7 @@ namespace Ginger
 			};
 
 			if (card.metaData != null && card.metaData.source != null)
-				Data.sources = new List<string>() { card.metaData.source };
+				Card.sources = new List<string>() { card.metaData.source };
 
 			var character = new CharacterData() {
 				spokenName = null,
@@ -337,14 +335,14 @@ namespace Ginger
 			Characters = new List<CharacterData> { character };
 
 			character.gender = Utility.InferGender(GingerString.FromTavern(card.persona).ToString());
-			Data.textStyle = DetectTextStyle(card.example, card.greeting);
+			Card.textStyle = DetectTextStyle(card.example, card.greeting);
 
-			AddChannel(GingerString.FromTavern(card.persona).ToParameter(), Resources.persona_recipe);
-			AddChannel(GingerString.FromTavern(card.scenario).ToParameter(), Resources.scenario_recipe);
-			AddChannel(GingerString.FromTavern(card.greeting).ToParameter(), Resources.greeting_recipe);
+			AddChannel(character, GingerString.FromTavern(card.persona).ToParameter(), Resources.persona_recipe);
+			AddChannel(character, GingerString.FromTavern(card.scenario).ToParameter(), Resources.scenario_recipe);
+			AddChannel(character, GingerString.FromTavern(card.greeting).ToParameter(), Resources.greeting_recipe);
 
 			if (string.IsNullOrEmpty(card.example) == false)
-				AddChannel(GingerString.FromTavernChat(card.example).ToParameter(), Resources.example_recipe);
+				AddChannel(character, GingerString.FromTavernChat(card.example).ToParameter(), Resources.example_recipe);
 
 			return true;
 		}
@@ -355,7 +353,7 @@ namespace Ginger
 				return false;
 
 			Reset();
-			Data = new CardData() {
+			Card = new CardData() {
 				name = card.name,
 				userGender = null,
 				creationDate = DateTime.UtcNow,
@@ -367,28 +365,42 @@ namespace Ginger
 			Characters = new List<CharacterData> { character };
 
 			character.gender = Utility.InferGender(GingerString.FromTavern(card.context).ToString());
-			Data.textStyle = DetectTextStyle(card.example, card.greeting);
+			Card.textStyle = DetectTextStyle(card.example, card.greeting);
 
-			AddChannel(GingerString.FromTavern(card.context).ToParameter(), Resources.persona_recipe);
-			AddChannel(GingerString.FromTavern(card.greeting).ToParameter(), Resources.greeting_recipe);
+			AddChannel(character, GingerString.FromTavern(card.context).ToParameter(), Resources.persona_recipe);
+			AddChannel(character, GingerString.FromTavern(card.greeting).ToParameter(), Resources.greeting_recipe);
 
 			if (string.IsNullOrEmpty(card.example) == false)
-				AddChannel(GingerString.FromTavernChat(card.example).ToParameter(), Resources.example_recipe);
+				AddChannel(character, GingerString.FromTavernChat(card.example).ToParameter(), Resources.example_recipe);
 
 			return true;
 		}
 
-		private Recipe AddChannel(string text, string xmlSource)
+		private Recipe AddChannel(CharacterData character, string text, string xmlSource)
 		{
 			if (string.IsNullOrWhiteSpace(text) == false)
 			{
 				Text.ReplaceDecorativeQuotes(ref text);
 
-				var recipe = RecipeBook.AddRecipeFromResource(xmlSource);
+				var recipe = CreateComponent(xmlSource);
 				(recipe.parameters[0] as TextParameter).value = text;
+				character.AddRecipe(recipe);
 				return recipe;
 			}
 			return null;
+		}
+
+		private static Recipe CreateComponent(string xmlSource)
+		{
+			byte[] recipeXml = Encoding.UTF8.GetBytes(xmlSource);
+			var xmlDoc = Utility.LoadXmlDocumentFromMemory(recipeXml);
+			Recipe recipe = new Recipe();
+			if (recipe.LoadFromXml(xmlDoc.DocumentElement))
+			{
+				recipe.type = Recipe.Type.Component;
+				return recipe;
+			}
+			return default(Recipe);
 		}
 
 		private static CardData.TextStyle DetectTextStyle(string example, string greeting)

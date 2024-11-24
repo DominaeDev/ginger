@@ -1460,11 +1460,11 @@ namespace Ginger
 			}
 		}
 
-		public static bool Export(GingerCharacter characterData, string filename, FileType fileType)
+		public static bool Export(string filename, FileType fileType)
 		{
 			// Save as...
-			var output = Generator.Generate(characterData, Generator.Option.Export);
-			var gingerExt = GingerExtensionData.FromOutput(Generator.Generate(characterData, Generator.Option.Snippet));
+			var output = Generator.Generate(Generator.Option.Export);
+			var gingerExt = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
 
 			if (fileType.Contains(FileType.TavernV2 | FileType.Json)) // Tavern V2 (json)
 			{
@@ -1480,7 +1480,7 @@ namespace Ginger
 				var card = TavernCardV3.FromOutput(output);
 				card.data.extensions.ginger = gingerExt;
 
-				var assets = (AssetCollection)characterData.Data.assets.Clone();
+				var assets = (AssetCollection)Current.Card.assets.Clone();
 				
 				assets.AddPortraitImage(FileType.Json);
 				assets.Validate();
@@ -1499,8 +1499,8 @@ namespace Ginger
 				card.extensions.ginger = gingerExt;
 
 				// Avatar image
-				if (characterData.PortraitImage != null)
-					card.avatar = Utility.ImageToBase64(characterData.PortraitImage);
+				if (Current.Card.portraitImage != null)
+					card.avatar = Utility.ImageToBase64(Current.Card.portraitImage);
 
 				string agnaisticJson = card.ToJson();
 				if (agnaisticJson != null && ExportTextFile(filename, agnaisticJson))
@@ -1515,15 +1515,15 @@ namespace Ginger
 			}
 			else if (fileType.Contains(FileType.TavernV2 | FileType.Png)) // Tavern V2 (png)
 			{
-				return Export(filename, (Image)characterData.PortraitImage ?? DefaultPortrait.Image, Format.SillyTavernV2);
+				return Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, Format.SillyTavernV2);
 			}
 			else if (fileType.Contains(FileType.TavernV3 | FileType.Png)) // Tavern V3 (json)
 			{
-				return Export(filename, (Image)characterData.PortraitImage ?? DefaultPortrait.Image, Format.SillyTavernV3);
+				return Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, Format.SillyTavernV3);
 			}
 			else if (fileType.Contains(FileType.Faraday | FileType.Png)) // Faraday (png)
 			{
-				return Export(filename, (Image)characterData.PortraitImage ?? DefaultPortrait.Image, Format.Faraday);
+				return Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, Format.Faraday);
 			}
 			else if (fileType.Contains(FileType.TavernV3 | FileType.CharX)) // Tavern V3 (charx)
 			{
@@ -1536,10 +1536,10 @@ namespace Ginger
 				if (yaml != null && ExportTextFile(filename, yaml))
 				{
 					// Save portrait
-					if (characterData.PortraitImage != null)
+					if (Current.Card.portraitImage != null)
 					{
 						var pngFilename = Path.Combine(Path.GetDirectoryName(filename), string.Concat(Path.GetFileNameWithoutExtension(filename), ".png"));
-						ExportPNG(pngFilename, characterData.PortraitImage, false);
+						ExportPNG(pngFilename, Current.Card.portraitImage, false);
 					}
 					return true; // Success
 				}

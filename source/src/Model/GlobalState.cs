@@ -16,8 +16,8 @@ namespace Ginger
 		public static GingerCharacter Instance = new GingerCharacter();
 
 		public static CardData Card { 
-			get { return Instance.Data; } 
-			set { Instance.Data = value; }
+			get { return Instance.Card; } 
+			set { Instance.Card = value; }
 		}
 		public static List<CharacterData> Characters { 
 			get { return Instance.Characters; } 

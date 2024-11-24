@@ -389,7 +389,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Choose export folder and format (filename is ignored).
+        ///   Looks up a localized string similar to Export character(s).
         /// </summary>
         internal static string cap_export_many_characters {
             get {
@@ -1251,6 +1251,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Operation canceled..
+        /// </summary>
+        internal static string error_canceled {
+            get {
+                return ResourceManager.GetString("error_canceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The chat contains no messages..
         /// </summary>
         internal static string error_empty_chat {
@@ -1283,6 +1292,15 @@ namespace Ginger.Properties {
         internal static string error_export_file {
             get {
                 return ResourceManager.GetString("error_export_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Something went wrong when exporting characters. Operation canceled..
+        /// </summary>
+        internal static string error_export_many_characters {
+            get {
+                return ResourceManager.GetString("error_export_many_characters", resourceCulture);
             }
         }
         
@@ -1332,7 +1350,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to save character to Backyard AI. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to save character to Backyard AI. Operation canceled..
         /// </summary>
         internal static string error_link_autosave {
             get {
@@ -1341,7 +1359,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to branch chat. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to branch chat. Operation canceled..
         /// </summary>
         internal static string error_link_branch_chat {
             get {
@@ -1377,7 +1395,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to create chat. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to create chat. Operation canceled..
         /// </summary>
         internal static string error_link_create_chat {
             get {
@@ -1386,7 +1404,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to delete chat. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to delete chat. Operation canceled..
         /// </summary>
         internal static string error_link_delete_chat {
             get {
@@ -1404,7 +1422,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to duplicate chat. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to duplicate chat. Operation canceled..
         /// </summary>
         internal static string error_link_duplicate_chat {
             get {
@@ -1433,7 +1451,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Something went wrong. Operation cancelled..
+        ///   Looks up a localized string similar to Something went wrong. Operation canceled..
         /// </summary>
         internal static string error_link_general {
             get {
@@ -1442,7 +1460,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to import chat. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to import chat. Operation canceled..
         /// </summary>
         internal static string error_link_import_chat {
             get {
@@ -1480,7 +1498,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to purge chat. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to purge chat. Operation canceled..
         /// </summary>
         internal static string error_link_purge_chat {
             get {
@@ -1511,7 +1529,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to rename chat. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to rename chat. Operation canceled..
         /// </summary>
         internal static string error_link_rename_chat {
             get {
@@ -1520,7 +1538,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Something went wrong. Operation cancelled..
+        ///   Looks up a localized string similar to Something went wrong. Operation canceled..
         /// </summary>
         internal static string error_link_repair_chat {
             get {
@@ -1538,7 +1556,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to save character to Backyard AI. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to save character to Backyard AI. Operation canceled..
         /// </summary>
         internal static string error_link_save {
             get {
@@ -2275,6 +2293,15 @@ namespace Ginger.Properties {
         internal static string msg_drop_image {
             get {
                 return ResourceManager.GetString("msg_drop_image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully exported {0} characters..
+        /// </summary>
+        internal static string msg_export_many_characters {
+            get {
+                return ResourceManager.GetString("msg_export_many_characters", resourceCulture);
             }
         }
         

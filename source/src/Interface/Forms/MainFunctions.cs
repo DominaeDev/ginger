@@ -649,7 +649,7 @@ namespace Ginger
 				return;
 			}
 
-			if (FileUtil.Export(Current.Instance, exportFileDialog.FileName, fileType) == false)
+			if (FileUtil.Export(exportFileDialog.FileName, fileType) == false)
 			{
 				MessageBox.Show(Resources.error_write_json, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -1976,12 +1976,86 @@ namespace Ginger
 			}
 
 			var exporter = new BulkExporter();
+
+			var progressDlg = new ProgressBarDialog();
+			progressDlg.onCancel += (s, e) => {
+				exporter.Cancel();
+				progressDlg.Close();
+			};
+			exporter.onProgress += (value) => {
+				progressDlg.Percentage = value;
+			};
+			exporter.onComplete += (result) => {
+				progressDlg.Percentage = 100;
+				progressDlg.TopMost = false;
+				progressDlg.Close();
+
+				CompleteExport(result, filenames);
+				_bCanRegenerate = true;
+			};
+
 			for (int i = 0; i < filenames.Count; ++i)
 				exporter.Enqueue(dlg.Characters[i]);
+
+			_bCanRegenerate = false;
 			exporter.Start(formatDialog.FileFormat);
+			progressDlg.ShowDialog();
 
 			return true;
 		}
 
+		private void CompleteExport(BulkExporter.Result result, List<string> filenames)
+		{
+			List<string> removeFilenames = new List<string>();
+			if (result.error == BulkExporter.Error.NoError)
+			{
+				// Move intermediate files
+				for (int i = 0; i < result.filenames.Length && i < filenames.Count; ++i)
+				{
+					try
+					{
+						string tempFilename = result.filenames[i];
+						if (string.IsNullOrEmpty(tempFilename) == false && File.Exists(tempFilename))
+							File.Move(tempFilename, filenames[i]);
+					}
+					catch
+					{
+						removeFilenames.Add(result.filenames[i]);
+					}
+				}
+			}
+			else
+			{
+				removeFilenames.AddRange(result.filenames);
+			}
+
+			// Delete temp files
+			foreach (var filename in removeFilenames)
+			{
+				try
+				{
+					if (string.IsNullOrEmpty(filename) == false && File.Exists(filename))
+						File.Delete(filename);
+				}
+				catch
+				{
+					// Do nothing
+				}
+			}
+
+			if (result.error == BulkExporter.Error.NoError)
+			{
+				MessageBox.Show(string.Format(Resources.msg_export_many_characters, result.succeeded), Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else if (result.error == BulkExporter.Error.Cancelled)
+			{
+				MessageBox.Show(Resources.error_canceled, Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else if (result.error == BulkExporter.Error.Cancelled)
+			{
+				MessageBox.Show(Resources.error_export_many_characters, Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+		}
 	}
 }
