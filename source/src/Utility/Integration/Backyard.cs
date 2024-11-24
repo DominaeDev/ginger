@@ -147,6 +147,7 @@ namespace Ginger.Integration
 	{
 		public static IEnumerable<FolderInstance> Folders { get { return _Folders.Values; } }
 		public static IEnumerable<CharacterInstance> Characters { get { return _Characters.Values; } }
+		public static IEnumerable<CharacterInstance> CharactersNoUser { get { return Characters.Where(c => c.isUser == false); } }
 		public static IEnumerable<GroupInstance> Groups { get { return _Groups.Values; } }
 		public static string DefaultModel = null;
 		public static string DefaultUserConfigId = null;

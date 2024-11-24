@@ -442,5 +442,14 @@ namespace Ginger
 				return CardData.TextStyle.Chat;
 			return CardData.TextStyle.None;
 		}
+
+		public void ConvertCharacterMarkers(string characterName, string userName)
+		{
+			if (Characters == null)
+				return;
+
+			foreach (var recipe in Characters.SelectMany(c => c.recipes))
+				recipe.ConvertCharacterMarkers(characterName, userName);
+		}
 	}
 }

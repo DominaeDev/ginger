@@ -57,6 +57,12 @@ namespace Ginger
 		public const int SB_TOP = 6;
 		public const int SB_BOTTOM = 7;
 		public const int SB_ENDSCROLL = 8;
+
+		public const int HR_ERROR_ACCESS_DENIED = unchecked((int)0x80070005);
+		public const int HR_ERROR_WRITE_PROTECT = unchecked((int)0x80070013);
+		public const int HR_ERROR_FILE_EXISTS = unchecked((int)0x80070050);
+		public const int HR_ERROR_HANDLE_DISK_FULL = unchecked((int)0x80070027);
+		public const int HR_ERROR_DISK_FULL = unchecked((int)0x80070070);
 		#endregion
 
 		#region Structs

@@ -1495,7 +1495,7 @@ namespace Ginger
 				AppSettings.BackyardLink.Enabled = false;
 			}
 
-			dlg.Characters = Backyard.Characters.ToArray();
+			dlg.Characters = Backyard.CharactersNoUser.ToArray();
 			dlg.Folders = Backyard.Folders.ToArray();
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return false;
@@ -1900,8 +1900,6 @@ namespace Ginger
 
 		public bool ExportManyFromBackyard()
 		{
-			var dlg = new LinkSelectMultipleCharactersDialog();
-
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
@@ -1909,22 +1907,29 @@ namespace Ginger
 				AppSettings.BackyardLink.Enabled = false;
 			}
 
-			dlg.Characters = Backyard.Characters.ToArray();
+			// Choose character(s)
+			var dlg = new LinkSelectMultipleCharactersDialog();
+			dlg.Characters = Backyard.CharactersNoUser.ToArray();
 			dlg.Folders = Backyard.Folders.ToArray();
 			if (dlg.ShowDialog() != DialogResult.OK || dlg.Characters.Length == 0)
 				return false;
 
-			// Save as...
-			/*exportFileDialog.Title = Resources.cap_export_many_characters;
-			exportFileDialog.Filter = "Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard AI PNG|*.png|CharX file|*.charx|Text generation web ui YAML|*.yaml";
-			exportFileDialog.FileName = "Character export";
-			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
-			exportFileDialog.FilterIndex = AppSettings.User.LastExportCharacterFilter;
-			exportFileDialog.OverwritePrompt = false;
-			var result = exportFileDialog.ShowDialog();
+			// Export format
+			var formatDialog = new FileFormatDialog();
+			if (formatDialog.ShowDialog() != DialogResult.OK)
+				return false;
 
-			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
-				return false;*/
+			string ext;
+			if (formatDialog.FileFormat.Contains(FileUtil.FileType.Json))
+				ext = "json";
+			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.Png))
+				ext = "png";
+			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.CharX))
+				ext = "charx";
+			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.Yaml))
+				ext = "yaml";
+			else
+				return false; // Error
 
 			var folderDialog = new WinAPICodePack.CommonOpenFileDialog();
 			folderDialog.Title = Resources.cap_export_many_characters;
@@ -1947,23 +1952,7 @@ namespace Ginger
 				return false;
 
 			AppSettings.Paths.LastImportExportPath = outputDirectory;
-
-			var formatDialog = new FileFormatDialog();
-			if (formatDialog.ShowDialog() != DialogResult.OK)
-				return false;
-
-			string ext;
-			if (formatDialog.FileFormat.Contains(FileUtil.FileType.Json))
-				ext = "json";
-			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.Png))
-				ext = "png";
-			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.CharX))
-				ext = "charx";
-			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.Yaml))
-				ext = "yaml";
-			else
-				return false; // Error
-
+		
 			var filenames = new List<string>(dlg.Characters.Length);
 			foreach (var character in dlg.Characters)
 			{
@@ -1973,6 +1962,13 @@ namespace Ginger
 						character.creationDate.ToFileTimeUtc() / 1000L,
 						ext))
 				));
+			}
+
+			// Confirm overwrite?
+			bool bFileExists = filenames.ContainsAny(fn => File.Exists(fn));
+			if (bFileExists && MessageBox.Show(Resources.msg_export_overwrite_files, Resources.cap_overwrite_files, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			{
+				return false;
 			}
 
 			var exporter = new BulkExporter();
@@ -2006,6 +2002,7 @@ namespace Ginger
 
 		private void CompleteExport(BulkExporter.Result result, List<string> filenames)
 		{
+			int skipped = 0;
 			List<string> removeFilenames = new List<string>();
 			if (result.error == BulkExporter.Error.NoError)
 			{
@@ -2016,11 +2013,39 @@ namespace Ginger
 					{
 						string tempFilename = result.filenames[i];
 						if (string.IsNullOrEmpty(tempFilename) == false && File.Exists(tempFilename))
+						{
+							if (File.Exists(filenames[i]))
+								File.Delete(filenames[i]);
 							File.Move(tempFilename, filenames[i]);
+						}
+					}
+					catch (IOException e)
+					{
+						if (e.HResult == Win32.HR_ERROR_DISK_FULL 
+							|| e.HResult == Win32.HR_ERROR_HANDLE_DISK_FULL)
+						{
+							removeFilenames.AddRange(result.filenames);
+							result.error = BulkExporter.Error.DiskFullError;
+							break;
+						}
+						else if (e.HResult == Win32.HR_ERROR_ACCESS_DENIED 
+							|| e.HResult == Win32.HR_ERROR_WRITE_PROTECT
+							|| e.HResult == Win32.HR_ERROR_FILE_EXISTS)
+						{
+							skipped++;
+							removeFilenames.Add(result.filenames[i]); // Skip
+						}
+						else
+						{
+							removeFilenames.AddRange(result.filenames);
+							result.error = BulkExporter.Error.FileError;
+							break;
+						}
 					}
 					catch
 					{
-						removeFilenames.Add(result.filenames[i]);
+						skipped++;
+						removeFilenames.Add(result.filenames[i]); // Skip
 					}
 				}
 			}
@@ -2045,13 +2070,28 @@ namespace Ginger
 
 			if (result.error == BulkExporter.Error.NoError)
 			{
-				MessageBox.Show(string.Format(Resources.msg_export_many_characters, result.succeeded), Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				if (skipped > 0)
+				{
+					MessageBox.Show(string.Format(Resources.msg_export_some_characters, result.succeeded - skipped, skipped), Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				else
+				{
+					MessageBox.Show(string.Format(Resources.msg_export_many_characters, result.succeeded), Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
 			}
 			else if (result.error == BulkExporter.Error.Cancelled)
 			{
 				MessageBox.Show(Resources.error_canceled, Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-			else if (result.error == BulkExporter.Error.Cancelled)
+			else if (result.error == BulkExporter.Error.FileError)
+			{
+				MessageBox.Show(Resources.error_write_file, Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else if (result.error == BulkExporter.Error.DiskFullError)
+			{
+				MessageBox.Show(Resources.error_disk_full, Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
 			{
 				MessageBox.Show(Resources.error_export_many_characters, Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}

@@ -80,7 +80,7 @@ namespace Ginger
 				// Sum character counts
 				for (int i = 0; i < Folders.Length; ++i)
 				{
-					_folderCounts.Add(Folders[i].instanceId, Characters.Count(c => c.isUser == false && c.folderId == Folders[i].instanceId));
+					_folderCounts.Add(Folders[i].instanceId, Characters.Count(c => c.folderId == Folders[i].instanceId));
 				}
 
 				for (int i = Folders.Length - 1; i >= 0; --i)
@@ -120,7 +120,7 @@ namespace Ginger
 			}
 
 			// Create characters
-			IEnumerable<NodeState> sortedNodes = Nodes.Where(n => n.character.isUser == false);
+			IEnumerable<NodeState> sortedNodes = Nodes;
 			if (AppSettings.User.SortCharacters == AppSettings.CharacterSortOrder.ByName)
 			{
 				sortedNodes = sortedNodes

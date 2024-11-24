@@ -239,6 +239,8 @@ namespace Ginger
 
 			var recipe = RecipeBook.AddRecipeFromResource(Resources.lorebook_recipe);
 			(recipe.parameters[0] as LorebookParameter).value = book;
+
+			recipe.ConvertCharacterMarkers(Current.Name, Card.userPlaceholder);
 			return recipe;
 		}
 
@@ -270,6 +272,7 @@ namespace Ginger
 				return false;
 
 			Instance.ReadFaradayCard(card, portrait);
+			Instance.ConvertCharacterMarkers(Name, Card.userPlaceholder);
 			return true;
 		}
 
@@ -280,6 +283,7 @@ namespace Ginger
 
 
 			Instance.ReadTavernCard(card, portrait);
+			Instance.ConvertCharacterMarkers(Name, Card.userPlaceholder);
 			return true;
 		}
 
@@ -289,7 +293,7 @@ namespace Ginger
 				return false;
 
 			Instance.ReadTavernCard(card, portrait);
-
+			Instance.ConvertCharacterMarkers(Name, Card.userPlaceholder);
 			return true;
 		}
 
@@ -299,7 +303,7 @@ namespace Ginger
 				return false;
 
 			Instance.ReadAgnaisticCard(card);
-
+			Instance.ConvertCharacterMarkers(Name, Card.userPlaceholder);
 			return true;
 		}
 
@@ -309,6 +313,7 @@ namespace Ginger
 				return false;
 
 			Instance.ReadPygmalionCard(card);
+			Instance.ConvertCharacterMarkers(Name, Card.userPlaceholder);
 			return true;
 		}
 
@@ -318,7 +323,7 @@ namespace Ginger
 				return false;
 
 			Instance.ReadTextGenWebUICard(card);
-
+			Instance.ConvertCharacterMarkers(Name, Card.userPlaceholder);
 			return true;
 		}
 

@@ -713,6 +713,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Overwrite existing file(s).
+        /// </summary>
+        internal static string cap_overwrite_files {
+            get {
+                return ResourceManager.GetString("cap_overwrite_files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Overwrite lorebook.
         /// </summary>
         internal static string cap_overwrite_lorebook {
@@ -1260,6 +1269,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Disk is full..
+        /// </summary>
+        internal static string error_disk_full {
+            get {
+                return ResourceManager.GetString("error_disk_full", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The chat contains no messages..
         /// </summary>
         internal static string error_empty_chat {
@@ -1283,15 +1301,6 @@ namespace Ginger.Properties {
         internal static string error_empty_snippet {
             get {
                 return ResourceManager.GetString("error_empty_snippet", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to write to file..
-        /// </summary>
-        internal static string error_export_file {
-            get {
-                return ResourceManager.GetString("error_export_file", resourceCulture);
             }
         }
         
@@ -1752,6 +1761,15 @@ namespace Ginger.Properties {
         internal static string error_unrecognized_lorebook_format {
             get {
                 return ResourceManager.GetString("error_unrecognized_lorebook_format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred when writing file to disk..
+        /// </summary>
+        internal static string error_write_file {
+            get {
+                return ResourceManager.GetString("error_write_file", resourceCulture);
             }
         }
         
@@ -2297,11 +2315,29 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully exported {0} characters..
+        ///   Looks up a localized string similar to Successfully exported {0} character(s)..
         /// </summary>
         internal static string msg_export_many_characters {
             get {
                 return ResourceManager.GetString("msg_export_many_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One or more files already exist. Do you want to replace them?.
+        /// </summary>
+        internal static string msg_export_overwrite_files {
+            get {
+                return ResourceManager.GetString("msg_export_overwrite_files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully exported {0} character(s). (Skipped {1}.).
+        /// </summary>
+        internal static string msg_export_some_characters {
+            get {
+                return ResourceManager.GetString("msg_export_some_characters", resourceCulture);
             }
         }
         

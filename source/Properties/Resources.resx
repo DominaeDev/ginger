@@ -637,8 +637,8 @@ Higher detail increases token count.</value>
   <data name="cap_export_asset" xml:space="preserve">
     <value>Export asset file</value>
   </data>
-  <data name="error_export_file" xml:space="preserve">
-    <value>Failed to write to file.</value>
+  <data name="error_write_file" xml:space="preserve">
+    <value>An error occurred when writing file to disk.</value>
   </data>
   <data name="cap_import_asset" xml:space="preserve">
     <value>Import asset file</value>
@@ -1312,6 +1312,18 @@ Reason: {0}</value>
     <value>Something went wrong when exporting characters. Operation canceled.</value>
   </data>
   <data name="msg_export_many_characters" xml:space="preserve">
-    <value>Successfully exported {0} characters.</value>
+    <value>Successfully exported {0} character(s).</value>
+  </data>
+  <data name="error_disk_full" xml:space="preserve">
+    <value>Disk is full.</value>
+  </data>
+  <data name="cap_overwrite_files" xml:space="preserve">
+    <value>Overwrite existing file(s)</value>
+  </data>
+  <data name="msg_export_overwrite_files" xml:space="preserve">
+    <value>One or more files already exist. Do you want to replace them?</value>
+  </data>
+  <data name="msg_export_some_characters" xml:space="preserve">
+    <value>Successfully exported {0} character(s). (Skipped {1}.)</value>
   </data>
 </root>

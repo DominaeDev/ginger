@@ -502,7 +502,7 @@ namespace Ginger
 			}
 			catch
 			{
-				MessageBox.Show(Resources.error_export_file, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				MessageBox.Show(Resources.error_write_file, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 					return;
 			}
 		}

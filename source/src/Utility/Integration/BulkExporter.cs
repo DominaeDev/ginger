@@ -28,6 +28,7 @@ namespace Ginger.Integration
 			UnknownError,
 			DatabaseError,
 			FileError,
+			DiskFullError,
 		}
 
 		public struct Result
@@ -257,9 +258,23 @@ namespace Ginger.Integration
 					filename = intermediateFilename;
 					return Error.NoError;
 				}
-
+				else
+				{
+					filename = default(string);
+					return Error.FileError;
+				}
+			}
+			catch (IOException e)
+			{
 				filename = default(string);
+				if (e.HResult == Win32.HR_ERROR_DISK_FULL || e.HResult == Win32.HR_ERROR_HANDLE_DISK_FULL)
+					return Error.DiskFullError;
 				return Error.FileError;
+			}
+			catch (Exception e)
+			{
+				filename = default(string);
+				return Error.UnknownError;
 			}
 			finally
 			{
