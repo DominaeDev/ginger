@@ -4,6 +4,14 @@ namespace Ginger
 {
 	public partial class ProgressBarDialog : FormEx
 	{
+		public string Message 
+		{ 
+			set
+			{
+				labelText.Text = value;
+			} 
+		}
+
 		public int Percentage 
 		{ 
 			set

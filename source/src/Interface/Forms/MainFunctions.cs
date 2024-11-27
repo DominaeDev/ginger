@@ -1905,6 +1905,7 @@ namespace Ginger
 			{
 				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				AppSettings.BackyardLink.Enabled = false;
+				return false;
 			}
 
 			// Choose character(s)
@@ -1974,6 +1975,8 @@ namespace Ginger
 			var exporter = new BulkExporter();
 
 			var progressDlg = new ProgressBarDialog();
+			progressDlg.Message = "Exporting...";
+
 			progressDlg.onCancel += (s, e) => {
 				exporter.Cancel();
 				progressDlg.Close();
@@ -1988,12 +1991,14 @@ namespace Ginger
 
 				CompleteExport(result, filenames);
 				_bCanRegenerate = true;
+				_bCanIdle = true;
 			};
 
 			for (int i = 0; i < filenames.Count; ++i)
 				exporter.Enqueue(dlg.Characters[i]);
 
 			_bCanRegenerate = false;
+			_bCanIdle = false;
 			exporter.Start(formatDialog.FileFormat);
 			progressDlg.ShowDialog();
 
@@ -2095,7 +2100,90 @@ namespace Ginger
 			{
 				MessageBox.Show(Resources.error_export_many_characters, Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+		}
 
+		public bool ImportManyToBackyard()
+		{
+			// Refresh character list
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+			{
+				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				AppSettings.BackyardLink.Enabled = false;
+				return false;
+			}
+
+			// Select files...
+			try
+			{
+				importFileDialog.Title = Resources.cap_import_character;
+				importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml";
+				importFileDialog.FilterIndex = AppSettings.User.LastImportCharacterFilter;
+				importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+				importFileDialog.Multiselect = true;
+
+				var mr = importFileDialog.ShowDialog();
+				if (mr != DialogResult.OK || importFileDialog.FileNames.Length == 0)
+					return false;
+			}
+			finally
+			{
+				importFileDialog.Multiselect = false;
+			}
+
+			// Confirm
+			if (MessageBox.Show(string.Format(Resources.msg_confirm_import_many, importFileDialog.FileNames.Length), Resources.cap_import_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+				return false;
+
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileNames[0]);
+			AppSettings.User.LastImportCharacterFilter = importFileDialog.FilterIndex;
+
+			var importer = new BulkImporter();
+
+			var progressDlg = new ProgressBarDialog();
+			progressDlg.Message = "Importing...";
+
+			progressDlg.onCancel += (s, e) => {
+				importer.Cancel();
+				progressDlg.Close();
+			};
+			importer.onProgress += (value) => {
+				progressDlg.Percentage = value;
+			};
+			importer.onComplete += (result) => {
+				progressDlg.Percentage = 100;
+				progressDlg.TopMost = false;
+				progressDlg.Close();
+
+				CompleteImport(result);
+				_bCanRegenerate = true;
+				_bCanIdle = true;
+			};
+
+			for (int i = 0; i < importFileDialog.FileNames.Length; ++i)
+				importer.Enqueue(importFileDialog.FileNames[i]);
+
+			_bCanRegenerate = false;
+			_bCanIdle = false;
+			importer.Start();
+			progressDlg.ShowDialog();
+
+			return true;
+		}
+
+		private void CompleteImport(BulkImporter.Result result)
+		{
+			if (result.error == BulkImporter.Error.NoError)
+			{
+				MessageBox.Show(string.Format(result.skipped == 0 ? Resources.msg_import_many_characters : Resources.msg_import_some_characters, result.succeeded, result.skipped), Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else if (result.error == BulkImporter.Error.Cancelled)
+			{
+				MessageBox.Show(Resources.error_canceled, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				MessageBox.Show(Resources.error_import_many_characters, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 	}
 }

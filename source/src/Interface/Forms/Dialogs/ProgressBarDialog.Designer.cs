@@ -30,11 +30,10 @@ namespace Ginger
 		private void InitializeComponent()
 		{
 			System.Windows.Forms.FlowLayoutPanel buttonLayout;
-			System.Windows.Forms.Label label;
 			this.btnCancel = new Ginger.ButtonEx();
+			this.labelText = new System.Windows.Forms.Label();
 			this.progressBar = new System.Windows.Forms.ProgressBar();
 			buttonLayout = new System.Windows.Forms.FlowLayoutPanel();
-			label = new System.Windows.Forms.Label();
 			buttonLayout.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -64,18 +63,18 @@ namespace Ginger
 			this.btnCancel.UseVisualStyleBackColor = true;
 			this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
 			// 
-			// label
+			// labelText
 			// 
-			label.AutoEllipsis = true;
-			label.Dock = System.Windows.Forms.DockStyle.Top;
-			label.Location = new System.Drawing.Point(9, 4);
-			label.Margin = new System.Windows.Forms.Padding(0);
-			label.MinimumSize = new System.Drawing.Size(136, 27);
-			label.Name = "label";
-			label.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			label.Size = new System.Drawing.Size(345, 30);
-			label.TabIndex = 8;
-			label.Text = "Exporting...";
+			this.labelText.AutoEllipsis = true;
+			this.labelText.Dock = System.Windows.Forms.DockStyle.Top;
+			this.labelText.Location = new System.Drawing.Point(9, 4);
+			this.labelText.Margin = new System.Windows.Forms.Padding(0);
+			this.labelText.MinimumSize = new System.Drawing.Size(136, 27);
+			this.labelText.Name = "labelText";
+			this.labelText.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
+			this.labelText.Size = new System.Drawing.Size(345, 30);
+			this.labelText.TabIndex = 8;
+			this.labelText.Text = "Exporting...";
 			// 
 			// progressBar
 			// 
@@ -93,7 +92,7 @@ namespace Ginger
 			this.ClientSize = new System.Drawing.Size(363, 105);
 			this.ControlBox = false;
 			this.Controls.Add(this.progressBar);
-			this.Controls.Add(label);
+			this.Controls.Add(this.labelText);
 			this.Controls.Add(buttonLayout);
 			this.DoubleBuffered = true;
 			this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -116,5 +115,6 @@ namespace Ginger
 
 		private ButtonEx btnCancel;
 		private System.Windows.Forms.ProgressBar progressBar;
+		private System.Windows.Forms.Label labelText;
 	}
 }

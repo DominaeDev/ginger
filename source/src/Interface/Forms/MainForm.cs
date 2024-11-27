@@ -27,6 +27,7 @@ namespace Ginger
 		private static bool _bEnableFormLevelDoubleBuffering = true;
 
 		private static bool _bCanRegenerate = true;
+		private static bool _bCanIdle = true;
 		private bool _bWasFileDirty = false;
 
 		public static MainForm instance { get; private set; }
@@ -187,6 +188,9 @@ namespace Ginger
 
 		private void OnIdle(object sender, EventArgs e)
 		{
+			if (_bCanIdle == false)
+				return;
+
 			foreach (var idleHandler in _idleHandlers)
 				idleHandler.OnIdle();
 
@@ -2434,6 +2438,11 @@ namespace Ginger
 		private void bulkExportMenuItem_Click(object sender, EventArgs e)
 		{
 			ExportManyFromBackyard();
+		}
+
+		private void bulkImportMenuItem_Click(object sender, EventArgs e)
+		{
+			ImportManyToBackyard();
 		}
 	}
 

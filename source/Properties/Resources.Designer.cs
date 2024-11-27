@@ -398,7 +398,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Export character(s).
+        ///   Looks up a localized string similar to Export characters to Backyard AI.
         /// </summary>
         internal static string cap_export_many_characters {
             get {
@@ -466,6 +466,15 @@ namespace Ginger.Properties {
         internal static string cap_import_lorebook {
             get {
                 return ResourceManager.GetString("cap_import_lorebook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import characters to Backyard AI.
+        /// </summary>
+        internal static string cap_import_many_characters {
+            get {
+                return ResourceManager.GetString("cap_import_many_characters", resourceCulture);
             }
         }
         
@@ -1346,6 +1355,15 @@ namespace Ginger.Properties {
         internal static string error_help {
             get {
                 return ResourceManager.GetString("error_help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Something went wrong when imported characters. Operation aborted..
+        /// </summary>
+        internal static string error_import_many_characters {
+            get {
+                return ResourceManager.GetString("error_import_many_characters", resourceCulture);
             }
         }
         
@@ -2287,6 +2305,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will import {0} characters to Backyard AI. Continue?.
+        /// </summary>
+        internal static string msg_confirm_import_many {
+            get {
+                return ResourceManager.GetString("msg_confirm_import_many", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This character does not contain a persona and may not function properly.
         ///Continue?.
         /// </summary>
@@ -2324,7 +2351,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully exported {0} character(s)..
+        ///   Looks up a localized string similar to Successfully exported {0} characters..
         /// </summary>
         internal static string msg_export_many_characters {
             get {
@@ -2365,6 +2392,24 @@ namespace Ginger.Properties {
         internal static string msg_import_lorebook_with_errors {
             get {
                 return ResourceManager.GetString("msg_import_lorebook_with_errors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully imported {0} characters..
+        /// </summary>
+        internal static string msg_import_many_characters {
+            get {
+                return ResourceManager.GetString("msg_import_many_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully imported {0} character(s). (Skipped {1}.).
+        /// </summary>
+        internal static string msg_import_some_characters {
+            get {
+                return ResourceManager.GetString("msg_import_some_characters", resourceCulture);
             }
         }
         

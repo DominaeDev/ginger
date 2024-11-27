@@ -1303,7 +1303,7 @@ Reason: {0}</value>
     <value>Recipes reloaded</value>
   </data>
   <data name="cap_export_many_characters" xml:space="preserve">
-    <value>Export character(s)</value>
+    <value>Export characters to Backyard AI</value>
   </data>
   <data name="error_canceled" xml:space="preserve">
     <value>Operation canceled.</value>
@@ -1312,7 +1312,7 @@ Reason: {0}</value>
     <value>Something went wrong when exporting characters. Operation canceled.</value>
   </data>
   <data name="msg_export_many_characters" xml:space="preserve">
-    <value>Successfully exported {0} character(s).</value>
+    <value>Successfully exported {0} characters.</value>
   </data>
   <data name="error_disk_full" xml:space="preserve">
     <value>Disk is full.</value>
@@ -1334,5 +1334,20 @@ Reason: {0}</value>
   </data>
   <data name="tooltip_import_many" xml:space="preserve">
     <value>Import multiple characters into Backyard AI at once.</value>
+  </data>
+  <data name="cap_import_many_characters" xml:space="preserve">
+    <value>Import characters to Backyard AI</value>
+  </data>
+  <data name="error_import_many_characters" xml:space="preserve">
+    <value>Something went wrong when imported characters. Operation aborted.</value>
+  </data>
+  <data name="msg_import_many_characters" xml:space="preserve">
+    <value>Successfully imported {0} characters.</value>
+  </data>
+  <data name="msg_confirm_import_many" xml:space="preserve">
+    <value>This will import {0} characters to Backyard AI. Continue?</value>
+  </data>
+  <data name="msg_import_some_characters" xml:space="preserve">
+    <value>Successfully imported {0} character(s). (Skipped {1}.)</value>
   </data>
 </root>

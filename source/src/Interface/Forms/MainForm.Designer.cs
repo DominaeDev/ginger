@@ -45,8 +45,6 @@ namespace Ginger {
 			this.reestablishLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.breakLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripSeparator();
-			this.bulkImportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.bulkExportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.applyToLastChatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.applyToFirstChatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.applyToAllChatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -168,6 +166,9 @@ namespace Ginger {
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusBarActor = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
+			this.bulkOperationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.bulkImportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.bulkExportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -243,8 +244,7 @@ namespace Ginger {
             this.reestablishLinkMenuItem,
             this.breakLinkMenuItem,
             this.toolStripMenuItem9,
-            this.bulkImportMenuItem,
-            this.bulkExportMenuItem});
+            this.bulkOperationsToolStripMenuItem});
 			linkMenuItem.Name = "linkMenuItem";
 			linkMenuItem.Size = new System.Drawing.Size(259, 22);
 			linkMenuItem.Text = "&Link";
@@ -315,21 +315,6 @@ namespace Ginger {
 			// 
 			this.toolStripMenuItem9.Name = "toolStripMenuItem9";
 			this.toolStripMenuItem9.Size = new System.Drawing.Size(236, 6);
-			// 
-			// bulkImportMenuItem
-			// 
-			this.bulkImportMenuItem.Name = "bulkImportMenuItem";
-			this.bulkImportMenuItem.Size = new System.Drawing.Size(239, 22);
-			this.bulkImportMenuItem.Text = "Import many characters...";
-			this.bulkImportMenuItem.ToolTipText = "Bulk import characters to Backyard AI.";
-			// 
-			// bulkExportMenuItem
-			// 
-			this.bulkExportMenuItem.Name = "bulkExportMenuItem";
-			this.bulkExportMenuItem.Size = new System.Drawing.Size(239, 22);
-			this.bulkExportMenuItem.Text = "Export many characters...";
-			this.bulkExportMenuItem.ToolTipText = "Bulk export characters from Backyard AI.";
-			this.bulkExportMenuItem.Click += new System.EventHandler(this.bulkExportMenuItem_Click);
 			// 
 			// writeChatSettingsMenuItem
 			// 
@@ -1566,6 +1551,29 @@ namespace Ginger {
 			this.statusConnectionIcon.Name = "statusConnectionIcon";
 			this.statusConnectionIcon.Size = new System.Drawing.Size(0, 17);
 			// 
+			// bulkOperationsToolStripMenuItem
+			// 
+			this.bulkOperationsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.bulkImportMenuItem,
+            this.bulkExportMenuItem});
+			this.bulkOperationsToolStripMenuItem.Name = "bulkOperationsToolStripMenuItem";
+			this.bulkOperationsToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.bulkOperationsToolStripMenuItem.Text = "Bulk operations";
+			// 
+			// bulkImportMenuItem
+			// 
+			this.bulkImportMenuItem.Name = "bulkImportMenuItem";
+			this.bulkImportMenuItem.Size = new System.Drawing.Size(209, 22);
+			this.bulkImportMenuItem.Text = "Import many characters...";
+			this.bulkImportMenuItem.Click += new System.EventHandler(this.bulkImportMenuItem_Click);
+			// 
+			// bulkExportMenuItem
+			// 
+			this.bulkExportMenuItem.Name = "bulkExportMenuItem";
+			this.bulkExportMenuItem.Size = new System.Drawing.Size(209, 22);
+			this.bulkExportMenuItem.Text = "Export many characters...";
+			this.bulkExportMenuItem.Click += new System.EventHandler(this.bulkExportMenuItem_Click);
+			// 
 			// MainForm
 			// 
 			this.AllowDrop = true;
@@ -1740,6 +1748,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem customVariablesMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem usePortraitAsBackgroundMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem9;
+		private System.Windows.Forms.ToolStripMenuItem bulkOperationsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem bulkImportMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem bulkExportMenuItem;
 	}
