@@ -2130,25 +2130,86 @@ namespace Ginger
 				importFileDialog.Multiselect = false;
 			}
 
-			// Identify file types
-			List<string> filenames = importFileDialog.FileNames.ToList();
-			filenames = filenames.Where(fn => FileUtil.CheckFileType(fn) != FileUtil.FileType.Unknown).ToList();
+			// Identify file types and import (no progress bar)
+			var filenames = importFileDialog.FileNames.ToArray();
+			if (filenames.Length < 10)
+			{ 
+				filenames = filenames
+					.Where(fn => FileUtil.CheckFileType(fn) != FileUtil.FileType.Unknown)
+					.OrderBy(fn => new FileInfo(fn).LastWriteTime)
+					.ToArray();
+				return BeginImport(filenames);
+			}
 
-			if (filenames.Count == 0)
+			// Identify file types (with progress bar)
+			var checker = new AsyncFileTypeChecker();
+
+			var progressDlg = new ProgressBarDialog();
+			progressDlg.Message = "Identifying file types...";
+
+			progressDlg.onCancel += (s, e) => {
+				checker.Cancel();
+				progressDlg.Close();
+				MessageBox.Show(Resources.error_canceled, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			};
+			checker.onProgress += (value) => {
+				progressDlg.Percentage = value;
+			};
+			checker.onComplete += (result) => {
+				progressDlg.Percentage = 100;
+				progressDlg.TopMost = false;
+				progressDlg.Close();
+
+				if (result.error == AsyncFileTypeChecker.Error.NoError)
+				{
+					BeginImport(result.filenames);
+				}
+				else if (result.error == AsyncFileTypeChecker.Error.Cancelled)
+				{
+					MessageBox.Show(Resources.error_canceled, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			};
+
+			checker.Enqueue(filenames);
+			checker.Start();
+			progressDlg.ShowDialog();
+
+			return true;
+		}
+
+		private bool BeginImport(string[] filenames)
+		{
+			if (filenames.Length == 0)
 			{
 				MessageBox.Show(Resources.error_import_many_unsupported, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
 			// Confirm
-			if (MessageBox.Show(string.Format(Resources.msg_confirm_import_many, NumCharacters(filenames.Count)), Resources.cap_import_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+			if (MessageBox.Show(string.Format(Resources.msg_confirm_import_many, NumCharacters(filenames.Length)), Resources.cap_import_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
 				return false;
 
 			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(filenames[0]);
 			AppSettings.User.LastImportCharacterFilter = importFileDialog.FilterIndex;
 
-			var importer = new BulkImporter();
+			// Create Ginger import folder
+			FolderInstance importFolder;
+			if (string.IsNullOrEmpty(AppSettings.BackyardLink.BulkImportFolderName) == false)
+			{
+				string folderName = AppSettings.BackyardLink.BulkImportFolderName.Trim();
+				string folderUrl = Backyard.ToFolderUrl(folderName);
+				importFolder = Backyard.Folders
+					.Where(f => string.Compare(f.name, folderName, StringComparison.OrdinalIgnoreCase) == 0
+						|| string.Compare(f.url, folderUrl, StringComparison.OrdinalIgnoreCase) == 0)
+					.FirstOrDefault();
 
+				if (importFolder.isEmpty)
+					Backyard.CreateNewFolder(folderName, out importFolder); // It's ok if this fails.
+			}
+			else
+				importFolder = default(FolderInstance);
+
+			var importer = new BulkImporter();
 			var progressDlg = new ProgressBarDialog();
 			progressDlg.Message = "Importing...";
 
@@ -2169,12 +2230,12 @@ namespace Ginger
 				_bCanIdle = true;
 			};
 
-			for (int i = 0; i < filenames.Count; ++i)
+			for (int i = 0; i < filenames.Length; ++i)
 				importer.Enqueue(filenames[i]);
 
 			_bCanRegenerate = false;
 			_bCanIdle = false;
-			importer.Start();
+			importer.Start(importFolder);
 			progressDlg.ShowDialog();
 
 			return true;

@@ -201,7 +201,7 @@ namespace Ginger.Integration
 				onComplete?.Invoke(_result);
 				return;
 			}
-			else if (_completed >= _totalCount)
+			else if (_completed >= _totalCount || _queue.IsEmpty())
 			{
 				onComplete?.Invoke(_result);
 				return;

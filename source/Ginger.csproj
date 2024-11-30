@@ -425,6 +425,7 @@
     <Compile Include="src\Model\Formats\ChatLogs\TextFileChat.cs" />
     <Compile Include="src\Model\Formats\Lorebooks\TavernWorldbook.cs" />
     <Compile Include="src\Model\CustomVariable.cs" />
+    <Compile Include="src\Utility\Integration\AsyncFileTypeChecker.cs" />
     <Compile Include="src\Utility\Integration\BackyardValidation.cs" />
     <Compile Include="src\Utility\Integration\BulkImporter.cs" />
     <Compile Include="src\Utility\Integration\BulkExporter.cs" />

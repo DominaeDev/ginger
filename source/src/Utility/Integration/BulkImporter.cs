@@ -18,6 +18,7 @@ namespace Ginger.Integration
 		private struct WorkerArguments
 		{
 			public string[] filenames;
+			public FolderInstance parentFolder;
 		}
 
 		public enum Error
@@ -62,6 +63,7 @@ namespace Ginger.Integration
 
 		private BackgroundWorker _bgWorker;
 		private Timer _timer;
+		private FolderInstance _parentFolder;
 
 		private int _totalCount = 0;
 		private int _completed = 0;
@@ -87,7 +89,7 @@ namespace Ginger.Integration
 			_queue.Enqueue(filename);
 		}
 
-		public bool Start()
+		public bool Start(FolderInstance folder)
 		{
 			_timer.Interval = IntervalMS;
 			_timer.SynchronizingObject = MainForm.instance;
@@ -96,6 +98,7 @@ namespace Ginger.Integration
 			_totalCount = _queue.Count;
 			_completed = 0;
 			_result = default(Result);
+			_parentFolder = folder;
 			return true;
 		}
 
@@ -114,6 +117,7 @@ namespace Ginger.Integration
 
 			var workerArgs = new WorkerArguments() {
 				filenames = filenames.ToArray(),
+				parentFolder = _parentFolder,
 			};
 
 			_bgWorker = new BackgroundWorker();
@@ -133,7 +137,7 @@ namespace Ginger.Integration
 			for (int i = 0; i < args.filenames.Length; ++i)
 			{
 				CharacterInstance importedCharacter;
-				WorkerError error = ImportCharacter(args.filenames[i], out importedCharacter);
+				WorkerError error = ImportCharacter(args.filenames[i], args.parentFolder, out importedCharacter);
 
 				switch (error)
 				{
@@ -215,7 +219,7 @@ namespace Ginger.Integration
 				onComplete?.Invoke(_result);
 				return;
 			}
-			else if (_completed >= _totalCount)
+			else if (_completed >= _totalCount || _queue.IsEmpty())
 			{
 				onComplete?.Invoke(_result);
 				return;
@@ -233,7 +237,7 @@ namespace Ginger.Integration
 				_bgWorker.CancelAsync();
 		}
 
-		private WorkerError ImportCharacter(string filename, out CharacterInstance characterInstance)
+		private WorkerError ImportCharacter(string filename, FolderInstance parentFolder, out CharacterInstance characterInstance)
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
@@ -306,7 +310,7 @@ namespace Ginger.Integration
 				}
 
 				Backyard.Link.Image[] imageLinks; // Ignored
-				var writeError = Backyard.CreateNewCharacter(card, imageInput, null, out characterInstance, out imageLinks);
+				var writeError = Backyard.CreateNewCharacter(card, imageInput, null, out characterInstance, out imageLinks, parentFolder);
 				if (writeError != Backyard.Error.NoError)
 				{
 					characterInstance = default(CharacterInstance);
@@ -319,63 +323,6 @@ namespace Ginger.Integration
 			{
 				Current.Instance = prevInstance;
 			}
-#if false
-			Backyard.Link.Image[] imageLinks; // Ignored
-			CharacterInstance returnedCharacter = default(CharacterInstance);
-			Backyard.Error error = Backyard.CreateNewCharacter(faradayCard, images.ToArray(), backup.chats.ToArray(), out returnedCharacter, out imageLinks), "Restoring backup...");
-			characterInstance = returnedCharacter;
-
-
-			if (importError != Backyard.Error.NoError)
-			{
-				character = default(CharacterInstance);
-				return Error.DatabaseError;
-			}
-
-			// Read image
-			Image image = null;
-			if (imageUrls != null && imageUrls.Length > 0)
-				Utility.LoadImageFromFile(imageUrls[0], out image);
-
-			// Convert
-			GingerCharacter character = new GingerCharacter();
-			character.ReadFaradayCard(faradayCard, image);
-
-			var prevInstance = Current.Instance;
-			Current.Instance = character;
-
-			try
-			{
-				// Write to disk
-				string intermediateFilename = Path.GetTempFileName();
-				if (FileUtil.Export(intermediateFilename, fileType))
-				{
-					character = intermediateFilename;
-					return Error.NoError;
-				}
-				else
-				{
-					character = default(string);
-					return Error.FileError;
-				}
-			}
-			catch (IOException e)
-			{
-				character = default(string);
-				if (e.HResult == Win32.HR_ERROR_DISK_FULL || e.HResult == Win32.HR_ERROR_HANDLE_DISK_FULL)
-					return Error.DiskFullError;
-				return Error.FileError;
-			}
-			catch (Exception e)
-			{
-				character = default(string);
-				return Error.UnknownError;
-			}
-			finally
-			{
-				Current.Instance = prevInstance;
-			}
-#endif
 		}
 	}
 }
