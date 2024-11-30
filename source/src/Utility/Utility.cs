@@ -288,6 +288,13 @@ namespace Ginger
 			return Convert.ToSingle(Math.Round(value / partition)) * partition;
 		}
 
+		public static decimal RoundNearest(decimal value, decimal partition)
+		{
+			if (partition <= 0.0m)
+				return Convert.ToDecimal(Math.Round(value));
+			return Convert.ToDecimal(Math.Round(value / partition)) * partition;
+		}
+
 		public static bool StringToBool(string value, bool defaultValue = false)
 		{
 			if (string.IsNullOrEmpty(value))

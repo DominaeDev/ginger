@@ -41,17 +41,6 @@ namespace Ginger
 			cbLorebooks.Enabled = context == Context.Main;
 		}
 
-		// Reduce flickering
-		protected override CreateParams CreateParams
-		{
-			get
-			{
-				CreateParams cp = base.CreateParams;
-				cp.ExStyle |= 0x02000000;  // Turn on WS_EX_COMPOSITED
-				return cp;
-			}
-		}
-
 		private void BtnOk_Click(object sender, EventArgs e)
 		{
 			AppSettings.User.ReplaceLastFind = textBox_Find.Text;

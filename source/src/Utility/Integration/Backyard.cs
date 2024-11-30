@@ -90,23 +90,6 @@ namespace Ginger.Integration
 	[Serializable]
 	public class ChatParameters
 	{
-		public ChatParameters()
-		{
-			if (string.IsNullOrEmpty(AppSettings.Faraday.ModelName) == false)
-				model = AppSettings.Faraday.ModelName;
-			else
-				model = Backyard.DefaultModel;
-			temperature = AppSettings.Faraday.Temperature;
-			topP = AppSettings.Faraday.TopP;
-			minP = AppSettings.Faraday.MinP;
-			minPEnabled = AppSettings.Faraday.MinPEnabled;
-			topK = AppSettings.Faraday.TopK;
-			repeatPenalty = AppSettings.Faraday.RepeatPenalty;
-			repeatLastN = AppSettings.Faraday.RepeatPenaltyTokens;
-			pruneExampleChat = AppSettings.Faraday.PruneExampleChat;
-			promptTemplate = AppSettings.Faraday.GetPromptTemplateName();
-		}
-
 		public string model = "";                   // Chat.model
 		public string authorNote = "";              // Chat.authorNote
 		public decimal temperature = 1.2m;          // Chat.temperature
@@ -114,12 +97,108 @@ namespace Ginger.Integration
 		public decimal minP = 0.1m;                 // Chat.minP
 		public int topK = 30;                       // Chat.topK
 		public bool minPEnabled = true;             // Chat.minPEnabled
-		public int repeatLastN = 256;               // Chat.repeatLastN
 		public decimal repeatPenalty = 1.05m;       // Chat.repeatPenalty
-		public string promptTemplate = null;        // Chat.promptTemplate
+		public int repeatPenaltyTokens = 256;		// Chat.repeatLastN
 		public bool pruneExampleChat = true;        // Chat.canDeleteCustomDialogue
 		public bool ttsAutoPlay = false;            // Chat.ttsAutoPlay
 		public string ttsInputFilter = "default";   // Chat.ttsInputFilter
+
+		private int _iPromptTemplate = 0;			// Chat.promptTemplate
+		public int iPromptTemplate
+		{
+			get { return _iPromptTemplate; }
+			set { _iPromptTemplate = Math.Min(Math.Max(value, 0), 6); }
+		}
+		public string promptTemplate
+		{
+			get
+			{
+				switch (_iPromptTemplate)
+				{
+				case 1: return "general";
+				case 2: return "ChatML";
+				case 3: return "Llama3";
+				case 4: return "Gemma2";
+				case 5: return "CommandR";
+				case 6: return "MistralInstruct";
+				default:
+					return null;
+				}
+			}
+
+			set
+			{
+				var sValue = (value ?? "").Trim().ToLowerInvariant();
+				int iValue;
+				if (sValue == "")
+				{
+					_iPromptTemplate = 0;
+				}
+				else if (int.TryParse(sValue, out iValue))
+				{
+					if (iValue >= 0 && iValue <= 6)
+						_iPromptTemplate = iValue;
+					else
+						_iPromptTemplate = 0;
+				}
+				else
+				{
+					switch (sValue)
+					{
+					case "text":
+					case "plain":
+					case "general":
+						_iPromptTemplate = 1;
+						break;
+					case "chatml":
+						_iPromptTemplate = 2;
+						break;
+					case "llama3":
+						_iPromptTemplate = 3;
+						break;
+					case "gemma":
+					case "gemma2":
+						_iPromptTemplate = 4;
+						break;
+					case "commandr":
+					case "command-r":
+						_iPromptTemplate = 5;
+						break;
+					case "mistral":
+					case "mistralinstruct":
+					case "mistral-instruct":
+						_iPromptTemplate = 6;
+						break;
+					default:
+						_iPromptTemplate = 0;
+						break;
+					}
+				}
+			}
+		}
+
+		public static ChatParameters Default
+		{
+			get
+			{
+				return new ChatParameters() {
+					model = null,
+					authorNote = "",
+					temperature = 1.2m,
+					topP = 0.9m,
+					minP = 0.1m,
+					topK = 30,
+					minPEnabled = true,
+					repeatPenaltyTokens = 256,
+					repeatPenalty = 1.05m,
+					promptTemplate = null,
+					pruneExampleChat = true,
+					ttsAutoPlay = false,
+					ttsInputFilter = "default",
+				};
+			}
+		}
+
 	}
 
 	public class ChatInstance
@@ -1723,6 +1802,7 @@ namespace Ginger.Integration
 					long createdAt = now.ToUnixTimeMilliseconds();
 					string folderOrder = null;
 					string[] chatIds = null;
+					ChatParameters chatParameters = AppSettings.BackyardSettings.DefaultSettings;
 
 					// Fetch default user
 					using (var cmdUser = connection.CreateCommand())
@@ -1822,13 +1902,13 @@ namespace Ginger.Integration
 												groupConfigId, 
 												modelInstructions, context, greetingDialogue, customDialogue, grammar, 
 												model, temperature, topP, minP, minPEnabled, topK, 
-												repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue)
+												repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, authorNote)
 										VALUES 
 											($chatId, '', $timestamp, $timestamp, 
 												$groupId,
 												$system, $scenario, $greeting, $example, $grammar, 
 												$model, $temperature, $topP, $minP, $minPEnabled, $topK, 
-												$repeatPenalty, $repeatLastN, $promptTemplate, $pruneExample);
+												$repeatPenalty, $repeatLastN, $promptTemplate, $pruneExample, $authorNote);
 									");
 	
 									cmdCreate.Parameters.AddWithValue("$chatId", chatId);
@@ -1837,19 +1917,20 @@ namespace Ginger.Integration
 									cmdCreate.Parameters.AddWithValue("$example", card.data.example);
 									cmdCreate.Parameters.AddWithValue("$greeting", card.data.greeting);
 									cmdCreate.Parameters.AddWithValue("$grammar", card.data.grammar ?? "");
-									if (string.IsNullOrEmpty(AppSettings.Faraday.ModelName) == false)
-										cmdCreate.Parameters.AddWithValue("$model", AppSettings.Faraday.ModelName);
+									if (string.IsNullOrEmpty(chatParameters.model) == false)
+										cmdCreate.Parameters.AddWithValue("$model", chatParameters.model);
 									else
 										cmdCreate.Parameters.AddWithValue("$model", DefaultModel);
-									cmdCreate.Parameters.AddWithValue("$temperature", AppSettings.Faraday.Temperature);
-									cmdCreate.Parameters.AddWithValue("$topP", AppSettings.Faraday.TopP);
-									cmdCreate.Parameters.AddWithValue("$minP", AppSettings.Faraday.MinP);
-									cmdCreate.Parameters.AddWithValue("$minPEnabled", AppSettings.Faraday.MinPEnabled);
-									cmdCreate.Parameters.AddWithValue("$topK", AppSettings.Faraday.TopK);
-									cmdCreate.Parameters.AddWithValue("$repeatPenalty", AppSettings.Faraday.RepeatPenalty);
-									cmdCreate.Parameters.AddWithValue("$repeatLastN", AppSettings.Faraday.RepeatPenaltyTokens);
-									cmdCreate.Parameters.AddWithValue("$promptTemplate", AppSettings.Faraday.GetPromptTemplateName());
-									cmdCreate.Parameters.AddWithValue("$pruneExample", AppSettings.Faraday.PruneExampleChat);
+									cmdCreate.Parameters.AddWithValue("$temperature", chatParameters.temperature);
+									cmdCreate.Parameters.AddWithValue("$topP", chatParameters.topP);
+									cmdCreate.Parameters.AddWithValue("$minP", chatParameters.minP);
+									cmdCreate.Parameters.AddWithValue("$minPEnabled", chatParameters.minPEnabled);
+									cmdCreate.Parameters.AddWithValue("$topK", chatParameters.topK);
+									cmdCreate.Parameters.AddWithValue("$repeatPenalty", chatParameters.repeatPenalty);
+									cmdCreate.Parameters.AddWithValue("$repeatLastN", chatParameters.repeatPenaltyTokens);
+									cmdCreate.Parameters.AddWithValue("$promptTemplate", chatParameters.promptTemplate);
+									cmdCreate.Parameters.AddWithValue("$pruneExample", chatParameters.pruneExampleChat);
+									cmdCreate.Parameters.AddWithValue("$authorNote", chatParameters.authorNote ?? "");
 
 									expectedUpdates += 1;
 
@@ -1910,23 +1991,24 @@ namespace Ginger.Integration
 											example = card.data.example,
 											grammar = card.data.grammar,
 										};
+
 										var parameters = chats[i].parameters ?? new ChatParameters();
 										cmdCreate.Parameters.AddWithValue($"$system{i:000}", staging.system);
 										cmdCreate.Parameters.AddWithValue($"$scenario{i:000}", staging.scenario);
 										cmdCreate.Parameters.AddWithValue($"$example{i:000}", staging.example);
 										cmdCreate.Parameters.AddWithValue($"$greeting{i:000}", staging.greeting);
 										cmdCreate.Parameters.AddWithValue($"$grammar{i:000}", staging.grammar ?? "");
-										cmdCreate.Parameters.AddWithValue($"$model{i:000}", parameters.model);
+										cmdCreate.Parameters.AddWithValue($"$model{i:000}", parameters.model ?? "");
 										cmdCreate.Parameters.AddWithValue($"$temperature{i:000}", parameters.temperature);
 										cmdCreate.Parameters.AddWithValue($"$topP{i:000}", parameters.topP);
 										cmdCreate.Parameters.AddWithValue($"$minP{i:000}", parameters.minP);
 										cmdCreate.Parameters.AddWithValue($"$minPEnabled{i:000}", parameters.minPEnabled);
 										cmdCreate.Parameters.AddWithValue($"$topK{i:000}", parameters.topK);
 										cmdCreate.Parameters.AddWithValue($"$repeatPenalty{i:000}", parameters.repeatPenalty);
-										cmdCreate.Parameters.AddWithValue($"$repeatLastN{i:000}", parameters.repeatLastN);
+										cmdCreate.Parameters.AddWithValue($"$repeatLastN{i:000}", parameters.repeatPenaltyTokens);
 										cmdCreate.Parameters.AddWithValue($"$promptTemplate{i:000}", parameters.promptTemplate);
 										cmdCreate.Parameters.AddWithValue($"$pruneExample{i:000}", parameters.pruneExampleChat);
-										cmdCreate.Parameters.AddWithValue($"$authorNote{i:000}", parameters.authorNote);
+										cmdCreate.Parameters.AddWithValue($"$authorNote{i:000}", parameters.authorNote ?? "");
 										cmdCreate.Parameters.AddWithValue($"$ttsAutoPlay{i:000}", parameters.ttsAutoPlay);
 										cmdCreate.Parameters.AddWithValue($"$ttsInputFilter{i:000}", parameters.ttsInputFilter);
 
@@ -2402,7 +2484,7 @@ namespace Ginger.Integration
 										minPEnabled = minPEnabled,
 										topK = topK,
 										repeatPenalty = repeatPenalty,
-										repeatLastN = repeatLastN,
+										repeatPenaltyTokens = repeatLastN,
 										promptTemplate = promptTemplate,
 										pruneExampleChat = pruneExampleChat,
 										authorNote = authorNote,
@@ -2560,7 +2642,7 @@ namespace Ginger.Integration
 									minPEnabled = minPEnabled,
 									topK = topK,
 									repeatPenalty = repeatPenalty,
-									repeatLastN = repeatLastN,
+									repeatPenaltyTokens = repeatLastN,
 									promptTemplate = promptTemplate,
 									pruneExampleChat = pruneExampleChat,
 									authorNote = authorNote,
@@ -2868,7 +2950,7 @@ namespace Ginger.Integration
 								defaultParameters.minPEnabled = reader.GetBoolean(9);
 								defaultParameters.topK = reader.GetInt32(10);
 								defaultParameters.repeatPenalty = reader.GetDecimal(11);
-								defaultParameters.repeatLastN = reader.GetInt32(12);
+								defaultParameters.repeatPenaltyTokens = reader.GetInt32(12);
 								defaultParameters.promptTemplate = reader[13] as string;
 								defaultParameters.pruneExampleChat = reader.GetBoolean(14);
 								defaultParameters.authorNote = reader.GetString(15);
@@ -2943,7 +3025,7 @@ namespace Ginger.Integration
 								cmdCreateChat.Parameters.AddWithValue("$minPEnabled", parameters.minPEnabled);
 								cmdCreateChat.Parameters.AddWithValue("$topK", parameters.topK);
 								cmdCreateChat.Parameters.AddWithValue("$repeatPenalty", parameters.repeatPenalty);
-								cmdCreateChat.Parameters.AddWithValue("$repeatLastN", parameters.repeatLastN);
+								cmdCreateChat.Parameters.AddWithValue("$repeatLastN", parameters.repeatPenaltyTokens);
 								cmdCreateChat.Parameters.AddWithValue("$promptTemplate", parameters.promptTemplate);
 								cmdCreateChat.Parameters.AddWithValue("$authorNote", parameters.authorNote ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$ttsAutoPlay", parameters.ttsAutoPlay);
@@ -3974,7 +4056,7 @@ namespace Ginger.Integration
 									cmdUpdateChat.Parameters.AddWithValue("$minPEnabled", parameters.minPEnabled);
 									cmdUpdateChat.Parameters.AddWithValue("$topK", parameters.topK);
 									cmdUpdateChat.Parameters.AddWithValue("$repeatPenalty", parameters.repeatPenalty);
-									cmdUpdateChat.Parameters.AddWithValue("$repeatLastN", parameters.repeatLastN);
+									cmdUpdateChat.Parameters.AddWithValue("$repeatLastN", parameters.repeatPenaltyTokens);
 									cmdUpdateChat.Parameters.AddWithValue("$promptTemplate", parameters.promptTemplate);
 									cmdUpdateChat.Parameters.AddWithValue("$pruneExample", parameters.pruneExampleChat);
 								}

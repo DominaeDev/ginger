@@ -18,5 +18,20 @@ namespace Ginger
 			Theme.Apply(this);
 			Theme.EndTheming();
 		}
+
+		// Reduce flickering
+		protected override CreateParams CreateParams
+		{
+			get
+			{
+				if (Utility.InDesignMode)
+					return base.CreateParams;
+
+				CreateParams cp = base.CreateParams;
+				cp.ExStyle |= 0x02000000;  // Turn on WS_EX_COMPOSITED
+				return cp;
+			}
+		}
+
 	}
 }

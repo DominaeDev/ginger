@@ -207,16 +207,17 @@ namespace Ginger
 			else
 				card.data.loreItems = new FaradayCardV1.LoreBookEntry[0];
 
+			var chatSettings = AppSettings.BackyardSettings.DefaultSettings;
+			card.data.repeatLastN = chatSettings.repeatPenaltyTokens;
+			card.data.repeatPenalty = chatSettings.repeatPenalty;
+			card.data.temperature = chatSettings.temperature;
+			card.data.topK = chatSettings.topK;
+			card.data.topP = chatSettings.topP;
+			card.data.minPEnabled = chatSettings.minPEnabled;
+			card.data.minP = chatSettings.minP;
+			card.data.pruneExampleChat = chatSettings.pruneExampleChat;
+			card.data.promptTemplate = chatSettings.promptTemplate;
 			card.data.isNSFW = Current.IsNSFW;
-			card.data.repeatLastN = AppSettings.Faraday.RepeatPenaltyTokens;
-			card.data.repeatPenalty = AppSettings.Faraday.RepeatPenalty;
-			card.data.temperature = AppSettings.Faraday.Temperature;
-			card.data.topK = AppSettings.Faraday.TopK;
-			card.data.topP = AppSettings.Faraday.TopP;
-			card.data.minPEnabled = AppSettings.Faraday.MinPEnabled;
-			card.data.minP = AppSettings.Faraday.MinP;
-			card.data.pruneExampleChat = AppSettings.Faraday.PruneExampleChat;
-			card.data.promptTemplate = AppSettings.Faraday.GetPromptTemplateName();
 
 			return card;
 		}

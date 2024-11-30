@@ -157,6 +157,12 @@ namespace Ginger
 
 		private void TextBox_KeyPress(object sender, KeyPressEventArgs e)
 		{
+			if (e.KeyChar == 0x7f) // Ctrl+Backspace
+			{
+				e.Handled = true;
+				return;
+			}
+
 			if (char.IsDigit(e.KeyChar) || char.IsControl(e.KeyChar) || e.KeyChar == '-'
 				|| (mode == NumberParameter.Mode.Decimal && e.KeyChar == '.'))
 			{
@@ -166,11 +172,11 @@ namespace Ginger
 					return;
 				}
 
-				e.Handled = false; //Do not reject the input
+				e.Handled = false; // Do not reject the input
 			}
 			else
 			{
-				e.Handled = true; //Reject the input
+				e.Handled = true; // Reject the input
 			}
 		}
 

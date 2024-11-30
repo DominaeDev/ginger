@@ -151,9 +151,8 @@ namespace Ginger
 			AppSettings.SaveToIni(Utility.AppPath("Settings.ini"));
 		}
 
-		/// Hack to reduce intolerable flickering
-		/// We have to turn this off occasionally to keep RichTextBox from breaking
-		/// (WinForms is great, just great...)
+		/// Hack to reduce intolerable flickering in WinForms.
+		/// We have to turn this on and off occasionally or else the RichTextBox scrollbar breaks.
 		protected override CreateParams CreateParams
 		{
 			get
@@ -2443,6 +2442,19 @@ namespace Ginger
 		private void bulkImportMenuItem_Click(object sender, EventArgs e)
 		{
 			ImportManyToBackyard();
+		}
+
+		private void changeModelSettingsMenuItem_Click(object sender, EventArgs e)
+		{
+			var dlg = new EditModelSettingsDialog();
+			dlg.ShowDialog();
+		}
+
+		private void editModelSettingsMenuItem_Click(object sender, EventArgs e)
+		{
+			var dlg = new EditModelSettingsDialog();
+//			AppSettings.BackyardLink
+			dlg.ShowDialog();
 		}
 	}
 
