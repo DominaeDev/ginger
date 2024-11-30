@@ -1312,7 +1312,7 @@ Reason: {0}</value>
     <value>Something went wrong when exporting characters. Operation canceled.</value>
   </data>
   <data name="msg_export_many_characters" xml:space="preserve">
-    <value>Successfully exported {0} characters.</value>
+    <value>Successfully exported {0}.</value>
   </data>
   <data name="error_disk_full" xml:space="preserve">
     <value>Disk is full.</value>
@@ -1324,7 +1324,7 @@ Reason: {0}</value>
     <value>One or more files already exist. Do you want to replace them?</value>
   </data>
   <data name="msg_export_some_characters" xml:space="preserve">
-    <value>Successfully exported {0} character(s). (Skipped {1}.)</value>
+    <value>Successfully exported {0}. (Skipped {1}.)</value>
   </data>
   <data name="cap_export_folder" xml:space="preserve">
     <value>Choose export folder</value>
@@ -1342,12 +1342,15 @@ Reason: {0}</value>
     <value>Something went wrong when imported characters. Operation aborted.</value>
   </data>
   <data name="msg_import_many_characters" xml:space="preserve">
-    <value>Successfully imported {0} characters.</value>
+    <value>Successfully imported {0}.</value>
   </data>
   <data name="msg_confirm_import_many" xml:space="preserve">
-    <value>This will import {0} characters to Backyard AI. Continue?</value>
+    <value>This will import {0} to Backyard AI. Continue?</value>
   </data>
   <data name="msg_import_some_characters" xml:space="preserve">
-    <value>Successfully imported {0} character(s). (Skipped {1}.)</value>
+    <value>Successfully imported {0}. (Skipped {1}.)</value>
+  </data>
+  <data name="error_import_many_unsupported" xml:space="preserve">
+    <value>No supported file types found.</value>
   </data>
 </root>

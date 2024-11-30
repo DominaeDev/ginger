@@ -2077,11 +2077,11 @@ namespace Ginger
 			{
 				if (skipped > 0)
 				{
-					MessageBox.Show(string.Format(Resources.msg_export_some_characters, result.succeeded - skipped, skipped), Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MessageBox.Show(string.Format(Resources.msg_export_some_characters, NumCharacters(result.succeeded - skipped), skipped), Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 				else
 				{
-					MessageBox.Show(string.Format(Resources.msg_export_many_characters, result.succeeded), Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MessageBox.Show(string.Format(Resources.msg_export_many_characters, NumCharacters(result.succeeded)), Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 			}
 			else if (result.error == BulkExporter.Error.Cancelled)
@@ -2130,11 +2130,21 @@ namespace Ginger
 				importFileDialog.Multiselect = false;
 			}
 
+			// Identify file types
+			List<string> filenames = importFileDialog.FileNames.ToList();
+			filenames = filenames.Where(fn => FileUtil.CheckFileType(fn) != FileUtil.FileType.Unknown).ToList();
+
+			if (filenames.Count == 0)
+			{
+				MessageBox.Show(Resources.error_import_many_unsupported, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
 			// Confirm
-			if (MessageBox.Show(string.Format(Resources.msg_confirm_import_many, importFileDialog.FileNames.Length), Resources.cap_import_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+			if (MessageBox.Show(string.Format(Resources.msg_confirm_import_many, NumCharacters(filenames.Count)), Resources.cap_import_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
 				return false;
 
-			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileNames[0]);
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(filenames[0]);
 			AppSettings.User.LastImportCharacterFilter = importFileDialog.FilterIndex;
 
 			var importer = new BulkImporter();
@@ -2159,8 +2169,8 @@ namespace Ginger
 				_bCanIdle = true;
 			};
 
-			for (int i = 0; i < importFileDialog.FileNames.Length; ++i)
-				importer.Enqueue(importFileDialog.FileNames[i]);
+			for (int i = 0; i < filenames.Count; ++i)
+				importer.Enqueue(filenames[i]);
 
 			_bCanRegenerate = false;
 			_bCanIdle = false;
@@ -2174,7 +2184,7 @@ namespace Ginger
 		{
 			if (result.error == BulkImporter.Error.NoError)
 			{
-				MessageBox.Show(string.Format(result.skipped == 0 ? Resources.msg_import_many_characters : Resources.msg_import_some_characters, result.succeeded, result.skipped), Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MessageBox.Show(string.Format(result.skipped == 0 ? Resources.msg_import_many_characters : Resources.msg_import_some_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 			else if (result.error == BulkImporter.Error.Cancelled)
 			{
@@ -2184,6 +2194,11 @@ namespace Ginger
 			{
 				MessageBox.Show(Resources.error_import_many_characters, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+		}
+
+		private string NumCharacters(int n)
+		{
+			return n == 1 ? string.Concat(n.ToString(), " character") : string.Concat(n.ToString(), " characters");
 		}
 	}
 }

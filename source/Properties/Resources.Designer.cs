@@ -1368,6 +1368,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No supported file types found..
+        /// </summary>
+        internal static string error_import_many_unsupported {
+            get {
+                return ResourceManager.GetString("error_import_many_unsupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This is not a valid JSON file..
         /// </summary>
         internal static string error_invalid_json_file {
@@ -2305,7 +2314,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will import {0} characters to Backyard AI. Continue?.
+        ///   Looks up a localized string similar to This will import {0} to Backyard AI. Continue?.
         /// </summary>
         internal static string msg_confirm_import_many {
             get {
@@ -2351,7 +2360,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully exported {0} characters..
+        ///   Looks up a localized string similar to Successfully exported {0}..
         /// </summary>
         internal static string msg_export_many_characters {
             get {
@@ -2369,7 +2378,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully exported {0} character(s). (Skipped {1}.).
+        ///   Looks up a localized string similar to Successfully exported {0}. (Skipped {1}.).
         /// </summary>
         internal static string msg_export_some_characters {
             get {
@@ -2396,7 +2405,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully imported {0} characters..
+        ///   Looks up a localized string similar to Successfully imported {0}..
         /// </summary>
         internal static string msg_import_many_characters {
             get {
@@ -2405,7 +2414,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully imported {0} character(s). (Skipped {1}.).
+        ///   Looks up a localized string similar to Successfully imported {0}. (Skipped {1}.).
         /// </summary>
         internal static string msg_import_some_characters {
             get {
