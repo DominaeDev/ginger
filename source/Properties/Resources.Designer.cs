@@ -380,11 +380,29 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Choose export folder.
+        /// </summary>
+        internal static string cap_export_folder {
+            get {
+                return ResourceManager.GetString("cap_export_folder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Export lorebook.
         /// </summary>
         internal static string cap_export_lorebook {
             get {
                 return ResourceManager.GetString("cap_export_lorebook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export characters to Backyard AI.
+        /// </summary>
+        internal static string cap_export_many_characters {
+            get {
+                return ResourceManager.GetString("cap_export_many_characters", resourceCulture);
             }
         }
         
@@ -448,6 +466,15 @@ namespace Ginger.Properties {
         internal static string cap_import_lorebook {
             get {
                 return ResourceManager.GetString("cap_import_lorebook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import characters to Backyard AI.
+        /// </summary>
+        internal static string cap_import_many_characters {
+            get {
+                return ResourceManager.GetString("cap_import_many_characters", resourceCulture);
             }
         }
         
@@ -700,6 +727,15 @@ namespace Ginger.Properties {
         internal static string cap_open_image {
             get {
                 return ResourceManager.GetString("cap_open_image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overwrite existing file(s).
+        /// </summary>
+        internal static string cap_overwrite_files {
+            get {
+                return ResourceManager.GetString("cap_overwrite_files", resourceCulture);
             }
         }
         
@@ -1242,6 +1278,24 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Operation canceled..
+        /// </summary>
+        internal static string error_canceled {
+            get {
+                return ResourceManager.GetString("error_canceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disk is full..
+        /// </summary>
+        internal static string error_disk_full {
+            get {
+                return ResourceManager.GetString("error_disk_full", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The chat contains no messages..
         /// </summary>
         internal static string error_empty_chat {
@@ -1269,11 +1323,11 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to write to file..
+        ///   Looks up a localized string similar to Something went wrong when exporting characters. Operation canceled..
         /// </summary>
-        internal static string error_export_file {
+        internal static string error_export_many_characters {
             get {
-                return ResourceManager.GetString("error_export_file", resourceCulture);
+                return ResourceManager.GetString("error_export_many_characters", resourceCulture);
             }
         }
         
@@ -1305,6 +1359,24 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Something went wrong when imported characters. Operation aborted..
+        /// </summary>
+        internal static string error_import_many_characters {
+            get {
+                return ResourceManager.GetString("error_import_many_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No supported file types found..
+        /// </summary>
+        internal static string error_import_many_unsupported {
+            get {
+                return ResourceManager.GetString("error_import_many_unsupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This is not a valid JSON file..
         /// </summary>
         internal static string error_invalid_json_file {
@@ -1323,7 +1395,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to save character to Backyard AI. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to save character to Backyard AI. Operation canceled..
         /// </summary>
         internal static string error_link_autosave {
             get {
@@ -1332,7 +1404,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to branch chat. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to branch chat. Operation canceled..
         /// </summary>
         internal static string error_link_branch_chat {
             get {
@@ -1368,7 +1440,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to create chat. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to create chat. Operation canceled..
         /// </summary>
         internal static string error_link_create_chat {
             get {
@@ -1377,7 +1449,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to delete chat. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to delete chat. Operation canceled..
         /// </summary>
         internal static string error_link_delete_chat {
             get {
@@ -1395,7 +1467,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to duplicate chat. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to duplicate chat. Operation canceled..
         /// </summary>
         internal static string error_link_duplicate_chat {
             get {
@@ -1424,7 +1496,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Something went wrong. Operation cancelled..
+        ///   Looks up a localized string similar to Something went wrong. Operation canceled..
         /// </summary>
         internal static string error_link_general {
             get {
@@ -1433,7 +1505,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to import chat. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to import chat. Operation canceled..
         /// </summary>
         internal static string error_link_import_chat {
             get {
@@ -1471,7 +1543,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to purge chat. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to purge chat. Operation canceled..
         /// </summary>
         internal static string error_link_purge_chat {
             get {
@@ -1502,7 +1574,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to rename chat. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to rename chat. Operation canceled..
         /// </summary>
         internal static string error_link_rename_chat {
             get {
@@ -1511,7 +1583,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Something went wrong. Operation cancelled..
+        ///   Looks up a localized string similar to Something went wrong. Operation canceled..
         /// </summary>
         internal static string error_link_repair_chat {
             get {
@@ -1529,7 +1601,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to save character to Backyard AI. Operation cancelled..
+        ///   Looks up a localized string similar to Failed to save character to Backyard AI. Operation canceled..
         /// </summary>
         internal static string error_link_save {
             get {
@@ -1725,6 +1797,15 @@ namespace Ginger.Properties {
         internal static string error_unrecognized_lorebook_format {
             get {
                 return ResourceManager.GetString("error_unrecognized_lorebook_format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred when writing file to disk..
+        /// </summary>
+        internal static string error_write_file {
+            get {
+                return ResourceManager.GetString("error_write_file", resourceCulture);
             }
         }
         
@@ -2233,6 +2314,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will import {0} to Backyard AI. Continue?.
+        /// </summary>
+        internal static string msg_confirm_import_many {
+            get {
+                return ResourceManager.GetString("msg_confirm_import_many", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This character does not contain a persona and may not function properly.
         ///Continue?.
         /// </summary>
@@ -2270,6 +2360,33 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Successfully exported {0}..
+        /// </summary>
+        internal static string msg_export_many_characters {
+            get {
+                return ResourceManager.GetString("msg_export_many_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One or more files already exist. Do you want to replace them?.
+        /// </summary>
+        internal static string msg_export_overwrite_files {
+            get {
+                return ResourceManager.GetString("msg_export_overwrite_files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully exported {0}. (Skipped {1}.).
+        /// </summary>
+        internal static string msg_export_some_characters {
+            get {
+                return ResourceManager.GetString("msg_export_some_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Imported character card with {0} error(s) due to invalid or corrupt JSON data. Some content may be incomplete or missing..
         /// </summary>
         internal static string msg_import_character_with_errors {
@@ -2284,6 +2401,24 @@ namespace Ginger.Properties {
         internal static string msg_import_lorebook_with_errors {
             get {
                 return ResourceManager.GetString("msg_import_lorebook_with_errors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully imported {0}..
+        /// </summary>
+        internal static string msg_import_many_characters {
+            get {
+                return ResourceManager.GetString("msg_import_many_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully imported {0}. (Skipped {1}.).
+        /// </summary>
+        internal static string msg_import_some_characters {
+            get {
+                return ResourceManager.GetString("msg_import_some_characters", resourceCulture);
             }
         }
         
@@ -2754,23 +2889,19 @@ namespace Ginger.Properties {
         ///	&lt;!-- Preamble --&gt;
         ///	&lt;Name&gt;%%NAME%%&lt;/Name&gt;
         ///	&lt;Title&gt;%%TITLE%%&lt;/Title&gt;
-        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	&lt;Category&gt;%%CATEGORY%%&lt;/Category&gt;
         ///	&lt;Requires&gt;not base&lt;/Requires&gt;
         ///	&lt;Flags&gt;base&lt;/Flags&gt;
-        ///	&lt;Description&gt;
-        ///		&lt;!-- Recipe information here --&gt;
-        ///	&lt;/Description&gt;
-        ///	
-        ///	&lt;!-- Parameters? --&gt;
+        ///	&lt;Description&gt;&lt;/Description&gt;
+        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	
         ///	&lt;!-- Output --&gt;
-        ///
-        ///	&lt;System&gt; 
-        ///		&lt;!-- Model instructions here --&gt;
+        ///	&lt;System&gt;
+        ///		Text transcript of a never-ending conversation between [user] and [char]. 
+        ///		In the transcript, gestures and other non-verbal actions are written between asterisks (for example, *waves hello* or *moves closer*).
         ///	&lt;/System&gt;
         ///	
-        ///&lt;/Ginger&gt;.
+        ///&lt;/Gi [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string recipe_template_base {
             get {
@@ -2783,14 +2914,10 @@ namespace Ginger.Properties {
         ///	&lt;!-- Preamble --&gt;
         ///	&lt;Name&gt;%%NAME%%&lt;/Name&gt;
         ///	&lt;Title&gt;%%TITLE%%&lt;/Title&gt;
-        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	&lt;Category&gt;%%CATEGORY%%&lt;/Category&gt;
         ///	&lt;Flags&gt;%%FLAGS%%&lt;/Flags&gt;
-        ///	&lt;Description&gt;
-        ///		&lt;!-- Recipe information here --&gt;
-        ///	&lt;/Description&gt;
-        ///	
-        ///	&lt;!-- Parameters? --&gt;
+        ///	&lt;Description&gt;&lt;/Description&gt;
+        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	
         ///	&lt;!-- Output --&gt;
         ///%%NODES%%%%ATTRIBUTES%%%%SYSTEM%%%%POSTHISTORY%%%%PERSONA%%%%USER%%%%SCENARIO%%%%GREETING%%%%GROUPGREETING%%%%EXAMPLE%%%%GRAMMAR%%%%LORE%%&lt;/Ginger&gt;.
@@ -2805,16 +2932,13 @@ namespace Ginger.Properties {
         ///   Looks up a localized string similar to &lt;Ginger version=&quot;1.0&quot;&gt;
         ///	&lt;!-- Preamble --&gt;
         ///	&lt;Name&gt;%%NAME%%&lt;/Name&gt;
-        ///	&lt;Title&gt;%%TITLE%%&lt;/Title&gt;
-        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	&lt;Category&gt;%%CATEGORY%%&lt;/Category&gt;
-        ///	&lt;Description&gt;
-        ///		&lt;!-- Recipe details here --&gt;
-        ///	&lt;/Description&gt;
+        ///	&lt;Description&gt;&lt;/Description&gt;
+        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	
         ///	&lt;!-- Output --&gt;
-        ///	&lt;Persona&gt; 
-        ///		&lt;!-- Character description here --&gt;
+        ///	&lt;Persona&gt;
+        ///	
         ///	&lt;/Persona&gt;
         ///&lt;/Ginger&gt;.
         /// </summary>
@@ -2829,26 +2953,30 @@ namespace Ginger.Properties {
         ///	&lt;!-- Preamble --&gt;
         ///	&lt;Name&gt;%%NAME%%&lt;/Name&gt;
         ///	&lt;Title&gt;%%TITLE%%&lt;/Title&gt;
-        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	&lt;Category&gt;%%CATEGORY%%&lt;/Category&gt;
-        ///	&lt;Description&gt;
-        ///		&lt;!-- Recipe information here --&gt;
-        ///	&lt;/Description&gt;
+        ///	&lt;Description&gt;&lt;/Description&gt;
+        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///
         ///	&lt;!-- Output --&gt;
-        ///	
         ///	&lt;Attribute&gt;
         ///		&lt;Name&gt;Personality&lt;/Name&gt;
-        ///		&lt;Value&gt;&lt;!-- Personality traits, separated by commas --&gt;&lt;/Value&gt;
+        ///		&lt;Value&gt;&lt;/Value&gt;
         ///	&lt;/Attribute&gt;
         ///
         ///	&lt;Attribute&gt;
         ///		&lt;Name&gt;Likes&lt;/Name&gt;
-        ///		&lt;Value&gt;&lt;!-- Likes, separated by commas --&gt;&lt;/Value&gt;
+        ///		&lt;Value&gt;&lt;/Value&gt;
         ///	&lt;/Attribute&gt;
         ///
         ///	&lt;Attribute&gt;
-        ///		&lt;Name&gt;Disl [rest of string was truncated]&quot;;.
+        ///		&lt;Name&gt;Dislikes&lt;/Name&gt;
+        ///		&lt;Value&gt;&lt;/Value&gt;
+        ///	&lt;/Attribute&gt;
+        ///
+        ///	&lt;Persona&gt;
+        ///		
+        ///	&lt;/Persona&gt;
+        ///&lt;/Ginger&gt;.
         /// </summary>
         internal static string recipe_template_personality {
             get {
@@ -2861,14 +2989,11 @@ namespace Ginger.Properties {
         ///	&lt;!-- Preamble --&gt;
         ///	&lt;Name&gt;%%NAME%%&lt;/Name&gt;
         ///	&lt;Title&gt;%%TITLE%%&lt;/Title&gt;
-        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	&lt;Category&gt;%%CATEGORY%%&lt;/Category&gt;
-        ///	&lt;Description&gt;
-        ///		Sample recipe of a character trait
-        ///	&lt;/Description&gt;
-        ///		
-        ///	&lt;!-- Output --&gt;
+        ///	&lt;Description&gt;Sample recipe of a character trait.&lt;/Description&gt;
+        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	
+        ///	&lt;!-- Output --&gt;
         ///	&lt;Persona&gt;
         ///		Two large horns, like those of a ram, protrude from [char&apos;s] forehead, curling up and around her head.
         ///	&lt;/Persona&gt;
@@ -2886,15 +3011,11 @@ namespace Ginger.Properties {
         ///	&lt;!-- Preamble --&gt;
         ///	&lt;Name&gt;%%NAME%%&lt;/Name&gt;
         ///	&lt;Title&gt;%%TITLE%%&lt;/Title&gt;
-        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
+        ///	&lt;Description&gt;Sample recipe with parameters.&lt;/Description&gt;
         ///	&lt;Category&gt;%%CATEGORY%%&lt;/Category&gt;
-        ///	&lt;Description&gt;
-        ///		Sample recipe with parameters.
-        ///	&lt;/Description&gt;
+        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	
-        ///	&lt;!-- Parameters --&gt;
-        ///
-        ///	&lt;!-- A drop-down list --&gt;
+        ///	&lt;!-- Input --&gt;
         ///	&lt;Choice id=&quot;my-choice&quot;&gt;
         ///		&lt;Label&gt;A choice&lt;/Label&gt;
         ///		&lt;Option id=&quot;choice-1&quot;&gt;Choice #1&lt;/Option&gt;
@@ -2902,8 +3023,9 @@ namespace Ginger.Properties {
         ///		&lt;Option id=&quot;choice-3&quot;&gt;Choice #3&lt;/Option&gt;
         ///	&lt;/Choice&gt;
         ///	
-        ///	&lt;!-- A text field --&gt;
-        ///	&lt;Tex [rest of string was truncated]&quot;;.
+        ///	&lt;Text id=&quot;my-text&quot;&gt;
+        ///		&lt;Label&gt;A text field&lt;/Label&gt;
+        ///		&lt;Placeholder&gt;Ple [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string recipe_template_sample_2 {
             get {
@@ -2916,14 +3038,11 @@ namespace Ginger.Properties {
         ///	&lt;!-- Preamble --&gt;
         ///	&lt;Name&gt;%%NAME%%&lt;/Name&gt;
         ///	&lt;Title&gt;%%TITLE%%&lt;/Title&gt;
-        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
+        ///	&lt;Description&gt;Sample recipe with lore book entries.&lt;/Description&gt;
         ///	&lt;Category&gt;%%CATEGORY%%&lt;/Category&gt;
-        ///	&lt;Description&gt;
-        ///		Sample recipe with lore book entries.
-        ///	&lt;/Description&gt;
+        ///	&lt;Author&gt;%%AUTHOR%%&lt;/Author&gt;
         ///	
-        ///	&lt;!-- Parameters --&gt;
-        ///
+        ///	&lt;!-- Input --&gt;
         ///	&lt;Choice id=&quot;lore-kind&quot; mandatory=&quot;true&quot;&gt;
         ///		&lt;Label&gt;Lore kind&lt;/Label&gt;
         ///		&lt;Option id=&quot;fruits&quot;&gt;Fruits&lt;/Option&gt;
@@ -2931,10 +3050,9 @@ namespace Ginger.Properties {
         ///	&lt;/Choice&gt;
         ///	
         ///	&lt;!-- Output --&gt;
-        ///
         ///	&lt;Lore rule=&quot;fruits&quot;&gt;
         ///		&lt;Name&gt;Apple&lt;/Name&gt;
-        ///		&lt;Value&gt;An a [rest of string was truncated]&quot;;.
+        ///		&lt;Value&gt;An apple is a sweet, [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string recipe_template_sample_3 {
             get {
@@ -3928,6 +4046,24 @@ namespace Ginger.Properties {
         internal static string tooltip_enable_scenario {
             get {
                 return ResourceManager.GetString("tooltip_enable_scenario", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export multiple characters from Backyard AI at once..
+        /// </summary>
+        internal static string tooltip_export_many {
+            get {
+                return ResourceManager.GetString("tooltip_export_many", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import multiple characters into Backyard AI at once..
+        /// </summary>
+        internal static string tooltip_import_many {
+            get {
+                return ResourceManager.GetString("tooltip_import_many", resourceCulture);
             }
         }
         

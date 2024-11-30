@@ -551,7 +551,7 @@ namespace Ginger
 			try
 			{
 				string json = Newtonsoft.Json.JsonConvert.SerializeObject(tavernBook);
-				if (json != null && FileUtil.ExportTextFile(filename, json))
+				if (json != null && ExportTextFile(filename, json))
 					return true; // Success
 			}
 			catch
@@ -630,7 +630,7 @@ namespace Ginger
 			try
 			{
 				string json = Newtonsoft.Json.JsonConvert.SerializeObject(lorebookV3);
-				if (json != null && FileUtil.ExportTextFile(filename, json))
+				if (json != null && ExportTextFile(filename, json))
 					return true; // Success
 			}
 			catch
@@ -701,7 +701,7 @@ namespace Ginger
 			try
 			{
 				string json = Newtonsoft.Json.JsonConvert.SerializeObject(agnaiBook);
-				if (json != null && FileUtil.ExportTextFile(filename, json))
+				if (json != null && ExportTextFile(filename, json))
 					return true; // Success
 			}
 			catch
@@ -1010,7 +1010,7 @@ namespace Ginger
 				return Error.FileReadError;
 			}
 
-			if (FileUtil.IsValidJson(json) == false)
+			if (IsValidJson(json) == false)
 			{
 				jsonErrors = 0;
 				return Error.InvalidJson;
@@ -1071,7 +1071,7 @@ namespace Ginger
 				if (pygmalionCard != null)
 				{
 					jsonErrors = 0;
-					Current.LoadCharacter(pygmalionCard);
+					Current.ReadPygmalionCard(pygmalionCard);
 					return Error.NoError;
 				}
 			}
@@ -1083,7 +1083,7 @@ namespace Ginger
 				if (textGenWebUICard != null)
 				{
 					jsonErrors = 0;
-					Current.LoadCharacter(textGenWebUICard);
+					Current.ReadTextGenWebUICard(textGenWebUICard);
 					return Error.NoError;
 				}
 			}
@@ -1304,7 +1304,7 @@ namespace Ginger
 		public static ChatHistory ImportChat(string filename)
 		{
 			string textData;
-			if (FileUtil.ReadTextFile(filename, out textData) == false)
+			if (ReadTextFile(filename, out textData) == false)
 				return null;
 
 			string ext = Path.GetExtension(filename).ToLowerInvariant();
@@ -1458,6 +1458,93 @@ namespace Ginger
 			{
 				return false;
 			}
+		}
+
+		public static bool Export(string filename, FileType fileType)
+		{
+			// Save as...
+			var output = Generator.Generate(Generator.Option.Export);
+			var gingerExt = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
+
+			if (fileType.Contains(FileType.TavernV2 | FileType.Json)) // Tavern V2 (json)
+			{
+				var card = TavernCardV2.FromOutput(output);
+				card.data.extensions.ginger = gingerExt;
+
+				string tavernJson = card.ToJson();
+				if (tavernJson != null && ExportTextFile(filename, tavernJson))
+					return true; // Success
+			}
+			else if (fileType.Contains(FileType.TavernV3 | FileType.Json)) // Tavern V3 (json)
+			{
+				var card = TavernCardV3.FromOutput(output);
+				card.data.extensions.ginger = gingerExt;
+
+				var assets = (AssetCollection)Current.Card.assets.Clone();
+				
+				assets.AddPortraitImage(FileType.Json);
+				assets.Validate();
+
+				card.data.assets = assets
+					.Select(a => a.ToV3Asset(AssetFile.UriFormat.Data))
+					.ToArray();
+
+				string tavernJson = card.ToJson();
+				if (tavernJson != null && ExportTextFile(filename, tavernJson))
+					return true; // Success
+			}
+			else if (fileType.Contains(FileType.Agnaistic | FileType.Json)) // Agnaistic (json)
+			{
+				var card = AgnaisticCard.FromOutput(output);
+				card.extensions.ginger = gingerExt;
+
+				// Avatar image
+				if (Current.Card.portraitImage != null)
+					card.avatar = Utility.ImageToBase64(Current.Card.portraitImage);
+
+				string agnaisticJson = card.ToJson();
+				if (agnaisticJson != null && ExportTextFile(filename, agnaisticJson))
+					return true; // Success
+			}
+			else if (fileType.Contains(FileType.Pygmalion | FileType.Json)) // Pygmalion / CAI (json)
+			{
+				var card = PygmalionCard.FromOutput(output);
+				string json = card.ToJson();
+				if (json != null && ExportTextFile(filename, json))
+					return true; // Success
+			}
+			else if (fileType.Contains(FileType.TavernV2 | FileType.Png)) // Tavern V2 (png)
+			{
+				return Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, Format.SillyTavernV2);
+			}
+			else if (fileType.Contains(FileType.TavernV3 | FileType.Png)) // Tavern V3 (json)
+			{
+				return Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, Format.SillyTavernV3);
+			}
+			else if (fileType.Contains(FileType.Faraday | FileType.Png)) // Faraday (png)
+			{
+				return Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, Format.Faraday);
+			}
+			else if (fileType.Contains(FileType.TavernV3 | FileType.CharX)) // Tavern V3 (charx)
+			{
+				return ExportToCharX(filename);
+			}
+			else if (fileType.Contains(FileType.TextGenWebUI | FileType.Yaml)) // Text Generation WebUI (Yaml)
+			{
+				var card = TextGenWebUICard.FromOutput(output);
+				string yaml = card.ToYaml();
+				if (yaml != null && ExportTextFile(filename, yaml))
+				{
+					// Save portrait
+					if (Current.Card.portraitImage != null)
+					{
+						var pngFilename = Path.Combine(Path.GetDirectoryName(filename), string.Concat(Path.GetFileNameWithoutExtension(filename), ".png"));
+						ExportPNG(pngFilename, Current.Card.portraitImage, false);
+					}
+					return true; // Success
+				}
+			}
+			return false;
 		}
 	}
 }

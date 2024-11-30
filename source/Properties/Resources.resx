@@ -637,8 +637,8 @@ Higher detail increases token count.</value>
   <data name="cap_export_asset" xml:space="preserve">
     <value>Export asset file</value>
   </data>
-  <data name="error_export_file" xml:space="preserve">
-    <value>Failed to write to file.</value>
+  <data name="error_write_file" xml:space="preserve">
+    <value>An error occurred when writing file to disk.</value>
   </data>
   <data name="cap_import_asset" xml:space="preserve">
     <value>Import asset file</value>
@@ -715,7 +715,7 @@ it to leave the context over time.</value>
     <value>Failed to connect to Backyard AI.</value>
   </data>
   <data name="error_link_save" xml:space="preserve">
-    <value>Failed to save character to Backyard AI. Operation cancelled.</value>
+    <value>Failed to save character to Backyard AI. Operation canceled.</value>
   </data>
   <data name="error_link_save_character" xml:space="preserve">
     <value>Failed to save character to Backyard AI. Character not found.</value>
@@ -752,7 +752,7 @@ Do you want to overwrite those changes?</value>
     <value>Restore link to character</value>
   </data>
   <data name="error_link_autosave" xml:space="preserve">
-    <value>Failed to save character to Backyard AI. Operation cancelled.</value>
+    <value>Failed to save character to Backyard AI. Operation canceled.</value>
   </data>
   <data name="error_link_reestablish" xml:space="preserve">
     <value>Unable to restore link. Character not found.
@@ -850,7 +850,7 @@ Please check the Ginger GitHub for updates.</value>
     <value>The chat contains no messages.</value>
   </data>
   <data name="error_link_import_chat" xml:space="preserve">
-    <value>Failed to import chat. Operation cancelled.</value>
+    <value>Failed to import chat. Operation canceled.</value>
   </data>
   <data name="error_unrecognized_chat_format" xml:space="preserve">
     <value>Unrecognized chat format.</value>
@@ -877,25 +877,25 @@ Please check the Ginger GitHub for updates.</value>
     <value>Scrub chat</value>
   </data>
   <data name="error_link_branch_chat" xml:space="preserve">
-    <value>Failed to branch chat. Operation cancelled.</value>
+    <value>Failed to branch chat. Operation canceled.</value>
   </data>
   <data name="error_link_delete_chat" xml:space="preserve">
-    <value>Failed to delete chat. Operation cancelled.</value>
+    <value>Failed to delete chat. Operation canceled.</value>
   </data>
   <data name="error_link_duplicate_chat" xml:space="preserve">
-    <value>Failed to duplicate chat. Operation cancelled.</value>
+    <value>Failed to duplicate chat. Operation canceled.</value>
   </data>
   <data name="error_link_general" xml:space="preserve">
-    <value>Something went wrong. Operation cancelled.</value>
+    <value>Something went wrong. Operation canceled.</value>
   </data>
   <data name="error_link_purge_chat" xml:space="preserve">
-    <value>Failed to purge chat. Operation cancelled.</value>
+    <value>Failed to purge chat. Operation canceled.</value>
   </data>
   <data name="error_link_rename_chat" xml:space="preserve">
-    <value>Failed to rename chat. Operation cancelled.</value>
+    <value>Failed to rename chat. Operation canceled.</value>
   </data>
   <data name="error_link_repair_chat" xml:space="preserve">
-    <value>Something went wrong. Operation cancelled.</value>
+    <value>Something went wrong. Operation canceled.</value>
   </data>
   <data name="error_link_disconnected" xml:space="preserve">
     <value>An error occurred while accessing Backyard AI. Please reestablish the connection and try again.</value>
@@ -1095,7 +1095,7 @@ Do you want to import it anyway? (Messages from characters outside the group wil
     <value>New chat</value>
   </data>
   <data name="error_link_create_chat" xml:space="preserve">
-    <value>Failed to create chat. Operation cancelled.</value>
+    <value>Failed to create chat. Operation canceled.</value>
   </data>
   <data name="cap_link_connect" xml:space="preserve">
     <value>Connect to Backyard AI</value>
@@ -1301,5 +1301,56 @@ Reason: {0}</value>
   </data>
   <data name="status_reload_recipes" xml:space="preserve">
     <value>Recipes reloaded</value>
+  </data>
+  <data name="cap_export_many_characters" xml:space="preserve">
+    <value>Export characters to Backyard AI</value>
+  </data>
+  <data name="error_canceled" xml:space="preserve">
+    <value>Operation canceled.</value>
+  </data>
+  <data name="error_export_many_characters" xml:space="preserve">
+    <value>Something went wrong when exporting characters. Operation canceled.</value>
+  </data>
+  <data name="msg_export_many_characters" xml:space="preserve">
+    <value>Successfully exported {0}.</value>
+  </data>
+  <data name="error_disk_full" xml:space="preserve">
+    <value>Disk is full.</value>
+  </data>
+  <data name="cap_overwrite_files" xml:space="preserve">
+    <value>Overwrite existing file(s)</value>
+  </data>
+  <data name="msg_export_overwrite_files" xml:space="preserve">
+    <value>One or more files already exist. Do you want to replace them?</value>
+  </data>
+  <data name="msg_export_some_characters" xml:space="preserve">
+    <value>Successfully exported {0}. (Skipped {1}.)</value>
+  </data>
+  <data name="cap_export_folder" xml:space="preserve">
+    <value>Choose export folder</value>
+  </data>
+  <data name="tooltip_export_many" xml:space="preserve">
+    <value>Export multiple characters from Backyard AI at once.</value>
+  </data>
+  <data name="tooltip_import_many" xml:space="preserve">
+    <value>Import multiple characters into Backyard AI at once.</value>
+  </data>
+  <data name="cap_import_many_characters" xml:space="preserve">
+    <value>Import characters to Backyard AI</value>
+  </data>
+  <data name="error_import_many_characters" xml:space="preserve">
+    <value>Something went wrong when imported characters. Operation aborted.</value>
+  </data>
+  <data name="msg_import_many_characters" xml:space="preserve">
+    <value>Successfully imported {0}.</value>
+  </data>
+  <data name="msg_confirm_import_many" xml:space="preserve">
+    <value>This will import {0} to Backyard AI. Continue?</value>
+  </data>
+  <data name="msg_import_some_characters" xml:space="preserve">
+    <value>Successfully imported {0}. (Skipped {1}.)</value>
+  </data>
+  <data name="error_import_many_unsupported" xml:space="preserve">
+    <value>No supported file types found.</value>
   </data>
 </root>

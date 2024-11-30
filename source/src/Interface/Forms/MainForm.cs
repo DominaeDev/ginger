@@ -27,6 +27,7 @@ namespace Ginger
 		private static bool _bEnableFormLevelDoubleBuffering = true;
 
 		private static bool _bCanRegenerate = true;
+		private static bool _bCanIdle = true;
 		private bool _bWasFileDirty = false;
 
 		public static MainForm instance { get; private set; }
@@ -187,6 +188,9 @@ namespace Ginger
 
 		private void OnIdle(object sender, EventArgs e)
 		{
+			if (_bCanIdle == false)
+				return;
+
 			foreach (var idleHandler in _idleHandlers)
 				idleHandler.OnIdle();
 
@@ -244,6 +248,8 @@ namespace Ginger
 			applyToAllChatsMenuItem.ToolTipText = Resources.tooltip_link_apply_to_all;
 			alwaysLinkMenuItem.ToolTipText = Resources.tooltip_link_always_create;
 			usePortraitAsBackgroundMenuItem.ToolTipText = Resources.tooltip_link_use_portrait_as_background;
+			bulkExportMenuItem.ToolTipText = Resources.tooltip_export_many;
+			bulkImportMenuItem.ToolTipText = Resources.tooltip_import_many;
 
 			RegisterIdleHandler(recipeList);
 
@@ -1299,6 +1305,9 @@ namespace Ginger
 			breakLinkMenuItem.Enabled = Backyard.ConnectionEstablished;
 			breakLinkMenuItem.Visible = Backyard.ConnectionEstablished && Current.HasActiveLink;
 			chatHistoryMenuItem.Visible = Backyard.ConnectionEstablished;
+			
+			bulkExportMenuItem.Enabled = Backyard.ConnectionEstablished;
+			bulkImportMenuItem.Enabled = Backyard.ConnectionEstablished;
 			
 			// Link options
 			linkOptionsMenuItem.Visible = Backyard.ConnectionEstablished;
@@ -2424,6 +2433,16 @@ namespace Ginger
 		private void customVariablesMenuItem_Click(object sender, EventArgs e)
 		{
 			ShowCustomVariablesDialog();
+		}
+
+		private void bulkExportMenuItem_Click(object sender, EventArgs e)
+		{
+			ExportManyFromBackyard();
+		}
+
+		private void bulkImportMenuItem_Click(object sender, EventArgs e)
+		{
+			ImportManyToBackyard();
 		}
 	}
 

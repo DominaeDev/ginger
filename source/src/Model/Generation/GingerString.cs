@@ -321,26 +321,37 @@ namespace Ginger
 			sb.Replace(InternalNameMarker, NameMarker);
 			sb.Replace(InternalContinueMarker, ContinueMarker);
 
-			string[] characterNames = Current.Characters.Select(c => c.namePlaceholder ?? "").ToArray();
-			for (int i = 0; i < characterNames.Length; ++i)
-				sb.Replace(MakeInternalCharacterMarker(i), characterNames[i]);
+			return sb.TrimStart().ToString();
+		}
 
-			if (AppSettings.Settings.AutoConvertNames)
+		public string WithNames(string[] characterNames, string userName)
+		{
+			return WithNames(value, characterNames, userName);
+		}
+
+		public static string WithNames(string value, string[] characterNames, string userName)
+		{
+			StringBuilder sb = new StringBuilder(value);
+			for (int i = 0; i < characterNames.Length; ++i)
 			{
-				string characterPlaceholder = Current.Character.namePlaceholder;
-				string userPlaceholder = Current.Card.userPlaceholder;
-				sb.Replace(CharacterMarker, characterPlaceholder, true);
-				sb.Replace(UserMarker, userPlaceholder, true);
+				string marker = MakeInternalCharacterMarker(i);
+				sb.Replace(marker, characterNames[i] ?? marker);
 			}
 
-			Utility.ReplaceWholeWord(sb, "<START>", "", StringComparison.Ordinal);
-			            
-			return sb.TrimStart().ToString();
+			if (AppSettings.Settings.AutoConvertNames && characterNames.Length > 0)
+				sb.Replace(CharacterMarker, characterNames[0] ?? CharacterMarker, true);
+			if (AppSettings.Settings.AutoConvertNames)
+				sb.Replace(UserMarker, userName ?? UserMarker, true);
+
+			return sb.ToString();
 		}
 
 		public string ToBaked()
 		{
-			return ToParameter();
+			string[] characterNames = Current.Characters.Select(c => c.namePlaceholder ?? "").ToArray();
+			string userPlaceholder = Current.Card.userPlaceholder;
+
+			return WithNames(ToParameter(), characterNames, userPlaceholder);
 		}
 		
 		public static GingerString FromString(string value)

@@ -752,11 +752,20 @@ namespace Ginger
 
 			char[] brackets = new char[] { '{', '[' };
 
+			var characterNames = new string[] { Current.Name };
+			var userName = Current.Card.userPlaceholder;
+
 			foreach (var parameter in parameters)
 			{
 				// Evaluate default value
-				if (string.IsNullOrEmpty(parameter.defaultValue) == false && parameter.defaultValue.IndexOfAny(brackets, 0) != -1 )
-					parameter.defaultValue = GingerString.FromString(Text.Eval(parameter.defaultValue, evalContext, evalConfig, Text.EvalOption.Minimal)).ToParameter();
+				if (string.IsNullOrEmpty(parameter.defaultValue) == false && parameter.defaultValue.IndexOfAny(brackets, 0) != -1)
+				{
+					var defaultValue = GingerString.FromString(Text.Eval(parameter.defaultValue, evalContext, evalConfig, Text.EvalOption.Minimal)).ToParameter();
+					if (AppSettings.Settings.AutoConvertNames)
+						defaultValue = GingerString.WithNames(defaultValue, characterNames, userName);
+					parameter.defaultValue = defaultValue;
+
+				}
 
 				parameter.ResetToDefault();
 			}
@@ -951,6 +960,31 @@ namespace Ginger
 					template.flags &= ~Template.Flags.Raw;
 				else
 					template.flags |= Template.Flags.Raw;
+			}
+		}
+
+		public void ConvertCharacterMarkers(string characterName, string userName)
+		{
+			ConvertCharacterMarkers(new string[] { characterName }, userName);
+		}
+
+		public void ConvertCharacterMarkers(string[] characterNames, string userName)
+		{
+			foreach (var parameter in parameters)
+			{
+				if (parameter is BaseParameter<string>)
+				{
+					var textParameter = parameter as BaseParameter<string>;
+					textParameter.value = GingerString.WithNames(textParameter.value, characterNames, userName);
+				}
+				else if (parameter is BaseParameter<Lorebook>)
+				{
+					var lorebookParameter = parameter as BaseParameter<Lorebook>;
+					var lorebook = lorebookParameter.value;
+
+					foreach (var entry in lorebook.entries)
+						entry.value = GingerString.WithNames(entry.value, characterNames, userName);
+				}
 			}
 		}
 	}

@@ -237,6 +237,7 @@ namespace Ginger
 			public static bool Autosave = true;
 			public static bool AlwaysLinkOnImport = false;
 			public static VersionNumber LastVersion;
+			public static string BulkImportFolderName = "Imported from Ginger";
 
 			public enum ActiveChatSetting { First, Last, All }
 			public static ActiveChatSetting ApplyChatSettings = ActiveChatSetting.Last;
@@ -383,6 +384,7 @@ namespace Ginger
 				ReadString(ref BackyardLink.Location, linkSection, "Location");
 				ReadEnum(ref BackyardLink.ApplyChatSettings, linkSection, "ApplyChatSettings");
 				ReadBool(ref BackyardLink.UsePortraitAsBackground, linkSection, "UsePortraitAsBackground");
+				ReadString(ref BackyardLink.BulkImportFolderName, linkSection, "BulkImportFolderName");
 			}
 
 			var mruSection = iniData.Sections["MRU"];
@@ -508,6 +510,7 @@ namespace Ginger
 					Write(outputFile, "AlwaysLinkOnImport", BackyardLink.AlwaysLinkOnImport);
 					Write(outputFile, "ApplyChatSettings", BackyardLink.ApplyChatSettings);
 					Write(outputFile, "UsePortraitAsBackground", BackyardLink.UsePortraitAsBackground);
+					Write(outputFile, "BulkImportFolderName", BackyardLink.BulkImportFolderName);
 
 					// MRU list
 					WriteSection(outputFile, "MRU");

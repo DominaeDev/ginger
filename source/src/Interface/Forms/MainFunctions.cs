@@ -9,6 +9,8 @@ using System.Xml;
 using Ginger.Properties;
 using Ginger.Integration;
 
+using WinAPICodePack = Microsoft.WindowsAPICodePack.Dialogs;
+
 using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
@@ -569,8 +571,8 @@ namespace Ginger
 
 		private void ExportCharacter()
 		{
-			ConfirmName(); 
-			
+			ConfirmName();
+
 			string filename = null;
 			if (string.IsNullOrWhiteSpace(Current.Card.name) == false)
 				filename = Current.Card.name;
@@ -579,7 +581,7 @@ namespace Ginger
 
 			if (string.IsNullOrEmpty(filename) == false)
 			{
-				if (AppSettings.User.LastExportCharacterFilter == 5 
+				if (AppSettings.User.LastExportCharacterFilter == 5
 					|| AppSettings.User.LastExportCharacterFilter == 6
 					|| AppSettings.User.LastExportCharacterFilter == 7) // png
 					filename = string.Concat(filename, ".png");
@@ -597,6 +599,7 @@ namespace Ginger
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			exportFileDialog.FilterIndex = AppSettings.User.LastExportCharacterFilter;
+			exportFileDialog.OverwritePrompt = true;
 			var result = exportFileDialog.ShowDialog();
 			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
 				return;
@@ -604,114 +607,52 @@ namespace Ginger
 			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
 			AppSettings.User.LastExportCharacterFilter = exportFileDialog.FilterIndex;
 
-			var output = Generator.Generate(Generator.Option.Export);
-			var gingerExt = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
-
-
-			if (exportFileDialog.FilterIndex == 1) // Tavern V2
+			FileUtil.FileType fileType;
+			switch (exportFileDialog.FilterIndex)
 			{
-				var card = TavernCardV2.FromOutput(output);
-				card.data.extensions.ginger = gingerExt;
-
-				string tavernJson = card.ToJson();
-				if (tavernJson != null && FileUtil.ExportTextFile(exportFileDialog.FileName, tavernJson))
-					return; // Success
+			case 1: // Tavern V2
+				fileType = FileUtil.FileType.TavernV2 | FileUtil.FileType.Json;
+				break;
+			case 2: // Tavern V3
+				fileType = FileUtil.FileType.TavernV3 | FileUtil.FileType.Json;
+				break;
+			case 3: // Agnaistic
+				fileType = FileUtil.FileType.Agnaistic | FileUtil.FileType.Json;
+				break;
+			case 4: // Pygmalion / CAI
+				fileType = FileUtil.FileType.Pygmalion | FileUtil.FileType.Json;
+				break;
+			case 5: // PNGv2
+				fileType = FileUtil.FileType.TavernV2 | FileUtil.FileType.Png;
+				break;
+			case 6: // PNGv3
+				fileType = FileUtil.FileType.TavernV3 | FileUtil.FileType.Png;
+				break;
+			case 7: // Faraday PNG
+				fileType = FileUtil.FileType.Faraday | FileUtil.FileType.Png;
+				break;
+			case 8: // CharX
+				fileType = FileUtil.FileType.TavernV3 | FileUtil.FileType.CharX;
+				break;
+			case 9: // Text Generation WebUI Yaml
+				fileType = FileUtil.FileType.TextGenWebUI | FileUtil.FileType.Yaml;
+				break;
+			default:
+				fileType = FileUtil.FileType.Unknown;
+				break;
 			}
-			else if (exportFileDialog.FilterIndex == 2) // Tavern V3
+
+			// Open in another instance?
+			if (fileType.Contains(FileUtil.FileType.Png) && FileMutex.CanAcquire(exportFileDialog.FileName) == false)
 			{
-				var card = TavernCardV3.FromOutput(output);
-				card.data.extensions.ginger = gingerExt;
-
-				var assets = (AssetCollection)Current.Card.assets.Clone();
-				
-				assets.AddPortraitImage(FileUtil.FileType.Json);
-				assets.Validate();
-
-				card.data.assets = assets
-					.Select(a => a.ToV3Asset(AssetFile.UriFormat.Data))
-					.ToArray();
-
-				string tavernJson = card.ToJson();
-				if (tavernJson != null && FileUtil.ExportTextFile(exportFileDialog.FileName, tavernJson))
-					return; // Success
+				MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(exportFileDialog.FileName)), Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
 			}
-			else if (exportFileDialog.FilterIndex == 3) // Agnaistic
+
+			if (FileUtil.Export(exportFileDialog.FileName, fileType) == false)
 			{
-				var card = AgnaisticCard.FromOutput(output);
-				card.extensions.ginger = gingerExt;
-
-				// Avatar image
-				if (Current.Card.portraitImage != null)
-					card.avatar = Utility.ImageToBase64(Current.Card.portraitImage);
-
-				string agnaisticJson = card.ToJson();
-				if (agnaisticJson != null && FileUtil.ExportTextFile(exportFileDialog.FileName, agnaisticJson))
-					return; // Success
+				MessageBox.Show(Resources.error_write_json, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-			else if (exportFileDialog.FilterIndex == 4) // Pygmalion / CAI
-			{
-				var card = PygmalionCard.FromOutput(output);
-				string json = card.ToJson();
-				if (json != null && FileUtil.ExportTextFile(exportFileDialog.FileName, json))
-					return; // Success
-			}
-			else if (exportFileDialog.FilterIndex == 5) // PNGv2
-			{
-				// Open in another instance?
-				if (FileMutex.CanAcquire(exportFileDialog.FileName) == false)
-				{
-					MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(exportFileDialog.FileName)), Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return;
-				}
-
-				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.SillyTavernV2))
-					return; // Success
-			}
-			else if (exportFileDialog.FilterIndex == 6) // PNGv3
-			{
-				// Open in another instance?
-				if (FileMutex.CanAcquire(exportFileDialog.FileName) == false)
-				{
-					MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(exportFileDialog.FileName)), Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return;
-				}
-
-				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.SillyTavernV3))
-					return; // Success
-			}
-			else if (exportFileDialog.FilterIndex == 7) // Faraday PNG
-			{
-				// Open in another instance?
-				if (FileMutex.CanAcquire(exportFileDialog.FileName) == false)
-				{
-					MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(exportFileDialog.FileName)), Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return;
-				}
-
-				if (FileUtil.Export(exportFileDialog.FileName, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, FileUtil.Format.Faraday))
-					return; // Success
-			}
-			else if (exportFileDialog.FilterIndex == 8) // CharX
-			{
-				if (FileUtil.ExportToCharX(exportFileDialog.FileName))
-					return; // Success
-			}
-			else if (exportFileDialog.FilterIndex == 9) // Text Generation WebUI Yaml
-			{
-				var card = TextGenWebUICard.FromOutput(output);
-				string yaml = card.ToYaml();
-				if (yaml != null && FileUtil.ExportTextFile(exportFileDialog.FileName, yaml))
-				{
-					// Save portrait
-					if (Current.Card.portraitImage != null)
-					{
-						var pngFilename = Path.Combine(Path.GetDirectoryName(exportFileDialog.FileName), string.Concat(Path.GetFileNameWithoutExtension(exportFileDialog.FileName), ".png"));
-						FileUtil.ExportPNG(pngFilename, Current.Card.portraitImage, false);
-					}
-					return; // Success
-				}
-			}
-			MessageBox.Show(Resources.error_write_json, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
 		private void ExportLorebook(Generator.Output output, bool saveLocal)
@@ -745,6 +686,7 @@ namespace Ginger
 			else
 				exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.ContentPath("Lorebooks");
 			exportFileDialog.FilterIndex = AppSettings.User.LastExportLorebookFilter;
+			exportFileDialog.OverwritePrompt = true;
 
 			var result = exportFileDialog.ShowDialog();
 			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
@@ -1553,7 +1495,7 @@ namespace Ginger
 				AppSettings.BackyardLink.Enabled = false;
 			}
 
-			dlg.Characters = Backyard.Characters.ToArray();
+			dlg.Characters = Backyard.CharactersNoUser.ToArray();
 			dlg.Folders = Backyard.Folders.ToArray();
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return false;
@@ -1954,6 +1896,370 @@ namespace Ginger
 					pos_var = text.IndexOf("{$", pos_var + 2);
 				}
 			}
+		}
+
+		public bool ExportManyFromBackyard()
+		{
+			// Refresh character list
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+			{
+				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				AppSettings.BackyardLink.Enabled = false;
+				return false;
+			}
+
+			// Choose character(s)
+			var dlg = new LinkSelectMultipleCharactersDialog();
+			dlg.Characters = Backyard.CharactersNoUser.ToArray();
+			dlg.Folders = Backyard.Folders.ToArray();
+			if (dlg.ShowDialog() != DialogResult.OK || dlg.Characters.Length == 0)
+				return false;
+
+			// Export format
+			var formatDialog = new FileFormatDialog();
+			if (formatDialog.ShowDialog() != DialogResult.OK)
+				return false;
+
+			string ext;
+			if (formatDialog.FileFormat.Contains(FileUtil.FileType.Json))
+				ext = "json";
+			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.Png))
+				ext = "png";
+			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.CharX))
+				ext = "charx";
+			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.Yaml))
+				ext = "yaml";
+			else
+				return false; // Error
+
+			var folderDialog = new WinAPICodePack.CommonOpenFileDialog();
+			folderDialog.Title = Resources.cap_export_folder;
+			folderDialog.IsFolderPicker = true;
+			folderDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			folderDialog.EnsurePathExists = true;
+			folderDialog.AllowNonFileSystemItems = false;
+			folderDialog.EnsureFileExists = true;
+			folderDialog.EnsureReadOnly = false;
+			folderDialog.EnsureValidNames = true;
+			folderDialog.Multiselect = false;
+			folderDialog.AddToMostRecentlyUsedList = false;
+			folderDialog.ShowPlacesList = true;
+
+			if (folderDialog.ShowDialog() != WinAPICodePack.CommonFileDialogResult.Ok)
+				return false;
+
+			var outputDirectory = folderDialog.FileName;
+			if (Directory.Exists(outputDirectory) == false)
+				return false;
+
+			AppSettings.Paths.LastImportExportPath = outputDirectory;
+		
+			var filenames = new List<string>(dlg.Characters.Length);
+			foreach (var character in dlg.Characters)
+			{
+				filenames.Add(Path.Combine(outputDirectory, 
+					Utility.MakeUniqueFilename(string.Format("{0}_{1}.{2}",
+						character.displayName,
+						character.creationDate.ToFileTimeUtc() / 1000L,
+						ext))
+				));
+			}
+
+			// Confirm overwrite?
+			bool bFileExists = filenames.ContainsAny(fn => File.Exists(fn));
+			if (bFileExists && MessageBox.Show(Resources.msg_export_overwrite_files, Resources.cap_overwrite_files, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			{
+				return false;
+			}
+
+			var exporter = new BulkExporter();
+
+			var progressDlg = new ProgressBarDialog();
+			progressDlg.Message = "Exporting...";
+
+			progressDlg.onCancel += (s, e) => {
+				exporter.Cancel();
+				progressDlg.Close();
+			};
+			exporter.onProgress += (value) => {
+				progressDlg.Percentage = value;
+			};
+			exporter.onComplete += (result) => {
+				progressDlg.Percentage = 100;
+				progressDlg.TopMost = false;
+				progressDlg.Close();
+
+				CompleteExport(result, filenames);
+				_bCanRegenerate = true;
+				_bCanIdle = true;
+			};
+
+			for (int i = 0; i < filenames.Count; ++i)
+				exporter.Enqueue(dlg.Characters[i]);
+
+			_bCanRegenerate = false;
+			_bCanIdle = false;
+			exporter.Start(formatDialog.FileFormat);
+			progressDlg.ShowDialog();
+
+			return true;
+		}
+
+		private void CompleteExport(BulkExporter.Result result, List<string> filenames)
+		{
+			int skipped = 0;
+			List<string> removeFilenames = new List<string>();
+			if (result.error == BulkExporter.Error.NoError)
+			{
+				// Move intermediate files
+				for (int i = 0; i < result.filenames.Length && i < filenames.Count; ++i)
+				{
+					try
+					{
+						string tempFilename = result.filenames[i];
+						if (string.IsNullOrEmpty(tempFilename) == false && File.Exists(tempFilename))
+						{
+							if (File.Exists(filenames[i]))
+								File.Delete(filenames[i]);
+							File.Move(tempFilename, filenames[i]);
+						}
+					}
+					catch (IOException e)
+					{
+						if (e.HResult == Win32.HR_ERROR_DISK_FULL 
+							|| e.HResult == Win32.HR_ERROR_HANDLE_DISK_FULL)
+						{
+							removeFilenames.AddRange(result.filenames);
+							result.error = BulkExporter.Error.DiskFullError;
+							break;
+						}
+						else if (e.HResult == Win32.HR_ERROR_ACCESS_DENIED 
+							|| e.HResult == Win32.HR_ERROR_WRITE_PROTECT
+							|| e.HResult == Win32.HR_ERROR_FILE_EXISTS)
+						{
+							skipped++;
+							removeFilenames.Add(result.filenames[i]); // Skip
+						}
+						else
+						{
+							removeFilenames.AddRange(result.filenames);
+							result.error = BulkExporter.Error.FileError;
+							break;
+						}
+					}
+					catch
+					{
+						skipped++;
+						removeFilenames.Add(result.filenames[i]); // Skip
+					}
+				}
+			}
+			else
+			{
+				removeFilenames.AddRange(result.filenames);
+			}
+
+			// Delete temp files
+			foreach (var filename in removeFilenames)
+			{
+				try
+				{
+					if (string.IsNullOrEmpty(filename) == false && File.Exists(filename))
+						File.Delete(filename);
+				}
+				catch
+				{
+					// Do nothing
+				}
+			}
+
+			if (result.error == BulkExporter.Error.NoError)
+			{
+				if (skipped > 0)
+				{
+					MessageBox.Show(string.Format(Resources.msg_export_some_characters, NumCharacters(result.succeeded - skipped), skipped), Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				else
+				{
+					MessageBox.Show(string.Format(Resources.msg_export_many_characters, NumCharacters(result.succeeded)), Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+			}
+			else if (result.error == BulkExporter.Error.Cancelled)
+			{
+				MessageBox.Show(Resources.error_canceled, Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else if (result.error == BulkExporter.Error.FileError)
+			{
+				MessageBox.Show(Resources.error_write_file, Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else if (result.error == BulkExporter.Error.DiskFullError)
+			{
+				MessageBox.Show(Resources.error_disk_full, Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				MessageBox.Show(Resources.error_export_many_characters, Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		public bool ImportManyToBackyard()
+		{
+			// Refresh character list
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+			{
+				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				AppSettings.BackyardLink.Enabled = false;
+				return false;
+			}
+
+			// Select files...
+			try
+			{
+				importFileDialog.Title = Resources.cap_import_character;
+				importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml";
+				importFileDialog.FilterIndex = AppSettings.User.LastImportCharacterFilter;
+				importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+				importFileDialog.Multiselect = true;
+
+				var mr = importFileDialog.ShowDialog();
+				if (mr != DialogResult.OK || importFileDialog.FileNames.Length == 0)
+					return false;
+			}
+			finally
+			{
+				importFileDialog.Multiselect = false;
+			}
+
+			// Identify file types and import (no progress bar)
+			var filenames = importFileDialog.FileNames.ToArray();
+			if (filenames.Length < 10)
+			{ 
+				filenames = filenames
+					.Where(fn => FileUtil.CheckFileType(fn) != FileUtil.FileType.Unknown)
+					.OrderBy(fn => new FileInfo(fn).LastWriteTime)
+					.ToArray();
+				return BeginImport(filenames);
+			}
+
+			// Identify file types (with progress bar)
+			var checker = new AsyncFileTypeChecker();
+
+			var progressDlg = new ProgressBarDialog();
+			progressDlg.Message = "Identifying file types...";
+
+			progressDlg.onCancel += (s, e) => {
+				checker.Cancel();
+				progressDlg.Close();
+				MessageBox.Show(Resources.error_canceled, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			};
+			checker.onProgress += (value) => {
+				progressDlg.Percentage = value;
+			};
+			checker.onComplete += (result) => {
+				progressDlg.Percentage = 100;
+				progressDlg.TopMost = false;
+				progressDlg.Close();
+
+				if (result.error == AsyncFileTypeChecker.Error.NoError)
+				{
+					BeginImport(result.filenames);
+				}
+				else if (result.error == AsyncFileTypeChecker.Error.Cancelled)
+				{
+					MessageBox.Show(Resources.error_canceled, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			};
+
+			checker.Enqueue(filenames);
+			checker.Start();
+			progressDlg.ShowDialog();
+
+			return true;
+		}
+
+		private bool BeginImport(string[] filenames)
+		{
+			if (filenames.Length == 0)
+			{
+				MessageBox.Show(Resources.error_import_many_unsupported, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			// Confirm
+			if (MessageBox.Show(string.Format(Resources.msg_confirm_import_many, NumCharacters(filenames.Length)), Resources.cap_import_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+				return false;
+
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(filenames[0]);
+			AppSettings.User.LastImportCharacterFilter = importFileDialog.FilterIndex;
+
+			// Create Ginger import folder
+			FolderInstance importFolder;
+			if (string.IsNullOrEmpty(AppSettings.BackyardLink.BulkImportFolderName) == false)
+			{
+				string folderName = AppSettings.BackyardLink.BulkImportFolderName.Trim();
+				string folderUrl = Backyard.ToFolderUrl(folderName);
+				importFolder = Backyard.Folders
+					.Where(f => string.Compare(f.name, folderName, StringComparison.OrdinalIgnoreCase) == 0
+						|| string.Compare(f.url, folderUrl, StringComparison.OrdinalIgnoreCase) == 0)
+					.FirstOrDefault();
+
+				if (importFolder.isEmpty)
+					Backyard.CreateNewFolder(folderName, out importFolder); // It's ok if this fails.
+			}
+			else
+				importFolder = default(FolderInstance);
+
+			var importer = new BulkImporter();
+			var progressDlg = new ProgressBarDialog();
+			progressDlg.Message = "Importing...";
+
+			progressDlg.onCancel += (s, e) => {
+				importer.Cancel();
+				progressDlg.Close();
+			};
+			importer.onProgress += (value) => {
+				progressDlg.Percentage = value;
+			};
+			importer.onComplete += (result) => {
+				progressDlg.Percentage = 100;
+				progressDlg.TopMost = false;
+				progressDlg.Close();
+
+				CompleteImport(result);
+				_bCanRegenerate = true;
+				_bCanIdle = true;
+			};
+
+			for (int i = 0; i < filenames.Length; ++i)
+				importer.Enqueue(filenames[i]);
+
+			_bCanRegenerate = false;
+			_bCanIdle = false;
+			importer.Start(importFolder);
+			progressDlg.ShowDialog();
+
+			return true;
+		}
+
+		private void CompleteImport(BulkImporter.Result result)
+		{
+			if (result.error == BulkImporter.Error.NoError)
+			{
+				MessageBox.Show(string.Format(result.skipped == 0 ? Resources.msg_import_many_characters : Resources.msg_import_some_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else if (result.error == BulkImporter.Error.Cancelled)
+			{
+				MessageBox.Show(Resources.error_canceled, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				MessageBox.Show(Resources.error_import_many_characters, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		private string NumCharacters(int n)
+		{
+			return n == 1 ? string.Concat(n.ToString(), " character") : string.Concat(n.ToString(), " characters");
 		}
 	}
 }

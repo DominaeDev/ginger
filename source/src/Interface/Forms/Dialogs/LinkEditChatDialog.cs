@@ -1389,7 +1389,7 @@ namespace Ginger
 
 			if (BackupUtil.WriteBackup(exportFileDialog.FileName, backup) == false)
 			{
-				MessageBox.Show(Resources.error_export_file, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_write_file, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 

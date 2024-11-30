@@ -50,7 +50,10 @@ namespace Ginger.Integration
 		public string instanceId;       // AppFolder.id
 		public string parentId;         // AppFolder.parentFolderId
 		public string name;             // AppFolder.name
+		public string url;				// AppFolder.url
 		public bool isRoot;
+
+		public bool isEmpty { get { return string.IsNullOrEmpty(instanceId); } }
 	}
 
 	public class ImageInstance
@@ -147,6 +150,7 @@ namespace Ginger.Integration
 	{
 		public static IEnumerable<FolderInstance> Folders { get { return _Folders.Values; } }
 		public static IEnumerable<CharacterInstance> Characters { get { return _Characters.Values; } }
+		public static IEnumerable<CharacterInstance> CharactersNoUser { get { return Characters.Where(c => c.isUser == false); } }
 		public static IEnumerable<GroupInstance> Groups { get { return _Groups.Values; } }
 		public static string DefaultModel = null;
 		public static string DefaultUserConfigId = null;
@@ -623,7 +627,7 @@ namespace Ginger.Integration
 						cmdFolderData.CommandText =
 						@"
 							SELECT 
-								id, parentFolderId, name, isRoot
+								id, parentFolderId, name, url, isRoot
 							FROM AppFolder
 						";
 
@@ -634,13 +638,15 @@ namespace Ginger.Integration
 								string instanceId = reader.GetString(0);
 								string parentId = reader[1] as string;
 								string name = reader.GetString(2);
-								bool isRoot = reader.GetBoolean(3);
+								string url = reader.GetString(3);
+								bool isRoot = reader.GetBoolean(4);
 
 								_Folders.TryAdd(instanceId, 
 									new FolderInstance() {
 										instanceId = instanceId,
 										parentId = parentId,
 										name = name,
+										url = url,
 										isRoot = isRoot,
 									});
 							}
@@ -1636,7 +1642,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public static Error CreateNewCharacter(FaradayCardV4 card, ImageInput[] imageInput, BackupData.Chat[] chats, out CharacterInstance characterInstance, out Link.Image[] imageLinks)
+		public static Error CreateNewCharacter(FaradayCardV4 card, ImageInput[] imageInput, BackupData.Chat[] chats, out CharacterInstance characterInstance, out Link.Image[] imageLinks, FolderInstance folder = default(FolderInstance))
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -1659,13 +1665,17 @@ namespace Ginger.Integration
 				return Error.InvalidArgument;
 			}
 
-			// Get root folder
-			var rootFolder = _Folders.Values.FirstOrDefault(f => f.isRoot);
-			if (rootFolder.isRoot == false || string.IsNullOrEmpty(rootFolder.instanceId))
+			FolderInstance parentFolder = folder;
+			if (parentFolder.isEmpty)
 			{
-				characterInstance = default(CharacterInstance);
-				imageLinks = null;
-				return Error.Unknown;
+				// Get root folder
+				parentFolder = _Folders.Values.FirstOrDefault(f => f.isRoot);
+				if (parentFolder.isEmpty)
+				{
+					characterInstance = default(CharacterInstance);
+					imageLinks = null;
+					return Error.Unknown;
+				}
 			}
 
 			bool bAllowBackgrounds = CheckFeature(Feature.ChatBackgrounds);
@@ -1743,7 +1753,7 @@ namespace Ginger.Integration
 							WHERE folderId = $folderId
 							ORDER BY folderSortPosition ASC;
 						";
-						cmdFolderOrder.Parameters.AddWithValue("$folderId", rootFolder.instanceId);
+						cmdFolderOrder.Parameters.AddWithValue("$folderId", parentFolder.instanceId);
 						folderOrder = cmdFolderOrder.ExecuteScalar() as string;
 					}
 
@@ -1987,7 +1997,7 @@ namespace Ginger.Integration
 								cmdCreate.Parameters.AddWithValue("$name", card.data.name);
 								cmdCreate.Parameters.AddWithValue("$displayName", card.data.displayName);
 								cmdCreate.Parameters.AddWithValue("$persona", card.data.persona);
-								cmdCreate.Parameters.AddWithValue("$folderId", rootFolder.instanceId);
+								cmdCreate.Parameters.AddWithValue("$folderId", parentFolder.instanceId);
 								cmdCreate.Parameters.AddWithValue("$folderSortPosition", MakeFolderSortPosition(folderOrder));
 								cmdCreate.Parameters.AddWithValue("$isNSFW", card.data.isNSFW);
 								cmdCreate.Parameters.AddWithValue("$timestamp", createdAt);
@@ -2104,7 +2114,7 @@ namespace Ginger.Integration
 								name = card.data.name,
 								creationDate = now,
 								updateDate = now,
-								folderId = rootFolder.instanceId,
+								folderId = parentFolder.instanceId,
 							};
 
 							transaction.Commit();
@@ -4021,8 +4031,222 @@ namespace Ginger.Integration
 				return Error.Unknown;
 			}
 		}
-		
+
 		#endregion // Chat
+
+		#region Folder
+
+		private struct _FolderInfo 
+		{
+			public string instanceId;
+			public string parentId;
+			public string name;
+			public string url;
+			public bool isRoot;
+			public bool isSortedDesc;
+			public string sortType;
+		}
+
+		public static string ToFolderUrl(string label)
+		{
+			if (string.IsNullOrWhiteSpace(label))
+				return null;
+
+			label = label.Trim().ToLowerInvariant();
+
+			StringBuilder sbFormat = new StringBuilder(label.Length);
+			for (int i = 0; i < label.Length; ++i)
+			{
+				char c = label[i];
+				if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-' || c == '_') // Valid chars
+					sbFormat.Append(c);
+				else if (c >= 'A' && c <= 'Z')
+					sbFormat.Append(char.ToLowerInvariant(c));
+				else if (char.IsWhiteSpace(c))
+					sbFormat.Append('-');
+				else if ((c & 0xFF) == c)
+					sbFormat.Append(string.Format("{0:x2}", c & 0xFF));
+				else
+					sbFormat.Append(string.Format("{0:x4}", c & 0xFFFF));
+			}
+			return sbFormat.ToString();
+		}
+
+		public static Error CreateNewFolder(string folderName, out FolderInstance folderInstance)
+		{
+			if (ConnectionEstablished == false)
+			{
+				folderInstance = default(FolderInstance);
+				return Error.NotConnected;
+			}
+
+			if (string.IsNullOrWhiteSpace(folderName))
+			{
+				folderInstance = default(FolderInstance);
+				return Error.InvalidArgument;
+			}
+
+			folderName = folderName.Trim();
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					// Fetch existing folders
+					var existingFolders = new List<_FolderInfo>();
+					using (var cmdReadFolders = connection.CreateCommand())
+					{ 
+						cmdReadFolders.CommandText =
+						@"
+							SELECT 
+								id, name, url, parentFolderId, isRoot, sortIsDesc, sortType
+							FROM AppFolder
+						";
+
+						using (var reader = cmdReadFolders.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string folderId = reader.GetString(0);
+								string name = reader.GetString(1);
+								string folderUrl = reader.GetString(2);
+								string parentFolderId = reader[3] as string;
+								bool isRoot = reader.GetBoolean(4);
+								bool isSortedDesc = reader.GetBoolean(5);
+								string sortType = reader.GetString(6);
+
+								existingFolders.Add(new _FolderInfo() {
+									instanceId = folderId,
+									parentId = parentFolderId,
+									url = folderUrl,
+									name = name,
+									isRoot = isRoot,
+									isSortedDesc = isSortedDesc,
+									sortType = sortType,
+								});
+							}
+						}
+					}
+
+					string rootFolderId = existingFolders
+						.Where(f => f.isRoot)
+						.Select(f => f.instanceId)
+						.FirstOrDefault();
+
+					if (string.IsNullOrEmpty(rootFolderId))
+					{
+						folderInstance = default(FolderInstance);
+						return Error.NotFound;
+					}
+
+					// Make unique folder url
+					var existingUrls = new HashSet<string>(existingFolders
+						.Where(f => !f.isRoot)
+						.Select(f => f.url));
+
+					string url = ToFolderUrl(folderName);
+					if (existingUrls.Contains(url))
+					{
+						string testUrl = url;
+						int iUrl = 1;
+						while (existingUrls.Contains(testUrl))
+							testUrl = string.Format("{0}-{1:00}", url, iUrl++);
+						url = testUrl;
+					}
+
+					// Write to database
+					using (var transaction = connection.BeginTransaction())
+					{
+						try
+						{
+							string folderId = Cuid.NewCuid();
+							DateTime now = DateTime.Now;
+							long createdAt = now.ToUnixTimeMilliseconds();
+
+							int updates = 0;
+							int expectedUpdates = 0;
+
+							using (var cmdCreateFolder = new SQLiteCommand(connection))
+							{
+								var sbCommand = new StringBuilder();
+
+								// Chat
+								sbCommand.AppendLine(
+								@"
+									INSERT INTO AppFolder
+										(id, createdAt, updatedAt, name, url, pinnedToSidebarPosition, parentFolderId, isRoot, sortIsDesc, sortType)
+									VALUES 
+										($folderId, $timestamp, $timestamp, 
+										$name, $url, $pinnedToSidebarPosition, $parentFolderId, $isRoot, $sortIsDesc, $sortType);
+								");
+
+								cmdCreateFolder.CommandText = sbCommand.ToString();
+								cmdCreateFolder.Parameters.AddWithValue("$folderId", folderId);
+								cmdCreateFolder.Parameters.AddWithValue("$timestamp", createdAt);
+								cmdCreateFolder.Parameters.AddWithValue("$name", folderName);
+								cmdCreateFolder.Parameters.AddWithValue("$url", url);
+								cmdCreateFolder.Parameters.AddWithValue("$pinnedToSidebarPosition", null);
+								cmdCreateFolder.Parameters.AddWithValue("$parentFolderId", rootFolderId);
+								cmdCreateFolder.Parameters.AddWithValue("$isRoot", false);
+								cmdCreateFolder.Parameters.AddWithValue("$sortIsDesc", true);
+								cmdCreateFolder.Parameters.AddWithValue("$sortType", "Custom");
+
+								expectedUpdates += 1;
+								updates += cmdCreateFolder.ExecuteNonQuery();
+							}
+
+							if (updates != expectedUpdates)
+							{
+								transaction.Rollback();
+								folderInstance = default(FolderInstance);
+								return Error.SQLCommandFailed;
+							}
+
+							transaction.Commit();
+
+							folderInstance = new FolderInstance() {
+								instanceId = folderId,
+								isRoot = false,
+								name = folderName,
+								url = url,
+								parentId = rootFolderId,
+							};
+							_Folders.Add(folderInstance.instanceId, folderInstance);
+							return Error.NoError;
+						}
+						catch (Exception e)
+						{
+							transaction.Rollback();
+
+							folderInstance = default(FolderInstance);
+							return Error.SQLCommandFailed;
+						}
+					}
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Disconnect();
+				folderInstance = default(FolderInstance);
+				return Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				Disconnect();
+				folderInstance = default(FolderInstance);
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				Disconnect();
+				folderInstance = default(FolderInstance);
+				return Error.Unknown;
+			}
+		}
+
+		#endregion
 
 		#region Utilities
 		private static string MakeLoreSortPosition(int index, int maxIndex, int hash)
@@ -4544,7 +4768,6 @@ namespace Ginger.Integration
 				return Error.Unknown;
 			}
 		}
-		#endregion // Utilities
 
 		public static bool GetAppVersion(out VersionNumber appVersion)
 		{
@@ -4576,6 +4799,9 @@ namespace Ginger.Integration
 			appVersion = VersionNumber.Zero;
 			return false;
 		}
+
+		#endregion // Utilities
+
 	}
 
 	public static class SqlExtensions

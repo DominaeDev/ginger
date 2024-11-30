@@ -1,7 +1,7 @@
 ﻿
 namespace Ginger
 {
-	partial class LinkSelectCharacterDialog
+	partial class LinkSelectMultipleCharactersDialog
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -36,15 +36,15 @@ namespace Ginger
             treeNode1});
 			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
             treeNode2});
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectCharacterDialog));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectMultipleCharactersDialog));
 			this.btnCancel = new Ginger.ButtonEx();
 			this.btnOk = new Ginger.ButtonEx();
 			this.listPanel = new System.Windows.Forms.Panel();
 			this.treeView = new Ginger.TreeViewEx();
 			this.imageList_Light = new System.Windows.Forms.ImageList(this.components);
-			this.cbCreateLink = new System.Windows.Forms.CheckBox();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.imageList_Dark = new System.Windows.Forms.ImageList(this.components);
+			this.cbSelectAll = new System.Windows.Forms.CheckBox();
 			buttonLayout = new System.Windows.Forms.FlowLayoutPanel();
 			buttonLayout.SuspendLayout();
 			this.listPanel.SuspendLayout();
@@ -85,7 +85,7 @@ namespace Ginger
 			this.btnOk.Name = "btnOk";
 			this.btnOk.Size = new System.Drawing.Size(117, 30);
 			this.btnOk.TabIndex = 1;
-			this.btnOk.Text = "Import";
+			this.btnOk.Text = "Export";
 			this.btnOk.UseVisualStyleBackColor = true;
 			this.btnOk.Click += new System.EventHandler(this.BtnOk_Click);
 			// 
@@ -104,10 +104,10 @@ namespace Ginger
 			// 
 			this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.treeView.CausesValidation = false;
+			this.treeView.CheckBoxes = true;
 			this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.treeView.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.treeView.FullRowSelect = true;
-			this.treeView.HideSelection = false;
 			this.treeView.ImageIndex = 0;
 			this.treeView.ImageList = this.imageList_Light;
 			this.treeView.Location = new System.Drawing.Point(2, 4);
@@ -131,7 +131,7 @@ namespace Ginger
 			this.treeView.Size = new System.Drawing.Size(480, 320);
 			this.treeView.TabIndex = 0;
 			this.treeView.OnRightClick += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseClick);
-			this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
+			this.treeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterCheck);
 			this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseDoubleClick);
 			// 
 			// imageList_Light
@@ -147,18 +147,6 @@ namespace Ginger
 			this.imageList_Light.Images.SetKeyName(6, "character_male_lore.png");
 			this.imageList_Light.Images.SetKeyName(7, "character_female_lore.png");
 			this.imageList_Light.Images.SetKeyName(8, "character_other_lore.png");
-			// 
-			// cbCreateLink
-			// 
-			this.cbCreateLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.cbCreateLink.AutoSize = true;
-			this.cbCreateLink.Location = new System.Drawing.Point(11, 334);
-			this.cbCreateLink.Name = "cbCreateLink";
-			this.cbCreateLink.Size = new System.Drawing.Size(173, 19);
-			this.cbCreateLink.TabIndex = 3;
-			this.cbCreateLink.Text = "Always link when importing";
-			this.cbCreateLink.UseVisualStyleBackColor = true;
-			this.cbCreateLink.Visible = false;
 			// 
 			// toolTip
 			// 
@@ -183,14 +171,28 @@ namespace Ginger
 			this.imageList_Dark.Images.SetKeyName(7, "character_female_lore.png");
 			this.imageList_Dark.Images.SetKeyName(8, "character_other_lore.png");
 			// 
-			// LinkSelectCharacterDialog
+			// cbSelectAll
+			// 
+			this.cbSelectAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.cbSelectAll.AutoSize = true;
+			this.cbSelectAll.Checked = true;
+			this.cbSelectAll.CheckState = System.Windows.Forms.CheckState.Indeterminate;
+			this.cbSelectAll.Location = new System.Drawing.Point(24, 334);
+			this.cbSelectAll.Name = "cbSelectAll";
+			this.cbSelectAll.Size = new System.Drawing.Size(72, 19);
+			this.cbSelectAll.TabIndex = 4;
+			this.cbSelectAll.Text = "Select all";
+			this.cbSelectAll.UseVisualStyleBackColor = true;
+			this.cbSelectAll.CheckedChanged += new System.EventHandler(this.cbSelectAll_CheckedChanged);
+			// 
+			// LinkSelectMultipleCharactersDialog
 			// 
 			this.AcceptButton = this.btnOk;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnCancel;
 			this.ClientSize = new System.Drawing.Size(484, 361);
-			this.Controls.Add(this.cbCreateLink);
+			this.Controls.Add(this.cbSelectAll);
 			this.Controls.Add(this.listPanel);
 			this.Controls.Add(buttonLayout);
 			this.DoubleBuffered = true;
@@ -199,10 +201,10 @@ namespace Ginger
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(450, 300);
-			this.Name = "LinkSelectCharacterDialog";
+			this.Name = "LinkSelectMultipleCharactersDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Choose Backyard AI character";
+			this.Text = "Choose Backyard AI characters to export";
 			buttonLayout.ResumeLayout(false);
 			this.listPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
@@ -215,9 +217,9 @@ namespace Ginger
 		private ButtonEx btnOk;
 		private TreeViewEx treeView;
 		private System.Windows.Forms.ImageList imageList_Light;
-		private System.Windows.Forms.CheckBox cbCreateLink;
 		private System.Windows.Forms.ToolTip toolTip;
 		private System.Windows.Forms.Panel listPanel;
 		private System.Windows.Forms.ImageList imageList_Dark;
+		private System.Windows.Forms.CheckBox cbSelectAll;
 	}
 }

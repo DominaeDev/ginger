@@ -10,8 +10,10 @@ namespace Ginger
 		#region Constants
 		public const int WM_LBUTTONDOWN = 0x0201;
 		public const int WM_LBUTTONUP = 0x0202;
+		public const int WM_LBUTTONDBLCLK = 0x0203;
 		public const int WM_RBUTTONDOWN = 0x0204;
 		public const int WM_RBUTTONUP = 0x0205;
+		public const int WM_RBUTTONDBLCLK = 0x0206;
 		
 		public const int WM_PAINT = 0x0F;
 		public const int WM_NCPAINT = 0x85;
@@ -55,6 +57,12 @@ namespace Ginger
 		public const int SB_TOP = 6;
 		public const int SB_BOTTOM = 7;
 		public const int SB_ENDSCROLL = 8;
+
+		public const int HR_ERROR_ACCESS_DENIED = unchecked((int)0x80070005);
+		public const int HR_ERROR_WRITE_PROTECT = unchecked((int)0x80070013);
+		public const int HR_ERROR_FILE_EXISTS = unchecked((int)0x80070050);
+		public const int HR_ERROR_HANDLE_DISK_FULL = unchecked((int)0x80070027);
+		public const int HR_ERROR_DISK_FULL = unchecked((int)0x80070070);
 		#endregion
 
 		#region Structs

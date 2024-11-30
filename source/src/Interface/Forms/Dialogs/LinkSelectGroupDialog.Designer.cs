@@ -37,8 +37,8 @@ namespace Ginger
             treeNode1,
             treeNode2});
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectGroupDialog));
-			this.btnCancel = new ButtonEx();
-			this.btnOk = new ButtonEx();
+			this.btnCancel = new Ginger.ButtonEx();
+			this.btnOk = new Ginger.ButtonEx();
 			this.listPanel = new System.Windows.Forms.Panel();
 			this.treeView = new Ginger.TreeViewEx();
 			this.imageList_Light = new System.Windows.Forms.ImageList(this.components);
@@ -194,7 +194,7 @@ namespace Ginger
 			this.Name = "LinkSelectGroupDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Select a character";
+			this.Text = "Choose Backyard AI character";
 			buttonLayout.ResumeLayout(false);
 			this.listPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
