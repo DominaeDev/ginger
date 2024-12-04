@@ -1353,4 +1353,35 @@ Reason: {0}</value>
   <data name="error_import_many_unsupported" xml:space="preserve">
     <value>No supported file types found.</value>
   </data>
+  <data name="tooltip_model_minp" xml:space="preserve">
+    <value>Min-P: Low numbers lead to greater word diversity, while high numbers lead to greater coherence.</value>
+  </data>
+  <data name="tooltip_model_repeat_lastn" xml:space="preserve">
+    <value>Penalty tokens: How many tokens to consider when applying the repeat penalty.</value>
+  </data>
+  <data name="tooltip_model_repeat_penalty" xml:space="preserve">
+    <value>Repeat penalty: How much to penalize tokens for how frequently they occur in the text so far.</value>
+  </data>
+  <data name="tooltip_model_sampler" xml:space="preserve">
+    <value>The sampler controls how the next token is chosen from a set of probable choices.
+
+Min-P: Rejects low-probability tokens in favor of more coherent output with higher word diversity, even at higher temperatures. (Default)
+Top-K: Limits sample to the k-highest probability tokens from the set of most probable tokens with cumulative probability less than p.</value>
+  </data>
+  <data name="tooltip_model_temperature" xml:space="preserve">
+    <value>Temperature: Adds randomness to the sampling, resulting in more creativity and less repetition.</value>
+  </data>
+  <data name="tooltip_model_topk" xml:space="preserve">
+    <value>Top-K: Restricts the number of tokens considered. Low numbers lead to higher accuracy with high repetition.</value>
+  </data>
+  <data name="tooltip_model_topp" xml:space="preserve">
+    <value>Top-P: Low numbers lead to greater word diversity, while high numbers lead to greater accuracy.</value>
+  </data>
+  <data name="tooltip_model_associate_prompt_template" xml:space="preserve">
+    <value>Remember the settings for the currently selected model.</value>
+  </data>
+  <data name="tooltip_model_prompt_template" xml:space="preserve">
+    <value>The prompt template controls how the context is delivered to the model.
+Some models require specific prompt templates to function properly.</value>
+  </data>
 </root>

@@ -4403,6 +4403,91 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remember the settings for the currently selected model..
+        /// </summary>
+        internal static string tooltip_model_associate_prompt_template {
+            get {
+                return ResourceManager.GetString("tooltip_model_associate_prompt_template", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Min-P: Low numbers lead to greater word diversity, while high numbers lead to greater coherence..
+        /// </summary>
+        internal static string tooltip_model_minp {
+            get {
+                return ResourceManager.GetString("tooltip_model_minp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The prompt template controls how the context is delivered to the model.
+        ///Some models require specific prompt templates to function properly..
+        /// </summary>
+        internal static string tooltip_model_prompt_template {
+            get {
+                return ResourceManager.GetString("tooltip_model_prompt_template", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Penalty tokens: How many tokens to consider when applying the repeat penalty..
+        /// </summary>
+        internal static string tooltip_model_repeat_lastn {
+            get {
+                return ResourceManager.GetString("tooltip_model_repeat_lastn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repeat penalty: How much to penalize tokens for how frequently they occur in the text so far..
+        /// </summary>
+        internal static string tooltip_model_repeat_penalty {
+            get {
+                return ResourceManager.GetString("tooltip_model_repeat_penalty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The sampler controls how the next token is chosen from a set of probable choices.
+        ///
+        ///Min-P: Rejects low-probability tokens in favor of more coherent output with higher word diversity, even at higher temperatures. (Default)
+        ///Top-K: Limits sample to the k-highest probability tokens from the set of most probable tokens with cumulative probability less than p..
+        /// </summary>
+        internal static string tooltip_model_sampler {
+            get {
+                return ResourceManager.GetString("tooltip_model_sampler", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Temperature: Adds randomness to the sampling, resulting in more creativity and less repetition..
+        /// </summary>
+        internal static string tooltip_model_temperature {
+            get {
+                return ResourceManager.GetString("tooltip_model_temperature", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top-K: Restricts the number of tokens considered. Low numbers lead to higher accuracy with high repetition..
+        /// </summary>
+        internal static string tooltip_model_topk {
+            get {
+                return ResourceManager.GetString("tooltip_model_topk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top-P: Low numbers lead to greater word diversity, while high numbers lead to greater accuracy..
+        /// </summary>
+        internal static string tooltip_model_topp {
+            get {
+                return ResourceManager.GetString("tooltip_model_topp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Move down
         ///(Hold Shift key to move to bottom).
         /// </summary>

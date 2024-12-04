@@ -147,6 +147,7 @@ namespace Ginger {
 			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.alwaysLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.usePortraitAsBackgroundMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.editModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
 			this.autoConvertNameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoBreakMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -171,7 +172,6 @@ namespace Ginger {
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusBarActor = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
-			this.editModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -363,27 +363,27 @@ namespace Ginger {
             this.applyToFirstChatMenuItem,
             this.applyToAllChatsMenuItem});
 			writeChatSettingsMenuItem.Name = "writeChatSettingsMenuItem";
-			writeChatSettingsMenuItem.Size = new System.Drawing.Size(213, 22);
+			writeChatSettingsMenuItem.Size = new System.Drawing.Size(224, 22);
 			writeChatSettingsMenuItem.Text = "Apply chat settings to";
 			// 
 			// applyToLastChatMenuItem
 			// 
 			this.applyToLastChatMenuItem.Name = "applyToLastChatMenuItem";
-			this.applyToLastChatMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.applyToLastChatMenuItem.Size = new System.Drawing.Size(163, 22);
 			this.applyToLastChatMenuItem.Text = "Most recent chat";
 			this.applyToLastChatMenuItem.Click += new System.EventHandler(this.applyToLastChatMenuItem_Click);
 			// 
 			// applyToFirstChatMenuItem
 			// 
 			this.applyToFirstChatMenuItem.Name = "applyToFirstChatMenuItem";
-			this.applyToFirstChatMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.applyToFirstChatMenuItem.Size = new System.Drawing.Size(163, 22);
 			this.applyToFirstChatMenuItem.Text = "Oldest chat";
 			this.applyToFirstChatMenuItem.Click += new System.EventHandler(this.applyToFirstChatMenuItem_Click);
 			// 
 			// applyToAllChatsMenuItem
 			// 
 			this.applyToAllChatsMenuItem.Name = "applyToAllChatsMenuItem";
-			this.applyToAllChatsMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.applyToAllChatsMenuItem.Size = new System.Drawing.Size(163, 22);
 			this.applyToAllChatsMenuItem.Text = "All chats";
 			this.applyToAllChatsMenuItem.Click += new System.EventHandler(this.applyToAllChatsMenuItem_Click);
 			// 
@@ -1383,23 +1383,30 @@ namespace Ginger {
 			// enableAutosaveMenuItem
 			// 
 			this.enableAutosaveMenuItem.Name = "enableAutosaveMenuItem";
-			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(213, 22);
+			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(224, 22);
 			this.enableAutosaveMenuItem.Text = "Synchronized saving";
 			this.enableAutosaveMenuItem.Click += new System.EventHandler(this.enableAutosaveMenuItem_Click);
 			// 
 			// alwaysLinkMenuItem
 			// 
 			this.alwaysLinkMenuItem.Name = "alwaysLinkMenuItem";
-			this.alwaysLinkMenuItem.Size = new System.Drawing.Size(213, 22);
+			this.alwaysLinkMenuItem.Size = new System.Drawing.Size(224, 22);
 			this.alwaysLinkMenuItem.Text = "Always link characters";
 			this.alwaysLinkMenuItem.Click += new System.EventHandler(this.alwaysLinkMenuItem_Click);
 			// 
 			// usePortraitAsBackgroundMenuItem
 			// 
 			this.usePortraitAsBackgroundMenuItem.Name = "usePortraitAsBackgroundMenuItem";
-			this.usePortraitAsBackgroundMenuItem.Size = new System.Drawing.Size(213, 22);
+			this.usePortraitAsBackgroundMenuItem.Size = new System.Drawing.Size(224, 22);
 			this.usePortraitAsBackgroundMenuItem.Text = "Set portrait as background";
 			this.usePortraitAsBackgroundMenuItem.Click += new System.EventHandler(this.usePortraitAsBackgroundMenuItem_Click);
+			// 
+			// editModelSettingsMenuItem
+			// 
+			this.editModelSettingsMenuItem.Name = "editModelSettingsMenuItem";
+			this.editModelSettingsMenuItem.Size = new System.Drawing.Size(224, 22);
+			this.editModelSettingsMenuItem.Text = "Edit default model settings...";
+			this.editModelSettingsMenuItem.Click += new System.EventHandler(this.editModelSettingsMenuItem_Click);
 			// 
 			// toolStripMenuItem11
 			// 
@@ -1591,13 +1598,6 @@ namespace Ginger {
 			// 
 			this.statusConnectionIcon.Name = "statusConnectionIcon";
 			this.statusConnectionIcon.Size = new System.Drawing.Size(0, 17);
-			// 
-			// editModelSettingsMenuItem
-			// 
-			this.editModelSettingsMenuItem.Name = "editModelSettingsMenuItem";
-			this.editModelSettingsMenuItem.Size = new System.Drawing.Size(213, 22);
-			this.editModelSettingsMenuItem.Text = "Model settings...";
-			this.editModelSettingsMenuItem.Click += new System.EventHandler(this.editModelSettingsMenuItem_Click);
 			// 
 			// MainForm
 			// 

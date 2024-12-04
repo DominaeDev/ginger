@@ -28,13 +28,13 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Windows.Forms.Label labelModel;
-			System.Windows.Forms.Label labelTemperature;
-			System.Windows.Forms.Label labelSampling;
-			System.Windows.Forms.Label labelPenaltyTokens;
-			System.Windows.Forms.Label labelRepeatPenalty;
-			System.Windows.Forms.Label labelPromptTemplate;
 			System.Windows.Forms.Label labelPresets;
+			this.labelModel = new System.Windows.Forms.Label();
+			this.labelTemperature = new System.Windows.Forms.Label();
+			this.labelSampling = new System.Windows.Forms.Label();
+			this.labelPenaltyTokens = new System.Windows.Forms.Label();
+			this.labelRepeatPenalty = new System.Windows.Forms.Label();
+			this.labelPromptTemplate = new System.Windows.Forms.Label();
 			this.btnCancel = new Ginger.ButtonEx();
 			this.btnConfirm = new Ginger.ButtonEx();
 			this.cbModel = new Ginger.ComboBoxEx();
@@ -44,43 +44,40 @@
 			this.labelMinP = new System.Windows.Forms.Label();
 			this.panelPresets = new System.Windows.Forms.Panel();
 			this.btnNewPreset = new System.Windows.Forms.Button();
+			this.btnSavePreset = new System.Windows.Forms.Button();
 			this.btnRemovePreset = new System.Windows.Forms.Button();
 			this.cbPresets = new Ginger.ComboBoxEx();
+			this.panelModel = new System.Windows.Forms.Panel();
+			this.cbAssociate = new System.Windows.Forms.CheckBox();
 			this.panelTemperature = new System.Windows.Forms.Panel();
 			this.trackBar_Temperature = new Ginger.TrackBarEx();
-			this.textBox_Temperature = new System.Windows.Forms.TextBox();
+			this.textBox_Temperature = new Ginger.TextBoxEx();
 			this.panelSampling = new System.Windows.Forms.Panel();
 			this.cbSampling = new Ginger.ComboBoxEx();
 			this.panelMinP = new System.Windows.Forms.Panel();
 			this.trackBar_MinP = new Ginger.TrackBarEx();
-			this.textBox_MinP = new System.Windows.Forms.TextBox();
+			this.textBox_MinP = new Ginger.TextBoxEx();
 			this.panelTopP = new System.Windows.Forms.Panel();
 			this.trackBar_TopP = new Ginger.TrackBarEx();
-			this.textBox_TopP = new System.Windows.Forms.TextBox();
+			this.textBox_TopP = new Ginger.TextBoxEx();
 			this.panelTopK = new System.Windows.Forms.Panel();
 			this.trackBar_TopK = new Ginger.TrackBarEx();
-			this.textBox_TopK = new System.Windows.Forms.TextBox();
+			this.textBox_TopK = new Ginger.TextBoxEx();
 			this.panelRepeatPenalty = new System.Windows.Forms.Panel();
 			this.trackBar_RepeatPenalty = new Ginger.TrackBarEx();
-			this.textBox_RepeatPenalty = new System.Windows.Forms.TextBox();
-			this.panelRepeatTokens = new System.Windows.Forms.Panel();
-			this.trackBar_RepeatTokens = new Ginger.TrackBarEx();
-			this.textBox_RepeatTokens = new System.Windows.Forms.TextBox();
+			this.textBox_RepeatPenalty = new Ginger.TextBoxEx();
+			this.panelPenaltyTokens = new System.Windows.Forms.Panel();
+			this.trackBar_PenaltyTokens = new Ginger.TrackBarEx();
+			this.textBox_RepeatTokens = new Ginger.TextBoxEx();
 			this.panelPromptTemplate = new System.Windows.Forms.Panel();
-			this.cbAssociate = new System.Windows.Forms.CheckBox();
 			this.cbPromptTemplate = new Ginger.ComboBoxEx();
 			this.tableLayout_Buttons = new System.Windows.Forms.TableLayoutPanel();
 			this.btnCopy = new Ginger.ButtonEx();
 			this.btnPaste = new Ginger.ButtonEx();
-			labelModel = new System.Windows.Forms.Label();
-			labelTemperature = new System.Windows.Forms.Label();
-			labelSampling = new System.Windows.Forms.Label();
-			labelPenaltyTokens = new System.Windows.Forms.Label();
-			labelRepeatPenalty = new System.Windows.Forms.Label();
-			labelPromptTemplate = new System.Windows.Forms.Label();
 			labelPresets = new System.Windows.Forms.Label();
 			this.tableLayout.SuspendLayout();
 			this.panelPresets.SuspendLayout();
+			this.panelModel.SuspendLayout();
 			this.panelTemperature.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.trackBar_Temperature)).BeginInit();
 			this.panelSampling.SuspendLayout();
@@ -92,77 +89,11 @@
 			((System.ComponentModel.ISupportInitialize)(this.trackBar_TopK)).BeginInit();
 			this.panelRepeatPenalty.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.trackBar_RepeatPenalty)).BeginInit();
-			this.panelRepeatTokens.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.trackBar_RepeatTokens)).BeginInit();
+			this.panelPenaltyTokens.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.trackBar_PenaltyTokens)).BeginInit();
 			this.panelPromptTemplate.SuspendLayout();
 			this.tableLayout_Buttons.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// labelModel
-			// 
-			labelModel.AutoSize = true;
-			labelModel.Dock = System.Windows.Forms.DockStyle.Top;
-			labelModel.Location = new System.Drawing.Point(3, 44);
-			labelModel.Name = "labelModel";
-			labelModel.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-			labelModel.Size = new System.Drawing.Size(114, 21);
-			labelModel.TabIndex = 0;
-			labelModel.Text = "Model";
-			// 
-			// labelTemperature
-			// 
-			labelTemperature.AutoSize = true;
-			labelTemperature.Dock = System.Windows.Forms.DockStyle.Top;
-			labelTemperature.Location = new System.Drawing.Point(3, 128);
-			labelTemperature.Name = "labelTemperature";
-			labelTemperature.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-			labelTemperature.Size = new System.Drawing.Size(114, 21);
-			labelTemperature.TabIndex = 2;
-			labelTemperature.Text = "Temperature";
-			// 
-			// labelSampling
-			// 
-			labelSampling.AutoSize = true;
-			labelSampling.Dock = System.Windows.Forms.DockStyle.Top;
-			labelSampling.Location = new System.Drawing.Point(3, 100);
-			labelSampling.Name = "labelSampling";
-			labelSampling.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-			labelSampling.Size = new System.Drawing.Size(114, 21);
-			labelSampling.TabIndex = 3;
-			labelSampling.Text = "Sampler";
-			// 
-			// labelPenaltyTokens
-			// 
-			labelPenaltyTokens.AutoSize = true;
-			labelPenaltyTokens.Dock = System.Windows.Forms.DockStyle.Top;
-			labelPenaltyTokens.Location = new System.Drawing.Point(3, 268);
-			labelPenaltyTokens.Name = "labelPenaltyTokens";
-			labelPenaltyTokens.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-			labelPenaltyTokens.Size = new System.Drawing.Size(114, 21);
-			labelPenaltyTokens.TabIndex = 7;
-			labelPenaltyTokens.Text = "Penalty tokens";
-			// 
-			// labelRepeatPenalty
-			// 
-			labelRepeatPenalty.AutoSize = true;
-			labelRepeatPenalty.Dock = System.Windows.Forms.DockStyle.Top;
-			labelRepeatPenalty.Location = new System.Drawing.Point(3, 240);
-			labelRepeatPenalty.Name = "labelRepeatPenalty";
-			labelRepeatPenalty.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-			labelRepeatPenalty.Size = new System.Drawing.Size(114, 21);
-			labelRepeatPenalty.TabIndex = 7;
-			labelRepeatPenalty.Text = "Repeat penalty";
-			// 
-			// labelPromptTemplate
-			// 
-			labelPromptTemplate.AutoSize = true;
-			labelPromptTemplate.Dock = System.Windows.Forms.DockStyle.Top;
-			labelPromptTemplate.Location = new System.Drawing.Point(3, 72);
-			labelPromptTemplate.Name = "labelPromptTemplate";
-			labelPromptTemplate.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-			labelPromptTemplate.Size = new System.Drawing.Size(114, 21);
-			labelPromptTemplate.TabIndex = 8;
-			labelPromptTemplate.Text = "Prompt template";
 			// 
 			// labelPresets
 			// 
@@ -174,6 +105,72 @@
 			labelPresets.TabIndex = 23;
 			labelPresets.Text = "Presets";
 			// 
+			// labelModel
+			// 
+			this.labelModel.AutoSize = true;
+			this.labelModel.Dock = System.Windows.Forms.DockStyle.Top;
+			this.labelModel.Location = new System.Drawing.Point(3, 44);
+			this.labelModel.Name = "labelModel";
+			this.labelModel.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
+			this.labelModel.Size = new System.Drawing.Size(114, 21);
+			this.labelModel.TabIndex = 0;
+			this.labelModel.Text = "Model";
+			// 
+			// labelTemperature
+			// 
+			this.labelTemperature.AutoSize = true;
+			this.labelTemperature.Dock = System.Windows.Forms.DockStyle.Top;
+			this.labelTemperature.Location = new System.Drawing.Point(3, 128);
+			this.labelTemperature.Name = "labelTemperature";
+			this.labelTemperature.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
+			this.labelTemperature.Size = new System.Drawing.Size(114, 21);
+			this.labelTemperature.TabIndex = 2;
+			this.labelTemperature.Text = "Temperature";
+			// 
+			// labelSampling
+			// 
+			this.labelSampling.AutoSize = true;
+			this.labelSampling.Dock = System.Windows.Forms.DockStyle.Top;
+			this.labelSampling.Location = new System.Drawing.Point(3, 100);
+			this.labelSampling.Name = "labelSampling";
+			this.labelSampling.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
+			this.labelSampling.Size = new System.Drawing.Size(114, 21);
+			this.labelSampling.TabIndex = 3;
+			this.labelSampling.Text = "Sampler";
+			// 
+			// labelPenaltyTokens
+			// 
+			this.labelPenaltyTokens.AutoSize = true;
+			this.labelPenaltyTokens.Dock = System.Windows.Forms.DockStyle.Top;
+			this.labelPenaltyTokens.Location = new System.Drawing.Point(3, 268);
+			this.labelPenaltyTokens.Name = "labelPenaltyTokens";
+			this.labelPenaltyTokens.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
+			this.labelPenaltyTokens.Size = new System.Drawing.Size(114, 21);
+			this.labelPenaltyTokens.TabIndex = 7;
+			this.labelPenaltyTokens.Text = "Penalty tokens";
+			// 
+			// labelRepeatPenalty
+			// 
+			this.labelRepeatPenalty.AutoSize = true;
+			this.labelRepeatPenalty.Dock = System.Windows.Forms.DockStyle.Top;
+			this.labelRepeatPenalty.Location = new System.Drawing.Point(3, 240);
+			this.labelRepeatPenalty.Name = "labelRepeatPenalty";
+			this.labelRepeatPenalty.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
+			this.labelRepeatPenalty.Size = new System.Drawing.Size(114, 21);
+			this.labelRepeatPenalty.TabIndex = 7;
+			this.labelRepeatPenalty.Text = "Repeat penalty";
+			// 
+			// labelPromptTemplate
+			// 
+			this.labelPromptTemplate.AutoSize = true;
+			this.labelPromptTemplate.Dock = System.Windows.Forms.DockStyle.Top;
+			this.labelPromptTemplate.Location = new System.Drawing.Point(3, 72);
+			this.labelPromptTemplate.Name = "labelPromptTemplate";
+			this.labelPromptTemplate.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
+			this.labelPromptTemplate.Size = new System.Drawing.Size(114, 21);
+			this.labelPromptTemplate.TabIndex = 8;
+			this.labelPromptTemplate.Text = "Prompt template";
+			// 
 			// btnCancel
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -181,7 +178,7 @@
 			this.btnCancel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(98, 30);
-			this.btnCancel.TabIndex = 2;
+			this.btnCancel.TabIndex = 3;
 			this.btnCancel.Text = "Cancel";
 			this.btnCancel.UseVisualStyleBackColor = true;
 			this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
@@ -193,47 +190,48 @@
 			this.btnConfirm.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.btnConfirm.Name = "btnConfirm";
 			this.btnConfirm.Size = new System.Drawing.Size(98, 30);
-			this.btnConfirm.TabIndex = 1;
-			this.btnConfirm.Text = "Apply";
+			this.btnConfirm.TabIndex = 2;
+			this.btnConfirm.Text = "OK";
 			this.btnConfirm.UseVisualStyleBackColor = true;
 			this.btnConfirm.Click += new System.EventHandler(this.BtnOk_Click);
 			// 
 			// cbModel
 			// 
-			this.cbModel.Dock = System.Windows.Forms.DockStyle.Top;
+			this.cbModel.Dock = System.Windows.Forms.DockStyle.Left;
 			this.cbModel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cbModel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.cbModel.FormattingEnabled = true;
-			this.cbModel.Location = new System.Drawing.Point(123, 47);
+			this.cbModel.Location = new System.Drawing.Point(3, 3);
 			this.cbModel.Name = "cbModel";
-			this.cbModel.Size = new System.Drawing.Size(426, 25);
-			this.cbModel.TabIndex = 1;
+			this.cbModel.Size = new System.Drawing.Size(260, 25);
+			this.cbModel.TabIndex = 0;
+			this.cbModel.SelectedIndexChanged += new System.EventHandler(this.cbModel_SelectedIndexChanged);
 			// 
 			// tableLayout
 			// 
 			this.tableLayout.ColumnCount = 2;
 			this.tableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
 			this.tableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tableLayout.Controls.Add(labelPromptTemplate, 0, 2);
-			this.tableLayout.Controls.Add(labelPenaltyTokens, 0, 9);
-			this.tableLayout.Controls.Add(labelRepeatPenalty, 0, 8);
+			this.tableLayout.Controls.Add(this.labelPromptTemplate, 0, 2);
+			this.tableLayout.Controls.Add(this.labelPenaltyTokens, 0, 9);
+			this.tableLayout.Controls.Add(this.labelRepeatPenalty, 0, 8);
 			this.tableLayout.Controls.Add(this.labelTopK, 0, 7);
 			this.tableLayout.Controls.Add(this.labelTopP, 0, 6);
 			this.tableLayout.Controls.Add(this.labelMinP, 0, 5);
-			this.tableLayout.Controls.Add(labelSampling, 0, 3);
-			this.tableLayout.Controls.Add(labelTemperature, 0, 4);
-			this.tableLayout.Controls.Add(labelModel, 0, 1);
+			this.tableLayout.Controls.Add(this.labelSampling, 0, 3);
+			this.tableLayout.Controls.Add(this.labelTemperature, 0, 4);
+			this.tableLayout.Controls.Add(this.labelModel, 0, 1);
 			this.tableLayout.Controls.Add(labelPresets, 0, 0);
 			this.tableLayout.Controls.Add(this.panelPresets, 1, 0);
-			this.tableLayout.Controls.Add(this.cbModel, 1, 1);
-			this.tableLayout.Controls.Add(this.panelTemperature, 1, 4);
+			this.tableLayout.Controls.Add(this.panelModel, 1, 1);
+			this.tableLayout.Controls.Add(this.panelPromptTemplate, 1, 2);
 			this.tableLayout.Controls.Add(this.panelSampling, 1, 3);
+			this.tableLayout.Controls.Add(this.panelTemperature, 1, 4);
 			this.tableLayout.Controls.Add(this.panelMinP, 1, 5);
 			this.tableLayout.Controls.Add(this.panelTopP, 1, 6);
 			this.tableLayout.Controls.Add(this.panelTopK, 1, 7);
 			this.tableLayout.Controls.Add(this.panelRepeatPenalty, 1, 8);
-			this.tableLayout.Controls.Add(this.panelRepeatTokens, 1, 9);
-			this.tableLayout.Controls.Add(this.panelPromptTemplate, 1, 2);
+			this.tableLayout.Controls.Add(this.panelPenaltyTokens, 1, 9);
 			this.tableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayout.Location = new System.Drawing.Point(4, 3);
 			this.tableLayout.Name = "tableLayout";
@@ -249,8 +247,8 @@
 			this.tableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
 			this.tableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
 			this.tableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayout.Size = new System.Drawing.Size(552, 349);
-			this.tableLayout.TabIndex = 7;
+			this.tableLayout.Size = new System.Drawing.Size(552, 311);
+			this.tableLayout.TabIndex = 0;
 			// 
 			// labelTopK
 			// 
@@ -287,6 +285,7 @@
 			// panelPresets
 			// 
 			this.panelPresets.Controls.Add(this.btnNewPreset);
+			this.panelPresets.Controls.Add(this.btnSavePreset);
 			this.panelPresets.Controls.Add(this.btnRemovePreset);
 			this.panelPresets.Controls.Add(this.cbPresets);
 			this.panelPresets.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -295,27 +294,40 @@
 			this.panelPresets.Name = "panelPresets";
 			this.panelPresets.Padding = new System.Windows.Forms.Padding(3, 3, 0, 0);
 			this.panelPresets.Size = new System.Drawing.Size(432, 29);
-			this.panelPresets.TabIndex = 24;
+			this.panelPresets.TabIndex = 0;
 			// 
 			// btnNewPreset
 			// 
 			this.btnNewPreset.Dock = System.Windows.Forms.DockStyle.Right;
 			this.btnNewPreset.Location = new System.Drawing.Point(282, 3);
 			this.btnNewPreset.Name = "btnNewPreset";
-			this.btnNewPreset.Size = new System.Drawing.Size(75, 26);
+			this.btnNewPreset.Size = new System.Drawing.Size(50, 26);
 			this.btnNewPreset.TabIndex = 1;
-			this.btnNewPreset.Text = "Save";
+			this.btnNewPreset.Text = "New";
 			this.btnNewPreset.UseVisualStyleBackColor = true;
+			this.btnNewPreset.Click += new System.EventHandler(this.btnNewPreset_Click);
+			// 
+			// btnSavePreset
+			// 
+			this.btnSavePreset.Dock = System.Windows.Forms.DockStyle.Right;
+			this.btnSavePreset.Location = new System.Drawing.Point(332, 3);
+			this.btnSavePreset.Name = "btnSavePreset";
+			this.btnSavePreset.Size = new System.Drawing.Size(50, 26);
+			this.btnSavePreset.TabIndex = 2;
+			this.btnSavePreset.Text = "Save";
+			this.btnSavePreset.UseVisualStyleBackColor = true;
+			this.btnSavePreset.Click += new System.EventHandler(this.btnSavePreset_Click);
 			// 
 			// btnRemovePreset
 			// 
 			this.btnRemovePreset.Dock = System.Windows.Forms.DockStyle.Right;
-			this.btnRemovePreset.Location = new System.Drawing.Point(357, 3);
+			this.btnRemovePreset.Location = new System.Drawing.Point(382, 3);
 			this.btnRemovePreset.Name = "btnRemovePreset";
-			this.btnRemovePreset.Size = new System.Drawing.Size(75, 26);
-			this.btnRemovePreset.TabIndex = 2;
-			this.btnRemovePreset.Text = "Delete";
+			this.btnRemovePreset.Size = new System.Drawing.Size(50, 26);
+			this.btnRemovePreset.TabIndex = 3;
+			this.btnRemovePreset.Text = "Rem";
 			this.btnRemovePreset.UseVisualStyleBackColor = true;
+			this.btnRemovePreset.Click += new System.EventHandler(this.btnRemovePreset_Click);
 			// 
 			// cbPresets
 			// 
@@ -323,12 +335,37 @@
 			this.cbPresets.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cbPresets.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.cbPresets.FormattingEnabled = true;
-			this.cbPresets.Items.AddRange(new object[] {
-            "(Default)"});
 			this.cbPresets.Location = new System.Drawing.Point(3, 3);
 			this.cbPresets.Name = "cbPresets";
 			this.cbPresets.Size = new System.Drawing.Size(260, 25);
 			this.cbPresets.TabIndex = 0;
+			this.cbPresets.SelectedIndexChanged += new System.EventHandler(this.cbPresets_SelectedIndexChanged);
+			// 
+			// panelModel
+			// 
+			this.panelModel.Controls.Add(this.cbAssociate);
+			this.panelModel.Controls.Add(this.cbModel);
+			this.panelModel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelModel.Location = new System.Drawing.Point(120, 44);
+			this.panelModel.Margin = new System.Windows.Forms.Padding(0);
+			this.panelModel.Name = "panelModel";
+			this.panelModel.Padding = new System.Windows.Forms.Padding(3);
+			this.panelModel.Size = new System.Drawing.Size(432, 28);
+			this.panelModel.TabIndex = 1;
+			// 
+			// cbAssociate
+			// 
+			this.cbAssociate.AutoSize = true;
+			this.cbAssociate.Checked = true;
+			this.cbAssociate.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbAssociate.Location = new System.Drawing.Point(269, 5);
+			this.cbAssociate.Name = "cbAssociate";
+			this.cbAssociate.Size = new System.Drawing.Size(147, 21);
+			this.cbAssociate.TabIndex = 10;
+			this.cbAssociate.Text = "Keep model settings";
+			this.cbAssociate.UseVisualStyleBackColor = true;
+			this.cbAssociate.Visible = false;
+			this.cbAssociate.CheckedChanged += new System.EventHandler(this.cbAssociate_CheckedChanged);
 			// 
 			// panelTemperature
 			// 
@@ -340,7 +377,7 @@
 			this.panelTemperature.Name = "panelTemperature";
 			this.panelTemperature.Padding = new System.Windows.Forms.Padding(3);
 			this.panelTemperature.Size = new System.Drawing.Size(432, 28);
-			this.panelTemperature.TabIndex = 12;
+			this.panelTemperature.TabIndex = 4;
 			// 
 			// trackBar_Temperature
 			// 
@@ -359,8 +396,10 @@
 			this.textBox_Temperature.Dock = System.Windows.Forms.DockStyle.Left;
 			this.textBox_Temperature.Location = new System.Drawing.Point(3, 3);
 			this.textBox_Temperature.Name = "textBox_Temperature";
+			this.textBox_Temperature.Placeholder = null;
 			this.textBox_Temperature.Size = new System.Drawing.Size(100, 25);
 			this.textBox_Temperature.TabIndex = 0;
+			this.textBox_Temperature.TextChanged += new System.EventHandler(this.textBox_Temperature_TextChanged);
 			// 
 			// panelSampling
 			// 
@@ -371,19 +410,17 @@
 			this.panelSampling.Name = "panelSampling";
 			this.panelSampling.Padding = new System.Windows.Forms.Padding(3);
 			this.panelSampling.Size = new System.Drawing.Size(432, 25);
-			this.panelSampling.TabIndex = 14;
+			this.panelSampling.TabIndex = 3;
 			// 
 			// cbSampling
 			// 
 			this.cbSampling.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cbSampling.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.cbSampling.Items.AddRange(new object[] {
-            "Min-P",
-            "Top-P"});
 			this.cbSampling.Location = new System.Drawing.Point(3, 0);
 			this.cbSampling.Name = "cbSampling";
-			this.cbSampling.Size = new System.Drawing.Size(200, 25);
+			this.cbSampling.Size = new System.Drawing.Size(100, 25);
 			this.cbSampling.TabIndex = 0;
+			this.cbSampling.SelectedIndexChanged += new System.EventHandler(this.CbSampling_SelectedIndexChanged);
 			// 
 			// panelMinP
 			// 
@@ -395,7 +432,7 @@
 			this.panelMinP.Name = "panelMinP";
 			this.panelMinP.Padding = new System.Windows.Forms.Padding(3);
 			this.panelMinP.Size = new System.Drawing.Size(432, 28);
-			this.panelMinP.TabIndex = 26;
+			this.panelMinP.TabIndex = 5;
 			// 
 			// trackBar_MinP
 			// 
@@ -415,8 +452,10 @@
 			this.textBox_MinP.Dock = System.Windows.Forms.DockStyle.Left;
 			this.textBox_MinP.Location = new System.Drawing.Point(3, 3);
 			this.textBox_MinP.Name = "textBox_MinP";
+			this.textBox_MinP.Placeholder = null;
 			this.textBox_MinP.Size = new System.Drawing.Size(100, 25);
 			this.textBox_MinP.TabIndex = 0;
+			this.textBox_MinP.TextChanged += new System.EventHandler(this.textBox_MinP_TextChanged);
 			// 
 			// panelTopP
 			// 
@@ -428,7 +467,7 @@
 			this.panelTopP.Name = "panelTopP";
 			this.panelTopP.Padding = new System.Windows.Forms.Padding(3);
 			this.panelTopP.Size = new System.Drawing.Size(432, 28);
-			this.panelTopP.TabIndex = 19;
+			this.panelTopP.TabIndex = 6;
 			// 
 			// trackBar_TopP
 			// 
@@ -447,8 +486,10 @@
 			this.textBox_TopP.Dock = System.Windows.Forms.DockStyle.Left;
 			this.textBox_TopP.Location = new System.Drawing.Point(3, 3);
 			this.textBox_TopP.Name = "textBox_TopP";
+			this.textBox_TopP.Placeholder = null;
 			this.textBox_TopP.Size = new System.Drawing.Size(100, 25);
 			this.textBox_TopP.TabIndex = 0;
+			this.textBox_TopP.TextChanged += new System.EventHandler(this.textBox_TopP_TextChanged);
 			// 
 			// panelTopK
 			// 
@@ -460,7 +501,7 @@
 			this.panelTopK.Name = "panelTopK";
 			this.panelTopK.Padding = new System.Windows.Forms.Padding(3);
 			this.panelTopK.Size = new System.Drawing.Size(432, 28);
-			this.panelTopK.TabIndex = 20;
+			this.panelTopK.TabIndex = 7;
 			// 
 			// trackBar_TopK
 			// 
@@ -480,8 +521,10 @@
 			this.textBox_TopK.Dock = System.Windows.Forms.DockStyle.Left;
 			this.textBox_TopK.Location = new System.Drawing.Point(3, 3);
 			this.textBox_TopK.Name = "textBox_TopK";
+			this.textBox_TopK.Placeholder = null;
 			this.textBox_TopK.Size = new System.Drawing.Size(100, 25);
 			this.textBox_TopK.TabIndex = 0;
+			this.textBox_TopK.TextChanged += new System.EventHandler(this.textBox_TopK_TextChanged);
 			// 
 			// panelRepeatPenalty
 			// 
@@ -493,7 +536,7 @@
 			this.panelRepeatPenalty.Name = "panelRepeatPenalty";
 			this.panelRepeatPenalty.Padding = new System.Windows.Forms.Padding(3);
 			this.panelRepeatPenalty.Size = new System.Drawing.Size(432, 28);
-			this.panelRepeatPenalty.TabIndex = 21;
+			this.panelRepeatPenalty.TabIndex = 8;
 			// 
 			// trackBar_RepeatPenalty
 			// 
@@ -514,46 +557,49 @@
 			this.textBox_RepeatPenalty.Dock = System.Windows.Forms.DockStyle.Left;
 			this.textBox_RepeatPenalty.Location = new System.Drawing.Point(3, 3);
 			this.textBox_RepeatPenalty.Name = "textBox_RepeatPenalty";
+			this.textBox_RepeatPenalty.Placeholder = null;
 			this.textBox_RepeatPenalty.Size = new System.Drawing.Size(100, 25);
 			this.textBox_RepeatPenalty.TabIndex = 0;
+			this.textBox_RepeatPenalty.TextChanged += new System.EventHandler(this.textBox_RepeatPenalty_TextChanged);
 			// 
-			// panelRepeatTokens
+			// panelPenaltyTokens
 			// 
-			this.panelRepeatTokens.Controls.Add(this.trackBar_RepeatTokens);
-			this.panelRepeatTokens.Controls.Add(this.textBox_RepeatTokens);
-			this.panelRepeatTokens.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelRepeatTokens.Location = new System.Drawing.Point(120, 268);
-			this.panelRepeatTokens.Margin = new System.Windows.Forms.Padding(0);
-			this.panelRepeatTokens.Name = "panelRepeatTokens";
-			this.panelRepeatTokens.Padding = new System.Windows.Forms.Padding(3);
-			this.panelRepeatTokens.Size = new System.Drawing.Size(432, 28);
-			this.panelRepeatTokens.TabIndex = 22;
+			this.panelPenaltyTokens.Controls.Add(this.trackBar_PenaltyTokens);
+			this.panelPenaltyTokens.Controls.Add(this.textBox_RepeatTokens);
+			this.panelPenaltyTokens.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelPenaltyTokens.Location = new System.Drawing.Point(120, 268);
+			this.panelPenaltyTokens.Margin = new System.Windows.Forms.Padding(0);
+			this.panelPenaltyTokens.Name = "panelPenaltyTokens";
+			this.panelPenaltyTokens.Padding = new System.Windows.Forms.Padding(3);
+			this.panelPenaltyTokens.Size = new System.Drawing.Size(432, 28);
+			this.panelPenaltyTokens.TabIndex = 9;
 			// 
-			// trackBar_RepeatTokens
+			// trackBar_PenaltyTokens
 			// 
-			this.trackBar_RepeatTokens.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.trackBar_RepeatTokens.LargeChange = 8;
-			this.trackBar_RepeatTokens.Location = new System.Drawing.Point(103, 3);
-			this.trackBar_RepeatTokens.Maximum = 512;
-			this.trackBar_RepeatTokens.Minimum = 16;
-			this.trackBar_RepeatTokens.Name = "trackBar_RepeatTokens";
-			this.trackBar_RepeatTokens.Size = new System.Drawing.Size(326, 22);
-			this.trackBar_RepeatTokens.TabIndex = 1;
-			this.trackBar_RepeatTokens.TickFrequency = 64;
-			this.trackBar_RepeatTokens.Value = 256;
-			this.trackBar_RepeatTokens.ValueChanged += new System.EventHandler(this.trackBar_RepeatTokens_ValueChanged);
+			this.trackBar_PenaltyTokens.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.trackBar_PenaltyTokens.LargeChange = 8;
+			this.trackBar_PenaltyTokens.Location = new System.Drawing.Point(103, 3);
+			this.trackBar_PenaltyTokens.Maximum = 512;
+			this.trackBar_PenaltyTokens.Minimum = 16;
+			this.trackBar_PenaltyTokens.Name = "trackBar_PenaltyTokens";
+			this.trackBar_PenaltyTokens.Size = new System.Drawing.Size(326, 22);
+			this.trackBar_PenaltyTokens.TabIndex = 1;
+			this.trackBar_PenaltyTokens.TickFrequency = 64;
+			this.trackBar_PenaltyTokens.Value = 256;
+			this.trackBar_PenaltyTokens.ValueChanged += new System.EventHandler(this.trackBar_RepeatTokens_ValueChanged);
 			// 
 			// textBox_RepeatTokens
 			// 
 			this.textBox_RepeatTokens.Dock = System.Windows.Forms.DockStyle.Left;
 			this.textBox_RepeatTokens.Location = new System.Drawing.Point(3, 3);
 			this.textBox_RepeatTokens.Name = "textBox_RepeatTokens";
+			this.textBox_RepeatTokens.Placeholder = null;
 			this.textBox_RepeatTokens.Size = new System.Drawing.Size(100, 25);
 			this.textBox_RepeatTokens.TabIndex = 0;
+			this.textBox_RepeatTokens.TextChanged += new System.EventHandler(this.textBox_RepeatTokens_TextChanged);
 			// 
 			// panelPromptTemplate
 			// 
-			this.panelPromptTemplate.Controls.Add(this.cbAssociate);
 			this.panelPromptTemplate.Controls.Add(this.cbPromptTemplate);
 			this.panelPromptTemplate.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelPromptTemplate.Location = new System.Drawing.Point(120, 72);
@@ -561,20 +607,7 @@
 			this.panelPromptTemplate.Name = "panelPromptTemplate";
 			this.panelPromptTemplate.Padding = new System.Windows.Forms.Padding(3);
 			this.panelPromptTemplate.Size = new System.Drawing.Size(432, 28);
-			this.panelPromptTemplate.TabIndex = 27;
-			// 
-			// cbAssociate
-			// 
-			this.cbAssociate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.cbAssociate.AutoSize = true;
-			this.cbAssociate.Checked = true;
-			this.cbAssociate.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbAssociate.Location = new System.Drawing.Point(279, 3);
-			this.cbAssociate.Name = "cbAssociate";
-			this.cbAssociate.Size = new System.Drawing.Size(144, 21);
-			this.cbAssociate.TabIndex = 10;
-			this.cbAssociate.Text = "Make model default";
-			this.cbAssociate.UseVisualStyleBackColor = true;
+			this.panelPromptTemplate.TabIndex = 2;
 			// 
 			// cbPromptTemplate
 			// 
@@ -586,7 +619,8 @@
 			this.cbPromptTemplate.MaximumSize = new System.Drawing.Size(200, 0);
 			this.cbPromptTemplate.Name = "cbPromptTemplate";
 			this.cbPromptTemplate.Size = new System.Drawing.Size(200, 25);
-			this.cbPromptTemplate.TabIndex = 9;
+			this.cbPromptTemplate.TabIndex = 0;
+			this.cbPromptTemplate.SelectedIndexChanged += new System.EventHandler(this.cbPromptTemplate_SelectedIndexChanged);
 			// 
 			// tableLayout_Buttons
 			// 
@@ -607,7 +641,7 @@
 			this.tableLayout_Buttons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayout_Buttons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
 			this.tableLayout_Buttons.Size = new System.Drawing.Size(552, 38);
-			this.tableLayout_Buttons.TabIndex = 3;
+			this.tableLayout_Buttons.TabIndex = 1;
 			// 
 			// btnCopy
 			// 
@@ -616,9 +650,10 @@
 			this.btnCopy.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.btnCopy.Name = "btnCopy";
 			this.btnCopy.Size = new System.Drawing.Size(98, 30);
-			this.btnCopy.TabIndex = 3;
+			this.btnCopy.TabIndex = 0;
 			this.btnCopy.Text = "Copy";
 			this.btnCopy.UseVisualStyleBackColor = true;
+			this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
 			// 
 			// btnPaste
 			// 
@@ -627,9 +662,10 @@
 			this.btnPaste.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.btnPaste.Name = "btnPaste";
 			this.btnPaste.Size = new System.Drawing.Size(98, 30);
-			this.btnPaste.TabIndex = 2;
+			this.btnPaste.TabIndex = 1;
 			this.btnPaste.Text = "Paste";
 			this.btnPaste.UseVisualStyleBackColor = true;
+			this.btnPaste.Click += new System.EventHandler(this.btnPaste_Click);
 			// 
 			// EditModelSettingsDialog
 			// 
@@ -637,8 +673,8 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoSize = true;
 			this.ClientSize = new System.Drawing.Size(560, 355);
-			this.Controls.Add(this.tableLayout_Buttons);
 			this.Controls.Add(this.tableLayout);
+			this.Controls.Add(this.tableLayout_Buttons);
 			this.DoubleBuffered = true;
 			this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -654,6 +690,8 @@
 			this.tableLayout.ResumeLayout(false);
 			this.tableLayout.PerformLayout();
 			this.panelPresets.ResumeLayout(false);
+			this.panelModel.ResumeLayout(false);
+			this.panelModel.PerformLayout();
 			this.panelTemperature.ResumeLayout(false);
 			this.panelTemperature.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.trackBar_Temperature)).EndInit();
@@ -670,11 +708,10 @@
 			this.panelRepeatPenalty.ResumeLayout(false);
 			this.panelRepeatPenalty.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.trackBar_RepeatPenalty)).EndInit();
-			this.panelRepeatTokens.ResumeLayout(false);
-			this.panelRepeatTokens.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.trackBar_RepeatTokens)).EndInit();
+			this.panelPenaltyTokens.ResumeLayout(false);
+			this.panelPenaltyTokens.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.trackBar_PenaltyTokens)).EndInit();
 			this.panelPromptTemplate.ResumeLayout(false);
-			this.panelPromptTemplate.PerformLayout();
 			this.tableLayout_Buttons.ResumeLayout(false);
 			this.ResumeLayout(false);
 
@@ -688,28 +725,28 @@
 		private ComboBoxEx cbPromptTemplate;
 		private System.Windows.Forms.Panel panelTemperature;
 		private TrackBarEx trackBar_Temperature;
-		private System.Windows.Forms.TextBox textBox_Temperature;
+		private TextBoxEx textBox_Temperature;
 		private System.Windows.Forms.Panel panelSampling;
 		private System.Windows.Forms.Panel panelPresets;
-		private System.Windows.Forms.Button btnNewPreset;
+		private System.Windows.Forms.Button btnSavePreset;
 		private System.Windows.Forms.Button btnRemovePreset;
 		private ComboBoxEx cbPresets;
 		private System.Windows.Forms.Panel panelTopP;
 		private TrackBarEx trackBar_TopP;
-		private System.Windows.Forms.TextBox textBox_TopP;
+		private TextBoxEx textBox_TopP;
 		private System.Windows.Forms.Panel panelTopK;
 		private TrackBarEx trackBar_TopK;
-		private System.Windows.Forms.TextBox textBox_TopK;
+		private TextBoxEx textBox_TopK;
 		private System.Windows.Forms.Panel panelRepeatPenalty;
 		private TrackBarEx trackBar_RepeatPenalty;
-		private System.Windows.Forms.TextBox textBox_RepeatPenalty;
-		private System.Windows.Forms.Panel panelRepeatTokens;
-		private TrackBarEx trackBar_RepeatTokens;
-		private System.Windows.Forms.TextBox textBox_RepeatTokens;
+		private TextBoxEx textBox_RepeatPenalty;
+		private System.Windows.Forms.Panel panelPenaltyTokens;
+		private TrackBarEx trackBar_PenaltyTokens;
+		private TextBoxEx textBox_RepeatTokens;
 		private ComboBoxEx cbSampling;
 		private System.Windows.Forms.Panel panelMinP;
 		private TrackBarEx trackBar_MinP;
-		private System.Windows.Forms.TextBox textBox_MinP;
+		private TextBoxEx textBox_MinP;
 		private System.Windows.Forms.Label labelMinP;
 		private System.Windows.Forms.Label labelTopK;
 		private System.Windows.Forms.Label labelTopP;
@@ -718,5 +755,13 @@
 		private ButtonEx btnPaste;
 		private System.Windows.Forms.Panel panelPromptTemplate;
 		private System.Windows.Forms.CheckBox cbAssociate;
+		private System.Windows.Forms.Label labelModel;
+		private System.Windows.Forms.Label labelTemperature;
+		private System.Windows.Forms.Label labelSampling;
+		private System.Windows.Forms.Label labelPenaltyTokens;
+		private System.Windows.Forms.Label labelRepeatPenalty;
+		private System.Windows.Forms.Label labelPromptTemplate;
+		private System.Windows.Forms.Panel panelModel;
+		private System.Windows.Forms.Button btnNewPreset;
 	}
 }

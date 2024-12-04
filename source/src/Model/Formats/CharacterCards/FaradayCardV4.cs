@@ -207,8 +207,8 @@ namespace Ginger
 			else
 				card.data.loreItems = new FaradayCardV1.LoreBookEntry[0];
 
-			var chatSettings = AppSettings.BackyardSettings.DefaultSettings;
-			card.data.repeatLastN = chatSettings.repeatPenaltyTokens;
+			var chatSettings = AppSettings.BackyardSettings.UserSettings;
+			card.data.repeatLastN = chatSettings.repeatLastN;
 			card.data.repeatPenalty = chatSettings.repeatPenalty;
 			card.data.temperature = chatSettings.temperature;
 			card.data.topK = chatSettings.topK;

@@ -2447,13 +2447,16 @@ namespace Ginger
 		private void changeModelSettingsMenuItem_Click(object sender, EventArgs e)
 		{
 			var dlg = new EditModelSettingsDialog();
+			dlg.EditingDefaults = false;
+			dlg.Parameters = AppSettings.BackyardSettings.UserSettings.Copy();
 			dlg.ShowDialog();
 		}
 
 		private void editModelSettingsMenuItem_Click(object sender, EventArgs e)
 		{
 			var dlg = new EditModelSettingsDialog();
-//			AppSettings.BackyardLink
+			dlg.EditingDefaults = true;
+			dlg.Parameters = AppSettings.BackyardSettings.UserSettings.Copy();
 			dlg.ShowDialog();
 		}
 	}

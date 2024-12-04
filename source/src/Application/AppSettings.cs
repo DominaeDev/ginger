@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Ginger
@@ -156,25 +157,42 @@ namespace Ginger
 
 		public static class BackyardSettings
 		{
-			public static ChatParameters DefaultSettings
+			public static ChatParameters UserSettings = new ChatParameters();
+			public static List<ChatParameters> Presets = new List<ChatParameters>();
+
+/*			public static List<KeyValuePair<string, ChatParameters>> PerModelSettings = new List<KeyValuePair<string, ChatParameters>>();
+			
+			public static void AssociateModelSettings(string modelName, ChatParameters settings)
 			{
-				get
+				int index = PerModelSettings.FindIndex(kvp => string.Compare(kvp.Key, modelName, StringComparison.OrdinalIgnoreCase) == 0);
+
+				if (settings != null)
 				{
-					if (chatSettings.Count > 0)
-						return chatSettings[0];
-					return ChatParameters.Default;
-				}
-				set
-				{
-					if (chatSettings.Count > 0)
-						chatSettings[0] = value;
+					if (index == -1)
+						PerModelSettings.Add(new KeyValuePair<string, ChatParameters>(modelName, settings.Copy()));
 					else
-						chatSettings.Add(value);
+						PerModelSettings[index] = new KeyValuePair<string, ChatParameters>(modelName, settings.Copy());
 				}
+				else if (index != -1)
+					PerModelSettings.RemoveAt(index);
 			}
 
-			public static List<ChatParameters> chatSettings = new List<ChatParameters>();
-			
+			public static ChatParameters GetAssociatedModelSettings(string modelName)
+			{
+				if (modelName == null)
+					return null;
+
+				int index = PerModelSettings.FindIndex(kvp => string.Compare(kvp.Key, modelName, StringComparison.OrdinalIgnoreCase) == 0);
+				if (index != -1)
+					return PerModelSettings[index].Value.Copy();
+				return null;
+			}
+			public static bool HasAssociatedModelSettings(string modelName)
+			{
+				return GetAssociatedModelSettings(modelName) != null;
+			}
+*/
+
 		}
 
 		public static class BackyardLink
@@ -317,65 +335,51 @@ namespace Ginger
 				ReadString(ref BackyardLink.BulkImportFolderName, linkSection, "BulkImportFolderName");
 			}
 			
-			var presetsSection = iniData.Sections["BackyardAI.Presets"];
-			if (presetsSection != null)
+			BackyardSettings.Presets.Clear();
+			var modelSettingsSection = iniData.Sections["BackyardAI.ModelSettings"]; // Since v1.5.0
+			if (modelSettingsSection != null)
 			{
-				for (int index = 0; index < 100; ++index)
-				{
-					string value = presetsSection[string.Format("Preset{0:00}.Model", index)];
-					if (string.IsNullOrWhiteSpace(value))
-						break;
-
-					ChatParameters chatSettings = new ChatParameters();
-
-					ReadString(ref chatSettings.model, presetsSection, string.Format("Preset{0:00}.Model", index));
-					if (string.Compare(chatSettings.model, "default", StringComparison.OrdinalIgnoreCase) == 0)
-						chatSettings.model = null;
-					ReadInt(ref chatSettings.repeatPenaltyTokens, presetsSection, string.Format("Preset{0:00}.RepeatPenaltyTokens", index), 16, 512);
-					ReadDecimal(ref chatSettings.repeatPenalty, presetsSection, string.Format("Preset{0:00}.RepeatPenalty", index), 0.5m, 2.0m);
-					ReadDecimal(ref chatSettings.temperature, presetsSection, string.Format("Preset{0:00}.Temperature", index), 0m, 5m);
-					ReadInt(ref chatSettings.topK, presetsSection, string.Format("Preset{0:00}.TopK", index), 0, 100);
-					ReadDecimal(ref chatSettings.topP, presetsSection, string.Format("Preset{0:00}.TopP", index), 0m, 1m);
-					ReadDecimal(ref chatSettings.minP, presetsSection, string.Format("Preset{0:00}.MinP", index), 0m, 1m);
-					ReadBool(ref chatSettings.minPEnabled, presetsSection, string.Format("Preset{0:00}.MinPEnabled", index));
-					ReadBool(ref chatSettings.pruneExampleChat, presetsSection, string.Format("Preset{0:00}.PruneExampleChat", index));
-					ReadString(ref chatSettings.authorNote, presetsSection, string.Format("Preset{0:00}.AuthorNote", index));
-					string promptTemplate = null;
-					ReadString(ref promptTemplate, presetsSection, string.Format("Preset{0:00}.PromptTemplate", index));
-					chatSettings.promptTemplate = promptTemplate;
-
-					BackyardSettings.chatSettings.Add(chatSettings);
-				}
+				BackyardSettings.UserSettings = ReadModelSettings(modelSettingsSection);
 			}
-			else
+			else // Legacy < 1.5.0
 			{
 				var backyardSection = iniData.Sections["BackyardAI"];
-				if (backyardSection != null)
-				{
-					if (backyardSection.ContainsKey("Model"))	// Legacy
-					{
-						ChatParameters chatSettings = new ChatParameters();
-
-						ReadString(ref chatSettings.model, backyardSection, "Model");
-						if (string.Compare(chatSettings.model, "default", StringComparison.OrdinalIgnoreCase) == 0)
-							chatSettings.model = null;
-						ReadInt(ref chatSettings.repeatPenaltyTokens, backyardSection, "RepeatPenaltyTokens", 16, 512);
-						ReadDecimal(ref chatSettings.repeatPenalty, backyardSection, "RepeatPenalty", 0.5m, 2.0m);
-						ReadDecimal(ref chatSettings.temperature, backyardSection, "Temperature", 0m, 5m);
-						ReadInt(ref chatSettings.topK, backyardSection, "TopK", 0, 100);
-						ReadDecimal(ref chatSettings.topP, backyardSection, "TopP", 0m, 1m);
-						ReadDecimal(ref chatSettings.minP, backyardSection, "MinP", 0m, 1m);
-						ReadBool(ref chatSettings.minPEnabled, backyardSection, "MinPEnabled");
-						ReadBool(ref chatSettings.pruneExampleChat, backyardSection, "PruneExampleChat");
-						ReadString(ref chatSettings.authorNote, backyardSection, "AuthorNote");
-						int iPromptTemplate = 0;
-						ReadInt(ref iPromptTemplate, backyardSection, "PromptTemplate");
-						chatSettings.iPromptTemplate = iPromptTemplate;
-
-						BackyardSettings.chatSettings.Add(chatSettings);
-					}
-				}
+				if (backyardSection != null && backyardSection.ContainsKey("Model"))
+					BackyardSettings.UserSettings = ReadModelSettings(backyardSection);
 			}
+
+			// Model setting presets
+			int unnamedPresetCounter = 1;
+			for (int i = 0; i < 1000; ++i)
+			{
+				var presetsSection = iniData.Sections[string.Format("BackyardAI.Preset{0:00}", i)];
+				if (presetsSection != null)
+				{
+					ChatParameters chatSettings = ReadModelSettings(presetsSection);
+					ReadString(ref chatSettings.name, presetsSection, "Name");
+					if (string.IsNullOrEmpty(chatSettings.name))
+						chatSettings.name = string.Format("Preset #{0}", unnamedPresetCounter++);
+					BackyardSettings.Presets.Add(chatSettings);
+					continue;
+				}
+				break;
+			}
+
+#if false
+			// Per-model settings
+			for (int i = 0; i < 1000; ++i)
+			{
+				var perModelSection = iniData.Sections[string.Format("BackyardAI.ModelPreset{0:00}", i)];
+				if (perModelSection != null)
+				{
+					ChatParameters chatSettings = ReadModelSettings(perModelSection);
+					if (string.IsNullOrEmpty(chatSettings.model) == false)
+						BackyardSettings.AssociateModelSettings(chatSettings.model, chatSettings);
+					continue;
+				}
+				break;
+			}
+#endif
 
 			var mruSection = iniData.Sections["MRU"];
 			if (mruSection != null)
@@ -407,6 +411,7 @@ namespace Ginger
 				}
 			}
 		}
+
 
 		public static void SaveToIni(string filePath)
 		{
@@ -487,33 +492,32 @@ namespace Ginger
 					Write(outputFile, "BulkImportFolderName", BackyardLink.BulkImportFolderName);
 
 					// Backyard model settings
-					WriteSection(outputFile, "BackyardAI.Presets");
-					if (BackyardSettings.chatSettings != null)
-					{
-						IEnumerable<ChatParameters> chatSettings = BackyardSettings.chatSettings;
-						if (chatSettings.IsEmpty())
-							chatSettings = new ChatParameters[] { BackyardSettings.DefaultSettings };
+					WriteSection(outputFile, "BackyardAI.ModelSettings");
+					WriteModelSettings(outputFile, BackyardSettings.UserSettings);
 
-						int index = 0;
-						foreach (var settings in chatSettings)
+					// Presets
+					for (int i = 0; i < BackyardSettings.Presets.Count; ++i)
+					{
+						var preset = BackyardSettings.Presets[i];
+							
+						WriteSection(outputFile, string.Format("BackyardAI.Preset{0:00}", i));
+						Write(outputFile, "Name", preset.name);
+						WriteModelSettings(outputFile, preset);
+					}
+
+#if false
+					// Per-model settings
+					if (BackyardSettings.PerModelSettings != null && BackyardSettings.PerModelSettings.Count > 0)
+					{
+						for (int i = 0; i < BackyardSettings.PerModelSettings.Count; ++i)
 						{
-							if (string.IsNullOrEmpty(settings.model) == false)
-								Write(outputFile, string.Format("Preset{0:00}.Model", index), settings.model);
-							else
-								Write(outputFile, string.Format("Preset{0:00}.Model", index), "Default");
-							Write(outputFile, string.Format("Preset{0:00}.PromptTemplate", index), settings.iPromptTemplate);
-							Write(outputFile, string.Format("Preset{0:00}.Temperature", index), settings.temperature);
-							Write(outputFile, string.Format("Preset{0:00}.MinPEnabled", index), settings.minPEnabled);
-							Write(outputFile, string.Format("Preset{0:00}.MinP", index), settings.minP);
-							Write(outputFile, string.Format("Preset{0:00}.TopP", index), settings.topP);
-							Write(outputFile, string.Format("Preset{0:00}.TopK", index), settings.topK);
-							Write(outputFile, string.Format("Preset{0:00}.RepeatPenalty", index), settings.repeatPenalty);
-							Write(outputFile, string.Format("Preset{0:00}.RepeatPenaltyTokens", index), settings.repeatPenaltyTokens);
-							Write(outputFile, string.Format("Preset{0:00}.PruneExampleChat", index), settings.pruneExampleChat);
-							Write(outputFile, string.Format("Preset{0:00}.AuthorNote", index), settings.authorNote);
-							++index;
+							var settings = BackyardSettings.PerModelSettings[i].Value;
+
+							WriteSection(outputFile, string.Format("BackyardAI.ModelPreset{0:00}", i));
+							WriteModelSettings(outputFile, settings);
 						}
 					}
+#endif
 					
 					// MRU list
 					WriteSection(outputFile, "MRU");
@@ -548,6 +552,32 @@ namespace Ginger
 		{
 			if (ini.ContainsKey(name))
 				value = ini[name]?.Trim();
+		}
+
+		private static ChatParameters ReadModelSettings(KeyDataCollection section)
+		{
+			ChatParameters chatSettings = new ChatParameters();
+
+			ReadString(ref chatSettings.model, section, "Model");
+			if (string.Compare(chatSettings.model, "default", StringComparison.OrdinalIgnoreCase) == 0)
+				chatSettings.model = null;
+			else if (chatSettings.model.ToLowerInvariant().EndsWith(".gguf")) // Strip extension
+				chatSettings.model = Path.GetFileNameWithoutExtension(chatSettings.model);
+
+			ReadInt(ref chatSettings.repeatLastN, section, "RepeatPenaltyTokens", 16, 512);
+			ReadDecimal(ref chatSettings.repeatPenalty, section, "RepeatPenalty", 0.5m, 2.0m);
+			ReadDecimal(ref chatSettings.temperature, section, "Temperature", 0m, 5m);
+			ReadInt(ref chatSettings.topK, section, "TopK", 0, 100);
+			ReadDecimal(ref chatSettings.topP, section, "TopP", 0m, 1m);
+			ReadDecimal(ref chatSettings.minP, section, "MinP", 0m, 1m);
+			ReadBool(ref chatSettings.minPEnabled, section, "MinPEnabled");
+			ReadBool(ref chatSettings.pruneExampleChat, section, "PruneExampleChat");
+			ReadString(ref chatSettings.authorNote, section, "AuthorNote");
+			string promptTemplate = null;
+			ReadString(ref promptTemplate, section, "PromptTemplate");
+			chatSettings.promptTemplate = promptTemplate;
+
+			return chatSettings;
 		}
 
 		private static void ReadEnum<T>(ref T value, KeyDataCollection ini, string name) where T : struct, IConvertible
@@ -595,6 +625,21 @@ namespace Ginger
 		private static void Write(StreamWriter w, string name, Point value)
 		{
 			w.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0} = {1},{2}", name, value.X, value.Y));
+		}
+
+		private static void WriteModelSettings(StreamWriter w, ChatParameters settings)
+		{
+			Write(w, "Model", string.IsNullOrEmpty(settings.model) ? "Default" : settings.model);
+			Write(w, "PromptTemplate", settings.iPromptTemplate);
+			Write(w, "Temperature", settings.temperature);
+			Write(w, "MinPEnabled", settings.minPEnabled);
+			Write(w, "MinP", settings.minP);
+			Write(w, "TopP", settings.topP);
+			Write(w, "TopK", settings.topK);
+			Write(w, "RepeatPenalty", settings.repeatPenalty);
+			Write(w, "RepeatPenaltyTokens", settings.repeatLastN);
+			Write(w, "PruneExampleChat", settings.pruneExampleChat);
+			Write(w, "AuthorNote", settings.authorNote);
 		}
 	}
 }
