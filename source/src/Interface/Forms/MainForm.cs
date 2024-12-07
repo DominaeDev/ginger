@@ -2446,27 +2446,7 @@ namespace Ginger
 
 		private void bulkChangeModelSettingsMenuItem_Click(object sender, EventArgs e)
 		{
-			// Refresh character list
-			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
-			{
-				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				AppSettings.BackyardLink.Enabled = false;
-				return;
-			}
-
-			// Choose character(s)
-			var dlg = new LinkSelectMultipleCharactersDialog();
-			dlg.Text = "Choose Backyard AI characters to modify";
-			dlg.Characters = Backyard.CharactersNoUser.ToArray();
-			dlg.Folders = Backyard.Folders.ToArray();
-			if (dlg.ShowDialog() != DialogResult.OK || dlg.Characters.Length == 0)
-				return;
-
-			var dlgSettings = new EditModelSettingsDialog(AppSettings.BackyardSettings.UserSettings);
-			if (dlgSettings.ShowDialog() == DialogResult.OK)
-			{
-
-			}
+			EditManyModelSettings();			
 		}
 
 		private void editExportModelSettingsMenuItem_Click(object sender, EventArgs e)

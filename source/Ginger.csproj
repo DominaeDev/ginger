@@ -241,6 +241,12 @@
     <Compile Include="src\Interface\Forms\Dialogs\EnterNameDialog.Designer.cs">
       <DependentUpon>EnterNameDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectMultipleGroupsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectMultipleGroupsDialog.Designer.cs">
+      <DependentUpon>LinkSelectMultipleGroupsDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\ProgressBarDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -447,6 +453,7 @@
     <Compile Include="src\Utility\Integration\BackyardValidation.cs" />
     <Compile Include="src\Utility\Integration\BulkImporter.cs" />
     <Compile Include="src\Utility\Integration\BulkExporter.cs" />
+    <Compile Include="src\Utility\Integration\BulkUpdateModelSettings.cs" />
     <Compile Include="src\Utility\Integration\ChatHistory.cs" />
     <Compile Include="src\Model\Formats\CharacterCards\TavernCardV3.cs" />
     <Compile Include="src\Model\Formats\CharacterCards\TextGenWebUICard.cs" />
@@ -727,6 +734,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\EnterNameDialog.resx">
       <DependentUpon>EnterNameDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectMultipleGroupsDialog.resx">
+      <DependentUpon>LinkSelectMultipleGroupsDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\ProgressBarDialog.resx">
       <DependentUpon>ProgressBarDialog.cs</DependentUpon>

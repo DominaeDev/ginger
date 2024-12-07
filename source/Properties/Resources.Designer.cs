@@ -398,15 +398,6 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Export characters to Backyard AI.
-        /// </summary>
-        internal static string cap_export_many_characters {
-            get {
-                return ResourceManager.GetString("cap_export_many_characters", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Find.
         /// </summary>
         internal static string cap_find {
@@ -466,15 +457,6 @@ namespace Ginger.Properties {
         internal static string cap_import_lorebook {
             get {
                 return ResourceManager.GetString("cap_import_lorebook", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Import characters to Backyard AI.
-        /// </summary>
-        internal static string cap_import_many_characters {
-            get {
-                return ResourceManager.GetString("cap_import_many_characters", resourceCulture);
             }
         }
         
@@ -574,6 +556,24 @@ namespace Ginger.Properties {
         internal static string cap_link_error {
             get {
                 return ResourceManager.GetString("cap_link_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export characters to Backyard AI.
+        /// </summary>
+        internal static string cap_link_export_many_characters {
+            get {
+                return ResourceManager.GetString("cap_link_export_many_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import characters to Backyard AI.
+        /// </summary>
+        internal static string cap_link_import_many_characters {
+            get {
+                return ResourceManager.GetString("cap_link_import_many_characters", resourceCulture);
             }
         }
         
@@ -682,6 +682,15 @@ namespace Ginger.Properties {
         internal static string cap_link_scrub_chat {
             get {
                 return ResourceManager.GetString("cap_link_scrub_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update models settings.
+        /// </summary>
+        internal static string cap_link_update_many_characters {
+            get {
+                return ResourceManager.GetString("cap_link_update_many_characters", resourceCulture);
             }
         }
         
@@ -1323,15 +1332,6 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Something went wrong when exporting characters. Operation canceled..
-        /// </summary>
-        internal static string error_export_many_characters {
-            get {
-                return ResourceManager.GetString("error_export_many_characters", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This file contains unsupported or corrupted data. The text was successfully recovered, but Ginger was unable to recover the recipes..
         /// </summary>
         internal static string error_fallback {
@@ -1355,24 +1355,6 @@ namespace Ginger.Properties {
         internal static string error_help {
             get {
                 return ResourceManager.GetString("error_help", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Something went wrong when imported characters. Operation aborted..
-        /// </summary>
-        internal static string error_import_many_characters {
-            get {
-                return ResourceManager.GetString("error_import_many_characters", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No supported file types found..
-        /// </summary>
-        internal static string error_import_many_unsupported {
-            get {
-                return ResourceManager.GetString("error_import_many_unsupported", resourceCulture);
             }
         }
         
@@ -1476,6 +1458,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Something went wrong when exporting characters. Operation canceled..
+        /// </summary>
+        internal static string error_link_export_many_characters {
+            get {
+                return ResourceManager.GetString("error_link_export_many_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to connect to Backyard AI..
         /// </summary>
         internal static string error_link_failed {
@@ -1510,6 +1501,24 @@ namespace Ginger.Properties {
         internal static string error_link_import_chat {
             get {
                 return ResourceManager.GetString("error_link_import_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Something went wrong when imported characters. Operation aborted..
+        /// </summary>
+        internal static string error_link_import_many_characters {
+            get {
+                return ResourceManager.GetString("error_link_import_many_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No supported file types found..
+        /// </summary>
+        internal static string error_link_import_many_unsupported {
+            get {
+                return ResourceManager.GetString("error_link_import_many_unsupported", resourceCulture);
             }
         }
         
@@ -1626,6 +1635,15 @@ namespace Ginger.Properties {
         internal static string error_link_unsupported {
             get {
                 return ResourceManager.GetString("error_link_unsupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Something went wrong when updating characters. Operation aborted..
+        /// </summary>
+        internal static string error_link_update_many_characters {
+            get {
+                return ResourceManager.GetString("error_link_update_many_characters", resourceCulture);
             }
         }
         
@@ -2314,15 +2332,6 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will import {0} to Backyard AI. Continue?.
-        /// </summary>
-        internal static string msg_confirm_import_many {
-            get {
-                return ResourceManager.GetString("msg_confirm_import_many", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This character does not contain a persona and may not function properly.
         ///Continue?.
         /// </summary>
@@ -2360,33 +2369,6 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully exported {0}..
-        /// </summary>
-        internal static string msg_export_many_characters {
-            get {
-                return ResourceManager.GetString("msg_export_many_characters", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to One or more files already exist. Do you want to replace them?.
-        /// </summary>
-        internal static string msg_export_overwrite_files {
-            get {
-                return ResourceManager.GetString("msg_export_overwrite_files", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Successfully exported {0}. (Skipped {1}.).
-        /// </summary>
-        internal static string msg_export_some_characters {
-            get {
-                return ResourceManager.GetString("msg_export_some_characters", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Imported character card with {0} error(s) due to invalid or corrupt JSON data. Some content may be incomplete or missing..
         /// </summary>
         internal static string msg_import_character_with_errors {
@@ -2401,24 +2383,6 @@ namespace Ginger.Properties {
         internal static string msg_import_lorebook_with_errors {
             get {
                 return ResourceManager.GetString("msg_import_lorebook_with_errors", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Successfully imported {0}..
-        /// </summary>
-        internal static string msg_import_many_characters {
-            get {
-                return ResourceManager.GetString("msg_import_many_characters", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Successfully imported {0}. (Skipped {1}.).
-        /// </summary>
-        internal static string msg_import_some_characters {
-            get {
-                return ResourceManager.GetString("msg_import_some_characters", resourceCulture);
             }
         }
         
@@ -2462,6 +2426,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will import {0} to Backyard AI. Continue?.
+        /// </summary>
+        internal static string msg_link_confirm_import_many {
+            get {
+                return ResourceManager.GetString("msg_link_confirm_import_many", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This character has been modified in Backyard AI.
         ///
         ///Do you want to overwrite those changes?.
@@ -2469,6 +2442,15 @@ namespace Ginger.Properties {
         internal static string msg_link_confirm_overwrite {
             get {
                 return ResourceManager.GetString("msg_link_confirm_overwrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will update {0} in Backyard AI. Continue?.
+        /// </summary>
+        internal static string msg_link_confirm_update_many {
+            get {
+                return ResourceManager.GetString("msg_link_confirm_update_many", resourceCulture);
             }
         }
         
@@ -2509,6 +2491,51 @@ namespace Ginger.Properties {
         internal static string msg_link_delete_confirm {
             get {
                 return ResourceManager.GetString("msg_link_delete_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully exported {0}..
+        /// </summary>
+        internal static string msg_link_export_many_characters {
+            get {
+                return ResourceManager.GetString("msg_link_export_many_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One or more files already exist. Do you want to replace them?.
+        /// </summary>
+        internal static string msg_link_export_overwrite_files {
+            get {
+                return ResourceManager.GetString("msg_link_export_overwrite_files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully exported {0}. (Skipped {1}.).
+        /// </summary>
+        internal static string msg_link_export_some_characters {
+            get {
+                return ResourceManager.GetString("msg_link_export_some_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully imported {0}..
+        /// </summary>
+        internal static string msg_link_import_many_characters {
+            get {
+                return ResourceManager.GetString("msg_link_import_many_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully imported {0}. (Skipped {1}.).
+        /// </summary>
+        internal static string msg_link_import_some_characters {
+            get {
+                return ResourceManager.GetString("msg_link_import_some_characters", resourceCulture);
             }
         }
         
@@ -2631,6 +2658,24 @@ namespace Ginger.Properties {
         internal static string msg_link_scrub_confirm {
             get {
                 return ResourceManager.GetString("msg_link_scrub_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully updated {0}..
+        /// </summary>
+        internal static string msg_link_update_many_characters {
+            get {
+                return ResourceManager.GetString("msg_link_update_many_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully updated {0}. (Skipped {1}.).
+        /// </summary>
+        internal static string msg_link_update_some_characters {
+            get {
+                return ResourceManager.GetString("msg_link_update_some_characters", resourceCulture);
             }
         }
         

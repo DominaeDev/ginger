@@ -1302,16 +1302,16 @@ Reason: {0}</value>
   <data name="status_reload_recipes" xml:space="preserve">
     <value>Recipes reloaded</value>
   </data>
-  <data name="cap_export_many_characters" xml:space="preserve">
+  <data name="cap_link_export_many_characters" xml:space="preserve">
     <value>Export characters to Backyard AI</value>
   </data>
   <data name="error_canceled" xml:space="preserve">
     <value>Operation canceled.</value>
   </data>
-  <data name="error_export_many_characters" xml:space="preserve">
+  <data name="error_link_export_many_characters" xml:space="preserve">
     <value>Something went wrong when exporting characters. Operation canceled.</value>
   </data>
-  <data name="msg_export_many_characters" xml:space="preserve">
+  <data name="msg_link_export_many_characters" xml:space="preserve">
     <value>Successfully exported {0}.</value>
   </data>
   <data name="error_disk_full" xml:space="preserve">
@@ -1320,10 +1320,10 @@ Reason: {0}</value>
   <data name="cap_overwrite_files" xml:space="preserve">
     <value>Overwrite existing file(s)</value>
   </data>
-  <data name="msg_export_overwrite_files" xml:space="preserve">
+  <data name="msg_link_export_overwrite_files" xml:space="preserve">
     <value>One or more files already exist. Do you want to replace them?</value>
   </data>
-  <data name="msg_export_some_characters" xml:space="preserve">
+  <data name="msg_link_export_some_characters" xml:space="preserve">
     <value>Successfully exported {0}. (Skipped {1}.)</value>
   </data>
   <data name="cap_export_folder" xml:space="preserve">
@@ -1335,22 +1335,22 @@ Reason: {0}</value>
   <data name="tooltip_import_many" xml:space="preserve">
     <value>Import multiple characters into Backyard AI at once.</value>
   </data>
-  <data name="cap_import_many_characters" xml:space="preserve">
+  <data name="cap_link_import_many_characters" xml:space="preserve">
     <value>Import characters to Backyard AI</value>
   </data>
-  <data name="error_import_many_characters" xml:space="preserve">
+  <data name="error_link_import_many_characters" xml:space="preserve">
     <value>Something went wrong when imported characters. Operation aborted.</value>
   </data>
-  <data name="msg_import_many_characters" xml:space="preserve">
+  <data name="msg_link_import_many_characters" xml:space="preserve">
     <value>Successfully imported {0}.</value>
   </data>
-  <data name="msg_confirm_import_many" xml:space="preserve">
+  <data name="msg_link_confirm_import_many" xml:space="preserve">
     <value>This will import {0} to Backyard AI. Continue?</value>
   </data>
-  <data name="msg_import_some_characters" xml:space="preserve">
+  <data name="msg_link_import_some_characters" xml:space="preserve">
     <value>Successfully imported {0}. (Skipped {1}.)</value>
   </data>
-  <data name="error_import_many_unsupported" xml:space="preserve">
+  <data name="error_link_import_many_unsupported" xml:space="preserve">
     <value>No supported file types found.</value>
   </data>
   <data name="tooltip_model_minp" xml:space="preserve">
@@ -1383,5 +1383,20 @@ Top-K: Limits sample to the k-highest probability tokens from the set of most pr
   <data name="tooltip_model_prompt_template" xml:space="preserve">
     <value>The prompt template controls how the context is delivered to the model.
 Some models require specific prompt templates to function properly.</value>
+  </data>
+  <data name="cap_link_update_many_characters" xml:space="preserve">
+    <value>Update models settings</value>
+  </data>
+  <data name="error_link_update_many_characters" xml:space="preserve">
+    <value>Something went wrong when updating characters. Operation aborted.</value>
+  </data>
+  <data name="msg_link_confirm_update_many" xml:space="preserve">
+    <value>This will update {0} in Backyard AI. Continue?</value>
+  </data>
+  <data name="msg_link_update_many_characters" xml:space="preserve">
+    <value>Successfully updated {0}.</value>
+  </data>
+  <data name="msg_link_update_some_characters" xml:space="preserve">
+    <value>Successfully updated {0}. (Skipped {1}.)</value>
   </data>
 </root>

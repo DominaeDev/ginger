@@ -1967,7 +1967,7 @@ namespace Ginger
 
 			// Confirm overwrite?
 			bool bFileExists = filenames.ContainsAny(fn => File.Exists(fn));
-			if (bFileExists && MessageBox.Show(Resources.msg_export_overwrite_files, Resources.cap_overwrite_files, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			if (bFileExists && MessageBox.Show(Resources.msg_link_export_overwrite_files, Resources.cap_overwrite_files, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 			{
 				return false;
 			}
@@ -2077,28 +2077,28 @@ namespace Ginger
 			{
 				if (skipped > 0)
 				{
-					MessageBox.Show(string.Format(Resources.msg_export_some_characters, NumCharacters(result.succeeded - skipped), skipped), Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MessageBox.Show(string.Format(Resources.msg_link_export_some_characters, NumCharacters(result.succeeded - skipped), skipped), Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 				else
 				{
-					MessageBox.Show(string.Format(Resources.msg_export_many_characters, NumCharacters(result.succeeded)), Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MessageBox.Show(string.Format(Resources.msg_link_export_many_characters, NumCharacters(result.succeeded)), Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 			}
 			else if (result.error == BulkExporter.Error.Cancelled)
 			{
-				MessageBox.Show(Resources.error_canceled, Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_canceled, Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 			else if (result.error == BulkExporter.Error.FileError)
 			{
-				MessageBox.Show(Resources.error_write_file, Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_write_file, Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 			else if (result.error == BulkExporter.Error.DiskFullError)
 			{
-				MessageBox.Show(Resources.error_disk_full, Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_disk_full, Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 			else
 			{
-				MessageBox.Show(Resources.error_export_many_characters, Resources.cap_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_export_many_characters, Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 
@@ -2150,7 +2150,7 @@ namespace Ginger
 			progressDlg.onCancel += (s, e) => {
 				checker.Cancel();
 				progressDlg.Close();
-				MessageBox.Show(Resources.error_canceled, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_canceled, Resources.cap_link_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			};
 			checker.onProgress += (value) => {
 				progressDlg.Percentage = value;
@@ -2166,7 +2166,7 @@ namespace Ginger
 				}
 				else if (result.error == AsyncFileTypeChecker.Error.Cancelled)
 				{
-					MessageBox.Show(Resources.error_canceled, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show(Resources.error_canceled, Resources.cap_link_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			};
 
@@ -2181,12 +2181,12 @@ namespace Ginger
 		{
 			if (filenames.Length == 0)
 			{
-				MessageBox.Show(Resources.error_import_many_unsupported, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_import_many_unsupported, Resources.cap_link_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
 			// Confirm
-			if (MessageBox.Show(string.Format(Resources.msg_confirm_import_many, NumCharacters(filenames.Length)), Resources.cap_import_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+			if (MessageBox.Show(string.Format(Resources.msg_link_confirm_import_many, NumCharacters(filenames.Length)), Resources.cap_link_import_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
 				return false;
 
 			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(filenames[0]);
@@ -2245,21 +2245,98 @@ namespace Ginger
 		{
 			if (result.error == BulkImporter.Error.NoError)
 			{
-				MessageBox.Show(string.Format(result.skipped == 0 ? Resources.msg_import_many_characters : Resources.msg_import_some_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MessageBox.Show(string.Format(result.skipped == 0 ? Resources.msg_link_import_many_characters : Resources.msg_link_import_some_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_link_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 			else if (result.error == BulkImporter.Error.Cancelled)
 			{
-				MessageBox.Show(Resources.error_canceled, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_canceled, Resources.cap_link_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 			else
 			{
-				MessageBox.Show(Resources.error_import_many_characters, Resources.cap_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_import_many_characters, Resources.cap_link_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 
 		private string NumCharacters(int n)
 		{
 			return n == 1 ? string.Concat(n.ToString(), " character") : string.Concat(n.ToString(), " characters");
+		}
+
+		private bool EditManyModelSettings()
+		{
+			// Refresh character list
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+			{
+				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				AppSettings.BackyardLink.Enabled = false;
+				return false;
+			}
+
+			// Choose character(s)
+			var dlg = new LinkSelectMultipleGroupDialog();
+			dlg.Text = "Choose Backyard AI characters to modify";
+			dlg.Characters = Backyard.Characters.ToArray();
+			dlg.Groups = Backyard.Groups.ToArray();
+			dlg.Folders = Backyard.Folders.ToArray();
+			if (dlg.ShowDialog() != DialogResult.OK || dlg.Groups.Length == 0)
+				return false;
+
+			// Model settings
+			var dlgSettings = new EditModelSettingsDialog(AppSettings.BackyardSettings.UserSettings);
+			if (dlgSettings.ShowDialog() != DialogResult.OK)
+				return false;
+
+			// Confirm
+			if (MessageBox.Show(string.Format(Resources.msg_link_confirm_update_many, NumCharacters(dlg.Groups.Length)), Resources.cap_link_update_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+				return false;
+
+			var updater = new BulkUpdateModelSettings();
+
+			var progressDlg = new ProgressBarDialog();
+			progressDlg.Message = "Updating...";
+
+			progressDlg.onCancel += (s, e) => {
+				updater.Cancel();
+				progressDlg.Close();
+			};
+			updater.onProgress += (value) => {
+				progressDlg.Percentage = value;
+			};
+			updater.onComplete += (result) => {
+				progressDlg.Percentage = 100;
+				progressDlg.TopMost = false;
+				progressDlg.Close();
+
+				CompleteUpdateSettings(result);
+				_bCanRegenerate = true;
+				_bCanIdle = true;
+			};
+
+			for (int i = 0; i < dlg.Groups.Length; ++i)
+				updater.Enqueue(dlg.Groups[i]);
+
+			_bCanRegenerate = false;
+			_bCanIdle = false;
+			updater.Start(dlgSettings.Parameters);
+			progressDlg.ShowDialog();
+
+			return true;
+		}
+
+		private void CompleteUpdateSettings(BulkUpdateModelSettings.Result result)
+		{
+			if (result.error == BulkUpdateModelSettings.Error.NoError)
+			{
+				MessageBox.Show(string.Format(result.skipped == 0 ? Resources.msg_link_update_many_characters : Resources.msg_link_update_some_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_link_update_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else if (result.error == BulkUpdateModelSettings.Error.Cancelled)
+			{
+				MessageBox.Show(Resources.error_canceled, Resources.cap_link_update_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				MessageBox.Show(Resources.error_link_update_many_characters, Resources.cap_link_update_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 	}
 }
