@@ -8,18 +8,27 @@ namespace Ginger
 {
 	public partial class EditModelSettingsDialog : FormEx
 	{
-		public bool EditingDefaults { get; set; }
-		public ChatParameters Parameters { get; set; }
+		public ChatParameters Parameters { get; private set; }
+		private ChatParameters _defaultParameters;
 
 		private bool _bIgnoreEvents = false;
 
-		private bool CanAssociate { get { return cbAssociate.Enabled && cbAssociate.Checked; } }
+		private bool CanEdit { get { return cbPresets.SelectedIndex != 1; } }
+		private bool CanSave { get { return cbPresets.SelectedIndex >= 2; } }
 
-		public EditModelSettingsDialog()
+		public EditModelSettingsDialog(ChatParameters defaultParameters = null)
 		{
+			if (defaultParameters != null)
+				_defaultParameters = defaultParameters.Copy();
+			else
+				_defaultParameters = AppSettings.BackyardSettings.UserSettings.Copy();
+			Parameters = _defaultParameters.Copy();
+
 			InitializeComponent();
 
 			Load += EditModelSettingsDialog_Load;
+
+			CancelButton = btnCancel;
 
 			textBox_Temperature.KeyPress += TextBox_Decimal_KeyPress;
 			textBox_MinP.KeyPress += TextBox_Decimal_KeyPress;
@@ -37,7 +46,6 @@ namespace Ginger
 			cbSampling.SelectedIndexChanged += CbSampling_SelectedIndexChanged;
 
 			SetToolTip(labelPromptTemplate, Resources.tooltip_model_prompt_template);
-			SetToolTip(cbAssociate, Resources.tooltip_model_associate_prompt_template);
 			SetToolTip(labelSampling, Resources.tooltip_model_sampler);
 			SetToolTip(labelTemperature, Resources.tooltip_model_temperature);
 			SetToolTip(labelMinP, Resources.tooltip_model_minp);
@@ -51,8 +59,8 @@ namespace Ginger
 		{
 			WhileIgnoringEvents(() => {
 				cbPresets.BeginUpdate();
-				cbPresets.Items.Add("Current settings");
-				cbPresets.Items.Add("Backyard defaults");
+				cbPresets.Items.Add("");
+				cbPresets.Items.Add("(Backyard AI Defaults)");
 				foreach (var preset in AppSettings.BackyardSettings.Presets)
 					cbPresets.Items.Add(preset.name);
 
@@ -87,27 +95,11 @@ namespace Ginger
 					"Top-K"
 				});
 				cbSampling.EndUpdate();
+
+				cbSavePromptTemplate.Checked = AppSettings.BackyardLink.SavePromptTemplates;
 			});
 
-			if (EditingDefaults)
-			{
-				cbPresets.Enabled = false;
-				btnNewPreset.Enabled = false;
-				btnSavePreset.Enabled = false;
-				btnRemovePreset.Enabled = false;
-				btnCopy.Enabled = true;
-				btnPaste.Enabled = CanPaste();
-			}
-			else
-			{
-				bool bCanEdit = cbPresets.SelectedIndex != 1;
-				cbPresets.Enabled = true;
-				btnNewPreset.Enabled = true;
-				btnSavePreset.Enabled = bCanEdit;
-				btnRemovePreset.Enabled = cbPresets.SelectedIndex >= 2;
-				btnCopy.Enabled = true;
-				btnPaste.Enabled = bCanEdit;
-			}
+			RefreshPresetButtons();
 			RefreshValues();
 
 			cbModel.Focus();
@@ -144,9 +136,6 @@ namespace Ginger
 					cbPromptTemplate.SelectedIndex = 0;
 					labelPromptTemplate.Enabled = false;
 					panelPromptTemplate.Enabled = false;
-
-					cbAssociate.Checked = false;
-					cbAssociate.Enabled = false;
 				}
 				else
 				{
@@ -154,28 +143,14 @@ namespace Ginger
 					cbPromptTemplate.SelectedItem = cbPromptTemplate.Items[Parameters.iPromptTemplate];
 					labelPromptTemplate.Enabled = true;
 					panelPromptTemplate.Enabled = true;
-
-#if false
-					if (cbModel.SelectedIndex != 0)
-					{
-						cbAssociate.Checked = AppSettings.BackyardSettings.HasAssociatedModelSettings(Parameters.model);
-						cbAssociate.Enabled = true;
-					}
-					else
-					{
-						cbAssociate.Checked = false;
-						cbAssociate.Enabled = false;
-					}
-#endif
 				}
 
-				Set(textBox_Temperature, Parameters.temperature, "0.0", 0.1m);
-				Set(textBox_MinP, Parameters.minP, "0.00", 0.05m);
-				Set(textBox_TopP, Parameters.topP, "0.00", 0.05m);
+				Set(textBox_Temperature, Parameters.temperature);
+				Set(textBox_MinP, Parameters.minP);
+				Set(textBox_TopP, Parameters.topP);
 				Set(textBox_TopK, Parameters.topK);
-				Set(textBox_RepeatPenalty, Parameters.repeatPenalty, "0.00", 0.05m);
+				Set(textBox_RepeatPenalty, Parameters.repeatPenalty);
 				Set(textBox_RepeatTokens, Parameters.repeatLastN);
-
 				Set(trackBar_Temperature, Convert.ToInt32(Parameters.temperature * 10));
 				Set(trackBar_MinP, Convert.ToInt32(Parameters.minP * 100));
 				Set(trackBar_TopP, Convert.ToInt32(Parameters.topP * 100));
@@ -183,39 +158,18 @@ namespace Ginger
 				Set(trackBar_RepeatPenalty, Convert.ToInt32(Parameters.repeatPenalty * 100));
 				Set(trackBar_PenaltyTokens, Convert.ToInt32(Parameters.repeatLastN));
 
-				if (Parameters.minPEnabled)
-				{
-					cbSampling.SelectedIndex = 0; // Min-P
-					labelMinP.Enabled = true;
-					panelMinP.Enabled = true;
-					trackBar_MinP.Visible = true;
-					labelTopP.Enabled = false;
-					panelTopP.Enabled = false;
-					trackBar_TopP.Visible = false;
-					labelTopK.Enabled = false;
-					panelTopK.Enabled = false;
-					trackBar_TopK.Visible = false;
-				}
-				else
-				{
-					cbSampling.SelectedIndex = 1; // Top-K
-					labelMinP.Enabled = false;
-					panelMinP.Enabled = false;
-					trackBar_MinP.Visible = false;
-					labelTopP.Enabled = true;
-					panelTopP.Enabled = true;
-					trackBar_TopP.Visible = true;
-					labelTopK.Enabled = true;
-					panelTopK.Enabled = true;
-					trackBar_TopK.Visible = true;
-				}
+                if (Parameters.minPEnabled)
+                    cbSampling.SelectedIndex = 0; // Min-P
+                else
+                    cbSampling.SelectedIndex = 1; // Top-K
+				
+				ToggleControls();
 			});
 		}
 
-		private void Set(TextBoxBase textBox, decimal value, string format = "0", decimal partition = 0.0m)
+		private void Set(TextBoxBase textBox, decimal value)
 		{
-			value = Utility.RoundNearest(value, partition);
-			textBox.Text = value.ToString(format, CultureInfo.InvariantCulture);
+			textBox.Text = value.ToString(CultureInfo.InvariantCulture);
 		}
 
 		private void Set(TrackBarEx trackBar, int value)
@@ -229,18 +183,7 @@ namespace Ginger
 				return;
 
 			Parameters.minPEnabled = cbSampling.SelectedIndex == 0;
-			SaveAssociatedSettings();
-
-			bool bMinPEnabled = cbSampling.SelectedIndex == 0;
-			labelMinP.Enabled = bMinPEnabled;
-			panelMinP.Enabled = bMinPEnabled;
-			trackBar_MinP.Visible = bMinPEnabled;
-			labelTopP.Enabled = !bMinPEnabled;
-			panelTopP.Enabled = !bMinPEnabled;
-			trackBar_TopP.Visible = !bMinPEnabled;
-			labelTopK.Enabled = !bMinPEnabled;
-			panelTopK.Enabled = !bMinPEnabled;
-			trackBar_TopK.Visible = !bMinPEnabled;
+			ToggleControls();
 		}
 
 		private void BtnOk_Click(object sender, EventArgs e)
@@ -373,63 +316,48 @@ namespace Ginger
 				return;
 
 			int index = cbPresets.SelectedIndex;
-			bool bCanEdit = index != 1;
-			bool bPreset = index > 1;
 
 			if (index == 0)
-				Parameters = AppSettings.BackyardSettings.UserSettings.Copy();
+				Parameters = _defaultParameters.Copy();
 			else if (index == 1)
 				Parameters = ChatParameters.Default;
 			else if (index >= 2 && index < AppSettings.BackyardSettings.Presets.Count + 2)
 				Parameters = AppSettings.BackyardSettings.Presets[index - 2].Copy();
 
-#if false
-			if (bCanEdit && string.IsNullOrEmpty(Parameters.model) == false)
-			{
-				// Per-model settings override
-				cbAssociate.Enabled = true;
-				var associatedSettings = AppSettings.BackyardSettings.GetAssociatedModelSettings(Parameters.model);
-				if (associatedSettings != null)
-					Parameters = associatedSettings;
-			}
-#endif
+			RefreshPresetButtons();
+			RefreshValues();
+			ToggleControls();
+		}
 
+		private void ToggleControls()
+		{
 			bool bMinPEnabled = Parameters.minPEnabled;
 			bool bDefaultModel = string.IsNullOrEmpty(Parameters.model);
 
-			RefreshValues();
-
-			btnNewPreset.Enabled = bCanEdit && !EditingDefaults;
-			btnSavePreset.Enabled = bCanEdit && !EditingDefaults;
-			btnRemovePreset.Enabled = bPreset;
-			btnCopy.Enabled = true;
-			btnPaste.Enabled = bCanEdit && CanPaste();
-
-			// Enable all
-			labelModel.Enabled = bCanEdit;
-			labelPromptTemplate.Enabled = bCanEdit && !bDefaultModel;
-			labelTemperature.Enabled = bCanEdit;
-			labelSampling.Enabled = bCanEdit;
-			labelMinP.Enabled = bCanEdit && bMinPEnabled;
-			labelTopP.Enabled = bCanEdit && !bMinPEnabled;
-			labelTopK.Enabled = bCanEdit && !bMinPEnabled;
-			labelRepeatPenalty.Enabled = bCanEdit;
-			labelPenaltyTokens.Enabled = bCanEdit;
-			panelModel.Enabled = bCanEdit;
-			panelPromptTemplate.Enabled = bCanEdit && !bDefaultModel;
-			panelTemperature.Enabled = bCanEdit;
-			panelSampling.Enabled = bCanEdit;
-			panelMinP.Enabled = bCanEdit && bMinPEnabled;
-			panelTopP.Enabled = bCanEdit && !bMinPEnabled;
-			panelTopK.Enabled = bCanEdit && !bMinPEnabled;
-			panelRepeatPenalty.Enabled = bCanEdit;
-			panelPenaltyTokens.Enabled = bCanEdit;
-			trackBar_Temperature.Visible = bCanEdit;
-			trackBar_MinP.Visible = bCanEdit && bMinPEnabled;
-			trackBar_TopP.Visible = bCanEdit && !bMinPEnabled;
-			trackBar_TopK.Visible = bCanEdit && !bMinPEnabled;
-			trackBar_RepeatPenalty.Visible = bCanEdit;
-			trackBar_PenaltyTokens.Visible = bCanEdit;
+			labelModel.Enabled = CanEdit;
+			labelPromptTemplate.Enabled = CanEdit && !bDefaultModel;
+			labelTemperature.Enabled = CanEdit;
+			labelSampling.Enabled = CanEdit;
+			labelMinP.Enabled = CanEdit && bMinPEnabled;
+			labelTopP.Enabled = CanEdit && !bMinPEnabled;
+			labelTopK.Enabled = CanEdit && !bMinPEnabled;
+			labelRepeatPenalty.Enabled = CanEdit;
+			labelPenaltyTokens.Enabled = CanEdit;
+			panelModel.Enabled = CanEdit;
+			panelPromptTemplate.Enabled = CanEdit && !bDefaultModel;
+			panelTemperature.Enabled = CanEdit;
+			panelSampling.Enabled = CanEdit;
+			panelMinP.Enabled = CanEdit && bMinPEnabled;
+			panelTopP.Enabled = CanEdit && !bMinPEnabled;
+			panelTopK.Enabled = CanEdit && !bMinPEnabled;
+			panelRepeatPenalty.Enabled = CanEdit;
+			panelPenaltyTokens.Enabled = CanEdit;
+			trackBar_Temperature.Visible = CanEdit;
+			trackBar_MinP.Visible = CanEdit && bMinPEnabled;
+			trackBar_TopP.Visible = CanEdit && !bMinPEnabled;
+			trackBar_TopK.Visible = CanEdit && !bMinPEnabled;
+			trackBar_RepeatPenalty.Visible = CanEdit;
+			trackBar_PenaltyTokens.Visible = CanEdit;
 		}
 
 		private void cbModel_SelectedIndexChanged(object sender, EventArgs e)
@@ -442,15 +370,11 @@ namespace Ginger
 			{
 				Parameters.model = null;
 
-				// Disable prompt template
 				WhileIgnoringEvents(() => {
 					// Disable prompt template
 					cbPromptTemplate.SelectedIndex = 0;
 					labelPromptTemplate.Enabled = false;
 					panelPromptTemplate.Enabled = false;
-
-					cbAssociate.Enabled = false;
-					cbAssociate.Checked = true;
 				});
 			}
 			else
@@ -462,34 +386,15 @@ namespace Ginger
 					labelPromptTemplate.Enabled = true;
 					panelPromptTemplate.Enabled = true;
 
-#if false
-					// Associated?
-					cbAssociate.Enabled = true;
-					cbAssociate.Checked = AppSettings.BackyardSettings.HasAssociatedModelSettings(Parameters.model);
-#endif
+					if (AppSettings.BackyardLink.SavePromptTemplates)
+					{
+						int iPromptTemplate = AppSettings.BackyardSettings.GetPromptTemplateForModel(Parameters.model);
+						if (iPromptTemplate != -1)
+							cbPromptTemplate.SelectedIndex = iPromptTemplate;
+					}
 				});
 			}
 
-#if false
-			if (CanAssociate && Parameters.model != null) // Fetch per-model settings
-			{
-				var associatedSettings = AppSettings.BackyardSettings.GetAssociatedModelSettings(Parameters.model);
-				if (associatedSettings != null)
-				{
-					Parameters = associatedSettings;
-					RefreshValues();
-					return;
-				}
-			}
-			else
-#endif
-			{
-				// Reset prompt settings
-				WhileIgnoringEvents(() => {
-					Parameters.iPromptTemplate = 0;
-					cbPromptTemplate.SelectedIndex = 0;
-				});
-			}
 		}
 
 		private void cbPromptTemplate_SelectedIndexChanged(object sender, EventArgs e)
@@ -500,15 +405,8 @@ namespace Ginger
 			int idxPromptTemplate = cbPromptTemplate.SelectedIndex;
 			Parameters.iPromptTemplate = idxPromptTemplate;
 
-			SaveAssociatedSettings();
-		}
-
-		private void SaveAssociatedSettings()
-		{
-#if false
-			if (CanAssociate && Parameters.model != null)
-				AppSettings.BackyardSettings.AssociateModelSettings(Parameters.model, Parameters);
-#endif
+			if (AppSettings.BackyardLink.SavePromptTemplates)
+				AppSettings.BackyardSettings.SetPromptTemplateForModel(Parameters.model, Parameters.iPromptTemplate);
 		}
 
 		private void textBox_Temperature_TextChanged(object sender, EventArgs e)
@@ -523,7 +421,6 @@ namespace Ginger
 				value = 0m;
 
 			Parameters.temperature = value;
-			SaveAssociatedSettings();
 
 			WhileIgnoringEvents(() => {
 				Set(trackBar_Temperature, Convert.ToInt32(value * 10));
@@ -542,7 +439,6 @@ namespace Ginger
 				value = 0m;
 
 			Parameters.minP = value;
-			SaveAssociatedSettings();
 
 			WhileIgnoringEvents(() => {
 				Set(trackBar_MinP, Convert.ToInt32(value * 100));
@@ -561,7 +457,6 @@ namespace Ginger
 				value = 0m;
 
 			Parameters.topP = value;
-			SaveAssociatedSettings();
 
 			WhileIgnoringEvents(() => {
 				Set(trackBar_TopP, Convert.ToInt32(value * 100));
@@ -580,7 +475,6 @@ namespace Ginger
 				value = 0;
 
 			Parameters.topK = value;
-			SaveAssociatedSettings();
 
 			WhileIgnoringEvents(() => {
 				Set(trackBar_TopK, value);
@@ -599,7 +493,6 @@ namespace Ginger
 				value = 0m;
 
 			Parameters.repeatPenalty = value;
-			SaveAssociatedSettings();
 
 			WhileIgnoringEvents(() => {
 				Set(trackBar_RepeatPenalty, Convert.ToInt32(value * 100));
@@ -618,24 +511,10 @@ namespace Ginger
 				value = 16;
 
 			Parameters.repeatLastN = value;
-			SaveAssociatedSettings();
 
 			WhileIgnoringEvents(() => {
 				Set(trackBar_PenaltyTokens, value);
 			});
-		}
-
-		private void cbAssociate_CheckedChanged(object sender, EventArgs e)
-		{
-			if (_bIgnoreEvents)
-				return;
-
-#if false
-			if (cbAssociate.Checked)
-				SaveAssociatedSettings();
-			else if (Parameters.model != null)
-				AppSettings.BackyardSettings.AssociateModelSettings(Parameters.model, null);
-#endif
 		}
 
 		private void TextBox_Temperature_LostFocus(object sender, EventArgs e)
@@ -644,7 +523,7 @@ namespace Ginger
 				return;
 
 			WhileIgnoringEvents(() => {
-				textBox_Temperature.Text = Parameters.temperature.ToString("0.0", CultureInfo.InvariantCulture);
+				textBox_Temperature.Text = Parameters.temperature.ToString(CultureInfo.InvariantCulture);
 			});
 		}
 
@@ -654,7 +533,7 @@ namespace Ginger
 				return;
 
 			WhileIgnoringEvents(() => {
-				textBox_MinP.Text = Parameters.minP.ToString("0.0#", CultureInfo.InvariantCulture);
+				textBox_MinP.Text = Parameters.minP.ToString(CultureInfo.InvariantCulture);
 			});
 		}
 
@@ -664,7 +543,7 @@ namespace Ginger
 				return;
 
 			WhileIgnoringEvents(() => {
-				textBox_TopP.Text = Parameters.topP.ToString("0.0#", CultureInfo.InvariantCulture);
+				textBox_TopP.Text = Parameters.topP.ToString(CultureInfo.InvariantCulture);
 			});
 		}
 
@@ -684,7 +563,7 @@ namespace Ginger
 				return;
 
 			WhileIgnoringEvents(() => {
-				textBox_RepeatPenalty.Text = Parameters.repeatPenalty.ToString("0.0#", CultureInfo.InvariantCulture);
+				textBox_RepeatPenalty.Text = Parameters.repeatPenalty.ToString(CultureInfo.InvariantCulture);
 			});
 		}
 
@@ -698,15 +577,10 @@ namespace Ginger
 			});
 		}
 
-		private bool CanPaste()
-		{
-			return Clipboard.ContainsData(ChatParametersClipboard.Format);
-		}
-
 		private void btnCopy_Click(object sender, EventArgs e)
 		{
 			Clipboard.SetDataObject(ChatParametersClipboard.FromParameters(Parameters), false);
-			btnPaste.Enabled = true;
+			RefreshPresetButtons();
 		}
 
 		private void btnPaste_Click(object sender, EventArgs e)
@@ -725,15 +599,8 @@ namespace Ginger
 		private void btnSavePreset_Click(object sender, EventArgs e)
 		{
 			int index = cbPresets.SelectedIndex;
-			if (index == 0) // User defaults
-			{
-				AppSettings.BackyardSettings.UserSettings = Parameters.Copy();
+			if (index <= 0)
 				return;
-			}
-			else if (index == 1) // Backyard defaults
-			{
-				return;
-			}
 			else // Preset
 			{
 				index -= 2;
@@ -773,6 +640,9 @@ namespace Ginger
 				cbPresets.SelectedIndex = cbPresets.Items.Count - 1;
 				cbPresets.EndUpdate();
 			});
+
+			RefreshPresetButtons();
+			RefreshValues();
 		}
 
 		private void btnRemovePreset_Click(object sender, EventArgs e)
@@ -796,8 +666,37 @@ namespace Ginger
 				cbPresets.EndUpdate();
 			});
 
-			Parameters = AppSettings.BackyardSettings.UserSettings.Copy();
+			Parameters = _defaultParameters.Copy();
+
+			RefreshPresetButtons();
 			RefreshValues();
+		}
+
+		private void RefreshPresetButtons()
+		{
+			btnNewPreset.Enabled = true;
+			btnSavePreset.Enabled = CanSave;
+			btnRemovePreset.Enabled = CanSave;
+
+			btnCopy.Enabled = true;
+			btnPaste.Enabled = CanEdit && Clipboard.ContainsData(ChatParametersClipboard.Format);
+		}
+
+		private void cbSavePromptTemplate_CheckedChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			AppSettings.BackyardLink.SavePromptTemplates = cbSavePromptTemplate.Checked;
+
+			if (cbSavePromptTemplate.Checked)
+			{
+				WhileIgnoringEvents(() => {
+					int iPromptTemplate = AppSettings.BackyardSettings.GetPromptTemplateForModel(Parameters.model);
+					if (iPromptTemplate != -1)
+						cbPromptTemplate.SelectedIndex = iPromptTemplate;
+				});
+			}
 		}
 	}
 }

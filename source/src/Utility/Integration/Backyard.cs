@@ -91,7 +91,31 @@ namespace Ginger.Integration
 	public class ChatParameters : ICloneable
 	{
 		public string name = "";					// Preset name
-		public string model = "";                   // Chat.model
+		public string model                         // Chat.model
+		{ 
+			get { return _model; }
+			set
+			{
+				// Strip extension
+				if (string.IsNullOrEmpty(value) || string.Compare(value, "default", StringComparison.OrdinalIgnoreCase) == 0)
+					_model = null;
+				else if (value.ToLowerInvariant().EndsWith(".gguf"))
+					_model = Path.GetFileNameWithoutExtension(value);
+				else
+					_model = value;
+			}
+		}
+		private string _model = "";
+		public string modelForDB
+		{
+			get
+			{
+				if (_model == null)
+					return Backyard.DefaultModel;
+				return string.Concat(_model, ".gguf");
+			}
+		}
+
 		public string authorNote = "";              // Chat.authorNote
 		public decimal temperature = 1.2m;          // Chat.temperature
 		public decimal topP = 0.9m;                 // Chat.topP
@@ -207,7 +231,7 @@ namespace Ginger.Integration
 		{
 			return new ChatParameters() {
 				name = this.name,
-				model = this.model,
+				_model = this._model,
 				authorNote = this.authorNote,
 				temperature = this.temperature,
 				topP = this.topP,
@@ -1969,10 +1993,7 @@ namespace Ginger.Integration
 									cmdCreate.Parameters.AddWithValue("$example", card.data.example);
 									cmdCreate.Parameters.AddWithValue("$greeting", card.data.greeting);
 									cmdCreate.Parameters.AddWithValue("$grammar", card.data.grammar ?? "");
-									if (string.IsNullOrEmpty(chatParameters.model) == false)
-										cmdCreate.Parameters.AddWithValue("$model", chatParameters.model);
-									else
-										cmdCreate.Parameters.AddWithValue("$model", DefaultModel);
+									cmdCreate.Parameters.AddWithValue("$model", chatParameters.modelForDB);
 									cmdCreate.Parameters.AddWithValue("$temperature", chatParameters.temperature);
 									cmdCreate.Parameters.AddWithValue("$topP", chatParameters.topP);
 									cmdCreate.Parameters.AddWithValue("$minP", chatParameters.minP);
@@ -2050,7 +2071,7 @@ namespace Ginger.Integration
 										cmdCreate.Parameters.AddWithValue($"$example{i:000}", staging.example);
 										cmdCreate.Parameters.AddWithValue($"$greeting{i:000}", staging.greeting);
 										cmdCreate.Parameters.AddWithValue($"$grammar{i:000}", staging.grammar ?? "");
-										cmdCreate.Parameters.AddWithValue($"$model{i:000}", parameters.model ?? "");
+										cmdCreate.Parameters.AddWithValue($"$model{i:000}", parameters.modelForDB);
 										cmdCreate.Parameters.AddWithValue($"$temperature{i:000}", parameters.temperature);
 										cmdCreate.Parameters.AddWithValue($"$topP{i:000}", parameters.topP);
 										cmdCreate.Parameters.AddWithValue($"$minP{i:000}", parameters.minP);
@@ -3069,7 +3090,7 @@ namespace Ginger.Integration
 								cmdCreateChat.Parameters.AddWithValue("$example",  staging.example);
 								cmdCreateChat.Parameters.AddWithValue("$greeting",  greeting);
 								cmdCreateChat.Parameters.AddWithValue("$grammar",  staging.grammar ?? "");
-								cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? DefaultModel);
+								cmdCreateChat.Parameters.AddWithValue("$model", parameters.modelForDB);
 								cmdCreateChat.Parameters.AddWithValue("$pruneExample", parameters.pruneExampleChat);
 								cmdCreateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 								cmdCreateChat.Parameters.AddWithValue("$topP", parameters.topP);
@@ -4101,7 +4122,7 @@ namespace Ginger.Integration
 								cmdUpdateChat.Parameters.AddWithValue("$timestamp", updatedAt);
 								if (parameters != null)
 								{
-									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? DefaultModel);
+									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.modelForDB);
 									cmdUpdateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 									cmdUpdateChat.Parameters.AddWithValue("$topP", parameters.topP);
 									cmdUpdateChat.Parameters.AddWithValue("$minP", parameters.minP);

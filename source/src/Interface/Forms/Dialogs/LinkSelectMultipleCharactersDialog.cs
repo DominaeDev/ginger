@@ -430,7 +430,7 @@ namespace Ginger
 		{
 			int count = treeView.AllNodes().Count(n => n.Tag is CharacterInstance && n.Checked);
 
-			btnOk.Text = count > 0 ? $"Export ({count})" : "Export";
+			btnOk.Text = count > 0 ? $"Select ({count})" : "Select";
 			btnOk.Enabled = cbSelectAll.CheckState != CheckState.Unchecked;
 		}
 	}

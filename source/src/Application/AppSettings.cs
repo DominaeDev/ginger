@@ -159,40 +159,39 @@ namespace Ginger
 		{
 			public static ChatParameters UserSettings = new ChatParameters();
 			public static List<ChatParameters> Presets = new List<ChatParameters>();
+			public static List<KeyValuePair<string, int>> ModelPromptTemplates = new List<KeyValuePair<string, int>>();
 
-/*			public static List<KeyValuePair<string, ChatParameters>> PerModelSettings = new List<KeyValuePair<string, ChatParameters>>();
-			
-			public static void AssociateModelSettings(string modelName, ChatParameters settings)
+			public static int GetPromptTemplateForModel(string model)
 			{
-				int index = PerModelSettings.FindIndex(kvp => string.Compare(kvp.Key, modelName, StringComparison.OrdinalIgnoreCase) == 0);
+				if (string.IsNullOrEmpty(model))
+					return -1;
 
-				if (settings != null)
+				int idxModel = ModelPromptTemplates.FindIndex(kvp => string.Compare(kvp.Key, model, StringComparison.OrdinalIgnoreCase) == 0);
+				if (idxModel == -1)
+					return -1;
+
+				int promptTemplate = ModelPromptTemplates[idxModel].Value;
+				if (promptTemplate >= 0 && promptTemplate <= ChatParameters.MaxPromptTemplate)
+					return promptTemplate;
+				return -1;
+			}
+
+			public static void SetPromptTemplateForModel(string model, int promptTemplate)
+			{
+				if (string.IsNullOrEmpty(model))
+					return;
+
+				int idxModel = ModelPromptTemplates.FindIndex(kvp => string.Compare(kvp.Key, model, StringComparison.OrdinalIgnoreCase) == 0);
+				if (idxModel != -1)
 				{
-					if (index == -1)
-						PerModelSettings.Add(new KeyValuePair<string, ChatParameters>(modelName, settings.Copy()));
+					if (promptTemplate >= 0)
+						ModelPromptTemplates[idxModel] = new KeyValuePair<string, int>(model, promptTemplate);
 					else
-						PerModelSettings[index] = new KeyValuePair<string, ChatParameters>(modelName, settings.Copy());
+						ModelPromptTemplates.RemoveAt(idxModel);
 				}
-				else if (index != -1)
-					PerModelSettings.RemoveAt(index);
+				else
+					ModelPromptTemplates.Add(new KeyValuePair<string, int>(model, promptTemplate));
 			}
-
-			public static ChatParameters GetAssociatedModelSettings(string modelName)
-			{
-				if (modelName == null)
-					return null;
-
-				int index = PerModelSettings.FindIndex(kvp => string.Compare(kvp.Key, modelName, StringComparison.OrdinalIgnoreCase) == 0);
-				if (index != -1)
-					return PerModelSettings[index].Value.Copy();
-				return null;
-			}
-			public static bool HasAssociatedModelSettings(string modelName)
-			{
-				return GetAssociatedModelSettings(modelName) != null;
-			}
-*/
-
 		}
 
 		public static class BackyardLink
@@ -204,6 +203,7 @@ namespace Ginger
 			public static bool AlwaysLinkOnImport = false;
 			public static VersionNumber LastVersion;
 			public static string BulkImportFolderName = "Imported from Ginger";
+			public static bool SavePromptTemplates = true;
 
 			public enum ActiveChatSetting { First, Last, All }
 			public static ActiveChatSetting ApplyChatSettings = ActiveChatSetting.Last;
@@ -237,6 +237,9 @@ namespace Ginger
 
 		private static void LoadFromIni(IniData iniData)
 		{
+			BackyardSettings.Presets.Clear();
+			BackyardSettings.ModelPromptTemplates.Clear();
+
 			var settingsSection = iniData.Sections["Settings"];
 			if (settingsSection != null)
 			{
@@ -333,10 +336,11 @@ namespace Ginger
 				ReadEnum(ref BackyardLink.ApplyChatSettings, linkSection, "ApplyChatSettings");
 				ReadBool(ref BackyardLink.UsePortraitAsBackground, linkSection, "UsePortraitAsBackground");
 				ReadString(ref BackyardLink.BulkImportFolderName, linkSection, "BulkImportFolderName");
+				ReadBool(ref BackyardLink.SavePromptTemplates, linkSection, "SavePromptTemplates");
 			}
 			
 			BackyardSettings.Presets.Clear();
-			var modelSettingsSection = iniData.Sections["BackyardAI.ModelSettings"]; // Since v1.5.0
+			var modelSettingsSection = iniData.Sections["BackyardAI.ModelSettings.Default"]; // Since v1.5.0
 			if (modelSettingsSection != null)
 			{
 				BackyardSettings.UserSettings = ReadModelSettings(modelSettingsSection);
@@ -352,7 +356,7 @@ namespace Ginger
 			int unnamedPresetCounter = 1;
 			for (int i = 0; i < 1000; ++i)
 			{
-				var presetsSection = iniData.Sections[string.Format("BackyardAI.Preset{0:00}", i)];
+				var presetsSection = iniData.Sections[string.Format("BackyardAI.ModelSettings.Preset{0:00}", i)];
 				if (presetsSection != null)
 				{
 					ChatParameters chatSettings = ReadModelSettings(presetsSection);
@@ -365,21 +369,17 @@ namespace Ginger
 				break;
 			}
 
-#if false
-			// Per-model settings
-			for (int i = 0; i < 1000; ++i)
+			// Prompt templates
+			var promptTemplateSection = iniData.Sections["BackyardAI.PromptTemplate"];
+			if (promptTemplateSection != null)
 			{
-				var perModelSection = iniData.Sections[string.Format("BackyardAI.ModelPreset{0:00}", i)];
-				if (perModelSection != null)
+				foreach (KeyData item in promptTemplateSection)
 				{
-					ChatParameters chatSettings = ReadModelSettings(perModelSection);
-					if (string.IsNullOrEmpty(chatSettings.model) == false)
-						BackyardSettings.AssociateModelSettings(chatSettings.model, chatSettings);
-					continue;
+					int iPromptTemplate = Utility.StringToInt(item.Value, -1);
+					if (iPromptTemplate >= 0 && iPromptTemplate <= ChatParameters.MaxPromptTemplate)
+						BackyardSettings.SetPromptTemplateForModel(item.KeyName, iPromptTemplate);
 				}
-				break;
 			}
-#endif
 
 			var mruSection = iniData.Sections["MRU"];
 			if (mruSection != null)
@@ -490,9 +490,10 @@ namespace Ginger
 					Write(outputFile, "ApplyChatSettings", BackyardLink.ApplyChatSettings);
 					Write(outputFile, "UsePortraitAsBackground", BackyardLink.UsePortraitAsBackground);
 					Write(outputFile, "BulkImportFolderName", BackyardLink.BulkImportFolderName);
+					Write(outputFile, "SavePromptTemplates", BackyardLink.SavePromptTemplates);
 
 					// Backyard model settings
-					WriteSection(outputFile, "BackyardAI.ModelSettings");
+					WriteSection(outputFile, "BackyardAI.ModelSettings.Default");
 					WriteModelSettings(outputFile, BackyardSettings.UserSettings);
 
 					// Presets
@@ -500,25 +501,19 @@ namespace Ginger
 					{
 						var preset = BackyardSettings.Presets[i];
 							
-						WriteSection(outputFile, string.Format("BackyardAI.Preset{0:00}", i));
+						WriteSection(outputFile, string.Format("BackyardAI.ModelSettings.Preset{0:00}", i));
 						Write(outputFile, "Name", preset.name);
 						WriteModelSettings(outputFile, preset);
 					}
 
-#if false
-					// Per-model settings
-					if (BackyardSettings.PerModelSettings != null && BackyardSettings.PerModelSettings.Count > 0)
+					// Model prompt templates
+					if (BackyardSettings.ModelPromptTemplates.Count > 0)
 					{
-						for (int i = 0; i < BackyardSettings.PerModelSettings.Count; ++i)
-						{
-							var settings = BackyardSettings.PerModelSettings[i].Value;
-
-							WriteSection(outputFile, string.Format("BackyardAI.ModelPreset{0:00}", i));
-							WriteModelSettings(outputFile, settings);
-						}
+						WriteSection(outputFile, "BackyardAI.PromptTemplate");
+						foreach (var kvp in BackyardSettings.ModelPromptTemplates.OrderBy(kvp => kvp.Key).Where(kvp => kvp.Value >= 0))
+							Write(outputFile, kvp.Key, kvp.Value);
 					}
-#endif
-					
+
 					// MRU list
 					WriteSection(outputFile, "MRU");
 					int mruIndex = 0;
@@ -558,11 +553,9 @@ namespace Ginger
 		{
 			ChatParameters chatSettings = new ChatParameters();
 
-			ReadString(ref chatSettings.model, section, "Model");
-			if (string.Compare(chatSettings.model, "default", StringComparison.OrdinalIgnoreCase) == 0)
-				chatSettings.model = null;
-			else if (chatSettings.model.ToLowerInvariant().EndsWith(".gguf")) // Strip extension
-				chatSettings.model = Path.GetFileNameWithoutExtension(chatSettings.model);
+			string model = null;
+			ReadString(ref model, section, "Model");
+			chatSettings.model = model;
 
 			ReadInt(ref chatSettings.repeatLastN, section, "RepeatPenaltyTokens", 16, 512);
 			ReadDecimal(ref chatSettings.repeatPenalty, section, "RepeatPenalty", 0.5m, 2.0m);
@@ -609,7 +602,7 @@ namespace Ginger
 
 		private static void Write(StreamWriter w, string name, decimal value)
 		{
-			w.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0} = {1:0.##}", name, value));
+			w.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0} = {1:0.###}", name, value));
 		}
 
 		private static void Write(StreamWriter w, string name, string value)

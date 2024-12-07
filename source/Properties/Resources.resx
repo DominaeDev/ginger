@@ -1021,8 +1021,8 @@ Do you want to continue?</value>
   <data name="cap_link_paste_settings" xml:space="preserve">
     <value>Paste chat settings</value>
   </data>
-  <data name="cap_link_reset_settings" xml:space="preserve">
-    <value>Reset chat settings</value>
+  <data name="cap_link_edit_settings" xml:space="preserve">
+    <value>Edit chat settings</value>
   </data>
   <data name="status_link_reset_settings" xml:space="preserve">
     <value>Chat settings reset</value>

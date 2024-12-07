@@ -407,6 +407,13 @@ namespace Ginger
 				history = chatHistory,
 			};
 
+			// Fetch latest chat settings
+			ChatInstance latestChat;
+			if (ConfirmChatExists(_groupInstance.instanceId, out latestChat))
+				args.parameters = latestChat.parameters;
+			else
+				args.parameters = AppSettings.BackyardSettings.UserSettings;
+
 			ChatInstance chatInstance = null;
 			var error = RunTask(() => Backyard.CreateNewChat(args, _groupInstance.instanceId, out chatInstance), "Creating chat...");
 			if (error == Backyard.Error.NotConnected)
@@ -478,6 +485,13 @@ namespace Ginger
 				history = chatHistory,
 				isImport = true,
 			};
+
+			// Fetch latest chat settings
+			ChatInstance latestChat;
+			if (ConfirmChatExists(_groupInstance.instanceId, out latestChat))
+				args.parameters = latestChat.parameters;
+			else
+				args.parameters = AppSettings.BackyardSettings.UserSettings;
 
 			var error = RunTask(() => Backyard.CreateNewChat(args, _groupInstance.instanceId, out chatInstance), "Importing chat...");
 			if (error == Backyard.Error.NotConnected)
@@ -1203,21 +1217,7 @@ namespace Ginger
 					ToolTipText = Resources.tooltip_link_copy_staging,
 				});
 
-				menu.Items.Add(new ToolStripMenuItem("Copy model settings", null, (s, e) => {
-					CopySettings(item.Tag as ChatInstance);
-				}) {
-					ToolTipText = Resources.tooltip_link_copy_settings,
-				});
-
-				if (Clipboard.ContainsData(ChatParametersClipboard.Format))
-				{
-					menu.Items.Add(new ToolStripMenuItem("Paste model settings", null, (s, e) => {
-						PasteSettings(item.Tag as ChatInstance);
-					}) {
-						ToolTipText = Resources.tooltip_link_paste_settings,
-					});
-				}
-				else if (Clipboard.ContainsData(ChatStagingClipboard.Format))
+				if (Clipboard.ContainsData(ChatStagingClipboard.Format))
 				{
 					menu.Items.Add(new ToolStripMenuItem("Paste chat settings", null, (s, e) => {
 						PasteStaging(item.Tag as ChatInstance);
@@ -1230,8 +1230,8 @@ namespace Ginger
 					menu.Items.Add(new ToolStripMenuItem("Paste", null, (EventHandler)null) { Enabled = false });
 				}
 
-				menu.Items.Add(new ToolStripMenuItem("Reset model settings", null, (s, e) => {
-					ResetSettings(item.Tag as ChatInstance);
+				menu.Items.Add(new ToolStripMenuItem("Edit model settings", null, (s, e) => {
+					EditSettings(item.Tag as ChatInstance);
 				}) {
 					ToolTipText = Resources.tooltip_link_reset_settings,
 				});
@@ -1480,61 +1480,6 @@ namespace Ginger
 			return true;
 		}
 
-		private void CopySettings(ChatInstance chatInstance)
-		{
-			if (Backyard.ConnectionEstablished == false)
-			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_copy_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			// Fetch latest
-			ChatInstance latestChat;
-			if (ConfirmChatExists(chatInstance.instanceId, out latestChat) == false)
-				latestChat = chatInstance;
-
-			if (latestChat.parameters == null)
-			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_copy_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			Clipboard.SetDataObject(ChatParametersClipboard.FromParameters(latestChat.parameters), false);
-
-			SetStatusBarMessage(Resources.status_link_copy_settings, Constants.StatusBarMessageInterval);
-		}
-
-		private void PasteSettings(ChatInstance chatInstance)
-		{
-			if (Backyard.ConnectionEstablished == false)
-			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_paste_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			if (Clipboard.ContainsData(ChatParametersClipboard.Format) == false)
-				return;
-
-			ChatParametersClipboard clip = Clipboard.GetData(ChatParametersClipboard.Format) as ChatParametersClipboard;
-			if (clip == null)
-				return;
-
-			var error = RunTask(() => Backyard.UpdateChatParameters(chatInstance.instanceId, clip.parameters, null), "Updating chat...");
-			if (error == Backyard.Error.NotFound)
-			{
-				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_reset_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				RefreshChats();
-				return;
-			}
-			if (error != Backyard.Error.NoError)
-			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_paste_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			SetStatusBarMessage(Resources.status_link_paste_settings, Constants.StatusBarMessageInterval);
-		}
-
 		private void CopyStaging(ChatInstance chatInstance)
 		{
 			if (Backyard.ConnectionEstablished == false)
@@ -1592,28 +1537,30 @@ namespace Ginger
 			RefreshChats();
 		}
 
-		private void ResetSettings(ChatInstance chatInstance)
+		private void EditSettings(ChatInstance chatInstance)
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_reset_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
-			// Confirm
-			if (MessageBox.Show(string.Format(Resources.msg_link_reset_settings, chatInstance.name), Resources.cap_link_reset_settings, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			// Model settings dialog
+			var dlg = new EditModelSettingsDialog(chatInstance.parameters);
+			dlg.Text = "Edit model settings";
+			if (dlg.ShowDialog() != DialogResult.OK)
 				return;
 
-			var error = RunTask(() => Backyard.UpdateChatParameters(chatInstance.instanceId, new ChatParameters(), null), "Updating chat...");
+			var error = RunTask(() => Backyard.UpdateChatParameters(chatInstance.instanceId, dlg.Parameters, null), "Updating chat...");
 			if (error == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_reset_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				RefreshChats();
 				return;
 			}
 			if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_reset_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 

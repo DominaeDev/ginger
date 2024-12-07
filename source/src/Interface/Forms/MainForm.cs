@@ -2444,20 +2444,36 @@ namespace Ginger
 			ImportManyToBackyard();
 		}
 
-		private void changeModelSettingsMenuItem_Click(object sender, EventArgs e)
+		private void bulkChangeModelSettingsMenuItem_Click(object sender, EventArgs e)
 		{
-			var dlg = new EditModelSettingsDialog();
-			dlg.EditingDefaults = false;
-			dlg.Parameters = AppSettings.BackyardSettings.UserSettings.Copy();
-			dlg.ShowDialog();
+			// Refresh character list
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+			{
+				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				AppSettings.BackyardLink.Enabled = false;
+				return;
+			}
+
+			// Choose character(s)
+			var dlg = new LinkSelectMultipleCharactersDialog();
+			dlg.Text = "Choose Backyard AI characters to modify";
+			dlg.Characters = Backyard.CharactersNoUser.ToArray();
+			dlg.Folders = Backyard.Folders.ToArray();
+			if (dlg.ShowDialog() != DialogResult.OK || dlg.Characters.Length == 0)
+				return;
+
+			var dlgSettings = new EditModelSettingsDialog(AppSettings.BackyardSettings.UserSettings);
+			if (dlgSettings.ShowDialog() == DialogResult.OK)
+			{
+
+			}
 		}
 
-		private void editModelSettingsMenuItem_Click(object sender, EventArgs e)
+		private void editExportModelSettingsMenuItem_Click(object sender, EventArgs e)
 		{
-			var dlg = new EditModelSettingsDialog();
-			dlg.EditingDefaults = true;
-			dlg.Parameters = AppSettings.BackyardSettings.UserSettings.Copy();
-			dlg.ShowDialog();
+			var dlg = new EditModelSettingsDialog(AppSettings.BackyardSettings.UserSettings);
+			if (dlg.ShowDialog() == DialogResult.OK)
+				AppSettings.BackyardSettings.UserSettings = dlg.Parameters.Copy();
 		}
 	}
 

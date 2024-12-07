@@ -186,15 +186,6 @@ namespace Ginger
 			else
 				card.data.loreItems = new FaradayCardV1.LoreBookEntry[0];
 
-			var chatSettings = AppSettings.BackyardSettings.UserSettings;
-			card.data.repeatLastN = chatSettings.repeatLastN;
-			card.data.repeatPenalty = chatSettings.repeatPenalty;
-			card.data.temperature = chatSettings.temperature;
-			card.data.topK = chatSettings.topK;
-			card.data.topP = chatSettings.topP;
-			card.data.minPEnabled = chatSettings.minPEnabled;
-			card.data.minP = chatSettings.minP;
-			card.data.promptTemplate = chatSettings.promptTemplate;
 			card.data.isNSFW = Current.IsNSFW;
 			
 			return card;

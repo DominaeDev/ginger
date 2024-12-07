@@ -168,6 +168,12 @@
     <Compile Include="src\Interface\Controls\CollectionTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="src\Interface\Controls\HorizontalLine.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\HorizontalLine.Designer.cs">
+      <DependentUpon>HorizontalLine.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\Interface\Controls\Overrides\ButtonEx.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -697,6 +703,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Controls\FlatRichTextBox.resx">
       <DependentUpon>FlatRichTextBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Controls\HorizontalLine.resx">
+      <DependentUpon>HorizontalLine.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Controls\PageChanger.resx">
       <DependentUpon>PageChanger.cs</DependentUpon>

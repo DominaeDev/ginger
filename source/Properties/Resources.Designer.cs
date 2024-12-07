@@ -560,6 +560,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit chat settings.
+        /// </summary>
+        internal static string cap_link_edit_settings {
+            get {
+                return ResourceManager.GetString("cap_link_edit_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Linking error.
         /// </summary>
         internal static string cap_link_error {
@@ -628,15 +637,6 @@ namespace Ginger.Properties {
         internal static string cap_link_repair_chat {
             get {
                 return ResourceManager.GetString("cap_link_repair_chat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reset chat settings.
-        /// </summary>
-        internal static string cap_link_reset_settings {
-            get {
-                return ResourceManager.GetString("cap_link_reset_settings", resourceCulture);
             }
         }
         

@@ -49,7 +49,7 @@ namespace Ginger {
 			this.bulkImportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.bulkExportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripSeparator();
-			this.changeModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.bulkChangeModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.applyToLastChatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.applyToFirstChatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.applyToAllChatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -147,7 +147,7 @@ namespace Ginger {
 			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.alwaysLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.usePortraitAsBackgroundMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.editModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.editExportModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
 			this.autoConvertNameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoBreakMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -325,7 +325,7 @@ namespace Ginger {
             this.bulkImportMenuItem,
             this.bulkExportMenuItem,
             this.toolStripMenuItem12,
-            this.changeModelSettingsMenuItem});
+            this.bulkChangeModelSettingsMenuItem});
 			this.bulkOperationsToolStripMenuItem.Name = "bulkOperationsToolStripMenuItem";
 			this.bulkOperationsToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.bulkOperationsToolStripMenuItem.Text = "Bulk operations";
@@ -349,12 +349,12 @@ namespace Ginger {
 			this.toolStripMenuItem12.Name = "toolStripMenuItem12";
 			this.toolStripMenuItem12.Size = new System.Drawing.Size(206, 6);
 			// 
-			// changeModelSettingsMenuItem
+			// bulkChangeModelSettingsMenuItem
 			// 
-			this.changeModelSettingsMenuItem.Name = "changeModelSettingsMenuItem";
-			this.changeModelSettingsMenuItem.Size = new System.Drawing.Size(209, 22);
-			this.changeModelSettingsMenuItem.Text = "Change model settings...";
-			this.changeModelSettingsMenuItem.Click += new System.EventHandler(this.changeModelSettingsMenuItem_Click);
+			this.bulkChangeModelSettingsMenuItem.Name = "bulkChangeModelSettingsMenuItem";
+			this.bulkChangeModelSettingsMenuItem.Size = new System.Drawing.Size(209, 22);
+			this.bulkChangeModelSettingsMenuItem.Text = "Edit model settings...";
+			this.bulkChangeModelSettingsMenuItem.Click += new System.EventHandler(this.bulkChangeModelSettingsMenuItem_Click);
 			// 
 			// writeChatSettingsMenuItem
 			// 
@@ -399,14 +399,14 @@ namespace Ginger {
 			// lightThemeMenuItem
 			// 
 			this.lightThemeMenuItem.Name = "lightThemeMenuItem";
-			this.lightThemeMenuItem.Size = new System.Drawing.Size(101, 22);
+			this.lightThemeMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.lightThemeMenuItem.Text = "Light";
 			this.lightThemeMenuItem.Click += new System.EventHandler(this.lightThemeMenuItem_Click);
 			// 
 			// darkThemeMenuItem
 			// 
 			this.darkThemeMenuItem.Name = "darkThemeMenuItem";
-			this.darkThemeMenuItem.Size = new System.Drawing.Size(101, 22);
+			this.darkThemeMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.darkThemeMenuItem.Text = "Dark";
 			this.darkThemeMenuItem.Click += new System.EventHandler(this.darkThemeMenuItem_Click);
 			// 
@@ -1374,8 +1374,8 @@ namespace Ginger {
             this.enableAutosaveMenuItem,
             this.alwaysLinkMenuItem,
             this.usePortraitAsBackgroundMenuItem,
-            writeChatSettingsMenuItem,
-            this.editModelSettingsMenuItem});
+            this.editExportModelSettingsMenuItem,
+            writeChatSettingsMenuItem});
 			this.linkOptionsMenuItem.Name = "linkOptionsMenuItem";
 			this.linkOptionsMenuItem.Size = new System.Drawing.Size(183, 22);
 			this.linkOptionsMenuItem.Text = "Link options";
@@ -1401,12 +1401,12 @@ namespace Ginger {
 			this.usePortraitAsBackgroundMenuItem.Text = "Set portrait as background";
 			this.usePortraitAsBackgroundMenuItem.Click += new System.EventHandler(this.usePortraitAsBackgroundMenuItem_Click);
 			// 
-			// editModelSettingsMenuItem
+			// editExportModelSettingsMenuItem
 			// 
-			this.editModelSettingsMenuItem.Name = "editModelSettingsMenuItem";
-			this.editModelSettingsMenuItem.Size = new System.Drawing.Size(224, 22);
-			this.editModelSettingsMenuItem.Text = "Edit default model settings...";
-			this.editModelSettingsMenuItem.Click += new System.EventHandler(this.editModelSettingsMenuItem_Click);
+			this.editExportModelSettingsMenuItem.Name = "editExportModelSettingsMenuItem";
+			this.editExportModelSettingsMenuItem.Size = new System.Drawing.Size(213, 22);
+			this.editExportModelSettingsMenuItem.Text = "Default model settings...";
+			this.editExportModelSettingsMenuItem.Click += new System.EventHandler(this.editExportModelSettingsMenuItem_Click);
 			// 
 			// toolStripMenuItem11
 			// 
@@ -1777,8 +1777,8 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem bulkImportMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem bulkExportMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem12;
-		private System.Windows.Forms.ToolStripMenuItem changeModelSettingsMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem editModelSettingsMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem bulkChangeModelSettingsMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem editExportModelSettingsMenuItem;
 	}
 }
 
