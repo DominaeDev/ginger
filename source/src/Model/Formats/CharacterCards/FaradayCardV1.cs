@@ -1,8 +1,8 @@
 ﻿using System;
-using Ginger.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
+using Ginger.Properties;
 
 namespace Ginger
 {

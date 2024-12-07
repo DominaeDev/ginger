@@ -44,6 +44,7 @@
 			this.labelMinP = new System.Windows.Forms.Label();
 			this.panelModel = new System.Windows.Forms.Panel();
 			this.panelPromptTemplate = new System.Windows.Forms.Panel();
+			this.cbSavePromptTemplate = new System.Windows.Forms.CheckBox();
 			this.cbPromptTemplate = new Ginger.ComboBoxEx();
 			this.panelSampling = new System.Windows.Forms.Panel();
 			this.cbSampling = new Ginger.ComboBoxEx();
@@ -78,7 +79,6 @@
 			this.line = new Ginger.HorizontalLine();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.horizontalLine1 = new Ginger.HorizontalLine();
-			this.cbSavePromptTemplate = new System.Windows.Forms.CheckBox();
 			labelPresets = new System.Windows.Forms.Label();
 			this.tableLayout_Settings.SuspendLayout();
 			this.panelModel.SuspendLayout();
@@ -309,6 +309,20 @@
 			this.panelPromptTemplate.Padding = new System.Windows.Forms.Padding(3);
 			this.panelPromptTemplate.Size = new System.Drawing.Size(432, 28);
 			this.panelPromptTemplate.TabIndex = 2;
+			// 
+			// cbSavePromptTemplate
+			// 
+			this.cbSavePromptTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.cbSavePromptTemplate.AutoSize = true;
+			this.cbSavePromptTemplate.Checked = true;
+			this.cbSavePromptTemplate.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbSavePromptTemplate.Location = new System.Drawing.Point(274, 5);
+			this.cbSavePromptTemplate.Name = "cbSavePromptTemplate";
+			this.cbSavePromptTemplate.Size = new System.Drawing.Size(158, 21);
+			this.cbSavePromptTemplate.TabIndex = 1;
+			this.cbSavePromptTemplate.Text = "Associated with model";
+			this.cbSavePromptTemplate.UseVisualStyleBackColor = true;
+			this.cbSavePromptTemplate.CheckedChanged += new System.EventHandler(this.cbSavePromptTemplate_CheckedChanged);
 			// 
 			// cbPromptTemplate
 			// 
@@ -710,20 +724,6 @@
 			this.horizontalLine1.Name = "horizontalLine1";
 			this.horizontalLine1.Size = new System.Drawing.Size(544, 2);
 			this.horizontalLine1.TabIndex = 0;
-			// 
-			// cbSavePromptTemplate
-			// 
-			this.cbSavePromptTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.cbSavePromptTemplate.AutoSize = true;
-			this.cbSavePromptTemplate.Checked = true;
-			this.cbSavePromptTemplate.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbSavePromptTemplate.Location = new System.Drawing.Point(274, 5);
-			this.cbSavePromptTemplate.Name = "cbSavePromptTemplate";
-			this.cbSavePromptTemplate.Size = new System.Drawing.Size(158, 21);
-			this.cbSavePromptTemplate.TabIndex = 1;
-			this.cbSavePromptTemplate.Text = "Associated with model";
-			this.cbSavePromptTemplate.UseVisualStyleBackColor = true;
-			this.cbSavePromptTemplate.CheckedChanged += new System.EventHandler(this.cbSavePromptTemplate_CheckedChanged);
 			// 
 			// EditModelSettingsDialog
 			// 

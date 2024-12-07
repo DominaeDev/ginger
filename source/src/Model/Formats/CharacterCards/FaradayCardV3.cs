@@ -3,8 +3,8 @@ using System.Text;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
-using Ginger.Properties;
 using Newtonsoft.Json.Linq;
+using Ginger.Properties;
 
 namespace Ginger
 {

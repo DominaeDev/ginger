@@ -55,6 +55,7 @@ namespace Ginger
 			repairChatsMenuItem.ToolTipText = Resources.tooltip_link_repair_chat;
 			createBackupMenuItem.ToolTipText = Resources.tooltip_link_create_backup;
 			restoreBackupMenuItem.ToolTipText = Resources.tooltip_link_restore_backup;
+			editModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_all;
 		}
 
 		private void OnLoad(object sender, EventArgs e)
@@ -231,7 +232,8 @@ namespace Ginger
 					if (chat.parameters != null)
 					{
 						sbTooltip.NewParagraph();
-						sbTooltip.AppendLine($"Model: {chat.parameters.model ?? Backyard.DefaultModel }");
+						var model = BackyardModelDatabase.GetModel(chat.parameters.model);
+						sbTooltip.AppendLine($"Model: {Utility.FirstNonEmpty(model.displayName, chat.parameters.model, "(Default model)") }");
 					}
 
 					sbTooltip.AppendLine($"Background: {(chat.hasBackground ? "Yes" : "No")}");
@@ -307,7 +309,7 @@ namespace Ginger
 			else
 				Unselect();
 			
-			ResetStatusBarMessage();
+			RefreshStatusBarMessage();
 			RefreshTitle();
 		}
 
@@ -862,7 +864,7 @@ namespace Ginger
 			}
 		}
 
-		public void ResetStatusBarMessage()
+		public void RefreshStatusBarMessage()
 		{
 			int count = chatInstanceList.Items.Count;
 			if (count > 0)
@@ -873,7 +875,7 @@ namespace Ginger
 
 		private void OnStatusBarTimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
-			ResetStatusBarMessage();
+			RefreshStatusBarMessage();
 		}
 
 		private void menuBar_MenuActivate(object sender, EventArgs e)
@@ -1233,7 +1235,7 @@ namespace Ginger
 				menu.Items.Add(new ToolStripMenuItem("Edit model settings", null, (s, e) => {
 					EditSettings(item.Tag as ChatInstance);
 				}) {
-					ToolTipText = Resources.tooltip_link_reset_settings,
+					ToolTipText = Resources.tooltip_link_model_settings_one,
 				});
 
 				menu.Items.Add(new ToolStripSeparator());
@@ -1546,12 +1548,12 @@ namespace Ginger
 			}
 
 			// Model settings dialog
-			var dlg = new EditModelSettingsDialog(chatInstance.parameters);
-			dlg.Text = "Edit model settings";
+			var dlg = new EditModelSettingsDialog();
+			dlg.Editing = chatInstance.parameters;
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return;
 
-			var error = RunTask(() => Backyard.UpdateChatParameters(chatInstance.instanceId, dlg.Parameters, null), "Updating chat...");
+			var error = RunTask(() => Backyard.UpdateChatParameters(chatInstance.instanceId, dlg.Parameters, null), "Updating model settings...");
 			if (error == Backyard.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1565,6 +1567,57 @@ namespace Ginger
 			}
 
 			SetStatusBarMessage(Resources.status_link_reset_settings, Constants.StatusBarMessageInterval);
+
+			RefreshChats();
+		}
+				
+		private void EditAllSettings()
+		{
+			if (Backyard.ConnectionEstablished == false)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			ChatInstance[] chats = null;
+			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+
+			if (chats == null || chats.Length == 0)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+
+			// Model settings dialog
+			var dlg = new EditModelSettingsDialog();
+			dlg.Editing = chats[0].parameters;
+			if (dlg.ShowDialog() != DialogResult.OK)
+				return;
+
+			string[] chatIds = chats.Select(c => c.instanceId).ToArray();
+
+			var error = RunTask(() => Backyard.UpdateChatParameters(chatIds, dlg.Parameters, null), "Updating model settings...");
+			if (error == Backyard.Error.NotFound)
+			{
+				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				RefreshChats();
+				return;
+			}
+			if (error != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			SetStatusBarMessage(Resources.status_link_update_model_settings, Constants.StatusBarMessageInterval);
+
+			RefreshChats();
 		}
 
 		private bool ConfirmChatExists(string chatId, string errorCaption)
@@ -1693,6 +1746,11 @@ namespace Ginger
 			ViewChat(_selectedChatInstance);
 			chatView.Invalidate();
 			this.Resume();
+		}
+
+		private void editModelSettingsMenuItem_Click(object sender, EventArgs e)
+		{
+			EditAllSettings();
 		}
 
 	}

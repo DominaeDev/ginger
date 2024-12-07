@@ -70,6 +70,8 @@ namespace Ginger
 			this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusChatLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.splitter = new System.Windows.Forms.Splitter();
+			this.editModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
 			columnTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			columnDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			leftPanel = new System.Windows.Forms.Panel();
@@ -242,6 +244,8 @@ namespace Ginger
 			this.fileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.selectCharacterMenuItem,
             this.refreshMenuItem,
+            this.toolStripMenuItem4,
+            this.editModelSettingsMenuItem,
             this.toolStripMenuItem3,
             this.importMenuItem,
             this.exportMenuItem,
@@ -255,7 +259,7 @@ namespace Ginger
 			// selectCharacterMenuItem
 			// 
 			this.selectCharacterMenuItem.Name = "selectCharacterMenuItem";
-			this.selectCharacterMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.selectCharacterMenuItem.Size = new System.Drawing.Size(184, 22);
 			this.selectCharacterMenuItem.Text = "Select &character...";
 			this.selectCharacterMenuItem.Click += new System.EventHandler(this.selectCharacterMenuItem_Click);
 			// 
@@ -263,46 +267,46 @@ namespace Ginger
 			// 
 			this.refreshMenuItem.Name = "refreshMenuItem";
 			this.refreshMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-			this.refreshMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.refreshMenuItem.Size = new System.Drawing.Size(184, 22);
 			this.refreshMenuItem.Text = "Refresh";
 			this.refreshMenuItem.Click += new System.EventHandler(this.refreshMenuItem_Click);
 			// 
 			// toolStripMenuItem3
 			// 
 			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-			this.toolStripMenuItem3.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem3.Size = new System.Drawing.Size(181, 6);
 			// 
 			// importMenuItem
 			// 
 			this.importMenuItem.Name = "importMenuItem";
-			this.importMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.importMenuItem.Size = new System.Drawing.Size(184, 22);
 			this.importMenuItem.Text = "&Import chat...";
 			this.importMenuItem.Click += new System.EventHandler(this.btnImport_Click);
 			// 
 			// exportMenuItem
 			// 
 			this.exportMenuItem.Name = "exportMenuItem";
-			this.exportMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.exportMenuItem.Size = new System.Drawing.Size(184, 22);
 			this.exportMenuItem.Text = "&Export chat...";
 			this.exportMenuItem.Click += new System.EventHandler(this.btnExport_Click);
 			// 
 			// duplicateMenuItem
 			// 
 			this.duplicateMenuItem.Name = "duplicateMenuItem";
-			this.duplicateMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.duplicateMenuItem.Size = new System.Drawing.Size(184, 22);
 			this.duplicateMenuItem.Text = "&Duplicate chat...";
 			this.duplicateMenuItem.Click += new System.EventHandler(this.duplicateMenuItem_Click);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(181, 6);
 			// 
 			// closeToolStripMenuItem
 			// 
 			this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
 			this.closeToolStripMenuItem.ShortcutKeyDisplayString = "Escape";
-			this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.closeToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
 			this.closeToolStripMenuItem.Text = "&Close";
 			this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
 			// 
@@ -320,26 +324,26 @@ namespace Ginger
 			// createBackupMenuItem
 			// 
 			this.createBackupMenuItem.Name = "createBackupMenuItem";
-			this.createBackupMenuItem.Size = new System.Drawing.Size(166, 22);
+			this.createBackupMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.createBackupMenuItem.Text = "Create &backup...";
 			this.createBackupMenuItem.Click += new System.EventHandler(this.createBackupMenuItem_Click);
 			// 
 			// restoreBackupMenuItem
 			// 
 			this.restoreBackupMenuItem.Name = "restoreBackupMenuItem";
-			this.restoreBackupMenuItem.Size = new System.Drawing.Size(166, 22);
+			this.restoreBackupMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.restoreBackupMenuItem.Text = "&Restore backup...";
 			this.restoreBackupMenuItem.Click += new System.EventHandler(this.restoreBackupMenuItem_Click);
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(163, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
 			// 
 			// repairChatsMenuItem
 			// 
 			this.repairChatsMenuItem.Name = "repairChatsMenuItem";
-			this.repairChatsMenuItem.Size = new System.Drawing.Size(166, 22);
+			this.repairChatsMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.repairChatsMenuItem.Text = "&Fix legacy chats...";
 			this.repairChatsMenuItem.Click += new System.EventHandler(this.repairChatsMenuItem_Click);
 			// 
@@ -364,7 +368,7 @@ namespace Ginger
 			// statusChatLabel
 			// 
 			this.statusChatLabel.Name = "statusChatLabel";
-			this.statusChatLabel.Size = new System.Drawing.Size(728, 17);
+			this.statusChatLabel.Size = new System.Drawing.Size(759, 17);
 			this.statusChatLabel.Spring = true;
 			this.statusChatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
@@ -378,6 +382,18 @@ namespace Ginger
 			this.splitter.TabIndex = 1;
 			this.splitter.TabStop = false;
 			this.splitter.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitter_SplitterMoved);
+			// 
+			// editModelSettingsMenuItem
+			// 
+			this.editModelSettingsMenuItem.Name = "editModelSettingsMenuItem";
+			this.editModelSettingsMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.editModelSettingsMenuItem.Text = "Edit &model settings...";
+			this.editModelSettingsMenuItem.Click += new System.EventHandler(this.editModelSettingsMenuItem_Click);
+			// 
+			// toolStripMenuItem4
+			// 
+			this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+			this.toolStripMenuItem4.Size = new System.Drawing.Size(181, 6);
 			// 
 			// LinkEditChatDialog
 			// 
@@ -441,5 +457,7 @@ namespace Ginger
 		private System.Windows.Forms.ToolStripMenuItem restoreBackupMenuItem;
 		private PortraitPreview portraitImage;
 		private System.Windows.Forms.Panel portraitPanel;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
+		private System.Windows.Forms.ToolStripMenuItem editModelSettingsMenuItem;
 	}
 }

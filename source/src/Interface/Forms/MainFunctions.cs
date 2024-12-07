@@ -2274,7 +2274,7 @@ namespace Ginger
 
 			// Choose character(s)
 			var dlg = new LinkSelectMultipleGroupDialog();
-			dlg.Text = "Choose Backyard AI characters to modify";
+			dlg.Text = "Select Backyard AI characters";
 			dlg.Characters = Backyard.Characters.ToArray();
 			dlg.Groups = Backyard.Groups.ToArray();
 			dlg.Folders = Backyard.Folders.ToArray();
@@ -2282,7 +2282,7 @@ namespace Ginger
 				return false;
 
 			// Model settings
-			var dlgSettings = new EditModelSettingsDialog(AppSettings.BackyardSettings.UserSettings);
+			var dlgSettings = new EditModelSettingsDialog();
 			if (dlgSettings.ShowDialog() != DialogResult.OK)
 				return false;
 

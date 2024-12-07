@@ -1,0 +1,47 @@
+{
+  "type": "array",
+  "items": {
+    "type": [
+      "object",
+      "null"
+    ],
+    "properties": {
+      "displayName": {
+        "required": true,
+        "type": "string"
+      },
+      "promptFormat": {
+        "required": true,
+        "type": "string"
+      },
+      "ctxSize": {
+        "required": true,
+        "type": "integer"
+      },
+      "files": {
+        "required": true,
+        "type": "array",
+        "items": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "displayName": {
+              "required": true,
+              "type": "string"
+            },
+            "localFilename": {
+              "required": true,
+              "type": "string"
+            },
+            "fileFormat": {
+              "required": true,
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -85,7 +85,7 @@ namespace Ginger
 			this.btnOk.Name = "btnOk";
 			this.btnOk.Size = new System.Drawing.Size(117, 30);
 			this.btnOk.TabIndex = 1;
-			this.btnOk.Text = "Import";
+			this.btnOk.Text = "Select";
 			this.btnOk.UseVisualStyleBackColor = true;
 			this.btnOk.Click += new System.EventHandler(this.BtnOk_Click);
 			// 
@@ -202,7 +202,7 @@ namespace Ginger
 			this.Name = "LinkSelectCharacterDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Choose Backyard AI character";
+			this.Text = "Select Backyard AI character";
 			buttonLayout.ResumeLayout(false);
 			this.listPanel.ResumeLayout(false);
 			this.ResumeLayout(false);

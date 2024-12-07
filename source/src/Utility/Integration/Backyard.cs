@@ -90,44 +90,32 @@ namespace Ginger.Integration
 	[Serializable]
 	public class ChatParameters : ICloneable
 	{
-		public string name = "";					// Preset name
-		public string model                         // Chat.model
+		public string name = "";			// Preset name
+		public string model		            // Chat.model
 		{ 
-			get { return _model; }
+			get { return _modelId; }
 			set
 			{
-				// Strip extension
 				if (string.IsNullOrEmpty(value) || string.Compare(value, "default", StringComparison.OrdinalIgnoreCase) == 0)
-					_model = null;
-				else if (value.ToLowerInvariant().EndsWith(".gguf"))
-					_model = Path.GetFileNameWithoutExtension(value);
+					_modelId = null;
 				else
-					_model = value;
+					_modelId = value;
 			}
 		}
-		private string _model = "";
-		public string modelForDB
-		{
-			get
-			{
-				if (_model == null)
-					return Backyard.DefaultModel;
-				return string.Concat(_model, ".gguf");
-			}
-		}
+		private string _modelId = null;
 
-		public string authorNote = "";              // Chat.authorNote
-		public decimal temperature = 1.2m;          // Chat.temperature
-		public decimal topP = 0.9m;                 // Chat.topP
-		public decimal minP = 0.1m;                 // Chat.minP
-		public int topK = 30;                       // Chat.topK
-		public bool minPEnabled = true;             // Chat.minPEnabled
-		public decimal repeatPenalty = 1.05m;       // Chat.repeatPenalty
+		public string authorNote = "";				// Chat.authorNote
+		public decimal temperature = 1.2m;			// Chat.temperature
+		public decimal topP = 0.9m;					// Chat.topP
+		public decimal minP = 0.1m;					// Chat.minP
+		public int topK = 30;						// Chat.topK
+		public bool minPEnabled = true;				// Chat.minPEnabled
+		public decimal repeatPenalty = 1.05m;		// Chat.repeatPenalty
 		public int repeatLastN = 256;				// Chat.repeatLastN
-		public bool pruneExampleChat = true;        // Chat.canDeleteCustomDialogue
-		public bool ttsAutoPlay = false;            // Chat.ttsAutoPlay
-		public string ttsInputFilter = "default";   // Chat.ttsInputFilter
-		private int _iPromptTemplate = 0;           // Chat.promptTemplate
+		public bool pruneExampleChat = true;		// Chat.canDeleteCustomDialogue
+		public bool ttsAutoPlay = false;			// Chat.ttsAutoPlay
+		public string ttsInputFilter = "default";	// Chat.ttsInputFilter
+		private int _iPromptTemplate = 0;			// Chat.promptTemplate
 
 		public static readonly int MaxPromptTemplate = 6;
 		public int iPromptTemplate
@@ -138,68 +126,63 @@ namespace Ginger.Integration
 
 		public string promptTemplate
 		{
-			get
-			{
-				switch (_iPromptTemplate)
-				{
-				case 1: return "general";
-				case 2: return "ChatML";
-				case 3: return "Llama3";
-				case 4: return "Gemma2";
-				case 5: return "CommandR";
-				case 6: return "MistralInstruct";
-				default:
-					return null;
-				}
-			}
+			get { return PromptTemplateFromInt(_iPromptTemplate); }
+			set { _iPromptTemplate = PromptTemplateFromString(value); }
+		}
 
-			set
+		
+		public static string PromptTemplateFromInt(int promptTemplate)
+		{
+			switch (promptTemplate)
 			{
-				var sValue = (value ?? "").Trim().ToLowerInvariant();
-				int iValue;
-				if (sValue == "")
-				{
-					_iPromptTemplate = 0;
-				}
-				else if (int.TryParse(sValue, out iValue))
-				{
-					if (iValue >= 0 && iValue <= MaxPromptTemplate)
-						_iPromptTemplate = iValue;
-					else
-						_iPromptTemplate = 0;
-				}
+			case 1: return "general";
+			case 2: return "ChatML";
+			case 3: return "Llama3";
+			case 4: return "Gemma2";
+			case 5: return "CommandR";
+			case 6: return "MistralInstruct";
+			default:
+				return null;
+			}
+		}
+
+		public static int PromptTemplateFromString(string promptTemplate)
+		{
+			var sValue = (promptTemplate ?? "").Trim().ToLowerInvariant();
+			int iValue;
+			if (sValue == "")
+				return 0;
+			else if (int.TryParse(sValue, out iValue))
+			{
+				if (iValue >= 0 && iValue <= MaxPromptTemplate)
+					return iValue;
 				else
+					return 0;
+			}
+			else
+			{
+				switch (sValue)
 				{
-					switch (sValue)
-					{
-					case "text":
-					case "plain":
-					case "general":
-						_iPromptTemplate = 1;
-						break;
-					case "chatml":
-						_iPromptTemplate = 2;
-						break;
-					case "llama3":
-						_iPromptTemplate = 3;
-						break;
-					case "gemma":
-					case "gemma2":
-						_iPromptTemplate = 4;
-						break;
-					case "commandr":
-					case "command-r":
-						_iPromptTemplate = 5;
-						break;
-					case "mistral":
-					case "mistralinstruct":
-					case "mistral-instruct":
-						_iPromptTemplate = 6;
-						break;
-					default:
-						_iPromptTemplate = 0;
-						break;
-					}
+				case "text":
+				case "plain":
+				case "general":
+					return 1;
+				case "chatml":
+					return 2;
+				case "llama3":
+					return 3;
+				case "gemma":
+				case "gemma2":
+					return 4;
+				case "commandr":
+				case "command-r":
+					return 5;
+				case "mistral":
+				case "mistralinstruct":
+				case "mistral-instruct":
+					return 6;
+				default:
+					return 0;
 				}
 			}
 		}
@@ -231,7 +214,7 @@ namespace Ginger.Integration
 		{
 			return new ChatParameters() {
 				name = this.name,
-				_model = this._model,
+				_modelId = this._modelId,
 				authorNote = this.authorNote,
 				temperature = this.temperature,
 				topP = this.topP,
@@ -285,7 +268,6 @@ namespace Ginger.Integration
 		public static IEnumerable<GroupInstance> Groups { get { return _Groups.Values; } }
 		public static string DefaultModel = null;
 		public static string DefaultUserConfigId = null;
-		public static string[] Models = null;
 
 		private static Dictionary<string, FolderInstance> _Folders = new Dictionary<string, FolderInstance>();
 		private static Dictionary<string, CharacterInstance> _Characters = new Dictionary<string, CharacterInstance>();
@@ -576,7 +558,7 @@ namespace Ginger.Integration
 					// Read settings
 					using (var cmdSettings = connection.CreateCommand())
 					{
-						cmdSettings.CommandText = @"SELECT model, modelDownloadLocation FROM AppSettings";
+						cmdSettings.CommandText = @"SELECT model, modelDownloadLocation, modelsJson FROM AppSettings";
 
 						using (var reader = cmdSettings.ExecuteReader())
 						{
@@ -584,12 +566,14 @@ namespace Ginger.Integration
 							{
 								DefaultModel = reader[0] as string;
 								string modelDirectory = reader[1] as string;
-								FindModels(modelDirectory);
+								string modelsJson = reader[2] as string;
+								
+								// Read model info
+								BackyardModelDatabase.FindModels(modelDirectory, modelsJson);
 							}
 							else
 							{
 								DefaultModel = null;
-								Models = null;
 							}
 						}
 					}
@@ -629,21 +613,6 @@ namespace Ginger.Integration
 			DatabaseVersion = BackyardDatabaseVersion.Unknown;
 			AppSettings.BackyardLink.Enabled = false;
 			SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
-		}
-
-		private static void FindModels(string modelDirectory)
-		{
-			try
-			{
-				Models = Directory.EnumerateFiles(modelDirectory, "*.gguf")
-					.Select(fn => Path.GetFileNameWithoutExtension(fn))
-					.OrderBy(fn => fn)
-					.ToArray();
-			}
-			catch
-			{
-				Models = null;
-			}
 		}
 
 		#endregion
@@ -1993,7 +1962,7 @@ namespace Ginger.Integration
 									cmdCreate.Parameters.AddWithValue("$example", card.data.example);
 									cmdCreate.Parameters.AddWithValue("$greeting", card.data.greeting);
 									cmdCreate.Parameters.AddWithValue("$grammar", card.data.grammar ?? "");
-									cmdCreate.Parameters.AddWithValue("$model", chatParameters.modelForDB);
+									cmdCreate.Parameters.AddWithValue("$model", chatParameters.model ?? DefaultModel);
 									cmdCreate.Parameters.AddWithValue("$temperature", chatParameters.temperature);
 									cmdCreate.Parameters.AddWithValue("$topP", chatParameters.topP);
 									cmdCreate.Parameters.AddWithValue("$minP", chatParameters.minP);
@@ -2071,7 +2040,7 @@ namespace Ginger.Integration
 										cmdCreate.Parameters.AddWithValue($"$example{i:000}", staging.example);
 										cmdCreate.Parameters.AddWithValue($"$greeting{i:000}", staging.greeting);
 										cmdCreate.Parameters.AddWithValue($"$grammar{i:000}", staging.grammar ?? "");
-										cmdCreate.Parameters.AddWithValue($"$model{i:000}", parameters.modelForDB);
+										cmdCreate.Parameters.AddWithValue($"$model{i:000}", parameters.model ?? "");
 										cmdCreate.Parameters.AddWithValue($"$temperature{i:000}", parameters.temperature);
 										cmdCreate.Parameters.AddWithValue($"$topP{i:000}", parameters.topP);
 										cmdCreate.Parameters.AddWithValue($"$minP{i:000}", parameters.minP);
@@ -3090,7 +3059,7 @@ namespace Ginger.Integration
 								cmdCreateChat.Parameters.AddWithValue("$example",  staging.example);
 								cmdCreateChat.Parameters.AddWithValue("$greeting",  greeting);
 								cmdCreateChat.Parameters.AddWithValue("$grammar",  staging.grammar ?? "");
-								cmdCreateChat.Parameters.AddWithValue("$model", parameters.modelForDB);
+								cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$pruneExample", parameters.pruneExampleChat);
 								cmdCreateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 								cmdCreateChat.Parameters.AddWithValue("$topP", parameters.topP);
@@ -4084,13 +4053,12 @@ namespace Ginger.Integration
 								sbCommand.AppendLine(
 								@"
 									UPDATE Chat
-									SET 
-										updatedAt = $timestamp");
+									SET ");
 
 								if (parameters != null)
 								{
 									sbCommand.AppendLine(
-									@",
+									@"
 										model = $model, 
 										temperature = $temperature,
 										topP = $topP,
@@ -4105,7 +4073,7 @@ namespace Ginger.Integration
 								if (staging != null)
 								{
 									sbCommand.AppendLine(
-									@",
+									@"
 										context = $scenario,
 										customDialogue = $example,
 										modelInstructions = $system,
@@ -4122,7 +4090,7 @@ namespace Ginger.Integration
 								cmdUpdateChat.Parameters.AddWithValue("$timestamp", updatedAt);
 								if (parameters != null)
 								{
-									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.modelForDB);
+									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 									cmdUpdateChat.Parameters.AddWithValue("$topP", parameters.topP);
 									cmdUpdateChat.Parameters.AddWithValue("$minP", parameters.minP);
@@ -4218,13 +4186,12 @@ namespace Ginger.Integration
 								sbCommand.AppendLine(
 								@"
 									UPDATE Chat
-									SET 
-										updatedAt = $timestamp");
+									SET ");
 
 								if (parameters != null)
 								{
 									sbCommand.AppendLine(
-									@",
+									@"
 										model = $model, 
 										temperature = $temperature,
 										topP = $topP,
@@ -4239,7 +4206,7 @@ namespace Ginger.Integration
 								if (staging != null)
 								{
 									sbCommand.AppendLine(
-									@",
+									@"  
 										context = $scenario,
 										customDialogue = $example,
 										modelInstructions = $system,
@@ -4262,7 +4229,7 @@ namespace Ginger.Integration
 								cmdUpdateChat.Parameters.AddWithValue("$timestamp", updatedAt);
 								if (parameters != null)
 								{
-									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.modelForDB);
+									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 									cmdUpdateChat.Parameters.AddWithValue("$topP", parameters.topP);
 									cmdUpdateChat.Parameters.AddWithValue("$minP", parameters.minP);

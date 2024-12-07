@@ -263,6 +263,41 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to {
+        ///  &quot;type&quot;: &quot;array&quot;,
+        ///  &quot;items&quot;: {
+        ///    &quot;type&quot;: [
+        ///      &quot;object&quot;,
+        ///      &quot;null&quot;
+        ///    ],
+        ///    &quot;properties&quot;: {
+        ///      &quot;displayName&quot;: {
+        ///        &quot;required&quot;: true,
+        ///        &quot;type&quot;: &quot;string&quot;
+        ///      },
+        ///      &quot;promptFormat&quot;: {
+        ///        &quot;required&quot;: true,
+        ///        &quot;type&quot;: &quot;string&quot;
+        ///      },
+        ///      &quot;ctxSize&quot;: {
+        ///        &quot;required&quot;: true,
+        ///        &quot;type&quot;: &quot;integer&quot;
+        ///      },
+        ///      &quot;files&quot;: {
+        ///        &quot;required&quot;: true,
+        ///        &quot;type&quot;: &quot;array&quot;,
+        ///        &quot;items&quot;: {
+        ///          &quot;type&quot;: [
+        ///            &quot;object&quot;,
+        ///       [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string backyard_models_schema {
+            get {
+                return ResourceManager.GetString("backyard_models_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
         ///	&quot;type&quot;: &quot;object&quot;,
         ///	&quot;properties&quot;: {
         ///		&quot;version&quot;: {
@@ -3378,6 +3413,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Model settings updated.
+        /// </summary>
+        internal static string status_link_update_model_settings {
+            get {
+                return ResourceManager.GetString("status_link_update_model_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reading character card....
         /// </summary>
         internal static string status_open_character {
@@ -4285,6 +4329,42 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change the model settings for all chats..
+        /// </summary>
+        internal static string tooltip_link_model_settings_all {
+            get {
+                return ResourceManager.GetString("tooltip_link_model_settings_all", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the default model settings..
+        /// </summary>
+        internal static string tooltip_link_model_settings_default {
+            get {
+                return ResourceManager.GetString("tooltip_link_model_settings_default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the model settings for multiple chats..
+        /// </summary>
+        internal static string tooltip_link_model_settings_many {
+            get {
+                return ResourceManager.GetString("tooltip_link_model_settings_many", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the model settings for this chat..
+        /// </summary>
+        internal static string tooltip_link_model_settings_one {
+            get {
+                return ResourceManager.GetString("tooltip_link_model_settings_one", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open a Backyard AI character..
         /// </summary>
         internal static string tooltip_link_open {
@@ -4335,15 +4415,6 @@ namespace Ginger.Properties {
         internal static string tooltip_link_repair_chat {
             get {
                 return ResourceManager.GetString("tooltip_link_repair_chat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reset this chat&apos;s settings to their default values..
-        /// </summary>
-        internal static string tooltip_link_reset_settings {
-            get {
-                return ResourceManager.GetString("tooltip_link_reset_settings", resourceCulture);
             }
         }
         

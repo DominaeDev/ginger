@@ -249,6 +249,8 @@ namespace Ginger
 			usePortraitAsBackgroundMenuItem.ToolTipText = Resources.tooltip_link_use_portrait_as_background;
 			bulkExportMenuItem.ToolTipText = Resources.tooltip_export_many;
 			bulkImportMenuItem.ToolTipText = Resources.tooltip_import_many;
+			bulkChangeModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_many;
+			editExportModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_default;
 
 			RegisterIdleHandler(recipeList);
 
@@ -2451,7 +2453,7 @@ namespace Ginger
 
 		private void editExportModelSettingsMenuItem_Click(object sender, EventArgs e)
 		{
-			var dlg = new EditModelSettingsDialog(AppSettings.BackyardSettings.UserSettings);
+			var dlg = new EditModelSettingsDialog();
 			if (dlg.ShowDialog() == DialogResult.OK)
 				AppSettings.BackyardSettings.UserSettings = dlg.Parameters.Copy();
 		}

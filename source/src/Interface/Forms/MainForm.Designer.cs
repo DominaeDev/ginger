@@ -353,7 +353,7 @@ namespace Ginger {
 			// 
 			this.bulkChangeModelSettingsMenuItem.Name = "bulkChangeModelSettingsMenuItem";
 			this.bulkChangeModelSettingsMenuItem.Size = new System.Drawing.Size(209, 22);
-			this.bulkChangeModelSettingsMenuItem.Text = "Edit model settings...";
+			this.bulkChangeModelSettingsMenuItem.Text = "Change model settings...";
 			this.bulkChangeModelSettingsMenuItem.Click += new System.EventHandler(this.bulkChangeModelSettingsMenuItem_Click);
 			// 
 			// writeChatSettingsMenuItem

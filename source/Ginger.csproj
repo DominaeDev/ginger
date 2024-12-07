@@ -483,6 +483,7 @@
     <Compile Include="src\Utility\GenderSwap.cs" />
     <Compile Include="src\Utility\Integration\BackupUtil.cs" />
     <Compile Include="src\Utility\Integration\Backyard.cs" />
+    <Compile Include="src\Utility\Integration\ModelInfo.cs" />
     <Compile Include="src\Utility\Measurement.cs" />
     <Compile Include="src\Utility\Random\RandomNoise.cs" />
     <Compile Include="src\Utility\ReplaceWord.cs" />
@@ -1075,6 +1076,7 @@
     <None Include="Resources\Icons\Dark\dark_write.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Schemas\backyard_models_schema.txt" />
     <None Include="Resources\Schemas\tavern_characterbook_v2_filter.schema.txt" />
     <None Include="Resources\Schemas\tavern_characterbook_v3_filter.schema.txt" />
     <None Include="Resources\Schemas\tavern_worldbook_filter.schema.txt" />

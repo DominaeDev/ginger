@@ -8,22 +8,23 @@ namespace Ginger
 {
 	public partial class EditModelSettingsDialog : FormEx
 	{
+		public ChatParameters Editing { get; set; }
 		public ChatParameters Parameters { get; private set; }
+		
 		private ChatParameters _defaultParameters;
 
 		private bool _bIgnoreEvents = false;
 
-		private bool CanEdit { get { return cbPresets.SelectedIndex != 1; } }
-		private bool CanSave { get { return cbPresets.SelectedIndex >= 2; } }
+		private int idxUserSettings { get { return Editing != null ? 1 : 0; } }
+		private int idxDefaults { get { return Editing != null ? 2 : 1; } }
+		private int idxPresets { get { return Editing != null ? 3 : 2; } }
 
-		public EditModelSettingsDialog(ChatParameters defaultParameters = null)
+		private bool IsEditing { get { return Editing != null; } }
+		private bool CanEdit { get { return true; } }
+		private bool CanSave { get { return cbPresets.SelectedIndex >= idxPresets; } }
+
+		public EditModelSettingsDialog()
 		{
-			if (defaultParameters != null)
-				_defaultParameters = defaultParameters.Copy();
-			else
-				_defaultParameters = AppSettings.BackyardSettings.UserSettings.Copy();
-			Parameters = _defaultParameters.Copy();
-
 			InitializeComponent();
 
 			Load += EditModelSettingsDialog_Load;
@@ -57,10 +58,19 @@ namespace Ginger
 
 		private void EditModelSettingsDialog_Load(object sender, EventArgs e)
 		{
+			if (Editing != null)
+				_defaultParameters = Editing.Copy();
+			else
+				_defaultParameters = AppSettings.BackyardSettings.UserSettings.Copy();
+
+			Parameters = _defaultParameters.Copy();
+
 			WhileIgnoringEvents(() => {
 				cbPresets.BeginUpdate();
-				cbPresets.Items.Add("");
-				cbPresets.Items.Add("(Backyard AI Defaults)");
+				if (IsEditing)
+					cbPresets.Items.Add("Current settings");
+				cbPresets.Items.Add("Default (Ginger)");
+				cbPresets.Items.Add("Default (Backyard AI)");
 				foreach (var preset in AppSettings.BackyardSettings.Presets)
 					cbPresets.Items.Add(preset.name);
 
@@ -69,11 +79,8 @@ namespace Ginger
 
 				cbModel.BeginUpdate();
 				cbModel.Items.Add("(Default model)");
-				if (Backyard.Models != null)
-				{
-					foreach (var model in Backyard.Models)
-						cbModel.Items.Add(model);
-				}
+				foreach (var model in BackyardModelDatabase.Models)
+					cbModel.Items.Add(model);
 				cbModel.SelectedItem = cbModel.Items[0];
 				cbModel.EndUpdate();
 
@@ -87,6 +94,7 @@ namespace Ginger
 					"Command-R",
 					"Mistral Instruct",
 				});
+				cbPromptTemplate.SelectedItem = cbPromptTemplate.Items[0];
 				cbPromptTemplate.EndUpdate();
 
 				cbSampling.BeginUpdate();
@@ -118,33 +126,30 @@ namespace Ginger
 		private void RefreshValues()
 		{
 			WhileIgnoringEvents(() => {
-				if (string.IsNullOrEmpty(Parameters.model) || Backyard.Models == null)
+				// Model
+				if (string.IsNullOrEmpty(Parameters.model))
 					cbModel.SelectedIndex = 0;
 				else
 				{
-					int idxModel = Array.FindIndex(Backyard.Models, fn => string.Compare(fn, Parameters.model, StringComparison.OrdinalIgnoreCase) == 0);
+					int idxModel = BackyardModelDatabase.Models.IndexOfAny(m => m.Compare(Parameters.model));
 
-					if (idxModel >= 0 && idxModel < Backyard.Models.Length && idxModel < cbModel.Items.Count - 1)
+					if (idxModel >= 0 && idxModel < BackyardModelDatabase.Models.Count && idxModel < cbModel.Items.Count - 1)
+					{
 						cbModel.SelectedIndex = idxModel + 1;
+						Parameters.model = BackyardModelDatabase.Models[idxModel].id; // Validated
+					}
 					else
+					{
+						// Unknown model
 						cbModel.SelectedIndex = 0;
+						Parameters.model = null;
+					}
 				}
 
-				if (cbPresets.SelectedIndex == 1) // Backyard defaults
-				{
-					// Disable prompt template
-					cbPromptTemplate.SelectedIndex = 0;
-					labelPromptTemplate.Enabled = false;
-					panelPromptTemplate.Enabled = false;
-				}
-				else
-				{
-					// Enable prompt template
-					cbPromptTemplate.SelectedItem = cbPromptTemplate.Items[Parameters.iPromptTemplate];
-					labelPromptTemplate.Enabled = true;
-					panelPromptTemplate.Enabled = true;
-				}
+				// Prompt template
+				cbPromptTemplate.SelectedItem = cbPromptTemplate.Items[Parameters.iPromptTemplate];
 
+				// Parameters
 				Set(textBox_Temperature, Parameters.temperature);
 				Set(textBox_MinP, Parameters.minP);
 				Set(textBox_TopP, Parameters.topP);
@@ -166,6 +171,126 @@ namespace Ginger
 				ToggleControls();
 			});
 		}
+
+		private void cbPresets_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			int index = cbPresets.SelectedIndex;
+
+			if (IsEditing && index == 0)
+				Parameters = _defaultParameters.Copy();
+			else if (index == idxUserSettings)
+				Parameters = AppSettings.BackyardSettings.UserSettings.Copy();
+			else if (index == idxDefaults)
+				Parameters = ChatParameters.Default;
+			else if (index >= idxPresets && index < AppSettings.BackyardSettings.Presets.Count + idxPresets)
+				Parameters = AppSettings.BackyardSettings.Presets[index - idxPresets].Copy();
+
+			RefreshPresetButtons();
+			RefreshValues();
+			ToggleControls();
+		}
+
+		private void ToggleControls()
+		{
+			bool bMinPEnabled = Parameters.minPEnabled;
+			bool bDefaultModel = string.IsNullOrEmpty(Parameters.model);
+
+			labelModel.Enabled = CanEdit;
+			labelPromptTemplate.Enabled = CanEdit && !bDefaultModel;
+			labelTemperature.Enabled = CanEdit;
+			labelSampling.Enabled = CanEdit;
+			labelMinP.Enabled = CanEdit && bMinPEnabled;
+			labelTopP.Enabled = CanEdit && !bMinPEnabled;
+			labelTopK.Enabled = CanEdit && !bMinPEnabled;
+			labelRepeatPenalty.Enabled = CanEdit;
+			labelPenaltyTokens.Enabled = CanEdit;
+			panelModel.Enabled = CanEdit;
+			panelPromptTemplate.Enabled = CanEdit && !bDefaultModel;
+			panelTemperature.Enabled = CanEdit;
+			panelSampling.Enabled = CanEdit;
+			panelMinP.Enabled = CanEdit && bMinPEnabled;
+			panelTopP.Enabled = CanEdit && !bMinPEnabled;
+			panelTopK.Enabled = CanEdit && !bMinPEnabled;
+			panelRepeatPenalty.Enabled = CanEdit;
+			panelPenaltyTokens.Enabled = CanEdit;
+			trackBar_Temperature.Visible = CanEdit;
+			trackBar_MinP.Visible = CanEdit && bMinPEnabled;
+			trackBar_TopP.Visible = CanEdit && !bMinPEnabled;
+			trackBar_TopK.Visible = CanEdit && !bMinPEnabled;
+			trackBar_RepeatPenalty.Visible = CanEdit;
+			trackBar_PenaltyTokens.Visible = CanEdit;
+		}
+
+		private void cbModel_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			int index = cbModel.SelectedIndex;
+			if (index == 0)
+			{
+				Parameters.model = null;
+				Parameters.iPromptTemplate = 0;
+
+				WhileIgnoringEvents(() => {
+					// Disable prompt template
+					cbPromptTemplate.SelectedIndex = 0;
+					labelPromptTemplate.Enabled = false;
+					panelPromptTemplate.Enabled = false;
+				});
+			}
+			else
+			{
+				var model = (BackyardModel)cbModel.SelectedItem;
+				Parameters.model = model.id;
+
+				int iDefaultPromptTemplate = ChatParameters.PromptTemplateFromString(model.promptTemplate);
+
+				WhileIgnoringEvents(() => {
+					if (AppSettings.BackyardLink.SavePromptTemplates)
+					{
+						int iPromptTemplate = AppSettings.BackyardSettings.GetPromptTemplateForModel(Parameters.model);
+						if (iPromptTemplate != -1)
+						{
+							cbPromptTemplate.SelectedIndex = iPromptTemplate;
+							Parameters.iPromptTemplate = iPromptTemplate;
+						}
+						else
+						{
+							cbPromptTemplate.SelectedIndex = iDefaultPromptTemplate;
+							Parameters.iPromptTemplate = iDefaultPromptTemplate;
+						}
+					}
+					else
+					{
+						cbPromptTemplate.SelectedIndex = iDefaultPromptTemplate;
+						Parameters.iPromptTemplate = iDefaultPromptTemplate;
+					}
+
+					bool bDefaultModel = string.IsNullOrEmpty(Parameters.model);
+					labelPromptTemplate.Enabled = CanEdit && !bDefaultModel;
+					panelPromptTemplate.Enabled = CanEdit && !bDefaultModel;
+
+				});
+			}
+
+		}
+
+		private void cbPromptTemplate_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			int idxPromptTemplate = cbPromptTemplate.SelectedIndex;
+			Parameters.iPromptTemplate = idxPromptTemplate;
+
+			if (AppSettings.BackyardLink.SavePromptTemplates)
+				AppSettings.BackyardSettings.SetPromptTemplateForModel(Parameters.model, Parameters.iPromptTemplate);
+		}
+
 
 		private void Set(TextBoxBase textBox, decimal value)
 		{
@@ -308,105 +433,6 @@ namespace Ginger
 			toolTip.UseAnimation = false;
 			toolTip.AutomaticDelay = 250;
 			toolTip.AutoPopDelay = 3500;
-		}
-
-		private void cbPresets_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			if (_bIgnoreEvents)
-				return;
-
-			int index = cbPresets.SelectedIndex;
-
-			if (index == 0)
-				Parameters = _defaultParameters.Copy();
-			else if (index == 1)
-				Parameters = ChatParameters.Default;
-			else if (index >= 2 && index < AppSettings.BackyardSettings.Presets.Count + 2)
-				Parameters = AppSettings.BackyardSettings.Presets[index - 2].Copy();
-
-			RefreshPresetButtons();
-			RefreshValues();
-			ToggleControls();
-		}
-
-		private void ToggleControls()
-		{
-			bool bMinPEnabled = Parameters.minPEnabled;
-			bool bDefaultModel = string.IsNullOrEmpty(Parameters.model);
-
-			labelModel.Enabled = CanEdit;
-			labelPromptTemplate.Enabled = CanEdit && !bDefaultModel;
-			labelTemperature.Enabled = CanEdit;
-			labelSampling.Enabled = CanEdit;
-			labelMinP.Enabled = CanEdit && bMinPEnabled;
-			labelTopP.Enabled = CanEdit && !bMinPEnabled;
-			labelTopK.Enabled = CanEdit && !bMinPEnabled;
-			labelRepeatPenalty.Enabled = CanEdit;
-			labelPenaltyTokens.Enabled = CanEdit;
-			panelModel.Enabled = CanEdit;
-			panelPromptTemplate.Enabled = CanEdit && !bDefaultModel;
-			panelTemperature.Enabled = CanEdit;
-			panelSampling.Enabled = CanEdit;
-			panelMinP.Enabled = CanEdit && bMinPEnabled;
-			panelTopP.Enabled = CanEdit && !bMinPEnabled;
-			panelTopK.Enabled = CanEdit && !bMinPEnabled;
-			panelRepeatPenalty.Enabled = CanEdit;
-			panelPenaltyTokens.Enabled = CanEdit;
-			trackBar_Temperature.Visible = CanEdit;
-			trackBar_MinP.Visible = CanEdit && bMinPEnabled;
-			trackBar_TopP.Visible = CanEdit && !bMinPEnabled;
-			trackBar_TopK.Visible = CanEdit && !bMinPEnabled;
-			trackBar_RepeatPenalty.Visible = CanEdit;
-			trackBar_PenaltyTokens.Visible = CanEdit;
-		}
-
-		private void cbModel_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			if (_bIgnoreEvents)
-				return;
-
-			int index = cbModel.SelectedIndex;
-			if (index == 0)
-			{
-				Parameters.model = null;
-
-				WhileIgnoringEvents(() => {
-					// Disable prompt template
-					cbPromptTemplate.SelectedIndex = 0;
-					labelPromptTemplate.Enabled = false;
-					panelPromptTemplate.Enabled = false;
-				});
-			}
-			else
-			{
-				Parameters.model = cbModel.SelectedItem as string;
-
-				WhileIgnoringEvents(() => {
-					// Enable prompt template
-					labelPromptTemplate.Enabled = true;
-					panelPromptTemplate.Enabled = true;
-
-					if (AppSettings.BackyardLink.SavePromptTemplates)
-					{
-						int iPromptTemplate = AppSettings.BackyardSettings.GetPromptTemplateForModel(Parameters.model);
-						if (iPromptTemplate != -1)
-							cbPromptTemplate.SelectedIndex = iPromptTemplate;
-					}
-				});
-			}
-
-		}
-
-		private void cbPromptTemplate_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			if (_bIgnoreEvents)
-				return;
-
-			int idxPromptTemplate = cbPromptTemplate.SelectedIndex;
-			Parameters.iPromptTemplate = idxPromptTemplate;
-
-			if (AppSettings.BackyardLink.SavePromptTemplates)
-				AppSettings.BackyardSettings.SetPromptTemplateForModel(Parameters.model, Parameters.iPromptTemplate);
 		}
 
 		private void textBox_Temperature_TextChanged(object sender, EventArgs e)
@@ -599,14 +625,11 @@ namespace Ginger
 		private void btnSavePreset_Click(object sender, EventArgs e)
 		{
 			int index = cbPresets.SelectedIndex;
-			if (index <= 0)
+			if (index < idxPresets)
 				return;
-			else // Preset
-			{
-				index -= 2;
-				if (index >= 0 && index < AppSettings.BackyardSettings.Presets.Count)
-					AppSettings.BackyardSettings.Presets[index] = (ChatParameters)Parameters.Clone();
-			}
+			index -= idxPresets;
+			if (index >= 0 && index < AppSettings.BackyardSettings.Presets.Count)
+				AppSettings.BackyardSettings.Presets[index] = (ChatParameters)Parameters.Clone();
 		}
 
 		private void btnNewPreset_Click(object sender, EventArgs e)
@@ -648,14 +671,14 @@ namespace Ginger
 		private void btnRemovePreset_Click(object sender, EventArgs e)
 		{
 			int index = cbPresets.SelectedIndex;
-			if (index < 2)
+			if (index < idxPresets)
 				return;
 
 			var mr = MessageBox.Show("Remove this preset?", Resources.cap_confirm, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
 			if (mr != DialogResult.Yes)
 				return;
 
-			index -= 2;
+			index -= idxPresets;
 			if (index >= 0 && index < AppSettings.BackyardSettings.Presets.Count)
 				AppSettings.BackyardSettings.Presets.RemoveAt(index);
 
