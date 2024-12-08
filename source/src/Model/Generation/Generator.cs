@@ -180,6 +180,7 @@ namespace Ginger
 			Export	= 1 << 0,
 			Bake	= 1 << 1,
 			Snippet = 1 << 2,
+			Linked	= 1 << 3,
 
 			Single	= 1 << 10,
 			All		= 1 << 11,

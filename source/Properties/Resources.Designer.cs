@@ -4148,6 +4148,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to When saving a new character to Backyard AI, create separate chats for each alternate greeting..
+        /// </summary>
+        internal static string tooltip_link_alt_greetings {
+            get {
+                return ResourceManager.GetString("tooltip_link_alt_greetings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Always link characters when importing or saving to Backyard AI..
         /// </summary>
         internal static string tooltip_link_always_create {
@@ -4482,7 +4491,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When saving the character to Backyard AI, set the portrait as the background image if no other background is assigned..
+        ///   Looks up a localized string similar to When saving a new character to Backyard AI, set the portrait as the background image if no other background is assigned..
         /// </summary>
         internal static string tooltip_link_use_portrait_as_background {
             get {

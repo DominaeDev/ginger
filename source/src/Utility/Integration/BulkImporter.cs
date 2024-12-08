@@ -286,31 +286,16 @@ namespace Ginger.Integration
 				}
 
 				// Write character to Backyard
-				FaradayCardV4 card = FaradayCardV4.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.Faraday));
-				
-				// Portrait image
-				Backyard.ImageInput[] imageInput;
-				if (Current.Card.portraitImage != null)
-				{
-					imageInput = new Backyard.ImageInput[] {
-						new Backyard.ImageInput() {
-							image = Current.Card.portraitImage,
-							fileExt = "png",
-						}
-					};
-				}
-				else
-				{
-					imageInput = new Backyard.ImageInput[] {
-						new Backyard.ImageInput() {
-							image = DefaultPortrait.Image,
-							fileExt = "png",
-						}
-					};
-				}
+				var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
+				FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+				Backyard.ImageInput[] imageInput = Backyard.GatherImages();
+				BackupData.Chat[] chats = null;
+
+				if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1)
+					chats = Backyard.GatherChats(card, output, imageInput);
 
 				Backyard.Link.Image[] imageLinks; // Ignored
-				var writeError = Backyard.CreateNewCharacter(card, imageInput, null, out characterInstance, out imageLinks, parentFolder);
+				var writeError = Backyard.CreateNewCharacter(card, imageInput, chats, out characterInstance, out imageLinks, parentFolder);
 				if (writeError != Backyard.Error.NoError)
 				{
 					characterInstance = default(CharacterInstance);

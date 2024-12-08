@@ -1563,7 +1563,7 @@ namespace Ginger
 			else if (Current.HasLink == false)
 				return Backyard.Error.NotFound;
 
-			FaradayCardV4 card = FaradayCardV4.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.Faraday));
+			FaradayCardV4 card = FaradayCardV4.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked));
 
 			// Check if character exists, has newer changes
 			bool hasChanges;
@@ -1613,10 +1613,15 @@ namespace Ginger
 				images = null;
 				return Backyard.Error.NotConnected;
 			}
-			
-			FaradayCardV4 card = FaradayCardV4.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.Faraday));
-			Backyard.ImageInput[] imageInput = GatherImages();
-			var error = Backyard.CreateNewCharacter(card, imageInput, null, out createdCharacter, out images);
+
+			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
+			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+			Backyard.ImageInput[] imageInput = Backyard.GatherImages();
+			BackupData.Chat[] chats = null;
+			if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1)
+				chats = Backyard.GatherChats(card, output, imageInput);
+
+			var error = Backyard.CreateNewCharacter(card, imageInput, chats, out createdCharacter, out images);
 			if (error != Backyard.Error.NoError)
 			{
 				return error;
@@ -1631,70 +1636,6 @@ namespace Ginger
 				Backyard.RefreshCharacters();
 				return Backyard.Error.NoError;
 			}
-		}
-
-		private Backyard.ImageInput[] GatherImages()
-		{
-			var lsImages = new List<Backyard.ImageInput>();
-
-			// Main portrait
-			if (Current.Card.portraitImage != null)
-			{
-				lsImages.Add(new Backyard.ImageInput() {
-					image = Current.Card.portraitImage,
-					fileExt = "png",
-				});
-			}
-			else
-			{
-				lsImages.Add(new Backyard.ImageInput() {
-					image = DefaultPortrait.Image,
-					fileExt = "png",
-				});
-			}
-
-			// Portrait as background?
-			if (AppSettings.BackyardLink.UsePortraitAsBackground
-				&& Current.Card.portraitImage != null 
-				&& (Current.Card.assets == null || Current.Card.assets.ContainsNoneOf(a => a.assetType == AssetFile.AssetType.Background)))
-			{
-				if (Current.Card.assets == null)
-					Current.Card.assets = new AssetCollection();
-
-				Current.Card.assets.Add(new AssetFile() {
-					name = "Portrait",
-					ext = "jpeg",
-					assetType = AssetFile.AssetType.Background,
-					data = AssetData.FromBytes(Utility.ImageToMemory(Current.Card.portraitImage, Utility.ImageFileFormat.Jpeg)),
-					uriType = AssetFile.UriType.Embedded,
-				});
-				Current.IsFileDirty = true;
-			}
-
-			if (Current.Card.assets != null)
-			{
-				foreach (var asset in Current.Card.assets
-					.Where(a => a.isEmbeddedAsset
-						&& (a.assetType == AssetFile.AssetType.Icon || a.assetType == AssetFile.AssetType.Expression)
-						&& a.data.length > 0))
-				{
-					lsImages.Add(new Backyard.ImageInput() {
-						asset = asset,
-						fileExt = asset.ext,
-					});
-				}
-
-				var backgroundAsset = Current.Card.assets.FirstOrDefault(a => a.assetType == AssetFile.AssetType.Background);
-				if (backgroundAsset != null)
-				{
-					lsImages.Add(new Backyard.ImageInput() {
-						asset = backgroundAsset,
-						fileExt = backgroundAsset.ext,
-					});
-				}
-			}
-
-			return lsImages.ToArray();
 		}
 
 		private bool ReestablishLink(bool bSilent = false)

@@ -1990,7 +1990,7 @@ namespace Ginger.Integration
 										expectedUpdates += 1;
 									}
 								}
-								else
+								else // One or more chats
 								{
 									// Generate unique IDs
 									chatIds = new string[chats.Length];
@@ -5066,6 +5066,145 @@ namespace Ginger.Integration
 			}
 			appVersion = VersionNumber.Zero;
 			return false;
+		}
+
+		public static ImageInput[] GatherImages()
+		{
+			var lsImages = new List<ImageInput>();
+
+			// Main portrait
+			if (Current.Card.portraitImage != null)
+			{
+				lsImages.Add(new ImageInput() {
+					image = Current.Card.portraitImage,
+					fileExt = "png",
+				});
+			}
+			else
+			{
+				lsImages.Add(new ImageInput() {
+					image = DefaultPortrait.Image,
+					fileExt = "png",
+				});
+			}
+
+			// Portrait as background?
+			if (AppSettings.BackyardLink.UsePortraitAsBackground
+				&& Current.Card.portraitImage != null 
+				&& (Current.Card.assets == null || Current.Card.assets.ContainsNoneOf(a => a.assetType == AssetFile.AssetType.Background)))
+			{
+				if (Current.Card.assets == null)
+					Current.Card.assets = new AssetCollection();
+
+				Current.Card.assets.Add(new AssetFile() {
+					name = "Portrait",
+					ext = "jpeg",
+					assetType = AssetFile.AssetType.Background,
+					data = AssetData.FromBytes(Utility.ImageToMemory(Current.Card.portraitImage, Utility.ImageFileFormat.Jpeg)),
+					uriType = AssetFile.UriType.Embedded,
+				});
+				Current.IsFileDirty = true;
+			}
+
+			if (Current.Card.assets != null)
+			{
+				foreach (var asset in Current.Card.assets
+					.Where(a => a.isEmbeddedAsset
+						&& (a.assetType == AssetFile.AssetType.Icon || a.assetType == AssetFile.AssetType.Expression)
+						&& a.data.length > 0))
+				{
+					lsImages.Add(new ImageInput() {
+						asset = asset,
+						fileExt = asset.ext,
+					});
+				}
+
+				var backgroundAsset = Current.Card.assets.FirstOrDefault(a => a.assetType == AssetFile.AssetType.Background);
+				if (backgroundAsset != null)
+				{
+					lsImages.Add(new ImageInput() {
+						asset = backgroundAsset,
+						fileExt = backgroundAsset.ext,
+					});
+				}
+			}
+
+			return lsImages.ToArray();
+		}
+
+		public static BackupData.Chat[] GatherChats(FaradayCardV4 card, Generator.Output output, Backyard.ImageInput[] images)
+		{
+			var lsChats = new List<BackupData.Chat>();
+
+			DateTime timestamp = DateTime.Now;
+
+			string backgroundName = null;
+			if (images != null)
+			{
+				backgroundName = images
+					.Where(i => i.asset != null && i.asset.assetType == AssetFile.AssetType.Background)
+					.Select(i => i.asset.name)
+					.FirstOrDefault();
+			}
+
+			var staging = new ChatStaging() {
+				system = card.data.system,
+				scenario = card.data.scenario,
+				greeting = card.data.greeting,
+				example = card.data.example,
+				grammar = card.data.grammar,
+			};
+
+			var parameters = AppSettings.BackyardSettings.UserSettings;
+
+			// Primary greeting
+			lsChats.Add(new BackupData.Chat() {
+				name = "Primary greeting",
+				creationDate = timestamp,
+				updateDate = timestamp,
+				backgroundName = backgroundName,
+				staging = staging,
+				parameters = parameters,
+				history = new ChatHistory() {
+					messages = new ChatHistory.Message[1] {
+						new ChatHistory.Message() {
+							instanceId = Cuid.NewCuid(),
+							creationDate = timestamp,
+							updateDate = timestamp,
+							swipes = new string[] { card.data.greeting },
+						}
+					}
+				}
+			});
+
+			// Alternate greetings
+			var alternativeGreetings = output.alternativeGreetings;
+			for (int i = 0; i < alternativeGreetings.Length; ++i)
+			{
+				var greeting = alternativeGreetings[i];
+				timestamp -= TimeSpan.FromMilliseconds(10);
+
+				lsChats.Add(new BackupData.Chat() {
+					name = string.Format("Alt. greeting #{0}", i + 1),
+					creationDate = timestamp,
+					updateDate = timestamp,
+					staging = staging,
+					parameters = parameters,
+					backgroundName = backgroundName,
+					history = new ChatHistory() {
+						messages = new ChatHistory.Message[1] {
+							new ChatHistory.Message() {
+								instanceId = Cuid.NewCuid(),
+								creationDate = timestamp,
+								updateDate = timestamp,
+								swipes = new string[] { greeting.ToFaradayGreeting() },
+							}
+						}
+					}
+				});
+			}
+
+			return lsChats.ToArray();
 		}
 
 		#endregion // Utilities

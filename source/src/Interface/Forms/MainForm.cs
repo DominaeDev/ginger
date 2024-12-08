@@ -251,6 +251,7 @@ namespace Ginger
 			bulkImportMenuItem.ToolTipText = Resources.tooltip_link_import_many;
 			bulkEditModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_many;
 			editExportModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_default;
+			importAltGreetingsMenuItem.ToolTipText = Resources.tooltip_link_alt_greetings;
 
 			RegisterIdleHandler(recipeList);
 
@@ -1321,6 +1322,7 @@ namespace Ginger
 			alwaysLinkMenuItem.Checked = AppSettings.BackyardLink.AlwaysLinkOnImport;
 			enableAutosaveMenuItem.Checked = AppSettings.BackyardLink.Autosave;
 			usePortraitAsBackgroundMenuItem.Checked = AppSettings.BackyardLink.UsePortraitAsBackground;
+			importAltGreetingsMenuItem.Checked = AppSettings.BackyardLink.ImportAlternateGreetings;
 
 			Theme.Apply(menuStrip);
 		}
@@ -2460,6 +2462,11 @@ namespace Ginger
 			dlg.EditingDefaults = true;
 			if (dlg.ShowDialog() == DialogResult.OK)
 				AppSettings.BackyardSettings.UserSettings = dlg.Parameters.Copy();
+		}
+
+		private void importAltGreetingsMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.BackyardLink.ImportAlternateGreetings = !AppSettings.BackyardLink.ImportAlternateGreetings;
 		}
 	}
 

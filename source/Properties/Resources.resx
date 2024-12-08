@@ -1288,7 +1288,7 @@ Reason: {0}</value>
     <value>..\Resources\Schemas\tavern_characterbook_v3_filter.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="tooltip_link_use_portrait_as_background" xml:space="preserve">
-    <value>When saving the character to Backyard AI, set the portrait as the background image if no other background is assigned.</value>
+    <value>When saving a new character to Backyard AI, set the portrait as the background image if no other background is assigned.</value>
   </data>
   <data name="status_link_save_file_and_link" xml:space="preserve">
     <value>Saved to file and Backyard AI</value>
@@ -1419,5 +1419,8 @@ Some models require specific prompt templates to function properly.</value>
   </data>
   <data name="tooltip_model_model" xml:space="preserve">
     <value>The model is responsible for generating the character's responses.</value>
+  </data>
+  <data name="tooltip_link_alt_greetings" xml:space="preserve">
+    <value>When saving a new character to Backyard AI, create separate chats for each alternate greeting.</value>
   </data>
 </root>

@@ -224,6 +224,7 @@ namespace Ginger
 			public enum ActiveChatSetting { First, Last, All }
 			public static ActiveChatSetting ApplyChatSettings = ActiveChatSetting.Last;
 			public static bool UsePortraitAsBackground = false;
+			public static bool ImportAlternateGreetings = false;
 
 			public static bool PruneExampleChat = true;
 			public static string AuthorNote = null;
@@ -356,6 +357,7 @@ namespace Ginger
 				ReadBool(ref BackyardLink.UsePortraitAsBackground, linkSection, "UsePortraitAsBackground");
 				ReadString(ref BackyardLink.BulkImportFolderName, linkSection, "BulkImportFolderName");
 				ReadBool(ref BackyardLink.PruneExampleChat, linkSection, "PruneExampleChat");
+				ReadBool(ref BackyardLink.ImportAlternateGreetings, linkSection, "ImportAlternateGreetings");
 				ReadString(ref BackyardLink.AuthorNote, linkSection, "AuthorNote");
 			}
 			
@@ -512,6 +514,7 @@ namespace Ginger
 					Write(outputFile, "UsePortraitAsBackground", BackyardLink.UsePortraitAsBackground);
 					Write(outputFile, "BulkImportFolderName", BackyardLink.BulkImportFolderName);
 					Write(outputFile, "PruneExampleChat", BackyardLink.PruneExampleChat);
+					Write(outputFile, "ImportAlternateGreetings", BackyardLink.ImportAlternateGreetings);
 					Write(outputFile, "AuthorNote", BackyardLink.AuthorNote);
 
 					// Backyard model settings
