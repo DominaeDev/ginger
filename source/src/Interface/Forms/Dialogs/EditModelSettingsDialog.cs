@@ -16,13 +16,25 @@ namespace Ginger
 		private bool _bIgnoreEvents = false;
 
 		private int idxUserSettings { get { return Editing != null ? 1 : 0; } }
-		private int idxDefaults { get { return Editing != null ? 2 : 1; } }
-		private int idxPresets { get { return Editing != null ? 3 : 2; } }
+		private int idxPresets { get { return Editing != null ? 2 : 1; } }
 
 		private bool IsEditing { get { return Editing != null; } }
 		private bool CanEdit { get { return true; } }
 		private bool CanSave { get { return cbPresets.SelectedIndex >= idxPresets; } }
 
+		private bool Dirty
+		{
+			set
+			{
+				if (value != btnSavePreset.Highlighted)
+					btnSavePreset.Highlighted = value;
+				_bDirty = value;
+			}
+		}
+		private bool _bDirty = false;
+
+		public bool EditingDefaults { get; set; }
+		
 		public EditModelSettingsDialog()
 		{
 			InitializeComponent();
@@ -46,6 +58,7 @@ namespace Ginger
 
 			cbSampling.SelectedIndexChanged += CbSampling_SelectedIndexChanged;
 
+			SetToolTip(labelModel, Resources.tooltip_model_model);
 			SetToolTip(labelPromptTemplate, Resources.tooltip_model_prompt_template);
 			SetToolTip(labelSampling, Resources.tooltip_model_sampler);
 			SetToolTip(labelTemperature, Resources.tooltip_model_temperature);
@@ -54,6 +67,10 @@ namespace Ginger
 			SetToolTip(labelTopK, Resources.tooltip_model_topk);
 			SetToolTip(labelRepeatPenalty, Resources.tooltip_model_repeat_penalty);
 			SetToolTip(labelPenaltyTokens, Resources.tooltip_model_repeat_lastn);
+			SetToolTip(btnCopy, Resources.tooltip_link_copy_settings);
+			SetToolTip(btnPaste, Resources.tooltip_link_paste_settings);
+			SetToolTip(btnPaste, Resources.tooltip_link_reset_settings);
+			SetToolTip(cbSavePromptTemplate, Resources.tooltip_model_associate_prompt_template);
 		}
 
 		private void EditModelSettingsDialog_Load(object sender, EventArgs e)
@@ -70,7 +87,6 @@ namespace Ginger
 				if (IsEditing)
 					cbPresets.Items.Add("Current settings");
 				cbPresets.Items.Add("Default (Ginger)");
-				cbPresets.Items.Add("Default (Backyard AI)");
 				foreach (var preset in AppSettings.BackyardSettings.Presets)
 					cbPresets.Items.Add(preset.name);
 
@@ -105,6 +121,10 @@ namespace Ginger
 				cbSampling.EndUpdate();
 
 				cbSavePromptTemplate.Checked = AppSettings.BackyardLink.SavePromptTemplates;
+
+				btnConfirm.Text = EditingDefaults ? "Save" : "Apply";
+//				labelPresets.Enabled = !EditingDefaults;
+//				panelPresets.Enabled = !EditingDefaults;
 			});
 
 			RefreshPresetButtons();
@@ -183,14 +203,13 @@ namespace Ginger
 				Parameters = _defaultParameters.Copy();
 			else if (index == idxUserSettings)
 				Parameters = AppSettings.BackyardSettings.UserSettings.Copy();
-			else if (index == idxDefaults)
-				Parameters = ChatParameters.Default;
 			else if (index >= idxPresets && index < AppSettings.BackyardSettings.Presets.Count + idxPresets)
 				Parameters = AppSettings.BackyardSettings.Presets[index - idxPresets].Copy();
 
 			RefreshPresetButtons();
 			RefreshValues();
 			ToggleControls();
+			Dirty = false;
 		}
 
 		private void ToggleControls()
@@ -277,6 +296,7 @@ namespace Ginger
 				});
 			}
 
+			Dirty = true;
 		}
 
 		private void cbPromptTemplate_SelectedIndexChanged(object sender, EventArgs e)
@@ -289,6 +309,8 @@ namespace Ginger
 
 			if (AppSettings.BackyardLink.SavePromptTemplates)
 				AppSettings.BackyardSettings.SetPromptTemplateForModel(Parameters.model, Parameters.iPromptTemplate);
+
+			Dirty = true;
 		}
 
 
@@ -447,10 +469,12 @@ namespace Ginger
 				value = 0m;
 
 			Parameters.temperature = value;
+			Dirty = true;
 
 			WhileIgnoringEvents(() => {
 				Set(trackBar_Temperature, Convert.ToInt32(value * 10));
 			});
+
 		}
 
 		private void textBox_MinP_TextChanged(object sender, EventArgs e)
@@ -465,6 +489,7 @@ namespace Ginger
 				value = 0m;
 
 			Parameters.minP = value;
+			Dirty = true;
 
 			WhileIgnoringEvents(() => {
 				Set(trackBar_MinP, Convert.ToInt32(value * 100));
@@ -483,6 +508,7 @@ namespace Ginger
 				value = 0m;
 
 			Parameters.topP = value;
+			Dirty = true;
 
 			WhileIgnoringEvents(() => {
 				Set(trackBar_TopP, Convert.ToInt32(value * 100));
@@ -501,6 +527,7 @@ namespace Ginger
 				value = 0;
 
 			Parameters.topK = value;
+			Dirty = true;
 
 			WhileIgnoringEvents(() => {
 				Set(trackBar_TopK, value);
@@ -519,6 +546,7 @@ namespace Ginger
 				value = 0m;
 
 			Parameters.repeatPenalty = value;
+			Dirty = true;
 
 			WhileIgnoringEvents(() => {
 				Set(trackBar_RepeatPenalty, Convert.ToInt32(value * 100));
@@ -537,6 +565,7 @@ namespace Ginger
 				value = 16;
 
 			Parameters.repeatLastN = value;
+			Dirty = true;
 
 			WhileIgnoringEvents(() => {
 				Set(trackBar_PenaltyTokens, value);
@@ -620,6 +649,7 @@ namespace Ginger
 
 			Parameters = clip.parameters.Copy();
 			RefreshValues();
+			Dirty = true;
 		}
 
 		private void btnSavePreset_Click(object sender, EventArgs e)
@@ -630,6 +660,7 @@ namespace Ginger
 			index -= idxPresets;
 			if (index >= 0 && index < AppSettings.BackyardSettings.Presets.Count)
 				AppSettings.BackyardSettings.Presets[index] = (ChatParameters)Parameters.Clone();
+			Dirty = false;
 		}
 
 		private void btnNewPreset_Click(object sender, EventArgs e)
@@ -666,6 +697,7 @@ namespace Ginger
 
 			RefreshPresetButtons();
 			RefreshValues();
+			Dirty = false;
 		}
 
 		private void btnRemovePreset_Click(object sender, EventArgs e)
@@ -693,6 +725,7 @@ namespace Ginger
 
 			RefreshPresetButtons();
 			RefreshValues();
+			Dirty = false;
 		}
 
 		private void RefreshPresetButtons()
@@ -717,9 +750,20 @@ namespace Ginger
 				WhileIgnoringEvents(() => {
 					int iPromptTemplate = AppSettings.BackyardSettings.GetPromptTemplateForModel(Parameters.model);
 					if (iPromptTemplate != -1)
+					{
 						cbPromptTemplate.SelectedIndex = iPromptTemplate;
+						Parameters.iPromptTemplate = iPromptTemplate;
+						Dirty = true;
+					}
 				});
 			}
+		}
+
+		private void btnReset_Click(object sender, EventArgs e)
+		{
+			Parameters = new ChatParameters();
+			RefreshValues();
+			Dirty = true;
 		}
 	}
 }

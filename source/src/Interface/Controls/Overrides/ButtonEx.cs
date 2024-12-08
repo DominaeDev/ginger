@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -6,6 +7,14 @@ namespace Ginger
 {
 	public class ButtonEx : Button
 	{
+		[Browsable(true)]
+		public bool Highlighted
+		{
+			get { return _bHighlighted; }
+			set { _bHighlighted = value; Invalidate(); }
+		}
+		private bool _bHighlighted = false;
+
 		private bool _bHover = false;
 
 		protected override void OnMouseEnter(EventArgs e)
@@ -61,6 +70,14 @@ namespace Ginger
 				g.DrawRectangle(pen, bounds);
 				if (bPressed || bFocused) // Thick border
 					g.DrawRectangle(pen, new Rectangle(bounds.Left + 1, bounds.Top + 1, bounds.Width - 2, bounds.Height - 2));
+			}
+
+			if (Enabled && Highlighted)
+			{
+				using (var pen = new Pen(Theme.Current.HighlightBorder, 1))
+				{
+					g.DrawRectangle(pen, new Rectangle(bounds.Left + 2, bounds.Top + 2, bounds.Width - 4, bounds.Height - 4));
+				}
 			}
 			
 			// Draw focus

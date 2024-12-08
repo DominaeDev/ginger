@@ -59,15 +59,24 @@ namespace Ginger
 
 			[JsonProperty("grammar", Required = Required.DisallowNull)]
 			public string grammar = null;
+
+			[JsonProperty("authorNote", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Ignore)]
+			public string authorNote = "";
+
+			[JsonProperty("pruneExampleChat")]
+			public bool pruneExampleChat = true;
+
+			[JsonProperty("ttsAutoPlay")]
+			public bool ttsAutoPlay = false;
+
+			[JsonProperty("ttsInputFilter", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Ignore)]
+			public string ttsInputFilter = null;
 		}
 
 		public class Parameters
 		{
 			[JsonProperty("model", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Ignore)]
 			public string model = "";
-
-			[JsonProperty("authorNote", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Ignore)]
-			public string authorNote = "";
 
 			[JsonProperty("temperature")]
 			public decimal temperature = 1.2m;
@@ -92,15 +101,6 @@ namespace Ginger
 
 			[JsonProperty("promptTemplate", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Include)]
 			public string promptTemplate = null;
-
-			[JsonProperty("pruneExampleChat")]
-			public bool pruneExampleChat = true;
-
-			[JsonProperty("ttsAutoPlay")]
-			public bool ttsAutoPlay = false;
-
-			[JsonProperty("ttsInputFilter", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Ignore)]
-			public string ttsInputFilter = null;
 		}
 
 		public class Chat
@@ -168,13 +168,16 @@ namespace Ginger
 					greeting = chat.staging.greeting ?? "",
 					example = chat.staging.example ?? "",
 					grammar = chat.staging.grammar ?? "",
+					authorNote = chat.staging.authorNote ?? "",
+					pruneExampleChat = chat.staging.pruneExampleChat,
+					ttsAutoPlay = chat.staging.ttsAutoPlay,
+					ttsInputFilter = chat.staging.ttsInputFilter ?? "default",
 				};
 			}
 			if (chat.parameters != null)
 			{
 				backup.parameters = new Parameters() {
 					model = chat.parameters.model ?? Backyard.DefaultModel,
-					authorNote = chat.parameters.authorNote ?? "",
 					temperature = chat.parameters.temperature,
 					topP = chat.parameters.topP,
 					minP = chat.parameters.minP,
@@ -183,9 +186,6 @@ namespace Ginger
 					repeatLastN = chat.parameters.repeatLastN,
 					repeatPenalty = chat.parameters.repeatPenalty,
 					promptTemplate = chat.parameters.promptTemplate,
-					pruneExampleChat = chat.parameters.pruneExampleChat,
-					ttsAutoPlay = chat.parameters.ttsAutoPlay,
-					ttsInputFilter = chat.parameters.ttsInputFilter ?? "default",
 				};
 			}
 			backup.chat.items = lsEntries.ToArray();
@@ -244,6 +244,10 @@ namespace Ginger
 					greeting = this.staging.greeting,
 					example = this.staging.example,
 					grammar = this.staging.grammar,
+					pruneExampleChat = this.staging.pruneExampleChat,
+					authorNote = this.staging.authorNote,
+					ttsAutoPlay = this.staging.ttsAutoPlay,
+					ttsInputFilter = this.staging.ttsInputFilter,
 				};
 			}
 
@@ -259,10 +263,6 @@ namespace Ginger
 					repeatPenalty = this.parameters.repeatPenalty,
 					repeatLastN = this.parameters.repeatLastN,
 					promptTemplate = this.parameters.promptTemplate,
-					pruneExampleChat = this.parameters.pruneExampleChat,
-					authorNote = this.parameters.authorNote,
-					ttsAutoPlay = this.parameters.ttsAutoPlay,
-					ttsInputFilter = this.parameters.ttsInputFilter,
 				};
 			}
 

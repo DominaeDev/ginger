@@ -208,6 +208,9 @@ namespace Ginger
 			public enum ActiveChatSetting { First, Last, All }
 			public static ActiveChatSetting ApplyChatSettings = ActiveChatSetting.Last;
 			public static bool UsePortraitAsBackground = false;
+
+			public static bool PruneExampleChat = true;
+			public static string AuthorNote = null;
 		}
 
 		public static bool LoadFromIni(string filePath)
@@ -337,6 +340,8 @@ namespace Ginger
 				ReadBool(ref BackyardLink.UsePortraitAsBackground, linkSection, "UsePortraitAsBackground");
 				ReadString(ref BackyardLink.BulkImportFolderName, linkSection, "BulkImportFolderName");
 				ReadBool(ref BackyardLink.SavePromptTemplates, linkSection, "SavePromptTemplates");
+				ReadBool(ref BackyardLink.PruneExampleChat, linkSection, "PruneExampleChat");
+				ReadString(ref BackyardLink.AuthorNote, linkSection, "AuthorNote");
 			}
 			
 			BackyardSettings.Presets.Clear();
@@ -491,6 +496,8 @@ namespace Ginger
 					Write(outputFile, "UsePortraitAsBackground", BackyardLink.UsePortraitAsBackground);
 					Write(outputFile, "BulkImportFolderName", BackyardLink.BulkImportFolderName);
 					Write(outputFile, "SavePromptTemplates", BackyardLink.SavePromptTemplates);
+					Write(outputFile, "PruneExampleChat", BackyardLink.PruneExampleChat);
+					Write(outputFile, "AuthorNote", BackyardLink.AuthorNote);
 
 					// Backyard model settings
 					WriteSection(outputFile, "BackyardAI.ModelSettings.Default");
@@ -564,8 +571,6 @@ namespace Ginger
 			ReadDecimal(ref chatSettings.topP, section, "TopP", 0m, 1m);
 			ReadDecimal(ref chatSettings.minP, section, "MinP", 0m, 1m);
 			ReadBool(ref chatSettings.minPEnabled, section, "MinPEnabled");
-			ReadBool(ref chatSettings.pruneExampleChat, section, "PruneExampleChat");
-			ReadString(ref chatSettings.authorNote, section, "AuthorNote");
 			string promptTemplate = null;
 			ReadString(ref promptTemplate, section, "PromptTemplate");
 			chatSettings.promptTemplate = promptTemplate;
@@ -631,8 +636,6 @@ namespace Ginger
 			Write(w, "TopK", settings.topK);
 			Write(w, "RepeatPenalty", settings.repeatPenalty);
 			Write(w, "RepeatPenaltyTokens", settings.repeatLastN);
-			Write(w, "PruneExampleChat", settings.pruneExampleChat);
-			Write(w, "AuthorNote", settings.authorNote);
 		}
 	}
 }

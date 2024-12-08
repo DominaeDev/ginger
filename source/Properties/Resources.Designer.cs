@@ -4139,24 +4139,6 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Export multiple characters from Backyard AI at once..
-        /// </summary>
-        internal static string tooltip_export_many {
-            get {
-                return ResourceManager.GetString("tooltip_export_many", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Import multiple characters into Backyard AI at once..
-        /// </summary>
-        internal static string tooltip_import_many {
-            get {
-                return ResourceManager.GetString("tooltip_import_many", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Linking allows changes made in Ginger to be saved back to Backyard AI..
         /// </summary>
         internal static string tooltip_link_about_linking {
@@ -4320,11 +4302,29 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Export multiple characters from Backyard AI at once..
+        /// </summary>
+        internal static string tooltip_link_export_many {
+            get {
+                return ResourceManager.GetString("tooltip_link_export_many", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Import a chat from a file..
         /// </summary>
         internal static string tooltip_link_import_chat {
             get {
                 return ResourceManager.GetString("tooltip_link_import_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import multiple characters into Backyard AI at once..
+        /// </summary>
+        internal static string tooltip_link_import_many {
+            get {
+                return ResourceManager.GetString("tooltip_link_import_many", resourceCulture);
             }
         }
         
@@ -4415,6 +4415,15 @@ namespace Ginger.Properties {
         internal static string tooltip_link_repair_chat {
             get {
                 return ResourceManager.GetString("tooltip_link_repair_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset all model settings to their default values..
+        /// </summary>
+        internal static string tooltip_link_reset_settings {
+            get {
+                return ResourceManager.GetString("tooltip_link_reset_settings", resourceCulture);
             }
         }
         
@@ -4519,7 +4528,8 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remember the settings for the currently selected model..
+        ///   Looks up a localized string similar to Associate the prompt template with the model and have it change
+        ///automatically the next time the model is selected..
         /// </summary>
         internal static string tooltip_model_associate_prompt_template {
             get {
@@ -4533,6 +4543,15 @@ namespace Ginger.Properties {
         internal static string tooltip_model_minp {
             get {
                 return ResourceManager.GetString("tooltip_model_minp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The model is responsible for generating the character&apos;s responses..
+        /// </summary>
+        internal static string tooltip_model_model {
+            get {
+                return ResourceManager.GetString("tooltip_model_model", resourceCulture);
             }
         }
         

@@ -28,7 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Windows.Forms.Label labelPresets;
+			this.labelPresets = new System.Windows.Forms.Label();
 			this.labelModel = new System.Windows.Forms.Label();
 			this.labelTemperature = new System.Windows.Forms.Label();
 			this.labelSampling = new System.Windows.Forms.Label();
@@ -74,12 +74,12 @@
 			this.tableLayout_Buttons = new System.Windows.Forms.TableLayoutPanel();
 			this.btnCopy = new Ginger.ButtonEx();
 			this.btnPaste = new Ginger.ButtonEx();
+			this.btnReset = new Ginger.ButtonEx();
 			this.tableLayout_Presets = new System.Windows.Forms.TableLayoutPanel();
 			this.separator = new System.Windows.Forms.Panel();
 			this.line = new Ginger.HorizontalLine();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.horizontalLine1 = new Ginger.HorizontalLine();
-			labelPresets = new System.Windows.Forms.Label();
 			this.tableLayout_Settings.SuspendLayout();
 			this.panelModel.SuspendLayout();
 			this.panelPromptTemplate.SuspendLayout();
@@ -105,13 +105,13 @@
 			// 
 			// labelPresets
 			// 
-			labelPresets.AutoSize = true;
-			labelPresets.Location = new System.Drawing.Point(3, 4);
-			labelPresets.Name = "labelPresets";
-			labelPresets.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-			labelPresets.Size = new System.Drawing.Size(50, 21);
-			labelPresets.TabIndex = 23;
-			labelPresets.Text = "Presets";
+			this.labelPresets.AutoSize = true;
+			this.labelPresets.Location = new System.Drawing.Point(3, 4);
+			this.labelPresets.Name = "labelPresets";
+			this.labelPresets.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
+			this.labelPresets.Size = new System.Drawing.Size(50, 21);
+			this.labelPresets.TabIndex = 23;
+			this.labelPresets.Text = "Presets";
 			// 
 			// labelModel
 			// 
@@ -182,11 +182,12 @@
 			// btnCancel
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnCancel.Highlighted = false;
 			this.btnCancel.Location = new System.Drawing.Point(451, 4);
 			this.btnCancel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(98, 30);
-			this.btnCancel.TabIndex = 3;
+			this.btnCancel.TabIndex = 4;
 			this.btnCancel.Text = "Cancel";
 			this.btnCancel.UseVisualStyleBackColor = true;
 			this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
@@ -194,11 +195,12 @@
 			// btnConfirm
 			// 
 			this.btnConfirm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnConfirm.Highlighted = false;
 			this.btnConfirm.Location = new System.Drawing.Point(347, 4);
 			this.btnConfirm.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.btnConfirm.Name = "btnConfirm";
 			this.btnConfirm.Size = new System.Drawing.Size(98, 30);
-			this.btnConfirm.TabIndex = 2;
+			this.btnConfirm.TabIndex = 3;
 			this.btnConfirm.Text = "Apply";
 			this.btnConfirm.UseVisualStyleBackColor = true;
 			this.btnConfirm.Click += new System.EventHandler(this.BtnOk_Click);
@@ -316,11 +318,11 @@
 			this.cbSavePromptTemplate.AutoSize = true;
 			this.cbSavePromptTemplate.Checked = true;
 			this.cbSavePromptTemplate.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbSavePromptTemplate.Location = new System.Drawing.Point(274, 5);
+			this.cbSavePromptTemplate.Location = new System.Drawing.Point(282, 5);
 			this.cbSavePromptTemplate.Name = "cbSavePromptTemplate";
-			this.cbSavePromptTemplate.Size = new System.Drawing.Size(158, 21);
+			this.cbSavePromptTemplate.Size = new System.Drawing.Size(150, 21);
 			this.cbSavePromptTemplate.TabIndex = 1;
-			this.cbSavePromptTemplate.Text = "Associated with model";
+			this.cbSavePromptTemplate.Text = "Associate with model";
 			this.cbSavePromptTemplate.UseVisualStyleBackColor = true;
 			this.cbSavePromptTemplate.CheckedChanged += new System.EventHandler(this.cbSavePromptTemplate_CheckedChanged);
 			// 
@@ -550,9 +552,10 @@
 			this.trackBar_PenaltyTokens.LargeChange = 8;
 			this.trackBar_PenaltyTokens.Location = new System.Drawing.Point(103, 3);
 			this.trackBar_PenaltyTokens.Maximum = 512;
+			this.trackBar_PenaltyTokens.MaximumSize = new System.Drawing.Size(0, 22);
 			this.trackBar_PenaltyTokens.Minimum = 16;
 			this.trackBar_PenaltyTokens.Name = "trackBar_PenaltyTokens";
-			this.trackBar_PenaltyTokens.Size = new System.Drawing.Size(326, 25);
+			this.trackBar_PenaltyTokens.Size = new System.Drawing.Size(326, 22);
 			this.trackBar_PenaltyTokens.TabIndex = 1;
 			this.trackBar_PenaltyTokens.TickFrequency = 64;
 			this.trackBar_PenaltyTokens.Value = 256;
@@ -585,6 +588,7 @@
 			// btnNewPreset
 			// 
 			this.btnNewPreset.Dock = System.Windows.Forms.DockStyle.Right;
+			this.btnNewPreset.Highlighted = false;
 			this.btnNewPreset.Location = new System.Drawing.Point(279, 3);
 			this.btnNewPreset.Name = "btnNewPreset";
 			this.btnNewPreset.Size = new System.Drawing.Size(50, 28);
@@ -596,6 +600,7 @@
 			// btnSavePreset
 			// 
 			this.btnSavePreset.Dock = System.Windows.Forms.DockStyle.Right;
+			this.btnSavePreset.Highlighted = true;
 			this.btnSavePreset.Location = new System.Drawing.Point(329, 3);
 			this.btnSavePreset.Name = "btnSavePreset";
 			this.btnSavePreset.Size = new System.Drawing.Size(50, 28);
@@ -607,6 +612,7 @@
 			// btnRemovePreset
 			// 
 			this.btnRemovePreset.Dock = System.Windows.Forms.DockStyle.Right;
+			this.btnRemovePreset.Highlighted = false;
 			this.btnRemovePreset.Location = new System.Drawing.Point(379, 3);
 			this.btnRemovePreset.Name = "btnRemovePreset";
 			this.btnRemovePreset.Size = new System.Drawing.Size(50, 28);
@@ -629,32 +635,34 @@
 			// 
 			// tableLayout_Buttons
 			// 
-			this.tableLayout_Buttons.ColumnCount = 5;
-			this.tableLayout_Buttons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 104F));
-			this.tableLayout_Buttons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 104F));
+			this.tableLayout_Buttons.ColumnCount = 6;
+			this.tableLayout_Buttons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 70F));
+			this.tableLayout_Buttons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 70F));
+			this.tableLayout_Buttons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 70F));
 			this.tableLayout_Buttons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayout_Buttons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 104F));
 			this.tableLayout_Buttons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 104F));
 			this.tableLayout_Buttons.Controls.Add(this.btnCopy, 0, 0);
 			this.tableLayout_Buttons.Controls.Add(this.btnPaste, 1, 0);
-			this.tableLayout_Buttons.Controls.Add(this.btnConfirm, 3, 0);
-			this.tableLayout_Buttons.Controls.Add(this.btnCancel, 4, 0);
+			this.tableLayout_Buttons.Controls.Add(this.btnReset, 2, 0);
+			this.tableLayout_Buttons.Controls.Add(this.btnConfirm, 4, 0);
+			this.tableLayout_Buttons.Controls.Add(this.btnCancel, 5, 0);
 			this.tableLayout_Buttons.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.tableLayout_Buttons.Location = new System.Drawing.Point(4, 319);
 			this.tableLayout_Buttons.Name = "tableLayout_Buttons";
 			this.tableLayout_Buttons.RowCount = 1;
 			this.tableLayout_Buttons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayout_Buttons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
 			this.tableLayout_Buttons.Size = new System.Drawing.Size(552, 38);
 			this.tableLayout_Buttons.TabIndex = 1;
 			// 
 			// btnCopy
 			// 
 			this.btnCopy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnCopy.Highlighted = false;
 			this.btnCopy.Location = new System.Drawing.Point(3, 4);
 			this.btnCopy.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.btnCopy.Name = "btnCopy";
-			this.btnCopy.Size = new System.Drawing.Size(98, 30);
+			this.btnCopy.Size = new System.Drawing.Size(64, 30);
 			this.btnCopy.TabIndex = 0;
 			this.btnCopy.Text = "Copy";
 			this.btnCopy.UseVisualStyleBackColor = true;
@@ -663,21 +671,34 @@
 			// btnPaste
 			// 
 			this.btnPaste.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnPaste.Location = new System.Drawing.Point(107, 4);
+			this.btnPaste.Highlighted = false;
+			this.btnPaste.Location = new System.Drawing.Point(73, 4);
 			this.btnPaste.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.btnPaste.Name = "btnPaste";
-			this.btnPaste.Size = new System.Drawing.Size(98, 30);
+			this.btnPaste.Size = new System.Drawing.Size(64, 30);
 			this.btnPaste.TabIndex = 1;
 			this.btnPaste.Text = "Paste";
 			this.btnPaste.UseVisualStyleBackColor = true;
 			this.btnPaste.Click += new System.EventHandler(this.btnPaste_Click);
+			// 
+			// btnReset
+			// 
+			this.btnReset.Highlighted = false;
+			this.btnReset.Location = new System.Drawing.Point(143, 4);
+			this.btnReset.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+			this.btnReset.Name = "btnReset";
+			this.btnReset.Size = new System.Drawing.Size(64, 30);
+			this.btnReset.TabIndex = 2;
+			this.btnReset.Text = "Reset";
+			this.btnReset.UseVisualStyleBackColor = true;
+			this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
 			// 
 			// tableLayout_Presets
 			// 
 			this.tableLayout_Presets.ColumnCount = 2;
 			this.tableLayout_Presets.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
 			this.tableLayout_Presets.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tableLayout_Presets.Controls.Add(labelPresets, 0, 0);
+			this.tableLayout_Presets.Controls.Add(this.labelPresets, 0, 0);
 			this.tableLayout_Presets.Controls.Add(this.panelPresets, 1, 0);
 			this.tableLayout_Presets.Dock = System.Windows.Forms.DockStyle.Top;
 			this.tableLayout_Presets.Location = new System.Drawing.Point(4, 3);
@@ -833,5 +854,7 @@
 		private System.Windows.Forms.Panel panel1;
 		private HorizontalLine horizontalLine1;
 		private System.Windows.Forms.CheckBox cbSavePromptTemplate;
+		private System.Windows.Forms.Label labelPresets;
+		private ButtonEx btnReset;
 	}
 }

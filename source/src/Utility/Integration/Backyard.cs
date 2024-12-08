@@ -68,23 +68,22 @@ namespace Ginger.Integration
 	[Serializable]
 	public class ChatStaging
 	{
-		public string system = "";      // Chat.modelInstructions
-		public string scenario = "";    // Chat.context
-		public string greeting = "";    // Chat.greetingDialogue
-		public string example = "";     // Chat.customDialogue
-		public string grammar = "";     // Chat.grammar
+		public ChatStaging()
+		{
+			pruneExampleChat = AppSettings.BackyardLink.PruneExampleChat;
+			authorNote = AppSettings.BackyardLink.AuthorNote;
+		}
+
+		public string system = "";					// Chat.modelInstructions
+		public string scenario = "";				// Chat.context
+		public string greeting = "";				// Chat.greetingDialogue
+		public string example = "";					// Chat.customDialogue
+		public string grammar = "";					// Chat.grammar
+		public bool pruneExampleChat = true;		// Chat.canDeleteCustomDialogue
+		public string authorNote = "";				// Chat.authorNote
+		public bool ttsAutoPlay = false;			// Chat.ttsAutoPlay
+		public string ttsInputFilter = "default";	// Chat.ttsInputFilter
 		public ChatBackground background = null;
-	}
-
-	[Serializable]
-	public class ChatBackground
-	{
-		public string instanceId;			// BackgroundChatImage.id
-		public string imageUrl;				// BackgroundChatImage.imageUrl
-		public int width;					// BackgroundChatImage.aspectRatio
-		public int height;					// BackgroundChatImage.aspectRatio
-
-		public string aspectRatio { get { return (width > 0 && height > 0) ? string.Format("{0}/{1}", width, height) : ""; } }
 	}
 
 	[Serializable]
@@ -104,7 +103,6 @@ namespace Ginger.Integration
 		}
 		private string _modelId = null;
 
-		public string authorNote = "";				// Chat.authorNote
 		public decimal temperature = 1.2m;			// Chat.temperature
 		public decimal topP = 0.9m;					// Chat.topP
 		public decimal minP = 0.1m;					// Chat.minP
@@ -112,9 +110,6 @@ namespace Ginger.Integration
 		public bool minPEnabled = true;				// Chat.minPEnabled
 		public decimal repeatPenalty = 1.05m;		// Chat.repeatPenalty
 		public int repeatLastN = 256;				// Chat.repeatLastN
-		public bool pruneExampleChat = true;		// Chat.canDeleteCustomDialogue
-		public bool ttsAutoPlay = false;			// Chat.ttsAutoPlay
-		public string ttsInputFilter = "default";	// Chat.ttsInputFilter
 		private int _iPromptTemplate = 0;			// Chat.promptTemplate
 
 		public static readonly int MaxPromptTemplate = 6;
@@ -194,7 +189,6 @@ namespace Ginger.Integration
 				return new ChatParameters() {
 					name = null,
 					model = null,
-					authorNote = "",
 					temperature = 1.2m,
 					topP = 0.9m,
 					minP = 0.1m,
@@ -203,9 +197,6 @@ namespace Ginger.Integration
 					repeatLastN = 256,
 					repeatPenalty = 1.05m,
 					iPromptTemplate = 0,
-					pruneExampleChat = true,
-					ttsAutoPlay = false,
-					ttsInputFilter = "default",
 				};
 			}
 		}
@@ -215,7 +206,6 @@ namespace Ginger.Integration
 			return new ChatParameters() {
 				name = this.name,
 				_modelId = this._modelId,
-				authorNote = this.authorNote,
 				temperature = this.temperature,
 				topP = this.topP,
 				minP = this.minP,
@@ -224,9 +214,6 @@ namespace Ginger.Integration
 				repeatLastN = this.repeatLastN,
 				repeatPenalty = this.repeatPenalty,
 				iPromptTemplate = this.iPromptTemplate,
-				pruneExampleChat = this.pruneExampleChat,
-				ttsAutoPlay = this.ttsAutoPlay,
-				ttsInputFilter = this.ttsInputFilter,
 			};
 		}
 
@@ -234,6 +221,17 @@ namespace Ginger.Integration
 		{
 			return (ChatParameters)Clone();
 		}
+	}
+	
+	[Serializable]
+	public class ChatBackground
+	{
+		public string instanceId;			// BackgroundChatImage.id
+		public string imageUrl;				// BackgroundChatImage.imageUrl
+		public int width;					// BackgroundChatImage.aspectRatio
+		public int height;					// BackgroundChatImage.aspectRatio
+
+		public string aspectRatio { get { return (width > 0 && height > 0) ? string.Format("{0}/{1}", width, height) : ""; } }
 	}
 
 	public class ChatInstance
@@ -1971,8 +1969,8 @@ namespace Ginger.Integration
 									cmdCreate.Parameters.AddWithValue("$repeatPenalty", chatParameters.repeatPenalty);
 									cmdCreate.Parameters.AddWithValue("$repeatLastN", chatParameters.repeatLastN);
 									cmdCreate.Parameters.AddWithValue("$promptTemplate", chatParameters.promptTemplate);
-									cmdCreate.Parameters.AddWithValue("$pruneExample", chatParameters.pruneExampleChat);
-									cmdCreate.Parameters.AddWithValue("$authorNote", chatParameters.authorNote ?? "");
+									cmdCreate.Parameters.AddWithValue("$pruneExample", AppSettings.BackyardLink.PruneExampleChat);
+									cmdCreate.Parameters.AddWithValue("$authorNote", AppSettings.BackyardLink.AuthorNote ?? "");
 
 									expectedUpdates += 1;
 
@@ -2040,6 +2038,10 @@ namespace Ginger.Integration
 										cmdCreate.Parameters.AddWithValue($"$example{i:000}", staging.example);
 										cmdCreate.Parameters.AddWithValue($"$greeting{i:000}", staging.greeting);
 										cmdCreate.Parameters.AddWithValue($"$grammar{i:000}", staging.grammar ?? "");
+										cmdCreate.Parameters.AddWithValue($"$authorNote{i:000}", staging.authorNote ?? "");
+										cmdCreate.Parameters.AddWithValue($"$pruneExample{i:000}", staging.pruneExampleChat);
+										cmdCreate.Parameters.AddWithValue($"$ttsAutoPlay{i:000}", staging.ttsAutoPlay);
+										cmdCreate.Parameters.AddWithValue($"$ttsInputFilter{i:000}", staging.ttsInputFilter);
 										cmdCreate.Parameters.AddWithValue($"$model{i:000}", parameters.model ?? "");
 										cmdCreate.Parameters.AddWithValue($"$temperature{i:000}", parameters.temperature);
 										cmdCreate.Parameters.AddWithValue($"$topP{i:000}", parameters.topP);
@@ -2049,10 +2051,6 @@ namespace Ginger.Integration
 										cmdCreate.Parameters.AddWithValue($"$repeatPenalty{i:000}", parameters.repeatPenalty);
 										cmdCreate.Parameters.AddWithValue($"$repeatLastN{i:000}", parameters.repeatLastN);
 										cmdCreate.Parameters.AddWithValue($"$promptTemplate{i:000}", parameters.promptTemplate);
-										cmdCreate.Parameters.AddWithValue($"$pruneExample{i:000}", parameters.pruneExampleChat);
-										cmdCreate.Parameters.AddWithValue($"$authorNote{i:000}", parameters.authorNote ?? "");
-										cmdCreate.Parameters.AddWithValue($"$ttsAutoPlay{i:000}", parameters.ttsAutoPlay);
-										cmdCreate.Parameters.AddWithValue($"$ttsInputFilter{i:000}", parameters.ttsInputFilter);
 
 										// Add background images
 										if (bAllowBackgrounds)
@@ -2516,7 +2514,11 @@ namespace Ginger.Integration
 										greeting = greeting,
 										example = example,
 										grammar = grammar,
+										authorNote = authorNote,
 										background = background,
+										pruneExampleChat = pruneExampleChat,
+										ttsAutoPlay = ttsAutoPlay,
+										ttsInputFilter = ttsInputFilter,
 									},
 									parameters = new ChatParameters() {
 										model = model,
@@ -2528,10 +2530,6 @@ namespace Ginger.Integration
 										repeatPenalty = repeatPenalty,
 										repeatLastN = repeatLastN,
 										promptTemplate = promptTemplate,
-										pruneExampleChat = pruneExampleChat,
-										authorNote = authorNote,
-										ttsAutoPlay = ttsAutoPlay,
-										ttsInputFilter = ttsInputFilter,
 									}
 								});
 							}
@@ -2675,6 +2673,10 @@ namespace Ginger.Integration
 									greeting = greeting,
 									example = example,
 									grammar = grammar,
+									authorNote = authorNote,
+									pruneExampleChat = pruneExampleChat,
+									ttsAutoPlay = ttsAutoPlay,
+									ttsInputFilter = ttsInputFilter,
 								},
 								parameters = new ChatParameters() {
 									model = model,
@@ -2686,10 +2688,6 @@ namespace Ginger.Integration
 									repeatPenalty = repeatPenalty,
 									repeatLastN = repeatLastN,
 									promptTemplate = promptTemplate,
-									pruneExampleChat = pruneExampleChat,
-									authorNote = authorNote,
-									ttsAutoPlay = ttsAutoPlay,
-									ttsInputFilter = ttsInputFilter,
 								}
 							};
 						}
@@ -2966,9 +2964,9 @@ namespace Ginger.Integration
 						@"
 							SELECT 
 								modelInstructions, context, greetingDialogue, customDialogue, grammar, 
+								authorNote, canDeleteCustomDialogue, ttsAutoplay, ttsInputFilter,
 								model, temperature, topP, minP, minPEnabled, topK, 
-								repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, 
-								authorNote, ttsAutoplay, ttsInputFilter
+								repeatPenalty, repeatLastN, promptTemplate
 							FROM Chat
 							WHERE groupConfigId = $groupId
 							ORDER BY updatedAt DESC
@@ -2985,19 +2983,19 @@ namespace Ginger.Integration
 								defaultStaging.greeting = reader.GetString(2);
 								defaultStaging.example = reader.GetString(3);
 								defaultStaging.grammar = reader[4] as string ?? "";
-								defaultParameters.model = reader.GetString(5);
-								defaultParameters.temperature = reader.GetDecimal(6);
-								defaultParameters.topP = reader.GetDecimal(7);
-								defaultParameters.minP = reader.GetDecimal(8);
-								defaultParameters.minPEnabled = reader.GetBoolean(9);
-								defaultParameters.topK = reader.GetInt32(10);
-								defaultParameters.repeatPenalty = reader.GetDecimal(11);
-								defaultParameters.repeatLastN = reader.GetInt32(12);
-								defaultParameters.promptTemplate = reader[13] as string;
-								defaultParameters.pruneExampleChat = reader.GetBoolean(14);
-								defaultParameters.authorNote = reader.GetString(15);
-								defaultParameters.ttsAutoPlay = reader.GetBoolean(16);
-								defaultParameters.ttsInputFilter = reader.GetString(17);
+								defaultStaging.authorNote = reader.GetString(5);
+								defaultStaging.pruneExampleChat = reader.GetBoolean(6);
+								defaultStaging.ttsAutoPlay = reader.GetBoolean(7);
+								defaultStaging.ttsInputFilter = reader.GetString(8);
+								defaultParameters.model = reader.GetString(9);
+								defaultParameters.temperature = reader.GetDecimal(10);
+								defaultParameters.topP = reader.GetDecimal(11);
+								defaultParameters.minP = reader.GetDecimal(12);
+								defaultParameters.minPEnabled = reader.GetBoolean(13);
+								defaultParameters.topK = reader.GetInt32(14);
+								defaultParameters.repeatPenalty = reader.GetDecimal(15);
+								defaultParameters.repeatLastN = reader.GetInt32(16);
+								defaultParameters.promptTemplate = reader[17] as string;
 							}
 						}
 					}
@@ -3059,8 +3057,11 @@ namespace Ginger.Integration
 								cmdCreateChat.Parameters.AddWithValue("$example",  staging.example);
 								cmdCreateChat.Parameters.AddWithValue("$greeting",  greeting);
 								cmdCreateChat.Parameters.AddWithValue("$grammar",  staging.grammar ?? "");
+								cmdCreateChat.Parameters.AddWithValue("$authorNote", staging.authorNote ?? "");
+								cmdCreateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
+								cmdCreateChat.Parameters.AddWithValue("$ttsAutoPlay", staging.ttsAutoPlay);
+								cmdCreateChat.Parameters.AddWithValue("$ttsInputFilter", staging.ttsInputFilter ?? "default");
 								cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? "");
-								cmdCreateChat.Parameters.AddWithValue("$pruneExample", parameters.pruneExampleChat);
 								cmdCreateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 								cmdCreateChat.Parameters.AddWithValue("$topP", parameters.topP);
 								cmdCreateChat.Parameters.AddWithValue("$minP", parameters.minP);
@@ -3069,9 +3070,6 @@ namespace Ginger.Integration
 								cmdCreateChat.Parameters.AddWithValue("$repeatPenalty", parameters.repeatPenalty);
 								cmdCreateChat.Parameters.AddWithValue("$repeatLastN", parameters.repeatLastN);
 								cmdCreateChat.Parameters.AddWithValue("$promptTemplate", parameters.promptTemplate);
-								cmdCreateChat.Parameters.AddWithValue("$authorNote", parameters.authorNote ?? "");
-								cmdCreateChat.Parameters.AddWithValue("$ttsAutoPlay", parameters.ttsAutoPlay);
-								cmdCreateChat.Parameters.AddWithValue("$ttsInputFilter", parameters.ttsInputFilter ?? "default");
 
 								expectedUpdates += 1;
 								updates += cmdCreateChat.ExecuteNonQuery();
@@ -4088,6 +4086,18 @@ namespace Ginger.Integration
 								cmdUpdateChat.CommandText = sbCommand.ToString();
 								cmdUpdateChat.Parameters.AddWithValue("$chatId", chatId);
 								cmdUpdateChat.Parameters.AddWithValue("$timestamp", updatedAt);
+								if (staging != null)
+								{
+									cmdUpdateChat.Parameters.AddWithValue("$system", Utility.FirstNonEmpty(staging.system, FaradayCardV4.OriginalModelInstructionsByFormat[0]));
+									cmdUpdateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$example", staging.example ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
+									// staging.authorNote
+									// staging.ttsAutoPlay
+									// staging.ttsInputFilter
+								}
 								if (parameters != null)
 								{
 									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? "");
@@ -4099,15 +4109,6 @@ namespace Ginger.Integration
 									cmdUpdateChat.Parameters.AddWithValue("$repeatPenalty", parameters.repeatPenalty);
 									cmdUpdateChat.Parameters.AddWithValue("$repeatLastN", parameters.repeatLastN);
 									cmdUpdateChat.Parameters.AddWithValue("$promptTemplate", parameters.promptTemplate);
-									cmdUpdateChat.Parameters.AddWithValue("$pruneExample", parameters.pruneExampleChat);
-								}
-								if (staging != null)
-								{
-									cmdUpdateChat.Parameters.AddWithValue("$system", Utility.FirstNonEmpty(staging.system, FaradayCardV4.OriginalModelInstructionsByFormat[0]));
-									cmdUpdateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
-									cmdUpdateChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
-									cmdUpdateChat.Parameters.AddWithValue("$example", staging.example ?? "");
-									cmdUpdateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 								}
 
 								expectedUpdates += 1;
@@ -4227,6 +4228,18 @@ namespace Ginger.Integration
 
 								cmdUpdateChat.CommandText = sbCommand.ToString();
 								cmdUpdateChat.Parameters.AddWithValue("$timestamp", updatedAt);
+								if (staging != null)
+								{
+									cmdUpdateChat.Parameters.AddWithValue("$system", Utility.FirstNonEmpty(staging.system, FaradayCardV4.OriginalModelInstructionsByFormat[0]));
+									cmdUpdateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$example", staging.example ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
+									// staging.authorNote
+									// staging.ttsAutoPlay
+									// staging.ttsInputFilter
+								}
 								if (parameters != null)
 								{
 									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? "");
@@ -4238,15 +4251,6 @@ namespace Ginger.Integration
 									cmdUpdateChat.Parameters.AddWithValue("$repeatPenalty", parameters.repeatPenalty);
 									cmdUpdateChat.Parameters.AddWithValue("$repeatLastN", parameters.repeatLastN);
 									cmdUpdateChat.Parameters.AddWithValue("$promptTemplate", parameters.promptTemplate);
-									cmdUpdateChat.Parameters.AddWithValue("$pruneExample", parameters.pruneExampleChat);
-								}
-								if (staging != null)
-								{
-									cmdUpdateChat.Parameters.AddWithValue("$system", Utility.FirstNonEmpty(staging.system, FaradayCardV4.OriginalModelInstructionsByFormat[0]));
-									cmdUpdateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
-									cmdUpdateChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
-									cmdUpdateChat.Parameters.AddWithValue("$example", staging.example ?? "");
-									cmdUpdateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 								}
 
 								expectedUpdates += chatIds.Length;

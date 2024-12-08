@@ -1329,10 +1329,10 @@ Reason: {0}</value>
   <data name="cap_export_folder" xml:space="preserve">
     <value>Choose export folder</value>
   </data>
-  <data name="tooltip_export_many" xml:space="preserve">
+  <data name="tooltip_link_export_many" xml:space="preserve">
     <value>Export multiple characters from Backyard AI at once.</value>
   </data>
-  <data name="tooltip_import_many" xml:space="preserve">
+  <data name="tooltip_link_import_many" xml:space="preserve">
     <value>Import multiple characters into Backyard AI at once.</value>
   </data>
   <data name="cap_link_import_many_characters" xml:space="preserve">
@@ -1378,7 +1378,8 @@ Top-K: Limits sample to the k-highest probability tokens from the set of most pr
     <value>Top-P: Low numbers lead to greater word diversity, while high numbers lead to greater accuracy.</value>
   </data>
   <data name="tooltip_model_associate_prompt_template" xml:space="preserve">
-    <value>Remember the settings for the currently selected model.</value>
+    <value>Associate the prompt template with the model and have it change
+automatically the next time the model is selected.</value>
   </data>
   <data name="tooltip_model_prompt_template" xml:space="preserve">
     <value>The prompt template controls how the context is delivered to the model.
@@ -1413,5 +1414,11 @@ Some models require specific prompt templates to function properly.</value>
   </data>
   <data name="tooltip_link_model_settings_many" xml:space="preserve">
     <value>Change the model settings for multiple chats.</value>
+  </data>
+  <data name="tooltip_link_reset_settings" xml:space="preserve">
+    <value>Reset all model settings to their default values.</value>
+  </data>
+  <data name="tooltip_model_model" xml:space="preserve">
+    <value>The model is responsible for generating the character's responses.</value>
   </data>
 </root>

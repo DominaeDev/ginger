@@ -247,8 +247,8 @@ namespace Ginger
 			applyToAllChatsMenuItem.ToolTipText = Resources.tooltip_link_apply_to_all;
 			alwaysLinkMenuItem.ToolTipText = Resources.tooltip_link_always_create;
 			usePortraitAsBackgroundMenuItem.ToolTipText = Resources.tooltip_link_use_portrait_as_background;
-			bulkExportMenuItem.ToolTipText = Resources.tooltip_export_many;
-			bulkImportMenuItem.ToolTipText = Resources.tooltip_import_many;
+			bulkExportMenuItem.ToolTipText = Resources.tooltip_link_export_many;
+			bulkImportMenuItem.ToolTipText = Resources.tooltip_link_import_many;
 			bulkChangeModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_many;
 			editExportModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_default;
 
@@ -2454,6 +2454,7 @@ namespace Ginger
 		private void editExportModelSettingsMenuItem_Click(object sender, EventArgs e)
 		{
 			var dlg = new EditModelSettingsDialog();
+			dlg.EditingDefaults = true;
 			if (dlg.ShowDialog() == DialogResult.OK)
 				AppSettings.BackyardSettings.UserSettings = dlg.Parameters.Copy();
 		}
