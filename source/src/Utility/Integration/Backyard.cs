@@ -1957,7 +1957,7 @@ namespace Ginger.Integration
 									cmdCreate.Parameters.AddWithValue("$example", card.data.example ?? "");
 									cmdCreate.Parameters.AddWithValue("$greeting", card.data.greeting ?? "");
 									cmdCreate.Parameters.AddWithValue("$grammar", card.data.grammar ?? "");
-									cmdCreate.Parameters.AddWithValue("$model", chatParameters.model ?? DefaultModel);
+									cmdCreate.Parameters.AddWithValue("$model", chatParameters.model ?? DefaultModel ?? "");
 									cmdCreate.Parameters.AddWithValue("$temperature", chatParameters.temperature);
 									cmdCreate.Parameters.AddWithValue("$topP", chatParameters.topP);
 									cmdCreate.Parameters.AddWithValue("$minP", chatParameters.minP);
@@ -2039,7 +2039,7 @@ namespace Ginger.Integration
 										cmdCreate.Parameters.AddWithValue($"$pruneExample{i:000}", staging.pruneExampleChat);
 										cmdCreate.Parameters.AddWithValue($"$ttsAutoPlay{i:000}", staging.ttsAutoPlay);
 										cmdCreate.Parameters.AddWithValue($"$ttsInputFilter{i:000}", staging.ttsInputFilter);
-										cmdCreate.Parameters.AddWithValue($"$model{i:000}", parameters.model ?? "");
+										cmdCreate.Parameters.AddWithValue($"$model{i:000}", parameters.model ?? DefaultModel ?? "");
 										cmdCreate.Parameters.AddWithValue($"$temperature{i:000}", parameters.temperature);
 										cmdCreate.Parameters.AddWithValue($"$topP{i:000}", parameters.topP);
 										cmdCreate.Parameters.AddWithValue($"$minP{i:000}", parameters.minP);
@@ -3059,7 +3059,7 @@ namespace Ginger.Integration
 								cmdCreateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
 								cmdCreateChat.Parameters.AddWithValue("$ttsAutoPlay", staging.ttsAutoPlay);
 								cmdCreateChat.Parameters.AddWithValue("$ttsInputFilter", staging.ttsInputFilter ?? "default");
-								cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? "");
+								cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? DefaultModel ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 								cmdCreateChat.Parameters.AddWithValue("$topP", parameters.topP);
 								cmdCreateChat.Parameters.AddWithValue("$minP", parameters.minP);
@@ -3728,6 +3728,9 @@ namespace Ginger.Integration
 		private static List<ChatHistory.Message> WriteChatMessages(SQLiteConnection connection, string chatId, ChatHistory chatHistory, string[] speakerIds, ref int expectedUpdates, ref int updates)
 		{
 			List<ChatHistory.Message> lsMessages = new List<ChatHistory.Message>();
+			if (chatHistory == null)
+				return lsMessages; // No history
+
 			int messageCount = chatHistory.messagesWithoutGreeting.Count();
 			if (messageCount == 0)
 				return lsMessages; // No messages
@@ -4100,7 +4103,7 @@ namespace Ginger.Integration
 								}
 								if (parameters != null)
 								{
-									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? DefaultModel ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 									cmdUpdateChat.Parameters.AddWithValue("$topP", parameters.topP);
 									cmdUpdateChat.Parameters.AddWithValue("$minP", parameters.minP);
@@ -4244,7 +4247,7 @@ namespace Ginger.Integration
 								}
 								if (parameters != null)
 								{
-									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? DefaultModel ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 									cmdUpdateChat.Parameters.AddWithValue("$topP", parameters.topP);
 									cmdUpdateChat.Parameters.AddWithValue("$minP", parameters.minP);
@@ -5147,14 +5150,6 @@ namespace Ginger.Integration
 					.FirstOrDefault();
 			}
 
-			var staging = new ChatStaging() {
-				system = card.data.system,
-				scenario = card.data.scenario,
-				greeting = card.data.greeting,
-				example = card.data.example,
-				grammar = card.data.grammar,
-			};
-
 			var parameters = AppSettings.BackyardSettings.UserSettings;
 
 			// Primary greeting
@@ -5163,44 +5158,38 @@ namespace Ginger.Integration
 				creationDate = timestamp,
 				updateDate = timestamp,
 				backgroundName = backgroundName,
-				staging = staging,
+				staging = new ChatStaging() {
+					system = card.data.system,
+					scenario = card.data.scenario,
+					greeting = card.data.greeting,
+					example = card.data.example,
+					grammar = card.data.grammar,
+				},
 				parameters = parameters,
-				history = new ChatHistory() {
-					messages = new ChatHistory.Message[1] {
-						new ChatHistory.Message() {
-							instanceId = Cuid.NewCuid(),
-							creationDate = timestamp,
-							updateDate = timestamp,
-							swipes = new string[] { card.data.greeting },
-						}
-					}
-				}
+				history = new ChatHistory(),
 			});
 
 			// Alternate greetings
-			var alternativeGreetings = output.alternativeGreetings;
-			for (int i = 0; i < alternativeGreetings.Length; ++i)
+			var altGreetings = output.alternativeGreetings;
+			for (int i = 0; i < altGreetings.Length; ++i)
 			{
-				var greeting = alternativeGreetings[i];
+				var altGreeting = altGreetings[i].ToFaradayGreeting();
 				timestamp -= TimeSpan.FromMilliseconds(10);
 
 				lsChats.Add(new BackupData.Chat() {
 					name = string.Format("Alt. greeting #{0}", i + 1),
 					creationDate = timestamp,
 					updateDate = timestamp,
-					staging = staging,
+					staging = new ChatStaging() {
+						system = card.data.system,
+						scenario = card.data.scenario,
+						greeting = altGreeting,
+						example = card.data.example,
+						grammar = card.data.grammar,
+					},
 					parameters = parameters,
 					backgroundName = backgroundName,
-					history = new ChatHistory() {
-						messages = new ChatHistory.Message[1] {
-							new ChatHistory.Message() {
-								instanceId = Cuid.NewCuid(),
-								creationDate = timestamp,
-								updateDate = timestamp,
-								swipes = new string[] { greeting.ToFaradayGreeting() },
-							}
-						}
-					}
+					history = new ChatHistory(),
 				});
 			}
 

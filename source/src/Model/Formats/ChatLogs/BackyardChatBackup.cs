@@ -177,7 +177,7 @@ namespace Ginger
 			if (chat.parameters != null)
 			{
 				backup.parameters = new Parameters() {
-					model = chat.parameters.model ?? Backyard.DefaultModel,
+					model = chat.parameters.model,
 					temperature = chat.parameters.temperature,
 					topP = chat.parameters.topP,
 					minP = chat.parameters.minP,

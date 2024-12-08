@@ -53,7 +53,7 @@ namespace Ginger.Integration
 		public class Message : ICloneable
 		{
 			public string instanceId;		// Message.id
-			public int speaker;
+			public int speaker;				// 0 = User, 1 = Character, 2 = Character...
 			public DateTime creationDate;	// Message.createdAt
 			public DateTime updateDate;     // Message.updatedAt
 			
