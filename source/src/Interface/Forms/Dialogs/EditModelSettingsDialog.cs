@@ -204,7 +204,7 @@ namespace Ginger
 			else if (index == idxUserSettings)
 				Parameters = AppSettings.BackyardSettings.UserSettings.Copy();
 			else if (index >= idxPresets && index < AppSettings.BackyardSettings.Presets.Count + idxPresets)
-				Parameters = AppSettings.BackyardSettings.Presets[index - idxPresets].Copy();
+				Parameters = AppSettings.BackyardSettings.Presets[index - idxPresets];
 
 			RefreshPresetButtons();
 			RefreshValues();
@@ -659,7 +659,10 @@ namespace Ginger
 				return;
 			index -= idxPresets;
 			if (index >= 0 && index < AppSettings.BackyardSettings.Presets.Count)
-				AppSettings.BackyardSettings.Presets[index] = (ChatParameters)Parameters.Clone();
+			{
+				string presetName = AppSettings.BackyardSettings.Presets[index].name;
+				AppSettings.BackyardSettings.Presets[index] = new AppSettings.BackyardSettings.Preset(presetName, Parameters);
+			}
 			Dirty = false;
 		}
 
@@ -683,10 +686,7 @@ namespace Ginger
 				return;
 			}
 
-			var preset = (ChatParameters)Parameters.Clone();
-			preset.name = presetName;
-
-			AppSettings.BackyardSettings.Presets.Add(preset);
+			AppSettings.BackyardSettings.Presets.Add(new AppSettings.BackyardSettings.Preset(presetName, Parameters));
 
 			WhileIgnoringEvents(() => {
 				cbPresets.BeginUpdate();

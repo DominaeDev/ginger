@@ -157,8 +157,25 @@ namespace Ginger
 
 		public static class BackyardSettings
 		{
+			public struct Preset
+			{
+				public Preset(string name, ChatParameters parameters)
+				{
+					this.name = name;
+					this.parameters = parameters.Copy();
+				}
+
+				public static implicit operator ChatParameters(Preset preset)
+				{
+					return preset.parameters.Copy();
+				}
+
+				public string name;
+				private ChatParameters parameters;
+			}
+
 			public static ChatParameters UserSettings = new ChatParameters();
-			public static List<ChatParameters> Presets = new List<ChatParameters>();
+			public static List<Preset> Presets = new List<Preset>();
 			public static List<KeyValuePair<string, int>> ModelPromptTemplates = new List<KeyValuePair<string, int>>();
 
 			public static int GetPromptTemplateForModel(string model)
@@ -364,11 +381,12 @@ namespace Ginger
 				var presetsSection = iniData.Sections[string.Format("BackyardAI.ModelSettings.Preset{0:00}", i)];
 				if (presetsSection != null)
 				{
-					ChatParameters chatSettings = ReadModelSettings(presetsSection);
-					ReadString(ref chatSettings.name, presetsSection, "Name");
-					if (string.IsNullOrEmpty(chatSettings.name))
-						chatSettings.name = string.Format("Preset #{0}", unnamedPresetCounter++);
-					BackyardSettings.Presets.Add(chatSettings);
+					ChatParameters chatParameters = ReadModelSettings(presetsSection);
+					string presetName = null;
+					ReadString(ref presetName, presetsSection, "Name");
+					if (string.IsNullOrEmpty(presetName))
+						presetName = string.Format("Preset #{0}", unnamedPresetCounter++);
+					BackyardSettings.Presets.Add(new BackyardSettings.Preset(presetName, chatParameters));
 					continue;
 				}
 				break;

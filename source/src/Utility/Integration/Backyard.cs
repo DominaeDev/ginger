@@ -89,7 +89,6 @@ namespace Ginger.Integration
 	[Serializable]
 	public class ChatParameters : ICloneable
 	{
-		public string name = "";			// Preset name
 		public string model		            // Chat.model
 		{ 
 			get { return _modelId; }
@@ -187,7 +186,6 @@ namespace Ginger.Integration
 			get
 			{
 				return new ChatParameters() {
-					name = null,
 					model = null,
 					temperature = 1.2m,
 					topP = 0.9m,
@@ -204,7 +202,6 @@ namespace Ginger.Integration
 		public object Clone()
 		{
 			return new ChatParameters() {
-				name = this.name,
 				_modelId = this._modelId,
 				temperature = this.temperature,
 				topP = this.topP,
