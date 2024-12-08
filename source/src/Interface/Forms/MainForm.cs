@@ -249,7 +249,7 @@ namespace Ginger
 			usePortraitAsBackgroundMenuItem.ToolTipText = Resources.tooltip_link_use_portrait_as_background;
 			bulkExportMenuItem.ToolTipText = Resources.tooltip_link_export_many;
 			bulkImportMenuItem.ToolTipText = Resources.tooltip_link_import_many;
-			bulkChangeModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_many;
+			bulkEditModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_many;
 			editExportModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_default;
 
 			RegisterIdleHandler(recipeList);
@@ -1300,15 +1300,18 @@ namespace Ginger
 			saveLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
 			saveNewLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink == false;
 			revertLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
-			reestablishLinkSeparator.Visible = Backyard.ConnectionEstablished && Current.HasLink;
+//			reestablishLinkSeparator.Visible = Backyard.ConnectionEstablished && Current.HasLink;
 			reestablishLinkMenuItem.Enabled = Backyard.ConnectionEstablished;
 			reestablishLinkMenuItem.Visible = Backyard.ConnectionEstablished && Current.HasStaleLink;
 			breakLinkMenuItem.Enabled = Backyard.ConnectionEstablished;
 			breakLinkMenuItem.Visible = Backyard.ConnectionEstablished && Current.HasActiveLink;
 			chatHistoryMenuItem.Visible = Backyard.ConnectionEstablished;
 			
+			bulkSeparator.Visible = Backyard.ConnectionEstablished;
+			bulkOperationsMenuItem.Visible = Backyard.ConnectionEstablished;
 			bulkExportMenuItem.Enabled = Backyard.ConnectionEstablished;
 			bulkImportMenuItem.Enabled = Backyard.ConnectionEstablished;
+			bulkEditModelSettingsMenuItem.Enabled = Backyard.ConnectionEstablished;
 			
 			// Link options
 			linkOptionsMenuItem.Visible = Backyard.ConnectionEstablished;

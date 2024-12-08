@@ -4528,8 +4528,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Associate the prompt template with the model and have it change
-        ///automatically the next time the model is selected..
+        ///   Looks up a localized string similar to Make this the default prompt template for the selected model..
         /// </summary>
         internal static string tooltip_model_associate_prompt_template {
             get {

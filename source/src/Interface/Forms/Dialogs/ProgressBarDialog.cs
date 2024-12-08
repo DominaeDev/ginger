@@ -27,6 +27,15 @@ namespace Ginger
 			InitializeComponent();
 
 			TopMost = true;
+			FormClosing += ProgressBarDialog_FormClosing;
+		}
+
+		private void ProgressBarDialog_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+		{
+			// Make sure this goes away before the message box appears.
+			Visible = false;
+			if (Owner != null)
+				Owner.Visible = true; // Because of a weird window order glitch observed while debugging.
 		}
 
 		private void btnCancel_Click(object sender, EventArgs e)

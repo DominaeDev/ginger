@@ -55,11 +55,15 @@ namespace Ginger
 			{
 				var characters = group.members
 					.Select(id => _charactersById.GetOrDefault(id))
-					.Where(c => c.isUser == false);
+					.OrderBy(c => c.creationDate)
+					.Where(c => c.isUser == false)
+					.ToArray();
 
-				if (characters.Count() > 1)
+				if (characters.Length > 1)
 				{
-					string[] memberNames = characters
+					return string.Concat(characters[0].displayName ?? Constants.DefaultCharacterName, " (and others)");
+
+/*					string[] memberNames = characters
 						.Select(c => c.name ?? Constants.DefaultCharacterName)
 						.OrderBy(c => c)
 						.ToArray();
@@ -67,7 +71,7 @@ namespace Ginger
 					if (memberNames.Length > 3)
 						groupTitle += ", ...";
 					
-					return groupTitle;
+					return groupTitle; */
 				}
 				else
 				{

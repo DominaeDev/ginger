@@ -86,7 +86,7 @@ namespace Ginger
 				cbPresets.BeginUpdate();
 				if (IsEditing)
 					cbPresets.Items.Add("Current settings");
-				cbPresets.Items.Add("Default (Ginger)");
+				cbPresets.Items.Add("Default settings");
 				foreach (var preset in AppSettings.BackyardSettings.Presets)
 					cbPresets.Items.Add(preset.name);
 
@@ -120,8 +120,6 @@ namespace Ginger
 				});
 				cbSampling.EndUpdate();
 
-				cbSavePromptTemplate.Checked = AppSettings.BackyardLink.SavePromptTemplates;
-
 				btnConfirm.Text = EditingDefaults ? "Save" : "Apply";
 //				labelPresets.Enabled = !EditingDefaults;
 //				panelPresets.Enabled = !EditingDefaults;
@@ -146,7 +144,9 @@ namespace Ginger
 		private void RefreshValues()
 		{
 			WhileIgnoringEvents(() => {
+
 				// Model
+				bool bLocalModel = true;
 				if (string.IsNullOrEmpty(Parameters.model))
 					cbModel.SelectedIndex = 0;
 				else
@@ -155,8 +155,10 @@ namespace Ginger
 
 					if (idxModel >= 0 && idxModel < BackyardModelDatabase.Models.Count && idxModel < cbModel.Items.Count - 1)
 					{
+						var model = BackyardModelDatabase.Models[idxModel];
 						cbModel.SelectedIndex = idxModel + 1;
-						Parameters.model = BackyardModelDatabase.Models[idxModel].id; // Validated
+						Parameters.model = model.id; // Validated
+						bLocalModel = model.isCustomLocalModel;
 					}
 					else
 					{
@@ -168,6 +170,8 @@ namespace Ginger
 
 				// Prompt template
 				cbPromptTemplate.SelectedItem = cbPromptTemplate.Items[Parameters.iPromptTemplate];
+				cbSavePromptTemplate.Enabled = bLocalModel;
+				cbSavePromptTemplate.Checked = !bLocalModel || AppSettings.BackyardSettings.GetPromptTemplateForModel(Parameters.model) != -1;
 
 				// Parameters
 				Set(textBox_Temperature, Parameters.temperature);
@@ -269,30 +273,38 @@ namespace Ginger
 				int iDefaultPromptTemplate = ChatParameters.PromptTemplateFromString(model.promptTemplate);
 
 				WhileIgnoringEvents(() => {
-					if (AppSettings.BackyardLink.SavePromptTemplates)
+					int iPromptTemplate;
+					if (model.isCustomLocalModel)
 					{
-						int iPromptTemplate = AppSettings.BackyardSettings.GetPromptTemplateForModel(Parameters.model);
+						iPromptTemplate = AppSettings.BackyardSettings.GetPromptTemplateForModel(Parameters.model);
+
 						if (iPromptTemplate != -1)
 						{
 							cbPromptTemplate.SelectedIndex = iPromptTemplate;
 							Parameters.iPromptTemplate = iPromptTemplate;
+
+							cbSavePromptTemplate.Enabled = true;
+							cbSavePromptTemplate.Checked = true;
 						}
 						else
 						{
 							cbPromptTemplate.SelectedIndex = iDefaultPromptTemplate;
 							Parameters.iPromptTemplate = iDefaultPromptTemplate;
+							cbSavePromptTemplate.Enabled = true;
+							cbSavePromptTemplate.Checked = false;
 						}
 					}
-					else
+					else // Set by Backyard
 					{
 						cbPromptTemplate.SelectedIndex = iDefaultPromptTemplate;
 						Parameters.iPromptTemplate = iDefaultPromptTemplate;
+						cbSavePromptTemplate.Enabled = false;
+						cbSavePromptTemplate.Checked = true;
 					}
 
 					bool bDefaultModel = string.IsNullOrEmpty(Parameters.model);
 					labelPromptTemplate.Enabled = CanEdit && !bDefaultModel;
 					panelPromptTemplate.Enabled = CanEdit && !bDefaultModel;
-
 				});
 			}
 
@@ -307,12 +319,22 @@ namespace Ginger
 			int idxPromptTemplate = cbPromptTemplate.SelectedIndex;
 			Parameters.iPromptTemplate = idxPromptTemplate;
 
-			if (AppSettings.BackyardLink.SavePromptTemplates)
+			if (cbSavePromptTemplate.Checked)
 				AppSettings.BackyardSettings.SetPromptTemplateForModel(Parameters.model, Parameters.iPromptTemplate);
 
 			Dirty = true;
 		}
+		
+		private void cbSavePromptTemplate_CheckedChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
 
+			if (cbSavePromptTemplate.Checked)
+				AppSettings.BackyardSettings.SetPromptTemplateForModel(Parameters.model, Parameters.iPromptTemplate);
+			else
+				AppSettings.BackyardSettings.SetPromptTemplateForModel(Parameters.model, -1);
+		}
 
 		private void Set(TextBoxBase textBox, decimal value)
 		{
@@ -736,27 +758,6 @@ namespace Ginger
 
 			btnCopy.Enabled = true;
 			btnPaste.Enabled = CanEdit && Clipboard.ContainsData(ChatParametersClipboard.Format);
-		}
-
-		private void cbSavePromptTemplate_CheckedChanged(object sender, EventArgs e)
-		{
-			if (_bIgnoreEvents)
-				return;
-
-			AppSettings.BackyardLink.SavePromptTemplates = cbSavePromptTemplate.Checked;
-
-			if (cbSavePromptTemplate.Checked)
-			{
-				WhileIgnoringEvents(() => {
-					int iPromptTemplate = AppSettings.BackyardSettings.GetPromptTemplateForModel(Parameters.model);
-					if (iPromptTemplate != -1)
-					{
-						cbPromptTemplate.SelectedIndex = iPromptTemplate;
-						Parameters.iPromptTemplate = iPromptTemplate;
-						Dirty = true;
-					}
-				});
-			}
 		}
 
 		private void btnReset_Click(object sender, EventArgs e)

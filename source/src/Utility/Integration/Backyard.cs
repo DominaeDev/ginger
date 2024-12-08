@@ -1411,9 +1411,9 @@ namespace Ginger.Integration
 								");
 								cmdUpdate.CommandText = sbCommand.ToString();
 								cmdUpdate.Parameters.AddWithValue("$configId", configId);
-								cmdUpdate.Parameters.AddWithValue("$displayName", card.data.displayName);
-								cmdUpdate.Parameters.AddWithValue("$name", card.data.name);
-								cmdUpdate.Parameters.AddWithValue("$persona", card.data.persona);
+								cmdUpdate.Parameters.AddWithValue("$displayName", card.data.displayName ?? "");
+								cmdUpdate.Parameters.AddWithValue("$name", card.data.name ?? "");
+								cmdUpdate.Parameters.AddWithValue("$persona", card.data.persona ?? "");
 								cmdUpdate.Parameters.AddWithValue("$timestamp", updatedAt);
 
 								expectedUpdates += 1;
@@ -1462,11 +1462,11 @@ namespace Ginger.Integration
 								}
 								
 								cmdChat.CommandText = sbCommand.ToString();
-								cmdChat.Parameters.AddWithValue("$system", card.data.system);
-								cmdChat.Parameters.AddWithValue("$scenario", card.data.scenario);
-								cmdChat.Parameters.AddWithValue("$example", card.data.example);
-								cmdChat.Parameters.AddWithValue("$greeting", card.data.greeting);
-								cmdChat.Parameters.AddWithValue("$grammar", card.data.grammar);
+								cmdChat.Parameters.AddWithValue("$system", card.data.system ?? "");
+								cmdChat.Parameters.AddWithValue("$scenario", card.data.scenario ?? "");
+								cmdChat.Parameters.AddWithValue("$example", card.data.example ?? "");
+								cmdChat.Parameters.AddWithValue("$greeting", card.data.greeting ?? "");
+								cmdChat.Parameters.AddWithValue("$grammar", card.data.grammar ?? "");
 								cmdChat.Parameters.AddWithValue("$timestamp", updatedAt);
 
 								int nChats = cmdChat.ExecuteNonQuery();
@@ -1915,7 +1915,7 @@ namespace Ginger.Integration
 									INSERT INTO GroupConfig
 										(id, createdAt, updatedAt, isNSFW, folderId, folderSortPosition, name)
 									VALUES 
-										($groupId, $timestamp, $timestamp, $isNSFW, $folderId, $folderSortPosition, '');
+										($groupId, $timestamp, $timestamp, $isNSFW, $folderId, $folderSortPosition, $groupName);
 								");
 
 								// _CharacterConfigToGroupConfig
@@ -1952,10 +1952,10 @@ namespace Ginger.Integration
 									");
 	
 									cmdCreate.Parameters.AddWithValue("$chatId", chatId);
-									cmdCreate.Parameters.AddWithValue("$system", card.data.system);
-									cmdCreate.Parameters.AddWithValue("$scenario", card.data.scenario);
-									cmdCreate.Parameters.AddWithValue("$example", card.data.example);
-									cmdCreate.Parameters.AddWithValue("$greeting", card.data.greeting);
+									cmdCreate.Parameters.AddWithValue("$system", card.data.system ?? "");
+									cmdCreate.Parameters.AddWithValue("$scenario", card.data.scenario ?? "");
+									cmdCreate.Parameters.AddWithValue("$example", card.data.example ?? "");
+									cmdCreate.Parameters.AddWithValue("$greeting", card.data.greeting ?? "");
 									cmdCreate.Parameters.AddWithValue("$grammar", card.data.grammar ?? "");
 									cmdCreate.Parameters.AddWithValue("$model", chatParameters.model ?? DefaultModel);
 									cmdCreate.Parameters.AddWithValue("$temperature", chatParameters.temperature);
@@ -2030,10 +2030,10 @@ namespace Ginger.Integration
 										};
 
 										var parameters = chats[i].parameters ?? new ChatParameters();
-										cmdCreate.Parameters.AddWithValue($"$system{i:000}", staging.system);
-										cmdCreate.Parameters.AddWithValue($"$scenario{i:000}", staging.scenario);
-										cmdCreate.Parameters.AddWithValue($"$example{i:000}", staging.example);
-										cmdCreate.Parameters.AddWithValue($"$greeting{i:000}", staging.greeting);
+										cmdCreate.Parameters.AddWithValue($"$system{i:000}", staging.system ?? "");
+										cmdCreate.Parameters.AddWithValue($"$scenario{i:000}", staging.scenario ?? "");
+										cmdCreate.Parameters.AddWithValue($"$example{i:000}", staging.example ?? "");
+										cmdCreate.Parameters.AddWithValue($"$greeting{i:000}", staging.greeting ?? "");
 										cmdCreate.Parameters.AddWithValue($"$grammar{i:000}", staging.grammar ?? "");
 										cmdCreate.Parameters.AddWithValue($"$authorNote{i:000}", staging.authorNote ?? "");
 										cmdCreate.Parameters.AddWithValue($"$pruneExample{i:000}", staging.pruneExampleChat);
@@ -2113,10 +2113,11 @@ namespace Ginger.Integration
 								cmdCreate.Parameters.AddWithValue("$userId", userId);
 								cmdCreate.Parameters.AddWithValue("$configId", configId);
 								cmdCreate.Parameters.AddWithValue("$groupId", groupId);
-								cmdCreate.Parameters.AddWithValue("$name", card.data.name);
-								cmdCreate.Parameters.AddWithValue("$displayName", card.data.displayName);
-								cmdCreate.Parameters.AddWithValue("$persona", card.data.persona);
-								cmdCreate.Parameters.AddWithValue("$folderId", parentFolder.instanceId);
+								cmdCreate.Parameters.AddWithValue("$name", card.data.name ?? "");
+								cmdCreate.Parameters.AddWithValue("$displayName", card.data.displayName ?? "");
+								cmdCreate.Parameters.AddWithValue("$groupName", card.data.displayName ?? "");
+								cmdCreate.Parameters.AddWithValue("$persona", card.data.persona ?? "");
+								cmdCreate.Parameters.AddWithValue("$folderId", parentFolder.instanceId ?? "");
 								cmdCreate.Parameters.AddWithValue("$folderSortPosition", MakeFolderSortPosition(folderOrder));
 								cmdCreate.Parameters.AddWithValue("$isNSFW", card.data.isNSFW);
 								cmdCreate.Parameters.AddWithValue("$timestamp", createdAt);
@@ -3049,10 +3050,10 @@ namespace Ginger.Integration
 								cmdCreateChat.Parameters.AddWithValue("$groupId", groupId);
 								cmdCreateChat.Parameters.AddWithValue("$chatName", chatName ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$timestamp", createdAt);
-								cmdCreateChat.Parameters.AddWithValue("$system", staging.system);
-								cmdCreateChat.Parameters.AddWithValue("$scenario",  staging.scenario);
-								cmdCreateChat.Parameters.AddWithValue("$example",  staging.example);
-								cmdCreateChat.Parameters.AddWithValue("$greeting",  greeting);
+								cmdCreateChat.Parameters.AddWithValue("$system", staging.system ?? "");
+								cmdCreateChat.Parameters.AddWithValue("$scenario",  staging.scenario ?? "");
+								cmdCreateChat.Parameters.AddWithValue("$example",  staging.example ?? "");
+								cmdCreateChat.Parameters.AddWithValue("$greeting",  greeting ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$grammar",  staging.grammar ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$authorNote", staging.authorNote ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
@@ -4050,8 +4051,21 @@ namespace Ginger.Integration
 									UPDATE Chat
 									SET ");
 
+								if (staging != null)
+								{
+									sbCommand.AppendLine(
+									@"
+										context = $scenario,
+										customDialogue = $example,
+										modelInstructions = $system,
+										grammar = $grammar,
+										greetingDialogue = $greeting,
+										canDeleteCustomDialogue = $pruneExample");
+								}
 								if (parameters != null)
 								{
+									if (staging != null)
+										sbCommand.Append(",");
 									sbCommand.AppendLine(
 									@"
 										model = $model, 
@@ -4062,18 +4076,7 @@ namespace Ginger.Integration
 										topK = $topK,
 										repeatPenalty = $repeatPenalty,
 										repeatLastN = $repeatLastN,
-										promptTemplate = $promptTemplate,
-										canDeleteCustomDialogue = $pruneExample");
-								}
-								if (staging != null)
-								{
-									sbCommand.AppendLine(
-									@"
-										context = $scenario,
-										customDialogue = $example,
-										modelInstructions = $system,
-										grammar = $grammar,
-										greetingDialogue = $greeting");
+										promptTemplate = $promptTemplate");
 								}
 								sbCommand.AppendLine(
 								@"
@@ -4186,8 +4189,21 @@ namespace Ginger.Integration
 									UPDATE Chat
 									SET ");
 
+								if (staging != null)
+								{
+									sbCommand.AppendLine(
+									@"  
+										context = $scenario,
+										customDialogue = $example,
+										modelInstructions = $system,
+										grammar = $grammar,
+										greetingDialogue = $greeting,
+										canDeleteCustomDialogue = $pruneExample");
+								}
 								if (parameters != null)
 								{
+									if (staging != null)
+										sbCommand.Append(",");
 									sbCommand.AppendLine(
 									@"
 										model = $model, 
@@ -4198,18 +4214,7 @@ namespace Ginger.Integration
 										topK = $topK,
 										repeatPenalty = $repeatPenalty,
 										repeatLastN = $repeatLastN,
-										promptTemplate = $promptTemplate,
-										canDeleteCustomDialogue = $pruneExample");
-								}
-								if (staging != null)
-								{
-									sbCommand.AppendLine(
-									@"  
-										context = $scenario,
-										customDialogue = $example,
-										modelInstructions = $system,
-										grammar = $grammar,
-										greetingDialogue = $greeting");
+										promptTemplate = $promptTemplate");
 								}
 								sbCommand.AppendLine(
 								@"

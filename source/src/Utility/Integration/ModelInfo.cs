@@ -40,6 +40,7 @@ namespace Ginger.Integration
 		public string displayName;
 		public string promptTemplate;
 		public string fileFormat;
+		public bool isCustomLocalModel;
 
 		public bool Compare(string nameOrId)
 		{
@@ -121,6 +122,7 @@ namespace Ginger.Integration
 							displayName = fileInfo.displayName,
 							promptTemplate = modelInfo.promptTemplate,
 							fileFormat = Utility.GetFileExt(fn),
+							isCustomLocalModel = false,
 						};
 					}
 					else
@@ -130,6 +132,7 @@ namespace Ginger.Integration
 							displayName = Path.GetFileNameWithoutExtension(fn),
 							fileFormat = Utility.GetFileExt(fn),
 							promptTemplate = null,
+							isCustomLocalModel = true,
 						};
 					}
 				})

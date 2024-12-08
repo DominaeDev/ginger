@@ -220,7 +220,6 @@ namespace Ginger
 			public static bool AlwaysLinkOnImport = false;
 			public static VersionNumber LastVersion;
 			public static string BulkImportFolderName = "Imported from Ginger";
-			public static bool SavePromptTemplates = true;
 
 			public enum ActiveChatSetting { First, Last, All }
 			public static ActiveChatSetting ApplyChatSettings = ActiveChatSetting.Last;
@@ -356,7 +355,6 @@ namespace Ginger
 				ReadEnum(ref BackyardLink.ApplyChatSettings, linkSection, "ApplyChatSettings");
 				ReadBool(ref BackyardLink.UsePortraitAsBackground, linkSection, "UsePortraitAsBackground");
 				ReadString(ref BackyardLink.BulkImportFolderName, linkSection, "BulkImportFolderName");
-				ReadBool(ref BackyardLink.SavePromptTemplates, linkSection, "SavePromptTemplates");
 				ReadBool(ref BackyardLink.PruneExampleChat, linkSection, "PruneExampleChat");
 				ReadString(ref BackyardLink.AuthorNote, linkSection, "AuthorNote");
 			}
@@ -513,7 +511,6 @@ namespace Ginger
 					Write(outputFile, "ApplyChatSettings", BackyardLink.ApplyChatSettings);
 					Write(outputFile, "UsePortraitAsBackground", BackyardLink.UsePortraitAsBackground);
 					Write(outputFile, "BulkImportFolderName", BackyardLink.BulkImportFolderName);
-					Write(outputFile, "SavePromptTemplates", BackyardLink.SavePromptTemplates);
 					Write(outputFile, "PruneExampleChat", BackyardLink.PruneExampleChat);
 					Write(outputFile, "AuthorNote", BackyardLink.AuthorNote);
 

@@ -314,15 +314,14 @@
 			// 
 			// cbSavePromptTemplate
 			// 
-			this.cbSavePromptTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.cbSavePromptTemplate.AutoSize = true;
 			this.cbSavePromptTemplate.Checked = true;
 			this.cbSavePromptTemplate.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbSavePromptTemplate.Location = new System.Drawing.Point(282, 5);
+			this.cbSavePromptTemplate.Location = new System.Drawing.Point(211, 5);
 			this.cbSavePromptTemplate.Name = "cbSavePromptTemplate";
-			this.cbSavePromptTemplate.Size = new System.Drawing.Size(150, 21);
+			this.cbSavePromptTemplate.Size = new System.Drawing.Size(109, 21);
 			this.cbSavePromptTemplate.TabIndex = 1;
-			this.cbSavePromptTemplate.Text = "Associate with model";
+			this.cbSavePromptTemplate.Text = "Model default";
 			this.cbSavePromptTemplate.UseVisualStyleBackColor = true;
 			this.cbSavePromptTemplate.CheckedChanged += new System.EventHandler(this.cbSavePromptTemplate_CheckedChanged);
 			// 

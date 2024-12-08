@@ -1378,8 +1378,7 @@ Top-K: Limits sample to the k-highest probability tokens from the set of most pr
     <value>Top-P: Low numbers lead to greater word diversity, while high numbers lead to greater accuracy.</value>
   </data>
   <data name="tooltip_model_associate_prompt_template" xml:space="preserve">
-    <value>Associate the prompt template with the model and have it change
-automatically the next time the model is selected.</value>
+    <value>Make this the default prompt template for the selected model.</value>
   </data>
   <data name="tooltip_model_prompt_template" xml:space="preserve">
     <value>The prompt template controls how the context is delivered to the model.
