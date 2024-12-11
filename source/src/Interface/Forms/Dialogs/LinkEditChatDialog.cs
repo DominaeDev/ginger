@@ -1757,5 +1757,34 @@ namespace Ginger
 			EditAllSettings();
 		}
 
+		private void fixBrokenImagesToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			var mr = MessageBox.Show(string.Format(Resources.msg_link_repair_images, GetGroupTitle(_groupInstance)), Resources.cap_link_repair_images, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+			if (mr != DialogResult.Yes)
+				return;
+
+			int modified = 0;
+			int skipped = 0;
+			var error = RunTask(() => Backyard.RepairImages(out modified, out skipped), "Repairing broken images...");
+
+			if (error == Backyard.Error.NotConnected)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+			}
+			else if (error == Backyard.Error.NotFound)
+			{
+				MessageBox.Show(Resources.error_link_images_folder_not_found, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+			}
+			else if (error != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_repair_images, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				MessageBox.Show(string.Format(Resources.msg_link_repaired_images, modified, skipped), Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+		}
 	}
 }

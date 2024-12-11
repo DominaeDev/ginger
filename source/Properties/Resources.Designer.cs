@@ -676,6 +676,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Repair broken images.
+        /// </summary>
+        internal static string cap_link_repair_images {
+            get {
+                return ResourceManager.GetString("cap_link_repair_images", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start over from here.
         /// </summary>
         internal static string cap_link_restart_chat {
@@ -1531,6 +1540,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Backyard AI image folder could not be found..
+        /// </summary>
+        internal static string error_link_images_folder_not_found {
+            get {
+                return ResourceManager.GetString("error_link_images_folder_not_found", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to import chat. Operation canceled..
         /// </summary>
         internal static string error_link_import_chat {
@@ -1632,6 +1650,15 @@ namespace Ginger.Properties {
         internal static string error_link_repair_chat {
             get {
                 return ResourceManager.GetString("error_link_repair_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Something went wrong. Operation aborted..
+        /// </summary>
+        internal static string error_link_repair_images {
+            get {
+                return ResourceManager.GetString("error_link_repair_images", resourceCulture);
             }
         }
         
@@ -2575,6 +2602,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No broken images could be found..
+        /// </summary>
+        internal static string msg_link_no_images_repaired {
+            get {
+                return ResourceManager.GetString("msg_link_no_images_repaired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to WARNING! This will delete all chats with &apos;{0}&apos;. This action cannot be reversed.
         ///
         ///Are you sure you want to permanently delete the chats?.
@@ -2597,11 +2633,31 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will attempt to repair any broken images in Backyard AI.
+        ///
+        ///Do you want to continue?.
+        /// </summary>
+        internal static string msg_link_repair_images {
+            get {
+                return ResourceManager.GetString("msg_link_repair_images", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} chats updated..
         /// </summary>
         internal static string msg_link_repaired_chat {
             get {
                 return ResourceManager.GetString("msg_link_repaired_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} broken images found and repaired. ({1} skipped.).
+        /// </summary>
+        internal static string msg_link_repaired_images {
+            get {
+                return ResourceManager.GetString("msg_link_repaired_images", resourceCulture);
             }
         }
         

@@ -55,6 +55,8 @@ namespace Ginger
 			this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
 			this.selectCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.refreshMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
+			this.editModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			this.importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.exportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,12 +68,11 @@ namespace Ginger
 			this.restoreBackupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
 			this.repairChatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.fixBrokenImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.statusBar = new System.Windows.Forms.StatusStrip();
 			this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusChatLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.splitter = new System.Windows.Forms.Splitter();
-			this.editModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
 			columnTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			columnDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			leftPanel = new System.Windows.Forms.Panel();
@@ -271,6 +272,18 @@ namespace Ginger
 			this.refreshMenuItem.Text = "Refresh";
 			this.refreshMenuItem.Click += new System.EventHandler(this.refreshMenuItem_Click);
 			// 
+			// toolStripMenuItem4
+			// 
+			this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+			this.toolStripMenuItem4.Size = new System.Drawing.Size(181, 6);
+			// 
+			// editModelSettingsMenuItem
+			// 
+			this.editModelSettingsMenuItem.Name = "editModelSettingsMenuItem";
+			this.editModelSettingsMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.editModelSettingsMenuItem.Text = "Edit &model settings...";
+			this.editModelSettingsMenuItem.Click += new System.EventHandler(this.editModelSettingsMenuItem_Click);
+			// 
 			// toolStripMenuItem3
 			// 
 			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
@@ -316,7 +329,8 @@ namespace Ginger
             this.createBackupMenuItem,
             this.restoreBackupMenuItem,
             this.toolStripMenuItem2,
-            this.repairChatsMenuItem});
+            this.repairChatsMenuItem,
+            this.fixBrokenImagesToolStripMenuItem});
 			this.toolsMenu.Name = "toolsMenu";
 			this.toolsMenu.Size = new System.Drawing.Size(46, 20);
 			this.toolsMenu.Text = "&Tools";
@@ -346,6 +360,13 @@ namespace Ginger
 			this.repairChatsMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.repairChatsMenuItem.Text = "&Fix legacy chats...";
 			this.repairChatsMenuItem.Click += new System.EventHandler(this.repairChatsMenuItem_Click);
+			// 
+			// fixBrokenImagesToolStripMenuItem
+			// 
+			this.fixBrokenImagesToolStripMenuItem.Name = "fixBrokenImagesToolStripMenuItem";
+			this.fixBrokenImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.fixBrokenImagesToolStripMenuItem.Text = "Fix broken images...";
+			this.fixBrokenImagesToolStripMenuItem.Click += new System.EventHandler(this.fixBrokenImagesToolStripMenuItem_Click);
 			// 
 			// statusBar
 			// 
@@ -382,18 +403,6 @@ namespace Ginger
 			this.splitter.TabIndex = 1;
 			this.splitter.TabStop = false;
 			this.splitter.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitter_SplitterMoved);
-			// 
-			// editModelSettingsMenuItem
-			// 
-			this.editModelSettingsMenuItem.Name = "editModelSettingsMenuItem";
-			this.editModelSettingsMenuItem.Size = new System.Drawing.Size(184, 22);
-			this.editModelSettingsMenuItem.Text = "Edit &model settings...";
-			this.editModelSettingsMenuItem.Click += new System.EventHandler(this.editModelSettingsMenuItem_Click);
-			// 
-			// toolStripMenuItem4
-			// 
-			this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-			this.toolStripMenuItem4.Size = new System.Drawing.Size(181, 6);
 			// 
 			// LinkEditChatDialog
 			// 
@@ -459,5 +468,6 @@ namespace Ginger
 		private System.Windows.Forms.Panel portraitPanel;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
 		private System.Windows.Forms.ToolStripMenuItem editModelSettingsMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem fixBrokenImagesToolStripMenuItem;
 	}
 }

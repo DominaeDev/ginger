@@ -1423,4 +1423,24 @@ Some models require specific prompt templates to function properly.</value>
   <data name="tooltip_link_alt_greetings" xml:space="preserve">
     <value>When saving a new character to Backyard AI, create separate chats for each alternate greeting.</value>
   </data>
+  <data name="cap_link_repair_images" xml:space="preserve">
+    <value>Repair broken images</value>
+  </data>
+  <data name="error_link_images_folder_not_found" xml:space="preserve">
+    <value>The Backyard AI image folder could not be found.</value>
+  </data>
+  <data name="error_link_repair_images" xml:space="preserve">
+    <value>Something went wrong. Operation aborted.</value>
+  </data>
+  <data name="msg_link_repaired_images" xml:space="preserve">
+    <value>{0} broken images found and repaired. ({1} skipped.)</value>
+  </data>
+  <data name="msg_link_repair_images" xml:space="preserve">
+    <value>This will attempt to repair any broken images in Backyard AI.
+
+Do you want to continue?</value>
+  </data>
+  <data name="msg_link_no_images_repaired" xml:space="preserve">
+    <value>No broken images could be found.</value>
+  </data>
 </root>

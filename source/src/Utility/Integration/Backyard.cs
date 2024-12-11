@@ -5196,6 +5196,249 @@ namespace Ginger.Integration
 			return lsChats.ToArray();
 		}
 
+		private struct _ImageInfo
+		{
+			public string instanceId;
+			public string imageUrl;
+			public string filename;
+		}
+
+		public static Error RepairImages(out int modified, out int skipped)
+		{
+			if (ConnectionEstablished == false)
+			{
+				modified = 0;
+				skipped = 0;
+				return Error.NotConnected;
+			}
+
+			var imagesFolder = Path.Combine(AppSettings.BackyardLink.Location, "images");
+			if (Directory.Exists(imagesFolder) == false)
+			{
+				modified = 0;
+				skipped = 0;
+				return Error.NotFound;
+			}
+
+			var knownImageFilenames = new HashSet<string>(Utility.FindFilesInFolder(imagesFolder)
+				.Select(fn => Path.GetFileName(fn))
+				.Where(fn => {
+					var ext = Utility.GetFileExt(fn).ToLowerInvariant();
+					return ext == "png"
+						|| ext == "jpeg"
+						|| ext == "jpg"
+						|| ext == "gif"
+						|| ext == "apng"
+						|| ext == "webp";
+				}));
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					// AppImage
+					var characterImages = new List<_ImageInfo>();
+					using (var cmdGetChats = connection.CreateCommand())
+					{
+						cmdGetChats.CommandText =
+						@"
+							SELECT id, imageUrl FROM AppImage
+							WHERE id IN (
+								SELECT A
+								FROM _AppImageToCharacterConfigVersion)";
+
+						using (var reader = cmdGetChats.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string id = reader.GetString(0);
+								string imageUrl = reader.GetString(1);
+
+								characterImages.Add(new _ImageInfo() {
+									instanceId = id,
+									filename = Path.GetFileName(imageUrl),
+									imageUrl = imageUrl,
+								});
+							}
+						}
+					}
+
+					// BackgroundChatImage
+					var backgroundImages = new List<_ImageInfo>();
+					using (var cmdGetChats = connection.CreateCommand())
+					{
+						cmdGetChats.CommandText =
+						@"
+							SELECT id, imageUrl, chatId FROM BackgroundChatImage
+							WHERE chatId IN (
+								SELECT id
+								FROM Chat)";
+
+						using (var reader = cmdGetChats.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string id = reader.GetString(0);
+								string imageUrl = reader.GetString(1);
+
+								backgroundImages.Add(new _ImageInfo() {
+									instanceId = id,
+									filename = Path.GetFileName(imageUrl),
+									imageUrl = imageUrl,
+								});
+							}
+						}
+					}
+
+					var modifiedCharacterImages = characterImages
+						.Where(i => knownImageFilenames.Contains(i.filename, StringComparer.OrdinalIgnoreCase)
+							&& i.imageUrl.BeginsWith(imagesFolder, true) == false)
+						.ToList();
+
+					var modifiedBackgroundImages = backgroundImages
+						.Where(i => knownImageFilenames.Contains(i.filename, StringComparer.OrdinalIgnoreCase)
+							&& i.imageUrl.BeginsWith(imagesFolder, true) == false)
+						.ToList();
+
+					modified = modifiedCharacterImages.Count + modifiedBackgroundImages.Count;
+					
+					var unknownImages = characterImages
+						.Where(i => !knownImageFilenames.Contains(i.filename, StringComparer.OrdinalIgnoreCase))
+						.Union(
+							backgroundImages.Where(i => !knownImageFilenames.Contains(i.filename, StringComparer.OrdinalIgnoreCase))
+						)
+						.ToList();
+
+					skipped = unknownImages.Count;
+					if (modified == 0)
+						return Error.NoError; // No changes
+
+					// Write to database
+					int updates = 0;
+					int expectedUpdates = 0;
+
+					using (var transaction = connection.BeginTransaction())
+					{
+						try
+						{
+							// Character portraits
+							if (modifiedCharacterImages.Count > 0)
+							{
+								using (var cmdUpdateAppImage = connection.CreateCommand())
+								{
+									var sbCommand = new StringBuilder();
+									sbCommand.AppendLine(
+									$@"
+									WITH updated(id, imageUrl) AS (VALUES
+								");
+
+									for (int i = 0; i < modifiedCharacterImages.Count; ++i)
+									{
+										if (i > 0)
+											sbCommand.Append(",\n");
+										string newFilename = Path.Combine(imagesFolder, modifiedCharacterImages[i].filename);
+										sbCommand.Append($"($id{i:000}, $imageUrl{i:000})");
+
+										cmdUpdateAppImage.Parameters.AddWithValue($"$id{i:000}", modifiedCharacterImages[i].instanceId);
+										cmdUpdateAppImage.Parameters.AddWithValue($"$imageUrl{i:000}", newFilename);
+										expectedUpdates += 1;
+									}
+									sbCommand.AppendLine(
+									$@"
+								) 
+								UPDATE AppImage
+									SET
+										imageUrl = updated.imageUrl
+									FROM updated
+									WHERE (AppImage.id = updated.id);");
+									cmdUpdateAppImage.CommandText = sbCommand.ToString();
+									updates += cmdUpdateAppImage.ExecuteNonQuery();
+								}
+							}
+
+							// Background images
+							if (modifiedBackgroundImages.Count > 0)
+							{
+								using (var cmdUpdateBackgrounds = connection.CreateCommand())
+								{
+									var sbCommand = new StringBuilder();
+									sbCommand.AppendLine(
+									$@"
+									WITH updated(id, imageUrl) AS (VALUES
+								");
+
+									for (int i = 0; i < modifiedBackgroundImages.Count; ++i)
+									{
+										if (i > 0)
+											sbCommand.Append(",\n");
+										string newFilename = Path.Combine(imagesFolder, modifiedBackgroundImages[i].filename);
+										sbCommand.Append($"($id{i:000}, $imageUrl{i:000})");
+
+										cmdUpdateBackgrounds.Parameters.AddWithValue($"$id{i:000}", modifiedBackgroundImages[i].instanceId);
+										cmdUpdateBackgrounds.Parameters.AddWithValue($"$imageUrl{i:000}", newFilename);
+										expectedUpdates += 1;
+									}
+									sbCommand.AppendLine(
+									$@"
+								) 
+								UPDATE BackgroundChatImage
+									SET
+										imageUrl = updated.imageUrl
+									FROM updated
+									WHERE (BackgroundChatImage.id = updated.id);");
+
+									cmdUpdateBackgrounds.CommandText = sbCommand.ToString();
+									updates += cmdUpdateBackgrounds.ExecuteNonQuery();
+								}
+							}
+
+							if (updates != expectedUpdates)
+							{
+								transaction.Rollback();
+								modified = 0;
+								skipped = 0;
+								return Error.SQLCommandFailed;
+							}
+
+							transaction.Commit();
+							return Error.NoError;
+						}
+						catch (Exception e)
+						{
+							transaction.Rollback();
+							modified = 0;
+							skipped = 0;
+							return Error.SQLCommandFailed;
+						}
+					}
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Disconnect();
+				modified = 0;
+				skipped = 0;
+
+				return Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				Disconnect();
+				modified = 0;
+				skipped = 0;
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				Disconnect();
+				modified = 0;
+				skipped = 0;
+				return Error.Unknown;
+			}
+		}
+
 		#endregion // Utilities
 
 	}
