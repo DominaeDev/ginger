@@ -1759,7 +1759,7 @@ namespace Ginger
 
 		private void fixBrokenImagesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			var mr = MessageBox.Show(string.Format(Resources.msg_link_repair_images, GetGroupTitle(_groupInstance)), Resources.cap_link_repair_images, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+			var mr = MessageBox.Show(Resources.msg_link_repair_images, Resources.cap_link_repair_images, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
 			if (mr != DialogResult.Yes)
 				return;
 
@@ -1771,19 +1771,85 @@ namespace Ginger
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
+				return;
 			}
-			else if (error == Backyard.Error.NotFound)
+			if (error == Backyard.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_images_folder_not_found, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Close();
+				return;
 			}
-			else if (error != Backyard.Error.NoError)
+			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_repair_images, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+			
+			// Success
+			MessageBox.Show(string.Format(Resources.msg_link_repaired_images, modified, skipped), Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
+
+		private void purgeUnusedImagesMenuItem_Click(object sender, EventArgs e)
+		{
+			var imagesFolder = Path.Combine(AppSettings.BackyardLink.Location, "images");
+			if (Directory.Exists(imagesFolder) == false)
+			{
+				MessageBox.Show(Resources.error_link_images_folder_not_found, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			string[] imageUrls = new string[0];
+
+			var error = RunTask(() => Backyard.GetAllImageUrls(out imageUrls));
+
+			if (error == Backyard.Error.NotConnected)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+			if (error != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_repair_images, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+			if (imageUrls == null || imageUrls.Length == 0)
+			{
+				MessageBox.Show(Resources.msg_link_purge_images_not_found, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return;
+			}
+
+			var images = new HashSet<string>(imageUrls
+				.Select(fn => Path.GetFileName(fn).ToLowerInvariant())
+				.Where(fn => string.IsNullOrEmpty(fn) == false));
+			
+			var foundImageFilenames = new HashSet<string>(Utility.FindFilesInFolder(imagesFolder)
+				.Select(fn => Path.GetFileName(fn).ToLowerInvariant())
+				.Where(fn => {
+					var ext = Utility.GetFileExt(fn);
+					return ext == "png"
+						|| ext == "jpg"
+						|| ext == "jpeg"
+						|| ext == "gif"
+						|| ext == "apng"
+						|| ext == "webp";
+				}));
+
+			var unknownImages = foundImageFilenames.Except(images)
+				.Select(fn => Path.Combine(imagesFolder, fn))
+				.ToList();
+
+			if (unknownImages.Count > 0)
+			{
+				var mr = MessageBox.Show(string.Format(Resources.msg_confirm_purge_images, unknownImages.Count), Resources.cap_link_purge_images, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,  MessageBoxDefaultButton.Button2);
+				
+				if (mr == DialogResult.Yes)
+				{
+					Win32.SendToRecycleBin(unknownImages, Win32.FileOperationFlags.FOF_WANTNUKEWARNING | Win32.FileOperationFlags.FOF_NOCONFIRMATION);
+				}
 			}
 			else
 			{
-				MessageBox.Show(string.Format(Resources.msg_link_repaired_images, modified, skipped), Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MessageBox.Show(Resources.msg_link_purge_images_not_found, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 		}
 	}

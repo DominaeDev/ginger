@@ -649,6 +649,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Purge unused images.
+        /// </summary>
+        internal static string cap_link_purge_images {
+            get {
+                return ResourceManager.GetString("cap_link_purge_images", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Restore link to character.
         /// </summary>
         internal static string cap_link_reestablish {
@@ -2413,6 +2422,17 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} unused images were found. Do you want to send them to the recycle bin?
+        ///
+        ///Caution: Depending on your system settings, the images MAY be permanently deleted!.
+        /// </summary>
+        internal static string msg_confirm_purge_images {
+            get {
+                return ResourceManager.GetString("msg_confirm_purge_images", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dismiss changes?.
         /// </summary>
         internal static string msg_dismiss_changes {
@@ -2618,6 +2638,15 @@ namespace Ginger.Properties {
         internal static string msg_link_purge_chat {
             get {
                 return ResourceManager.GetString("msg_link_purge_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No usused images were found..
+        /// </summary>
+        internal static string msg_link_purge_images_not_found {
+            get {
+                return ResourceManager.GetString("msg_link_purge_images_not_found", resourceCulture);
             }
         }
         

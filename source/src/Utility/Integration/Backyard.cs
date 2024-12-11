@@ -5240,16 +5240,16 @@ namespace Ginger.Integration
 
 					// AppImage
 					var characterImages = new List<_ImageInfo>();
-					using (var cmdGetChats = connection.CreateCommand())
+					using (var cmdGetImages = connection.CreateCommand())
 					{
-						cmdGetChats.CommandText =
+						cmdGetImages.CommandText =
 						@"
 							SELECT id, imageUrl FROM AppImage
 							WHERE id IN (
 								SELECT A
 								FROM _AppImageToCharacterConfigVersion)";
 
-						using (var reader = cmdGetChats.ExecuteReader())
+						using (var reader = cmdGetImages.ExecuteReader())
 						{
 							while (reader.Read())
 							{
@@ -5267,16 +5267,16 @@ namespace Ginger.Integration
 
 					// BackgroundChatImage
 					var backgroundImages = new List<_ImageInfo>();
-					using (var cmdGetChats = connection.CreateCommand())
+					using (var cmdGetBackgrounds = connection.CreateCommand())
 					{
-						cmdGetChats.CommandText =
+						cmdGetBackgrounds.CommandText =
 						@"
 							SELECT id, imageUrl, chatId FROM BackgroundChatImage
 							WHERE chatId IN (
 								SELECT id
 								FROM Chat)";
 
-						using (var reader = cmdGetChats.ExecuteReader())
+						using (var reader = cmdGetBackgrounds.ExecuteReader())
 						{
 							while (reader.Read())
 							{
@@ -5435,6 +5435,88 @@ namespace Ginger.Integration
 				Disconnect();
 				modified = 0;
 				skipped = 0;
+				return Error.Unknown;
+			}
+		}
+
+		public static Error GetAllImageUrls(out string[] imageUrls)
+		{
+			if (ConnectionEstablished == false)
+			{
+				imageUrls = null;
+				return Error.NotConnected;
+			}
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					var lsImageUrls = new List<string>();
+
+					// AppImage
+					using (var cmdGetImages = connection.CreateCommand())
+					{
+						cmdGetImages.CommandText =
+						@"
+							SELECT id, imageUrl FROM AppImage
+							WHERE id IN (
+								SELECT A
+								FROM _AppImageToCharacterConfigVersion)";
+
+						using (var reader = cmdGetImages.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string imageUrl = reader.GetString(1);
+								lsImageUrls.Add(imageUrl);
+							}
+						}
+					}
+
+					// BackgroundChatImage
+					using (var cmdGetBackgrounds = connection.CreateCommand())
+					{
+						cmdGetBackgrounds.CommandText =
+						@"
+							SELECT id, imageUrl, chatId FROM BackgroundChatImage
+							WHERE chatId IN (
+								SELECT id
+								FROM Chat)";
+
+						using (var reader = cmdGetBackgrounds.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string imageUrl = reader.GetString(1);
+
+								lsImageUrls.Add(imageUrl);
+							}
+						}
+					}
+
+					imageUrls = lsImageUrls.ToArray();
+					return Error.NoError;
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Disconnect();
+				imageUrls = null;
+
+				return Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				Disconnect();
+				imageUrls = null;
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				Disconnect();
+				imageUrls = null;
 				return Error.Unknown;
 			}
 		}

@@ -1443,4 +1443,15 @@ Do you want to continue?</value>
   <data name="msg_link_no_images_repaired" xml:space="preserve">
     <value>No broken images could be found.</value>
   </data>
+  <data name="cap_link_purge_images" xml:space="preserve">
+    <value>Purge unused images</value>
+  </data>
+  <data name="msg_confirm_purge_images" xml:space="preserve">
+    <value>{0} unused images were found. Do you want to send them to the recycle bin?
+
+Caution: Depending on your system settings, the images MAY be permanently deleted!</value>
+  </data>
+  <data name="msg_link_purge_images_not_found" xml:space="preserve">
+    <value>No usused images were found.</value>
+  </data>
 </root>

@@ -73,6 +73,7 @@ namespace Ginger
 			this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusChatLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.splitter = new System.Windows.Forms.Splitter();
+			this.purgeUnusedImagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			columnTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			columnDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			leftPanel = new System.Windows.Forms.Panel();
@@ -330,7 +331,8 @@ namespace Ginger
             this.restoreBackupMenuItem,
             this.toolStripMenuItem2,
             this.repairChatsMenuItem,
-            this.fixBrokenImagesToolStripMenuItem});
+            this.fixBrokenImagesToolStripMenuItem,
+            this.purgeUnusedImagesMenuItem});
 			this.toolsMenu.Name = "toolsMenu";
 			this.toolsMenu.Size = new System.Drawing.Size(46, 20);
 			this.toolsMenu.Text = "&Tools";
@@ -338,33 +340,33 @@ namespace Ginger
 			// createBackupMenuItem
 			// 
 			this.createBackupMenuItem.Name = "createBackupMenuItem";
-			this.createBackupMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.createBackupMenuItem.Size = new System.Drawing.Size(197, 22);
 			this.createBackupMenuItem.Text = "Create &backup...";
 			this.createBackupMenuItem.Click += new System.EventHandler(this.createBackupMenuItem_Click);
 			// 
 			// restoreBackupMenuItem
 			// 
 			this.restoreBackupMenuItem.Name = "restoreBackupMenuItem";
-			this.restoreBackupMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.restoreBackupMenuItem.Size = new System.Drawing.Size(197, 22);
 			this.restoreBackupMenuItem.Text = "&Restore backup...";
 			this.restoreBackupMenuItem.Click += new System.EventHandler(this.restoreBackupMenuItem_Click);
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(194, 6);
 			// 
 			// repairChatsMenuItem
 			// 
 			this.repairChatsMenuItem.Name = "repairChatsMenuItem";
-			this.repairChatsMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.repairChatsMenuItem.Size = new System.Drawing.Size(197, 22);
 			this.repairChatsMenuItem.Text = "&Fix legacy chats...";
 			this.repairChatsMenuItem.Click += new System.EventHandler(this.repairChatsMenuItem_Click);
 			// 
 			// fixBrokenImagesToolStripMenuItem
 			// 
 			this.fixBrokenImagesToolStripMenuItem.Name = "fixBrokenImagesToolStripMenuItem";
-			this.fixBrokenImagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.fixBrokenImagesToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
 			this.fixBrokenImagesToolStripMenuItem.Text = "Fix broken images...";
 			this.fixBrokenImagesToolStripMenuItem.Click += new System.EventHandler(this.fixBrokenImagesToolStripMenuItem_Click);
 			// 
@@ -403,6 +405,13 @@ namespace Ginger
 			this.splitter.TabIndex = 1;
 			this.splitter.TabStop = false;
 			this.splitter.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitter_SplitterMoved);
+			// 
+			// purgeUnusedImagesMenuItem
+			// 
+			this.purgeUnusedImagesMenuItem.Name = "purgeUnusedImagesMenuItem";
+			this.purgeUnusedImagesMenuItem.Size = new System.Drawing.Size(197, 22);
+			this.purgeUnusedImagesMenuItem.Text = "Purge unused images...";
+			this.purgeUnusedImagesMenuItem.Click += new System.EventHandler(this.purgeUnusedImagesMenuItem_Click);
 			// 
 			// LinkEditChatDialog
 			// 
@@ -469,5 +478,6 @@ namespace Ginger
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
 		private System.Windows.Forms.ToolStripMenuItem editModelSettingsMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem fixBrokenImagesToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem purgeUnusedImagesMenuItem;
 	}
 }
