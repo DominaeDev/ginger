@@ -56,6 +56,8 @@ namespace Ginger
 			createBackupMenuItem.ToolTipText = Resources.tooltip_link_create_backup;
 			restoreBackupMenuItem.ToolTipText = Resources.tooltip_link_restore_backup;
 			editModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_all;
+			fixBrokenImagesToolStripMenuItem.ToolTipText = Resources.tooltip_link_repair_images;
+			purgeUnusedImagesMenuItem.ToolTipText = Resources.tooltip_link_purge_images;
 		}
 
 		private void OnLoad(object sender, EventArgs e)

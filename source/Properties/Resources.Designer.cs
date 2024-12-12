@@ -649,7 +649,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Purge unused images.
+        ///   Looks up a localized string similar to Clean Backyard AI image folder.
         /// </summary>
         internal static string cap_link_purge_images {
             get {
@@ -2422,7 +2422,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} unused images were found. Do you want to send them to the recycle bin?
+        ///   Looks up a localized string similar to {0} unreferenced images were found. Do you want to send them to the recycle bin?
         ///
         ///Caution: Depending on your system settings, the images MAY be permanently deleted!.
         /// </summary>
@@ -2622,7 +2622,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No broken images could be found..
+        ///   Looks up a localized string similar to No broken images were found..
         /// </summary>
         internal static string msg_link_no_images_repaired {
             get {
@@ -2642,7 +2642,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No usused images were found..
+        ///   Looks up a localized string similar to No unreferenced images were found..
         /// </summary>
         internal static string msg_link_purge_images_not_found {
             get {
@@ -4495,6 +4495,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Find and remove images from the Backyard AI images folder that are not referenced by any character..
+        /// </summary>
+        internal static string tooltip_link_purge_images {
+            get {
+                return ResourceManager.GetString("tooltip_link_purge_images", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attempt to restore the link connecting this file to Backyard AI..
         /// </summary>
         internal static string tooltip_link_reestablish {
@@ -4504,11 +4513,20 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove instances of &quot;#{character}:&quot; and &quot;#{user}:&quot; from this character&apos;s chat logs..
+        ///   Looks up a localized string similar to Restore legacy chat logs from old versions of Backyard AI..
         /// </summary>
         internal static string tooltip_link_repair_chat {
             get {
                 return ResourceManager.GetString("tooltip_link_repair_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restore broken image references that may have occured after moving a Backyard AI installation to a new device or user..
+        /// </summary>
+        internal static string tooltip_link_repair_images {
+            get {
+                return ResourceManager.GetString("tooltip_link_repair_images", resourceCulture);
             }
         }
         

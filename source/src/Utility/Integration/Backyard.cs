@@ -5220,7 +5220,7 @@ namespace Ginger.Integration
 				return Error.NotFound;
 			}
 
-			var knownImageFilenames = new HashSet<string>(Utility.FindFilesInFolder(imagesFolder)
+			var foundImages = new HashSet<string>(Utility.FindFilesInFolder(imagesFolder)
 				.Select(fn => Path.GetFileName(fn))
 				.Where(fn => {
 					var ext = Utility.GetFileExt(fn).ToLowerInvariant();
@@ -5293,21 +5293,21 @@ namespace Ginger.Integration
 					}
 
 					var modifiedCharacterImages = characterImages
-						.Where(i => knownImageFilenames.Contains(i.filename, StringComparer.OrdinalIgnoreCase)
-							&& i.imageUrl.BeginsWith(imagesFolder, true) == false)
+						.Where(i => foundImages.Contains(i.filename, StringComparer.OrdinalIgnoreCase)
+							&& File.Exists(i.imageUrl) == false)
 						.ToList();
 
 					var modifiedBackgroundImages = backgroundImages
-						.Where(i => knownImageFilenames.Contains(i.filename, StringComparer.OrdinalIgnoreCase)
-							&& i.imageUrl.BeginsWith(imagesFolder, true) == false)
+						.Where(i => foundImages.Contains(i.filename, StringComparer.OrdinalIgnoreCase)
+							&& File.Exists(i.imageUrl) == false)
 						.ToList();
 
 					modified = modifiedCharacterImages.Count + modifiedBackgroundImages.Count;
 					
 					var unknownImages = characterImages
-						.Where(i => !knownImageFilenames.Contains(i.filename, StringComparer.OrdinalIgnoreCase))
+						.Where(i => !foundImages.Contains(i.filename, StringComparer.OrdinalIgnoreCase))
 						.Union(
-							backgroundImages.Where(i => !knownImageFilenames.Contains(i.filename, StringComparer.OrdinalIgnoreCase))
+							backgroundImages.Where(i => !foundImages.Contains(i.filename, StringComparer.OrdinalIgnoreCase))
 						)
 						.ToList();
 
