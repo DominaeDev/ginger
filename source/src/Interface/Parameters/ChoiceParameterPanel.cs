@@ -95,6 +95,13 @@ namespace Ginger
 			textBox_Custom.Enabled = bEnabled && parameter.isEnabled;
 		}
 
+		protected override void OnSetReserved(bool bReserved)
+		{
+			cbEnabled.Enabled = !bReserved && parameter.isOptional;
+			comboBox.Enabled = !bReserved && parameter.isEnabled;
+			textBox_Custom.Enabled = !bReserved && parameter.isEnabled;
+		}
+
 		private void CbEnabled_CheckedChanged(object sender, EventArgs e)
 		{
 			comboBox.Enabled = cbEnabled.Checked || !parameter.isOptional;

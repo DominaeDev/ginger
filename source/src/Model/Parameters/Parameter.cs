@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -155,7 +156,7 @@ namespace Ginger
 
 		public void Apply(ParameterState parameterState)
 		{
-			if (!isEnabled || !IsActive(parameterState))
+			if (!isEnabled || !IsActive(parameterState) || parameterState.globalParameters.IsReserved(id))
 				return;
 
 			if (isLocal) // Set local parameters
@@ -430,6 +431,7 @@ namespace Ginger
 	{
 		private Dictionary<StringHandle, ContextualValue> _values = new Dictionary<StringHandle, ContextualValue>();
 		private HashSet<StringHandle> _flags = new HashSet<StringHandle>();
+		private HashSet<StringHandle> _reserved = new HashSet<StringHandle>();
 
 		public void SetValue(StringHandle id, ContextualValue value)
 		{
@@ -441,6 +443,12 @@ namespace Ginger
 
 		public bool TryGetValue(StringHandle id, out ContextualValue value)
 		{
+			if (_reserved.Contains(id))
+			{
+				value = null;
+				return false;
+			}
+
 			return _values.TryGetValue(id, out value);
 		}
 
@@ -454,10 +462,20 @@ namespace Ginger
 			_flags.UnionWith(flags);
 		}
 
+		public void Reserve(StringHandle id)
+		{
+			_reserved.Add(id);
+		}
+
+		public bool IsReserved(StringHandle id)
+		{
+			return _reserved.Contains(id);
+		}
+
 		public void ApplyToContext(Context context)
 		{
 			context.AddTags(_flags);
-			foreach (var kvp in _values)
+			foreach (var kvp in _values.Where(kvp => IsReserved(kvp.Key) == false))
 				context.SetValue(kvp.Key, kvp.Value.ToString());
 		}
 
@@ -468,10 +486,16 @@ namespace Ginger
 				SetValue(value.Key, value.Value);
 		}
 
-		public void Erase(StringHandle flag)
+		public void Erase(StringHandle id)
 		{
-			_values.Remove(flag);
-			_flags.Remove(flag);
+			_values.Remove(id);
+			_flags.Remove(id);
+			_reserved.Remove(id);
+		}
+
+		public void CopyReserved(ParameterCollection collection)
+		{
+			_reserved.UnionWith(collection._reserved);
 		}
 	}
 

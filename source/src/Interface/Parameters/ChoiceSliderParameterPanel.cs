@@ -56,6 +56,13 @@ namespace Ginger
 			slider.Enabled = bEnabled && parameter.isEnabled;
 		}
 
+		protected override void OnSetReserved(bool bReserved)
+		{
+			cbEnabled.Enabled = !bReserved && parameter.isOptional;
+			textBox.Enabled = !bReserved && parameter.isEnabled;
+			slider.Enabled = !bReserved && parameter.isEnabled;
+		}
+
 		private void SelectByValue(string value)
 		{
 			int count = this.parameter.items.Count;

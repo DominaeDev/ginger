@@ -144,6 +144,9 @@ namespace Ginger
 				state.SetValue(id + ":value", items[selectedIndex].label, scope);
 				state.SetValue(id + ":text", items[selectedIndex].label, scope);
 			}
+
+			if (isGlobal && scope == ParameterScope.Global)
+				state.globalParameters.Reserve(id);
 		}
 
 		public override object Clone()

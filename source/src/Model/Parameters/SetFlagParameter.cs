@@ -50,7 +50,10 @@ namespace Ginger
 		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
 			if (scope == ParameterScope.Global) // Global only
+			{
 				state.SetFlags(flags, ParameterScope.Global);
+				state.globalParameters.Reserve(id);
+			}
 		}
 
 		public override object Clone()

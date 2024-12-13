@@ -53,9 +53,14 @@ namespace Ginger
 
 		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
-			if (value != default(string))
-				state.SetValue(id, value, scope);
+			if (string.IsNullOrEmpty(value))
+				return;
+
+			state.SetValue(id, value, scope);
 			state.SetValue(string.Concat(id, ":value"), Convert.ToSingle(this.magnitude), scope);
+
+			if (isGlobal && scope == ParameterScope.Global)
+				state.globalParameters.Reserve(id);
 		}
 
 		public override object Clone()

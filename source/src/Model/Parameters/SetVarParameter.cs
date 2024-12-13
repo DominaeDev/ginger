@@ -52,6 +52,8 @@ namespace Ginger
 					state.SetValue(id, Text.Eval(value, state.evalContext, state.evalConfig), ParameterScope.Global);
 				else
 					state.SetValue(id, value, ParameterScope.Global);
+
+				state.globalParameters.Reserve(id);
 			}
 		}
 

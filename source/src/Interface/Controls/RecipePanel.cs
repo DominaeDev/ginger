@@ -628,6 +628,8 @@ namespace Ginger
 				var state = new ParameterState();
 				state.evalContext = evalContext;
 				state.SetFlags(globalFlags, ParameterScope.Global);
+				if (i > 0)
+					state.globalParameters.CopyReserved(parameterStates[i - 1].globalParameters);
 				parameterStates[i] = state;
 			}
 
@@ -649,7 +651,12 @@ namespace Ginger
 					valueSuppliers = new IValueSupplier[] { parameterStates },
 				};
 				foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
+				{
+					if (i > 0 && parameterStates[i - 1].globalParameters.IsReserved(parameter.id))
+						continue; // Skip reserved
+
 					parameter.Apply(state);
+				}
 				state.SetFlags(recipe.flags, ParameterScope.Global);
 			}
 
@@ -663,19 +670,23 @@ namespace Ginger
 			};
 			foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
 			{
-				if (parameter.isConditional)
+				var parameterPanel = _parameterPanels.Find(p => p.GetParameter() == parameter);
+				if (parameterPanel == null)
+					continue;
+
+				if (parameter.isConditional) // Has condition
 				{
-					var parameterPanel = _parameterPanels.Find(p => p.GetParameter() == parameter);
+					var localContext = Context.Copy(parameterState.evalContext);
+					parameterState.localParameters.ApplyToContext(localContext);
 
-					if (parameterPanel != null)
-					{
-						var localContext = Context.Copy(parameterState.evalContext);
-						parameterState.localParameters.ApplyToContext(localContext);
-
-						bool wasVisible = parameterPanel.Active;
-						parameterPanel.Active = parameter.IsActive(localContext);
-						bChanged |= wasVisible != parameterPanel.Active;
-					}
+					bool wasVisible = parameterPanel.Active;
+					parameterPanel.Active = parameter.IsActive(localContext);
+					bChanged |= wasVisible != parameterPanel.Active;
+				}
+				else if (parameter.isGlobal) // Is shared
+				{
+					bool isReserved = parameter.isEnabled && recipeIdx > 0 && parameterStates[recipeIdx - 1].globalParameters.IsReserved(parameter.id);
+					parameterPanel.SetReserved(isReserved);
 				}
 								
 				// Apply parameter to context

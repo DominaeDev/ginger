@@ -37,6 +37,11 @@ namespace Ginger
 			cbToggle.Enabled = bEnabled;
 		}
 
+		protected override void OnSetReserved(bool bReserved)
+		{
+			cbToggle.Enabled = !bReserved;
+		}
+
 		protected override void OnRefreshValue()
 		{
 			cbToggle.Checked = parameter.value;

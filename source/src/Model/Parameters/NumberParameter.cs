@@ -79,11 +79,14 @@ namespace Ginger
 
 		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
-			if (value != default(decimal))
-			{
-				string sValue = Convert.ToSingle(value).ToString(CultureInfo.InvariantCulture);
-				state.SetValue(id, sValue, scope);
-			}
+			if (value == default(decimal))
+				return;
+
+			string sValue = Convert.ToSingle(value).ToString(CultureInfo.InvariantCulture);
+			state.SetValue(id, sValue, scope);
+			
+			if (isGlobal && scope == ParameterScope.Global)
+				state.globalParameters.Reserve(id);
 		}
 
 		public override object Clone()

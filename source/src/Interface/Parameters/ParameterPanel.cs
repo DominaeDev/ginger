@@ -84,6 +84,15 @@ namespace Ginger
 
 		protected virtual void OnSetEnabled(bool bEnabled) { }
 
+		public void SetReserved(bool bReserved) 
+		{
+			_bIgnoreEvents = true;
+			OnSetReserved(bReserved);
+			_bIgnoreEvents = false;
+		}
+
+		protected virtual void OnSetReserved(bool bEnabled) { }
+
 		public void RefreshValue()
 		{
 			_bIgnoreEvents = true;
@@ -230,11 +239,13 @@ namespace Ginger
 		IParameter GetParameter();
 		void SetLabel(string label);
 		void SetEnabled(bool bEnabled);
+		void SetReserved(bool bReserved);
 		void SetParameter(IParameter parameter);
 		void ResetParameterReference(IParameter parameter);
 		void RefreshValue();
-		bool Active { get; set; }
 		int GetParameterHeight();
+		
+		bool Active { get; set; }
 	}
 
 	public interface IFlexibleParameterPanel

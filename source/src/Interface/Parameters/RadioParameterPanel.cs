@@ -127,6 +127,14 @@ namespace Ginger
 			radioPanel2.Enabled = bEnabled && parameter.isEnabled;
 		}
 
+		protected override void OnSetReserved(bool bReserved)
+		{
+			cbEnabled.Enabled = !bReserved && parameter.isOptional;
+			radioPanel0.Enabled = !bReserved && parameter.isEnabled;
+			radioPanel1.Enabled = !bReserved && parameter.isEnabled;
+			radioPanel2.Enabled = !bReserved && parameter.isEnabled;
+		}
+
 		private void AddOption(int column, string label)
 		{
 			var radioButton = new RadioButton();

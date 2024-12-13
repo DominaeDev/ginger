@@ -68,22 +68,25 @@ namespace Ginger
 
 		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
-			if (string.IsNullOrEmpty(value) == false)
-			{
-				string sValue;
-				if (isRaw)
-				{
-					if (mode == Mode.Code)
-						sValue = GingerString.FromCode(value); // Keep tabs
-					else
-						sValue = Text.DontProcess(value.Trim());
-				}
-				else
-					sValue = GingerString.FromParameter(GingerString.EvaluateParameter(value.Trim(), state.evalContext, state.evalConfig)).ToString();
+			if (string.IsNullOrEmpty(value))
+				return;
 
-				state.SetValue(id, sValue, scope);
-				state.SetValue(string.Concat(id.ToString(), ":raw"), Text.DontProcess(value.Trim()), scope);
+			string sValue;
+			if (isRaw)
+			{
+				if (mode == Mode.Code)
+					sValue = GingerString.FromCode(value); // Keep tabs
+				else
+					sValue = Text.DontProcess(value.Trim());
 			}
+			else
+				sValue = GingerString.FromParameter(GingerString.EvaluateParameter(value.Trim(), state.evalContext, state.evalConfig)).ToString();
+
+			state.SetValue(id, sValue, scope);
+			state.SetValue(string.Concat(id.ToString(), ":raw"), Text.DontProcess(value.Trim()), scope);
+
+			if (isGlobal && scope == ParameterScope.Global)
+				state.globalParameters.Reserve(id);
 		}
 
 		public override object Clone()

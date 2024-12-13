@@ -97,13 +97,16 @@ namespace Ginger
 		{
 			switch (mode)
 			{
-			default:
-				state.SetValue(id, Convert.ToSingle(value).ToString(CultureInfo.InvariantCulture), scope);
-				break;
 			case Mode.Percent:
 				state.SetValue(id, Convert.ToSingle(value * 0.01m).ToString(CultureInfo.InvariantCulture), scope);
 				break;
+			default:
+				state.SetValue(id, Convert.ToSingle(value).ToString(CultureInfo.InvariantCulture), scope);
+				break;
 			}
+
+			if (isGlobal && scope == ParameterScope.Global)
+				state.globalParameters.Reserve(id);
 		}
 
 		public override object Clone()

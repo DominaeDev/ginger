@@ -104,6 +104,12 @@ namespace Ginger
 			textBox.Enabled = bEnabled && parameter.isEnabled;
 		}
 
+		protected override void OnSetReserved(bool bReserved)
+		{
+			cbEnabled.Enabled = !bReserved && parameter.isOptional;
+			textBox.Enabled = !bReserved && parameter.isEnabled;
+		}
+
 		private void TextBox_GotFocus(object sender, EventArgs e)
 		{
 			_contentHash = parameter.magnitude.GetHashCode();

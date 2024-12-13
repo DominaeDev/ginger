@@ -76,25 +76,28 @@ namespace Ginger
 
 		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
-			if (value != null && value.Count > 0)
-			{
-				var list = new HashSet<string>(value
-					.Select(t => GingerString.FromParameter(t).ToString()));
-				var text = Utility.ListToDelimitedString(list.Select(itemID => {
-					int index = items.FindIndex(ii => ii.id == itemID);
-					if (index != -1)
-						return items[index].label;
-					return itemID;
-				}), Text.Delimiter);
+			if (value == null || value.Count == 0)
+				return;
 
-				string sList = Utility.ListToDelimitedString(list, Text.Delimiter);
-				state.SetValue(id, sList, scope);
-				state.SetValue(id + ":value", text, scope);
-				state.SetValue(id + ":text", text, scope);
+			var list = new HashSet<string>(value
+				.Select(t => GingerString.FromParameter(t).ToString()));
+			var text = Utility.ListToDelimitedString(list.Select(itemID => {
+				int index = items.FindIndex(ii => ii.id == itemID);
+				if (index != -1)
+					return items[index].label;
+				return itemID;
+			}), Text.Delimiter);
 
-				if (scope == ParameterScope.Local)
-					state.SetFlags(list.Select(s => new StringHandle(s)), scope);
-			}
+			string sList = Utility.ListToDelimitedString(list, Text.Delimiter);
+			state.SetValue(id, sList, scope);
+			state.SetValue(id + ":value", text, scope);
+			state.SetValue(id + ":text", text, scope);
+
+			if (scope == ParameterScope.Local)
+				state.SetFlags(list.Select(s => new StringHandle(s)), scope);
+			
+			if (isGlobal && scope == ParameterScope.Global)
+				state.globalParameters.Reserve(id);
 		}
 
 		public override object Clone()

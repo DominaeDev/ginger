@@ -32,14 +32,17 @@ namespace Ginger
 
 		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
-			if (value != null && value.Count > 0)
-			{
-				var items = new HashSet<string>(value
-					.Select(t => GingerString.FromParameter(GingerString.EvaluateParameter(t.Trim(), state.evalContext, state.evalConfig)).ToString()));
-				string sItems = Utility.ListToDelimitedString(items, Text.Delimiter);
-				state.SetValue(id, sItems, scope);
-				state.SetValue(id + ":count", items.Count, scope);
-			}
+			if (value == null || value.Count == 0)
+				return;
+
+			var items = new HashSet<string>(value
+				.Select(t => GingerString.FromParameter(GingerString.EvaluateParameter(t.Trim(), state.evalContext, state.evalConfig)).ToString()));
+			string sItems = Utility.ListToDelimitedString(items, Text.Delimiter);
+			state.SetValue(id, sItems, scope);
+			state.SetValue(id + ":count", items.Count, scope);
+
+			if (isGlobal && scope == ParameterScope.Global)
+				state.globalParameters.Reserve(id);
 		}
 
 		public override object Clone()

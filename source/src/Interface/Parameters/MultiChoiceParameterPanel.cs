@@ -101,6 +101,14 @@ namespace Ginger
 			checkBoxPanel2.Enabled = bEnabled && parameter.isEnabled;
 		}
 
+		protected override void OnSetReserved(bool bReserved)
+		{
+			cbEnabled.Enabled = !bReserved && parameter.isOptional;
+			checkBoxPanel0.Enabled = !bReserved && parameter.isEnabled;
+			checkBoxPanel1.Enabled = !bReserved && parameter.isEnabled;
+			checkBoxPanel2.Enabled = !bReserved && parameter.isEnabled;
+		}
+
 		private void AddOption(int column, string label, bool bChecked = false)
 		{
 			var checkBox = new CheckBox();
