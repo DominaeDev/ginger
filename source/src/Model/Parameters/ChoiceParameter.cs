@@ -122,12 +122,12 @@ namespace Ginger
 
 		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
-			if (string.IsNullOrEmpty(value) == false)
-			{
-				state.SetValue(id, value, scope);
-				if (scope == ParameterScope.Local)
-					state.SetFlag(value, scope);
-			}
+			if (string.IsNullOrEmpty(value))
+				return;
+
+			state.SetValue(id, value, scope);
+			if (scope == ParameterScope.Local)
+				state.SetFlag(value, scope);
 
 			state.SetValue(id + ":index", selectedIndex, scope);
 			if (selectedIndex == -2) // Custom
@@ -135,8 +135,7 @@ namespace Ginger
 				state.SetValue(id + ":id", "custom", scope);
 				state.SetValue(id + ":value", value, scope);
 				state.SetValue(id + ":text", value, scope);
-				if (scope == ParameterScope.Local)
-					state.SetFlag(id + ":custom", scope);
+				state.SetFlag(id + ":custom", scope);
 			}
 			else if (selectedIndex >= 0 && selectedIndex < items.Count)
 			{

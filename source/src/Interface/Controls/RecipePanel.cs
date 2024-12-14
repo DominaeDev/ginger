@@ -682,6 +682,9 @@ namespace Ginger
 						&& parameter.isEnabled 
 						&& parameterStates[recipeIdx - 1].TryGetReservedValue(parameter.id, out reservedValue);
 					parameterPanel.SetReserved(isReserved, reservedValue);
+
+					if (isReserved)
+						continue;
 				}
 				if (parameter.isConditional && parameterPanel.isReserved == false) // Has condition
 				{

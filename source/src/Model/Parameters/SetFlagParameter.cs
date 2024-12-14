@@ -22,8 +22,6 @@ namespace Ginger
 			isGlobal = true;
 		}
 
-		public override bool isLocal { get { return false; } }
-
 		public override bool LoadFromXml(XmlNode xmlNode)
 		{
 			string value = xmlNode.GetTextValue();
@@ -32,6 +30,7 @@ namespace Ginger
 				return false;
 
 			id = Utility.ListToCommaSeparatedString(flags);
+			isGlobal = xmlNode.GetAttributeBool("shared", true);
 
 			if (xmlNode.HasAttribute("rule"))
 				condition = Rule.Parse(xmlNode.GetAttribute("rule"));
@@ -49,11 +48,9 @@ namespace Ginger
 
 		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
-			if (scope == ParameterScope.Global) // Global only
-			{
-				state.SetFlags(flags, ParameterScope.Global);
+			state.SetFlags(flags, scope);
+			if (scope == ParameterScope.Global)
 				state.Reserve(id, null);
-			}
 		}
 
 		public override object Clone()

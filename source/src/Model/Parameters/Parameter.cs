@@ -15,7 +15,6 @@ namespace Ginger
 		string description { get; }
 		bool isOptional { get; }
 		bool isEnabled { get; }
-		bool isLocal { get; }
 		bool isGlobal { get; }
 		bool isImmediate { get; }
 		bool isConditional { get; }
@@ -131,7 +130,6 @@ namespace Ginger
 		public string placeholder { get; protected set; }
 		public bool isOptional { get; protected set; }
 		public bool isEnabled { get; set; }
-		public virtual bool isLocal { get { return true; } }
 		public bool isGlobal { get; set; }
 		public bool isImmediate { get; set; }
 		public bool isConditional { get { return condition != null; } }
@@ -159,8 +157,8 @@ namespace Ginger
 			if (!isEnabled || !IsActive(parameterState))
 				return;
 
-			if (isLocal) // Set local parameters
-				OnApply(parameterState, ParameterScope.Local);
+			// Set local parameters
+			OnApply(parameterState, ParameterScope.Local);
 			if (isGlobal) // Set global parameters
 				OnApply(parameterState, ParameterScope.Global);
 		}
@@ -553,7 +551,7 @@ namespace Ginger
 
 		public void Reserve(StringHandle id, string reservedValue)
 		{
-			_reserved.Add(id, reservedValue);
+			_reserved.TryAdd(id, reservedValue);
 		}
 
 		public bool TryGetReservedValue(StringHandle id, out string reservedValue)
