@@ -1,14 +1,12 @@
-<Ginger version="1.0">
+<Ginger version="1.1">
 	<Name>Anatomy/Weight</Name>
 	<Description>Specify the character's weight.</Description>
 	<Author>Ginger</Author>
 	<Category>Body</Category>
-	<Requires>not weight</Requires>
-	<Flags>weight</Flags>
 	<Order>10</Order>
 	
 	<!-- Parameters -->
-	<Number id="weight" style="weight" min="0" shared="yes" rule="not weight">
+	<Number id="weight" style="weight" min="0" shared="yes">
 		<Label>Weight</Label>
 		<Placeholder>Weight (kg/lb)</Placeholder>
 		<Description>
@@ -27,7 +25,5 @@
 		<Name>Weight</Name>
 		<Value>{weight.lb.value} lbs ({weight.kg})</Value>
 	</Attribute>
-	
-	<Hint rule="weight and not weight:local">Weight is already defined.</Hint>
-	
+		
 </Ginger>

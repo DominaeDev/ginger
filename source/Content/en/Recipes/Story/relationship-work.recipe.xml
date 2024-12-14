@@ -25,7 +25,7 @@
 	</Text>
 
 	<!-- Title -->
-	<Text id="job-title" shared="yes" rule="not job-title">
+	<Text id="job-title" shared="yes">
 		<Label>Job title</Label>
 		<Placeholder>Employee</Placeholder>
 	</Text>

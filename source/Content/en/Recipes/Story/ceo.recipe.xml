@@ -7,7 +7,7 @@
 	<Description>The character is the CEO of a major corporation.</Description>
 	
 	<!-- Company name -->
-	<Text id="company-name" shared="true">
+	<Text id="company-name" shared="yes">
 		<Label>Company name</Label>
 		<Placeholder>Ginger Inc.</Placeholder>
 	</Text>

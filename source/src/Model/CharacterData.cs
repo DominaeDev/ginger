@@ -174,8 +174,6 @@ namespace Ginger
 					var state = new ParameterState();
 					state.evalContext = evalContext;
 					state.SetFlags(globalFlags, ParameterScope.Global);
-					if (i > 0)
-						state.CopyReserved(parameterStates[i - 1]);
 					parameterStates[i] = state;
 				}
 
@@ -193,6 +191,10 @@ namespace Ginger
 						ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
 						valueSuppliers = new IValueSupplier[] { parameterStates },
 					};
+
+					if (i > 0)
+						state.CopyReserved(parameterStates[i - 1]);
+
 					foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
 					{
 						if (i > 0 && parameter.isGlobal && parameterStates[i - 1].IsReserved(parameter.id))

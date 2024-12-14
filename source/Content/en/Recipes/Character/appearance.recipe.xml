@@ -92,7 +92,7 @@
 	</Choice>
 
 	<!-- Skin tone -->
-	<Choice id="skin-tone" style="custom" rule="not (skin-tone or fur or anthro or animal)" shared="yes">
+	<Choice id="skin-tone" style="custom" rule="not (fur or anthro or animal)" shared="yes">
 		<Label>Complexion</Label>
 		<Placeholder>e.g. Blue, Green, ...</Placeholder>
 		<Option id="skin-albino">Albino</Option>
@@ -119,7 +119,7 @@
 	</Choice>
 	
 	<!-- Height -->
-	<Number id="height" style="length" min="0" shared="yes" rule="not height">
+	<Number id="height" style="length" min="0" shared="yes">
 		<Label>Height</Label>
 		<Placeholder>Height (cm/ft)</Placeholder>
 		<Description>

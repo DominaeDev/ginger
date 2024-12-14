@@ -8,7 +8,7 @@ namespace Ginger
 	{
 		protected T parameter;
 
-		public bool Active // Is parameter visible? (Control.Visible depends on parent)
+		public bool isActive // Is parameter visible? (Control.Visible depends on parent)
 		{
 			get { return _bActive; } 
 			set { _bActive = value; Visible = _bActive; }
@@ -249,7 +249,8 @@ namespace Ginger
 		void RefreshValue();
 		int GetParameterHeight();
 		
-		bool Active { get; set; }
+		bool isActive { get; set; }
+		bool isReserved { get; }
 	}
 
 	public interface IFlexibleParameterPanel

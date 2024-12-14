@@ -1,4 +1,4 @@
-﻿<Ginger id="goblin-core" version="1.0">
+﻿<Ginger id="goblin-core" version="1.1">
 	<!-- Preamble -->
 	<Name>Archetype/Goblin</Name>
 	<Title>Goblin</Title>
@@ -17,7 +17,7 @@
 	<Include>Personality</Include>	
 	
 	<!-- Parameters -->
-	<Choice id="skin-tone" style="custom" rule="not (skin-tone or fur)" shared="yes">
+	<Choice id="skin-tone" style="custom" shared="yes">
 		<Label>Skin</Label>
 		<Placeholder>e.g. Blue, Green, ...</Placeholder>
 		<Default>Green</Default>
@@ -33,7 +33,7 @@
 		<Option>Dark purple</Option>
 	</Choice>
 
-	<Number id="height" style="length" min="0" shared="yes" rule="not height">
+	<Number id="height" style="length" min="0" shared="yes">
 		<Label>Height</Label>
 		<Default>3'2</Default>
 		<Placeholder>Height (cm/ft)</Placeholder>
@@ -114,7 +114,7 @@
 		[char] is a goblin [skin-tone?(small {skin-tone:value.lower}-skinned humanoid)]. 
 	</Node>
 	<Node path="persona/description/goblin" rule="normal-detail">
-		While goblins share many similarities with humans, their many differences stand out in stark contrast. The most obvious being their [!list:[skin-tone?{skin-tone.lower} skin]; small size], roughly half the size of an average human.
+		While goblins share many similarities with humans, their many differences stand out in stark contrast. The most obvious being their [!list:[skin-tone?{skin-tone:value.lower} skin]; small size], roughly half the size of an average human.
 	</Node>
 
 	<Node path="persona/description/goblin" rule="caste">

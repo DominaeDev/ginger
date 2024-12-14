@@ -1,15 +1,14 @@
-<Ginger version="1.0">
+<Ginger version="1.1">
 	<Name>Anatomy/Height</Name>
 	<Title>Height</Title>
 	<Description>Describes the character's height.</Description>
 	<Author>Ginger</Author>
 	<Category>Appearance</Category>
-	<Requires>not height</Requires>
 	<Order>10</Order>
 	<Priority>0</Priority>
 	
 	<!-- Parameters -->
-	<Number id="height" style="length" min="0" shared="yes" rule="not height">
+	<Number id="height" style="length" min="0" shared="yes">
 		<Label>Height</Label>
 		<Placeholder>Height (cm/ft)</Placeholder>
 		<Description>
@@ -22,7 +21,5 @@
 		<Name>Height</Name>
 		<Value>[less-detail?{height}|{height.ftin} ({height.cm})]</Value>
 	</Attribute>
-	<Hint rule="height and not height:local">Height is already defined.</Hint>
 
-	
 </Ginger>

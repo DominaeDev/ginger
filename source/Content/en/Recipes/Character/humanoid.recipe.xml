@@ -50,7 +50,7 @@
 	<SetVar id="race">[@race]</SetVar>
 
 	<!-- Skin tone -->
-	<Choice id="skin-tone" style="custom" rule="not skin-tone" shared="yes">
+	<Choice id="skin-tone" style="custom" shared="yes">
 		<Label>Skin tone</Label>
 		<Placeholder>e.g. Blue, Green, ...</Placeholder>
 		<Option id="skin-albino">Albino</Option>
@@ -128,7 +128,7 @@
 		<String rule="skin-white" priority="1">is bright white</String>	
 		<String rule="skin-red" priority="1">is deep red</String>	
 		<String rule="skin-metallic" priority="1">is shiny and metallic</String>	
-		<String rule="skin-tone">is a shade of {skin-tone:value.lower}</String>
+		<String rule="skin-tone:local">is a shade of {skin-tone:value.lower}</String>
 	</String>
 	<Node path="appearance/body" order="0" rule="skin-tone:local">[Their] skin [@skin-tone].</Node>
 	

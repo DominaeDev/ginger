@@ -1,4 +1,4 @@
-﻿<Ginger version="1.0">
+﻿<Ginger version="1.1">
 	<!-- Preamble -->
 	<Name>Build/Shortstack</Name>
 	<Title>Shortstack</Title>
@@ -11,7 +11,7 @@
 	
 	<!-- Parameters -->
 
-	<Number id="height" style="length" min="0" shared="yes" rule="not height">
+	<Number id="height" style="length" min="0" shared="yes">
 		<Label>Height</Label>
 		<Placeholder>Height (cm/ft)</Placeholder>
 		<Default>5 ft</Default>
@@ -25,7 +25,6 @@
 		<Name>Height</Name>
 		<Value>[less-detail?{height}|{height.ftin} ({height.cm})]</Value>
 	</Attribute>
-	<Hint rule="height and not height:local">Height is already defined.</Hint>	
 	
 	<Attribute>
 		<Name>Appearance</Name>

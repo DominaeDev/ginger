@@ -76,7 +76,7 @@ namespace Ginger
 				for (int i = 0; i < parameterPanels.Count; ++i)
 				{
 					var parameterPanel = parameterPanels[i];
-					if (parameterPanel.Active == false)
+					if (parameterPanel.isActive == false)
 						continue;
 					if (index++ > 0)
 						parameterY += Constants.ParameterPanel.Spacing;
@@ -628,8 +628,6 @@ namespace Ginger
 				var state = new ParameterState();
 				state.evalContext = evalContext;
 				state.SetFlags(globalFlags, ParameterScope.Global);
-				if (i > 0)
-					state.CopyReserved(parameterStates[i - 1]);
 				parameterStates[i] = state;
 			}
 
@@ -650,6 +648,9 @@ namespace Ginger
 					ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
 					valueSuppliers = new IValueSupplier[] { parameterStates },
 				};
+				if (i > 0)
+					state.CopyReserved(parameterStates[i - 1]);
+
 				foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
 				{
 					if (i > 0 && parameter.isGlobal && parameterStates[i - 1].IsReserved(parameter.id))
@@ -674,22 +675,22 @@ namespace Ginger
 				if (parameterPanel == null)
 					continue;
 
-				if (parameter.isConditional) // Has condition
-				{
-					var localContext = Context.Copy(parameterState.evalContext);
-					parameterState.localParameters.ApplyToContext(localContext);
-
-					bool wasVisible = parameterPanel.Active;
-					parameterPanel.Active = parameter.IsActive(localContext);
-					bChanged |= wasVisible != parameterPanel.Active;
-				}
-				else if (parameter.isGlobal) // Is shared
+				if (parameter.isGlobal) // Is shared (reserve?)
 				{
 					string reservedValue = default(string);
 					bool isReserved = recipeIdx > 0 
 						&& parameter.isEnabled 
 						&& parameterStates[recipeIdx - 1].TryGetReservedValue(parameter.id, out reservedValue);
 					parameterPanel.SetReserved(isReserved, reservedValue);
+				}
+				if (parameter.isConditional && parameterPanel.isReserved == false) // Has condition
+				{
+					var localContext = Context.Copy(parameterState.evalContext);
+					parameterState.localParameters.ApplyToContext(localContext);
+
+					bool wasVisible = parameterPanel.isActive;
+					parameterPanel.isActive = parameter.IsActive(localContext);
+					bChanged |= wasVisible != parameterPanel.isActive;
 				}
 								
 				// Apply parameter to context
@@ -848,7 +849,7 @@ namespace Ginger
 			for (int i = 0; i < parameterPanels.Count; ++i)
 			{
 				var parameterPanel = parameterPanels[i];
-				if (parameterPanel.Active == false)
+				if (parameterPanel.isActive == false)
 					continue;
 				if (index++ > 0) // Spacing
 					parameterY += Constants.ParameterPanel.Spacing;

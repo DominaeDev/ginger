@@ -1,4 +1,4 @@
-﻿<Ginger id="orc-core" version="1.0">
+﻿<Ginger id="orc-core" version="1.1">
 	<!-- Preamble -->
 	<Name>Archetype/Orc</Name>
 	<Title>Orc</Title>
@@ -17,7 +17,7 @@
 	<Include>Personality</Include>	
 	
 	<!-- Parameters -->
-	<Choice id="skin-tone" style="custom" rule="not (skin-tone or fur)" shared="yes">
+	<Choice id="skin-tone" style="custom" shared="yes">
 		<Label>Skin</Label>
 		<Placeholder>e.g. Blue, Green, ...</Placeholder>
 		<Default>Green</Default>
@@ -33,7 +33,7 @@
 		<Option>Dark purple</Option>
 	</Choice>
 
-	<Number id="height" style="length" min="0" shared="yes" rule="not height">
+	<Number id="height" style="length" min="0" shared="yes">
 		<Label>Height</Label>
 		<Default>7'2</Default>
 		<Placeholder>Height (cm/ft)</Placeholder>
@@ -96,17 +96,17 @@
 		<Value>warrior mind, simple-minded, brutish, tribal, driven mostly by primal instinct, solves problems with [their] brawn instead of [their] brain.</Value>
 	</Attribute>
 	
-	<Node path="persona/description/goblin" order="0">
-		[char] is an orc [skin-tone?(large {skin-tone:value.lower}-skinned humanoid)]. 
+	<Node path="persona/description/orc" order="0">
+		[char] is an orc [skin-tone:local?(large {skin-tone:value.lower}-skinned humanoid)]. 
 	</Node>
-	<Node path="persona/description/goblin" rule="normal-detail">
+	<Node path="persona/description/orc" rule="normal-detail">
 		While orcs share many similarities with humans, their many differences stand out in stark contrast. 
-		The most obvious being their [!list:[skin-tone?{skin-tone.lower} skin]; large, muscular size], much taller than the average human.
+		The most obvious being their [!list:[skin-tone:local?{skin-tone:value.lower} skin]; large, muscular size], much taller than the average human.
 	</Node>
 
-	<Node path="persona/description/goblin" rule="caste">
+	<Node path="persona/description/orc" rule="caste">
 		Orc live in the wilderness in communities that can range in size from a dozen to more than a hundred individuals.
 	</Node>
 			
-	<Node path="persona/description/goblin" rule="more">{more}.</Node>
+	<Node path="persona/description/orc" rule="more">{more}.</Node>
 </Ginger>

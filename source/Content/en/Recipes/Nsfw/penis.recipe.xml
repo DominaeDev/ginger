@@ -8,7 +8,7 @@
 	<Order>150</Order>
 
 	<!-- Parameters -->
-	<Number id="penis-length" style="length" optional="yes" shared="yes">
+	<Number id="penis-length" style="length" shared="yes">
 		<Label>Size</Label>
 		<Placeholder>Length (cm/in)</Placeholder>
 	</Number>
