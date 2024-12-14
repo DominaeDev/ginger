@@ -101,12 +101,19 @@ namespace Ginger
 			checkBoxPanel2.Enabled = bEnabled && parameter.isEnabled;
 		}
 
-		protected override void OnSetReserved(bool bReserved)
+		protected override void OnSetReserved(bool bReserved, string reservedValue)
 		{
 			cbEnabled.Enabled = !bReserved && parameter.isOptional;
 			checkBoxPanel0.Enabled = !bReserved && parameter.isEnabled;
 			checkBoxPanel1.Enabled = !bReserved && parameter.isEnabled;
 			checkBoxPanel2.Enabled = !bReserved && parameter.isEnabled;
+
+			WhileIgnoringEvents(() => {
+				if (bReserved)
+					SelectByValue(new HashSet<string>(Utility.ListFromCommaSeparatedString(reservedValue)));
+				else
+					SelectByValue(parameter.value);
+			});
 		}
 
 		private void AddOption(int column, string label, bool bChecked = false)
@@ -144,6 +151,9 @@ namespace Ginger
 
 		private void CbEnabled_CheckedChanged(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents)
+				return;
+
 			checkBoxPanel0.Enabled = cbEnabled.Checked || !parameter.isOptional;
 			checkBoxPanel1.Enabled = cbEnabled.Checked || !parameter.isOptional;
 			checkBoxPanel2.Enabled = cbEnabled.Checked || !parameter.isOptional;

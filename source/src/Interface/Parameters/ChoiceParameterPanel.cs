@@ -95,15 +95,22 @@ namespace Ginger
 			textBox_Custom.Enabled = bEnabled && parameter.isEnabled;
 		}
 
-		protected override void OnSetReserved(bool bReserved)
+		protected override void OnSetReserved(bool bReserved, string reservedValue)
 		{
 			cbEnabled.Enabled = !bReserved && parameter.isOptional;
 			comboBox.Enabled = !bReserved && parameter.isEnabled;
 			textBox_Custom.Enabled = !bReserved && parameter.isEnabled;
+
+			WhileIgnoringEvents(() => {
+				SelectByValue(bReserved ? reservedValue : this.parameter.value);
+			});
 		}
 
 		private void CbEnabled_CheckedChanged(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents)
+				return;
+
 			comboBox.Enabled = cbEnabled.Checked || !parameter.isOptional;
 			textBox_Custom.Enabled = cbEnabled.Checked || !parameter.isOptional;
 			if (isIgnoringEvents)

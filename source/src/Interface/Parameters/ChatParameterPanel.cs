@@ -122,10 +122,10 @@ namespace Ginger
 			base.OnSetEnabled(bEnabled);
 		}
 
-		protected override void OnSetReserved(bool bReserved)
+		protected override void OnSetReserved(bool bReserved, string reservedValue)
 		{
-			btnAddEntry.Enabled = !bReserved;
-			base.OnSetReserved(bReserved);
+			btnAddEntry.Enabled = !bReserved && parameter.isEnabled;
+			base.OnSetReserved(bReserved, reservedValue);
 		}
 
 		private void OnMouseClick(object sender, MouseEventArgs e)

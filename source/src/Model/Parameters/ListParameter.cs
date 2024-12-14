@@ -20,7 +20,7 @@ namespace Ginger
 			if (base.LoadFromXml(xmlNode) == false)
 				return false;
 
-			//			value = GetDefaultValue();
+//			value = GetDefaultValue();
 			return true;
 		}
 
@@ -42,7 +42,7 @@ namespace Ginger
 			state.SetValue(id + ":count", items.Count, scope);
 
 			if (isGlobal && scope == ParameterScope.Global)
-				state.globalParameters.Reserve(id);
+				state.Reserve(id, sItems);
 		}
 
 		public override object Clone()

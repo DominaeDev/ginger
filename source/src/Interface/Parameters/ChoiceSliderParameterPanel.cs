@@ -56,11 +56,15 @@ namespace Ginger
 			slider.Enabled = bEnabled && parameter.isEnabled;
 		}
 
-		protected override void OnSetReserved(bool bReserved)
+		protected override void OnSetReserved(bool bReserved, string reservedValue)
 		{
 			cbEnabled.Enabled = !bReserved && parameter.isOptional;
 			textBox.Enabled = !bReserved && parameter.isEnabled;
 			slider.Enabled = !bReserved && parameter.isEnabled;
+
+			WhileIgnoringEvents(() => {
+				SelectByValue(bReserved ? reservedValue : this.parameter.value);
+			});
 		}
 
 		private void SelectByValue(string value)
@@ -78,6 +82,9 @@ namespace Ginger
 
 		private void CbEnabled_CheckedChanged(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents)
+				return;
+
 			textBox.Enabled = cbEnabled.Checked || !parameter.isOptional;
 			slider.Enabled = cbEnabled.Checked || !parameter.isOptional;
 			if (isIgnoringEvents)

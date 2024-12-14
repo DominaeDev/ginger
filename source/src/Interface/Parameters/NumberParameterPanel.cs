@@ -91,7 +91,7 @@ namespace Ginger
 		protected override void OnRefreshValue()
 		{
 			if (parameter.value == default(decimal) && parameter.isOptional && parameter.GetDefaultValue() == default(decimal))
-				textBox.SetTextSilent(""); 
+				textBox.SetTextSilent("");
 			else
 				SetValueSilent(parameter.value);
 
@@ -104,10 +104,26 @@ namespace Ginger
 			textBox.Enabled = bEnabled && parameter.isEnabled;
 		}
 
-		protected override void OnSetReserved(bool bReserved)
+		protected override void OnSetReserved(bool bReserved, string reservedValue)
 		{
 			cbEnabled.Enabled = !bReserved && parameter.isOptional;
 			textBox.Enabled = !bReserved && parameter.isEnabled;
+
+			WhileIgnoringEvents(() => {
+				decimal number;
+				if (bReserved)
+					decimal.TryParse(reservedValue, NumberStyles.Float, CultureInfo.InvariantCulture, out number);
+				else
+					number = parameter.value;
+
+				if (parameter.value == default(decimal) && parameter.isOptional && parameter.GetDefaultValue() == default(decimal))
+				{
+					textBox.Text = "";
+					textBox.InitUndo();
+				}
+				else
+					SetValue(number);
+			});
 		}
 
 		private void SetValue(decimal value, bool bSuffix = true)
@@ -156,6 +172,9 @@ namespace Ginger
 
 		private void TextBox_EnterPressed(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents)
+				return;
+
 			TextBox_LostFocus(this, EventArgs.Empty);
 			textBox.SelectAll();
 			NotifyValueChanged();
@@ -199,6 +218,9 @@ namespace Ginger
 
 		private void TextBox_LostFocus(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents)
+				return;
+
 			// Validate
 			if (string.IsNullOrEmpty(textBox.Text) == false)
 			{
@@ -223,6 +245,9 @@ namespace Ginger
 
 		private void CbEnabled_CheckedChanged(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents)
+				return;
+
 			textBox.Enabled = cbEnabled.Checked || !parameter.isOptional;
 			if (isIgnoringEvents)
 				return;

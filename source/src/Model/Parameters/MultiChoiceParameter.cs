@@ -97,7 +97,7 @@ namespace Ginger
 				state.SetFlags(list.Select(s => new StringHandle(s)), scope);
 			
 			if (isGlobal && scope == ParameterScope.Global)
-				state.globalParameters.Reserve(id);
+				state.Reserve(id, sList);
 		}
 
 		public override object Clone()

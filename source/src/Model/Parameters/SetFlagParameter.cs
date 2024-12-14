@@ -52,7 +52,7 @@ namespace Ginger
 			if (scope == ParameterScope.Global) // Global only
 			{
 				state.SetFlags(flags, ParameterScope.Global);
-				state.globalParameters.Reserve(id);
+				state.Reserve(id, null);
 			}
 		}
 

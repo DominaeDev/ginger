@@ -65,7 +65,6 @@ namespace Ginger
 
 			SetValue(parameter.value);
 
-
 			// Enabled checkbox
 			cbEnabled.Enabled = parameter.isOptional;
 			cbEnabled.Checked = parameter.isEnabled;
@@ -81,11 +80,20 @@ namespace Ginger
 			slider.Enabled = bEnabled && parameter.isEnabled;
 		}
 
-		protected override void OnSetReserved(bool bReserved)
+		protected override void OnSetReserved(bool bReserved, string reservedValue)
 		{
 			cbEnabled.Enabled = !bReserved && parameter.isOptional;
 			textBox.Enabled = !bReserved && parameter.isEnabled;
 			slider.Enabled = !bReserved && parameter.isEnabled;
+
+			WhileIgnoringEvents(() => {
+				decimal number;
+				if (bReserved)
+					decimal.TryParse(reservedValue, NumberStyles.Float, CultureInfo.InvariantCulture, out number);
+				else
+					number = this.parameter.value;
+				SetValue(number);
+			});
 		}
 
 		private void SetValue(decimal value, bool bSuffix = true)
@@ -208,6 +216,9 @@ namespace Ginger
 
 		private void CbEnabled_CheckedChanged(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents)
+				return;
+
 			textBox.Enabled = cbEnabled.Checked || !parameter.isOptional;
 			slider.Enabled = cbEnabled.Checked || !parameter.isOptional;
 			if (isIgnoringEvents)

@@ -104,19 +104,30 @@ namespace Ginger
 			textBox.Enabled = bEnabled && parameter.isEnabled;
 		}
 
-		protected override void OnSetReserved(bool bReserved)
+		protected override void OnSetReserved(bool bReserved, string reservedValue)
 		{
 			cbEnabled.Enabled = !bReserved && parameter.isOptional;
 			textBox.Enabled = !bReserved && parameter.isEnabled;
+
+			WhileIgnoringEvents(() => {
+				textBox.Text = bReserved ? reservedValue : parameter.value;
+				textBox.InitUndo();
+			});
 		}
 
 		private void TextBox_GotFocus(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents)
+				return;
+
 			_contentHash = parameter.magnitude.GetHashCode();
 		}
 
 		private void TextBox_LostFocus(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents)
+				return;
+
 			if (string.IsNullOrEmpty(textBox.Text) == false)
 			{
 				string unit;
@@ -147,6 +158,9 @@ namespace Ginger
 
 		private void CbEnabled_CheckedChanged(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents)
+				return;
+
 			textBox.Enabled = cbEnabled.Checked || !parameter.isOptional;
 			if (isIgnoringEvents)
 				return;
@@ -157,6 +171,9 @@ namespace Ginger
 
 		private void TextBox_EnterPressed(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents)
+				return;
+
 			TextBox_LostFocus(this, EventArgs.Empty);
 			textBox.SelectAll();
 			NotifyValueChanged();

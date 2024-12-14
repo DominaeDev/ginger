@@ -95,18 +95,21 @@ namespace Ginger
 
 		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
+			string sValue;
 			switch (mode)
 			{
 			case Mode.Percent:
-				state.SetValue(id, Convert.ToSingle(value * 0.01m).ToString(CultureInfo.InvariantCulture), scope);
+				sValue = Convert.ToSingle(value * 0.01m).ToString(CultureInfo.InvariantCulture);
 				break;
 			default:
-				state.SetValue(id, Convert.ToSingle(value).ToString(CultureInfo.InvariantCulture), scope);
+				sValue = Convert.ToSingle(value).ToString(CultureInfo.InvariantCulture);
 				break;
 			}
 
+			state.SetValue(id, sValue, scope);
+
 			if (isGlobal && scope == ParameterScope.Global)
-				state.globalParameters.Reserve(id);
+				state.Reserve(id, sValue);
 		}
 
 		public override object Clone()

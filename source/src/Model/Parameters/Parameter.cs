@@ -156,7 +156,7 @@ namespace Ginger
 
 		public void Apply(ParameterState parameterState)
 		{
-			if (!isEnabled || !IsActive(parameterState) || parameterState.globalParameters.IsReserved(id))
+			if (!isEnabled || !IsActive(parameterState))
 				return;
 
 			if (isLocal) // Set local parameters
@@ -431,7 +431,6 @@ namespace Ginger
 	{
 		private Dictionary<StringHandle, ContextualValue> _values = new Dictionary<StringHandle, ContextualValue>();
 		private HashSet<StringHandle> _flags = new HashSet<StringHandle>();
-		private HashSet<StringHandle> _reserved = new HashSet<StringHandle>();
 
 		public void SetValue(StringHandle id, ContextualValue value)
 		{
@@ -443,12 +442,6 @@ namespace Ginger
 
 		public bool TryGetValue(StringHandle id, out ContextualValue value)
 		{
-			if (_reserved.Contains(id))
-			{
-				value = null;
-				return false;
-			}
-
 			return _values.TryGetValue(id, out value);
 		}
 
@@ -462,20 +455,10 @@ namespace Ginger
 			_flags.UnionWith(flags);
 		}
 
-		public void Reserve(StringHandle id)
-		{
-			_reserved.Add(id);
-		}
-
-		public bool IsReserved(StringHandle id)
-		{
-			return _reserved.Contains(id);
-		}
-
 		public void ApplyToContext(Context context)
 		{
 			context.AddTags(_flags);
-			foreach (var kvp in _values.Where(kvp => IsReserved(kvp.Key) == false))
+			foreach (var kvp in _values)
 				context.SetValue(kvp.Key, kvp.Value.ToString());
 		}
 
@@ -490,13 +473,8 @@ namespace Ginger
 		{
 			_values.Remove(id);
 			_flags.Remove(id);
-			_reserved.Remove(id);
 		}
 
-		public void CopyReserved(ParameterCollection collection)
-		{
-			_reserved.UnionWith(collection._reserved);
-		}
 	}
 
 	public enum ParameterScope
@@ -512,6 +490,8 @@ namespace Ginger
 
 		public Context evalContext;
 		public ContextString.EvaluationConfig evalConfig;
+
+		private Dictionary<StringHandle, string> _reserved = new Dictionary<StringHandle, string>();
 
 		private ParameterCollection GetCollection(ParameterScope scope)
 		{
@@ -563,11 +543,33 @@ namespace Ginger
 			}
 		}
 
-		public void Erase(StringHandle flag)
+		public void Erase(StringHandle id)
 		{
-			globalParameters.Erase(flag);
-			evalContext.SetValue(flag, null);
-			evalContext.RemoveTag(flag);
+			globalParameters.Erase(id);
+			evalContext.SetValue(id, null);
+			evalContext.RemoveTag(id);
+			_reserved.Remove(id);
+		}
+
+		public void Reserve(StringHandle id, string reservedValue)
+		{
+			_reserved.Add(id, reservedValue);
+		}
+
+		public bool TryGetReservedValue(StringHandle id, out string reservedValue)
+		{
+			return _reserved.TryGetValue(id, out reservedValue);
+		}
+
+		public bool IsReserved(StringHandle id)
+		{
+			return _reserved.ContainsKey(id);
+		}
+		
+		public void CopyReserved(ParameterState state)
+		{
+			_reserved = _reserved.Union(state._reserved)
+				.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 		}
 	}
 

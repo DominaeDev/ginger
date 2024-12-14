@@ -127,12 +127,16 @@ namespace Ginger
 			radioPanel2.Enabled = bEnabled && parameter.isEnabled;
 		}
 
-		protected override void OnSetReserved(bool bReserved)
+		protected override void OnSetReserved(bool bReserved, string reservedValue)
 		{
 			cbEnabled.Enabled = !bReserved && parameter.isOptional;
 			radioPanel0.Enabled = !bReserved && parameter.isEnabled;
 			radioPanel1.Enabled = !bReserved && parameter.isEnabled;
 			radioPanel2.Enabled = !bReserved && parameter.isEnabled;
+
+			WhileIgnoringEvents(() => {
+				SelectByValue(bReserved ? reservedValue : this.parameter.value);	
+			});
 		}
 
 		private void AddOption(int column, string label)
@@ -169,6 +173,9 @@ namespace Ginger
 
 		private void CbEnabled_CheckedChanged(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents)
+				return;
+
 			radioPanel0.Enabled = cbEnabled.Checked || !parameter.isOptional;
 			radioPanel1.Enabled = cbEnabled.Checked || !parameter.isOptional;
 			radioPanel2.Enabled = cbEnabled.Checked || !parameter.isOptional;

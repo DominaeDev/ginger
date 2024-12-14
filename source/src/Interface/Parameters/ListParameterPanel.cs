@@ -127,14 +127,28 @@ namespace Ginger
 			textBox.Enabled = bEnabled && parameter.isEnabled;
 		}
 
-		protected override void OnSetReserved(bool bReserved)
+		protected override void OnSetReserved(bool bReserved, string reservedValue)
 		{
 			cbEnabled.Enabled = !bReserved && parameter.isOptional;
 			textBox.Enabled = !bReserved && parameter.isEnabled;
+
+			WhileIgnoringEvents(() => {
+				if (bReserved)
+					textBox.Text = reservedValue;
+				else
+				{
+					textBox.Text = Utility.ListToCommaSeparatedString(Collection);
+					textBox.richTextBox.RefreshSyntaxHighlight(false); // Rehighlight
+				}
+				textBox.InitUndo();
+			});
 		}
 
 		private void CbEnabled_CheckedChanged(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents)
+				return;
+
 			textBox.Enabled = cbEnabled.Checked || !parameter.isOptional;
 			if (isIgnoringEvents)
 				return;

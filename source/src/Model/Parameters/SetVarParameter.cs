@@ -48,12 +48,14 @@ namespace Ginger
 		{
 			if (string.IsNullOrEmpty(value) == false && scope == ParameterScope.Global) // Global only
 			{
+				string sValue;
 				if (value.IndexOfAny(new char[] { '{', '}', '[', ']' }) != -1)
-					state.SetValue(id, Text.Eval(value, state.evalContext, state.evalConfig), ParameterScope.Global);
+					sValue = Text.Eval(value, state.evalContext, state.evalConfig);
 				else
-					state.SetValue(id, value, ParameterScope.Global);
+					sValue = value;
+				state.SetValue(id, sValue, ParameterScope.Global);
 
-				state.globalParameters.Reserve(id);
+				state.Reserve(id, sValue);
 			}
 		}
 

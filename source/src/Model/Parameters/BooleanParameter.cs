@@ -30,7 +30,7 @@ namespace Ginger
 			if (value)
 				state.SetFlag(id, scope);
 			if (isGlobal && scope == ParameterScope.Global)
-				state.globalParameters.Reserve(id);
+				state.Reserve(id, this.value ? "Yes" : "No");
 		}
 
 		public override object Clone()

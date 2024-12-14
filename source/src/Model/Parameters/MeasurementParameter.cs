@@ -60,7 +60,7 @@ namespace Ginger
 			state.SetValue(string.Concat(id, ":value"), Convert.ToSingle(this.magnitude), scope);
 
 			if (isGlobal && scope == ParameterScope.Global)
-				state.globalParameters.Reserve(id);
+				state.Reserve(id, this.value);
 		}
 
 		public override object Clone()

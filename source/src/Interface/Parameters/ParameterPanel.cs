@@ -18,8 +18,10 @@ namespace Ginger
 		protected virtual CheckBox parameterCheckBox { get { return null; } }
 		protected virtual Label parameterLabel { get { return null; } }
 
-		protected bool isIgnoringEvents { get { return _bIgnoreEvents; } }
+		protected bool isIgnoringEvents { get { return _bIgnoreEvents || isReserved; } }
 		private bool _bIgnoreEvents = false;
+
+		public bool isReserved { get; private set; }
 
 		public event EventHandler<ParameterEventArgs> ParameterValueChanged;
 		public event EventHandler ParameterEnabledChanged;
@@ -84,14 +86,16 @@ namespace Ginger
 
 		protected virtual void OnSetEnabled(bool bEnabled) { }
 
-		public void SetReserved(bool bReserved) 
+		public void SetReserved(bool bReserved, string value) 
 		{
 			_bIgnoreEvents = true;
-			OnSetReserved(bReserved);
+			OnSetReserved(bReserved, bReserved ? value : default(string));
 			_bIgnoreEvents = false;
+
+			isReserved = bReserved;
 		}
 
-		protected virtual void OnSetReserved(bool bEnabled) { }
+		protected virtual void OnSetReserved(bool bEnabled, string value) { }
 
 		public void RefreshValue()
 		{
@@ -239,7 +243,7 @@ namespace Ginger
 		IParameter GetParameter();
 		void SetLabel(string label);
 		void SetEnabled(bool bEnabled);
-		void SetReserved(bool bReserved);
+		void SetReserved(bool bReserved, string value = null);
 		void SetParameter(IParameter parameter);
 		void ResetParameterReference(IParameter parameter);
 		void RefreshValue();
