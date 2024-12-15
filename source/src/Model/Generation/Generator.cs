@@ -464,7 +464,7 @@ namespace Ginger
 			bool bMain = (characterIndex == 0 && Current.Characters.Count == 1) || options.Contains(Option.Single);
 
 			// Prepare contexts
-			Context[] recipeContexts = GetRecipeContexts(recipes.ToArray(), globalContext);
+			Context[] recipeContexts = ParameterResolver.GetLocalContexts(recipes.ToArray(), globalContext);
 
 			// Evaluate lorebooks, blocks, and attributes
 			for (int i = 0; i < recipes.Count; ++i)
@@ -889,74 +889,6 @@ namespace Ginger
 				nodes = nodes,
 				attributes = attributes,
 			};
-		}
-
-		public static Context[] GetRecipeContexts(Recipe[] recipes, Context context)
-		{
-			if (recipes == null || recipes.Length == 0)
-				return new Context[0];
-
-			Context evalContext = Context.Copy(context);
-			ParameterStates parameterStates = new ParameterStates(recipes);
-			Context[] localContexts = new Context[recipes.Length];
-
-			// Collect global flags
-			var globalFlags = new HashSet<StringHandle>();
-			for (int i = 0; i < recipes.Length; ++i)
-			{
-				if (recipes[i].isEnabled)
-					globalFlags.UnionWith(recipes[i].flags);
-			}
-
-			// Create parameter states
-			for (int i = 0; i < recipes.Length; ++i)
-			{
-				var state = new ParameterState();
-				state.evalContext = evalContext;
-				state.SetFlags(globalFlags, ParameterScope.Global);
-				parameterStates[i] = state;
-			}
-
-			// Resolve parameters
-			for (int i = 0; i < recipes.Length; ++i)
-			{
-				var recipe = recipes[i];
-				if (recipe.isEnabled == false)
-					continue; // Skip
-
-				var state = parameterStates[i];
-				state.evalConfig = new ContextString.EvaluationConfig() {
-					macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
-					referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
-					ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
-					valueSuppliers = new IValueSupplier[] { parameterStates },
-				};
-				if (i > 0)
-					state.CopyReserved(parameterStates[i - 1]);
-
-				foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
-				{
-					if (i > 0 && parameter.isGlobal && parameterStates[i - 1].IsReserved(parameter.id))
-						continue; // Skip reserved
-
-					parameter.Apply(state);
-				}
-				state.SetFlags(recipe.flags, ParameterScope.Global);
-			}
-
-			// Create contexts
-			for (int i = 0; i < recipes.Length; ++i)
-			{
-				if (recipes[i].isEnabled == false)
-					continue; // Skip
-
-				var localContext = Context.Copy(evalContext);
-				if (parameterStates[i] != null)
-					parameterStates[i].localParameters.ApplyToContext(localContext);
-				localContexts[i] = localContext;
-			}
-
-			return localContexts;
 		}
 	}
 

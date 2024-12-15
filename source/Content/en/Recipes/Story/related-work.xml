@@ -1,4 +1,4 @@
-﻿<Ginger id="related-work" version="1.0">
+﻿<Ginger id="related-work" version="1.1">
 	<!-- Preamble -->
 	<Name>Story/Based on a fictional work</Name>
 	<Title>Based on a fictional work</Title>
@@ -24,6 +24,6 @@
 	
 	<!-- Output -->
 	<System rule="work-title">
-		This transcript is based on the plot of "{work-title}" [medium?({medium:value})].
+		This transcript is based on the plot of "{work-title}" [medium?({medium})].
 	</System>
 </Ginger>

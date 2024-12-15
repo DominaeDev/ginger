@@ -1,4 +1,4 @@
-<Ginger id="assistant-base" version="1.0">
+<Ginger id="assistant-base" version="1.1">
 	<!-- Recipe info -->
 	<Name>Base/Virtual assistant</Name>
 	<Title>Virtual assistant</Title>
@@ -87,7 +87,7 @@
 	</System>
 
 	<System rule="topic is code">
-		As an expert programmer, you provide detailed facts and information about coding and programming. {{Programming language='{language:value}'}}
+		As an expert programmer, you provide detailed facts and information about coding and programming. {{Programming language='{language}'}}
 	</System>
 
     <System rule="topic:custom">

@@ -1,4 +1,4 @@
-<Ginger id="libido" version="1.0">
+<Ginger id="libido" version="1.1">
 	<Name>Sexuality/Libido</Name>
 	<Category>Sexual</Category>
 	<Author>Ginger</Author>
@@ -32,12 +32,12 @@
 	<!-- Output -->	
 	<Attribute>
 		<Name>Libido</Name>
-		<Value>{libido:value}</Value>
+		<Value>{libido}</Value>
 	</Attribute>
 	
 	<Attribute>
 		<Name>Sexual experience</Name>
-		<Value>{experience:value}</Value>
+		<Value>{experience}</Value>
 	</Attribute>
 	
 	

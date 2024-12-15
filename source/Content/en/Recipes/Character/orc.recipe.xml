@@ -1,4 +1,4 @@
-﻿<Ginger id="orc-core" version="1.1">
+﻿<Ginger id="orc-core" version="1.2">
 	<!-- Preamble -->
 	<Name>Archetype/Orc</Name>
 	<Title>Orc</Title>
@@ -18,7 +18,7 @@
 	
 	<!-- Parameters -->
 	<Choice id="skin-tone" style="custom" shared="yes">
-		<Label>Skin</Label>
+		<Label>Skin tone</Label>
 		<Placeholder>e.g. Blue, Green, ...</Placeholder>
 		<Default>Green</Default>
 		<Option>Green</Option>
@@ -66,9 +66,9 @@
 		<Value>Orc</Value>
 	</Attribute>
 		
-	<Attribute order="20" rule="skin-tone:local" mode="replace">
+	<Attribute order="20" rule="complexion:local" mode="replace">
 		<Name>Skin</Name>
-		<Value>{skin-tone:value}</Value>
+		<Value>{skin-tone}</Value>
 	</Attribute>
 	
 	<Attribute order="21">
@@ -97,11 +97,12 @@
 	</Attribute>
 	
 	<Node path="persona/description/orc" order="0">
-		[char] is an orc [skin-tone:local?(large {skin-tone:value.lower}-skinned humanoid)]. 
+		[char] is an orc [skin-tone:local?(large {skin-tone.lower}-skinned humanoid)]. 
 	</Node>
+	
 	<Node path="persona/description/orc" rule="normal-detail">
 		While orcs share many similarities with humans, their many differences stand out in stark contrast. 
-		The most obvious being their [!list:[skin-tone:local?{skin-tone:value.lower} skin]; large, muscular size], much taller than the average human.
+		The most obvious being their [!list:[skin-tone:local?{skin-tone} skin]; large, muscular size], much taller than the average human.
 	</Node>
 
 	<Node path="persona/description/orc" rule="caste">

@@ -1,4 +1,4 @@
-<Ginger id="anthro" version="1.0">
+<Ginger id="anthro" version="1.1">
 	<Name>Archetype/Anthropomorphic animal</Name>
 	<Title>Anthropomorphic animal</Title>
 	<Description>Base recipe for an anthropomorphic character.</Description>
@@ -242,7 +242,7 @@
 
 	<Rule id="has-pattern">pattern</Rule>
 
-	<Macro id="accent">[secondary-color? with shades of {secondary-color:value.lower}]</Macro>
+	<Macro id="accent">[secondary-color? with shades of {secondary-color.lower}]</Macro>
 
 	<String id="family">
 		<String rule="is-aquatic">Aquatic</String>
@@ -257,19 +257,19 @@
 	</String>
 
 	<String id="animal" rule="animal">
-		<String rule="secondary-animal">{animal:value}/{secondary-animal:value}</String>
-		<String>{animal:value}</String>
+		<String rule="secondary-animal">{animal}/{secondary-animal}</String>
+		<String>{animal}</String>
 	</String>
 
 	<String id="pattern">
-		<String rule="stripes">distinct {secondary-color:value.lower} stripes</String>
-		<String rule="spots">{secondary-color:value.lower} spots</String>
-		<String rule="mottled">[a] [secondary-color?{secondary-color:value.lower}] mottled pattern</String>
-		<String rule="patterned">[a] [secondary-color?{secondary-color:value.lower}] pattern</String>
+		<String rule="stripes">distinct {secondary-color.lower} stripes</String>
+		<String rule="spots">{secondary-color.lower} spots</String>
+		<String rule="mottled">[a] [secondary-color?{secondary-color.lower}] mottled pattern</String>
+		<String rule="patterned">[a] [secondary-color?{secondary-color.lower}] pattern</String>
 	</String>
 
 	<!-- System prompt -->
-	<Node path="system/guidelines/anthro" rule="normal-detail">Focus on [their] [@family.lower], and [animal? {animal:value.lower}[secondary-animal? and {secondary-animal:value.lower}]-like] features when describing [char].</Node>
+	<Node path="system/guidelines/anthro" rule="normal-detail">Focus on [their] [@family.lower], and [animal? {animal.lower}[secondary-animal? and {secondary-animal.lower}]-like] features when describing [char].</Node>
 	<Node path="system/exceptions/paws" rule="normal-detail and paws">[char] has paws for hands.</Node>
 	<Node path="system/exceptions/hooves" rule="normal-detail and hooves">[char] has hooves instead of feet.</Node>
 
@@ -279,10 +279,10 @@
 	</Attribute>
 
 	<Node path="description/anthro" order="0" rule="animal and not secondary-animal">
-		[char] is an anthropomorphic {breed.lower} [@animal.lower], a bipedal humanoid with {[is-woman?beautiful, feminine, ]|[is-man?pronounced, masculine,]} [@family.lower] and {animal:value.lower}-like features.
+		[char] is an anthropomorphic {breed.lower} [@animal.lower], a bipedal humanoid with {[is-woman?beautiful, feminine, ]|[is-man?pronounced, masculine,]} [@family.lower] and {animal.lower}-like features.
 	</Node>
 	<Node path="description/anthro" order="0" rule="animal and secondary-animal">
-		[char] is an anthropomorphic [@animal.lower], a bipedal humanoid with {[is-woman?beautiful, feminine, ]|[is-man?pronounced, masculine,]} and [@family.lower] features; [their] appearance [a] [is-woman?alluring|striking] cross between [a] {animal:value.lower} and [a] {secondary-animal:value.lower}.
+		[char] is an anthropomorphic [@animal.lower], a bipedal humanoid with {[is-woman?beautiful, feminine, ]|[is-man?pronounced, masculine,]} and [@family.lower] features; [their] appearance [a] [is-woman?alluring|striking] cross between [a] {animal.lower} and [a] {secondary-animal.lower}.
 	</Node>
 
 	<!-- Skin / Fur -->
@@ -302,7 +302,7 @@
 		 [Their] body is covered in sleek [primary-color?{primary-color.lower}] scales [has-pattern? with {@pattern}|{accent}].
 	</Node>
 	<Node path="appearance/body" order="0" rule="feathers">
-		 [Their] body is covered in soft [primary-color?{primary-color.lower}] feathers [has-pattern? with {@pattern}|[secondary-color? with {secondary-color:value.lower} tips]].
+		 [Their] body is covered in soft [primary-color?{primary-color.lower}] feathers [has-pattern? with {@pattern}|[secondary-color? with {secondary-color.lower} tips]].
 	</Node>
 
 	<!-- Features -->
@@ -310,10 +310,10 @@
 		The top of [their] head is adorned by two prominent horns.
 	</Node>
 	<Node path="appearance/body" order="100" rule="tail">
-		[Their] [thick-fur?large, bushy] tail curls past [their] knees, adding to [their] [{animal:value.lower}|animal]-like appearance.
+		[Their] [thick-fur?large, bushy] tail curls past [their] knees, adding to [their] [{animal.lower}|animal]-like appearance.
 	</Node>
 	<Node path="appearance/body" order="100" rule="ears and not (is-rodent or is-avian or is-reptile)">
-		[Their] [animal:value.lower] ears are pointed and alert [primary-color and secondary-color?, with a [thick-fur?fluffy] {secondary-color:value.lower} interior and {primary-color.lower} on the outside].
+		[Their] {animal.lower} ears are pointed and alert [primary-color and secondary-color?, with a [thick-fur?fluffy] {secondary-color.lower} interior and {primary-color.lower} on the outside].
 	</Node>
 	<Node path="appearance/body" order="100" rule="ears and (mouse or rat)">
 		[Their] ears are big, round, and pink.

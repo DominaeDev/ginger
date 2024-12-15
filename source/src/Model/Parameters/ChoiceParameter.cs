@@ -125,23 +125,26 @@ namespace Ginger
 			if (string.IsNullOrEmpty(value))
 				return;
 
-			state.SetValue(id, value, scope);
 			if (scope == ParameterScope.Local)
 				state.SetFlag(value, scope);
 
-			state.SetValue(id + ":index", selectedIndex, scope);
 			if (selectedIndex == -2) // Custom
 			{
+				state.SetValue(id, value, scope);
 				state.SetValue(id + ":id", "custom", scope);
-				state.SetValue(id + ":value", value, scope);
 				state.SetValue(id + ":text", value, scope);
+				state.SetValue(id + ":value", value, scope);	// Deprecated
+				state.SetValue(id + ":index", -1, scope);
 				state.SetFlag(id + ":custom", scope);
 			}
 			else if (selectedIndex >= 0 && selectedIndex < items.Count)
 			{
-				state.SetValue(id + ":id", items[selectedIndex].id.ToString(), scope);
-				state.SetValue(id + ":value", items[selectedIndex].label, scope);
-				state.SetValue(id + ":text", items[selectedIndex].label, scope);
+				string textValue = items[selectedIndex].label;
+				state.SetValue(id, textValue, scope);
+				state.SetValue(id + ":id", value, scope);
+				state.SetValue(id + ":text", textValue, scope);
+				state.SetValue(id + ":value", textValue, scope);	// Deprecated
+				state.SetValue(id + ":index", selectedIndex, scope);
 			}
 
 			if (isGlobal && scope == ParameterScope.Global)

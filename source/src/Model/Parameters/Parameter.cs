@@ -427,8 +427,15 @@ namespace Ginger
 
 	public class ParameterCollection
 	{
+		public IEnumerable<KeyValuePair<StringHandle, ContextualValue>> values { get { return _values; } }
 		private Dictionary<StringHandle, ContextualValue> _values = new Dictionary<StringHandle, ContextualValue>();
+		public IEnumerable<StringHandle> flags { get { return _flags; } }
 		private HashSet<StringHandle> _flags = new HashSet<StringHandle>();
+		
+		public IEnumerable<StringHandle> erasedValues { get { return _erasedValues; } }
+		public IEnumerable<StringHandle> erasedFlags{ get { return _erasedFlags; } }
+		private HashSet<StringHandle> _erasedValues = new HashSet<StringHandle>();
+		private HashSet<StringHandle> _erasedFlags = new HashSet<StringHandle>();
 
 		public void SetValue(StringHandle id, ContextualValue value)
 		{
@@ -436,6 +443,8 @@ namespace Ginger
 				_values[id] = value;
 			else
 				_values.Add(id, value);
+			
+			_erasedValues.Remove(id);
 		}
 
 		public bool TryGetValue(StringHandle id, out ContextualValue value)
@@ -446,11 +455,13 @@ namespace Ginger
 		public void SetFlag(StringHandle flag)
 		{
 			_flags.Add(flag);
+			_erasedFlags.Remove(flag);
 		}
 
 		public void SetFlags(IEnumerable<StringHandle> flags)
 		{
 			_flags.UnionWith(flags);
+			_erasedFlags.ExceptWith(flags);
 		}
 
 		public void ApplyToContext(Context context)
@@ -462,17 +473,47 @@ namespace Ginger
 
 		public void CopyFromContext(Context context)
 		{
-			SetFlags(context.tags);
-			foreach (var value in context.values)
-				SetValue(value.Key, value.Value);
+			if (context == null)
+				return;
+			if (context.tags != null)
+				SetFlags(context.tags);
+			if (context.values != null)
+			{
+				foreach (var value in context.values)
+					SetValue(value.Key, value.Value);
+			}
 		}
-
+		/*
 		public void Erase(StringHandle id)
 		{
 			_values.Remove(id);
 			_flags.Remove(id);
+			_erasedFlags.Add(id);
+			_erasedValues.Add(id);
+		}
+		*/
+
+		public void EraseFlag(StringHandle id)
+		{
+			_flags.Remove(id);
+			_erasedFlags.Add(id);
 		}
 
+		public void EraseValue(StringHandle id)
+		{
+			_values.Remove(id);
+			_erasedValues.Add(id);
+		}
+
+		public Context context
+		{
+			get
+			{
+				var ctx = Context.CreateEmpty();
+				ApplyToContext(ctx);
+				return ctx;
+			}
+		}
 	}
 
 	public enum ParameterScope
@@ -483,13 +524,25 @@ namespace Ginger
 
 	public class ParameterState
 	{
+		public Context globalContext;
+
 		public ParameterCollection globalParameters = new ParameterCollection();
 		public ParameterCollection localParameters = new ParameterCollection();
 
-		public Context evalContext;
+		public Context evalContext
+		{
+			get
+			{
+				if (_bDirty || _evalContext == null)
+					_evalContext = CreateContext();
+				return _evalContext;
+			}
+		}
+		private Context _evalContext = null;
 		public ContextString.EvaluationConfig evalConfig;
 
 		private Dictionary<StringHandle, string> _reserved = new Dictionary<StringHandle, string>();
+		private bool _bDirty = true;
 
 		private ParameterCollection GetCollection(ParameterScope scope)
 		{
@@ -499,59 +552,61 @@ namespace Ginger
 		public void SetFlag(StringHandle flag, ParameterScope scope)
 		{
 			GetCollection(scope).SetFlag(flag);
-			if (scope == ParameterScope.Global)
-				evalContext.AddTag(flag);
-			else
+			if (scope == ParameterScope.Local && flag.ToString().IndexOf(':') == -1)
 				localParameters.SetFlag(string.Concat(flag.ToString(), ":local"));
+			_bDirty = true;
 		}
 
 		public void SetFlags(IEnumerable<StringHandle> flags, ParameterScope scope)
 		{
 			GetCollection(scope).SetFlags(flags);
-			if (scope == ParameterScope.Global)
-				evalContext.AddTags(flags);
-			else
+			if (scope == ParameterScope.Local)
 			{
-				foreach (var flag in flags)
+				foreach (var flag in flags.Where(f => f.ToString().IndexOf(':') == -1))
 					localParameters.SetFlag(string.Concat(flag.ToString(), ":local"));
 			}
+			_bDirty = true;
 		}
 
 		public void SetValue(StringHandle id, string value, ParameterScope scope)
 		{
 			GetCollection(scope).SetValue(id, value);
-			if (scope == ParameterScope.Global)
-				evalContext.SetValue(id, value);
-			else
+			if (scope == ParameterScope.Local && id.ToString().IndexOf(':') == -1)
 			{
 				localParameters.SetFlag(string.Concat(id.ToString(), ":local"));
 				localParameters.SetValue(string.Concat(id.ToString(), ":local"), value);
 			}
+			_bDirty = true;
 		}
 
 		public void SetValue(StringHandle id, float value, ParameterScope scope)
 		{
 			GetCollection(scope).SetValue(id, value);
-			if (scope == ParameterScope.Global)
-				evalContext.SetValue(id, value);
-			else if (id.ToString().IndexOf(':') == -1)
+			if (id.ToString().IndexOf(':') == -1)
 			{
 				localParameters.SetFlag(string.Concat(id.ToString(), ":local"));
 				localParameters.SetValue(string.Concat(id.ToString(), ":local"), value);
 			}
+			_bDirty = true;
 		}
 
 		public void Erase(StringHandle id)
 		{
-			globalParameters.Erase(id);
-			evalContext.SetValue(id, null);
-			evalContext.RemoveTag(id);
+			globalContext.RemoveTag(id);
+			globalContext.SetValue(id, null);
+
+			globalParameters.EraseFlag(id);
+			globalParameters.EraseValue(id);
+			localParameters.EraseFlag(id);
+			localParameters.EraseValue(id);
 			_reserved.Remove(id);
+			_bDirty = true;
 		}
 
 		public void Reserve(StringHandle id, string reservedValue)
 		{
 			_reserved.TryAdd(id, reservedValue);
+			_bDirty = true;
 		}
 
 		public bool TryGetReservedValue(StringHandle id, out string reservedValue)
@@ -564,10 +619,46 @@ namespace Ginger
 			return _reserved.ContainsKey(id);
 		}
 		
-		public void CopyReserved(ParameterState state)
+		public void CopyGlobals(ParameterState state)
 		{
+			// Erase flags
+			foreach (var flag in state.globalParameters.erasedFlags)
+			{
+				globalContext.RemoveTag(flag);
+				globalParameters.EraseFlag(flag);
+			}
+
+			// Erase values
+			foreach (var value in state.globalParameters.erasedValues)
+			{
+				globalContext.SetValue(value, null);
+				globalParameters.EraseValue(value);
+			}
+
+			// Copy flags
+			foreach (var flag in state.globalParameters.flags.Except(state.globalParameters.erasedFlags))
+			{
+//				globalContext.AddTag(flag);
+				globalParameters.SetFlag(flag);
+			}
+
+			// Copy values
+			foreach (var value in state.globalParameters.values.Where(kvp => state.globalParameters.erasedValues.Contains(kvp.Key) == false))
+			{
+//				globalContext.SetValue(value.Key, value.Value);
+				globalParameters.SetValue(value.Key, value.Value);
+			}
+
+//			globalParameters.CopyFromContext(state.globalParameters.context);
 			_reserved = _reserved.Union(state._reserved)
 				.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+			_bDirty = true;
+		}
+
+		private Context CreateContext()
+		{
+			_bDirty = false;
+			return Context.Merge(Context.Merge(globalContext, globalParameters.context), localParameters.context);
 		}
 	}
 
@@ -576,6 +667,8 @@ namespace Ginger
 		public ParameterStates(ICollection<Recipe> recipes)
 		{
 			_states = new ParameterState[recipes.Count];
+			for (int i = 0; i < _states.Length; ++i)
+				_states[i] = new ParameterState();
 		}
 
 		public ParameterState this[int index]
@@ -585,6 +678,8 @@ namespace Ginger
 		}
 
 		private ParameterState[] _states;
+
+		public int Length { get { return _states.Length; } }
 
 		public bool TryGetValue(StringHandle id, out string value)
 		{

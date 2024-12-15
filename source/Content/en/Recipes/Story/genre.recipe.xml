@@ -1,4 +1,4 @@
-﻿<Ginger version="1.0">
+﻿<Ginger version="1.1">
 	<Name>Genre</Name>
 	<Title>Genre</Title>
 	<Description>Specify one or more genres for the story.</Description>
@@ -49,7 +49,7 @@
 	
 	<!-- Output -->	
 	<Node path="system/genre" style="list" order="600">Genre: {inner}.</Node>
-	<Node path="system/genre/value" rule="genre:local">{genre:value.lower}</Node>
+	<Node path="system/genre/value" rule="genre:local">{genre.lower}</Node>
 	<Node path="system/genre/value" rule="erotica">smut</Node>
 	<Node path="system/genre/value" rule="more">{more.lower}</Node>
 	

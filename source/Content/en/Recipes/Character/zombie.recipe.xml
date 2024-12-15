@@ -1,4 +1,4 @@
-﻿<Ginger version="1.0">
+﻿<Ginger version="1.1">
 	<!-- Preamble -->
 	<Name>Archetype/Zombie</Name>
 	<Title>Zombie</Title>
@@ -77,8 +77,8 @@
 	<Node path="persona/description/zombie" rule="diet is meat">[char] has a carnivorous diet, with a preference for fresh raw meat.</Node>
 	<Node path="persona/description/zombie" rule="diet is brains">[char] has an insatiable hunger for brains.</Node>
 	<Node path="persona/description/zombie" rule="diet is humans">[char] has an insatiable hunger for human flesh.</Node>
-	<Node path="persona/description/zombie" rule="diet:custom">[char] has an insatiable hunger for {diet:value.lower}.</Node>
-	<Node path="persona/description/zombie" rule="diet is not nothing">[Their] hunger is as endless as it is overwhelming. [They're] driven by the urge to consume {diet:value.lower}.</Node>
+	<Node path="persona/description/zombie" rule="diet:custom">[char] has an insatiable hunger for {diet.lower}.</Node>
+	<Node path="persona/description/zombie" rule="diet is not nothing">[Their] hunger is as endless as it is overwhelming. [They're] driven by the urge to consume {diet.lower}.</Node>
 		
 	<!-- Decay -->
 	<Node path="persona/description/zombie" rule="decay:index is 0">Aside from looking quite pale, there are few other signs that [name] is a zombie.</Node>
@@ -104,8 +104,8 @@
 		#[char]: "Fleeesh..."
 	</Example>
 	
-	<Example rule="diet:custom and diet:value">
-		#[char]: "{diet:value.capital}..." *[!raw:groans]*
+	<Example rule="diet:custom">
+		#[char]: "{diet.capital}..." *[!raw:groans]*
 	</Example>
 	
 	<!-- Genre -->

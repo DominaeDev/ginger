@@ -611,81 +611,38 @@ namespace Ginger
 			if (recipeIdx == -1)
 				return false;
 
-			Context evalContext = Current.Character.GetContext(CharacterData.ContextType.None);
-			ParameterStates parameterStates = new ParameterStates(recipes);
-
-			// Collect global flags
-			var globalFlags = new HashSet<StringHandle>();
-			for (int i = 0; i < recipes.Length; ++i)
-			{
-				if (recipes[i].isEnabled)
-					globalFlags.UnionWith(recipes[i].flags);
-			}
-
-			// Create parameter states
-			for (int i = 0; i < recipes.Length; ++i)
-			{
-				var state = new ParameterState();
-				state.evalContext = evalContext;
-				state.SetFlags(globalFlags, ParameterScope.Global);
-				parameterStates[i] = state;
-			}
-
-			// Resolve prior recipes
-			for (int i = 0; i < recipes.Length; ++i)
-			{
-				if (i == recipeIdx)
-					break;
-
-				var recipe = recipes[i];
-				if (recipe.isEnabled == false)
-					continue; // Skip
-
-				var state = parameterStates[i];
-				state.evalConfig = new ContextString.EvaluationConfig() {
-					macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
-					referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
-					ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
-					valueSuppliers = new IValueSupplier[] { parameterStates },
-				};
-				if (i > 0)
-					state.CopyReserved(parameterStates[i - 1]);
-
-				foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
-				{
-					if (i > 0 && parameter.isGlobal && parameterStates[i - 1].IsReserved(parameter.id))
-						continue; // Skip reserved
-
-					parameter.Apply(state);
-				}
-				state.SetFlags(recipe.flags, ParameterScope.Global);
-			}
+			Context outerContext = Current.Character.GetContext(CharacterData.ContextType.None);
+			ParameterStates parameterStates = ParameterResolver.ResolveParameters(recipes, outerContext);
 
 			// Resolve parameters
 			var parameterState = parameterStates[recipeIdx];
-			parameterState.evalContext = evalContext;
-			parameterState.evalConfig = new ContextString.EvaluationConfig() {
+//			parameterState.evalContext = outerContext;
+/*			parameterState.evalConfig = new ContextString.EvaluationConfig() {
 				macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
 				referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
 				ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
-			};
+			};*/
+
 			foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
 			{
 				var parameterPanel = _parameterPanels.Find(p => p.GetParameter() == parameter);
 				if (parameterPanel == null)
 					continue;
 
-				if (parameter.isGlobal) // Is shared (reserve?)
+				if (parameter.isGlobal && recipeIdx > 0) // Is shared (reserve?)
 				{
+					int idxLastRecipe = Array.FindLastIndex(recipes, recipeIdx - 1, r => r.isEnabled);
+
 					string reservedValue = default(string);
-					bool isReserved = recipeIdx > 0 
+					bool isReserved = idxLastRecipe != -1 
 						&& parameter.isEnabled 
-						&& parameterStates[recipeIdx - 1].TryGetReservedValue(parameter.id, out reservedValue);
+						&& parameterStates[idxLastRecipe].TryGetReservedValue(parameter.id, out reservedValue);
 					parameterPanel.SetReserved(isReserved, reservedValue);
 
 					if (isReserved)
 						continue;
 				}
+
 				if (parameter.isConditional && parameterPanel.isReserved == false) // Has condition
 				{
 					var localContext = Context.Copy(parameterState.evalContext);

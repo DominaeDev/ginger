@@ -162,7 +162,9 @@ namespace Ginger
 			// In set
 			if (_operator == Operator.InSet && lhs_str != null && rhs_str != null)
 			{
-				return Utility.ListFromDelimitedString(rhs_str.ToLowerInvariant(), ',', true).Contains(lhs_str.ToLowerInvariant());
+				string rhs = rhs_str.ToLowerInvariant();
+				rhs = rhs.Replace(Text.Delimiter, ";");
+				return Utility.ListFromDelimitedString(rhs, ';', true).Contains(lhs_str.ToLowerInvariant());
 			}
 
 			// Parse numeric values

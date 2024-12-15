@@ -1,4 +1,4 @@
-<Ginger version="1.0">
+<Ginger version="1.1">
 	<Name>Anatomy/Breasts</Name>
 	<Title>Breasts</Title>
 	<Description>Describe the character's breasts.</Description>
@@ -84,7 +84,7 @@
 			
 	<Attribute rule="has-breasts and not has-cup">
 		<Name>Breasts</Name>
-		<Value>{cup-size:value}</Value>
+		<Value>{cup-size}</Value>
 	</Attribute>
 
 	<Attribute rule="is-flat">

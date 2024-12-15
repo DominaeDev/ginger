@@ -78,26 +78,29 @@ namespace Ginger
 		{
 			if (value == null || value.Count == 0)
 				return;
-
-			var list = new HashSet<string>(value
+			
+			var values = new HashSet<string>(value
 				.Select(t => GingerString.FromParameter(t).ToString()));
-			var text = Utility.ListToDelimitedString(list.Select(itemID => {
-				int index = items.FindIndex(ii => ii.id == itemID);
+
+			var text = Utility.ListToDelimitedString(values.Select(itemID => {
+				int index = this.items.FindIndex(ii => ii.id == itemID);
 				if (index != -1)
-					return items[index].label;
+					return this.items[index].label;
 				return itemID;
 			}), Text.Delimiter);
 
-			string sList = Utility.ListToDelimitedString(list, Text.Delimiter);
-			state.SetValue(id, sList, scope);
-			state.SetValue(id + ":value", text, scope);
+			string items = Utility.ListToDelimitedString(values, Text.Delimiter);
+
+			state.SetValue(id, text, scope);
 			state.SetValue(id + ":text", text, scope);
+			state.SetValue(id + ":items", items, scope);
+			state.SetValue(id + ":value", text, scope); // Deprecated
 
 			if (scope == ParameterScope.Local)
-				state.SetFlags(list.Select(s => new StringHandle(s)), scope);
+				state.SetFlags(values.Select(s => new StringHandle(s)), scope);
 			
 			if (isGlobal && scope == ParameterScope.Global)
-				state.Reserve(id, sList);
+				state.Reserve(id, items);
 		}
 
 		public override object Clone()

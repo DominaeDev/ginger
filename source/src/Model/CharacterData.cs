@@ -157,55 +157,7 @@ namespace Ginger
 
 			if (type == ContextType.Full)
 			{
-				ParameterStates parameterStates = new ParameterStates(recipes);
-				Context evalContext = Context.Copy(context);
-
-				// Collect global flags
-				var globalFlags = new HashSet<StringHandle>();
-				for (int i = 0; i < recipes.Count; ++i)
-				{
-					if (recipes[i].isEnabled)
-						globalFlags.UnionWith(recipes[i].flags);
-				}
-
-				// Create parameter states
-				for (int i = 0; i < recipes.Count; ++i)
-				{
-					var state = new ParameterState();
-					state.evalContext = evalContext;
-					state.SetFlags(globalFlags, ParameterScope.Global);
-					parameterStates[i] = state;
-				}
-
-				for (int i = 0; i < recipes.Count; ++i)
-				{
-					var recipe = recipes[i];
-					if (recipe.isEnabled == false && includeInactive == false)
-						continue; // Skip
-
-					var state = parameterStates[i];
-					state.evalContext = evalContext;
-					state.evalConfig = new ContextString.EvaluationConfig() {
-						macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
-						referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
-						ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
-						valueSuppliers = new IValueSupplier[] { parameterStates },
-					};
-
-					if (i > 0)
-						state.CopyReserved(parameterStates[i - 1]);
-
-					foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
-					{
-						if (i > 0 && parameter.isGlobal && parameterStates[i - 1].IsReserved(parameter.id))
-							continue; // Skip reserved
-
-						parameter.Apply(state);
-					}
-					state.SetFlags(recipe.flags, ParameterScope.Global);
-				}
-
-				return evalContext;
+				return ParameterResolver.GetFinalContext(recipes.ToArray(), context);
 			}
 			else if (type == ContextType.FlagsOnly)
 			{
@@ -228,7 +180,7 @@ namespace Ginger
 				return GetContext(ContextType.None);
 
 			// Prepare contexts
-			var localContexts = Generator.GetRecipeContexts(recipes.ToArray(), GetContext(ContextType.None));
+			var localContexts = ParameterResolver.GetLocalContexts(recipes.ToArray(), GetContext(ContextType.None));
 			return localContexts[index];
 		}
 

@@ -1,4 +1,4 @@
-﻿<Ginger id="honorific" version="1.0">
+﻿<Ginger id="honorific" version="1.1">
 	<Name>Identity/Honorific</Name>
 	<Description>Specify an honorific that should be used with this character.</Description>
 	<Author>Ginger</Author>
@@ -34,7 +34,7 @@
 	</Toggle>
 	
 	<!-- Output -->
-	<Macro id="with-honorific">{char}-{honorific:value.lower}</Macro>
+	<Macro id="with-honorific">{char}-{honorific.lower}</Macro>
 	
 	<System rule="honorific and insist">
 		Forgetting to address [char] as '[with-honorific]' is considered to be very rude.

@@ -1,4 +1,4 @@
-﻿<Ginger id="pious" version="1.1">
+﻿<Ginger id="pious" version="1.2">
 	<Name>Personality/Pious</Name>
 	<Description>The character is religious.</Description>
 	<Author>Ginger</Author>
@@ -40,7 +40,7 @@
 		<String rule="deity:index is 4" priority="1">the divine gods</String>
 		<String rule="deity:index is 5" priority="1">the divine goddesses</String>
 		<String rule="deity:index is 6" priority="1">Mother Nature</String>
-		<String>{deity:value}</String>
+		<String>{deity}</String>
 	</String>
 	
 	<String id="god">

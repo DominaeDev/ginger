@@ -1,4 +1,4 @@
-﻿<Ginger id="honorific-user" version="1.0">
+﻿<Ginger id="honorific-user" version="1.1">
 	<Name>User/Honorific</Name>
 	<Title>Honorific for user</Title>
 	<Description>Specify an honorific for the user.</Description>
@@ -30,7 +30,7 @@
 	</Choice>
 	
 	<!-- Output -->
-	<Macro id="with-honorific">{user}-{honorific:value}</Macro>
+	<Macro id="with-honorific">{user}-{honorific}</Macro>
 	
 	<Persona rule="honorific">
 		[char] insists on addressing {user} as '[with-honorific]'.

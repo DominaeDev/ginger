@@ -1,4 +1,4 @@
-﻿<Ginger id="werewolf-core" version="1.0">
+﻿<Ginger id="werewolf-core" version="1.1">
 	<!-- Preamble -->
 	<Name>Archetype/Werewolf</Name>
 	<Title>Werewolf</Title>
@@ -138,7 +138,7 @@
 		[can-transform?As a wolf,] [they've] got large pointy ears and walks on four pawed legs.
 	</Node>
 	<Node path="persona/werewolf/form" order="0" rule="is-anthro and can-transform">
-		[can-transform?When transformed,] [char's] appearance is that of a tall, muscular, anthropomorphic wolf-[man], standing on two legs, with the head of a wolf [eye-color?and large {eye-color:value.lower} eyes].
+		[can-transform?When transformed,] [char's] appearance is that of a tall, muscular, anthropomorphic wolf-[man], standing on two legs, with the head of a wolf [eye-color?and large {eye-color.lower} eyes].
 	</Node>
 	<Node path="persona/werewolf/fur" rule="can-transform">
 		[Their] body is covered in thick [fur-color?, dull, {fur-color.lower}] fur.

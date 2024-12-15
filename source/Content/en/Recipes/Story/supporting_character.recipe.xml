@@ -1,4 +1,4 @@
-<Ginger id="supporting-character" version="1.0">
+<Ginger id="supporting-character" version="1.1">
 	<Name>Cast/Add supporting character</Name>
 	<Title>Supporting character</Title>
 	<Author>Ginger</Author>
@@ -34,19 +34,19 @@
 	<Rule id="has-value">support-name and support-description</Rule>
 	
 	<Persona rule="placement is persona and has-value">
-		[p]"{support-name}" [support-gender?({support-gender:value})]:  
+		[p]"{support-name}" [support-gender?({support-gender})]:  
 		[support-description?{support-description}.]
 	</Persona>
 	
 	<Scenario rule="placement is scenario and has-value">
-		[p]"{support-name}" [support-gender?({support-gender:value})]:  
+		[p]"{support-name}" [support-gender?({support-gender})]:  
 		[support-description?{support-description}.]
 	</Scenario>
 	
 	<Lore rule="placement is lore and has-value">
 		<Name>{support-name}</Name>
 		<Value>
-			"{support-name}" [support-gender?({support-gender:value})]:  
+			"{support-name}" [support-gender?({support-gender})]:  
 			[support-description?{support-description}.]
 		</Value>
 	</Lore>

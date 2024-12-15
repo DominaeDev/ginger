@@ -1,4 +1,4 @@
-﻿<Ginger version="1.0">
+﻿<Ginger version="1.1">
 	<Name>Archetype/Centaur</Name>
 	<Title>Centaur</Title>
 	<Description>
@@ -102,7 +102,7 @@
 	</Node>
 	
 	<Node path="persona/centaur/fur" rule="fur-color">
-		[Their] coat is a glossy {fur-color:value.lower}, shimmering in the sunlight.
+		[Their] coat is a glossy {fur-color.lower}, shimmering in the sunlight.
 	</Node>
 	<Node path="persona/centaur/tail" rule="normal-detail">
 		A beautiful tail extends from [their] rump, flowing down like a waterfall, catching the breeze and sending it swaying back and forth with each movement.

@@ -1,4 +1,4 @@
-﻿<Ginger id="animal" version="1.0">
+﻿<Ginger id="animal" version="1.1">
 	<Name>Archetype/Animal</Name>
 	<Title>Animal</Title>
 	<Description>Base recipe for an animal character.</Description>
@@ -169,8 +169,8 @@
 		<Label>Additional details</Label>
 	</Text>
 
-	<SetVar id="species" rule="animal">[animal:value]</SetVar>
-	<SetVar id="race" rule="animal">[animal:value]</SetVar>
+	<SetVar id="species" rule="animal">{animal}</SetVar>
+	<SetVar id="race" rule="animal">{animal}</SetVar>
 	<SetVar id="breed" rule="breed">{breed}</SetVar>
 	
 	<!-- Output -->
@@ -187,7 +187,7 @@
 	<Rule id="is-quadruped">not (is-aquatic or is-primate or is-avian or snake or bat)</Rule>
 	<Rule id="has-pattern">pattern</Rule>
 
-	<Macro id="accent">[secondary-color? with shades of {secondary-color:value.lower}]</Macro>
+	<Macro id="accent">[secondary-color? with shades of {secondary-color.lower}]</Macro>
 
 	<String id="family">
 		<String rule="is-aquatic">Aquatic</String>
@@ -202,14 +202,14 @@
 	</String>
 
 	<String id="pattern">
-		<String rule="stripes">distinct {secondary-color:value.lower} stripes</String>
-		<String rule="spots">{secondary-color:value.lower} spots</String>
-		<String rule="mottled">[a] [secondary-color?{secondary-color:value.lower}] mottled pattern</String>
-		<String rule="patterned">[a] [secondary-color?{secondary-color:value.lower}] pattern</String>
+		<String rule="stripes">distinct {secondary-color.lower} stripes</String>
+		<String rule="spots">{secondary-color.lower} spots</String>
+		<String rule="mottled">[a] [secondary-color?{secondary-color.lower}] mottled pattern</String>
+		<String rule="patterned">[a] [secondary-color?{secondary-color.lower}] pattern</String>
 	</String>
 
 	<!-- System prompt -->
-	<Node path="system/guidelines/animal" rule="normal-detail">Focus on [their] [@family.lower], and [animal? {animal:value.lower}-like] behavior and traits when describing [char].</Node>
+	<Node path="system/guidelines/animal" rule="normal-detail">Focus on [their] [@family.lower], and [animal? {animal.lower}-like] behavior and traits when describing [char].</Node>
 	<Node path="system/exceptions/paws" rule="normal-detail and paws">[char] has paws for hands.</Node>
 	<Node path="system/exceptions/hooves" rule="normal-detail and hooves">[char] has hooves instead of feet.</Node>
 	<Node path="system/exceptions/mute" rule="not can-talk">
@@ -219,15 +219,15 @@
 	
 	<Attribute order="20" rule="animal">
 		<Name>Species</Name>
-		<Value>[animal:value] [breed?({breed})]</Value>
+		<Value>{animal} [breed?({breed})]</Value>
 	</Attribute>
 
 	<Node path="description/animal" order="0" rule="animal">
-		[char] is a [tame?tame|feral] {breed.lower} [animal:value.lower], [a] [is-quadruped?four-legged] animal with predominantly [{@family.lower}|animalistic] traits and behavior.
+		[char] is a [tame?tame|feral] {breed.lower} {animal.lower}, [a] [is-quadruped?four-legged] animal with predominantly [{@family.lower}|animalistic] traits and behavior.
 	</Node>
 
 	<Node path="description/animal" rule="can-talk">
-		Despite being [a] [animal?{animal.lower}|animal], [char] is capable of speech [animal?, albeit with a distinct [animal:value.lower] vocabulary, perspective, and mannerisms].
+		Despite being [a] [animal?{animal.lower}|animal], [char] is capable of speech [animal?, albeit with a distinct {animal.lower} vocabulary, perspective, and mannerisms].
 	</Node>
 
 	<!-- Skin / Fur -->
@@ -247,7 +247,7 @@
 		 [Their] body is covered in sleek [primary-color?{primary-color.lower}] scales [has-pattern? with {@pattern}|{accent}].
 	</Node>
 	<Node path="appearance/body" order="0" rule="feathers">
-		 [Their] body is covered in soft [primary-color?{primary-color.lower}] feathers [has-pattern? with {@pattern}|[secondary-color? with {secondary-color:value.lower} tips]].
+		 [Their] body is covered in soft [primary-color?{primary-color.lower}] feathers [has-pattern? with {@pattern}|[secondary-color? with {secondary-color.lower} tips]].
 	</Node>
 
 	<!-- Features -->
@@ -255,7 +255,7 @@
 		The top of [their] head is adorned by two prominent horns.
 	</Node>
 	<Node path="appearance/body" order="100" rule="tail">
-		[Their] [thick-fur?large, bushy] tail emphasizes [their] [{animal:value.lower}|animal]-like appearance.
+		[Their] [thick-fur?large, bushy] tail emphasizes [their] [{animal.lower}|animal]-like appearance.
 	</Node>
 	<Node path="appearance/body" order="100" rule="wings">
 		A set of large wings protude from [their] back, allowing [them] to take flight if necessary.

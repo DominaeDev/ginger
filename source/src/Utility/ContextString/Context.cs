@@ -76,6 +76,9 @@ namespace Ginger
 
 		public void AddTags(IEnumerable<StringHandle> tags)
 		{
+			if (tags == null)
+				return;
+
 			if (this.tags == null)
 				this.tags = new HashSet<StringHandle>();
 
@@ -176,6 +179,16 @@ namespace Ginger
 		public void SetValue(StringHandle id, float value)
 		{
 			SetValue(id, value.ToString("g"));
+		}
+
+		public void SetValue(StringHandle id, ContextualValue value)
+		{
+			if (value.isNil)
+				SetValue(id, null);
+			else if (value.isFloat)
+				SetValue(id, value.ToFloat());
+			else
+				SetValue(id, value.ToString());
 		}
 
 		public bool TryGetValue(StringHandle id, out string value)
@@ -300,8 +313,20 @@ namespace Ginger
 				if (values == null)
 					values = new Dictionary<StringHandle, string>();
 				foreach (var kvp in other.values)
-					values.TryAdd(kvp.Key, kvp.Value);
+					values.Set(kvp.Key, kvp.Value);
 			}
+		}
+
+		public static Context Merge(Context first, Context second)
+		{
+			if (first == null)
+				return second;
+			if (second == null)
+				return first;
+
+			var ctx = Copy(first);
+			ctx.MergeWith(second);
+			return ctx;
 		}
 	}
 }

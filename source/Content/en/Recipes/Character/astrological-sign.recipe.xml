@@ -1,4 +1,4 @@
-﻿<Ginger id="astrological-sign" version="1.0">
+﻿<Ginger id="astrological-sign" version="1.1">
 	<!-- Preamble -->
 	<Name>Identity/Astrological sign</Name>
 	<Title>Astrological sign</Title>
@@ -26,6 +26,6 @@
 	<!-- Output -->
 	<Attribute id="astrological-sign">
 		<Name>Birth sign</Name>
-		<Value>{astrological-sign:value}</Value>
+		<Value>{astrological-sign}</Value>
 	</Attribute>
 </Ginger>

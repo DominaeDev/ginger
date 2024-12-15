@@ -1,4 +1,4 @@
-﻿<Ginger id="title" version="1.0">
+﻿<Ginger id="title" version="1.1">
 	<Name>Identity/Title</Name>
 	<Description>Give the character a title.</Description>
 	<Author>Ginger</Author>
@@ -27,7 +27,7 @@
 	</Toggle>
 	
 	<!-- Output -->
-	<Macro id="with-title">{title:value.capital} {char}</Macro>
+	<Macro id="with-title">{title.capital} {char}</Macro>
 	
 	<Node path="system/guidelines/title" rule="title and insist">
 		Forgetting to address [char] as '[with-title]' is considered to be very rude.
@@ -35,7 +35,7 @@
 	
 	<Attribute order="20">
 		<Name>Title</Name>
-		<Value>{title:value}</Value>
+		<Value>{title}</Value>
 	</Attribute>
 	
 	<Persona rule="title">

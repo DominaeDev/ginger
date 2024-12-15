@@ -1,4 +1,4 @@
-<Ginger id="futanari" version="1.1">
+<Ginger id="futanari" version="1.2">
 	<Name>Gender/Futanari</Name>
 	<Description>(Gender override) The character is a futanari (woman with male genitals).</Description>
 	<Author>Ginger</Author>
@@ -44,9 +44,9 @@
 		[has-balls?Below [their] cock hangs a proud pair of testicles.]
 	</Node>
 	
-	<Attribute rule="not has-vagina">
+	<Attribute rule="not has-vagina" mode="replace">
 		<Name>Gender</Name>
-		<Value>(male genitals)</Value>
+		<Value>[futanari.capital] (male genitals)</Value>
 	</Attribute>
 	
 	<Attribute order="20" style="list">

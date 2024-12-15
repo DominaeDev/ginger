@@ -1,4 +1,4 @@
-﻿<Ginger id="title-user" version="1.0">
+﻿<Ginger id="title-user" version="1.1">
 	<Name>User/Title</Name>
 	<Title>Title for user</Title>
 	<Description>Specify a title for the user.</Description>
@@ -22,7 +22,7 @@
 	</Choice>
 	
 	<!-- Output -->
-	<Macro id="with-title">{title:value.capital} {user}</Macro>
+	<Macro id="with-title">{title.capital} {user}</Macro>
 	
 	<Persona rule="title">
 		[char] insists on addressing {user} as '[with-title]'.
