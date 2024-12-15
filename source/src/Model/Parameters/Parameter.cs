@@ -15,6 +15,7 @@ namespace Ginger
 		string description { get; }
 		bool isOptional { get; }
 		bool isEnabled { get; }
+		bool isLocal { get; }
 		bool isGlobal { get; }
 		bool isImmediate { get; }
 		bool isConditional { get; }
@@ -130,6 +131,7 @@ namespace Ginger
 		public string placeholder { get; protected set; }
 		public bool isOptional { get; protected set; }
 		public bool isEnabled { get; set; }
+		public virtual bool isLocal { get { return true; } }
 		public bool isGlobal { get; set; }
 		public bool isImmediate { get; set; }
 		public bool isConditional { get { return condition != null; } }
@@ -144,6 +146,7 @@ namespace Ginger
 		{
 			this.value = value;
 		}
+		
 
 		protected BaseParameter() { }
 
@@ -157,8 +160,8 @@ namespace Ginger
 			if (!isEnabled || !IsActive(parameterState))
 				return;
 
-			// Set local parameters
-			OnApply(parameterState, ParameterScope.Local);
+			if (isLocal) // Set local parameters
+				OnApply(parameterState, ParameterScope.Local);
 			if (isGlobal) // Set global parameters
 				OnApply(parameterState, ParameterScope.Global);
 		}
@@ -466,7 +469,7 @@ namespace Ginger
 
 		public void ApplyToContext(Context context)
 		{
-			context.AddTags(_flags);
+			context.AddFlags(_flags);
 			foreach (var kvp in _values)
 				context.SetValue(kvp.Key, kvp.Value.ToString());
 		}
@@ -475,23 +478,15 @@ namespace Ginger
 		{
 			if (context == null)
 				return;
-			if (context.tags != null)
-				SetFlags(context.tags);
+			if (context.flags != null)
+				SetFlags(context.flags);
 			if (context.values != null)
 			{
 				foreach (var value in context.values)
 					SetValue(value.Key, value.Value);
 			}
 		}
-		/*
-		public void Erase(StringHandle id)
-		{
-			_values.Remove(id);
-			_flags.Remove(id);
-			_erasedFlags.Add(id);
-			_erasedValues.Add(id);
-		}
-		*/
+		
 
 		public void EraseFlag(StringHandle id)
 		{
@@ -592,7 +587,7 @@ namespace Ginger
 
 		public void Erase(StringHandle id)
 		{
-			globalContext.RemoveTag(id);
+			globalContext.RemoveFlag(id);
 			globalContext.SetValue(id, null);
 
 			globalParameters.EraseFlag(id);
@@ -624,7 +619,7 @@ namespace Ginger
 			// Erase flags
 			foreach (var flag in state.globalParameters.erasedFlags)
 			{
-				globalContext.RemoveTag(flag);
+				globalContext.RemoveFlag(flag);
 				globalParameters.EraseFlag(flag);
 			}
 
@@ -649,7 +644,6 @@ namespace Ginger
 				globalParameters.SetValue(value.Key, value.Value);
 			}
 
-//			globalParameters.CopyFromContext(state.globalParameters.context);
 			_reserved = _reserved.Union(state._reserved)
 				.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 			_bDirty = true;

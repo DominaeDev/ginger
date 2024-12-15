@@ -8,7 +8,7 @@ namespace Ginger
 	public class Context : IContextual, ICloneable
 	{
 		public Dictionary<StringHandle, string> values = null;
-		public HashSet<StringHandle> tags = null;
+		public HashSet<StringHandle> flags = null;
 
 		public Context context { get { return this; } } // IContextual
 
@@ -26,10 +26,10 @@ namespace Ginger
 		{
 			if (other != null)
 			{
-				if (other.tags != null)
+				if (other.flags != null)
 				{
-					tags = new HashSet<StringHandle>();
-					tags.UnionWith(other.tags);
+					flags = new HashSet<StringHandle>();
+					flags.UnionWith(other.flags);
 				}
 
 				if (other.values != null)
@@ -45,10 +45,10 @@ namespace Ginger
 		{
 			Context clone = new Context();
 			
-			if (this.tags != null)
+			if (this.flags != null)
 			{
-				clone.tags = new HashSet<StringHandle>();
-				clone.tags.UnionWith(this.tags);
+				clone.flags = new HashSet<StringHandle>();
+				clone.flags.UnionWith(this.flags);
 			}
 
 			if (this.values != null)
@@ -66,44 +66,44 @@ namespace Ginger
 			return (Context)MemberwiseClone();
 		}
 
-		public void AddTag(StringHandle tag)
+		public void AddFlag(StringHandle flag)
 		{
-			if (tags == null)
-				tags = new HashSet<StringHandle>();
+			if (flags == null)
+				flags = new HashSet<StringHandle>();
 
-			tags.Add(tag);
+			flags.Add(flag);
 		}
 
-		public void AddTags(IEnumerable<StringHandle> tags)
+		public void AddFlags(IEnumerable<StringHandle> flags)
 		{
-			if (tags == null)
+			if (flags == null)
 				return;
 
-			if (this.tags == null)
-				this.tags = new HashSet<StringHandle>();
+			if (this.flags == null)
+				this.flags = new HashSet<StringHandle>();
 
-			this.tags.UnionWith(tags);
+			this.flags.UnionWith(flags);
 		}
 
-		public void RemoveTag(StringHandle tag)
+		public void RemoveFlag(StringHandle flag)
 		{
-			if (tags == null)
+			if (flags == null)
 				return;
 
-			tags.Remove(tag);
+			flags.Remove(flag);
 		}
 
-		public bool HasTag(StringHandle tag)
+		public bool HasFlag(StringHandle flag)
 		{
-			if (tags == null)
+			if (flags == null)
 				return false;
 
-			return tags.Contains(tag);
+			return flags.Contains(flag);
 		}
 
-		public HashSet<StringHandle> GetTags()
+		public HashSet<StringHandle> GetFlags()
 		{
-			return tags;
+			return flags;
 		}
 
 		public Context WithValues(params string[] values)
@@ -133,19 +133,19 @@ namespace Ginger
 			return newCtx;
 		}
 
-		public Context WithTags(params StringHandle[] tags)
+		public Context WithFlags(params StringHandle[] flags)
 		{
 			Context newCtx = new Context(this);
-			if (tags != null)
+			if (flags != null)
 			{
-				IEnumerable<StringHandle> lsTags = tags.Where(s => StringHandle.IsNullOrEmpty(s) == false);
+				IEnumerable<StringHandle> lsFlags = flags.Where(s => StringHandle.IsNullOrEmpty(s) == false);
 
-				if (lsTags.Count() > 0)
+				if (lsFlags.Count() > 0)
 				{
-					if (newCtx.tags == null)
-						newCtx.tags = new HashSet<StringHandle>();
+					if (newCtx.flags == null)
+						newCtx.flags = new HashSet<StringHandle>();
 
-					newCtx.tags.UnionWith(lsTags);
+					newCtx.flags.UnionWith(lsFlags);
 				}
 			}
 			return newCtx;
@@ -301,11 +301,11 @@ namespace Ginger
 
 		public void MergeWith(Context other)
 		{
-			if (other.tags != null)
+			if (other.flags != null)
 			{
-				if (tags == null)
-					tags = new HashSet<StringHandle>();
-				tags.UnionWith(other.tags);
+				if (flags == null)
+					flags = new HashSet<StringHandle>();
+				flags.UnionWith(other.flags);
 			}
 
 			if (other.values != null)

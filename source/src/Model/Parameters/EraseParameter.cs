@@ -47,8 +47,11 @@ namespace Ginger
 
 		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
-			foreach (var flag in flags)
-				state.Erase(flag);
+			if (scope == ParameterScope.Global) // Global only
+			{
+				foreach (var flag in flags)
+					state.Erase(flag);
+			}
 		}
 
 		public override object Clone()

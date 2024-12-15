@@ -6,6 +6,8 @@ namespace Ginger
 {
 	public class SetFlagParameter : BaseParameter<string>, IInvisibleParameter
 	{
+        public override bool isLocal { get { return false; } }
+
 		private HashSet<StringHandle> flags = new HashSet<StringHandle>();
 
 		public SetFlagParameter() : base()
@@ -48,9 +50,12 @@ namespace Ginger
 
 		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
-			state.SetFlags(flags, scope);
-			if (scope == ParameterScope.Global)
-				state.Reserve(id, null);
+			if (scope == ParameterScope.Global) // Global only
+			{
+				state.SetFlags(flags, scope);
+				if (scope == ParameterScope.Global)
+					state.Reserve(id, null);
+			}
 		}
 
 		public override object Clone()

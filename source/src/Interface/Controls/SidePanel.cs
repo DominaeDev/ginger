@@ -103,44 +103,7 @@ namespace Ginger
 			textBox_tags.InitUndo();
 
 			// Gender
-			if (!_bOverridingGender)
-			{
-				if (string.IsNullOrWhiteSpace(Current.Character.gender) == false)
-				{
-					if (string.Compare(Current.Character.gender, "male", true) == 0)
-						comboBox_gender.SelectedItem = comboBox_gender.Items[1];
-					else if (string.Compare(Current.Character.gender, "female", true) == 0)
-						comboBox_gender.SelectedItem = comboBox_gender.Items[2];
-					else if (string.IsNullOrWhiteSpace(Current.Character.gender) == false)
-						comboBox_gender.SelectedItem = comboBox_gender.Items[3];
-					else
-						comboBox_gender.SelectedItem = comboBox_gender.Items[0];
-				}
-				else
-					comboBox_gender.SelectedItem = comboBox_gender.Items[0];
-
-				// Custom gender
-				if (comboBox_gender.SelectedIndex == 3)
-				{
-					textBox_customGender.Visible = true;
-					textBox_customGender.Enabled = true;
-					textBox_customGender.Text = Current.Character.gender;
-				}
-				else
-				{
-					textBox_customGender.Visible = false;
-					textBox_customGender.Enabled = true;
-					textBox_customGender.Text = "";
-				}
-			}
-			else // Recipe gender override
-			{
-				comboBox_gender.Enabled = false;
-				comboBox_gender.SelectedIndex = 3; // Other
-				textBox_customGender.Visible = true; 
-				textBox_customGender.Enabled = false;
-				textBox_customGender.Text = _overrideGender;
-			}
+			RefreshGender(false);
 
 			// User gender
 			if (string.IsNullOrWhiteSpace(Current.Card.userGender) == false)
@@ -706,37 +669,70 @@ namespace Ginger
 
 		public void OnRegenerate()
 		{
-			var context = Current.Character.GetContext(CharacterData.ContextType.Full);
 			_bIgnoreEvents = true;
-
-			_bOverridingGender = context.HasTag(Constants.Flag.OverrideGender);
-
-			if (_bOverridingGender)
-			{
-				context.TryGetValue("gender", out _overrideGender);
-
-				if (comboBox_gender.Enabled)
-				{
-					comboBox_gender.Enabled = false;
-					comboBox_gender.SelectedIndex = 3; // Other
-					textBox_customGender.Visible = true;
-					textBox_customGender.Enabled = false;
-					textBox_customGender.Text = _overrideGender;
-				}
-			}
-			else
-			{
-				_overrideGender = null;
-				if (comboBox_gender.Enabled == false)
-				{
-					comboBox_gender.Enabled = true;
-					textBox_customGender.Visible = comboBox_gender.SelectedIndex == 3;
-					textBox_customGender.Enabled = true;
-				}
-			}
-
+			RefreshGender(true);
 			_bIgnoreEvents = false;
+		}
 
+		public void OnActorChanged()
+		{
+			_bIgnoreEvents = true;
+			RefreshGender(true);
+			_bIgnoreEvents = false;
+		}
+
+		private void RefreshGender(bool bUpdate)
+		{
+			if (bUpdate)
+			{
+				var context = Current.Character.GetContext(CharacterData.ContextType.Full);
+				_bOverridingGender = context.HasFlag(Constants.Flag.OverrideGender);
+				if (_bOverridingGender)
+					context.TryGetValue("gender", out _overrideGender);
+				else
+					_overrideGender = null;
+			}
+
+			if (!_bOverridingGender)
+			{
+				comboBox_gender.Enabled = true;
+
+				if (string.IsNullOrWhiteSpace(Current.Character.gender) == false)
+				{
+					if (string.Compare(Current.Character.gender, "male", true) == 0)
+						comboBox_gender.SelectedItem = comboBox_gender.Items[1];
+					else if (string.Compare(Current.Character.gender, "female", true) == 0)
+						comboBox_gender.SelectedItem = comboBox_gender.Items[2];
+					else if (string.IsNullOrWhiteSpace(Current.Character.gender) == false)
+						comboBox_gender.SelectedItem = comboBox_gender.Items[3];
+					else
+						comboBox_gender.SelectedItem = comboBox_gender.Items[0];
+				}
+				else
+					comboBox_gender.SelectedItem = comboBox_gender.Items[0];
+
+				// Custom gender
+				if (comboBox_gender.SelectedIndex == 3)
+				{
+					textBox_customGender.Visible = true;
+					textBox_customGender.Enabled = true;
+					textBox_customGender.Text = Current.Character.gender;
+				}
+				else
+				{
+					textBox_customGender.Visible = false;
+					textBox_customGender.Enabled = true;
+					textBox_customGender.Text = "";
+				}
+			}
+			else // Recipe gender override
+			{
+				comboBox_gender.Enabled = false;
+				comboBox_gender.SelectedIndex = 3; // Other
+				textBox_customGender.Visible = true; 
+				textBox_customGender.Enabled = false;
+				textBox_customGender.Text = _overrideGender;
+			}
 		}
 
 		private void btn_More_MouseClick(object sender, MouseEventArgs args)

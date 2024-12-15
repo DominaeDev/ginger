@@ -216,34 +216,34 @@ namespace Ginger
 				var context = character.GetContext(CharacterData.ContextType.None);
 				if (option.Contains(Option.Faraday))
 				{
-					context.AddTag("__faraday");
-					context.AddTag("__backyard");
+					context.AddFlag("__faraday");
+					context.AddFlag("__backyard");
 				}
 				else if (option.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3))
-					context.AddTag("__tavern");
+					context.AddFlag("__tavern");
 				if (option.ContainsAny(Option.SillyTavernV2))
-					context.AddTag("__ccv2");
+					context.AddFlag("__ccv2");
 				else if (option.ContainsAny(Option.SillyTavernV3))
-					context.AddTag("__ccv3");
+					context.AddFlag("__ccv3");
 
 				if (option.Contains(Option.Preview))
 				{
-					context.AddTag("__preview");
+					context.AddFlag("__preview");
 
 					switch (AppSettings.Settings.PreviewFormat)
 					{
 					case AppSettings.Settings.OutputPreviewFormat.Default:
-						context.AddTag("__ginger");
+						context.AddFlag("__ginger");
 						break;
 					case AppSettings.Settings.OutputPreviewFormat.Faraday:
-						context.AddTag("__backyard");
-						 context.AddTag("__faraday");
+						context.AddFlag("__backyard");
+						 context.AddFlag("__faraday");
 						break;
 					case AppSettings.Settings.OutputPreviewFormat.SillyTavern:
-						context.AddTag("__tavern");
+						context.AddFlag("__tavern");
 						break;
 					case AppSettings.Settings.OutputPreviewFormat.PlainText:
-						context.AddTag("__plain");
+						context.AddFlag("__plain");
 						break;
 					}
 				}
@@ -350,7 +350,7 @@ namespace Ginger
 				personality = GingerString.FromOutput(blockBuilder.Build("persona/output/personality"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 
 			// Option: Prune scenario
-			if (context.HasTag(Constants.Flag.PruneScenario) && options.ContainsAny(Option.Snippet | Option.Bake) == false)
+			if (context.HasFlag(Constants.Flag.PruneScenario) && options.ContainsAny(Option.Snippet | Option.Bake) == false)
 			{
 				GingerString scenario = GingerString.FromOutput(blockBuilder.Build("scenario/output"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 				blockBuilder.Add(new Block() {
@@ -362,7 +362,7 @@ namespace Ginger
 
 			// Should insert original model instructions?
 			bool bPrependOriginal = options.ContainsAny(Option.Export | Option.Preview)
-				&& !(context.HasTag(Constants.Flag.System) || context.HasTag(Constants.Flag.Base) || context.HasTag("system-prompt")
+				&& !(context.HasFlag(Constants.Flag.System) || context.HasFlag(Constants.Flag.Base) || context.HasFlag("system-prompt")
 					|| blockBuilder.BlockHasChildren("system/output", true));
 
 			// Omit attributes block
@@ -455,11 +455,11 @@ namespace Ginger
 
 			var globalContext = Context.Copy(context);
 			if (options.Contains(Option.Bake) || options.Contains(Option.Snippet))
-				globalContext.AddTag("__bake");
+				globalContext.AddFlag("__bake");
 			if (options.Contains(Option.Snippet))
-				globalContext.AddTag("__snippet");
+				globalContext.AddFlag("__snippet");
 			if (options.Contains(Option.Single))
-				globalContext.AddTag("__single");
+				globalContext.AddFlag("__single");
 
 			bool bMain = (characterIndex == 0 && Current.Characters.Count == 1) || options.Contains(Option.Single);
 

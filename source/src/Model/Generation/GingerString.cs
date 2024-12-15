@@ -571,7 +571,7 @@ namespace Ginger
 			if (text == null)
 				return null;
 
-			if (context.HasTag("__snippet"))
+			if (context.HasFlag("__snippet"))
 				return text; // Don't evaluate if we're generating a snippet
 
 			if (text.Contains('{') == false)

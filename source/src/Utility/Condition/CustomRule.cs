@@ -106,7 +106,7 @@ namespace Ginger
 				return comparison.Evaluate(context);
 
 			// Contextual tag?
-			if (context.HasTag(expression))
+			if (context.HasFlag(expression))
 				return true;
 
 			// Value exists?

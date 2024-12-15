@@ -11,8 +11,8 @@ namespace Ginger
 
 		void MarkDirtyContext();
 
-		bool HasTag(StringHandle tag);
-		HashSet<StringHandle> GetTags();
+		bool HasFlag(StringHandle tag);
+		HashSet<StringHandle> GetFlags();
 		ContextualValue GetContextualValue(StringHandle valueName);
 	}
 
@@ -40,7 +40,7 @@ namespace Ginger
 			// Refresh tags
 			_bDirtyTags = true;
 			__RefreshTags();
-			_context.AddTags(_contextualTags);
+			_context.AddFlags(_contextualTags);
 
 			// Refresh functions
 			_bDirtyFunctions = true;
@@ -66,15 +66,15 @@ namespace Ginger
 			_bDirtyFunctions = true;
 		}
 
-		public HashSet<StringHandle> GetTags()
+		public HashSet<StringHandle> GetFlags()
 		{
 			__RefreshTags();
 			return _contextualTags;
 		}
 
-		public virtual bool HasTag(StringHandle tag)
+		public virtual bool HasFlag(StringHandle tag)
 		{
-			if (GetTags().Contains(tag))
+			if (GetFlags().Contains(tag))
 				return true;
 
 			// Function?

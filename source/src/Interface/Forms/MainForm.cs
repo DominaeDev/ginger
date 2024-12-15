@@ -1753,6 +1753,7 @@ namespace Ginger
 			tabControl.SelectedIndex = 0;
 			recipeList.RecreatePanels();
 			sidePanel.RefreshValues();
+			sidePanel.OnActorChanged();
 			RefreshTitle();
 			sidePanel.SetSpokenName(Constants.DefaultCharacterName);
 
@@ -1771,6 +1772,7 @@ namespace Ginger
 			tabControl.SelectedIndex = 0;
 			recipeList.RecreatePanels();
 			sidePanel.RefreshValues();
+			sidePanel.OnActorChanged();
 			RefreshTitle();
 			StealFocus();
 
@@ -1789,6 +1791,7 @@ namespace Ginger
 			tabControl.SelectedIndex = 0;
 			recipeList.RecreatePanels();
 			sidePanel.RefreshValues();
+			sidePanel.OnActorChanged();
 			RefreshTitle();
 
 			Undo.Push(Undo.Kind.RecipeList, "Select actor", "select-actor");

@@ -4,6 +4,8 @@ namespace Ginger
 {
 	public class SetVarParameter : BaseParameter<string>, IInvisibleParameter
 	{
+        public override bool isLocal { get { return false; } }
+
 		public SetVarParameter() : base()
 		{
 			isEnabled = true;
@@ -45,7 +47,7 @@ namespace Ginger
 
 		public override void OnApply(ParameterState state, ParameterScope scope)
 		{
-			if (string.IsNullOrEmpty(value) == false)
+			if (string.IsNullOrEmpty(value) == false && scope == ParameterScope.Global) // Global only
 			{
 				string sValue;
 				if (value.IndexOfAny(new char[] { '{', '}', '[', ']' }) != -1)
@@ -54,8 +56,7 @@ namespace Ginger
 					sValue = value;
 				state.SetValue(id, sValue, scope);
 
-				if (scope == ParameterScope.Global)
-					state.Reserve(id, sValue);
+				state.Reserve(id, sValue);
 			}
 		}
 

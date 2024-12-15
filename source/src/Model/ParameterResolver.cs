@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Ginger
@@ -26,7 +27,7 @@ namespace Ginger
 			{
 				var state = parameterStates[i];
 				state.globalContext = Context.Copy(context);
-				state.globalContext.AddTags(globalFlags[i]);
+				state.globalContext.AddFlags(globalFlags[i]);
 				state.globalParameters.SetFlags(globalFlags[i]);
 				parameterStates[i] = state;
 			}
@@ -76,11 +77,7 @@ namespace Ginger
 			{
 				if (recipes[i].isEnabled == false)
 					continue; // Skip
-
-				var localContext = Context.Copy(outerContext);
-				if (parameterStates[i] != null)
-					localContext.MergeWith(parameterStates[i].evalContext);
-				localContexts[i] = localContext;
+				localContexts[i] = parameterStates[i].evalContext;
 			}
 
 			return localContexts;
@@ -92,16 +89,13 @@ namespace Ginger
 				return Context.Copy(outerContext);
 
 			ParameterStates parameterStates = ResolveParameters(recipes, outerContext);
+			int idxLastRecipe = Array.FindLastIndex(recipes, r => r.isEnabled);
+			if (idxLastRecipe == -1)
+				return Context.Copy(outerContext);
 
-			Context finalContext = Context.Copy(outerContext);
-			for (int i = 0; i < parameterStates.Length; ++i)
-			{
-//				finalContext.AddTags(parameterStates[i].globalParameters.GetFlags());
-				finalContext.MergeWith(parameterStates[i].globalParameters.context);
-
-			}
-
-			return finalContext;
+			var context = Context.Copy(parameterStates[idxLastRecipe].evalContext);
+			context.AddFlags(recipes[idxLastRecipe].flags);
+			return context;
 		}
 
 	}
