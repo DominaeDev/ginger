@@ -629,9 +629,11 @@ namespace Ginger
 				if (parameterPanel == null)
 					continue;
 
-				if (parameter.isGlobal && recipeIdx > 0) // Is shared (reserve?)
+				if (parameter.isGlobal) // Is shared (reserve?)
 				{
-					int idxLastRecipe = Array.FindLastIndex(recipes, recipeIdx - 1, r => r.isEnabled);
+					int idxLastRecipe = -1;
+					if (recipeIdx > 0)
+						idxLastRecipe = Array.FindLastIndex(recipes, recipeIdx - 1, r => r.isEnabled);
 
 					string reservedValue = default(string);
 					bool isReserved = idxLastRecipe != -1 

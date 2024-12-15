@@ -109,7 +109,6 @@ namespace Ginger
 			Stopwatch stopWatch = new Stopwatch();
 			stopWatch.Start();
 #endif
-			Current.IsFileDirty = false;
 			RefreshTitle();
 
 			this.Suspend();
@@ -128,6 +127,7 @@ namespace Ginger
 			RefreshSpellChecking();
 
 			Regenerate();
+			Current.IsFileDirty = false;
 
 #if DEBUG
 			stopWatch.Stop();
@@ -1791,7 +1791,7 @@ namespace Ginger
 			sidePanel.RefreshValues();
 			RefreshTitle();
 
-			Undo.Push(Undo.Kind.Parameter, "Select actor", "select-actor");
+			Undo.Push(Undo.Kind.RecipeList, "Select actor", "select-actor");
 		}
 
 		private void CreateSnippetMenuItem_Click(object sender, EventArgs e)
