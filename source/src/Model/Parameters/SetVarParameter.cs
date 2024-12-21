@@ -56,7 +56,7 @@ namespace Ginger
 					sValue = value;
 				state.SetValue(id, sValue, scope);
 
-				state.Reserve(id, sValue);
+//				state.Reserve(id, sValue);
 			}
 		}
 
