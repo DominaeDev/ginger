@@ -40,7 +40,7 @@ namespace Ginger
 			// Refresh tags
 			_bDirtyTags = true;
 			__RefreshTags();
-			_context.AddFlags(_contextualTags);
+			_context.SetFlags(_contextualTags);
 
 			// Refresh functions
 			_bDirtyFunctions = true;

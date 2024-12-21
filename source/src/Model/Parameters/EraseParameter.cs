@@ -45,9 +45,9 @@ namespace Ginger
 				node.AddAttribute("rule", condition.ToString());
 		}
 
-		public override void OnApply(ParameterState state, ParameterScope scope)
+		public override void OnApply(ParameterState state, Parameter.Scope scope)
 		{
-			if (scope == ParameterScope.Global) // Global only
+			if (scope == Parameter.Scope.Global) // Global only
 			{
 				foreach (var flag in flags)
 					state.Erase(flag);

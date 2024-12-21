@@ -18,7 +18,7 @@ namespace Ginger
 		{
 			value = xmlNode.GetTextValue();
 			defaultValue = value;
-			isEnabled = false;
+			isEnabled = true;
 			isOptional = false;
 			if (xmlNode.HasAttribute("rule"))
 				condition = Rule.Parse(xmlNode.GetAttribute("rule"));
@@ -34,7 +34,7 @@ namespace Ginger
 				node.AddAttribute("rule", condition.ToString());
 		}
 
-		public override void OnApply(ParameterState state, ParameterScope scope) { }
+		public override void OnApply(ParameterState state, Parameter.Scope scope) { }
 
 		public override object Clone()
 		{

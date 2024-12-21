@@ -66,7 +66,7 @@ namespace Ginger
 			return (Context)MemberwiseClone();
 		}
 
-		public void AddFlag(StringHandle flag)
+		public void SetFlag(StringHandle flag)
 		{
 			if (flags == null)
 				flags = new HashSet<StringHandle>();
@@ -74,7 +74,7 @@ namespace Ginger
 			flags.Add(flag);
 		}
 
-		public void AddFlags(IEnumerable<StringHandle> flags)
+		public void SetFlags(IEnumerable<StringHandle> flags)
 		{
 			if (flags == null)
 				return;
@@ -320,9 +320,9 @@ namespace Ginger
 		public static Context Merge(Context first, Context second)
 		{
 			if (first == null)
-				return second;
+				return Copy(second);
 			if (second == null)
-				return first;
+				return Copy(first);
 
 			var ctx = Copy(first);
 			ctx.MergeWith(second);

@@ -216,34 +216,34 @@ namespace Ginger
 				var context = character.GetContext(CharacterData.ContextType.None);
 				if (option.Contains(Option.Faraday))
 				{
-					context.AddFlag("__faraday");
-					context.AddFlag("__backyard");
+					context.SetFlag("__faraday");
+					context.SetFlag("__backyard");
 				}
 				else if (option.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3))
-					context.AddFlag("__tavern");
+					context.SetFlag("__tavern");
 				if (option.ContainsAny(Option.SillyTavernV2))
-					context.AddFlag("__ccv2");
+					context.SetFlag("__ccv2");
 				else if (option.ContainsAny(Option.SillyTavernV3))
-					context.AddFlag("__ccv3");
+					context.SetFlag("__ccv3");
 
 				if (option.Contains(Option.Preview))
 				{
-					context.AddFlag("__preview");
+					context.SetFlag("__preview");
 
 					switch (AppSettings.Settings.PreviewFormat)
 					{
 					case AppSettings.Settings.OutputPreviewFormat.Default:
-						context.AddFlag("__ginger");
+						context.SetFlag("__ginger");
 						break;
 					case AppSettings.Settings.OutputPreviewFormat.Faraday:
-						context.AddFlag("__backyard");
-						 context.AddFlag("__faraday");
+						context.SetFlag("__backyard");
+						 context.SetFlag("__faraday");
 						break;
 					case AppSettings.Settings.OutputPreviewFormat.SillyTavern:
-						context.AddFlag("__tavern");
+						context.SetFlag("__tavern");
 						break;
 					case AppSettings.Settings.OutputPreviewFormat.PlainText:
-						context.AddFlag("__plain");
+						context.SetFlag("__plain");
 						break;
 					}
 				}
@@ -455,11 +455,11 @@ namespace Ginger
 
 			var globalContext = Context.Copy(context);
 			if (options.Contains(Option.Bake) || options.Contains(Option.Snippet))
-				globalContext.AddFlag("__bake");
+				globalContext.SetFlag("__bake");
 			if (options.Contains(Option.Snippet))
-				globalContext.AddFlag("__snippet");
+				globalContext.SetFlag("__snippet");
 			if (options.Contains(Option.Single))
-				globalContext.AddFlag("__single");
+				globalContext.SetFlag("__single");
 
 			bool bMain = (characterIndex == 0 && Current.Characters.Count == 1) || options.Contains(Option.Single);
 

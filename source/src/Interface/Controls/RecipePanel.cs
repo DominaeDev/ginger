@@ -616,12 +616,6 @@ namespace Ginger
 
 			// Resolve parameters
 			var parameterState = parameterStates[recipeIdx];
-//			parameterState.evalContext = outerContext;
-/*			parameterState.evalConfig = new ContextString.EvaluationConfig() {
-				macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
-				referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
-				ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
-			};*/
 
 			foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
 			{
@@ -647,11 +641,8 @@ namespace Ginger
 
 				if (parameter.isConditional && parameterPanel.isReserved == false) // Has condition
 				{
-					var localContext = Context.Copy(parameterState.evalContext);
-					parameterState.localParameters.ApplyToContext(localContext);
-
 					bool wasVisible = parameterPanel.isActive;
-					parameterPanel.isActive = parameter.IsActive(localContext);
+					parameterPanel.isActive = parameterState.IsInactive(parameter.id) == false;
 					bChanged |= wasVisible != parameterPanel.isActive;
 				}
 								

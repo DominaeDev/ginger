@@ -74,7 +74,7 @@ namespace Ginger
 			}
 		}
 
-		public override void OnApply(ParameterState state, ParameterScope scope)
+		public override void OnApply(ParameterState state, Parameter.Scope scope)
 		{
 			if (value == null || value.Count == 0)
 				return;
@@ -96,10 +96,10 @@ namespace Ginger
 			state.SetValue(id + ":items", items, scope);
 			state.SetValue(id + ":value", text, scope); // Deprecated
 
-			if (scope == ParameterScope.Local)
+			if (scope == Parameter.Scope.Local)
 				state.SetFlags(values.Select(s => new StringHandle(s)), scope);
 			
-			if (isGlobal && scope == ParameterScope.Global)
+			if (isGlobal && scope == Parameter.Scope.Global)
 				state.Reserve(id, items);
 		}
 

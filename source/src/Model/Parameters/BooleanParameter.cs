@@ -25,11 +25,11 @@ namespace Ginger
 			base.SaveToXml(node);
 		}
 
-		public override void OnApply(ParameterState state, ParameterScope scope)
+		public override void OnApply(ParameterState state, Parameter.Scope scope)
 		{
 			if (value)
 				state.SetFlag(id, scope);
-			if (isGlobal && scope == ParameterScope.Global)
+			if (isGlobal && scope == Parameter.Scope.Global)
 				state.Reserve(id, this.value ? "Yes" : "No");
 		}
 

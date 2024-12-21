@@ -69,18 +69,18 @@ namespace Ginger
 			if (string.IsNullOrWhiteSpace(this.gender) == false)
 			{
 				context.SetValue("gender", this.gender.ToLowerInvariant());
-				context.AddFlag(this.gender);
+				context.SetFlag(this.gender);
 
 				bool bFuta = GenderSwap.IsFutanari(this.gender);
 				if (bFuta)
-					context.AddFlag("futanari");
+					context.SetFlag("futanari");
 
 				// Custom gender?
 				if (!(string.Compare(this.gender, "male", true) == 0 
 					|| string.Compare(this.gender, "female", true) == 0 
 					|| bFuta))
 				{
-					context.AddFlag("custom-gender");
+					context.SetFlag("custom-gender");
 				}
 			}
 
@@ -94,25 +94,25 @@ namespace Ginger
 
 			// Is actor?
 			if (isMainCharacter == false)
-				context.AddFlag(Constants.Flag.Actor);
+				context.SetFlag(Constants.Flag.Actor);
 			if (Current.Characters.Count > 1)
 			{
-				context.AddFlag("__multi");
-				context.AddFlag("multi-character");
+				context.SetFlag("__multi");
+				context.SetFlag("multi-character");
 			}
 
 			// Allow nsfw?
 			if (AppSettings.Settings.AllowNSFW)
-				context.AddFlag("allow-nsfw");
+				context.SetFlag("allow-nsfw");
 
 			// Level of detail
 			switch (Current.Card.detailLevel)
 			{
 			case CardData.DetailLevel.Low: 
-				context.AddFlag("less-detail");
+				context.SetFlag("less-detail");
 				break;
 			case CardData.DetailLevel.High:
-				context.AddFlag("more-detail");
+				context.SetFlag("more-detail");
 				break;
 			}
 			context.SetValue("detail", EnumHelper.ToInt(Current.Card.detailLevel));
@@ -128,32 +128,32 @@ namespace Ginger
 			case CardData.TextStyle.None:
 				break;
 			case CardData.TextStyle.Novel:
-				context.AddFlag("__style-quotes");
+				context.SetFlag("__style-quotes");
 				break;
 			case CardData.TextStyle.Chat:
-				context.AddFlag("__style-action-asterisks");
+				context.SetFlag("__style-action-asterisks");
 				break;
 			case CardData.TextStyle.Mixed:
-				context.AddFlag("__style-quotes");
-				context.AddFlag("__style-action-asterisks");
+				context.SetFlag("__style-quotes");
+				context.SetFlag("__style-action-asterisks");
 				break;
 			case CardData.TextStyle.Decorative:
-				context.AddFlag("__style-quotes-decorative");
+				context.SetFlag("__style-quotes-decorative");
 				break;
 			case CardData.TextStyle.Japanese:
-				context.AddFlag("__style-quotes-cjk");
+				context.SetFlag("__style-quotes-cjk");
 				break;
 			case CardData.TextStyle.Parentheses:
-				context.AddFlag("__style-action-brackets");
+				context.SetFlag("__style-action-brackets");
 				break;
 			case CardData.TextStyle.Bold:
-				context.AddFlag("__style-action-bold");
+				context.SetFlag("__style-action-bold");
 				break;
 			}
 
 			// Flags
 			if (Current.Card.extraFlags.Contains(CardData.Flag.PruneScenario))
-				context.AddFlag(Constants.Flag.PruneScenario);
+				context.SetFlag(Constants.Flag.PruneScenario);
 
 			if (type == ContextType.Full)
 			{
@@ -166,7 +166,7 @@ namespace Ginger
 					if (recipe.isEnabled == false && includeInactive == false)
 						continue;
 
-					context.AddFlags(recipe.flags);
+					context.SetFlags(recipe.flags);
 				}
 			}			
 

@@ -45,9 +45,9 @@ namespace Ginger
 				node.AddAttribute("rule", condition.ToString());
 		}
 
-		public override void OnApply(ParameterState state, ParameterScope scope)
+		public override void OnApply(ParameterState state, Parameter.Scope scope)
 		{
-			if (string.IsNullOrEmpty(value) == false && scope == ParameterScope.Global) // Global only
+			if (string.IsNullOrEmpty(value) == false && scope == Parameter.Scope.Global) // Global only
 			{
 				string sValue;
 				if (value.IndexOfAny(new char[] { '{', '}', '[', ']' }) != -1)

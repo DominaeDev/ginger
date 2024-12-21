@@ -28,7 +28,7 @@ namespace Ginger
 			base.SaveToXml(node);
 		}
 
-		public override void OnApply(ParameterState state, ParameterScope scope) { }
+		public override void OnApply(ParameterState state, Parameter.Scope scope) { }
 
 		public override object Clone()
 		{

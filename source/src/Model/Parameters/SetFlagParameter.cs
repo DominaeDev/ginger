@@ -48,14 +48,10 @@ namespace Ginger
 				node.AddAttribute("rule", condition.ToString());
 		}
 
-		public override void OnApply(ParameterState state, ParameterScope scope)
+		public override void OnApply(ParameterState state, Parameter.Scope scope)
 		{
-			if (scope == ParameterScope.Global) // Global only
-			{
+			if (scope == Parameter.Scope.Global) // Global only
 				state.SetFlags(flags, scope);
-				if (scope == ParameterScope.Global)
-					state.Reserve(id, null);
-			}
 		}
 
 		public override object Clone()

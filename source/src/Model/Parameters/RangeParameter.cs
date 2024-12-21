@@ -93,7 +93,7 @@ namespace Ginger
 
 		}
 
-		public override void OnApply(ParameterState state, ParameterScope scope)
+		public override void OnApply(ParameterState state, Parameter.Scope scope)
 		{
 			string sValue;
 			switch (mode)
@@ -108,7 +108,7 @@ namespace Ginger
 
 			state.SetValue(id, sValue, scope);
 
-			if (isGlobal && scope == ParameterScope.Global)
+			if (isGlobal && scope == Parameter.Scope.Global)
 				state.Reserve(id, sValue);
 		}
 

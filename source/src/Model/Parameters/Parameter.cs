@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -32,6 +31,12 @@ namespace Ginger
 
 	public static class Parameter
 	{
+		public enum Scope
+		{
+			Global,
+			Local
+		}
+	
 		public static IParameter Create(XmlNode xmlNode, Recipe recipe)
 		{
 			string typeName = xmlNode.Name;
@@ -136,7 +141,7 @@ namespace Ginger
 		public bool isImmediate { get; set; }
 		public bool isConditional { get { return condition != null; } }
 		public ICondition condition { get; protected set; }
-		public abstract void OnApply(ParameterState state, ParameterScope scope);
+		public abstract void OnApply(ParameterState state, Parameter.Scope scope);
 		public Recipe recipe { get; protected set; }
 
 		public T value;
@@ -146,7 +151,6 @@ namespace Ginger
 		{
 			this.value = value;
 		}
-		
 
 		protected BaseParameter() { }
 
@@ -157,13 +161,20 @@ namespace Ginger
 
 		public void Apply(ParameterState parameterState)
 		{
-			if (!isEnabled || !IsActive(parameterState))
+			if (!isEnabled)
 				return;
 
+			if (!IsActive(parameterState))
+			{
+				if ((this is IInvisibleParameter) == false)
+					parameterState.Inactivate(id);
+				return;
+			}
+
 			if (isLocal) // Set local parameters
-				OnApply(parameterState, ParameterScope.Local);
+				OnApply(parameterState, Parameter.Scope.Local);
 			if (isGlobal) // Set global parameters
-				OnApply(parameterState, ParameterScope.Global);
+				OnApply(parameterState, Parameter.Scope.Global);
 		}
 
 		public virtual bool LoadFromXml(XmlNode xmlNode)
@@ -428,271 +439,5 @@ namespace Ginger
 		}
 	}
 
-	public class ParameterCollection
-	{
-		public IEnumerable<KeyValuePair<StringHandle, ContextualValue>> values { get { return _values; } }
-		private Dictionary<StringHandle, ContextualValue> _values = new Dictionary<StringHandle, ContextualValue>();
-		public IEnumerable<StringHandle> flags { get { return _flags; } }
-		private HashSet<StringHandle> _flags = new HashSet<StringHandle>();
-		
-		public IEnumerable<StringHandle> erasedValues { get { return _erasedValues; } }
-		public IEnumerable<StringHandle> erasedFlags{ get { return _erasedFlags; } }
-		private HashSet<StringHandle> _erasedValues = new HashSet<StringHandle>();
-		private HashSet<StringHandle> _erasedFlags = new HashSet<StringHandle>();
-
-		public void SetValue(StringHandle id, ContextualValue value)
-		{
-			if (_values.ContainsKey(id))
-				_values[id] = value;
-			else
-				_values.Add(id, value);
-			
-			_erasedValues.Remove(id);
-		}
-
-		public bool TryGetValue(StringHandle id, out ContextualValue value)
-		{
-			return _values.TryGetValue(id, out value);
-		}
-
-		public void SetFlag(StringHandle flag)
-		{
-			_flags.Add(flag);
-			_erasedFlags.Remove(flag);
-		}
-
-		public void SetFlags(IEnumerable<StringHandle> flags)
-		{
-			_flags.UnionWith(flags);
-			_erasedFlags.ExceptWith(flags);
-		}
-
-		public void ApplyToContext(Context context)
-		{
-			context.AddFlags(_flags);
-			foreach (var kvp in _values)
-				context.SetValue(kvp.Key, kvp.Value.ToString());
-		}
-
-		public void CopyFromContext(Context context)
-		{
-			if (context == null)
-				return;
-			if (context.flags != null)
-				SetFlags(context.flags);
-			if (context.values != null)
-			{
-				foreach (var value in context.values)
-					SetValue(value.Key, value.Value);
-			}
-		}
-		
-
-		public void EraseFlag(StringHandle id)
-		{
-			_flags.Remove(id);
-			_erasedFlags.Add(id);
-		}
-
-		public void EraseValue(StringHandle id)
-		{
-			_values.Remove(id);
-			_erasedValues.Add(id);
-		}
-
-		public Context context
-		{
-			get
-			{
-				var ctx = Context.CreateEmpty();
-				ApplyToContext(ctx);
-				return ctx;
-			}
-		}
-	}
-
-	public enum ParameterScope
-	{
-		Global,
-		Local
-	}
-
-	public class ParameterState
-	{
-		public Context globalContext;
-
-		public ParameterCollection globalParameters = new ParameterCollection();
-		public ParameterCollection localParameters = new ParameterCollection();
-
-		public Context evalContext
-		{
-			get
-			{
-				if (_bDirty || _evalContext == null)
-					_evalContext = CreateContext();
-				return _evalContext;
-			}
-		}
-		private Context _evalContext = null;
-		public ContextString.EvaluationConfig evalConfig;
-
-		private Dictionary<StringHandle, string> _reserved = new Dictionary<StringHandle, string>();
-		private bool _bDirty = true;
-
-		private ParameterCollection GetCollection(ParameterScope scope)
-		{
-			return scope == ParameterScope.Global ? globalParameters : localParameters;
-		}
-
-		public void SetFlag(StringHandle flag, ParameterScope scope)
-		{
-			GetCollection(scope).SetFlag(flag);
-			if (scope == ParameterScope.Local && flag.ToString().IndexOf(':') == -1)
-				localParameters.SetFlag(string.Concat(flag.ToString(), ":local"));
-			_bDirty = true;
-		}
-
-		public void SetFlags(IEnumerable<StringHandle> flags, ParameterScope scope)
-		{
-			GetCollection(scope).SetFlags(flags);
-			if (scope == ParameterScope.Local)
-			{
-				foreach (var flag in flags.Where(f => f.ToString().IndexOf(':') == -1))
-					localParameters.SetFlag(string.Concat(flag.ToString(), ":local"));
-			}
-			_bDirty = true;
-		}
-
-		public void SetValue(StringHandle id, string value, ParameterScope scope)
-		{
-			GetCollection(scope).SetValue(id, value);
-			if (scope == ParameterScope.Local && id.ToString().IndexOf(':') == -1)
-			{
-				localParameters.SetFlag(string.Concat(id.ToString(), ":local"));
-				localParameters.SetValue(string.Concat(id.ToString(), ":local"), value);
-			}
-			_bDirty = true;
-		}
-
-		public void SetValue(StringHandle id, float value, ParameterScope scope)
-		{
-			GetCollection(scope).SetValue(id, value);
-			if (id.ToString().IndexOf(':') == -1)
-			{
-				localParameters.SetFlag(string.Concat(id.ToString(), ":local"));
-				localParameters.SetValue(string.Concat(id.ToString(), ":local"), value);
-			}
-			_bDirty = true;
-		}
-
-		public void Erase(StringHandle id)
-		{
-			globalContext.RemoveFlag(id);
-			globalContext.SetValue(id, null);
-
-			globalParameters.EraseFlag(id);
-			globalParameters.EraseValue(id);
-			localParameters.EraseFlag(id);
-			localParameters.EraseValue(id);
-			_reserved.Remove(id);
-			_bDirty = true;
-		}
-
-		public void Reserve(StringHandle id, string reservedValue)
-		{
-			_reserved.TryAdd(id, reservedValue);
-			_bDirty = true;
-		}
-
-		public bool TryGetReservedValue(StringHandle id, out string reservedValue)
-		{
-			return _reserved.TryGetValue(id, out reservedValue);
-		}
-
-		public bool IsReserved(StringHandle id)
-		{
-			return _reserved.ContainsKey(id);
-		}
-		
-		public void CopyGlobals(ParameterState state)
-		{
-			// Erase flags
-			foreach (var flag in state.globalParameters.erasedFlags)
-			{
-				globalContext.RemoveFlag(flag);
-				globalParameters.EraseFlag(flag);
-			}
-
-			// Erase values
-			foreach (var value in state.globalParameters.erasedValues)
-			{
-				globalContext.SetValue(value, null);
-				globalParameters.EraseValue(value);
-			}
-
-			// Copy flags
-			foreach (var flag in state.globalParameters.flags.Except(state.globalParameters.erasedFlags))
-			{
-//				globalContext.AddTag(flag);
-				globalParameters.SetFlag(flag);
-			}
-
-			// Copy values
-			foreach (var value in state.globalParameters.values.Where(kvp => state.globalParameters.erasedValues.Contains(kvp.Key) == false))
-			{
-//				globalContext.SetValue(value.Key, value.Value);
-				globalParameters.SetValue(value.Key, value.Value);
-			}
-
-			_reserved = _reserved.Union(state._reserved)
-				.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-			_bDirty = true;
-		}
-
-		private Context CreateContext()
-		{
-			_bDirty = false;
-			return Context.Merge(Context.Merge(globalContext, globalParameters.context), localParameters.context);
-		}
-	}
-
-	public class ParameterStates : IValueSupplier
-	{
-		public ParameterStates(ICollection<Recipe> recipes)
-		{
-			_states = new ParameterState[recipes.Count];
-			for (int i = 0; i < _states.Length; ++i)
-				_states[i] = new ParameterState();
-		}
-
-		public ParameterState this[int index]
-		{
-			get { return _states[index]; }
-			set { _states[index] = value; }
-		}
-
-		private ParameterState[] _states;
-
-		public int Length { get { return _states.Length; } }
-
-		public bool TryGetValue(StringHandle id, out string value)
-		{
-			for (int i = _states.Length - 1; i >= 0; --i)
-			{
-				if (_states[i] == null)
-					continue;
-				
-				ContextualValue ctxValue;
-				if (_states[i].localParameters.TryGetValue(id, out ctxValue))
-				{
-					value = ctxValue.ToString();
-					return true;
-				}
-			}
-
-			value = default(string);
-			return false;
-		}
-	}
 
 }

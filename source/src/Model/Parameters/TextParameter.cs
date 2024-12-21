@@ -66,7 +66,7 @@ namespace Ginger
 				node.AddAttribute("raw", true);
 		}
 
-		public override void OnApply(ParameterState state, ParameterScope scope)
+		public override void OnApply(ParameterState state, Parameter.Scope scope)
 		{
 			if (string.IsNullOrEmpty(value))
 				return;
@@ -85,7 +85,7 @@ namespace Ginger
 			state.SetValue(id, sValue, scope);
 			state.SetValue(string.Concat(id.ToString(), ":raw"), Text.DontProcess(value.Trim()), scope);
 
-			if (isGlobal && scope == ParameterScope.Global)
+			if (isGlobal && scope == Parameter.Scope.Global)
 				state.Reserve(id, sValue);
 		}
 

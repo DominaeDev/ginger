@@ -120,12 +120,12 @@ namespace Ginger
 			}
 		}
 
-		public override void OnApply(ParameterState state, ParameterScope scope)
+		public override void OnApply(ParameterState state, Parameter.Scope scope)
 		{
 			if (string.IsNullOrEmpty(value))
 				return;
 
-			if (scope == ParameterScope.Local)
+			if (scope == Parameter.Scope.Local)
 				state.SetFlag(value, scope);
 
 			if (selectedIndex == -2) // Custom
@@ -147,7 +147,7 @@ namespace Ginger
 				state.SetValue(id + ":index", selectedIndex, scope);
 			}
 
-			if (isGlobal && scope == ParameterScope.Global)
+			if (isGlobal && scope == Parameter.Scope.Global)
 				state.Reserve(id, this.value);
 		}
 

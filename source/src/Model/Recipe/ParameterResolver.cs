@@ -26,8 +26,8 @@ namespace Ginger
 			for (int i = 0; i < recipes.Length; ++i)
 			{
 				var state = parameterStates[i];
-				state.globalContext = Context.Copy(context);
-				state.globalContext.AddFlags(globalFlags[i]);
+				state.outerContext = Context.Copy(context);
+				state.outerContext.SetFlags(globalFlags[i]);
 				state.globalParameters.SetFlags(globalFlags[i]);
 				parameterStates[i] = state;
 			}
@@ -93,8 +93,8 @@ namespace Ginger
 			if (idxLastRecipe == -1)
 				return Context.Copy(outerContext);
 
-			var context = Context.Copy(parameterStates[idxLastRecipe].evalContext);
-			context.AddFlags(recipes[idxLastRecipe].flags);
+			var context = parameterStates[idxLastRecipe].GetFullContext();
+			context.SetFlags(recipes[idxLastRecipe].flags);
 			return context;
 		}
 

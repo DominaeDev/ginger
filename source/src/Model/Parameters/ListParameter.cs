@@ -30,7 +30,7 @@ namespace Ginger
 			base.SaveToXml(node);
 		}
 
-		public override void OnApply(ParameterState state, ParameterScope scope)
+		public override void OnApply(ParameterState state, Parameter.Scope scope)
 		{
 			if (value == null || value.Count == 0)
 				return;
@@ -41,7 +41,7 @@ namespace Ginger
 			state.SetValue(id, sItems, scope);
 			state.SetValue(id + ":count", items.Count, scope);
 
-			if (isGlobal && scope == ParameterScope.Global)
+			if (isGlobal && scope == Parameter.Scope.Global)
 				state.Reserve(id, sItems);
 		}
 
