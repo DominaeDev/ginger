@@ -4908,7 +4908,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save an incremental copy of this card.
+        ///   Looks up a localized string similar to Save as a new file with an automatically incrementing filename..
         /// </summary>
         internal static string tooltip_save_incremental {
             get {

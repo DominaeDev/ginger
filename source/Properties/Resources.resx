@@ -581,7 +581,7 @@ Higher detail increases token count.</value>
     <value>Reload all recipes from disk</value>
   </data>
   <data name="tooltip_save_incremental" xml:space="preserve">
-    <value>Save an incremental copy of this card</value>
+    <value>Save as a new file with an automatically incrementing filename.</value>
   </data>
   <data name="default_portrait" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\default_portrait.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
