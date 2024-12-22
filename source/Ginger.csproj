@@ -436,13 +436,14 @@
       <DependentUpon>RecipePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Model\CardData.cs" />
+    <Compile Include="src\Model\Formats\ChatLogs\BackyardChatBackupV1.cs" />
     <Compile Include="src\Model\GingerCharacter.cs" />
     <Compile Include="src\Model\Clipboard\ChatClipboard.cs" />
     <Compile Include="src\Model\Clipboard\ChatParametersClipboard.cs" />
     <Compile Include="src\Model\Clipboard\ChatStagingClipboard.cs" />
     <Compile Include="src\Model\Formats\AssetFile.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\AgnaiChat.cs" />
-    <Compile Include="src\Model\Formats\ChatLogs\BackyardChatBackup.cs" />
+    <Compile Include="src\Model\Formats\ChatLogs\BackyardChatBackupV2.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\BackyardChat.cs" />
     <Compile Include="src\Model\Formats\CharacterCards\FaradayCardV4.cs" />
     <Compile Include="src\Model\Formats\CharacterCards\FaradayCardV3.cs" />
@@ -1078,6 +1079,10 @@
     <None Include="Resources\Icons\Dark\dark_write.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Schemas\backup_chat_v2.schema.txt" />
+    <None Include="Resources\Schemas\backup_chat_v1.schema.txt" />
+    <None Include="Resources\Schemas\backyard_models_v2.schema.txt" />
+    <None Include="Resources\Schemas\backyard_models_v1.schema.txt" />
     <None Include="Resources\Schemas\backyard_models_schema.txt" />
     <None Include="Resources\Schemas\tavern_characterbook_v2_filter.schema.txt" />
     <None Include="Resources\Schemas\tavern_characterbook_v3_filter.schema.txt" />

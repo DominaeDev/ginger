@@ -2278,5 +2278,349 @@ namespace Ginger
 				MessageBox.Show(this, Resources.error_link_update_many_characters, Resources.cap_link_update_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
+
+		private bool CreateBackyardBackup()
+		{
+			var groupDlg = new LinkSelectGroupDialog();
+			groupDlg.Characters = Backyard.Characters.ToArray();
+			groupDlg.Groups = Backyard.Groups.ToArray();
+			groupDlg.Folders = Backyard.Folders.ToArray();
+
+			GroupInstance groupInstance;
+			if (groupDlg.ShowDialog() == DialogResult.OK)
+				groupInstance = groupDlg.SelectedGroup;
+			else
+				return false;
+
+			if (groupInstance.isEmpty)
+				return false;
+
+			if (groupInstance.members.Length > 2)
+			{
+				MessageBox.Show(Resources.error_link_create_backup_not_character, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return false;
+			}
+
+			CharacterInstance characterInstance;
+			characterInstance = groupInstance.members
+				.Select(id => Backyard.GetCharacter(id))
+				.FirstOrDefault(c => c.isUser == false);
+
+			if (string.IsNullOrEmpty(characterInstance.instanceId))
+				return false; // Error
+
+			string groupName = Utility.FirstNonEmpty(groupInstance.name, characterInstance.displayName, Constants.DefaultCharacterName);
+			if (groupInstance.members.Length > 2)
+				groupName += " et al";
+
+			BackupData backup = null;
+			var error = RunTask(() => BackupUtil.CreateBackup(characterInstance, out backup), "Creating backup...");
+			if (error == Backyard.Error.NotFound)
+			{
+				MessageBox.Show(Resources.error_link_create_backup, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+			else if (error == Backyard.Error.NotConnected)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return false;
+			}
+			else if (error != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			string filename = string.Concat(groupName, ".backup.", DateTime.Now.ToString("yyyy-MM-dd"), ".zip").Replace(" ", "_");
+
+			importFileDialog.Title = Resources.cap_link_create_backup;
+			exportFileDialog.Filter = "Character backup file|*.zip";
+			exportFileDialog.FileName = Utility.ValidFilename(filename);
+			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			exportFileDialog.FilterIndex = AppSettings.User.LastExportChatFilter;
+
+			var result = exportFileDialog.ShowDialog();
+			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
+				return false;
+
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
+			AppSettings.User.LastExportChatFilter = exportFileDialog.FilterIndex;
+
+			if (BackupUtil.WriteBackup(exportFileDialog.FileName, backup) == false)
+			{
+				MessageBox.Show(Resources.error_write_file, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			MessageBox.Show(Resources.msg_link_create_backup, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			return true;
+		}
+
+		private bool RestoreBackyardBackup(out CharacterInstance characterInstance)
+		{
+			if (Backyard.ConnectionEstablished == false)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				characterInstance = default(CharacterInstance);
+				return false;
+			}
+
+			importFileDialog.Title = Resources.cap_link_restore_backup;
+			importFileDialog.Filter = "Character backup file|*.zip";
+			importFileDialog.FilterIndex = AppSettings.User.LastImportChatFilter;
+			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			var result = importFileDialog.ShowDialog();
+			if (result != DialogResult.OK)
+			{
+				characterInstance = default(CharacterInstance);
+				return false;
+			}
+
+			AppSettings.User.LastImportChatFilter = importFileDialog.FilterIndex;
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
+
+			BackupData backup;
+			FileUtil.Error readError = BackupUtil.ReadBackup(importFileDialog.FileName, out backup);
+			if (readError != FileUtil.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_restore_backup_invalid, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				characterInstance = default(CharacterInstance);
+				return false;
+			}
+
+			// Confirmation
+			if (MessageBox.Show(string.Format(Resources.msg_link_restore_backup, backup.characterCard.data.displayName, backup.chats.Count), Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No)
+			{
+				characterInstance = default(CharacterInstance);
+				return false;
+			}
+
+			// Import chat parameters?
+			if (backup.hasParameters && MessageBox.Show(Resources.msg_link_restore_backup_settings, Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No)
+			{
+				// Strip parameters
+				foreach (var chat in backup.chats)
+					chat.parameters = null;
+			}
+
+			IEnumerable<Backyard.ImageInput> images = backup.images
+				.Select(i => new Backyard.ImageInput {
+					asset = new AssetFile() {
+						name = i.filename,
+						data = AssetData.FromBytes(i.data),
+						ext = i.ext,
+						assetType = AssetFile.AssetType.Icon,
+					},
+					fileExt = i.ext,
+				});
+
+			images = images.Union(backup.backgrounds
+				.Select(i => new Backyard.ImageInput {
+					asset = new AssetFile() {
+						name = i.filename,
+						data = AssetData.FromBytes(i.data),
+						ext = i.ext,
+						assetType = AssetFile.AssetType.Background,
+					},
+					fileExt = i.ext,
+				}));
+
+			// Create Ginger import folder
+			FolderInstance backupFolder;
+			if (string.IsNullOrEmpty(AppSettings.BackyardLink.BulkImportFolderName) == false)
+			{
+				string folderName = "Restored backups";
+				string folderUrl = Backyard.ToFolderUrl(folderName);
+				backupFolder = Backyard.Folders
+					.Where(f => string.Compare(f.name, folderName, StringComparison.OrdinalIgnoreCase) == 0
+						|| string.Compare(f.url, folderUrl, StringComparison.OrdinalIgnoreCase) == 0)
+					.FirstOrDefault();
+
+				if (backupFolder.isEmpty)
+					Backyard.CreateNewFolder(folderName, out backupFolder); // It's ok if this fails.
+			}
+			else
+				backupFolder = default(FolderInstance);
+
+			// Write character
+			Backyard.Link.Image[] imageLinks; // Ignored
+			CharacterInstance returnedCharacter = default(CharacterInstance);
+			Backyard.Error error = RunTask(() => Backyard.CreateNewCharacter(backup.characterCard, images.ToArray(), backup.chats.ToArray(), out returnedCharacter, out imageLinks, backupFolder), "Restoring backup...");
+			characterInstance = returnedCharacter;
+			if (error != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+						
+			MessageBox.Show(Resources.msg_link_restore_backup_success, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			return true;
+		}
+
+		private Backyard.Error RunTask(Func<Backyard.Error> action, string statusText = null)
+		{
+			if (statusText != null)
+				SetStatusBarMessage(statusText);
+			
+			this.Cursor = Cursors.WaitCursor;
+			var error = action.Invoke();
+			this.Cursor = Cursors.Default;
+
+			if (statusText != null)
+				ClearStatusBarMessage();
+			return error;
+		}
+
+		private void RepairBrokenImages()
+		{
+			var mr = MessageBox.Show(Resources.msg_link_repair_images, Resources.cap_link_repair_images, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+			if (mr != DialogResult.Yes)
+				return;
+
+			int modified = 0;
+			int skipped = 0;
+			var error = RunTask(() => Backyard.RepairImages(out modified, out skipped), "Repairing broken images...");
+
+			if (error == Backyard.Error.NotConnected)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+			if (error == Backyard.Error.NotFound)
+			{
+				MessageBox.Show(Resources.error_link_images_folder_not_found, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+			if (error != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_repair_images, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+			
+			// Success
+			MessageBox.Show(string.Format(Resources.msg_link_repaired_images, modified, skipped), Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
+
+		private void PurgeUnusedImages()
+		{
+			var imagesFolder = Path.Combine(AppSettings.BackyardLink.Location, "images");
+			if (Directory.Exists(imagesFolder) == false)
+			{
+				MessageBox.Show(Resources.error_link_images_folder_not_found, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			string[] imageUrls = new string[0];
+
+			var error = RunTask(() => Backyard.GetAllImageUrls(out imageUrls));
+
+			if (error == Backyard.Error.NotConnected)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+			if (error != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_repair_images, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+			if (imageUrls == null || imageUrls.Length == 0)
+			{
+				MessageBox.Show(Resources.msg_link_purge_images_not_found, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return;
+			}
+
+			var images = new HashSet<string>(imageUrls
+				.Select(fn => Path.GetFileName(fn).ToLowerInvariant())
+				.Where(fn => string.IsNullOrEmpty(fn) == false));
+			
+			var foundImageFilenames = new HashSet<string>(Utility.FindFilesInFolder(imagesFolder)
+				.Select(fn => Path.GetFileName(fn).ToLowerInvariant())
+				.Where(fn => {
+					var ext = Utility.GetFileExt(fn);
+					return ext == "png"
+						|| ext == "jpg"
+						|| ext == "jpeg"
+						|| ext == "gif"
+						|| ext == "apng"
+						|| ext == "webp";
+				}));
+
+			var unknownImages = foundImageFilenames.Except(images)
+				.Select(fn => Path.Combine(imagesFolder, fn))
+				.ToList();
+
+			if (unknownImages.Count > 0)
+			{
+				var mr = MessageBox.Show(string.Format(Resources.msg_confirm_purge_images, unknownImages.Count), Resources.cap_link_purge_images, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,  MessageBoxDefaultButton.Button2);
+				
+				if (mr == DialogResult.Yes)
+				{
+					Win32.SendToRecycleBin(unknownImages, Win32.FileOperationFlags.FOF_WANTNUKEWARNING | Win32.FileOperationFlags.FOF_NOCONFIRMATION);
+				}
+			}
+			else
+			{
+				MessageBox.Show(Resources.msg_link_purge_images_not_found, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+		}
+
+		private bool EditCurrentModelSettings()
+		{
+			// Refresh character list
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+			{
+				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				AppSettings.BackyardLink.Enabled = false;
+				return false;
+			}
+
+			var groupInstance = Backyard.GetGroupForCharacter(Current.Link.characterId);
+			if (groupInstance.isEmpty)
+			{
+				MessageBox.Show(string.Format(Resources.error_link_character_not_found, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+
+			ChatInstance[] chats = null;
+			if (groupInstance.isEmpty == false && RunTask(() => Backyard.GetChats(groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			if (chats == null || chats.Length == 0)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			// Model settings dialog
+			var dlg = new EditModelSettingsDialog();
+			dlg.Editing = chats[0].parameters;
+			if (dlg.ShowDialog() != DialogResult.OK)
+				return false;
+
+			string[] chatIds = chats.Select(c => c.instanceId).ToArray();
+
+			var error = RunTask(() => Backyard.UpdateChatParameters(chatIds, dlg.Parameters, null), "Updating model settings...");
+			if (error == Backyard.Error.NotFound)
+			{
+				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;;
+			}
+			if (error != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			SetStatusBarMessage(Resources.status_link_update_model_settings, Constants.StatusBarMessageInterval);
+			return true;
+		}
 	}
 }

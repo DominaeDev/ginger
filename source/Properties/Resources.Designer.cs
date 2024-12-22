@@ -253,11 +253,20 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {&quot;type&quot;:&quot;object&quot;,&quot;properties&quot;:{&quot;version&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;integer&quot;},&quot;chat&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;object&quot;,&quot;properties&quot;:{&quot;ChatItems&quot;:{&quot;required&quot;:true,&quot;type&quot;:[&quot;array&quot;,&quot;null&quot;],&quot;items&quot;:{&quot;type&quot;:[&quot;object&quot;,&quot;null&quot;],&quot;properties&quot;:{&quot;input&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;output&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;createdAt&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;integer&quot;}}}}}},&quot;name&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;createdAt&quot;:{&quot;type&quot;:[&quot;integer&quot;,&quot;null&quot;]},&quot;updatedAt&quot;:{&quot;type&quot;:[&quot;integer&quot;,&quot;null&quot;]},&quot;staging&quot;:{&quot;type&quot;:[&quot;object&quot;,&quot;n [rest of stri....
+        ///   Looks up a localized string similar to {&quot;type&quot;:&quot;object&quot;,&quot;properties&quot;:{&quot;name&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;createdAt&quot;:{&quot;type&quot;:[&quot;integer&quot;,&quot;null&quot;]},&quot;updatedAt&quot;:{&quot;type&quot;:[&quot;integer&quot;,&quot;null&quot;]},&quot;staging&quot;:{&quot;type&quot;:[&quot;object&quot;,&quot;null&quot;],&quot;properties&quot;:{&quot;system&quot;:{&quot;required&quot;:true,&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;greeting&quot;:{&quot;required&quot;:true,&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;scenario&quot;:{&quot;required&quot;:true,&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;example&quot;:{&quot;required&quot;:true,&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;grammar&quot;:{&quot;required&quot;:true,&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;authorNote&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;pruneExamp [rest of stri....
         /// </summary>
-        internal static string backup_chat_schema {
+        internal static string backup_chat_v1_schema {
             get {
-                return ResourceManager.GetString("backup_chat_schema", resourceCulture);
+                return ResourceManager.GetString("backup_chat_v1_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {&quot;type&quot;:&quot;object&quot;,&quot;properties&quot;:{&quot;name&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;createdAt&quot;:{&quot;type&quot;:[&quot;integer&quot;,&quot;null&quot;]},&quot;updatedAt&quot;:{&quot;type&quot;:[&quot;integer&quot;,&quot;null&quot;]},&quot;staging&quot;:{&quot;type&quot;:[&quot;object&quot;,&quot;null&quot;],&quot;properties&quot;:{&quot;system&quot;:{&quot;required&quot;:true,&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;greeting&quot;:{&quot;required&quot;:true,&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;scenario&quot;:{&quot;required&quot;:true,&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;example&quot;:{&quot;required&quot;:true,&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;grammar&quot;:{&quot;required&quot;:true,&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;authorNote&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;pruneExamp [rest of stri....
+        /// </summary>
+        internal static string backup_chat_v2_schema {
+            get {
+                return ResourceManager.GetString("backup_chat_v2_schema", resourceCulture);
             }
         }
         
@@ -1448,6 +1457,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Character entry not found..
+        /// </summary>
+        internal static string error_link_character_not_found {
+            get {
+                return ResourceManager.GetString("error_link_character_not_found", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Chat not found..
         /// </summary>
         internal static string error_link_chat_not_found {
@@ -2537,7 +2555,9 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully connected to Backyard AI..
+        ///   Looks up a localized string similar to Successfully connected to Backyard AI.
+        ///
+        ///You can now open and save characters directly..
         /// </summary>
         internal static string msg_link_connected {
             get {
@@ -4296,7 +4316,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Break the link connecting this file to Backyard AI..
+        ///   Looks up a localized string similar to Break the link between this file and the character stored in Backyard AI..
         /// </summary>
         internal static string tooltip_link_break {
             get {
@@ -4504,7 +4524,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attempt to restore the link connecting this file to Backyard AI..
+        ///   Looks up a localized string similar to Attempt to restore the link between this file and the character stored in Backyard AI..
         /// </summary>
         internal static string tooltip_link_reestablish {
             get {

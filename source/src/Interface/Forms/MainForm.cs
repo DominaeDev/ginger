@@ -253,6 +253,11 @@ namespace Ginger
 			editExportModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_default;
 			importAltGreetingsMenuItem.ToolTipText = Resources.tooltip_link_alt_greetings;
 
+			createBackupMenuItem.ToolTipText = Resources.tooltip_link_create_backup;
+			restoreBackupMenuItem.ToolTipText = Resources.tooltip_link_restore_backup;
+			repairBrokenImagesMenuItem.ToolTipText = Resources.tooltip_link_repair_images;
+			purgeUnusedImagesMenuItem.ToolTipText = Resources.tooltip_link_purge_images;
+
 			RegisterIdleHandler(recipeList);
 
 			outputBox.SetTabWidth(4);
@@ -1120,6 +1125,10 @@ namespace Ginger
 #if DEBUG && false // Show form level buffering
 			statusBarActor.Text = statusBarActor.Text + (_bEnableFormLevelDoubleBuffering && AppSettings.Settings.EnableFormLevelBuffering ? " ON" : " OFF");
 #endif
+
+			// Show Backyard menu
+			backyardMenuItem.Visible = Backyard.ConnectionEstablished;
+
 			// Connection status icon
 			if (Backyard.ConnectionEstablished)
 			{
@@ -1296,26 +1305,23 @@ namespace Ginger
 			}
 
 			// Link menu
+			enableLinkMenuItem.Text = Backyard.ConnectionEstablished ? "Connected to Backyard AI" : "Connect to Backyard AI";
 			enableLinkMenuItem.Checked = Backyard.ConnectionEstablished;
+			backyardMenuItem.Visible = Backyard.ConnectionEstablished;
+
 			importLinkedMenuItem.Enabled = Backyard.ConnectionEstablished;
 			saveLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
 			saveNewLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink == false;
 			revertLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
-//			reestablishLinkSeparator.Visible = Backyard.ConnectionEstablished && Current.HasLink;
-			reestablishLinkMenuItem.Enabled = Backyard.ConnectionEstablished;
+
+			breakRestoreLinkSeparator.Visible = Backyard.ConnectionEstablished;
+			breakLinkMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
+			breakLinkMenuItem.Visible = Backyard.ConnectionEstablished && Current.HasStaleLink == false;
+			reestablishLinkMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasStaleLink;
 			reestablishLinkMenuItem.Visible = Backyard.ConnectionEstablished && Current.HasStaleLink;
-			breakLinkMenuItem.Enabled = Backyard.ConnectionEstablished;
-			breakLinkMenuItem.Visible = Backyard.ConnectionEstablished && Current.HasActiveLink;
-			chatHistoryMenuItem.Visible = Backyard.ConnectionEstablished;
-			
-			bulkSeparator.Visible = Backyard.ConnectionEstablished;
-			bulkOperationsMenuItem.Visible = Backyard.ConnectionEstablished;
-			bulkExportMenuItem.Enabled = Backyard.ConnectionEstablished;
-			bulkImportMenuItem.Enabled = Backyard.ConnectionEstablished;
-			bulkEditModelSettingsMenuItem.Enabled = Backyard.ConnectionEstablished;
-			
+			editCurrentModelSettingsMenuItem.Enabled = Current.HasActiveLink;
+						
 			// Link options
-			linkOptionsMenuItem.Visible = Backyard.ConnectionEstablished;
 			applyToFirstChatMenuItem.Checked = AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.First;
 			applyToLastChatMenuItem.Checked = AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.Last;
 			applyToAllChatsMenuItem.Checked = AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.All;
@@ -1323,6 +1329,7 @@ namespace Ginger
 			enableAutosaveMenuItem.Checked = AppSettings.BackyardLink.Autosave;
 			usePortraitAsBackgroundMenuItem.Checked = AppSettings.BackyardLink.UsePortraitAsBackground;
 			importAltGreetingsMenuItem.Checked = AppSettings.BackyardLink.ImportAlternateGreetings;
+
 
 			Theme.Apply(menuStrip);
 		}
@@ -2470,6 +2477,32 @@ namespace Ginger
 		private void importAltGreetingsMenuItem_Click(object sender, EventArgs e)
 		{
 			AppSettings.BackyardLink.ImportAlternateGreetings = !AppSettings.BackyardLink.ImportAlternateGreetings;
+		}
+
+		private void createBackupMenuItem_Click(object sender, EventArgs e)
+		{
+			CreateBackyardBackup();
+		}
+
+		private void restoreBackupMenuItem_Click(object sender, EventArgs e)
+		{
+			CharacterInstance characterInstance;
+			RestoreBackyardBackup(out characterInstance);
+		}
+
+		private void repairBrokenImagesMenuItem_Click(object sender, EventArgs e)
+		{
+			RepairBrokenImages();
+		}
+
+		private void purgeUnusedImages_Click(object sender, EventArgs e)
+		{
+			PurgeUnusedImages();
+		}
+
+		private void editCurrentModelSettingsMenuItem_Click(object sender, EventArgs e)
+		{
+			EditCurrentModelSettings();
 		}
 	}
 

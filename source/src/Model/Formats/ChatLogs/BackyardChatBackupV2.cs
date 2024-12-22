@@ -8,16 +8,20 @@ using Ginger.Integration;
 
 namespace Ginger
 {
-	public class BackyardChatBackup
+	public class BackyardChatBackupV2
 	{
 		private static JsonSchema _schema;
 
-		static BackyardChatBackup()
+		static BackyardChatBackupV2()
 		{
-			_schema = JsonSchema.Parse(Resources.backup_chat_schema);
+//			JsonSchemaGenerator generator = new JsonSchemaGenerator();
+//			JsonSchema schema = generator.Generate(typeof(BackyardChatBackupV2));
+//			string jsonSchema = schema.ToString();
+
+			_schema = JsonSchema.Parse(Resources.backup_chat_v2_schema);
 		}
 
-		[JsonProperty("name", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Ignore)]
+		[JsonProperty("name", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
 		public string name = null;
 
 		[JsonProperty("createdAt", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
@@ -45,22 +49,22 @@ namespace Ginger
 
 		public class Staging
 		{
-			[JsonProperty("system", Required = Required.DisallowNull)]
+			[JsonProperty("system", Required = Required.AllowNull)]
 			public string system = null;
 
-			[JsonProperty("greeting", Required = Required.DisallowNull)]
+			[JsonProperty("greeting", Required = Required.AllowNull)]
 			public string greeting = null;
 
-			[JsonProperty("scenario", Required = Required.DisallowNull)]
+			[JsonProperty("scenario", Required = Required.AllowNull)]
 			public string scenario = null;
 
-			[JsonProperty("example", Required = Required.DisallowNull)]
+			[JsonProperty("example", Required = Required.AllowNull)]
 			public string example = null;
 
-			[JsonProperty("grammar", Required = Required.DisallowNull)]
+			[JsonProperty("grammar", Required = Required.AllowNull)]
 			public string grammar = null;
 
-			[JsonProperty("authorNote", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Ignore)]
+			[JsonProperty("authorNote", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
 			public string authorNote = "";
 
 			[JsonProperty("pruneExampleChat")]
@@ -69,13 +73,13 @@ namespace Ginger
 			[JsonProperty("ttsAutoPlay")]
 			public bool ttsAutoPlay = false;
 
-			[JsonProperty("ttsInputFilter", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Ignore)]
+			[JsonProperty("ttsInputFilter", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
 			public string ttsInputFilter = null;
 		}
 
 		public class Parameters
 		{
-			[JsonProperty("model", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Ignore)]
+			[JsonProperty("model", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
 			public string model = "";
 
 			[JsonProperty("temperature")]
@@ -99,7 +103,7 @@ namespace Ginger
 			[JsonProperty("repeatPenalty")]
 			public decimal repeatPenalty = 1.05m;
 
-			[JsonProperty("promptTemplate", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Include)]
+			[JsonProperty("promptTemplate", Required = Required.Default, NullValueHandling = NullValueHandling.Include)]
 			public string promptTemplate = null;
 		}
 
@@ -119,9 +123,9 @@ namespace Ginger
 			public long timestamp;
 		}
 
-		public static BackyardChatBackup FromChat(BackupData.Chat chat)
+		public static BackyardChatBackupV2 FromChat(BackupData.Chat chat)
 		{
-			BackyardChatBackup backup = new BackyardChatBackup();
+			BackyardChatBackupV2 backup = new BackyardChatBackupV2();
 			var lsEntries = new List<ChatItem>(chat.history.count / 2 + 1);
 
 			int iMsg = 0;
@@ -156,7 +160,7 @@ namespace Ginger
 				}
 			}
 
-			backup.name = chat.name;
+			backup.name = chat.name ?? ChatInstance.DefaultName;
 			backup.createdAt = chat.creationDate.ToUnixTimeMilliseconds();
 			backup.updatedAt = chat.updateDate.ToUnixTimeMilliseconds();
 			backup.backgroundName = chat.backgroundName;
@@ -177,7 +181,7 @@ namespace Ginger
 			if (chat.parameters != null)
 			{
 				backup.parameters = new Parameters() {
-					model = chat.parameters.model,
+					model = chat.parameters.model ?? Backyard.DefaultModel,
 					temperature = chat.parameters.temperature,
 					topP = chat.parameters.topP,
 					minP = chat.parameters.minP,
@@ -239,22 +243,22 @@ namespace Ginger
 			if (this.staging != null)
 			{
 				staging = new ChatStaging() {
-					system = this.staging.system,
-					scenario = this.staging.scenario,
-					greeting = this.staging.greeting,
-					example = this.staging.example,
-					grammar = this.staging.grammar,
+					system = this.staging.system ?? "",
+					scenario = this.staging.scenario ?? "",
+					greeting = this.staging.greeting ?? "",
+					example = this.staging.example ?? "",
+					grammar = this.staging.grammar ?? "",
 					pruneExampleChat = this.staging.pruneExampleChat,
-					authorNote = this.staging.authorNote,
+					authorNote = this.staging.authorNote ?? "",
 					ttsAutoPlay = this.staging.ttsAutoPlay,
-					ttsInputFilter = this.staging.ttsInputFilter,
+					ttsInputFilter = this.staging.ttsInputFilter ?? "default",
 				};
 			}
 
 			if (this.parameters != null)
 			{
 				parameters = new ChatParameters() {
-					model = this.parameters.model,
+					model = this.parameters.model ?? Backyard.DefaultModel,
 					temperature = this.parameters.temperature,
 					topP = this.parameters.topP,
 					minP = this.parameters.minP,
@@ -267,7 +271,7 @@ namespace Ginger
 			}
 
 			return new BackupData.Chat() {
-				name = name,
+				name = name ?? ChatInstance.DefaultName,
 				creationDate = createdAt.HasValue ? DateTimeExtensions.FromUnixTime(createdAt.Value) : DateTime.Now,
 				updateDate = updatedAt.HasValue ? DateTimeExtensions.FromUnixTime(updatedAt.Value) : DateTime.Now,
 				staging = staging,
@@ -279,14 +283,15 @@ namespace Ginger
 			};
 		}
 
-		public static BackyardChatBackup FromJson(string json)
+		public static BackyardChatBackupV2 FromJson(string json)
 		{
 			try
 			{
 				JObject jObject = JObject.Parse(json);
-				if (jObject.IsValid(_schema))
+				IList<string> errorMessages;
+				if (jObject.IsValid(_schema, out errorMessages))
 				{
-					var card = JsonConvert.DeserializeObject<BackyardChatBackup>(json);
+					var card = JsonConvert.DeserializeObject<BackyardChatBackupV2>(json);
 					return card;
 				}
 			}

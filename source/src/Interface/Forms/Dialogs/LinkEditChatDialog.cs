@@ -53,11 +53,7 @@ namespace Ginger
 			exportMenuItem.ToolTipText = Resources.tooltip_link_export_chat;
 			duplicateMenuItem.ToolTipText = Resources.tooltip_link_duplicate_chat;
 			repairChatsMenuItem.ToolTipText = Resources.tooltip_link_repair_chat;
-			createBackupMenuItem.ToolTipText = Resources.tooltip_link_create_backup;
-			restoreBackupMenuItem.ToolTipText = Resources.tooltip_link_restore_backup;
 			editModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_all;
-			fixBrokenImagesToolStripMenuItem.ToolTipText = Resources.tooltip_link_repair_images;
-			purgeUnusedImagesMenuItem.ToolTipText = Resources.tooltip_link_purge_images;
 		}
 
 		private void OnLoad(object sender, EventArgs e)
@@ -894,7 +890,6 @@ namespace Ginger
 			duplicateMenuItem.Enabled = hasGroup && hasChat;
 			refreshMenuItem.Enabled = hasGroup;
 			repairChatsMenuItem.Enabled = hasGroup;
-			createBackupMenuItem.Enabled = hasGroup;
 		}
 
 		private void duplicateMenuItem_Click(object sender, EventArgs e)
@@ -1309,185 +1304,6 @@ namespace Ginger
 			RefreshPortraitPosition();
 		}
 
-		private void createBackupMenuItem_Click(object sender, EventArgs e)
-		{
-			if (_groupInstance.isEmpty)
-				return;
-
-			CreateBackup();
-		}
-		
-		private void restoreBackupMenuItem_Click(object sender, EventArgs e)
-		{
-			CharacterInstance characterInstance;
-			if (RestoreBackup(out characterInstance))
-			{
-				// Refresh and select newly created character
-				if (RunTask(() => Backyard.RefreshCharacters()) != Backyard.Error.NoError)
-				{
-					MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					Close();
-					return;
-				}
-
-				var group = Backyard.GetGroupForCharacter(characterInstance.instanceId);
-				if (group.isEmpty == false)
-				{
-					_groupInstance = group;
-					_charactersById = Backyard.Characters.ToDictionary(c => c.instanceId, c => c);
-
-					PopulateChatList(true);
-					RefreshPortrait();
-				}
-			}
-		}
-
-		private bool CreateBackup()
-		{
-			if (_groupInstance.isEmpty)
-				return false;
-
-			if (_groupInstance.members.Length > 2)
-			{
-				MessageBox.Show(Resources.error_link_create_backup_not_character, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Information);
-				return false;
-			}
-
-			CharacterInstance characterInstance;
-			characterInstance = _groupInstance.members
-				.Select(id => Backyard.GetCharacter(id))
-				.FirstOrDefault(c => c.isUser == false);
-
-			if (string.IsNullOrEmpty(characterInstance.instanceId))
-				return false; // Error
-
-			BackupData backup = null;
-			var error = RunTask(() => BackupUtil.CreateBackup(characterInstance, out backup), "Creating backup...");
-			if (error == Backyard.Error.NotFound)
-			{
-				MessageBox.Show(Resources.error_link_create_backup, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return false;
-			}
-			else if (error == Backyard.Error.NotConnected)
-			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Close();
-				return false;
-			}
-			else if (error != Backyard.Error.NoError)
-			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return false;
-			}
-
-			string filename = string.Concat(GetCharacterName(), ".backup.", DateTime.Now.ToString("yyyy-MM-dd"), ".zip").Replace(" ", "_");
-
-			importFileDialog.Title = Resources.cap_link_create_backup;
-			exportFileDialog.Filter = "Character backup file|*.zip";
-			exportFileDialog.FileName = Utility.ValidFilename(filename);
-			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
-			exportFileDialog.FilterIndex = AppSettings.User.LastExportChatFilter;
-
-			var result = exportFileDialog.ShowDialog();
-			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
-				return false;
-
-			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
-			AppSettings.User.LastExportChatFilter = exportFileDialog.FilterIndex;
-
-			if (BackupUtil.WriteBackup(exportFileDialog.FileName, backup) == false)
-			{
-				MessageBox.Show(Resources.error_write_file, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return false;
-			}
-
-			MessageBox.Show(Resources.msg_link_create_backup, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Information);
-			return true;
-		}
-
-		private bool RestoreBackup(out CharacterInstance characterInstance)
-		{
-			if (Backyard.ConnectionEstablished == false)
-			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				characterInstance = default(CharacterInstance);
-				return false;
-			}
-
-			importFileDialog.Title = Resources.cap_link_restore_backup;
-			importFileDialog.Filter = "Character backup file|*.zip";
-			importFileDialog.FilterIndex = AppSettings.User.LastImportChatFilter;
-			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
-			var result = importFileDialog.ShowDialog();
-			if (result != DialogResult.OK)
-			{
-				characterInstance = default(CharacterInstance);
-				return false;
-			}
-
-			AppSettings.User.LastImportChatFilter = importFileDialog.FilterIndex;
-			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
-
-			BackupData backup;
-			FileUtil.Error readError = BackupUtil.ReadBackup(importFileDialog.FileName, out backup);
-			if (readError != FileUtil.Error.NoError)
-			{
-				MessageBox.Show(Resources.error_link_restore_backup_invalid, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				characterInstance = default(CharacterInstance);
-				return false;
-			}
-
-			// Confirmation
-			if (MessageBox.Show(string.Format(Resources.msg_link_restore_backup, backup.characterCard.data.displayName, backup.chats.Count), Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No)
-			{
-				characterInstance = default(CharacterInstance);
-				return false;
-			}
-
-			// Import chat parameters?
-			if (backup.hasParameters && MessageBox.Show(Resources.msg_link_restore_backup_settings, Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No)
-			{
-				// Strip parameters
-				foreach (var chat in backup.chats)
-					chat.parameters = null;
-			}
-
-			IEnumerable<Backyard.ImageInput> images = backup.images
-				.Select(i => new Backyard.ImageInput {
-					asset = new AssetFile() {
-						name = i.filename,
-						data = AssetData.FromBytes(i.data),
-						ext = i.ext,
-						assetType = AssetFile.AssetType.Icon,
-					},
-					fileExt = i.ext,
-				});
-
-			images = images.Union(backup.backgrounds
-				.Select(i => new Backyard.ImageInput {
-					asset = new AssetFile() {
-						name = i.filename,
-						data = AssetData.FromBytes(i.data),
-						ext = i.ext,
-						assetType = AssetFile.AssetType.Background,
-					},
-					fileExt = i.ext,
-				}));
-
-			Backyard.Link.Image[] imageLinks; // Ignored
-			CharacterInstance returnedCharacter = default(CharacterInstance);
-			Backyard.Error error = RunTask(() => Backyard.CreateNewCharacter(backup.characterCard, images.ToArray(), backup.chats.ToArray(), out returnedCharacter, out imageLinks), "Restoring backup...");
-			characterInstance = returnedCharacter;
-			if (error != Backyard.Error.NoError)
-			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return false;
-			}
-						
-			MessageBox.Show(Resources.msg_link_restore_backup_success, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Information);
-			return true;
-		}
-
 		private void CopyStaging(ChatInstance chatInstance)
 		{
 			if (Backyard.ConnectionEstablished == false)
@@ -1576,7 +1392,7 @@ namespace Ginger
 
 			RefreshChats();
 		}
-				
+		
 		private void EditAllSettings()
 		{
 			if (Backyard.ConnectionEstablished == false)
@@ -1759,100 +1575,5 @@ namespace Ginger
 			EditAllSettings();
 		}
 
-		private void fixBrokenImagesToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			var mr = MessageBox.Show(Resources.msg_link_repair_images, Resources.cap_link_repair_images, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
-			if (mr != DialogResult.Yes)
-				return;
-
-			int modified = 0;
-			int skipped = 0;
-			var error = RunTask(() => Backyard.RepairImages(out modified, out skipped), "Repairing broken images...");
-
-			if (error == Backyard.Error.NotConnected)
-			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Close();
-				return;
-			}
-			if (error == Backyard.Error.NotFound)
-			{
-				MessageBox.Show(Resources.error_link_images_folder_not_found, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-			if (error != Backyard.Error.NoError)
-			{
-				MessageBox.Show(Resources.error_link_repair_images, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-			
-			// Success
-			MessageBox.Show(string.Format(Resources.msg_link_repaired_images, modified, skipped), Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
-		}
-
-		private void purgeUnusedImagesMenuItem_Click(object sender, EventArgs e)
-		{
-			var imagesFolder = Path.Combine(AppSettings.BackyardLink.Location, "images");
-			if (Directory.Exists(imagesFolder) == false)
-			{
-				MessageBox.Show(Resources.error_link_images_folder_not_found, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			string[] imageUrls = new string[0];
-
-			var error = RunTask(() => Backyard.GetAllImageUrls(out imageUrls));
-
-			if (error == Backyard.Error.NotConnected)
-			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Close();
-				return;
-			}
-			if (error != Backyard.Error.NoError)
-			{
-				MessageBox.Show(Resources.error_link_repair_images, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-			if (imageUrls == null || imageUrls.Length == 0)
-			{
-				MessageBox.Show(Resources.msg_link_purge_images_not_found, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
-				return;
-			}
-
-			var images = new HashSet<string>(imageUrls
-				.Select(fn => Path.GetFileName(fn).ToLowerInvariant())
-				.Where(fn => string.IsNullOrEmpty(fn) == false));
-			
-			var foundImageFilenames = new HashSet<string>(Utility.FindFilesInFolder(imagesFolder)
-				.Select(fn => Path.GetFileName(fn).ToLowerInvariant())
-				.Where(fn => {
-					var ext = Utility.GetFileExt(fn);
-					return ext == "png"
-						|| ext == "jpg"
-						|| ext == "jpeg"
-						|| ext == "gif"
-						|| ext == "apng"
-						|| ext == "webp";
-				}));
-
-			var unknownImages = foundImageFilenames.Except(images)
-				.Select(fn => Path.Combine(imagesFolder, fn))
-				.ToList();
-
-			if (unknownImages.Count > 0)
-			{
-				var mr = MessageBox.Show(string.Format(Resources.msg_confirm_purge_images, unknownImages.Count), Resources.cap_link_purge_images, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,  MessageBoxDefaultButton.Button2);
-				
-				if (mr == DialogResult.Yes)
-				{
-					Win32.SendToRecycleBin(unknownImages, Win32.FileOperationFlags.FOF_WANTNUKEWARNING | Win32.FileOperationFlags.FOF_NOCONFIRMATION);
-				}
-			}
-			else
-			{
-				MessageBox.Show(Resources.msg_link_purge_images_not_found, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
-			}
-		}
 	}
 }

@@ -33,25 +33,11 @@ namespace Ginger {
 			System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
 			System.Windows.Forms.ToolStripMenuItem linkMenuItem;
-			System.Windows.Forms.ToolStripSeparator toolStripMenuItem10;
-			System.Windows.Forms.ToolStripMenuItem writeChatSettingsMenuItem;
 			System.Windows.Forms.ToolStripMenuItem themeMenuItem;
 			this.enableLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.breakRestoreLinkSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.reestablishLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.breakLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.importLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveNewLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.revertLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.bulkSeparator = new System.Windows.Forms.ToolStripSeparator();
-			this.bulkOperationsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.bulkEditModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripSeparator();
-			this.bulkImportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.bulkExportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.applyToLastChatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.applyToFirstChatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.applyToAllChatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.lightThemeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.darkThemeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitContainer = new System.Windows.Forms.SplitContainer();
@@ -113,7 +99,6 @@ namespace Ginger {
 			this.viewNotesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.embeddedAssetsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.customVariablesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.chatHistoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.collapseAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.expandAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.showRecipeCategoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -142,12 +127,6 @@ namespace Ginger {
 			this.checkSpellingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.enableSpellCheckingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
-			this.linkOptionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.alwaysLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.usePortraitAsBackgroundMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.importAltGreetingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.editExportModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
 			this.autoConvertNameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoBreakMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -160,6 +139,38 @@ namespace Ginger {
 			this.bakeAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.bakeActorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mergeLoreMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.backyardMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.importLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveNewLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.revertLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripSeparator();
+			this.chatHistoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.editCurrentModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripSeparator();
+			this.bulkOperationsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.bulkEditModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripSeparator();
+			this.bulkImportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.bulkExportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.utilitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.createBackupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.restoreBackupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem10 = new System.Windows.Forms.ToolStripSeparator();
+			this.repairBrokenImagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.purgeUnusedImagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem14 = new System.Windows.Forms.ToolStripSeparator();
+			this.optionsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.alwaysLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.usePortraitAsBackgroundMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.importAltGreetingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.writeChatSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.applyToLastChatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.applyToFirstChatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.applyToAllChatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem16 = new System.Windows.Forms.ToolStripSeparator();
+			this.editExportModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.viewHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.visitGitHubPageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -180,8 +191,6 @@ namespace Ginger {
 			toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
 			linkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			toolStripMenuItem10 = new System.Windows.Forms.ToolStripSeparator();
-			writeChatSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			themeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
 			this.splitContainer.Panel1.SuspendLayout();
@@ -238,15 +247,9 @@ namespace Ginger {
 			// 
 			linkMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.enableLinkMenuItem,
+            this.breakRestoreLinkSeparator,
             this.reestablishLinkMenuItem,
-            this.breakLinkMenuItem,
-            toolStripMenuItem10,
-            this.importLinkedMenuItem,
-            this.saveLinkedMenuItem,
-            this.saveNewLinkedMenuItem,
-            this.revertLinkedMenuItem,
-            this.bulkSeparator,
-            this.bulkOperationsMenuItem});
+            this.breakLinkMenuItem});
 			linkMenuItem.Name = "linkMenuItem";
 			linkMenuItem.Size = new System.Drawing.Size(227, 22);
 			linkMenuItem.Text = "&Link";
@@ -254,132 +257,28 @@ namespace Ginger {
 			// enableLinkMenuItem
 			// 
 			this.enableLinkMenuItem.Name = "enableLinkMenuItem";
-			this.enableLinkMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.enableLinkMenuItem.Size = new System.Drawing.Size(198, 22);
 			this.enableLinkMenuItem.Text = "Connect to Backyard AI";
 			this.enableLinkMenuItem.Click += new System.EventHandler(this.enableLinkMenuItem_Click);
+			// 
+			// breakRestoreLinkSeparator
+			// 
+			this.breakRestoreLinkSeparator.Name = "breakRestoreLinkSeparator";
+			this.breakRestoreLinkSeparator.Size = new System.Drawing.Size(195, 6);
 			// 
 			// reestablishLinkMenuItem
 			// 
 			this.reestablishLinkMenuItem.Name = "reestablishLinkMenuItem";
-			this.reestablishLinkMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.reestablishLinkMenuItem.Size = new System.Drawing.Size(198, 22);
 			this.reestablishLinkMenuItem.Text = "Restore character link";
 			this.reestablishLinkMenuItem.Click += new System.EventHandler(this.reestablishLinkMenuItem_Click);
 			// 
 			// breakLinkMenuItem
 			// 
 			this.breakLinkMenuItem.Name = "breakLinkMenuItem";
-			this.breakLinkMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.breakLinkMenuItem.Size = new System.Drawing.Size(198, 22);
 			this.breakLinkMenuItem.Text = "Break character link";
 			this.breakLinkMenuItem.Click += new System.EventHandler(this.breakLinkMenuItem_Click);
-			// 
-			// toolStripMenuItem10
-			// 
-			toolStripMenuItem10.Name = "toolStripMenuItem10";
-			toolStripMenuItem10.Size = new System.Drawing.Size(236, 6);
-			// 
-			// importLinkedMenuItem
-			// 
-			this.importLinkedMenuItem.Name = "importLinkedMenuItem";
-			this.importLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+O";
-			this.importLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
-			this.importLinkedMenuItem.Text = "Open character...";
-			this.importLinkedMenuItem.Click += new System.EventHandler(this.importLinkedMenuItem_Click);
-			// 
-			// saveLinkedMenuItem
-			// 
-			this.saveLinkedMenuItem.Name = "saveLinkedMenuItem";
-			this.saveLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+U";
-			this.saveLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
-			this.saveLinkedMenuItem.Text = "Save changes";
-			this.saveLinkedMenuItem.Click += new System.EventHandler(this.saveLinkedMenuItem_Click);
-			// 
-			// saveNewLinkedMenuItem
-			// 
-			this.saveNewLinkedMenuItem.Name = "saveNewLinkedMenuItem";
-			this.saveNewLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+U";
-			this.saveNewLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
-			this.saveNewLinkedMenuItem.Text = "Save as new";
-			this.saveNewLinkedMenuItem.Click += new System.EventHandler(this.saveNewLinkedMenuItem_Click);
-			// 
-			// revertLinkedMenuItem
-			// 
-			this.revertLinkedMenuItem.Name = "revertLinkedMenuItem";
-			this.revertLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
-			this.revertLinkedMenuItem.Text = "Revert...";
-			this.revertLinkedMenuItem.Click += new System.EventHandler(this.revertLinkedMenuItem_Click);
-			// 
-			// bulkSeparator
-			// 
-			this.bulkSeparator.Name = "bulkSeparator";
-			this.bulkSeparator.Size = new System.Drawing.Size(236, 6);
-			// 
-			// bulkOperationsMenuItem
-			// 
-			this.bulkOperationsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.bulkEditModelSettingsMenuItem,
-            this.toolStripMenuItem12,
-            this.bulkImportMenuItem,
-            this.bulkExportMenuItem});
-			this.bulkOperationsMenuItem.Name = "bulkOperationsMenuItem";
-			this.bulkOperationsMenuItem.Size = new System.Drawing.Size(239, 22);
-			this.bulkOperationsMenuItem.Text = "Bulk operations";
-			// 
-			// bulkEditModelSettingsMenuItem
-			// 
-			this.bulkEditModelSettingsMenuItem.Name = "bulkEditModelSettingsMenuItem";
-			this.bulkEditModelSettingsMenuItem.Size = new System.Drawing.Size(209, 22);
-			this.bulkEditModelSettingsMenuItem.Text = "Change model settings...";
-			this.bulkEditModelSettingsMenuItem.Click += new System.EventHandler(this.bulkChangeModelSettingsMenuItem_Click);
-			// 
-			// toolStripMenuItem12
-			// 
-			this.toolStripMenuItem12.Name = "toolStripMenuItem12";
-			this.toolStripMenuItem12.Size = new System.Drawing.Size(206, 6);
-			// 
-			// bulkImportMenuItem
-			// 
-			this.bulkImportMenuItem.Name = "bulkImportMenuItem";
-			this.bulkImportMenuItem.Size = new System.Drawing.Size(209, 22);
-			this.bulkImportMenuItem.Text = "Import many characters...";
-			this.bulkImportMenuItem.Click += new System.EventHandler(this.bulkImportMenuItem_Click);
-			// 
-			// bulkExportMenuItem
-			// 
-			this.bulkExportMenuItem.Name = "bulkExportMenuItem";
-			this.bulkExportMenuItem.Size = new System.Drawing.Size(209, 22);
-			this.bulkExportMenuItem.Text = "Export many characters...";
-			this.bulkExportMenuItem.Click += new System.EventHandler(this.bulkExportMenuItem_Click);
-			// 
-			// writeChatSettingsMenuItem
-			// 
-			writeChatSettingsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.applyToLastChatMenuItem,
-            this.applyToFirstChatMenuItem,
-            this.applyToAllChatsMenuItem});
-			writeChatSettingsMenuItem.Name = "writeChatSettingsMenuItem";
-			writeChatSettingsMenuItem.Size = new System.Drawing.Size(220, 22);
-			writeChatSettingsMenuItem.Text = "Apply chat settings to";
-			// 
-			// applyToLastChatMenuItem
-			// 
-			this.applyToLastChatMenuItem.Name = "applyToLastChatMenuItem";
-			this.applyToLastChatMenuItem.Size = new System.Drawing.Size(163, 22);
-			this.applyToLastChatMenuItem.Text = "Most recent chat";
-			this.applyToLastChatMenuItem.Click += new System.EventHandler(this.applyToLastChatMenuItem_Click);
-			// 
-			// applyToFirstChatMenuItem
-			// 
-			this.applyToFirstChatMenuItem.Name = "applyToFirstChatMenuItem";
-			this.applyToFirstChatMenuItem.Size = new System.Drawing.Size(163, 22);
-			this.applyToFirstChatMenuItem.Text = "Oldest chat";
-			this.applyToFirstChatMenuItem.Click += new System.EventHandler(this.applyToFirstChatMenuItem_Click);
-			// 
-			// applyToAllChatsMenuItem
-			// 
-			this.applyToAllChatsMenuItem.Name = "applyToAllChatsMenuItem";
-			this.applyToAllChatsMenuItem.Size = new System.Drawing.Size(163, 22);
-			this.applyToAllChatsMenuItem.Text = "All chats";
-			this.applyToAllChatsMenuItem.Click += new System.EventHandler(this.applyToAllChatsMenuItem_Click);
 			// 
 			// themeMenuItem
 			// 
@@ -790,6 +689,7 @@ namespace Ginger {
             this.viewToolStripMenuItem,
             this.optionsToolStripMenuItem,
             this.toolsToolStripMenuItem,
+            this.backyardMenuItem,
             this.helpToolStripMenuItem});
 			this.menuStrip.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip.Name = "menuStrip";
@@ -1060,7 +960,6 @@ namespace Ginger {
             this.viewNotesMenuItem,
             this.embeddedAssetsMenuItem,
             this.customVariablesMenuItem,
-            this.chatHistoryMenuItem,
             toolStripMenuItem5,
             this.collapseAllMenuItem,
             this.expandAllMenuItem,
@@ -1110,14 +1009,6 @@ namespace Ginger {
 			this.customVariablesMenuItem.Text = "User-defined &variables...";
 			this.customVariablesMenuItem.Click += new System.EventHandler(this.customVariablesMenuItem_Click);
 			// 
-			// chatHistoryMenuItem
-			// 
-			this.chatHistoryMenuItem.Name = "chatHistoryMenuItem";
-			this.chatHistoryMenuItem.ShortcutKeyDisplayString = "Ctrl+H";
-			this.chatHistoryMenuItem.Size = new System.Drawing.Size(219, 22);
-			this.chatHistoryMenuItem.Text = "Chat &history...";
-			this.chatHistoryMenuItem.Click += new System.EventHandler(this.chatHistoryMenuItem_Click);
-			// 
 			// collapseAllMenuItem
 			// 
 			this.collapseAllMenuItem.Enabled = false;
@@ -1166,7 +1057,6 @@ namespace Ginger {
             this.outputPreviewToolStripMenuItem,
             this.checkSpellingMenuItem,
             themeMenuItem,
-            this.linkOptionsMenuItem,
             this.toolStripMenuItem11,
             this.autoConvertNameMenuItem,
             this.autoBreakMenuItem,
@@ -1362,54 +1252,6 @@ namespace Ginger {
 			this.toolStripMenuItem4.Name = "toolStripMenuItem4";
 			this.toolStripMenuItem4.Size = new System.Drawing.Size(113, 6);
 			// 
-			// linkOptionsMenuItem
-			// 
-			this.linkOptionsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.enableAutosaveMenuItem,
-            this.alwaysLinkMenuItem,
-            this.usePortraitAsBackgroundMenuItem,
-            this.importAltGreetingsMenuItem,
-            this.editExportModelSettingsMenuItem,
-            writeChatSettingsMenuItem});
-			this.linkOptionsMenuItem.Name = "linkOptionsMenuItem";
-			this.linkOptionsMenuItem.Size = new System.Drawing.Size(183, 22);
-			this.linkOptionsMenuItem.Text = "Link options";
-			// 
-			// enableAutosaveMenuItem
-			// 
-			this.enableAutosaveMenuItem.Name = "enableAutosaveMenuItem";
-			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.enableAutosaveMenuItem.Text = "Synchronized saving";
-			this.enableAutosaveMenuItem.Click += new System.EventHandler(this.enableAutosaveMenuItem_Click);
-			// 
-			// alwaysLinkMenuItem
-			// 
-			this.alwaysLinkMenuItem.Name = "alwaysLinkMenuItem";
-			this.alwaysLinkMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.alwaysLinkMenuItem.Text = "Always link characters";
-			this.alwaysLinkMenuItem.Click += new System.EventHandler(this.alwaysLinkMenuItem_Click);
-			// 
-			// usePortraitAsBackgroundMenuItem
-			// 
-			this.usePortraitAsBackgroundMenuItem.Name = "usePortraitAsBackgroundMenuItem";
-			this.usePortraitAsBackgroundMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.usePortraitAsBackgroundMenuItem.Text = "Set portrait as background";
-			this.usePortraitAsBackgroundMenuItem.Click += new System.EventHandler(this.usePortraitAsBackgroundMenuItem_Click);
-			// 
-			// importAltGreetingsMenuItem
-			// 
-			this.importAltGreetingsMenuItem.Name = "importAltGreetingsMenuItem";
-			this.importAltGreetingsMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.importAltGreetingsMenuItem.Text = "Import alternative greetings";
-			this.importAltGreetingsMenuItem.Click += new System.EventHandler(this.importAltGreetingsMenuItem_Click);
-			// 
-			// editExportModelSettingsMenuItem
-			// 
-			this.editExportModelSettingsMenuItem.Name = "editExportModelSettingsMenuItem";
-			this.editExportModelSettingsMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.editExportModelSettingsMenuItem.Text = "Default model settings...";
-			this.editExportModelSettingsMenuItem.Click += new System.EventHandler(this.editExportModelSettingsMenuItem_Click);
-			// 
 			// toolStripMenuItem11
 			// 
 			this.toolStripMenuItem11.Name = "toolStripMenuItem11";
@@ -1513,6 +1355,255 @@ namespace Ginger {
 			this.mergeLoreMenuItem.Text = "Merge &lorebooks";
 			this.mergeLoreMenuItem.ToolTipText = global::Ginger.Properties.Resources.tooltip_merge_lorebooks;
 			this.mergeLoreMenuItem.Click += new System.EventHandler(this.MergeLoreMenuItem_Click);
+			// 
+			// backyardMenuItem
+			// 
+			this.backyardMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.importLinkedMenuItem,
+            this.saveLinkedMenuItem,
+            this.saveNewLinkedMenuItem,
+            this.revertLinkedMenuItem,
+            this.toolStripMenuItem9,
+            this.chatHistoryMenuItem,
+            this.editCurrentModelSettingsMenuItem,
+            this.toolStripMenuItem13,
+            this.bulkOperationsMenuItem,
+            this.utilitiesToolStripMenuItem,
+            this.toolStripMenuItem14,
+            this.optionsToolStripMenuItem1});
+			this.backyardMenuItem.Name = "backyardMenuItem";
+			this.backyardMenuItem.Size = new System.Drawing.Size(81, 20);
+			this.backyardMenuItem.Text = "Backyard AI";
+			// 
+			// importLinkedMenuItem
+			// 
+			this.importLinkedMenuItem.Name = "importLinkedMenuItem";
+			this.importLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+O";
+			this.importLinkedMenuItem.Size = new System.Drawing.Size(250, 22);
+			this.importLinkedMenuItem.Text = "Open character...";
+			this.importLinkedMenuItem.Click += new System.EventHandler(this.importLinkedMenuItem_Click);
+			// 
+			// saveLinkedMenuItem
+			// 
+			this.saveLinkedMenuItem.Name = "saveLinkedMenuItem";
+			this.saveLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+U";
+			this.saveLinkedMenuItem.Size = new System.Drawing.Size(250, 22);
+			this.saveLinkedMenuItem.Text = "Save changes";
+			this.saveLinkedMenuItem.Click += new System.EventHandler(this.saveLinkedMenuItem_Click);
+			// 
+			// saveNewLinkedMenuItem
+			// 
+			this.saveNewLinkedMenuItem.Name = "saveNewLinkedMenuItem";
+			this.saveNewLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+U";
+			this.saveNewLinkedMenuItem.Size = new System.Drawing.Size(250, 22);
+			this.saveNewLinkedMenuItem.Text = "Save as new";
+			this.saveNewLinkedMenuItem.Click += new System.EventHandler(this.saveNewLinkedMenuItem_Click);
+			// 
+			// revertLinkedMenuItem
+			// 
+			this.revertLinkedMenuItem.Name = "revertLinkedMenuItem";
+			this.revertLinkedMenuItem.Size = new System.Drawing.Size(250, 22);
+			this.revertLinkedMenuItem.Text = "Revert...";
+			this.revertLinkedMenuItem.Click += new System.EventHandler(this.revertLinkedMenuItem_Click);
+			// 
+			// toolStripMenuItem9
+			// 
+			this.toolStripMenuItem9.Name = "toolStripMenuItem9";
+			this.toolStripMenuItem9.Size = new System.Drawing.Size(247, 6);
+			// 
+			// chatHistoryMenuItem
+			// 
+			this.chatHistoryMenuItem.Name = "chatHistoryMenuItem";
+			this.chatHistoryMenuItem.ShortcutKeyDisplayString = "Ctrl+H";
+			this.chatHistoryMenuItem.Size = new System.Drawing.Size(250, 22);
+			this.chatHistoryMenuItem.Text = "View chat history...";
+			this.chatHistoryMenuItem.Click += new System.EventHandler(this.chatHistoryMenuItem_Click);
+			// 
+			// editCurrentModelSettingsMenuItem
+			// 
+			this.editCurrentModelSettingsMenuItem.Name = "editCurrentModelSettingsMenuItem";
+			this.editCurrentModelSettingsMenuItem.ShortcutKeyDisplayString = "Ctrl+M";
+			this.editCurrentModelSettingsMenuItem.Size = new System.Drawing.Size(250, 22);
+			this.editCurrentModelSettingsMenuItem.Text = "Change model settings...";
+			this.editCurrentModelSettingsMenuItem.Click += new System.EventHandler(this.editCurrentModelSettingsMenuItem_Click);
+			// 
+			// toolStripMenuItem13
+			// 
+			this.toolStripMenuItem13.Name = "toolStripMenuItem13";
+			this.toolStripMenuItem13.Size = new System.Drawing.Size(247, 6);
+			// 
+			// bulkOperationsMenuItem
+			// 
+			this.bulkOperationsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.bulkEditModelSettingsMenuItem,
+            this.toolStripMenuItem15,
+            this.bulkImportMenuItem,
+            this.bulkExportMenuItem});
+			this.bulkOperationsMenuItem.Name = "bulkOperationsMenuItem";
+			this.bulkOperationsMenuItem.Size = new System.Drawing.Size(250, 22);
+			this.bulkOperationsMenuItem.Text = "Bulk operations";
+			// 
+			// bulkEditModelSettingsMenuItem
+			// 
+			this.bulkEditModelSettingsMenuItem.Name = "bulkEditModelSettingsMenuItem";
+			this.bulkEditModelSettingsMenuItem.ShortcutKeyDisplayString = "Ctrl+Alt+M";
+			this.bulkEditModelSettingsMenuItem.Size = new System.Drawing.Size(273, 22);
+			this.bulkEditModelSettingsMenuItem.Text = "Change model settings...";
+			this.bulkEditModelSettingsMenuItem.Click += new System.EventHandler(this.bulkChangeModelSettingsMenuItem_Click);
+			// 
+			// toolStripMenuItem15
+			// 
+			this.toolStripMenuItem15.Name = "toolStripMenuItem15";
+			this.toolStripMenuItem15.Size = new System.Drawing.Size(270, 6);
+			// 
+			// bulkImportMenuItem
+			// 
+			this.bulkImportMenuItem.Name = "bulkImportMenuItem";
+			this.bulkImportMenuItem.Size = new System.Drawing.Size(273, 22);
+			this.bulkImportMenuItem.Text = "Import many characters...";
+			this.bulkImportMenuItem.Click += new System.EventHandler(this.bulkImportMenuItem_Click);
+			// 
+			// bulkExportMenuItem
+			// 
+			this.bulkExportMenuItem.Name = "bulkExportMenuItem";
+			this.bulkExportMenuItem.Size = new System.Drawing.Size(273, 22);
+			this.bulkExportMenuItem.Text = "Export many characters...";
+			this.bulkExportMenuItem.Click += new System.EventHandler(this.bulkExportMenuItem_Click);
+			// 
+			// utilitiesToolStripMenuItem
+			// 
+			this.utilitiesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createBackupMenuItem,
+            this.restoreBackupMenuItem,
+            this.toolStripMenuItem10,
+            this.repairBrokenImagesMenuItem,
+            this.purgeUnusedImagesMenuItem});
+			this.utilitiesToolStripMenuItem.Name = "utilitiesToolStripMenuItem";
+			this.utilitiesToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+			this.utilitiesToolStripMenuItem.Text = "Utilities";
+			// 
+			// createBackupMenuItem
+			// 
+			this.createBackupMenuItem.Name = "createBackupMenuItem";
+			this.createBackupMenuItem.Size = new System.Drawing.Size(200, 22);
+			this.createBackupMenuItem.Text = "Create backup...";
+			this.createBackupMenuItem.Click += new System.EventHandler(this.createBackupMenuItem_Click);
+			// 
+			// restoreBackupMenuItem
+			// 
+			this.restoreBackupMenuItem.Name = "restoreBackupMenuItem";
+			this.restoreBackupMenuItem.Size = new System.Drawing.Size(200, 22);
+			this.restoreBackupMenuItem.Text = "Restore backup...";
+			this.restoreBackupMenuItem.Click += new System.EventHandler(this.restoreBackupMenuItem_Click);
+			// 
+			// toolStripMenuItem10
+			// 
+			this.toolStripMenuItem10.Name = "toolStripMenuItem10";
+			this.toolStripMenuItem10.Size = new System.Drawing.Size(197, 6);
+			// 
+			// repairBrokenImagesMenuItem
+			// 
+			this.repairBrokenImagesMenuItem.Name = "repairBrokenImagesMenuItem";
+			this.repairBrokenImagesMenuItem.Size = new System.Drawing.Size(200, 22);
+			this.repairBrokenImagesMenuItem.Text = "Repair broken images...";
+			this.repairBrokenImagesMenuItem.Click += new System.EventHandler(this.repairBrokenImagesMenuItem_Click);
+			// 
+			// purgeUnusedImagesMenuItem
+			// 
+			this.purgeUnusedImagesMenuItem.Name = "purgeUnusedImagesMenuItem";
+			this.purgeUnusedImagesMenuItem.Size = new System.Drawing.Size(200, 22);
+			this.purgeUnusedImagesMenuItem.Text = "Clean up image folder...";
+			this.purgeUnusedImagesMenuItem.Click += new System.EventHandler(this.purgeUnusedImages_Click);
+			// 
+			// toolStripMenuItem14
+			// 
+			this.toolStripMenuItem14.Name = "toolStripMenuItem14";
+			this.toolStripMenuItem14.Size = new System.Drawing.Size(247, 6);
+			// 
+			// optionsToolStripMenuItem1
+			// 
+			this.optionsToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.enableAutosaveMenuItem,
+            this.alwaysLinkMenuItem,
+            this.usePortraitAsBackgroundMenuItem,
+            this.importAltGreetingsMenuItem,
+            this.writeChatSettingsMenuItem,
+            this.toolStripMenuItem16,
+            this.editExportModelSettingsMenuItem});
+			this.optionsToolStripMenuItem1.Name = "optionsToolStripMenuItem1";
+			this.optionsToolStripMenuItem1.Size = new System.Drawing.Size(250, 22);
+			this.optionsToolStripMenuItem1.Text = "Options";
+			// 
+			// enableAutosaveMenuItem
+			// 
+			this.enableAutosaveMenuItem.Name = "enableAutosaveMenuItem";
+			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(232, 22);
+			this.enableAutosaveMenuItem.Text = "Push updates on save";
+			this.enableAutosaveMenuItem.Click += new System.EventHandler(this.enableAutosaveMenuItem_Click);
+			// 
+			// alwaysLinkMenuItem
+			// 
+			this.alwaysLinkMenuItem.Name = "alwaysLinkMenuItem";
+			this.alwaysLinkMenuItem.Size = new System.Drawing.Size(232, 22);
+			this.alwaysLinkMenuItem.Text = "Always link on import";
+			this.alwaysLinkMenuItem.Click += new System.EventHandler(this.alwaysLinkMenuItem_Click);
+			// 
+			// usePortraitAsBackgroundMenuItem
+			// 
+			this.usePortraitAsBackgroundMenuItem.Name = "usePortraitAsBackgroundMenuItem";
+			this.usePortraitAsBackgroundMenuItem.Size = new System.Drawing.Size(232, 22);
+			this.usePortraitAsBackgroundMenuItem.Text = "Make portrait the background";
+			this.usePortraitAsBackgroundMenuItem.Click += new System.EventHandler(this.usePortraitAsBackgroundMenuItem_Click);
+			// 
+			// importAltGreetingsMenuItem
+			// 
+			this.importAltGreetingsMenuItem.Name = "importAltGreetingsMenuItem";
+			this.importAltGreetingsMenuItem.Size = new System.Drawing.Size(232, 22);
+			this.importAltGreetingsMenuItem.Text = "Include alternate greetings";
+			this.importAltGreetingsMenuItem.Click += new System.EventHandler(this.importAltGreetingsMenuItem_Click);
+			// 
+			// writeChatSettingsMenuItem
+			// 
+			this.writeChatSettingsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.applyToLastChatMenuItem,
+            this.applyToFirstChatMenuItem,
+            this.applyToAllChatsMenuItem});
+			this.writeChatSettingsMenuItem.Name = "writeChatSettingsMenuItem";
+			this.writeChatSettingsMenuItem.Size = new System.Drawing.Size(232, 22);
+			this.writeChatSettingsMenuItem.Text = "Apply chat settings to";
+			// 
+			// applyToLastChatMenuItem
+			// 
+			this.applyToLastChatMenuItem.Name = "applyToLastChatMenuItem";
+			this.applyToLastChatMenuItem.Size = new System.Drawing.Size(163, 22);
+			this.applyToLastChatMenuItem.Text = "Most recent chat";
+			this.applyToLastChatMenuItem.Click += new System.EventHandler(this.applyToLastChatMenuItem_Click);
+			// 
+			// applyToFirstChatMenuItem
+			// 
+			this.applyToFirstChatMenuItem.Name = "applyToFirstChatMenuItem";
+			this.applyToFirstChatMenuItem.Size = new System.Drawing.Size(163, 22);
+			this.applyToFirstChatMenuItem.Text = "Oldest chat";
+			this.applyToFirstChatMenuItem.Click += new System.EventHandler(this.applyToFirstChatMenuItem_Click);
+			// 
+			// applyToAllChatsMenuItem
+			// 
+			this.applyToAllChatsMenuItem.Name = "applyToAllChatsMenuItem";
+			this.applyToAllChatsMenuItem.Size = new System.Drawing.Size(163, 22);
+			this.applyToAllChatsMenuItem.Text = "All chats";
+			this.applyToAllChatsMenuItem.Click += new System.EventHandler(this.applyToAllChatsMenuItem_Click);
+			// 
+			// toolStripMenuItem16
+			// 
+			this.toolStripMenuItem16.Name = "toolStripMenuItem16";
+			this.toolStripMenuItem16.Size = new System.Drawing.Size(229, 6);
+			// 
+			// editExportModelSettingsMenuItem
+			// 
+			this.editExportModelSettingsMenuItem.Name = "editExportModelSettingsMenuItem";
+			this.editExportModelSettingsMenuItem.Size = new System.Drawing.Size(232, 22);
+			this.editExportModelSettingsMenuItem.Text = "Default model settings...";
+			this.editExportModelSettingsMenuItem.Click += new System.EventHandler(this.editExportModelSettingsMenuItem_Click);
 			// 
 			// helpToolStripMenuItem
 			// 
@@ -1753,34 +1844,47 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem tokenBudget10K;
 		private System.Windows.Forms.ToolStripMenuItem embeddedAssetsMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem enableLinkMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem importLinkedMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem saveNewLinkedMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem saveLinkedMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem reestablishLinkMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem breakLinkMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel statusConnectionIcon;
-		private System.Windows.Forms.ToolStripMenuItem revertLinkedMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem rearrangeLoreMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem chatHistoryMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem linkOptionsMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem enableAutosaveMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem applyToFirstChatMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem applyToLastChatMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem applyToAllChatsMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem alwaysLinkMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
 		private System.Windows.Forms.ToolStripMenuItem lightThemeMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem darkThemeMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem customVariablesMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem usePortraitAsBackgroundMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem backyardMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem importLinkedMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem saveLinkedMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem saveNewLinkedMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem revertLinkedMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem9;
+		private System.Windows.Forms.ToolStripMenuItem chatHistoryMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem editCurrentModelSettingsMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem13;
 		private System.Windows.Forms.ToolStripMenuItem bulkOperationsMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem bulkEditModelSettingsMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem15;
 		private System.Windows.Forms.ToolStripMenuItem bulkImportMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem bulkExportMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem12;
-		private System.Windows.Forms.ToolStripMenuItem bulkEditModelSettingsMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem14;
+		private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem editExportModelSettingsMenuItem;
-		private System.Windows.Forms.ToolStripSeparator bulkSeparator;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem16;
+		private System.Windows.Forms.ToolStripMenuItem enableAutosaveMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem alwaysLinkMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem usePortraitAsBackgroundMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem importAltGreetingsMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem writeChatSettingsMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem applyToLastChatMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem applyToFirstChatMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem applyToAllChatsMenuItem;
+		private System.Windows.Forms.ToolStripSeparator breakRestoreLinkSeparator;
+		private System.Windows.Forms.ToolStripMenuItem utilitiesToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem repairBrokenImagesMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem purgeUnusedImagesMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem createBackupMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem restoreBackupMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem10;
 	}
 }
 
