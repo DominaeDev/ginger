@@ -12,14 +12,14 @@ namespace Ginger
 		{
 			isEnabled = true;
 			isOptional = false;
-			isGlobal = true;
+			_scope = Parameter.Scope.Both;
 		}
 
 		public EraseParameter(Recipe recipe) : base(recipe)
 		{
 			isEnabled = true;
 			isOptional = false;
-			isGlobal = true;
+			_scope = Parameter.Scope.Both;
 		}
 
 		public override bool LoadFromXml(XmlNode xmlNode)
@@ -50,7 +50,7 @@ namespace Ginger
 			if (scope == Parameter.Scope.Global) // Global only
 			{
 				foreach (var flag in flags)
-					state.Erase(flag);
+					state.Erase(flag, Parameter.Scope.Global);
 			}
 		}
 

@@ -6,22 +6,20 @@ namespace Ginger
 {
 	public class SetFlagParameter : BaseParameter<string>, IInvisibleParameter
 	{
-        public override bool isLocal { get { return false; } }
-
 		private HashSet<StringHandle> flags = new HashSet<StringHandle>();
 
 		public SetFlagParameter() : base()
 		{
 			isEnabled = true;
 			isOptional = false;
-			isGlobal = true;
+			_scope = Parameter.Scope.Both;
 		}
 
 		public SetFlagParameter(Recipe recipe) : base(recipe)
 		{
 			isEnabled = true;
 			isOptional = false;
-			isGlobal = true;
+			_scope = Parameter.Scope.Both;
 		}
 
 		public override bool LoadFromXml(XmlNode xmlNode)
@@ -32,7 +30,6 @@ namespace Ginger
 				return false;
 
 			id = Utility.ListToCommaSeparatedString(flags);
-			isGlobal = xmlNode.GetAttributeBool("shared", true);
 
 			if (xmlNode.HasAttribute("rule"))
 				condition = Rule.Parse(xmlNode.GetAttribute("rule"));

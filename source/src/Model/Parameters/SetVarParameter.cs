@@ -4,20 +4,18 @@ namespace Ginger
 {
 	public class SetVarParameter : BaseParameter<string>, IInvisibleParameter
 	{
-        public override bool isLocal { get { return false; } }
-
 		public SetVarParameter() : base()
 		{
 			isEnabled = true;
 			isOptional = false;
-			isGlobal = true;
+			_scope = Parameter.Scope.Both;
 		}
 
 		public SetVarParameter(Recipe recipe) : base(recipe)
 		{
 			isEnabled = true;
 			isOptional = false;
-			isGlobal = true;
+			_scope = Parameter.Scope.Both;
 		}
 
 		public override bool LoadFromXml(XmlNode xmlNode)
@@ -29,7 +27,6 @@ namespace Ginger
 			if (xmlNode.HasAttribute("rule"))
 				condition = Rule.Parse(xmlNode.GetAttribute("rule"));
 
-			isGlobal = xmlNode.GetAttributeBool("shared", true);
 			value = xmlNode.GetTextValue().SingleLine();
 			defaultValue = value;
 			return true;
@@ -55,8 +52,6 @@ namespace Ginger
 				else
 					sValue = value;
 				state.SetValue(id, sValue, scope);
-
-//				state.Reserve(id, sValue);
 			}
 		}
 

@@ -12,10 +12,11 @@ namespace Ginger
 		string defaultValue { get; set; }
 		string label { get; }
 		string description { get; }
-		bool isOptional { get; }
-		bool isEnabled { get; }
+		Parameter.Scope scope { get; }
 		bool isLocal { get; }
 		bool isGlobal { get; }
+		bool isOptional { get; }
+		bool isEnabled { get; }
 		bool isImmediate { get; }
 		bool isConditional { get; }
 
@@ -31,10 +32,13 @@ namespace Ginger
 
 	public static class Parameter
 	{
+		[Flags]
 		public enum Scope
 		{
-			Global,
-			Local
+			Global = 1 << 0,
+			Local  = 1 << 1,
+			
+			Both = Global | Local,
 		}
 	
 		public static IParameter Create(XmlNode xmlNode, Recipe recipe)
@@ -136,8 +140,9 @@ namespace Ginger
 		public string placeholder { get; protected set; }
 		public bool isOptional { get; protected set; }
 		public bool isEnabled { get; set; }
-		public virtual bool isLocal { get { return true; } }
-		public bool isGlobal { get; set; }
+		public virtual Parameter.Scope scope { get { return _scope; } private set { _scope = value; } }
+		public bool isLocal { get { return scope.Contains(Parameter.Scope.Local); } }
+		public bool isGlobal { get { return scope.Contains(Parameter.Scope.Global); } }
 		public bool isImmediate { get; set; }
 		public bool isConditional { get { return condition != null; } }
 		public ICondition condition { get; protected set; }
@@ -146,6 +151,7 @@ namespace Ginger
 
 		public T value;
 		public string defaultValue { get; set; }
+		protected Parameter.Scope _scope = Parameter.Scope.Local;
 
 		public virtual void Set(T value)
 		{
@@ -185,9 +191,11 @@ namespace Ginger
 
 			isOptional = xmlNode.GetAttributeBool("optional", true);
 			isOptional &= !xmlNode.GetAttributeBool("required", false);
-			isGlobal = xmlNode.GetAttributeBool("shared", false);
 			isEnabled = xmlNode.GetAttributeBool("enabled", true);
 			isImmediate = xmlNode.GetAttributeBool("immediate", false);
+			bool bShared = xmlNode.GetAttributeBool("shared", false);
+			if (bShared)
+				_scope = Parameter.Scope.Both;
 
 			if (xmlNode.HasAttribute("rule"))
 				condition = Rule.Parse(xmlNode.GetAttribute("rule"));
@@ -213,7 +221,7 @@ namespace Ginger
 				xmlNode.AddAttribute("rule", condition.ToString());
 			if (!isOptional)
 				xmlNode.AddAttribute("required", true);
-			if (isGlobal)
+			if (_scope == Parameter.Scope.Both)
 				xmlNode.AddAttribute("shared", true);
 			if (!isEnabled)
 				xmlNode.AddAttribute("enabled", false);
@@ -242,7 +250,7 @@ namespace Ginger
 			clone.placeholder = this.placeholder;
 			clone.isOptional = this.isOptional;
 			clone.isEnabled = this.isEnabled;
-			clone.isGlobal = this.isGlobal;
+			clone.scope = this.scope;
 			clone.isImmediate = this.isImmediate;
 			clone.condition = this.condition;
 			clone.defaultValue = this.defaultValue;
@@ -309,7 +317,7 @@ namespace Ginger
 				placeholder,
 				condition,
 				isOptional,
-				isGlobal,
+				scope,
 				isImmediate
 				);
 			return hash;

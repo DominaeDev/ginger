@@ -81,19 +81,12 @@ namespace Ginger
 			_bDirty = true;
 		}
 
-		public void Erase(StringHandle id)
+		public void Erase(StringHandle id, Parameter.Scope scope)
 		{
-			if (outerContext != null)
-			{
-				outerContext.RemoveFlag(id);
-				outerContext.SetValue(id, null);
-			}
-
-			globalParameters.EraseFlag(id);
-			globalParameters.EraseValue(id);
-			localParameters.EraseFlag(id);
-			localParameters.EraseValue(id);
-			_reserved.Remove(id);
+			GetCollection(scope).EraseFlag(id);
+			GetCollection(scope).EraseValue(id);
+			if (scope == Parameter.Scope.Global)
+				_reserved.Remove(id);
 			_bDirty = true;
 		}
 
