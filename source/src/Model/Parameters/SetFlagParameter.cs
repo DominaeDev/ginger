@@ -12,14 +12,14 @@ namespace Ginger
 		{
 			isEnabled = true;
 			isOptional = false;
-			_scope = Parameter.Scope.Both;
+			scope = Parameter.Scope.Global;
 		}
 
 		public SetFlagParameter(Recipe recipe) : base(recipe)
 		{
 			isEnabled = true;
 			isOptional = false;
-			_scope = Parameter.Scope.Both;
+			scope = Parameter.Scope.Global;
 		}
 
 		public override bool LoadFromXml(XmlNode xmlNode)
@@ -30,6 +30,7 @@ namespace Ginger
 				return false;
 
 			id = Utility.ListToCommaSeparatedString(flags);
+			scope = xmlNode.GetAttributeEnum("scope", Parameter.Scope.Global);
 
 			if (xmlNode.HasAttribute("rule"))
 				condition = Rule.Parse(xmlNode.GetAttribute("rule"));
@@ -41,13 +42,16 @@ namespace Ginger
 			var node = xmlNode.AddElement("SetFlag");
 			node.AddTextValue(Utility.ListToCommaSeparatedString(flags));
 
+			if (scope != Parameter.Scope.Global)
+				node.AddAttribute("scope", EnumHelper.ToString(scope).ToLowerInvariant());
+
 			if (condition != null)
 				node.AddAttribute("rule", condition.ToString());
 		}
 
 		public override void OnApply(ParameterState state, Parameter.Scope scope)
 		{
-			if (scope == Parameter.Scope.Global) // Global only
+			if (this.scope.Contains(scope))
 				state.SetFlags(flags, scope);
 		}
 

@@ -140,7 +140,6 @@ namespace Ginger
 		public string placeholder { get; protected set; }
 		public bool isOptional { get; protected set; }
 		public bool isEnabled { get; set; }
-		public virtual Parameter.Scope scope { get { return _scope; } private set { _scope = value; } }
 		public bool isLocal { get { return scope.Contains(Parameter.Scope.Local); } }
 		public bool isGlobal { get { return scope.Contains(Parameter.Scope.Global); } }
 		public bool isImmediate { get; set; }
@@ -148,10 +147,15 @@ namespace Ginger
 		public ICondition condition { get; protected set; }
 		public abstract void OnApply(ParameterState state, Parameter.Scope scope);
 		public Recipe recipe { get; protected set; }
+		public Parameter.Scope scope { 
+			get { return _scope; } 
+			protected set { _scope = value; }
+		}
+		private Parameter.Scope _scope = Parameter.Scope.Local;
 
 		public T value;
 		public string defaultValue { get; set; }
-		protected Parameter.Scope _scope = Parameter.Scope.Local;
+
 
 		public virtual void Set(T value)
 		{

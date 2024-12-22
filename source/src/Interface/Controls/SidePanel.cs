@@ -23,8 +23,7 @@ namespace Ginger
 
 		private bool _bIgnoreEvents = false;
 		private int lastLoreCount = 0;
-		private bool _bOverridingGender = false;
-		private string _overrideGender = "";
+		private string _genderOverride = null;
 
 		private string CardName { get { return textBox_characterName.Text.Trim(); } }
 		private string SpokenName { get { return textBox_characterSpokenName.Text.Trim(); } }
@@ -185,8 +184,7 @@ namespace Ginger
 
 		public void Reset()
 		{
-			_bOverridingGender = false;
-			_overrideGender = null;
+			_genderOverride = null;
 		}
 
 		public void RefreshTokenCount()
@@ -685,15 +683,16 @@ namespace Ginger
 		{
 			if (bUpdate)
 			{
+				string gender = Current.Character.gender;
+				string newGender;
 				var context = Current.Character.GetContext(CharacterData.ContextType.Full);
-				_bOverridingGender = context.HasFlag(Constants.Flag.OverrideGender);
-				if (_bOverridingGender)
-					context.TryGetValue("gender", out _overrideGender);
+				if (context.TryGetValue("gender", out newGender) && string.Compare(gender, newGender, StringComparison.OrdinalIgnoreCase) != 0)
+					_genderOverride = newGender;
 				else
-					_overrideGender = null;
+					_genderOverride = null;
 			}
 
-			if (!_bOverridingGender)
+			if (string.IsNullOrEmpty(_genderOverride))
 			{
 				comboBox_gender.Enabled = true;
 
@@ -731,7 +730,7 @@ namespace Ginger
 				comboBox_gender.SelectedIndex = 3; // Other
 				textBox_customGender.Visible = true; 
 				textBox_customGender.Enabled = false;
-				textBox_customGender.Text = _overrideGender;
+				textBox_customGender.Text = _genderOverride;
 			}
 		}
 

@@ -12,14 +12,14 @@ namespace Ginger
 		{
 			isEnabled = true;
 			isOptional = false;
-			_scope = Parameter.Scope.Both;
+			scope = Parameter.Scope.Both;
 		}
 
 		public EraseParameter(Recipe recipe) : base(recipe)
 		{
 			isEnabled = true;
 			isOptional = false;
-			_scope = Parameter.Scope.Both;
+			scope = Parameter.Scope.Both;
 		}
 
 		public override bool LoadFromXml(XmlNode xmlNode)
@@ -30,6 +30,7 @@ namespace Ginger
 				return false;
 
 			id = Utility.ListToCommaSeparatedString(flags);
+			scope = xmlNode.GetAttributeEnum("scope", Parameter.Scope.Both);
 
 			if (xmlNode.HasAttribute("rule"))
 				condition = Rule.Parse(xmlNode.GetAttribute("rule"));
@@ -41,20 +42,19 @@ namespace Ginger
 			var node = xmlNode.AddElement("Erase");
 			node.AddTextValue(Utility.ListToCommaSeparatedString(flags));
 
+			if (scope != Parameter.Scope.Both)
+				node.AddAttribute("scope", EnumHelper.ToString(scope).ToLowerInvariant());
+
 			if (condition != null)
 				node.AddAttribute("rule", condition.ToString());
 		}
 
 		public override void OnApply(ParameterState state, Parameter.Scope scope)
 		{
-			if (scope == Parameter.Scope.Global) // Global only
+			if (this.scope.Contains(scope))
 			{
 				foreach (var flag in flags)
-				{
-					state.EraseFlag(flag, Parameter.Scope.Global);
-					state.EraseValue(flag, Parameter.Scope.Global);
-					state.Unreserve(flag);
-				}
+					state.Erase(flag, scope);
 			}
 		}
 

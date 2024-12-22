@@ -8,14 +8,14 @@ namespace Ginger
 		{
 			isEnabled = true;
 			isOptional = false;
-			_scope = Parameter.Scope.Both;
+			scope = Parameter.Scope.Global;
 		}
 
 		public SetVarParameter(Recipe recipe) : base(recipe)
 		{
 			isEnabled = true;
 			isOptional = false;
-			_scope = Parameter.Scope.Both;
+			scope = Parameter.Scope.Global;
 		}
 
 		public override bool LoadFromXml(XmlNode xmlNode)
@@ -26,6 +26,7 @@ namespace Ginger
 
 			if (xmlNode.HasAttribute("rule"))
 				condition = Rule.Parse(xmlNode.GetAttribute("rule"));
+			scope = xmlNode.GetAttributeEnum("scope", Parameter.Scope.Global);
 
 			value = xmlNode.GetTextValue().SingleLine();
 			defaultValue = value;
@@ -38,13 +39,16 @@ namespace Ginger
 			node.AddAttribute("id", id.ToString());
 			node.AddTextValue(value);
 
+			if (scope != Parameter.Scope.Global)
+				node.AddAttribute("scope", EnumHelper.ToString(scope).ToLowerInvariant());
+
 			if (condition != null)
 				node.AddAttribute("rule", condition.ToString());
 		}
 
 		public override void OnApply(ParameterState state, Parameter.Scope scope)
 		{
-			if (string.IsNullOrEmpty(value) == false && scope == Parameter.Scope.Global) // Global only
+			if (string.IsNullOrEmpty(value) == false && this.scope.Contains(scope))
 			{
 				string sValue;
 				if (value.IndexOfAny(new char[] { '{', '}', '[', ']' }) != -1)

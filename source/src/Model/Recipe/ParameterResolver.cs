@@ -64,7 +64,7 @@ namespace Ginger
 				}
 
 				CopyGlobals(parameterStates, i, globalContext);
-
+				globalContext.SetFlags(recipe.flags);
 				idxLastRecipe = i;
 			}
 

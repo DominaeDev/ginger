@@ -38,7 +38,10 @@ namespace Ginger
 		public void SetFlag(StringHandle flag, Parameter.Scope scope)
 		{
 			if (scope.Contains(Parameter.Scope.Global))
+			{
 				globalScope.SetFlag(flag);
+				outerScope.SetFlag(flag);
+			}
 			if (scope.Contains(Parameter.Scope.Local))
 			{
 				localScope.SetFlag(flag);
@@ -51,9 +54,13 @@ namespace Ginger
 		public void SetFlags(IEnumerable<StringHandle> flags, Parameter.Scope scope)
 		{
 			if (scope.Contains(Parameter.Scope.Global))
+			{
 				globalScope.SetFlags(flags);
+				outerScope.SetFlags(flags);
+			}
 			if (scope.Contains(Parameter.Scope.Local))
 			{
+				localScope.SetFlags(flags);
 				foreach (var flag in flags.Where(f => f.ToString().IndexOf(':') == -1))
 					localScope.SetFlag(string.Concat(flag.ToString(), ":local"));
 			}
@@ -63,9 +70,13 @@ namespace Ginger
 		public void SetValue(StringHandle id, string value, Parameter.Scope scope)
 		{
 			if (scope.Contains(Parameter.Scope.Global))
+			{
 				globalScope.SetValue(id, value);
+				outerScope.SetValue(id, value);
+			}
 			if (scope.Contains(Parameter.Scope.Local))
 			{
+				localScope.SetValue(id, value);
 				if (id.ToString().IndexOf(':') == -1)
 				{
 					localScope.SetFlag(string.Concat(id.ToString(), ":local"));
@@ -78,9 +89,13 @@ namespace Ginger
 		public void SetValue(StringHandle id, float value, Parameter.Scope scope)
 		{
 			if (scope.Contains(Parameter.Scope.Global))
+			{
 				globalScope.SetValue(id, value);
+				outerScope.SetValue(id, value);
+			}
 			if (scope.Contains(Parameter.Scope.Local))
 			{
+				localScope.SetValue(id, value);
 				if (id.ToString().IndexOf(':') == -1)
 				{
 					localScope.SetFlag(string.Concat(id.ToString(), ":local"));
@@ -93,9 +108,13 @@ namespace Ginger
 		public void SetValue(StringHandle id, ContextualValue value, Parameter.Scope scope)
 		{
 			if (scope.Contains(Parameter.Scope.Global))
+			{
 				globalScope.SetValue(id, value);
+				outerScope.SetValue(id, value);
+			}
 			if (scope.Contains(Parameter.Scope.Local))
 			{
+				localScope.SetValue(id, value);
 				if (id.ToString().IndexOf(':') == -1)
 				{
 					localScope.SetFlag(string.Concat(id.ToString(), ":local"));
@@ -105,10 +124,19 @@ namespace Ginger
 			Dirty();
 		}
 
+		public void Erase(StringHandle id, Parameter.Scope scope)
+		{
+			EraseFlag(id, scope);
+			EraseValue(id, scope);
+		}
+
 		public void EraseFlag(StringHandle id, Parameter.Scope scope)
 		{
 			if (scope.Contains(Parameter.Scope.Global))
+			{
 				globalScope.EraseFlag(id);
+				outerScope.EraseFlag(id);
+			}
 
 			if (scope.Contains(Parameter.Scope.Local))
 				localScope.EraseFlag(id);
@@ -118,7 +146,10 @@ namespace Ginger
 		public void EraseValue(StringHandle id, Parameter.Scope scope)
 		{
 			if (scope.Contains(Parameter.Scope.Global))
+			{
 				globalScope.EraseValue(id);
+				outerScope.EraseValue(id);
+			}
 
 			if (scope.Contains(Parameter.Scope.Local))
 				localScope.EraseValue(id);
@@ -131,11 +162,6 @@ namespace Ginger
 			_resolvedStates.TryAdd(id, State.Reserved);
 			_reserved.TryAdd(id, reservedValue);
 			Dirty();
-		}
-
-		public void Unreserve(StringHandle id)
-		{
-			_reserved.Remove(id);
 		}
 
 		public bool TryGetReservedValue(StringHandle id, out string reservedValue)
@@ -276,7 +302,8 @@ namespace Ginger
 
 		public void EraseFlag(StringHandle id)
 		{
-			_flags.Remove(id);
+			var ids = _flags.Where(f => f == id || f.BeginsWith(id.ToString() + ":")).ToArray();
+			_flags.ExceptWith(ids);
 			_erasedFlags.Add(id);
 		}
 
