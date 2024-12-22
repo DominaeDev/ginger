@@ -185,7 +185,7 @@ namespace Ginger
 		public const Keys NextActor = Keys.Alt | Keys.Right;
 		public const Keys PreviousActor = Keys.Alt | Keys.Left;
 		public const Keys SwitchView = Keys.Control | Keys.Tab;
-		public const Keys SaveIncremental = Keys.Control | Keys.Shift | Keys.Alt | Keys.S;
+		public const Keys SaveIncremental = Keys.Control | Keys.Alt | Keys.S;
 		public const Keys LinkedOpen = Keys.Control | Keys.Shift | Keys.O;
 		public const Keys LinkedSave = Keys.Control | Keys.U;
 		public const Keys LinkedSaveAsNew = Keys.Control | Keys.Shift | Keys.U;

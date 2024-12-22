@@ -1,4 +1,4 @@
-﻿<Ginger version="1.0">
+﻿<Ginger version="1.1">
 	<!-- Preamble -->
 	<Name>Gender/Transgender</Name>
 	<Title>Transgender</Title>
@@ -11,8 +11,8 @@
 	<!-- Parameters -->
 	<Choice id="trans-gender" required="yes" rule="not (male or female or custom-gender)">
 		<Label>Sex</Label>
-		<Option>Male</Option>
-		<Option>Female</Option>
+		<Option id="male">Transgender man</Option>
+		<Option id="female">Transgender woman</Option>
 	</Choice>
 	
 	<Choice id="trans-pronouns" rule="not custom-pronoun">
@@ -24,26 +24,26 @@
 	</Choice>
 	
 	<!-- Set gender -->
-	<Erase>gender</Erase>
-	<Erase rule="trans-gender">male, female</Erase>
-	<SetFlag rule="trans-gender is male">male</SetFlag>
-	<SetFlag rule="trans-gender is female">female</SetFlag>
-	<SetVar id="gender">Transgender</SetVar>
+	<Erase scope="both">gender</Erase>
+	<Erase scope="both">male, female, non-binary, futanari</Erase>
+	<SetFlag scope="both" rule="trans-gender is male">male</SetFlag>
+	<SetFlag scope="both" rule="trans-gender is female">female</SetFlag>
+	<SetVar scope="both" id="gender">{trans-gender}</SetVar>
 	
 	<!-- Set pronouns -->
-	<SetFlag rule="trans-pronouns">custom-pronoun</SetFlag>
-	<Erase rule="trans-pronouns">pronoun-masculine, pronoun-feminine, pronoun-neutral, pronoun-objective</Erase>
-	<SetFlag rule="pronouns-he">pronoun-masculine</SetFlag>
-	<SetFlag rule="pronouns-she">pronoun-feminine</SetFlag>
-	<SetFlag rule="pronouns-them">pronoun-neutral</SetFlag>
+	<SetFlag scope="both" rule="trans-pronouns">custom-pronoun</SetFlag>
+	<Erase scope="both" rule="trans-pronouns">pronoun-masculine, pronoun-feminine, pronoun-neutral, pronoun-objective</Erase>
+	<SetFlag scope="both" rule="pronouns-he">pronoun-masculine</SetFlag>
+	<SetFlag scope="both" rule="pronouns-she">pronoun-feminine</SetFlag>
+	<SetFlag scope="both" rule="pronouns-them">pronoun-neutral</SetFlag>
 	
 	<!-- Set flags -->
-	<SetFlag rule="trans-male">trans-male</SetFlag>
-	<SetFlag rule="trans-female">trans-female</SetFlag>
+	<SetFlag scope="both" rule="trans-male">trans-male</SetFlag>
+	<SetFlag scope="both" rule="trans-female">trans-female</SetFlag>
 	
 	<!-- Output -->
-	<Rule id="trans-male">trans-gender is male or (not sex and male)</Rule>
-	<Rule id="trans-female">trans-gender is female or (not sex and female)</Rule>
+	<Rule id="trans-male">trans-gender:id is male</Rule>
+	<Rule id="trans-female">trans-gender:id is female</Rule>
 	
 	<String id="descriptor">
 		<String rule="age and age le 18" priority="1">

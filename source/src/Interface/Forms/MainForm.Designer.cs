@@ -146,6 +146,7 @@ namespace Ginger {
 			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.alwaysLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.usePortraitAsBackgroundMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.importAltGreetingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.editExportModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
 			this.autoConvertNameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -171,7 +172,6 @@ namespace Ginger {
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusBarActor = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
-			this.importAltGreetingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -202,12 +202,12 @@ namespace Ginger {
 			// toolStripMenuItem3
 			// 
 			toolStripMenuItem3.Name = "toolStripMenuItem3";
-			toolStripMenuItem3.Size = new System.Drawing.Size(256, 6);
+			toolStripMenuItem3.Size = new System.Drawing.Size(224, 6);
 			// 
 			// toolStripMenuItem1
 			// 
 			toolStripMenuItem1.Name = "toolStripMenuItem1";
-			toolStripMenuItem1.Size = new System.Drawing.Size(256, 6);
+			toolStripMenuItem1.Size = new System.Drawing.Size(224, 6);
 			// 
 			// toolStripMenuItem8
 			// 
@@ -248,7 +248,7 @@ namespace Ginger {
             this.bulkSeparator,
             this.bulkOperationsMenuItem});
 			linkMenuItem.Name = "linkMenuItem";
-			linkMenuItem.Size = new System.Drawing.Size(259, 22);
+			linkMenuItem.Size = new System.Drawing.Size(227, 22);
 			linkMenuItem.Text = "&Link";
 			// 
 			// enableLinkMenuItem
@@ -393,14 +393,14 @@ namespace Ginger {
 			// lightThemeMenuItem
 			// 
 			this.lightThemeMenuItem.Name = "lightThemeMenuItem";
-			this.lightThemeMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.lightThemeMenuItem.Size = new System.Drawing.Size(101, 22);
 			this.lightThemeMenuItem.Text = "Light";
 			this.lightThemeMenuItem.Click += new System.EventHandler(this.lightThemeMenuItem_Click);
 			// 
 			// darkThemeMenuItem
 			// 
 			this.darkThemeMenuItem.Name = "darkThemeMenuItem";
-			this.darkThemeMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.darkThemeMenuItem.Size = new System.Drawing.Size(101, 22);
 			this.darkThemeMenuItem.Text = "Dark";
 			this.darkThemeMenuItem.Click += new System.EventHandler(this.darkThemeMenuItem_Click);
 			// 
@@ -826,7 +826,7 @@ namespace Ginger {
 			this.newMenuItem.Name = "newMenuItem";
 			this.newMenuItem.ShortcutKeyDisplayString = "Ctrl+N";
 			this.newMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-			this.newMenuItem.Size = new System.Drawing.Size(259, 22);
+			this.newMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.newMenuItem.Text = "&New";
 			this.newMenuItem.Click += new System.EventHandler(this.NewToolStripMenuItem_Click);
 			// 
@@ -836,14 +836,14 @@ namespace Ginger {
 			this.newWindowMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+N";
 			this.newWindowMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.N)));
-			this.newWindowMenuItem.Size = new System.Drawing.Size(259, 22);
+			this.newWindowMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.newWindowMenuItem.Text = "New &window";
 			this.newWindowMenuItem.Click += new System.EventHandler(this.NewWindowMenuItem_Click);
 			// 
 			// newFromTemplateMenuItem
 			// 
 			this.newFromTemplateMenuItem.Name = "newFromTemplateMenuItem";
-			this.newFromTemplateMenuItem.Size = new System.Drawing.Size(259, 22);
+			this.newFromTemplateMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.newFromTemplateMenuItem.Text = "New from &template";
 			// 
 			// openMenuItem
@@ -851,14 +851,14 @@ namespace Ginger {
 			this.openMenuItem.Name = "openMenuItem";
 			this.openMenuItem.ShortcutKeyDisplayString = "Ctrl+O";
 			this.openMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openMenuItem.Size = new System.Drawing.Size(259, 22);
+			this.openMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.openMenuItem.Text = "&Open...";
 			this.openMenuItem.Click += new System.EventHandler(this.OpenFileMenuItem_Click);
 			// 
 			// openRecentMenuItem
 			// 
 			this.openRecentMenuItem.Name = "openRecentMenuItem";
-			this.openRecentMenuItem.Size = new System.Drawing.Size(259, 22);
+			this.openRecentMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.openRecentMenuItem.Text = "Open &recent";
 			// 
 			// saveToolStripMenuItem
@@ -866,7 +866,7 @@ namespace Ginger {
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.saveToolStripMenuItem.Text = "&Save";
 			this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItem_Click);
 			// 
@@ -876,15 +876,15 @@ namespace Ginger {
 			this.saveasToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+S";
 			this.saveasToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
-			this.saveasToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
+			this.saveasToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.saveasToolStripMenuItem.Text = "Save &as...";
 			this.saveasToolStripMenuItem.Click += new System.EventHandler(this.SaveasToolStripMenuItem_Click);
 			// 
 			// saveIncrementalMenuItem
 			// 
 			this.saveIncrementalMenuItem.Name = "saveIncrementalMenuItem";
-			this.saveIncrementalMenuItem.ShortcutKeyDisplayString = "Ctrl+Alt+Shift+S";
-			this.saveIncrementalMenuItem.Size = new System.Drawing.Size(259, 22);
+			this.saveIncrementalMenuItem.ShortcutKeyDisplayString = "Ctrl+Alt+S";
+			this.saveIncrementalMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.saveIncrementalMenuItem.Text = "Save &incremental";
 			this.saveIncrementalMenuItem.ToolTipText = global::Ginger.Properties.Resources.tooltip_save_incremental;
 			this.saveIncrementalMenuItem.Click += new System.EventHandler(this.SaveIncrementalMenuItem_Click);
@@ -895,7 +895,7 @@ namespace Ginger {
             this.importCharacterMenuItem,
             this.importLorebookMenuItem});
 			this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-			this.importToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
+			this.importToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.importToolStripMenuItem.Text = "&Import";
 			// 
 			// importCharacterMenuItem
@@ -918,7 +918,7 @@ namespace Ginger {
             this.exportCharacterMenuItem,
             this.exportLorebookMenuItem});
 			this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-			this.exportToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
+			this.exportToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.exportToolStripMenuItem.Text = "&Export";
 			// 
 			// exportCharacterMenuItem
@@ -938,20 +938,20 @@ namespace Ginger {
 			// changeLanguageMenuItem
 			// 
 			this.changeLanguageMenuItem.Name = "changeLanguageMenuItem";
-			this.changeLanguageMenuItem.Size = new System.Drawing.Size(259, 22);
+			this.changeLanguageMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.changeLanguageMenuItem.Text = "Change &language";
 			// 
 			// changeLanguageSeparator
 			// 
 			this.changeLanguageSeparator.Name = "changeLanguageSeparator";
-			this.changeLanguageSeparator.Size = new System.Drawing.Size(256, 6);
+			this.changeLanguageSeparator.Size = new System.Drawing.Size(224, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.ShortcutKeyDisplayString = "Alt+F4";
 			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.OnExitApplication);
 			// 
@@ -1396,6 +1396,13 @@ namespace Ginger {
 			this.usePortraitAsBackgroundMenuItem.Text = "Set portrait as background";
 			this.usePortraitAsBackgroundMenuItem.Click += new System.EventHandler(this.usePortraitAsBackgroundMenuItem_Click);
 			// 
+			// importAltGreetingsMenuItem
+			// 
+			this.importAltGreetingsMenuItem.Name = "importAltGreetingsMenuItem";
+			this.importAltGreetingsMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.importAltGreetingsMenuItem.Text = "Import alternative greetings";
+			this.importAltGreetingsMenuItem.Click += new System.EventHandler(this.importAltGreetingsMenuItem_Click);
+			// 
 			// editExportModelSettingsMenuItem
 			// 
 			this.editExportModelSettingsMenuItem.Name = "editExportModelSettingsMenuItem";
@@ -1593,13 +1600,6 @@ namespace Ginger {
 			// 
 			this.statusConnectionIcon.Name = "statusConnectionIcon";
 			this.statusConnectionIcon.Size = new System.Drawing.Size(0, 17);
-			// 
-			// importAltGreetingsMenuItem
-			// 
-			this.importAltGreetingsMenuItem.Name = "importAltGreetingsMenuItem";
-			this.importAltGreetingsMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.importAltGreetingsMenuItem.Text = "Import alternative greetings";
-			this.importAltGreetingsMenuItem.Click += new System.EventHandler(this.importAltGreetingsMenuItem_Click);
 			// 
 			// MainForm
 			// 
