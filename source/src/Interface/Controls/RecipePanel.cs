@@ -625,14 +625,11 @@ namespace Ginger
 
 				if (parameter.isGlobal) // Is shared (reserve?)
 				{
-					int idxLastRecipe = -1;
-					if (recipeIdx > 0)
-						idxLastRecipe = Array.FindLastIndex(recipes, recipeIdx - 1, r => r.isEnabled);
-
+					StringHandle uid;
 					string reservedValue = default(string);
-					bool isReserved = idxLastRecipe != -1 
-						&& parameter.isEnabled 
-						&& parameterStates[idxLastRecipe].TryGetReservedValue(parameter.id, out reservedValue);
+					bool isReserved = /*parameter.isEnabled
+						&&*/ parameterStates.TryGetReservedValue(parameter.id, out uid, out reservedValue)
+						&& uid != parameter.uid;
 					parameterPanel.SetReserved(isReserved, reservedValue);
 
 					if (isReserved)
@@ -642,7 +639,7 @@ namespace Ginger
 				if (parameter.isConditional && parameterPanel.isReserved == false) // Has condition
 				{
 					bool wasVisible = parameterPanel.isActive;
-					parameterPanel.isActive = parameterState.IsInactive(parameter.id) == false;
+					parameterPanel.isActive = parameterState.IsInactive(parameter.uid) == false;
 					bChanged |= wasVisible != parameterPanel.isActive;
 				}
 								

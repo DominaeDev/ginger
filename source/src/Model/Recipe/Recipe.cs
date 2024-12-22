@@ -642,8 +642,10 @@ namespace Ginger
 			clone.parameters = new List<IParameter>(this.parameters.Count);
 			for (int i = 0; i < this.parameters.Count; ++i)
 			{
-				var other = this.parameters[i];
-				clone.parameters.Add((IParameter)other.Clone());
+				var other = (IParameter)this.parameters[i].Clone();
+				other.recipe = clone;
+				clone.parameters.Add(other);
+
 			}
 			clone.loreItems = new List<LoreItem>(this.loreItems.Count);
 			for (int i = 0; i < this.loreItems.Count; ++i)

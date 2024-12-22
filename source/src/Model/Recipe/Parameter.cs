@@ -8,6 +8,7 @@ namespace Ginger
 {
 	public interface IParameter : IXmlLoadable, IXmlSaveable, ICloneable
 	{
+		StringHandle uid { get; }
 		StringHandle id { get; }
 		string defaultValue { get; set; }
 		string label { get; }
@@ -19,6 +20,7 @@ namespace Ginger
 		bool isEnabled { get; }
 		bool isImmediate { get; }
 		bool isConditional { get; }
+		Recipe recipe { set; }
 
 		bool IsActive(Context context);
 
@@ -135,6 +137,7 @@ namespace Ginger
 	public abstract class BaseParameter<T> : IParameter
 	{
 		public StringHandle id { get; protected set; }
+		public StringHandle uid { get { return string.Concat(recipe?.instanceID.ToString() ?? "__", ':', id.ToString()); } }
 		public string label { get; protected set; }
 		public string description { get; protected set; }
 		public string placeholder { get; protected set; }
@@ -146,7 +149,8 @@ namespace Ginger
 		public bool isConditional { get { return condition != null; } }
 		public ICondition condition { get; protected set; }
 		public abstract void OnApply(ParameterState state, Parameter.Scope scope);
-		public Recipe recipe { get; protected set; }
+		public Recipe recipe { get; set; }
+
 		public Parameter.Scope scope { 
 			get { return _scope; } 
 			protected set { _scope = value; }
@@ -155,7 +159,6 @@ namespace Ginger
 
 		public T value;
 		public string defaultValue { get; set; }
-
 
 		public virtual void Set(T value)
 		{
@@ -177,7 +180,7 @@ namespace Ginger
 			if (!IsActive(parameterState))
 			{
 				if ((this is IInvisibleParameter) == false)
-					parameterState.Inactivate(id);
+					parameterState.Inactivate(uid);
 				return;
 			}
 

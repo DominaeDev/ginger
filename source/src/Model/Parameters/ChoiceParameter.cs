@@ -148,7 +148,7 @@ namespace Ginger
 			}
 
 			if (isGlobal && scope == Parameter.Scope.Global)
-				state.Reserve(id, this.value);
+				state.Reserve(id, uid, this.value);
 		}
 
 		public override object Clone()

@@ -566,7 +566,7 @@
     <Compile Include="src\Model\Lorebook\Lorebooks.cs" />
     <Compile Include="src\Model\Parameters\EraseParameter.cs" />
     <Compile Include="src\Model\Parameters\LorebookParameter.cs" />
-    <Compile Include="src\Model\Parameters\Parameter.cs" />
+    <Compile Include="src\Model\Recipe\Parameter.cs" />
     <Compile Include="src\Model\Parameters\BooleanParameter.cs" />
     <Compile Include="src\Model\Parameters\ListParameter.cs" />
     <Compile Include="src\Model\Parameters\HintParameter.cs" />

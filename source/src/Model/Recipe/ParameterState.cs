@@ -28,11 +28,20 @@ namespace Ginger
 		public enum State
 		{
 			Default,
-			Inactive,
-			Reserved,
+			Inactive,	// Rule evaluated to false
+			Reserved,	// Unavailable
+
 		}
-		private Dictionary<StringHandle, State> _resolvedStates = new Dictionary<StringHandle, State>();
-		private Dictionary<StringHandle, string> _reserved = new Dictionary<StringHandle, string>();
+		private Dictionary<StringHandle, State> _resolvedStates = new Dictionary<StringHandle, State>(); // param uid, state
+
+		public struct Reserved
+		{
+			public StringHandle id;
+			public StringHandle uid;
+			public string value;
+		}
+		public IDictionary<StringHandle, Reserved> reserved { get { return _reserved; } }
+		private Dictionary<StringHandle, Reserved> _reserved = new Dictionary<StringHandle, Reserved>(); // param id, struct
 		private bool _bDirty = true;
 
 		public void SetFlag(StringHandle flag, Parameter.Scope scope)
@@ -157,24 +166,17 @@ namespace Ginger
 			Dirty();
 		}
 
-		public void Reserve(StringHandle id, string reservedValue)
+		public void Reserve(StringHandle id, StringHandle uid, string reservedValue)
 		{
-			_resolvedStates.TryAdd(id, State.Reserved);
-			_reserved.TryAdd(id, reservedValue);
-			Dirty();
-		}
-
-		public bool TryGetReservedValue(StringHandle id, out string reservedValue)
-		{
-			return _reserved.TryGetValue(id, out reservedValue);
-		}
-
-		public bool IsReserved(StringHandle id)
-		{
-			State state;
-			if (_resolvedStates.TryGetValue(id, out state))
-				return state == State.Reserved;
-			return false;
+			_resolvedStates.TryAdd(uid, State.Reserved);
+			if (_reserved.ContainsKey(id) == false)
+			{
+				_reserved.Add(id, new Reserved() {
+					id = id, 
+					uid = uid,
+					value = reservedValue,
+				});
+			}
 		}
 
 		public void CopyReserved(ParameterState state)
@@ -183,15 +185,15 @@ namespace Ginger
 				.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 		}
 
-		public void Inactivate(StringHandle id)
+		public void Inactivate(StringHandle uid)
 		{
-			_resolvedStates.TryAdd(id, State.Inactive);
+			_resolvedStates.TryAdd(uid, State.Inactive);
 		}
 
-		public bool IsInactive(StringHandle id)
+		public bool IsInactive(StringHandle uid)
 		{
 			State state;
-			if (_resolvedStates.TryGetValue(id, out state))
+			if (_resolvedStates.TryGetValue(uid, out state))
 				return state == State.Inactive;
 			return false;
 		}
@@ -239,6 +241,32 @@ namespace Ginger
 			value = default(string);
 			return false;
 		}
+
+		public bool TryGetReservedValue(StringHandle id, out StringHandle uid, out string reservedValue)
+		{
+			ParameterState.Reserved reserved;
+			if (_reserved.TryGetValue(id, out reserved))
+			{
+				uid = reserved.uid;
+				reservedValue = reserved.value;
+				return true;
+			}
+			uid = default(StringHandle);
+			reservedValue = default(string);
+			return false;
+		}
+
+		public void Reserve(ParameterState.Reserved reserved)
+		{
+			_reserved.TryAdd(reserved.id, reserved);
+		}
+		
+		public bool IsReserved(StringHandle id)
+		{
+			return _reserved.ContainsKey(id);
+		}
+
+		private Dictionary<StringHandle, ParameterState.Reserved> _reserved = new Dictionary<StringHandle, ParameterState.Reserved>(); // param id, struct
 	}
 
 	public class ParameterCollection

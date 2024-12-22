@@ -109,7 +109,7 @@ namespace Ginger
 			state.SetValue(id, sValue, scope);
 
 			if (isGlobal && scope == Parameter.Scope.Global)
-				state.Reserve(id, sValue);
+				state.Reserve(id, uid, sValue);
 		}
 
 		public override object Clone()

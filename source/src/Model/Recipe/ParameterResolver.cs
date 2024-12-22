@@ -53,12 +53,10 @@ namespace Ginger
 					ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
 					valueSuppliers = new IValueSupplier[] { parameterStates },
 				};
-				if (idxLastRecipe != -1) // Forward reserved values
-					state.CopyReserved(parameterStates[idxLastRecipe]);
 
 				foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
 				{
-					if (idxLastRecipe != -1 && parameter.isGlobal && parameterStates[idxLastRecipe].IsReserved(parameter.id))
+					if (idxLastRecipe != -1 && parameter.isGlobal && parameterStates.IsReserved(parameter.id))
 						continue; // Skip reserved
 					parameter.Apply(state);
 				}
@@ -73,8 +71,10 @@ namespace Ginger
 
 		private static void CopyGlobals(ParameterStates parameterStates, int idxSource, Context globalContext)
 		{
-			var globals = parameterStates[idxSource].globalScope;
+			var sourceState = parameterStates[idxSource];
+			var globals = sourceState.globalScope;
 
+			// Shared variables and flags
 			for (int i = 0; i < parameterStates.Length; ++i)
 			{
 				if (i == idxSource)
@@ -103,6 +103,10 @@ namespace Ginger
 			foreach (var value in globals.values)
 				globalContext.SetValue(value.Key, value.Value);
 			globalContext.SetFlags(globals.flags);
+
+			// Reserved parameters
+			foreach (var kvp in sourceState.reserved)
+				parameterStates.Reserve(kvp.Value);
 		}
 
 		public static Context[] GetLocalContexts(Recipe[] recipes, Context outerContext)
