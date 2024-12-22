@@ -637,16 +637,15 @@ namespace Ginger
 		public void RefreshPatterns()
 		{
 			var flags = _syntaxFlags;
-			_syntaxFlags = SyntaxFlags.None;
-			SetSyntaxHighlightPattern(flags);
+			SetSyntaxHighlightPattern(flags, true);
 		}
 
-		private void SetSyntaxHighlightPattern(SyntaxFlags flags)
+		private void SetSyntaxHighlightPattern(SyntaxFlags flags, bool bForce = false)
 		{
 			if (_syntaxHighlighter == null)
 				return;
 
-			if (_syntaxFlags == flags)
+			if (_syntaxFlags == flags && !bForce)
 				return; // No change
 			_syntaxFlags = flags;
 

@@ -148,12 +148,18 @@ namespace Ginger
 
 		private void RichTextBox_GotFocus(object sender, EventArgs e)
 		{
+			if (_bIgnoreEvents || !Enabled)
+				return;
+
 			_keyHash = textBox_Keys.Text.GetHashCode();
 			_contentHash = textBox_Text.Text.GetHashCode();
 		}
 
 		private void RichTextBox_LostFocus(object sender, EventArgs e)
 		{
+			if (_bIgnoreEvents || !Enabled)
+				return;
+
 			// Clean up
 			_bIgnoreEvents = true;
 			var keys = Utility.ListFromCommaSeparatedString(textBox_Keys.Text);

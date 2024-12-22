@@ -207,6 +207,9 @@ namespace Ginger
 
 		private void TextBox_GotFocus(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents || !Enabled)
+				return;
+
 			_contentHash = parameter.value.GetHashCode();
 
 			if (textBox.Text.EndsWith(string.Concat(" ", Suffix)))
@@ -218,7 +221,7 @@ namespace Ginger
 
 		private void TextBox_LostFocus(object sender, EventArgs e)
 		{
-			if (isIgnoringEvents)
+			if (isIgnoringEvents || !Enabled)
 				return;
 
 			// Validate

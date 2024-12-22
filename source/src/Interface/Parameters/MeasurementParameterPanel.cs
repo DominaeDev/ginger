@@ -117,7 +117,7 @@ namespace Ginger
 
 		private void TextBox_GotFocus(object sender, EventArgs e)
 		{
-			if (isIgnoringEvents)
+			if (isIgnoringEvents || !Enabled)
 				return;
 
 			_contentHash = parameter.magnitude.GetHashCode();
@@ -125,7 +125,7 @@ namespace Ginger
 
 		private void TextBox_LostFocus(object sender, EventArgs e)
 		{
-			if (isIgnoringEvents)
+			if (isIgnoringEvents || !Enabled)
 				return;
 
 			if (string.IsNullOrEmpty(textBox.Text) == false)

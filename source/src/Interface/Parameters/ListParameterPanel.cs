@@ -68,11 +68,17 @@ namespace Ginger
 
 		private void TextBox_GotFocus(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents || !Enabled)
+				return;
+
 			_contentHash = textBox.Text.GetHashCode();
 		}
 
 		private void TextBox_LostFocus(object sender, EventArgs e)
 		{
+			if (isIgnoringEvents || !Enabled)
+				return;
+
 			// Clean up
 			WhileIgnoringEvents(() => {
 				string text = Utility.ListToCommaSeparatedString(Collection);

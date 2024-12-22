@@ -16,7 +16,7 @@ namespace Ginger
 
 		private void TextBox_EnterPressed(object sender, EventArgs e)
 		{
-			if (isIgnoringEvents || Enabled == false)
+			if (isIgnoringEvents || !Enabled)
 				return;
 
 			this.parameter.value = textBox.Text;
@@ -26,6 +26,8 @@ namespace Ginger
 				_contentHash = newContentHash;
 				NotifyValueChanged(_contentHash);
 			}
+
+			textBox.richTextBox.SelectAll();
 		}
 
 		private void OnMouseClick(object sender, System.Windows.Forms.MouseEventArgs e)

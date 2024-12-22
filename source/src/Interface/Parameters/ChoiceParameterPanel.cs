@@ -8,12 +8,17 @@ namespace Ginger
 		protected override CheckBox parameterCheckBox { get { return cbEnabled; } }
 		protected override Label parameterLabel { get { return label; } }
 
+		private int _contentHash;
+
 		public ChoiceParameterPanel()
 		{
 			InitializeComponent();
 
 			comboBox.SelectedValueChanged += OnValueChanged;
-			textBox_Custom.richTextBox.ValueChanged += OnCustomTextChanged;
+			textBox_Custom.richTextBox.ValueChanged += TextBox_Custom_TextChanged;
+			textBox_Custom.richTextBox.EnterPressed += TextBox_Custom_EnterPressed;
+			textBox_Custom.richTextBox.GotFocus += TextBox_Custom_GotFocus;
+			textBox_Custom.LostFocus += TextBox_Custom_LostFocus;
 
 			FontChanged += FontDidChange;
 		}
@@ -23,6 +28,43 @@ namespace Ginger
 			WhileIgnoringEvents(() => {
 				textBox_Custom.Font = this.Font;
 			});
+		}
+
+		private void TextBox_Custom_LostFocus(object sender, EventArgs e)
+		{
+			if (isIgnoringEvents || !Enabled)
+				return;
+
+			var newContentHash = textBox_Custom.Text.GetHashCode();
+			if (_contentHash != newContentHash)
+			{
+				Current.IsFileDirty = this.parameter.value != textBox_Custom.Text;
+				this.parameter.value = textBox_Custom.Text;
+
+				_contentHash = newContentHash;
+				NotifyValueChanged(_contentHash);
+			}
+		}
+
+		private void TextBox_Custom_GotFocus(object sender, EventArgs e)
+		{
+			_contentHash = textBox_Custom.Text.GetHashCode();
+		}
+
+		private void TextBox_Custom_EnterPressed(object sender, EventArgs e)
+		{
+			if (isIgnoringEvents || Enabled == false)
+				return;
+
+			this.parameter.value = textBox_Custom.Text;
+			var newContentHash = textBox_Custom.Text.GetHashCode();
+			if (_contentHash != newContentHash)
+			{
+				_contentHash = newContentHash;
+				NotifyValueChanged(_contentHash);
+			}
+
+			textBox_Custom.richTextBox.SelectAll();
 		}
 
 		protected override void OnResize(EventArgs e)
@@ -51,7 +93,7 @@ namespace Ginger
 
 			comboBox.Enabled = parameter.isEnabled || !parameter.isOptional;
 
-			textBox_Custom.Visible = parameter.style == ChoiceParameter.Style.Custom && comboBox.SelectedIndex == comboBox.Items.Count - 1;
+			textBox_Custom.Visible = parameter.style == ChoiceParameter.Style.Custom && comboBox.SelectedIndex == comboBox.Items.Count - 1 && !isReserved;
 			textBox_Custom.Enabled = parameter.isEnabled || !parameter.isOptional;
 			textBox_Custom.Placeholder = parameter.placeholder;
 
@@ -103,6 +145,8 @@ namespace Ginger
 
 			WhileIgnoringEvents(() => {
 				SelectByValue(bReserved ? reservedValue : this.parameter.value);
+				if (bReserved)
+					textBox_Custom.Visible = false;
 			});
 		}
 
@@ -145,7 +189,7 @@ namespace Ginger
 
 				if (index >= 0 && index < comboBox.Items.Count)
 				{
-					this.parameter.value = parameter.items[index].id.ToString();
+					this.parameter.value = parameter.items[index].value;
 					this.parameter.selectedIndex = index;
 				}
 				else
@@ -159,12 +203,15 @@ namespace Ginger
 			NotifyValueChanged();
 		}
 
-		private void OnCustomTextChanged(object sender, EventArgs e)
+		private void TextBox_Custom_TextChanged(object sender, EventArgs e)
 		{
-			if (isIgnoringEvents)
+			if (isIgnoringEvents || parameter.style != ChoiceParameter.Style.Custom || comboBox.SelectedIndex < comboBox.Items.Count - 1)
 				return;
 
-			if (parameter.style == ChoiceParameter.Style.Custom && comboBox.SelectedIndex >= comboBox.Items.Count - 1)
+			this.parameter.value = textBox_Custom.Text;
+			Current.IsFileDirty = true;
+
+			/*if (parameter.style == ChoiceParameter.Style.Custom && comboBox.SelectedIndex >= comboBox.Items.Count - 1)
 			{
 				if (this.parameter.value != textBox_Custom.Text)
 				{
@@ -172,7 +219,7 @@ namespace Ginger
 					this.parameter.selectedIndex = -2;
 					NotifyValueChanged();
 				}
-			}
+			}*/
 		}
 
 		private void SelectByValue(string value)
@@ -180,21 +227,27 @@ namespace Ginger
 			if (comboBox.Items.Count == 0)
 				return;
 
-			int index = this.parameter.items.FindIndex(i => string.Compare(i.value, value, true) == 0 || string.Compare(i.label, value, true) == 0);
+			WhileIgnoringEvents(() => {
+				int index = this.parameter.items.FindIndex(i => string.Compare(i.value, value, true) == 0 || string.Compare(i.label, value, true) == 0);
 
-			if (index == -1 && parameter.style == ChoiceParameter.Style.Custom && string.IsNullOrWhiteSpace(value) == false)
-			{
-				index = comboBox.Items.Count - 1;
-				textBox_Custom.Text = value;
-			}
-			else if (index == -1 && parameter.isOptional)
-				index = 0; // (not set)
-			else if (parameter.isOptional)
-				index += 1; // (not set)...
+				if (index == -1 && parameter.style == ChoiceParameter.Style.Custom && string.IsNullOrWhiteSpace(value) == false)
+				{
+					index = comboBox.Items.Count - 1;
+					textBox_Custom.Text = value;
+					_contentHash = textBox_Custom.Text.GetHashCode();
+				}
+				else if (index == -1 && parameter.isOptional)
+					index = 0; // (not set)
+				else if (parameter.isOptional)
+					index += 1; // (not set)...
 
-			if (index < 0 || index >= comboBox.Items.Count)
-				index = 0;
-			comboBox.SelectedItem = comboBox.Items[index];
+				if (index < 0 || index >= comboBox.Items.Count)
+					index = 0;
+
+				comboBox.SelectedItem = comboBox.Items[index];
+			});
+
+			textBox_Custom.Visible = parameter.style == ChoiceParameter.Style.Custom && comboBox.SelectedIndex == comboBox.Items.Count - 1;
 		}
 
 		public ISearchable[] GetSearchables()
