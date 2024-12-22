@@ -157,7 +157,9 @@ namespace Ginger
 
 			if (type == ContextType.Full)
 			{
-				return ParameterResolver.GetFinalContext(recipes.ToArray(), context);
+				Context fullContext;
+				ParameterResolver.ResolveParameters(recipes.ToArray(), context, out fullContext);
+				return fullContext;
 			}
 			else if (type == ContextType.FlagsOnly)
 			{

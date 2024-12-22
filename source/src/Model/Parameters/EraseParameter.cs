@@ -50,7 +50,11 @@ namespace Ginger
 			if (scope == Parameter.Scope.Global) // Global only
 			{
 				foreach (var flag in flags)
-					state.Erase(flag, Parameter.Scope.Global);
+				{
+					state.EraseFlag(flag, Parameter.Scope.Global);
+					state.EraseValue(flag, Parameter.Scope.Global);
+					state.Unreserve(flag);
+				}
 			}
 		}
 

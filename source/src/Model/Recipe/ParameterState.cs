@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Ginger
 {
 	public class ParameterState
 	{
-		public Context outerContext;
-
-		public ParameterCollection globalParameters = new ParameterCollection();
-		public ParameterCollection localParameters = new ParameterCollection();
+		public ParameterCollection outerScope = new ParameterCollection();		// Global in
+		public ParameterCollection globalScope = new ParameterCollection();		// Global out
+		public ParameterCollection localScope = new ParameterCollection();
 
 		public Context evalContext
 		{
@@ -16,7 +16,7 @@ namespace Ginger
 			{
 				if (_bDirty || _evalContext == null)
 				{
-					_evalContext = Context.Merge(outerContext, localParameters.context);
+					_evalContext = Context.Merge(outerScope.context, localScope.context);
 					_bDirty = false;
 				}
 				return _evalContext;
@@ -35,66 +35,107 @@ namespace Ginger
 		private Dictionary<StringHandle, string> _reserved = new Dictionary<StringHandle, string>();
 		private bool _bDirty = true;
 
-		private ParameterCollection GetCollection(Parameter.Scope scope)
-		{
-			return scope == Parameter.Scope.Global ? globalParameters : localParameters;
-		}
-
 		public void SetFlag(StringHandle flag, Parameter.Scope scope)
 		{
-			GetCollection(scope).SetFlag(flag);
-			if (scope == Parameter.Scope.Local && flag.ToString().IndexOf(':') == -1)
-				localParameters.SetFlag(string.Concat(flag.ToString(), ":local"));
-			_bDirty = true;
+			if (scope.Contains(Parameter.Scope.Global))
+				globalScope.SetFlag(flag);
+			if (scope.Contains(Parameter.Scope.Local))
+			{
+				localScope.SetFlag(flag);
+				if (flag.ToString().IndexOf(':') == -1)
+					localScope.SetFlag(string.Concat(flag.ToString(), ":local"));
+			}
+			Dirty();
 		}
 
 		public void SetFlags(IEnumerable<StringHandle> flags, Parameter.Scope scope)
 		{
-			GetCollection(scope).SetFlags(flags);
-			if (scope == Parameter.Scope.Local)
+			if (scope.Contains(Parameter.Scope.Global))
+				globalScope.SetFlags(flags);
+			if (scope.Contains(Parameter.Scope.Local))
 			{
 				foreach (var flag in flags.Where(f => f.ToString().IndexOf(':') == -1))
-					localParameters.SetFlag(string.Concat(flag.ToString(), ":local"));
+					localScope.SetFlag(string.Concat(flag.ToString(), ":local"));
 			}
-			_bDirty = true;
+			Dirty();
 		}
 
 		public void SetValue(StringHandle id, string value, Parameter.Scope scope)
 		{
-			GetCollection(scope).SetValue(id, value);
-			if (scope == Parameter.Scope.Local && id.ToString().IndexOf(':') == -1)
+			if (scope.Contains(Parameter.Scope.Global))
+				globalScope.SetValue(id, value);
+			if (scope.Contains(Parameter.Scope.Local))
 			{
-				localParameters.SetFlag(string.Concat(id.ToString(), ":local"));
-				localParameters.SetValue(string.Concat(id.ToString(), ":local"), value);
+				if (id.ToString().IndexOf(':') == -1)
+				{
+					localScope.SetFlag(string.Concat(id.ToString(), ":local"));
+					localScope.SetValue(string.Concat(id.ToString(), ":local"), value);
+				}
 			}
-			_bDirty = true;
+			Dirty();
 		}
 
 		public void SetValue(StringHandle id, float value, Parameter.Scope scope)
 		{
-			GetCollection(scope).SetValue(id, value);
-			if (id.ToString().IndexOf(':') == -1)
+			if (scope.Contains(Parameter.Scope.Global))
+				globalScope.SetValue(id, value);
+			if (scope.Contains(Parameter.Scope.Local))
 			{
-				localParameters.SetFlag(string.Concat(id.ToString(), ":local"));
-				localParameters.SetValue(string.Concat(id.ToString(), ":local"), value);
+				if (id.ToString().IndexOf(':') == -1)
+				{
+					localScope.SetFlag(string.Concat(id.ToString(), ":local"));
+					localScope.SetValue(string.Concat(id.ToString(), ":local"), value);
+				}
 			}
-			_bDirty = true;
+			Dirty();
 		}
 
-		public void Erase(StringHandle id, Parameter.Scope scope)
+		public void SetValue(StringHandle id, ContextualValue value, Parameter.Scope scope)
 		{
-			GetCollection(scope).EraseFlag(id);
-			GetCollection(scope).EraseValue(id);
-			if (scope == Parameter.Scope.Global)
-				_reserved.Remove(id);
-			_bDirty = true;
+			if (scope.Contains(Parameter.Scope.Global))
+				globalScope.SetValue(id, value);
+			if (scope.Contains(Parameter.Scope.Local))
+			{
+				if (id.ToString().IndexOf(':') == -1)
+				{
+					localScope.SetFlag(string.Concat(id.ToString(), ":local"));
+					localScope.SetValue(string.Concat(id.ToString(), ":local"), value);
+				}
+			}
+			Dirty();
+		}
+
+		public void EraseFlag(StringHandle id, Parameter.Scope scope)
+		{
+			if (scope.Contains(Parameter.Scope.Global))
+				globalScope.EraseFlag(id);
+
+			if (scope.Contains(Parameter.Scope.Local))
+				localScope.EraseFlag(id);
+			Dirty();
+		}
+
+		public void EraseValue(StringHandle id, Parameter.Scope scope)
+		{
+			if (scope.Contains(Parameter.Scope.Global))
+				globalScope.EraseValue(id);
+
+			if (scope.Contains(Parameter.Scope.Local))
+				localScope.EraseValue(id);
+
+			Dirty();
 		}
 
 		public void Reserve(StringHandle id, string reservedValue)
 		{
 			_resolvedStates.TryAdd(id, State.Reserved);
 			_reserved.TryAdd(id, reservedValue);
-			_bDirty = true;
+			Dirty();
+		}
+
+		public void Unreserve(StringHandle id)
+		{
+			_reserved.Remove(id);
 		}
 
 		public bool TryGetReservedValue(StringHandle id, out string reservedValue)
@@ -110,6 +151,12 @@ namespace Ginger
 			return false;
 		}
 
+		public void CopyReserved(ParameterState state)
+		{
+			_reserved = _reserved.Union(state._reserved)
+				.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+		}
+
 		public void Inactivate(StringHandle id)
 		{
 			_resolvedStates.TryAdd(id, State.Inactive);
@@ -122,50 +169,10 @@ namespace Ginger
 				return state == State.Inactive;
 			return false;
 		}
-		
-		public void CopyGlobals(ParameterState state)
+
+		public void Dirty()
 		{
-			// Erase flags
-			foreach (var flag in state.globalParameters.erasedFlags)
-			{
-				outerContext.RemoveFlag(flag);
-				globalParameters.EraseFlag(flag);
-			}
-
-			// Erase values
-			foreach (var value in state.globalParameters.erasedValues)
-			{
-				outerContext.SetValue(value, null);
-				globalParameters.EraseValue(value);
-			}
-
-			// Copy flags
-			foreach (var flag in state.globalParameters.flags.Except(state.globalParameters.erasedFlags))
-			{
-				outerContext.SetFlag(flag);
-				globalParameters.SetFlag(flag);
-			}
-
-			// Copy values
-			foreach (var value in state.globalParameters.values.Where(kvp => state.globalParameters.erasedValues.Contains(kvp.Key) == false))
-			{
-				outerContext.SetValue(value.Key, value.Value);
-				globalParameters.SetValue(value.Key, value.Value);
-			}
-
-			_reserved = _reserved.Union(state._reserved)
-				.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 			_bDirty = true;
-		}
-
-		public Context GetFullContext()
-		{
-			return Context.Merge(Context.Merge(outerContext, globalParameters.context), localParameters.context);
-		}
-
-		public Context GetLocalContext()
-		{
-			return Context.Merge(Context.Merge(outerContext, globalParameters.context), localParameters.context);
 		}
 	}
 
@@ -194,9 +201,9 @@ namespace Ginger
 			{
 				if (_states[i] == null)
 					continue;
-				
+
 				ContextualValue ctxValue;
-				if (_states[i].localParameters.TryGetValue(id, out ctxValue))
+				if (_states[i].localScope.TryGetValue(id, out ctxValue))
 				{
 					value = ctxValue.ToString();
 					return true;
@@ -214,9 +221,9 @@ namespace Ginger
 		private Dictionary<StringHandle, ContextualValue> _values = new Dictionary<StringHandle, ContextualValue>();
 		public IEnumerable<StringHandle> flags { get { return _flags; } }
 		private HashSet<StringHandle> _flags = new HashSet<StringHandle>();
-		
+
 		public IEnumerable<StringHandle> erasedValues { get { return _erasedValues; } }
-		public IEnumerable<StringHandle> erasedFlags{ get { return _erasedFlags; } }
+		public IEnumerable<StringHandle> erasedFlags { get { return _erasedFlags; } }
 		private HashSet<StringHandle> _erasedValues = new HashSet<StringHandle>();
 		private HashSet<StringHandle> _erasedFlags = new HashSet<StringHandle>();
 
@@ -226,7 +233,7 @@ namespace Ginger
 				_values[id] = value;
 			else
 				_values.Add(id, value);
-			
+
 			_erasedValues.Remove(id);
 		}
 

@@ -6,9 +6,17 @@ namespace Ginger
 {
 	public static class ParameterResolver
 	{
-		public static ParameterStates ResolveParameters(Recipe[] recipes, Context outerContext)
+		public static ParameterStates ResolveParameters(Recipe[] recipes, Context context)
+		{
+			Context tmp;
+			return ResolveParameters(recipes, context, out tmp);
+		}
+
+		public static ParameterStates ResolveParameters(Recipe[] recipes, Context context, out Context globalContext)
 		{
 			var parameterStates = new ParameterStates(recipes);
+
+			globalContext = Context.Copy(context);
 
 			// Collect global flags
 			var globalFlags = new HashSet<StringHandle>[recipes.Length];
@@ -19,16 +27,14 @@ namespace Ginger
 				for (int j = 0; j < recipes.Length; ++j)
 					if (i != j && recipes[j].isEnabled)
 						flags.UnionWith(recipes[j].flags);
-
-				outerContext.SetFlags(recipes[i].flags);
 			}
 
 			// Create parameter states
 			for (int i = 0; i < recipes.Length; ++i)
 			{
 				var state = parameterStates[i];
-				state.outerContext = outerContext;
-				state.globalParameters.SetFlags(globalFlags[i]);
+				state.outerScope.CopyFromContext(context);
+				state.outerScope.SetFlags(globalFlags[i]);
 				parameterStates[i] = state;
 			}
 
@@ -47,37 +53,56 @@ namespace Ginger
 					ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
 					valueSuppliers = new IValueSupplier[] { parameterStates },
 				};
-				if (idxLastRecipe != -1) // Pass on global state
-					state.CopyGlobals(parameterStates[idxLastRecipe]);
+				if (idxLastRecipe != -1) // Forward reserved values
+					state.CopyReserved(parameterStates[idxLastRecipe]);
 
 				foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
 				{
 					if (idxLastRecipe != -1 && parameter.isGlobal && parameterStates[idxLastRecipe].IsReserved(parameter.id))
 						continue; // Skip reserved
-
 					parameter.Apply(state);
 				}
+
+				CopyGlobals(parameterStates, i, globalContext);
 
 				idxLastRecipe = i;
 			}
 
-			if (idxLastRecipe != -1)
+			return parameterStates;
+		}
+
+		private static void CopyGlobals(ParameterStates parameterStates, int idxSource, Context globalContext)
+		{
+			var globals = parameterStates[idxSource].globalScope;
+
+			for (int i = 0; i < parameterStates.Length; ++i)
 			{
-				var lastState = parameterStates[idxLastRecipe];
+				if (i == idxSource)
+					continue;
+
+				var state = parameterStates[i];
+
 				// Erase flags/values
-				foreach (var flag in lastState.globalParameters.erasedFlags)
-					outerContext.RemoveFlag(flag);
-				foreach (var value in lastState.globalParameters.erasedValues)
-					outerContext.SetValue(value, null);
+				foreach (var flag in globals.erasedFlags)
+					state.outerScope.EraseFlag(flag);
+				foreach (var value in globals.erasedValues)
+					state.outerScope.EraseValue(value);
 
 				// Copy flags/values
-				foreach (var flag in lastState.globalParameters.flags.Except(lastState.globalParameters.erasedFlags))
-					outerContext.SetFlag(flag);
-				foreach (var value in lastState.globalParameters.values.Where(kvp => lastState.globalParameters.erasedValues.Contains(kvp.Key) == false))
-					outerContext.SetValue(value.Key, value.Value);
+				foreach (var value in globals.values)
+					state.outerScope.SetValue(value.Key, value.Value);
+				state.outerScope.SetFlags(globals.flags);
+				state.Dirty();
 			}
 
-			return parameterStates;
+			// Update global context
+			foreach (var flag in globals.erasedFlags)
+				globalContext.RemoveFlag(flag);
+			foreach (var value in globals.erasedValues)
+				globalContext.SetValue(value, null);
+			foreach (var value in globals.values)
+				globalContext.SetValue(value.Key, value.Value);
+			globalContext.SetFlags(globals.flags);
 		}
 
 		public static Context[] GetLocalContexts(Recipe[] recipes, Context outerContext)
@@ -89,41 +114,10 @@ namespace Ginger
 			Context[] localContexts = new Context[recipes.Length];
 
 			// Create contexts
-			/*for (int i = 0; i < recipes.Length; ++i)
-			{
-				if (recipes[i].isEnabled == false)
-					continue; // Skip
-				localContexts[i] = parameterStates[i].evalContext;
-			}*/
-
-			// Create contexts
 			for (int i = 0; i < recipes.Length; ++i)
-			{
-				if (recipes[i].isEnabled == false)
-					continue; // Skip
+				localContexts[i] = parameterStates[i].evalContext;
 
-				var localContext = Context.Copy(outerContext);
-				if (parameterStates[i] != null)
-					parameterStates[i].localParameters.ApplyToContext(localContext);
-				localContexts[i] = localContext;
-			}
 			return localContexts;
-		}
-
-
-		public static Context GetFinalContext(Recipe[] recipes, Context outerContext)
-		{
-			if (recipes == null || recipes.Length == 0)
-				return Context.Copy(outerContext);
-
-			ParameterStates parameterStates = ResolveParameters(recipes, outerContext);
-			int idxLastRecipe = Array.FindLastIndex(recipes, r => r.isEnabled);
-			if (idxLastRecipe == -1)
-				return Context.Copy(outerContext);
-
-			var context = parameterStates[idxLastRecipe].GetFullContext();
-			context.SetFlags(recipes[idxLastRecipe].flags);
-			return context;
 		}
 
 	}

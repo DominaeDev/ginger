@@ -277,7 +277,7 @@ namespace Ginger
 				return true;
 
 			var localContext = Context.Copy(parameterState.evalContext);
-			parameterState.localParameters.ApplyToContext(localContext);
+			parameterState.localScope.ApplyToContext(localContext);
 
 			return condition.Evaluate(localContext, new EvaluationCookie() {
 				randomizer = parameterState.evalConfig.randomizer,

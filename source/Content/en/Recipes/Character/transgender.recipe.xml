@@ -6,10 +6,10 @@
 	<Author>Ginger</Author>
 	<Category>Character</Category>
 	<Flags>trans, transgender, override-gender</Flags>
-	<Requires>not override-gender</Requires>
+	<Requires>not (override-gender or custom-gender)</Requires>
 	
 	<!-- Parameters -->
-	<Choice id="trans-gender" required="yes" rule="not (male or female or custom-gender)">
+	<Choice id="trans-gender" required="yes">
 		<Label>Sex</Label>
 		<Option>Male</Option>
 		<Option>Female</Option>

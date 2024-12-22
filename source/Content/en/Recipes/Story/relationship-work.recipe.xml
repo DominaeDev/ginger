@@ -1,4 +1,4 @@
-<Ginger id="relationship-professional" version="1.0">
+<Ginger id="relationship-professional" version="1.1">
 	<Name>Relationship/Professional</Name>
 	<Title>Professional relationship</Title>
 	<Description>The character has a working relationship with the user.</Description>
@@ -19,7 +19,7 @@
 	</Choice>
 	
 	<!-- Company name -->
-	<Text id="company-name" rule="not company-name">
+	<Text id="company-name" shared="yes">
 		<Label>Company name</Label>
 		<Placeholder>Ginger Inc.</Placeholder>
 	</Text>
