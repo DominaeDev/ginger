@@ -43,6 +43,8 @@ namespace Ginger
 		public string ext;
 		public AssetData data;
 
+		public static readonly string MainAssetName = "main";
+
 		// Meta
 		public string uid
 		{ 
@@ -78,6 +80,16 @@ namespace Ginger
 		public bool isDefaultAsset { get { return uriType == UriType.Default; } }
 		public bool isEmbeddedAsset { get { return uriType == UriType.Embedded; } }
 		public bool isRemoteAsset { get { return uriType == UriType.Custom; } }
+
+		public bool isMainPortrait
+		{
+			get
+			{
+				if (assetType != AssetType.Icon)
+					return false;
+				return isDefaultAsset || (isEmbeddedAsset && string.Compare(name, MainAssetName, StringComparison.OrdinalIgnoreCase) == 0);
+			}
+		}
 
 		public static readonly string DefaultUri = "ccdefault:";
 		public static readonly string CharXEmbedUriPrefix = "embeded://";
@@ -258,7 +270,7 @@ namespace Ginger
 				assetType = type,
 				fullUri = DefaultUri,
 				uriType = UriType.Default,
-				name = name ?? "main",
+				name = name ?? MainAssetName,
 				ext = ext ?? "unknown",
 				uriName = null,
 				uriPath = null,
@@ -500,7 +512,7 @@ namespace Ginger
 				assetData = images[0].data;
 			else
 			{
-				var mainAsset = images.FirstOrDefault(a => a.name == "main");
+				var mainAsset = images.FirstOrDefault(a => a.name == AssetFile.MainAssetName);
 				if (mainAsset != null)
 					assetData = mainAsset.data;
 				else
@@ -509,17 +521,11 @@ namespace Ginger
 			if (assetData.length == 0)
 				return null;
 
-			try
-			{
-				using (var stream = new MemoryStream(assetData.bytes))
-				{
-					return Image.FromStream(stream);
-				}
-			}
-			catch
-			{
-				return null;
-			}
+			Image image;
+			if (Utility.LoadImageFromMemory(assetData.bytes, out image))
+				return image;
+
+			return null;
 		}
 
 		public bool RemovePortraitImage()
@@ -535,7 +541,7 @@ namespace Ginger
 			}
 			else
 			{
-				int idx = this.FindIndex(a => string.Compare(a.name, "main", StringComparison.OrdinalIgnoreCase) == 0);
+				int idx = this.FindIndex(a => string.Compare(a.name, AssetFile.MainAssetName, StringComparison.OrdinalIgnoreCase) == 0);
 				if (idx != -1)
 				{
 					this.RemoveAt(idx);
@@ -617,17 +623,20 @@ namespace Ginger
 
 		public bool HasDefaultIcon()
 		{
-			return this.ContainsAny(a => a.assetType == AssetFile.AssetType.Icon && (a.isDefaultAsset || a.name == "main" ));
+			return this.ContainsAny(a => a.assetType == AssetFile.AssetType.Icon && (a.isDefaultAsset || a.name == AssetFile.MainAssetName ));
 		}
 
 		public void AddPortraitImage(FileUtil.FileType fileType)
 		{
+			if (this.ContainsAny(a => a.isMainPortrait && a.isDefaultAsset == false))
+				return; // A portrait image already exists
+
 			// Remove any existing default icon(s)
 			this.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
 
 			if (fileType == FileUtil.FileType.Png)
 			{
-				this.Insert(0, AssetFile.MakeDefault(AssetFile.AssetType.Icon, "main", "png")); // Add default
+				this.Insert(0, AssetFile.MakeDefault(AssetFile.AssetType.Icon, AssetFile.MainAssetName, "png")); // Add default
 				return;
 			}
 
@@ -662,7 +671,7 @@ namespace Ginger
 					// Add asset
 					this.Insert(0, new AssetFile() {
 						assetType = AssetFile.AssetType.Icon,
-						name = "main",
+						name = AssetFile.MainAssetName,
 						ext = "png",
 						uriType = AssetFile.UriType.Embedded,
 						data = AssetData.FromBytes(stream.ToArray()),

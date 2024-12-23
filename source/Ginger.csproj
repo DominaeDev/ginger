@@ -503,6 +503,7 @@
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProvider.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleNoneProvider.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleRoundedProvider.cs" />
+    <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\acTLChunk.cs" />
     <Compile Include="src\Utility\ThirdParty\WebPWrapper\WebPWrapper.cs" />
     <Compile Include="src\Utility\Undo\UndoStack.cs" />
     <Compile Include="src\Utility\Undo\TextUndoStack.cs" />

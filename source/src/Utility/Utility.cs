@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PNGNet;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -179,6 +180,94 @@ namespace Ginger
 				image = default(Image);
 				return false;
 			}
+		}
+		
+		public static bool IsAnimatedImage(Image image)
+		{
+			var dimension = new FrameDimension(image.FrameDimensionsList[0]);
+			int frameCount = image.GetFrameCount(dimension);
+			return frameCount > 1;
+		}
+
+		public static bool IsAnimatedWebP(string filename)
+		{
+			try
+			{
+				byte[] bytes = File.ReadAllBytes(filename);
+				return IsAnimatedWebP(bytes);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		public static bool IsAnimatedWebP(byte[] bytes)
+		{
+			try
+			{
+				using (var webp = new WebP())
+				{
+					int w, h;
+					bool alpha, animation;
+					string format;
+					webp.GetInfo(bytes, out w, out h, out alpha, out animation, out format);
+					return animation;
+				}
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		public static bool IsAnimatedPNG(string filename)
+		{
+			try
+			{
+				byte[] bytes = File.ReadAllBytes(filename);
+				return IsAnimatedPNG(bytes);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		public static bool IsAnimatedPNG(byte[] bytes)
+		{
+			using (var stream = new MemoryStream(bytes))
+			{
+				PNGImage image = new PNGImage(stream);
+
+				foreach (var chunk in image.Chunks)
+				{
+					if (chunk is acTLChunk)
+					{
+						var acTL = chunk as acTLChunk;
+						return acTL.NumFrames > 1;
+					}
+				}
+			}
+			return false;
+		}
+
+		private static bool IsAnimatedPng(byte[] bytes)
+		{
+			using (var stream = new MemoryStream(bytes))
+			{
+				PNGImage image = new PNGImage(stream);
+
+				foreach (var chunk in image.Chunks)
+				{
+					if (chunk is acTLChunk)
+					{
+						var acTL = chunk as acTLChunk;
+						return acTL.NumFrames > 1;
+					}
+				}
+			}
+			return false;
 		}
 
 		public static bool IsSupportedImageFilename(string filename)

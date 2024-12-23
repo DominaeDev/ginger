@@ -110,7 +110,7 @@ namespace Ginger
 			}
 			catch
 			{
-				assets = null;
+				assets = new AssetCollection(); // Empty
 				return Error.FileReadError;
 			}
 		}

@@ -445,39 +445,56 @@ namespace Ginger
 				filename = openFileDialog.FileName;
 			}
 
-			Image image;
-			if (Utility.LoadImageFromFile(filename, out image) == false)
+			Image portraitImage;
+			if (Utility.LoadImageFromFile(filename, out portraitImage) == false)
 			{
 				MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				return;
 			}
-			
-			if (image.Width > Constants.MaxImageDimension || image.Height > Constants.MaxImageDimension)
+
+			// Is animated image?
+			var ext = Utility.GetFileExt(filename);
+			bool bAnimated;
+			if (ext == "apng" || ext == "png")
+				bAnimated = Utility.IsAnimatedPNG(filename);
+			else if (ext == "webp")
+				bAnimated = Utility.IsAnimatedWebP(filename);
+			else if (ext == "gif")
+				bAnimated = Utility.IsAnimatedImage(portraitImage);
+			else
+				bAnimated = false;
+						
+			if (portraitImage.Width > Constants.MaxImageDimension || portraitImage.Height > Constants.MaxImageDimension)
 			{
-				int srcWidth = image.Width;
-				int srcHeight = image.Height;
+				int srcWidth = portraitImage.Width;
+				int srcHeight = portraitImage.Height;
 				float scale = Math.Min((float)Constants.MaxImageDimension / srcWidth, (float)Constants.MaxImageDimension / srcHeight);
 				int newWidth = Math.Max((int)Math.Round(srcWidth * scale), 1);
 				int newHeight = Math.Max((int)Math.Round(srcHeight * scale), 1);
 
-				if (MessageBox.Show(string.Format(Resources.msg_rescale_portrait, image.Width, image.Height, newWidth, newHeight), Resources.cap_change_portrait, MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+				if (MessageBox.Show(string.Format(Resources.msg_rescale_portrait, portraitImage.Width, portraitImage.Height, newWidth, newHeight), Resources.cap_change_portrait, MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
 				{
 					var bmpNewImage = new Bitmap(newWidth, newHeight);
 					using (Graphics gfxNewImage = Graphics.FromImage(bmpNewImage))
 					{
-						gfxNewImage.DrawImage(image,
+						gfxNewImage.DrawImage(portraitImage,
 							new Rectangle(0, 0, newWidth, newHeight),
 								0, 0, srcWidth, srcHeight,
 								GraphicsUnit.Pixel);
 					}
-					image = Image.FromHbitmap(bmpNewImage.GetHbitmap());
+					portraitImage = Image.FromHbitmap(bmpNewImage.GetHbitmap());
 				}
 			}
 
-			Current.Card.portraitImage = ImageRef.FromImage(image);
+			Current.Card.portraitImage = ImageRef.FromImage(portraitImage);
 			Current.IsDirty = true;
-			sidePanel.RefreshValues();
 
+			if (bAnimated)
+				Current.Card.ReplaceMainPortraitAsset(filename);
+			else
+				Current.Card.RemoveMainPortraitAsset();
+
+			sidePanel.RefreshValues();
 			Undo.Push(Undo.Kind.Parameter, "Change portrait image");
 		}
 

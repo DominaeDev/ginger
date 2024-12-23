@@ -121,6 +121,45 @@ namespace Ginger
 			value = default(string);
 			return false;
 		}
+
+		public bool ReplaceMainPortraitAsset(string filename)
+		{
+			var ext = Utility.GetFileExt(filename);
+			var bytes = Utility.LoadFile(filename);
+			if (bytes == null || bytes.Length == 0)
+				return false;
+
+			if (Utility.IsSupportedImageFileExt(ext) == false)
+				return false;
+
+			// Remove existing
+			Current.Card.assets.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
+			int idxExisting = Current.Card.assets.FindIndex(a => a.isMainPortrait);
+			if (idxExisting != -1)
+				Current.Card.assets.RemoveAt(idxExisting);
+
+			// Add new asset
+			Current.Card.assets.Insert(0, new AssetFile() {
+				name = AssetFile.MainAssetName,
+				uriType = AssetFile.UriType.Embedded,
+				assetType = AssetFile.AssetType.Icon,
+				data = AssetData.FromBytes(bytes),
+				ext = ext,
+			});
+			return true;
+		}
+
+		public bool RemoveMainPortraitAsset()
+		{
+			// Remove existing
+			int idxExisting = Current.Card.assets.FindIndex(a => a.isMainPortrait && a.isDefaultAsset == false);
+			if (idxExisting != -1)
+			{
+				Current.Card.assets.RemoveAt(idxExisting);
+				return true;
+			}
+			return false;
+		}
 	}
 
 	/// <summary>

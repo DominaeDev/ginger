@@ -5077,16 +5077,26 @@ namespace Ginger.Integration
 		public static ImageInput[] GatherImages()
 		{
 			var lsImages = new List<ImageInput>();
+			var assets = (AssetCollection)Current.Card.assets.Clone();
 
-			// Main portrait
-			if (Current.Card.portraitImage != null)
+			var mainPortraitAsset = assets.FirstOrDefault(a => a.isMainPortrait && Utility.IsSupportedImageFileExt(a.ext));
+
+			if (mainPortraitAsset != null) // Embedded portrait (animated)
+			{
+				lsImages.Add(new ImageInput() {
+					asset = mainPortraitAsset,
+					fileExt = mainPortraitAsset.ext,
+				});
+				assets.Remove(mainPortraitAsset);
+			}
+			else if (Current.Card.portraitImage != null) // Main portrait (not animated)
 			{
 				lsImages.Add(new ImageInput() {
 					image = Current.Card.portraitImage,
 					fileExt = "png",
 				});
 			}
-			else
+			else // Default portrait
 			{
 				lsImages.Add(new ImageInput() {
 					image = DefaultPortrait.Image,
@@ -5096,25 +5106,42 @@ namespace Ginger.Integration
 
 			// Portrait as background?
 			if (AppSettings.BackyardLink.UsePortraitAsBackground
-				&& Current.Card.portraitImage != null 
-				&& (Current.Card.assets == null || Current.Card.assets.ContainsNoneOf(a => a.assetType == AssetFile.AssetType.Background)))
+				&& (Current.Card.portraitImage != null || mainPortraitAsset != null)
+				&& assets.ContainsNoneOf(a => a.assetType == AssetFile.AssetType.Background))
 			{
-				if (Current.Card.assets == null)
-					Current.Card.assets = new AssetCollection();
+				if (assets == null)
+					assets = new AssetCollection();
 
-				Current.Card.assets.Add(new AssetFile() {
-					name = "Portrait",
-					ext = "jpeg",
-					assetType = AssetFile.AssetType.Background,
-					data = AssetData.FromBytes(Utility.ImageToMemory(Current.Card.portraitImage, Utility.ImageFileFormat.Jpeg)),
-					uriType = AssetFile.UriType.Embedded,
-				});
+				AssetFile portraitBackground;
+				if (mainPortraitAsset != null)
+				{
+					portraitBackground = new AssetFile() {
+						name = "Portrait background",
+						ext = mainPortraitAsset.ext,
+						assetType = AssetFile.AssetType.Background,
+						data = mainPortraitAsset.data,
+						uriType = AssetFile.UriType.Embedded,
+					};
+				}
+				else
+				{
+					portraitBackground = new AssetFile() {
+						name = "Portrait background",
+						ext = "jpeg",
+						assetType = AssetFile.AssetType.Background,
+						data = AssetData.FromBytes(Utility.ImageToMemory(Current.Card.portraitImage, Utility.ImageFileFormat.Jpeg)),
+						uriType = AssetFile.UriType.Embedded,
+					};
+				}
+
+				assets.Add(portraitBackground);
+				Current.Card.assets.Add(portraitBackground);
 				Current.IsFileDirty = true;
 			}
 
-			if (Current.Card.assets != null)
+			if (assets != null)
 			{
-				foreach (var asset in Current.Card.assets
+				foreach (var asset in assets
 					.Where(a => a.isEmbeddedAsset
 						&& (a.assetType == AssetFile.AssetType.Icon || a.assetType == AssetFile.AssetType.Expression)
 						&& a.data.length > 0))
@@ -5125,7 +5152,7 @@ namespace Ginger.Integration
 					});
 				}
 
-				var backgroundAsset = Current.Card.assets.FirstOrDefault(a => a.assetType == AssetFile.AssetType.Background);
+				var backgroundAsset = assets.FirstOrDefault(a => a.assetType == AssetFile.AssetType.Background);
 				if (backgroundAsset != null)
 				{
 					lsImages.Add(new ImageInput() {
