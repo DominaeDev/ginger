@@ -113,7 +113,7 @@ namespace Ginger.Integration
 				Image portraitImage;
 				if (backup.images.Count > 0) // Convert portrait
 				{
-					string ext = Utility.GetFileExt(backup.images[0].filename).ToLowerInvariant();
+					string ext = Utility.GetFileExt(backup.images[0].filename);
 					if (ext == "png")
 						Utility.LoadImageFromMemory(backup.images[0].data, out portraitImage);
 					else
@@ -305,7 +305,7 @@ namespace Ginger.Integration
 							string entryPath = Path.GetDirectoryName(entry.FullName).Replace('\\', '/');
 							string entryFullName = Path.GetFileName(entry.FullName);
 							string entryName = Path.GetFileNameWithoutExtension(entry.FullName);
-							string entryExt = Utility.GetFileExt(entry.FullName).ToLowerInvariant();
+							string entryExt = Utility.GetFileExt(entry.FullName);
 							
 							// Read character png
 							if (entryPath == "" && entryExt == "png" && characterCard == null)
@@ -373,9 +373,7 @@ namespace Ginger.Integration
 							}
 
 							// Images
-							if (entryPath == "images"
-								&& (entryExt == "png" || entryExt == "apng" || entryExt == "jpeg" || entryExt == "jpg" 
-								|| entryExt == "gif" || entryExt == "webp"))
+							if (entryPath == "images" && Utility.IsSupportedImageFileExt(entryExt))
 							{
 								long dataSize = entry.Length;
 								if (dataSize > 0)
@@ -391,9 +389,7 @@ namespace Ginger.Integration
 							}
 
 							// Backgrounds
-							if (entryPath == "backgrounds"
-								&& (entryExt == "png" || entryExt == "apng" || entryExt == "jpeg" || entryExt == "jpg" 
-								|| entryExt == "gif" || entryExt == "webp" || entryExt == "avif" ))
+							if (entryPath == "backgrounds" && Utility.IsSupportedImageFileExt(entryExt))
 							{
 								long dataSize = entry.Length;
 								if (dataSize > 0)

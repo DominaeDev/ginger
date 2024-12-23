@@ -295,20 +295,13 @@ namespace Ginger
 				name = path;
 
 			// Extension
-			string ext = Path.GetExtension(name).ToLowerInvariant();
-			if (ext != null && ext.Length > 0 && ext[0] == '.')
-				ext = ext.Substring(1); // Strip '.'
+			string ext = Utility.GetFileExt(name);
 
 			name = Path.GetFileNameWithoutExtension(name);
 
 			if (type == AssetType.Undefined)
 			{ 
-				bool isImage = ext == "png"
-					|| ext == "apng"
-					|| ext == "jpg"
-					|| ext == "jpeg"
-					|| ext == "webp"
-					|| ext == "avif";
+				bool isImage = Utility.IsSupportedImageFileExt(ext);
 				type = isImage ? AssetType.Icon : AssetType.Other;
 			}
 

@@ -5223,17 +5223,11 @@ namespace Ginger.Integration
 				return Error.NotFound;
 			}
 
-			var foundImages = new HashSet<string>(Utility.FindFilesInFolder(imagesFolder)
-				.Select(fn => Path.GetFileName(fn))
-				.Where(fn => {
-					var ext = Utility.GetFileExt(fn).ToLowerInvariant();
-					return ext == "png"
-						|| ext == "jpeg"
-						|| ext == "jpg"
-						|| ext == "gif"
-						|| ext == "apng"
-						|| ext == "webp";
-				}));
+			var foundImages = new HashSet<string>(
+				Utility.FindFilesInFolder(imagesFolder)
+					.Select(fn => Path.GetFileName(fn))
+					.Where(fn => Utility.IsSupportedImageFilename(fn))
+				);
 
 			try
 			{

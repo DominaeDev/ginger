@@ -43,8 +43,8 @@ namespace Ginger
 				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 				if (files.Length == 1)
 				{
-					string fn = files[0].ToLowerInvariant();
-					if (fn.EndsWith(".png") || fn.EndsWith(".jpg") || fn.EndsWith(".jpeg"))
+					string ext = Utility.GetFileExt(files[0]);
+					if (Utility.IsSupportedImageFileExt(ext))
 					{
 						e.Effect = DragDropEffects.Copy;
 						return;
@@ -62,8 +62,7 @@ namespace Ginger
 			string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 			if (files.Length != 1)
 				return; // Error
-			string fn = files[0].ToLowerInvariant();
-			if (!(fn.EndsWith(".png") || fn.EndsWith(".jpg") || fn.EndsWith(".jpeg")))
+			if (Utility.IsSupportedImageFilename(files[0]) == false)
 				return; // Error
 
 			string filename = files[0];

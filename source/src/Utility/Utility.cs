@@ -9,8 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
-
-
+using WebPWrapper;
 
 namespace Ginger
 {
@@ -31,14 +30,15 @@ namespace Ginger
 
 		public static byte[] LoadFile(string filename)
 		{
-			byte[] bytes = null;
-			FileStream fs;
+			byte[] bytes;
+			
 			try
 			{
-				fs = File.OpenRead(filename);
-				bytes = new byte[fs.Length];
-				fs.Read(bytes, 0, (int)fs.Length);
-				fs.Close();
+				using (FileStream fs = File.OpenRead(filename))
+				{
+					bytes = new byte[fs.Length];
+					fs.Read(bytes, 0, (int)fs.Length);
+				}
 			}
 			catch
 			{
@@ -74,21 +74,37 @@ namespace Ginger
 				return false;
 			}
 
-			// Load image first
-			try
-			{
-				byte[] bytes = File.ReadAllBytes(filename);
-				using (var stream = new MemoryStream(bytes))
-				{
-					image = Image.FromStream(stream);
-					return true;
-				}
-			}
-			catch
+			string ext = GetFileExt(filename);
+
+			if (IsSupportedImageFileExt(ext) == false)
 			{
 				image = default(Image);
 				return false;
 			}
+
+			if (ext == "webp" && LoadWebPFromFile(filename, out image))
+				return true;
+
+			else
+			{
+				try
+				{
+					byte[] bytes = File.ReadAllBytes(filename);
+
+					// Png, Jpeg, ...
+					using (var stream = new MemoryStream(bytes))
+					{
+						image = Image.FromStream(stream);
+						return true;
+					}
+				}
+				catch
+				{
+					image = default(Image);
+					return false;
+				}
+			}
+			
 		}
 
 		public static bool LoadImageFromMemory(byte[] bytes, out Image image)
@@ -110,9 +126,73 @@ namespace Ginger
 			}
 			catch
 			{
+			}
+			image = default(Image);
+			return false;
+		}
+
+		private static bool LoadWebPFromFile(string filename, out Image image)
+		{
+			try
+			{
+				byte[] bytes = File.ReadAllBytes(filename);
+				return LoadWebPFromMemory(bytes, out image);
+			}
+			catch
+			{
 				image = default(Image);
 				return false;
 			}
+		}
+
+		public static bool LoadWebPFromMemory(byte[] bytes, out Image image)
+		{
+			try
+			{
+				using (var webp = new WebP())
+				{
+					int w, h;
+					bool alpha, animation;
+					string format;
+					webp.GetInfo(bytes, out w, out h, out alpha, out animation, out format);
+
+					if (animation)
+					{
+						var frames = webp.AnimDecode(bytes);
+						if (frames.Count > 0)
+						{
+							image = (Image)frames[0].Bitmap;
+							return true;
+						}
+						image = default(Image);
+						return false;						
+					}
+					else 
+					{ 
+						image = (Image)webp.Decode(bytes);
+						return true;
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				image = default(Image);
+				return false;
+			}
+		}
+
+		public static bool IsSupportedImageFilename(string filename)
+		{
+			var ext = GetFileExt(filename, true);
+			return ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "gif"
+				|| ext == "apng" || ext == "bmp" || ext == "webp";
+		}
+
+		public static bool IsSupportedImageFileExt(string ext)
+		{
+			ext = ext.ToLowerInvariant();
+			return ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "gif"
+				|| ext == "apng" || ext == "bmp" || ext == "webp";
 		}
 
 		public static bool GetImageDimensions(byte[] bytes, out int width, out int height)
@@ -137,10 +217,15 @@ namespace Ginger
 			}
 			catch
 			{
-				width = default(int);
-				height = default(int);
-				return false;
 			}
+
+			// WebP
+			if (WebP.IsWebP(bytes, out width, out height))
+				return true;
+			
+			width = default(int);
+			height = default(int);
+			return false;
 		}
 
 		public static int StringToInt(string s, int default_value = 0)
@@ -1682,7 +1767,7 @@ namespace Ginger
 			return string.Concat(Guid.NewGuid().ToString().Replace("-", "").ToLowerInvariant(), ".", ext);
 		}
 
-		public static string GetFileExt(string filename)
+		public static string GetFileExt(string filename, bool lowercase = true)
 		{
 			if (string.IsNullOrWhiteSpace(filename))
 				return "";
@@ -1690,7 +1775,7 @@ namespace Ginger
 			string ext = Path.GetExtension(filename);
 			if (ext.BeginsWith('.'))
 				ext = ext.Substring(1);
-			return ext;
+			return lowercase ? ext.ToLowerInvariant() : ext;
 		}
 	}
 

@@ -2540,13 +2540,7 @@ namespace Ginger
 			var foundImageFilenames = new HashSet<string>(Utility.FindFilesInFolder(imagesFolder)
 				.Select(fn => Path.GetFileName(fn).ToLowerInvariant())
 				.Where(fn => {
-					var ext = Utility.GetFileExt(fn);
-					return ext == "png"
-						|| ext == "jpg"
-						|| ext == "jpeg"
-						|| ext == "gif"
-						|| ext == "apng"
-						|| ext == "webp";
+					return Utility.IsSupportedImageFilename(fn);
 				}));
 
 			var unknownImages = foundImageFilenames.Except(images)

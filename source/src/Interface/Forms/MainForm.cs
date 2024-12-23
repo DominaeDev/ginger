@@ -434,7 +434,7 @@ namespace Ginger
 			{
 				// Open file...
 				openFileDialog.Title = Resources.cap_open_image;
-				openFileDialog.Filter = "Image files|*.png;*.jpeg;*.jpg";
+				openFileDialog.Filter = "Image files|*.png;*.jpeg;*.jpg;*.webp";
 				openFileDialog.InitialDirectory = AppSettings.Paths.LastImagePath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 				var result = openFileDialog.ShowDialog();
 				if (result != DialogResult.OK)
