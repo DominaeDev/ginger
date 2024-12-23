@@ -4771,21 +4771,24 @@ namespace Ginger.Integration
 					// Measure dimensions
 					int imageWidth;
 					int imageHeight;
-					if (Utility.GetImageDimensions(input.asset.data.bytes, out imageWidth, out imageHeight))
+					if (Utility.GetImageDimensions(input.asset.data.bytes, out imageWidth, out imageHeight) == false)
 					{
-						string filename = Utility.CreateRandomFilename(input.fileExt);
-						results.Add(new ImageOutput() {
-							instanceId = Cuid.NewCuid(),
-							imageUrl = Path.Combine(destPath, filename),
-							data = input.asset.data,
-							width = imageWidth,
-							height = imageHeight,
-						});
-						lsImageLinks.Add(new Link.Image() {
-							uid = input.asset.uid,
-							filename = filename,
-						});
-					}
+						imageWidth = 1024;
+						imageHeight = 1024;
+					}	
+					
+					string filename = Utility.CreateRandomFilename(input.fileExt);
+					results.Add(new ImageOutput() {
+						instanceId = Cuid.NewCuid(),
+						imageUrl = Path.Combine(destPath, filename),
+						data = input.asset.data,
+						width = imageWidth,
+						height = imageHeight,
+					});
+					lsImageLinks.Add(new Link.Image() {
+						uid = input.asset.uid,
+						filename = filename,
+					});
 				}
 				else if (input.image != null) // Image reference
 				{

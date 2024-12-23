@@ -148,17 +148,17 @@ namespace Ginger {
 			this.chatHistoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.editCurrentModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripSeparator();
-			this.bulkOperationsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.bulkEditModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripSeparator();
-			this.bulkImportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.bulkExportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.utilitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.createBackupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.restoreBackupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem10 = new System.Windows.Forms.ToolStripSeparator();
 			this.repairBrokenImagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.purgeUnusedImagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.bulkOperationsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.bulkEditModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripSeparator();
+			this.bulkImportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.bulkExportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem14 = new System.Windows.Forms.ToolStripSeparator();
 			this.optionsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1367,8 +1367,8 @@ namespace Ginger {
             this.chatHistoryMenuItem,
             this.editCurrentModelSettingsMenuItem,
             this.toolStripMenuItem13,
-            this.bulkOperationsMenuItem,
             this.utilitiesToolStripMenuItem,
+            this.bulkOperationsMenuItem,
             this.toolStripMenuItem14,
             this.optionsToolStripMenuItem1});
 			this.backyardMenuItem.Name = "backyardMenuItem";
@@ -1432,6 +1432,51 @@ namespace Ginger {
 			this.toolStripMenuItem13.Name = "toolStripMenuItem13";
 			this.toolStripMenuItem13.Size = new System.Drawing.Size(247, 6);
 			// 
+			// utilitiesToolStripMenuItem
+			// 
+			this.utilitiesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createBackupMenuItem,
+            this.restoreBackupMenuItem,
+            this.toolStripMenuItem10,
+            this.repairBrokenImagesMenuItem,
+            this.purgeUnusedImagesMenuItem});
+			this.utilitiesToolStripMenuItem.Name = "utilitiesToolStripMenuItem";
+			this.utilitiesToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
+			this.utilitiesToolStripMenuItem.Text = "Utilities";
+			// 
+			// createBackupMenuItem
+			// 
+			this.createBackupMenuItem.Name = "createBackupMenuItem";
+			this.createBackupMenuItem.Size = new System.Drawing.Size(216, 22);
+			this.createBackupMenuItem.Text = "Create character backup...";
+			this.createBackupMenuItem.Click += new System.EventHandler(this.createBackupMenuItem_Click);
+			// 
+			// restoreBackupMenuItem
+			// 
+			this.restoreBackupMenuItem.Name = "restoreBackupMenuItem";
+			this.restoreBackupMenuItem.Size = new System.Drawing.Size(216, 22);
+			this.restoreBackupMenuItem.Text = "Restore character backup...";
+			this.restoreBackupMenuItem.Click += new System.EventHandler(this.restoreBackupMenuItem_Click);
+			// 
+			// toolStripMenuItem10
+			// 
+			this.toolStripMenuItem10.Name = "toolStripMenuItem10";
+			this.toolStripMenuItem10.Size = new System.Drawing.Size(213, 6);
+			// 
+			// repairBrokenImagesMenuItem
+			// 
+			this.repairBrokenImagesMenuItem.Name = "repairBrokenImagesMenuItem";
+			this.repairBrokenImagesMenuItem.Size = new System.Drawing.Size(216, 22);
+			this.repairBrokenImagesMenuItem.Text = "Repair broken images...";
+			this.repairBrokenImagesMenuItem.Click += new System.EventHandler(this.repairBrokenImagesMenuItem_Click);
+			// 
+			// purgeUnusedImagesMenuItem
+			// 
+			this.purgeUnusedImagesMenuItem.Name = "purgeUnusedImagesMenuItem";
+			this.purgeUnusedImagesMenuItem.Size = new System.Drawing.Size(216, 22);
+			this.purgeUnusedImagesMenuItem.Text = "Clean up image folder...";
+			this.purgeUnusedImagesMenuItem.Click += new System.EventHandler(this.purgeUnusedImages_Click);
+			// 
 			// bulkOperationsMenuItem
 			// 
 			this.bulkOperationsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1469,51 +1514,6 @@ namespace Ginger {
 			this.bulkExportMenuItem.Size = new System.Drawing.Size(273, 22);
 			this.bulkExportMenuItem.Text = "Export many characters...";
 			this.bulkExportMenuItem.Click += new System.EventHandler(this.bulkExportMenuItem_Click);
-			// 
-			// utilitiesToolStripMenuItem
-			// 
-			this.utilitiesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.createBackupMenuItem,
-            this.restoreBackupMenuItem,
-            this.toolStripMenuItem10,
-            this.repairBrokenImagesMenuItem,
-            this.purgeUnusedImagesMenuItem});
-			this.utilitiesToolStripMenuItem.Name = "utilitiesToolStripMenuItem";
-			this.utilitiesToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
-			this.utilitiesToolStripMenuItem.Text = "Utilities";
-			// 
-			// createBackupMenuItem
-			// 
-			this.createBackupMenuItem.Name = "createBackupMenuItem";
-			this.createBackupMenuItem.Size = new System.Drawing.Size(200, 22);
-			this.createBackupMenuItem.Text = "Create backup...";
-			this.createBackupMenuItem.Click += new System.EventHandler(this.createBackupMenuItem_Click);
-			// 
-			// restoreBackupMenuItem
-			// 
-			this.restoreBackupMenuItem.Name = "restoreBackupMenuItem";
-			this.restoreBackupMenuItem.Size = new System.Drawing.Size(200, 22);
-			this.restoreBackupMenuItem.Text = "Restore backup...";
-			this.restoreBackupMenuItem.Click += new System.EventHandler(this.restoreBackupMenuItem_Click);
-			// 
-			// toolStripMenuItem10
-			// 
-			this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-			this.toolStripMenuItem10.Size = new System.Drawing.Size(197, 6);
-			// 
-			// repairBrokenImagesMenuItem
-			// 
-			this.repairBrokenImagesMenuItem.Name = "repairBrokenImagesMenuItem";
-			this.repairBrokenImagesMenuItem.Size = new System.Drawing.Size(200, 22);
-			this.repairBrokenImagesMenuItem.Text = "Repair broken images...";
-			this.repairBrokenImagesMenuItem.Click += new System.EventHandler(this.repairBrokenImagesMenuItem_Click);
-			// 
-			// purgeUnusedImagesMenuItem
-			// 
-			this.purgeUnusedImagesMenuItem.Name = "purgeUnusedImagesMenuItem";
-			this.purgeUnusedImagesMenuItem.Size = new System.Drawing.Size(200, 22);
-			this.purgeUnusedImagesMenuItem.Text = "Clean up image folder...";
-			this.purgeUnusedImagesMenuItem.Click += new System.EventHandler(this.purgeUnusedImages_Click);
 			// 
 			// toolStripMenuItem14
 			// 

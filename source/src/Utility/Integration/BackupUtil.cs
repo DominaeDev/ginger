@@ -44,8 +44,9 @@ namespace Ginger.Integration
 		{
 			FaradayCardV4 card = null;
 			string[] imageUrls = null;
+			string[] backgroundUrls = null;
 			ChatInstance[] chatInstances = null;
-			var error = Backyard.ImportCharacter(characterInstance, out card, out imageUrls);
+			var error = Backyard.ImportCharacter(characterInstance, out card, out imageUrls, out backgroundUrls);
 			if (error != Backyard.Error.NoError)
 			{
 				backupInfo = null;
@@ -59,12 +60,6 @@ namespace Ginger.Integration
 				return error;
 			}
 
-			var backgrounds = chatInstances
-				.Where(c => c.hasBackground)
-				.Select(c => c.staging.background)
-				.DistinctBy(b => b.imageUrl)
-				.ToList();
-
 			// Create backup
 			backupInfo = new BackupData();
 			backupInfo.characterCard = card;
@@ -75,7 +70,7 @@ namespace Ginger.Integration
 					string bgName = null;
 					if (c.hasBackground)
 					{
-						int index = backgrounds.FindIndex(b => b.imageUrl == c.staging.background.imageUrl);
+						int index = Array.FindIndex(backgroundUrls, url => string.Compare(url, c.staging.background.imageUrl, StringComparison.OrdinalIgnoreCase) == 0);
 						if (index != -1)
 							bgName = string.Format("background_{0:00}.{1}", index + 1, Utility.GetFileExt(c.staging.background.imageUrl));
 					}
@@ -99,9 +94,9 @@ namespace Ginger.Integration
 			}).ToList();
 
 			// Background images
-			backupInfo.backgrounds = backgrounds.Select(b => new BackupData.Image() {
-				filename = Path.GetFileName(b.imageUrl),
-				data = Utility.LoadFile(b.imageUrl),
+			backupInfo.backgrounds = backgroundUrls.Select(url => new BackupData.Image() {
+				filename = Path.GetFileName(url),
+				data = Utility.LoadFile(url),
 			}).ToList();
 
 			return Backyard.Error.NoError;
@@ -109,37 +104,58 @@ namespace Ginger.Integration
 
 		public static bool WriteBackup(string filename, BackupData backup)
 		{
+			byte[] nonPNGImageData = null;
+			string nonPNGImageExt = "png";
+			var intermediateCardFilename = Path.GetTempFileName();
+
 			try
 			{
-				Image image = null;
-				if (backup.images.Count > 0)
-					Utility.LoadImageFromMemory(backup.images[0].data, out image);
-				if (image == null)
-					image = DefaultPortrait.Image;
+				Image portraitImage;
+				if (backup.images.Count > 0) // Convert portrait
+				{
+					string ext = Utility.GetFileExt(backup.images[0].filename).ToLowerInvariant();
+					if (ext == "png")
+						Utility.LoadImageFromMemory(backup.images[0].data, out portraitImage);
+					else
+					{
+						nonPNGImageData = backup.images[0].data;
+						portraitImage = DefaultPortrait.Image;
+						nonPNGImageExt = ext;
+					}
+				}
+				else
+					portraitImage = DefaultPortrait.Image;
 
 				// Write character card (png)
-				var intermediateCardFilename = Path.GetTempFileName();
 				using (var stream = new FileStream(intermediateCardFilename, FileMode.OpenOrCreate, FileAccess.Write))
 				{
-					if (image.RawFormat.Equals(ImageFormat.Png) == false) // Convert to PNG
+					if (portraitImage.RawFormat.Equals(ImageFormat.Png) == false) // Convert to PNG
 					{
-						using (Image bmpNewImage = new Bitmap(image.Width, image.Height))
+						using (Image bmpNewImage = new Bitmap(portraitImage.Width, portraitImage.Height))
 						{
 							Graphics gfxNewImage = Graphics.FromImage(bmpNewImage);
-							gfxNewImage.DrawImage(image, new Rectangle(0, 0, bmpNewImage.Width, bmpNewImage.Height),
-												  0, 0,
-												  image.Width, image.Height,
-												  GraphicsUnit.Pixel);
+							gfxNewImage.DrawImage(portraitImage, new Rectangle(0, 0, bmpNewImage.Width, bmpNewImage.Height),
+													0, 0,
+													portraitImage.Width, portraitImage.Height,
+													GraphicsUnit.Pixel);
 							gfxNewImage.Dispose();
 							bmpNewImage.Save(stream, ImageFormat.Png);
 						}
 					}
 					else
 					{
-						image.Save(stream, ImageFormat.Png);
+						portraitImage.Save(stream, ImageFormat.Png);
 					}
 				}
+			}
+			catch
+			{
+				File.Delete(intermediateCardFilename);
+				return false;
+			}
 
+			try
+			{
 				// Write json
 				string faradayJson = backup.characterCard.ToJson();
 				var faradayBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(faradayJson));
@@ -183,6 +199,22 @@ namespace Ginger.Integration
                     {
 						writer.Write(cardBytes, 0, cardBytes.Length);
                     }
+
+					// Write non-png portrait (situational)
+					if (nonPNGImageData != null && nonPNGImageData.Length > 0)
+					{
+						string entryName = string.Format("images/image_00.{0}", nonPNGImageExt);
+						var fileEntry = zip.CreateEntry(string.Format(entryName, CompressionLevel.NoCompression));
+						using (Stream writer = fileEntry.Open())
+						{
+							for (long n = nonPNGImageData.Length; n > 0;)
+							{
+								int length = (int)Math.Min(n, (long)int.MaxValue);
+								writer.Write(nonPNGImageData, 0, length);
+								n -= (long)length;
+							}
+						}
+					}
 
 					// Write image files
 					for (int i = 1; i < backup.images.Count; ++i)
@@ -273,10 +305,10 @@ namespace Ginger.Integration
 							string entryPath = Path.GetDirectoryName(entry.FullName).Replace('\\', '/');
 							string entryFullName = Path.GetFileName(entry.FullName);
 							string entryName = Path.GetFileNameWithoutExtension(entry.FullName);
-							string entryExt = Path.GetExtension(entry.FullName).ToLowerInvariant();
+							string entryExt = Utility.GetFileExt(entry.FullName).ToLowerInvariant();
 							
 							// Read character png
-							if (entryPath == "" && entryExt == ".png" && characterCard == null)
+							if (entryPath == "" && entryExt == "png" && characterCard == null)
 							{
 								long dataSize = entry.Length;
 								if (dataSize > 0)
@@ -302,7 +334,7 @@ namespace Ginger.Integration
 							}
 
 							// Read chat log
-							if ((entryPath == "chats" || entryPath == "logs") && entryExt == ".json")
+							if ((entryPath == "chats" || entryPath == "logs") && entryExt == "json")
 							{
 								long dataSize = entry.Length;
 								if (dataSize > 0)
@@ -342,8 +374,8 @@ namespace Ginger.Integration
 
 							// Images
 							if (entryPath == "images"
-								&& (entryExt == ".png" || entryExt == ".apng" || entryExt == ".jpeg" || entryExt == ".jpg" 
-								|| entryExt == ".gif" || entryExt == ".webp" || entryExt == ".avif" ))
+								&& (entryExt == "png" || entryExt == "apng" || entryExt == "jpeg" || entryExt == "jpg" 
+								|| entryExt == "gif" || entryExt == "webp"))
 							{
 								long dataSize = entry.Length;
 								if (dataSize > 0)
@@ -360,8 +392,8 @@ namespace Ginger.Integration
 
 							// Backgrounds
 							if (entryPath == "backgrounds"
-								&& (entryExt == ".png" || entryExt == ".apng" || entryExt == ".jpeg" || entryExt == ".jpg" 
-								|| entryExt == ".gif" || entryExt == ".webp" || entryExt == ".avif" ))
+								&& (entryExt == "png" || entryExt == "apng" || entryExt == "jpeg" || entryExt == "jpg" 
+								|| entryExt == "gif" || entryExt == "webp" || entryExt == "avif" ))
 							{
 								long dataSize = entry.Length;
 								if (dataSize > 0)
@@ -377,6 +409,20 @@ namespace Ginger.Integration
 							}
 						}
 					}
+				}
+
+				// images/portrait.*, images/image_00.* supercedes png.
+				int idxPortrait = images.FindIndex(i => {
+					string fn = Path.GetFileNameWithoutExtension(i.filename).ToLowerInvariant();
+					return fn == "portrait" || fn == "image_00";
+				});
+				if (idxPortrait > 0 && images.Count > 0)
+				{
+					// Move to front (remove existing)
+					var image = images[idxPortrait];
+					images.RemoveAt(idxPortrait);
+					images.RemoveAt(0);
+					images.Insert(0, image);
 				}
 
 				if (characterCard == null)

@@ -2332,7 +2332,7 @@ namespace Ginger
 				return false;
 			}
 
-			string filename = string.Concat(groupName, ".backup.", DateTime.Now.ToString("yyyy-MM-dd"), ".zip").Replace(" ", "_");
+			string filename = string.Concat(groupName.Replace(" ", "_"), " - ", DateTime.Now.ToString("yyyy-MM-dd"), ".backup.zip");
 
 			importFileDialog.Title = Resources.cap_link_create_backup;
 			exportFileDialog.Filter = "Character backup file|*.zip";
@@ -2430,7 +2430,7 @@ namespace Ginger
 			FolderInstance backupFolder;
 			if (string.IsNullOrEmpty(AppSettings.BackyardLink.BulkImportFolderName) == false)
 			{
-				string folderName = "Restored backups";
+				string folderName = "Restored from backup";
 				string folderUrl = Backyard.ToFolderUrl(folderName);
 				backupFolder = Backyard.Folders
 					.Where(f => string.Compare(f.name, folderName, StringComparison.OrdinalIgnoreCase) == 0
