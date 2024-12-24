@@ -1096,6 +1096,8 @@
     <None Include="Resources\Icons\Dark\dark_link_connected.png" />
     <None Include="Resources\Icons\Dark\dark_link_disconnected.png" />
     <None Include="Resources\Icons\Dark\dark_link_inactive.png" />
+    <None Include="Resources\Icons\Dark\dark_embedded_assets.png" />
+    <None Include="Resources\Icons\Dark\dark_menu_embedded_assets.png" />
     <Content Include="Resources\Icons\Light\arrow_down.png" />
     <Content Include="Resources\Icons\Light\arrow_left.png" />
     <Content Include="Resources\Icons\Light\arrow_right.png" />
@@ -1109,6 +1111,7 @@
     <Content Include="Resources\Icons\Light\delete.png" />
     <Content Include="Resources\Icons\Light\delete_small.png" />
     <Content Include="Resources\Icons\Light\delete_strike.png" />
+    <None Include="Resources\Icons\Light\embedded_assets.png" />
     <Content Include="Resources\Icons\Light\expanded.png" />
     <Content Include="Resources\Icons\Light\folder.png" />
     <Content Include="Resources\Icons\Light\lore.png" />
@@ -1117,6 +1120,7 @@
     <Content Include="Resources\Icons\Light\lore_up.png" />
     <Content Include="Resources\Icons\Light\menu.png" />
     <Content Include="Resources\Icons\Light\menu_edit.png" />
+    <None Include="Resources\Icons\Light\menu_embedded_assets.png" />
     <Content Include="Resources\Icons\Light\model.png" />
     <Content Include="Resources\Icons\Light\persona.png" />
     <Content Include="Resources\Icons\Light\personality.png" />

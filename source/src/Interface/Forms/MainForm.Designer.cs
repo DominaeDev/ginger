@@ -182,6 +182,7 @@ namespace Ginger {
 			this.statusBar = new System.Windows.Forms.StatusStrip();
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusBarActor = new System.Windows.Forms.ToolStripStatusLabel();
+			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
@@ -286,7 +287,7 @@ namespace Ginger {
             this.lightThemeMenuItem,
             this.darkThemeMenuItem});
 			themeMenuItem.Name = "themeMenuItem";
-			themeMenuItem.Size = new System.Drawing.Size(183, 22);
+			themeMenuItem.Size = new System.Drawing.Size(195, 22);
 			themeMenuItem.Text = "Theme";
 			// 
 			// lightThemeMenuItem
@@ -438,7 +439,6 @@ namespace Ginger {
 			this.btnAdd_Lore.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
 			this.btnAdd_Lore.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_Lore.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_Lore.Image = global::Ginger.Properties.Resources.lore;
 			this.btnAdd_Lore.Location = new System.Drawing.Point(673, 0);
 			this.btnAdd_Lore.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
 			this.btnAdd_Lore.Name = "btnAdd_Lore";
@@ -455,7 +455,6 @@ namespace Ginger {
 			this.btnAdd_Snippets.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
 			this.btnAdd_Snippets.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_Snippets.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_Snippets.Image = global::Ginger.Properties.Resources.snippet;
 			this.btnAdd_Snippets.Location = new System.Drawing.Point(577, 0);
 			this.btnAdd_Snippets.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
 			this.btnAdd_Snippets.Name = "btnAdd_Snippets";
@@ -472,7 +471,6 @@ namespace Ginger {
 			this.btnAdd_Other.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
 			this.btnAdd_Other.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_Other.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_Other.Image = global::Ginger.Properties.Resources.component;
 			this.btnAdd_Other.Location = new System.Drawing.Point(481, 0);
 			this.btnAdd_Other.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
 			this.btnAdd_Other.Name = "btnAdd_Other";
@@ -489,7 +487,6 @@ namespace Ginger {
 			this.btnAdd_World.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
 			this.btnAdd_World.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_World.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_World.Image = global::Ginger.Properties.Resources.story;
 			this.btnAdd_World.Location = new System.Drawing.Point(385, 0);
 			this.btnAdd_World.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
 			this.btnAdd_World.Name = "btnAdd_World";
@@ -506,7 +503,6 @@ namespace Ginger {
 			this.btnAdd_Mind.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
 			this.btnAdd_Mind.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_Mind.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_Mind.Image = global::Ginger.Properties.Resources.personality;
 			this.btnAdd_Mind.Location = new System.Drawing.Point(289, 0);
 			this.btnAdd_Mind.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
 			this.btnAdd_Mind.Name = "btnAdd_Mind";
@@ -523,7 +519,6 @@ namespace Ginger {
 			this.btnAdd_Traits.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
 			this.btnAdd_Traits.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_Traits.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_Traits.Image = global::Ginger.Properties.Resources.characteristic;
 			this.btnAdd_Traits.Location = new System.Drawing.Point(193, 0);
 			this.btnAdd_Traits.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
 			this.btnAdd_Traits.Name = "btnAdd_Traits";
@@ -540,7 +535,6 @@ namespace Ginger {
 			this.btnAdd_Character.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
 			this.btnAdd_Character.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_Character.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_Character.Image = global::Ginger.Properties.Resources.persona;
 			this.btnAdd_Character.Location = new System.Drawing.Point(97, 0);
 			this.btnAdd_Character.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
 			this.btnAdd_Character.Name = "btnAdd_Character";
@@ -557,7 +551,6 @@ namespace Ginger {
 			this.btnAdd_Model.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
 			this.btnAdd_Model.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_Model.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_Model.Image = global::Ginger.Properties.Resources.model;
 			this.btnAdd_Model.Location = new System.Drawing.Point(0, 0);
 			this.btnAdd_Model.Margin = new System.Windows.Forms.Padding(0, 0, 1, 0);
 			this.btnAdd_Model.Name = "btnAdd_Model";
@@ -786,7 +779,6 @@ namespace Ginger {
 			this.saveIncrementalMenuItem.ShortcutKeyDisplayString = "Ctrl+Alt+S";
 			this.saveIncrementalMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.saveIncrementalMenuItem.Text = "Save &incremental";
-			this.saveIncrementalMenuItem.ToolTipText = global::Ginger.Properties.Resources.tooltip_save_incremental;
 			this.saveIncrementalMenuItem.Click += new System.EventHandler(this.SaveIncrementalMenuItem_Click);
 			// 
 			// importToolStripMenuItem
@@ -1083,7 +1075,7 @@ namespace Ginger {
             this.tokenBudget24K,
             this.tokenBudget32K});
 			this.tokenBudgetMenuItem.Name = "tokenBudgetMenuItem";
-			this.tokenBudgetMenuItem.Size = new System.Drawing.Size(183, 22);
+			this.tokenBudgetMenuItem.Size = new System.Drawing.Size(195, 22);
 			this.tokenBudgetMenuItem.Text = "Token budget";
 			// 
 			// tokenBudgetNone
@@ -1198,36 +1190,36 @@ namespace Ginger {
             this.outputPreviewFaradayMenuItem,
             this.outputPreviewPlainTextMenuItem});
 			this.outputPreviewToolStripMenuItem.Name = "outputPreviewToolStripMenuItem";
-			this.outputPreviewToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-			this.outputPreviewToolStripMenuItem.Text = "Preview format";
+			this.outputPreviewToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+			this.outputPreviewToolStripMenuItem.Text = "Output preview format";
 			// 
 			// outputPreviewDefaultMenuItem
 			// 
 			this.outputPreviewDefaultMenuItem.Checked = true;
 			this.outputPreviewDefaultMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.outputPreviewDefaultMenuItem.Name = "outputPreviewDefaultMenuItem";
-			this.outputPreviewDefaultMenuItem.Size = new System.Drawing.Size(157, 22);
+			this.outputPreviewDefaultMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.outputPreviewDefaultMenuItem.Text = "Ginger (default)";
 			this.outputPreviewDefaultMenuItem.Click += new System.EventHandler(this.outputPreviewDefaultMenuItem_Click);
 			// 
 			// outputPreviewSillyTavernMenuItem
 			// 
 			this.outputPreviewSillyTavernMenuItem.Name = "outputPreviewSillyTavernMenuItem";
-			this.outputPreviewSillyTavernMenuItem.Size = new System.Drawing.Size(157, 22);
+			this.outputPreviewSillyTavernMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.outputPreviewSillyTavernMenuItem.Text = "SillyTavern";
 			this.outputPreviewSillyTavernMenuItem.Click += new System.EventHandler(this.outputPreviewSillyTavernMenuItem_Click);
 			// 
 			// outputPreviewFaradayMenuItem
 			// 
 			this.outputPreviewFaradayMenuItem.Name = "outputPreviewFaradayMenuItem";
-			this.outputPreviewFaradayMenuItem.Size = new System.Drawing.Size(157, 22);
+			this.outputPreviewFaradayMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.outputPreviewFaradayMenuItem.Text = "Backyard AI";
 			this.outputPreviewFaradayMenuItem.Click += new System.EventHandler(this.outputPreviewFaradayMenuItem_Click);
 			// 
 			// outputPreviewPlainTextMenuItem
 			// 
 			this.outputPreviewPlainTextMenuItem.Name = "outputPreviewPlainTextMenuItem";
-			this.outputPreviewPlainTextMenuItem.Size = new System.Drawing.Size(157, 22);
+			this.outputPreviewPlainTextMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.outputPreviewPlainTextMenuItem.Text = "Plain text";
 			this.outputPreviewPlainTextMenuItem.Click += new System.EventHandler(this.outputPreviewPlainTextMenuItem_Click);
 			// 
@@ -1237,7 +1229,7 @@ namespace Ginger {
             this.enableSpellCheckingMenuItem,
             this.toolStripMenuItem4});
 			this.checkSpellingMenuItem.Name = "checkSpellingMenuItem";
-			this.checkSpellingMenuItem.Size = new System.Drawing.Size(183, 22);
+			this.checkSpellingMenuItem.Size = new System.Drawing.Size(195, 22);
 			this.checkSpellingMenuItem.Text = "Spell checking";
 			// 
 			// enableSpellCheckingMenuItem
@@ -1255,7 +1247,7 @@ namespace Ginger {
 			// toolStripMenuItem11
 			// 
 			this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-			this.toolStripMenuItem11.Size = new System.Drawing.Size(180, 6);
+			this.toolStripMenuItem11.Size = new System.Drawing.Size(192, 6);
 			// 
 			// autoConvertNameMenuItem
 			// 
@@ -1263,22 +1255,21 @@ namespace Ginger {
 			this.autoConvertNameMenuItem.CheckOnClick = true;
 			this.autoConvertNameMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.autoConvertNameMenuItem.Name = "autoConvertNameMenuItem";
-			this.autoConvertNameMenuItem.Size = new System.Drawing.Size(183, 22);
+			this.autoConvertNameMenuItem.Size = new System.Drawing.Size(195, 22);
 			this.autoConvertNameMenuItem.Text = "Auto-convert names";
-			this.autoConvertNameMenuItem.ToolTipText = global::Ginger.Properties.Resources.tooltip_option_use_placeholders;
 			this.autoConvertNameMenuItem.Click += new System.EventHandler(this.AutoconvertCharacterMarkersMenuItem_CheckedChanged);
 			// 
 			// autoBreakMenuItem
 			// 
 			this.autoBreakMenuItem.Name = "autoBreakMenuItem";
-			this.autoBreakMenuItem.Size = new System.Drawing.Size(183, 22);
+			this.autoBreakMenuItem.Size = new System.Drawing.Size(195, 22);
 			this.autoBreakMenuItem.Text = "Limit line width";
 			this.autoBreakMenuItem.Click += new System.EventHandler(this.AutoBreakMenuItem_Click);
 			// 
 			// rearrangeLoreMenuItem
 			// 
 			this.rearrangeLoreMenuItem.Name = "rearrangeLoreMenuItem";
-			this.rearrangeLoreMenuItem.Size = new System.Drawing.Size(183, 22);
+			this.rearrangeLoreMenuItem.Size = new System.Drawing.Size(195, 22);
 			this.rearrangeLoreMenuItem.Text = "Rearrange lore";
 			this.rearrangeLoreMenuItem.Click += new System.EventHandler(this.rearrangeLoreMenuItem_Click);
 			// 
@@ -1286,9 +1277,8 @@ namespace Ginger {
 			// 
 			this.showNSFWRecipesMenuItem.CheckOnClick = true;
 			this.showNSFWRecipesMenuItem.Name = "showNSFWRecipesMenuItem";
-			this.showNSFWRecipesMenuItem.Size = new System.Drawing.Size(183, 22);
+			this.showNSFWRecipesMenuItem.Size = new System.Drawing.Size(195, 22);
 			this.showNSFWRecipesMenuItem.Text = "Allow &NSFW content";
-			this.showNSFWRecipesMenuItem.ToolTipText = global::Ginger.Properties.Resources.tooltip_option_nsfw;
 			this.showNSFWRecipesMenuItem.Click += new System.EventHandler(this.showNSFWRecipesMenuItem_Click);
 			// 
 			// toolsToolStripMenuItem
@@ -1310,7 +1300,6 @@ namespace Ginger {
 			this.createRecipeMenuItem.Name = "createRecipeMenuItem";
 			this.createRecipeMenuItem.Size = new System.Drawing.Size(187, 22);
 			this.createRecipeMenuItem.Text = "New recipe...";
-			this.createRecipeMenuItem.ToolTipText = global::Ginger.Properties.Resources.tooltip_create_recipe;
 			this.createRecipeMenuItem.Click += new System.EventHandler(this.CreateRecipeMenuItem_Click);
 			// 
 			// createSnippetMenuItem
@@ -1318,7 +1307,6 @@ namespace Ginger {
 			this.createSnippetMenuItem.Name = "createSnippetMenuItem";
 			this.createSnippetMenuItem.Size = new System.Drawing.Size(187, 22);
 			this.createSnippetMenuItem.Text = "New snippet...";
-			this.createSnippetMenuItem.ToolTipText = global::Ginger.Properties.Resources.tooltip_create_snippet;
 			this.createSnippetMenuItem.Click += new System.EventHandler(this.CreateSnippetMenuItem_Click);
 			// 
 			// reloadRecipesToolStripMenuItem
@@ -1328,7 +1316,6 @@ namespace Ginger {
 			this.reloadRecipesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
 			this.reloadRecipesToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
 			this.reloadRecipesToolStripMenuItem.Text = "&Reload recipes";
-			this.reloadRecipesToolStripMenuItem.ToolTipText = global::Ginger.Properties.Resources.tooltip_reload_recipes;
 			this.reloadRecipesToolStripMenuItem.Click += new System.EventHandler(this.ReloadRecipesToolStripMenuItem_Click);
 			// 
 			// bakeAllMenuItem
@@ -1353,7 +1340,6 @@ namespace Ginger {
 			this.mergeLoreMenuItem.Name = "mergeLoreMenuItem";
 			this.mergeLoreMenuItem.Size = new System.Drawing.Size(187, 22);
 			this.mergeLoreMenuItem.Text = "Merge &lorebooks";
-			this.mergeLoreMenuItem.ToolTipText = global::Ginger.Properties.Resources.tooltip_merge_lorebooks;
 			this.mergeLoreMenuItem.Click += new System.EventHandler(this.MergeLoreMenuItem_Click);
 			// 
 			// backyardMenuItem
@@ -1667,6 +1653,7 @@ namespace Ginger {
 			this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.statusBarMessage,
             this.statusBarActor,
+            this.statusEmbeddedAssets,
             this.statusConnectionIcon});
 			this.statusBar.Location = new System.Drawing.Point(0, 799);
 			this.statusBar.Name = "statusBar";
@@ -1683,14 +1670,24 @@ namespace Ginger {
 			// 
 			this.statusBarActor.Margin = new System.Windows.Forms.Padding(0, 3, 18, 2);
 			this.statusBarActor.Name = "statusBarActor";
-			this.statusBarActor.Size = new System.Drawing.Size(1231, 17);
+			this.statusBarActor.Size = new System.Drawing.Size(1215, 17);
 			this.statusBarActor.Spring = true;
 			this.statusBarActor.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
+			// statusEmbeddedAssets
+			// 
+			this.statusEmbeddedAssets.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+			this.statusEmbeddedAssets.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.statusEmbeddedAssets.Name = "statusEmbeddedAssets";
+			this.statusEmbeddedAssets.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
+			this.statusEmbeddedAssets.Size = new System.Drawing.Size(8, 17);
+			// 
 			// statusConnectionIcon
 			// 
+			this.statusConnectionIcon.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
 			this.statusConnectionIcon.Name = "statusConnectionIcon";
-			this.statusConnectionIcon.Size = new System.Drawing.Size(0, 17);
+			this.statusConnectionIcon.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
+			this.statusConnectionIcon.Size = new System.Drawing.Size(8, 17);
 			// 
 			// MainForm
 			// 
@@ -1885,6 +1882,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem createBackupMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem restoreBackupMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem10;
+		private System.Windows.Forms.ToolStripStatusLabel statusEmbeddedAssets;
 	}
 }
 

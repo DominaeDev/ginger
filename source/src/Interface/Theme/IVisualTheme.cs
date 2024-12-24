@@ -97,5 +97,7 @@ namespace Ginger
 		Image LinkActive { get; }
 		Image LinkInactive { get; }
 		Image LinkBroken { get; }
+		Image EmbeddedAssets { get; }
+		Image MenuEmbeddedAssets { get; }
 	}
 }

@@ -1073,6 +1073,16 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap dark_embedded_assets {
+            get {
+                object obj = ResourceManager.GetObject("dark_embedded_assets", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap dark_expanded {
             get {
                 object obj = ResourceManager.GetObject("dark_expanded", resourceCulture);
@@ -1203,6 +1213,16 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap dark_menu_embedded_assets {
+            get {
+                object obj = ResourceManager.GetObject("dark_menu_embedded_assets", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap dark_model {
             get {
                 object obj = ResourceManager.GetObject("dark_model", resourceCulture);
@@ -1326,6 +1346,16 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap delete_strike {
             get {
                 object obj = ResourceManager.GetObject("delete_strike", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap embedded_assets {
+            get {
+                object obj = ResourceManager.GetObject("embedded_assets", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -2415,6 +2445,16 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap menu_edit {
             get {
                 object obj = ResourceManager.GetObject("menu_edit", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_embedded_assets {
+            get {
+                object obj = ResourceManager.GetObject("menu_embedded_assets", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

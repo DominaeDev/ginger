@@ -1171,6 +1171,11 @@ namespace Ginger
 				}
 			}
 
+			int embeddedCount = Current.Card.assets.Count(a => a.isEmbeddedAsset);
+			statusEmbeddedAssets.Image = Theme.Current.EmbeddedAssets;
+			statusEmbeddedAssets.ToolTipText = string.Format("This character card contains {0} embedded asset(s).", embeddedCount);
+			statusEmbeddedAssets.Visible = embeddedCount > 0;
+
 			// Menu items
 			RefreshMenuItems();
 		}
@@ -1262,6 +1267,8 @@ namespace Ginger
 			rearrangeLoreMenuItem.Checked = AppSettings.Settings.EnableRearrangeLoreMode;
 			lightThemeMenuItem.Checked = !AppSettings.Settings.DarkTheme;
 			darkThemeMenuItem.Checked = AppSettings.Settings.DarkTheme;
+
+			embeddedAssetsMenuItem.Image = Theme.Current.MenuEmbeddedAssets;
 
 			// Spell checking
 			foreach (var kvp in _spellCheckLangMenuItems)
@@ -2195,6 +2202,7 @@ namespace Ginger
 				Undo.Push(Undo.Kind.Parameter, "Changed embedded assets");
 
 				Current.IsFileDirty = true;
+				RefreshTitle();
 			}
 		}
 

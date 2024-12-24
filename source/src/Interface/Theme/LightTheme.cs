@@ -175,6 +175,9 @@ namespace Ginger
 			public Image LinkActive => Resources.link_active;
 			public Image LinkInactive => Resources.link_inactive;
 			public Image LinkBroken => Resources.link_broken;
+
+			public Image EmbeddedAssets => Resources.menu_embedded_assets;
+			public Image MenuEmbeddedAssets => Resources.menu_embedded_assets;
 		}
 
 	}

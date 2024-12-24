@@ -177,6 +177,9 @@ namespace Ginger
 			public Image LinkActive => Resources.dark_link_active;
 			public Image LinkInactive => Resources.dark_link_inactive;
 			public Image LinkBroken => Resources.dark_link_broken;
+
+			public Image EmbeddedAssets => Resources.dark_menu_embedded_assets;
+			public Image MenuEmbeddedAssets => Resources.dark_menu_embedded_assets;
 		}
 
 		public class ToolStripColorTable : ProfessionalColorTable
