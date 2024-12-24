@@ -474,6 +474,7 @@ namespace Ginger
 			if (e.Button == MouseButtons.Right) // Double right click: Clear portrait
 			{
 				Current.Card.portraitImage = null;
+				Current.Card.assets.RemoveMainPortraitOverride();
 				portraitImage.SetImage(null);
 				label_Image_Value.Text = "-";
 				Undo.Push(Undo.Kind.Parameter, "Clear portrait image");

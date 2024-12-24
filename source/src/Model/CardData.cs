@@ -121,44 +121,36 @@ namespace Ginger
 			value = default(string);
 			return false;
 		}
-
-		public bool ReplaceMainPortraitAsset(string filename)
+		
+		public bool LoadPortraitImageFromFile(string filename, out Image image)
 		{
+			if (Utility.LoadImageFromFile(filename, out image) == false)
+				return false;
+
+			// Is animated image?
 			var ext = Utility.GetFileExt(filename);
-			var bytes = Utility.LoadFile(filename);
-			if (bytes == null || bytes.Length == 0)
-				return false;
+			bool bAnimated;
+			if (ext == "apng" || ext == "png")
+				bAnimated = Utility.IsAnimatedPNG(filename);
+			else if (ext == "webp")
+				bAnimated = Utility.IsAnimatedWebP(filename);
+			else if (ext == "gif")
+				bAnimated = Utility.IsAnimatedImage(image);
+			else
+				bAnimated = false;
 
-			if (Utility.IsSupportedImageFileExt(ext) == false)
-				return false;
+			portraitImage = ImageRef.FromImage(image);
+			Current.IsFileDirty = true;
 
-			// Remove existing
-			Current.Card.assets.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
-			int idxExisting = Current.Card.assets.FindIndex(a => a.isMainPortrait);
-			if (idxExisting != -1)
-				Current.Card.assets.RemoveAt(idxExisting);
-
-			// Add new asset
-			Current.Card.assets.Insert(0, new AssetFile() {
-				name = AssetFile.MainAssetName,
-				uriType = AssetFile.UriType.Embedded,
-				assetType = AssetFile.AssetType.Icon,
-				data = AssetData.FromBytes(bytes),
-				ext = ext,
-			});
-			return true;
-		}
-
-		public bool RemoveMainPortraitAsset()
-		{
-			// Remove existing
-			int idxExisting = Current.Card.assets.FindIndex(a => a.isMainPortrait && a.isDefaultAsset == false);
-			if (idxExisting != -1)
+			if (bAnimated)
 			{
-				Current.Card.assets.RemoveAt(idxExisting);
-				return true;
+				AssetFile asset;
+				if (assets.ReplaceMainPortraitOverride(filename, out asset))
+					portraitImage.uid = asset.uid; //?
 			}
-			return false;
+			else
+				assets.RemoveMainPortraitOverride();
+			return true;
 		}
 	}
 

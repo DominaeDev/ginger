@@ -371,10 +371,9 @@ namespace Ginger
 
 			if (imageType == AssetFile.AssetType.Icon)
 			{
-				Image image;
-				if (Utility.LoadImageFromFile(images[0], out image))
+				Image portraitImage;
+				if (Card.LoadPortraitImageFromFile(images[0], out portraitImage))
 				{
-					Card.portraitImage = ImageRef.FromImage(image);
 					lsImageLinks.Add(new Backyard.Link.Image() {
 						filename = Path.GetFileName(images[0]),
 						uid = Card.portraitImage.uid,

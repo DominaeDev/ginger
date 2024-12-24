@@ -346,9 +346,8 @@ namespace Ginger
 				{
 					var pngFilename = Path.Combine(Path.GetDirectoryName(filename), string.Concat(Path.GetFileNameWithoutExtension(filename), ".png"));
 
-					Image image;
-					if (Utility.LoadImageFromFile(pngFilename, out image))
-						Current.Card.portraitImage = ImageRef.FromImage(image);
+					Image portraitImage;
+					Current.Card.LoadPortraitImageFromFile(pngFilename, out portraitImage);
 				}
 			}
 			else
@@ -1090,7 +1089,7 @@ namespace Ginger
 						SetStatusBarMessage(Resources.status_link_save_file_and_link, Constants.StatusBarMessageInterval);
 					else if (autosaveError == Backyard.Error.NotFound)
 					{
-						MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						MessageBox.Show(Resources.error_link_update_character_not_found, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 						BreakLink(true);
 					}
 					else if (autosaveError != Backyard.Error.NoError)
@@ -1713,7 +1712,8 @@ namespace Ginger
 			// Import data
 			FaradayCardV4 faradayData;
 			string[] images;
-			var importError = Backyard.ImportCharacter(characterInstance, out faradayData, out images);
+			string[] backgrounds;
+			var importError = Backyard.ImportCharacter(characterInstance, out faradayData, out images, out backgrounds);
 			if (importError != Backyard.Error.NoError)
 				return importError;
 
@@ -1722,6 +1722,14 @@ namespace Ginger
 
 			Backyard.Link.Image[] imageLinks;
 			Current.ImportImages(images, out imageLinks);
+			
+			if (backgrounds != null && backgrounds.Length > 0)
+			{
+				Backyard.Link.Image[] backgroundsLinks;
+				Current.ImportImages(backgrounds, out backgroundsLinks, AssetFile.AssetType.Background);
+				imageLinks = Utility.ConcatenateArrays(imageLinks, backgroundsLinks);
+			}
+
 			Current.LinkWith(characterInstance, imageLinks);
 			Current.IsDirty = true;
 			Current.IsLinkDirty = false;
@@ -2396,12 +2404,12 @@ namespace Ginger
 				return false;
 			}
 
-			// Import chat parameters?
+			// Import model settings?
 			if (backup.hasParameters && MessageBox.Show(Resources.msg_link_restore_backup_settings, Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No)
 			{
-				// Strip parameters
+				// Use default model settings
 				foreach (var chat in backup.chats)
-					chat.parameters = null;
+					chat.parameters = AppSettings.BackyardSettings.UserSettings;
 			}
 
 			IEnumerable<Backyard.ImageInput> images = backup.images
@@ -2549,7 +2557,7 @@ namespace Ginger
 
 			if (unknownImages.Count > 0)
 			{
-				var mr = MessageBox.Show(string.Format(Resources.msg_confirm_purge_images, unknownImages.Count), Resources.cap_link_purge_images, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,  MessageBoxDefaultButton.Button2);
+				var mr = MessageBox.Show(string.Format(Resources.msg_confirm_purge_images, unknownImages.Count), Resources.cap_link_purge_images, MessageBoxButtons.YesNo, MessageBoxIcon.Stop,  MessageBoxDefaultButton.Button2);
 				
 				if (mr == DialogResult.Yes)
 				{

@@ -1774,7 +1774,7 @@ namespace Ginger.Integration
 			{
 				characterInstance = default(CharacterInstance);
 				imageLinks = null;
-				return Error.NotFound;
+				return Error.InvalidArgument;
 			}
 
 			if (chats != null && chats.ContainsAny(c => c.history != null && c.history.numSpeakers > 2))
@@ -4597,25 +4597,46 @@ namespace Ginger.Integration
 			// Prepare image information
 			string destPath = Path.Combine(AppSettings.BackyardLink.Location, "images");
 
+			var assets = (AssetCollection)Current.Card.assets.Clone();
+
 			List<ImageOutput> results = new List<ImageOutput>();
 			List<Link.Image> lsImageLinks = new List<Link.Image>();
 
 			// Main portrait
-			var portraitImage = Current.Card.portraitImage;
-			string portraitUID;
-			if (portraitImage != null)
-				portraitUID = portraitImage.uid;
-			else
-				portraitUID = "__default";
-			
+			ImageRef portraitImage = Current.Card.portraitImage;
 			ImageInstance existingPortrait = null;
 			int idxPortraitLink = -1;
-			if (imageLinks != null)
+			string portraitUID = null;
+
+			var mainPortraitAsset = assets.GetMainPortraitOverride();
+			if (mainPortraitAsset != null) // Has embedded asset
 			{
-				idxPortraitLink = Array.FindIndex(imageLinks, l => l.uid == portraitUID);
-				if (idxPortraitLink != -1)
+				if (imageLinks != null)
 				{
-					existingPortrait = imageInstances.FirstOrDefault(kvp => string.Compare(Path.GetFileName(kvp.imageUrl), imageLinks[idxPortraitLink].filename, StringComparison.InvariantCultureIgnoreCase) == 0);
+					idxPortraitLink = Array.FindIndex(imageLinks, l => l.uid == mainPortraitAsset.uid);
+					if (idxPortraitLink != -1)
+					{
+						existingPortrait = imageInstances.FirstOrDefault(kvp => string.Compare(Path.GetFileName(kvp.imageUrl), imageLinks[idxPortraitLink].filename, StringComparison.InvariantCultureIgnoreCase) == 0);
+						portraitUID = mainPortraitAsset.uid;
+					}
+				}
+				assets.Remove(mainPortraitAsset);
+			}
+			
+			if (portraitUID == null)
+			{
+				if (portraitImage != null)
+					portraitUID = portraitImage.uid;
+				else
+					portraitUID = "__default";
+
+				if (imageLinks != null)
+				{
+					idxPortraitLink = Array.FindIndex(imageLinks, l => l.uid == portraitUID);
+					if (idxPortraitLink != -1)
+					{
+						existingPortrait = imageInstances.FirstOrDefault(kvp => string.Compare(Path.GetFileName(kvp.imageUrl), imageLinks[idxPortraitLink].filename, StringComparison.InvariantCultureIgnoreCase) == 0);
+					}
 				}
 			}
 			
@@ -4665,64 +4686,61 @@ namespace Ginger.Integration
 			}
 
 			// Embedded assets
-			if (Current.Card.assets != null)
+			foreach (var asset in assets
+				.Where(a => a.isEmbeddedAsset 
+					&& a.data.length > 0
+					&& (a.assetType == AssetFile.AssetType.Icon || a.assetType == AssetFile.AssetType.Expression)))
 			{
-				foreach (var asset in Current.Card.assets
-					.Where(a => a.isEmbeddedAsset 
-						&& a.data.length > 0
-						&& (a.assetType == AssetFile.AssetType.Icon || a.assetType == AssetFile.AssetType.Expression)))
+				ImageInstance existingInstance = null;
+				if (imageLinks != null)
 				{
-					ImageInstance existingInstance = null;
-					if (imageLinks != null)
+					int idxLink = Array.FindIndex(imageLinks, l => l.uid == asset.uid); // Same id
+					if (idxLink == -1)
 					{
-						int idxLink = Array.FindIndex(imageLinks, l => l.uid == asset.uid); // Same id
-						if (idxLink == -1)
+						idxLink = Array.FindIndex(imageLinks, l => string.Compare(l.filename, string.Concat(asset.name, ".", asset.ext), StringComparison.InvariantCultureIgnoreCase) == 0); // Same filename
+					}
+					if (idxLink != -1)
+					{
+						existingInstance = imageInstances.FirstOrDefault(kvp => string.Compare(Path.GetFileName(kvp.imageUrl), imageLinks[idxLink].filename, StringComparison.InvariantCultureIgnoreCase) == 0);
+						if (existingInstance != null)
 						{
-							idxLink = Array.FindIndex(imageLinks, l => string.Compare(l.filename, string.Concat(asset.name, ".", asset.ext), StringComparison.InvariantCultureIgnoreCase) == 0); // Same filename
-						}
-						if (idxLink != -1)
-						{
-							existingInstance = imageInstances.FirstOrDefault(kvp => string.Compare(Path.GetFileName(kvp.imageUrl), imageLinks[idxLink].filename, StringComparison.InvariantCultureIgnoreCase) == 0);
-							if (existingInstance != null)
-							{
-								// No change
-								results.Add(new ImageOutput() {
-									instanceId = existingInstance.instanceId,
-									imageUrl = existingInstance.imageUrl,
-									label = existingInstance.label,
-									width = existingInstance.width,
-									height = existingInstance.height,
-								});
+							// No change
+							results.Add(new ImageOutput() {
+								instanceId = existingInstance.instanceId,
+								imageUrl = existingInstance.imageUrl,
+								label = existingInstance.label,
+								width = existingInstance.width,
+								height = existingInstance.height,
+							});
 
-								lsImageLinks.Add(imageLinks[idxLink]);
-								continue;
-							}
+							lsImageLinks.Add(imageLinks[idxLink]);
+							continue;
 						}
 					}
+				}
 
 
-					int imageWidth = asset.knownWidth;
-					int imageHeight = asset.knownHeight;
-					if ((imageWidth > 0 && imageHeight > 0) || Utility.GetImageDimensions(asset.data.bytes, out imageWidth, out imageHeight))
-					{
-						asset.knownWidth = imageWidth;
-						asset.knownHeight = imageHeight;
+				int imageWidth = asset.knownWidth;
+				int imageHeight = asset.knownHeight;
+				if ((imageWidth > 0 && imageHeight > 0) || Utility.GetImageDimensions(asset.data.bytes, out imageWidth, out imageHeight))
+				{
+					asset.knownWidth = imageWidth;
+					asset.knownHeight = imageHeight;
 
-						string filename = Utility.CreateRandomFilename(asset.ext);
-						ImageOutput output = new ImageOutput() {
-							instanceId = Cuid.NewCuid(),
-							imageUrl = Path.Combine(destPath, filename),
-							data = asset.data,
-							width = imageWidth,
-							height = imageHeight,
-						};
+					string filename = Utility.CreateRandomFilename(asset.ext);
+					ImageOutput output = new ImageOutput() {
+						instanceId = Cuid.NewCuid(),
+						imageUrl = Path.Combine(destPath, filename),
+						data = asset.data,
+						width = imageWidth,
+						height = imageHeight,
+					};
 						
-						results.Add(output);
-						lsImageLinks.Add(new Link.Image() {
-							uid = asset.uid,
-							filename = filename,
-						});
-					}
+					results.Add(output);
+					lsImageLinks.Add(new Link.Image() {
+						uid = asset.uid,
+						filename = filename,
+					});
 				}
 			}
 
@@ -5078,8 +5096,7 @@ namespace Ginger.Integration
 		{
 			var lsImages = new List<ImageInput>();
 			var assets = (AssetCollection)Current.Card.assets.Clone();
-
-			var mainPortraitAsset = assets.FirstOrDefault(a => a.isMainPortrait && Utility.IsSupportedImageFileExt(a.ext));
+			AssetFile mainPortraitAsset = assets.GetMainPortraitOverride();
 
 			if (mainPortraitAsset != null) // Embedded portrait (animated)
 			{

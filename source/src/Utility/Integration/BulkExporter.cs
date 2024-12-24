@@ -230,24 +230,27 @@ namespace Ginger.Integration
 			// Read character from Backyard
 			FaradayCardV4 faradayCard;
 			string[] imageUrls;
-			var importError = Backyard.ImportCharacter(characterInstance, out faradayCard, out imageUrls);
+			string[] backgroundUrls;
+			var importError = Backyard.ImportCharacter(characterInstance, out faradayCard, out imageUrls, out backgroundUrls);
 			if (importError != Backyard.Error.NoError)
 			{
 				filename = default(string);
 				return Error.DatabaseError;
 			}
 
-			// Read image
-			Image image = null;
-			if (imageUrls != null && imageUrls.Length > 0)
-				Utility.LoadImageFromFile(imageUrls[0], out image);
-
 			// Convert
 			GingerCharacter character = new GingerCharacter();
-			character.ReadFaradayCard(faradayCard, image);
+			character.ReadFaradayCard(faradayCard, null);
 
 			var prevInstance = Current.Instance;
 			Current.Instance = character;
+
+			// Load images/backgrounds
+			Backyard.Link.Image[] unused;
+			Current.ImportImages(imageUrls, out unused, AssetFile.AssetType.Icon);
+			
+			if (backgroundUrls != null && backgroundUrls.Length > 0)
+				Current.ImportImages(backgroundUrls, out unused, AssetFile.AssetType.Background);
 
 			try
 			{

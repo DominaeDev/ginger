@@ -1439,7 +1439,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to save character to Backyard AI. Operation canceled..
+        ///   Looks up a localized string similar to Failed to push updates to Backyard AI. Operation canceled..
         /// </summary>
         internal static string error_link_autosave {
             get {
@@ -1701,18 +1701,9 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Failed to save character to Backyard AI. Operation canceled..
         /// </summary>
-        internal static string error_link_save {
+        internal static string error_link_save_character_as_new {
             get {
-                return ResourceManager.GetString("error_link_save", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to save character to Backyard AI. Character not found..
-        /// </summary>
-        internal static string error_link_save_character {
-            get {
-                return ResourceManager.GetString("error_link_save_character", resourceCulture);
+                return ResourceManager.GetString("error_link_save_character_as_new", resourceCulture);
             }
         }
         
@@ -1724,6 +1715,24 @@ namespace Ginger.Properties {
         internal static string error_link_unsupported {
             get {
                 return ResourceManager.GetString("error_link_unsupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to push updates to Backyard AI. Operation canceled..
+        /// </summary>
+        internal static string error_link_update_character {
+            get {
+                return ResourceManager.GetString("error_link_update_character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to push updates to Backyard AI. Linked character not found..
+        /// </summary>
+        internal static string error_link_update_character_not_found {
+            get {
+                return ResourceManager.GetString("error_link_update_character_not_found", resourceCulture);
             }
         }
         
@@ -2440,7 +2449,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} unreferenced images were found. Do you want to send them to the recycle bin?
+        ///   Looks up a localized string similar to {0} unreferenced images found. Do you want to send them to the recycle bin?
         ///
         ///Caution: Depending on your system settings, the images MAY be permanently deleted!.
         /// </summary>
@@ -2651,7 +2660,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WARNING! This will delete all chats with &apos;{0}&apos;. This action cannot be reversed.
+        ///   Looks up a localized string similar to CAUTION! This will delete all chats with &apos;{0}&apos;. This action cannot be reversed.
         ///
         ///Are you sure you want to permanently delete the chats?.
         /// </summary>

@@ -446,24 +446,13 @@ namespace Ginger
 			}
 
 			Image portraitImage;
-			if (Utility.LoadImageFromFile(filename, out portraitImage) == false)
+			if (Current.Card.LoadPortraitImageFromFile(filename, out portraitImage) == false)
 			{
 				MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				return;
 			}
 
-			// Is animated image?
-			var ext = Utility.GetFileExt(filename);
-			bool bAnimated;
-			if (ext == "apng" || ext == "png")
-				bAnimated = Utility.IsAnimatedPNG(filename);
-			else if (ext == "webp")
-				bAnimated = Utility.IsAnimatedWebP(filename);
-			else if (ext == "gif")
-				bAnimated = Utility.IsAnimatedImage(portraitImage);
-			else
-				bAnimated = false;
-						
+			// Resize?
 			if (portraitImage.Width > Constants.MaxImageDimension || portraitImage.Height > Constants.MaxImageDimension)
 			{
 				int srcWidth = portraitImage.Width;
@@ -482,17 +471,10 @@ namespace Ginger
 								0, 0, srcWidth, srcHeight,
 								GraphicsUnit.Pixel);
 					}
-					portraitImage = Image.FromHbitmap(bmpNewImage.GetHbitmap());
+					Current.Card.portraitImage = ImageRef.FromImage(Image.FromHbitmap(bmpNewImage.GetHbitmap()));
 				}
 			}
-
-			Current.Card.portraitImage = ImageRef.FromImage(portraitImage);
 			Current.IsDirty = true;
-
-			if (bAnimated)
-				Current.Card.ReplaceMainPortraitAsset(filename);
-			else
-				Current.Card.RemoveMainPortraitAsset();
 
 			sidePanel.RefreshValues();
 			Undo.Push(Undo.Kind.Parameter, "Change portrait image");
@@ -511,6 +493,7 @@ namespace Ginger
 			}
 
 			Current.Card.portraitImage = ImageRef.FromImage(image);
+			Current.Card.assets.RemoveMainPortraitOverride();
 			Current.IsDirty = true;
 			sidePanel.RefreshValues();
 
@@ -520,6 +503,7 @@ namespace Ginger
 		private void OnRemovePortraitImage(object sender, EventArgs e)
 		{
 			Current.Card.portraitImage = null;
+			Current.Card.assets.RemoveMainPortraitOverride();
 			Current.IsDirty = true;
 			sidePanel.RefreshValues();
 			Undo.Push(Undo.Kind.Parameter, "Clear portrait");
@@ -2281,7 +2265,7 @@ namespace Ginger
 			}
 			else if (error == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_update_character_not_found, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 			else if (error == Backyard.Error.CancelledByUser || error == Backyard.Error.DismissedByUser)
 			{
@@ -2290,7 +2274,7 @@ namespace Ginger
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_save, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_update_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 			else
 			{
@@ -2307,10 +2291,8 @@ namespace Ginger
 			var error = CreateNewCharacterInBackyard(out createdCharacter, out images);
 			if (error == Backyard.Error.NotConnected)
 				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			else if (error == Backyard.Error.NotFound)
-				MessageBox.Show(Resources.error_link_save_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			else if (error != Backyard.Error.NoError)
-				MessageBox.Show(Resources.error_link_save, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_save_character_as_new, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			else
 			{
 				if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)

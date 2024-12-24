@@ -81,14 +81,8 @@ namespace Ginger
 		public bool isEmbeddedAsset { get { return uriType == UriType.Embedded; } }
 		public bool isRemoteAsset { get { return uriType == UriType.Custom; } }
 
-		public bool isMainPortrait
-		{
-			get
-			{
-				if (assetType != AssetType.Icon)
-					return false;
-				return isDefaultAsset || (isEmbeddedAsset && string.Compare(name, MainAssetName, StringComparison.OrdinalIgnoreCase) == 0);
-			}
+		public bool isMainPortraitOverride {
+			get { return assetType == AssetType.Icon && isEmbeddedAsset && string.Compare(name, MainAssetName, StringComparison.OrdinalIgnoreCase) == 0; }
 		}
 
 		public static readonly string DefaultUri = "ccdefault:";
@@ -626,9 +620,9 @@ namespace Ginger
 			return this.ContainsAny(a => a.assetType == AssetFile.AssetType.Icon && (a.isDefaultAsset || a.name == AssetFile.MainAssetName ));
 		}
 
-		public void AddPortraitImage(FileUtil.FileType fileType)
+		public void AddPortraitAsset(FileUtil.FileType fileType)
 		{
-			if (this.ContainsAny(a => a.isMainPortrait && a.isDefaultAsset == false))
+			if (this.ContainsAny(a => a.isMainPortraitOverride))
 				return; // A portrait image already exists
 
 			// Remove any existing default icon(s)
@@ -681,6 +675,59 @@ namespace Ginger
 			catch
 			{
 			}
+		}
+
+		public AssetFile GetMainPortraitOverride()
+		{
+			return this.FirstOrDefault(a => a.isMainPortraitOverride
+				&& a.isDefaultAsset == false
+				&& Utility.IsSupportedImageFileExt(a.ext));
+		}
+
+		public bool ReplaceMainPortraitOverride(string filename, out AssetFile asset)
+		{
+			var ext = Utility.GetFileExt(filename);
+			var bytes = Utility.LoadFile(filename);
+			if (bytes == null || bytes.Length == 0)
+			{
+				asset = default(AssetFile);
+				return false;
+			}
+
+			if (Utility.IsSupportedImageFileExt(ext) == false)
+			{
+				asset = default(AssetFile);
+				return false;
+			}
+
+			// Remove existing
+			this.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
+			int idxExisting = this.FindIndex(a => a.isMainPortraitOverride);
+			if (idxExisting != -1)
+				this.RemoveAt(idxExisting);
+
+			// Add new asset
+			asset = new AssetFile() {
+				name = AssetFile.MainAssetName,
+				uriType = AssetFile.UriType.Embedded,
+				assetType = AssetFile.AssetType.Icon,
+				data = AssetData.FromBytes(bytes),
+				ext = ext,
+			};
+			this.Insert(0, asset);
+			return true;
+		}
+
+		public bool RemoveMainPortraitOverride()
+		{
+			// Remove existing
+			int idxExisting = this.FindIndex(a => a.isMainPortraitOverride);
+			if (idxExisting != -1)
+			{
+				this.RemoveAt(idxExisting);
+				return true;
+			}
+			return false;
 		}
 	}
 }

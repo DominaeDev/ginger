@@ -714,11 +714,11 @@ it to leave the context over time.</value>
   <data name="error_link_failed" xml:space="preserve">
     <value>Failed to connect to Backyard AI.</value>
   </data>
-  <data name="error_link_save" xml:space="preserve">
+  <data name="error_link_save_character_as_new" xml:space="preserve">
     <value>Failed to save character to Backyard AI. Operation canceled.</value>
   </data>
-  <data name="error_link_save_character" xml:space="preserve">
-    <value>Failed to save character to Backyard AI. Character not found.</value>
+  <data name="error_link_update_character" xml:space="preserve">
+    <value>Failed to push updates to Backyard AI. Operation canceled.</value>
   </data>
   <data name="msg_confirm_no_persona" xml:space="preserve">
     <value>This character does not contain a persona and may not function properly.
@@ -752,7 +752,7 @@ Do you want to overwrite those changes?</value>
     <value>Restore link to character</value>
   </data>
   <data name="error_link_autosave" xml:space="preserve">
-    <value>Failed to save character to Backyard AI. Operation canceled.</value>
+    <value>Failed to push updates to Backyard AI. Operation canceled.</value>
   </data>
   <data name="error_link_reestablish" xml:space="preserve">
     <value>Unable to restore link. Character not found.
@@ -906,7 +906,7 @@ Please check the Ginger GitHub for updates.</value>
 Are you sure you want to permanently delete this chat?</value>
   </data>
   <data name="msg_link_purge_chat" xml:space="preserve">
-    <value>WARNING! This will delete all chats with '{0}'. This action cannot be reversed.
+    <value>CAUTION! This will delete all chats with '{0}'. This action cannot be reversed.
 
 Are you sure you want to permanently delete the chats?</value>
   </data>
@@ -1443,7 +1443,7 @@ Do you want to continue?</value>
     <value>Clean Backyard AI image folder</value>
   </data>
   <data name="msg_confirm_purge_images" xml:space="preserve">
-    <value>{0} unreferenced images were found. Do you want to send them to the recycle bin?
+    <value>{0} unreferenced images found. Do you want to send them to the recycle bin?
 
 Caution: Depending on your system settings, the images MAY be permanently deleted!</value>
   </data>
@@ -1467,5 +1467,8 @@ Caution: Depending on your system settings, the images MAY be permanently delete
   </data>
   <data name="error_link_character_not_found" xml:space="preserve">
     <value>Character entry not found.</value>
+  </data>
+  <data name="error_link_update_character_not_found" xml:space="preserve">
+    <value>Failed to push updates to Backyard AI. Linked character not found.</value>
   </data>
 </root>

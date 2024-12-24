@@ -391,7 +391,7 @@ namespace Ginger
 
 					// Compile assets
 					var assets = (AssetCollection)Current.Card.assets.Clone();
-					assets.AddPortraitImage(FileType.Png);
+					assets.AddPortraitAsset(FileType.Png);
 
 					assets.Validate();
 
@@ -1482,7 +1482,7 @@ namespace Ginger
 
 				var assets = (AssetCollection)Current.Card.assets.Clone();
 				
-				assets.AddPortraitImage(FileType.Json);
+				assets.AddPortraitAsset(FileType.Json);
 				assets.Validate();
 
 				card.data.assets = assets

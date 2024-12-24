@@ -1447,33 +1447,33 @@ namespace Ginger {
 			// createBackupMenuItem
 			// 
 			this.createBackupMenuItem.Name = "createBackupMenuItem";
-			this.createBackupMenuItem.Size = new System.Drawing.Size(216, 22);
-			this.createBackupMenuItem.Text = "Create character backup...";
+			this.createBackupMenuItem.Size = new System.Drawing.Size(200, 22);
+			this.createBackupMenuItem.Text = "Create backup...";
 			this.createBackupMenuItem.Click += new System.EventHandler(this.createBackupMenuItem_Click);
 			// 
 			// restoreBackupMenuItem
 			// 
 			this.restoreBackupMenuItem.Name = "restoreBackupMenuItem";
-			this.restoreBackupMenuItem.Size = new System.Drawing.Size(216, 22);
-			this.restoreBackupMenuItem.Text = "Restore character backup...";
+			this.restoreBackupMenuItem.Size = new System.Drawing.Size(200, 22);
+			this.restoreBackupMenuItem.Text = "Restore backup...";
 			this.restoreBackupMenuItem.Click += new System.EventHandler(this.restoreBackupMenuItem_Click);
 			// 
 			// toolStripMenuItem10
 			// 
 			this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-			this.toolStripMenuItem10.Size = new System.Drawing.Size(213, 6);
+			this.toolStripMenuItem10.Size = new System.Drawing.Size(197, 6);
 			// 
 			// repairBrokenImagesMenuItem
 			// 
 			this.repairBrokenImagesMenuItem.Name = "repairBrokenImagesMenuItem";
-			this.repairBrokenImagesMenuItem.Size = new System.Drawing.Size(216, 22);
-			this.repairBrokenImagesMenuItem.Text = "Repair broken images...";
+			this.repairBrokenImagesMenuItem.Size = new System.Drawing.Size(200, 22);
+			this.repairBrokenImagesMenuItem.Text = "Fix broken images...";
 			this.repairBrokenImagesMenuItem.Click += new System.EventHandler(this.repairBrokenImagesMenuItem_Click);
 			// 
 			// purgeUnusedImagesMenuItem
 			// 
 			this.purgeUnusedImagesMenuItem.Name = "purgeUnusedImagesMenuItem";
-			this.purgeUnusedImagesMenuItem.Size = new System.Drawing.Size(216, 22);
+			this.purgeUnusedImagesMenuItem.Size = new System.Drawing.Size(200, 22);
 			this.purgeUnusedImagesMenuItem.Text = "Clean up image folder...";
 			this.purgeUnusedImagesMenuItem.Click += new System.EventHandler(this.purgeUnusedImages_Click);
 			// 
@@ -1505,14 +1505,14 @@ namespace Ginger {
 			// 
 			this.bulkImportMenuItem.Name = "bulkImportMenuItem";
 			this.bulkImportMenuItem.Size = new System.Drawing.Size(273, 22);
-			this.bulkImportMenuItem.Text = "Import many characters...";
+			this.bulkImportMenuItem.Text = "Import multiple characters...";
 			this.bulkImportMenuItem.Click += new System.EventHandler(this.bulkImportMenuItem_Click);
 			// 
 			// bulkExportMenuItem
 			// 
 			this.bulkExportMenuItem.Name = "bulkExportMenuItem";
 			this.bulkExportMenuItem.Size = new System.Drawing.Size(273, 22);
-			this.bulkExportMenuItem.Text = "Export many characters...";
+			this.bulkExportMenuItem.Text = "Export multiple characters...";
 			this.bulkExportMenuItem.Click += new System.EventHandler(this.bulkExportMenuItem_Click);
 			// 
 			// toolStripMenuItem14

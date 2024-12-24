@@ -64,7 +64,6 @@ namespace Ginger.Integration
 			backupInfo = new BackupData();
 			backupInfo.characterCard = card;
 			backupInfo.chats = chatInstances
-				.Where(c => c.history.isEmpty == false)
 				.Select(c => 
 				{
 					string bgName = null;

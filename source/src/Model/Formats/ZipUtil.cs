@@ -122,7 +122,7 @@ namespace Ginger
 
 			AssetCollection assets = (AssetCollection)Current.Card.assets.Clone();
 
-			assets.AddPortraitImage(FileType.CharX);
+			assets.AddPortraitAsset(FileType.CharX);
 			assets.Validate();
 
 			card.data.assets = assets
