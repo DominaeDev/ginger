@@ -2720,6 +2720,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Character link restored..
+        /// </summary>
+        internal static string msg_link_reestablished {
+            get {
+                return ResourceManager.GetString("msg_link_reestablished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This will update and fix all legacy chats for &apos;{0}&apos;.
         ///
         ///Do you want to continue?.
@@ -2965,7 +2974,16 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save changes?.
+        ///   Looks up a localized string similar to Save changes to &apos;{0}&apos; before quitting?.
+        /// </summary>
+        internal static string msg_save_before_quit {
+            get {
+                return ResourceManager.GetString("msg_save_before_quit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save changes to &apos;{0}&apos;?.
         /// </summary>
         internal static string msg_save_changes {
             get {

@@ -1212,7 +1212,21 @@ namespace Ginger
 			if (Current.IsFileDirty == false)
 				return true; // No changes
 
-			var mr = MessageBox.Show(Resources.msg_save_changes, caption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+			var mr = MessageBox.Show(string.Format(Resources.msg_save_changes, Current.CardName), caption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+			if (mr == DialogResult.Cancel)
+				return false;
+			if (mr == DialogResult.No)
+				return true;
+
+			return Save(Current.Filename);
+		}
+
+		private bool ConfirmSaveBeforeExit()
+		{
+			if (Current.IsFileDirty == false)
+				return true; // No changes
+
+			var mr = MessageBox.Show(string.Format(Resources.msg_save_before_quit, Current.CardName), Resources.cap_exit_app, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
 			if (mr == DialogResult.Cancel)
 				return false;
 			if (mr == DialogResult.No)
@@ -1637,15 +1651,12 @@ namespace Ginger
 			}
 		}
 
-		private bool ReestablishLink(bool bSilent = false)
+		private bool ReestablishLink()
 		{
 			// Refresh character information
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
-				if (bSilent == false)
-				{
-					MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
+				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
@@ -1660,11 +1671,11 @@ namespace Ginger
 					Current.Link.RefreshState();
 					RefreshTitle();
 
-					if (bSilent == false)
-						SetStatusBarMessage(Resources.status_link_reestablished, Constants.StatusBarMessageInterval);
+					MessageBox.Show(Resources.msg_link_reestablished, Resources.cap_link_reestablish, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					// SetStatusBarMessage(Resources.status_link_reestablished, Constants.StatusBarMessageInterval);
 					return true;
 				}
-				else if (bSilent == false)
+				else
 				{
 					if (MessageBox.Show(Resources.error_link_reestablish, Resources.cap_link_reestablish, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
 					{

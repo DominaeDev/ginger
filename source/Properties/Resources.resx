@@ -300,7 +300,7 @@ Would you like to overwrite it?</value>
     <value>{0} occurence replaced.</value>
   </data>
   <data name="msg_save_changes" xml:space="preserve">
-    <value>Save changes?</value>
+    <value>Save changes to '{0}'?</value>
   </data>
   <data name="personality" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Light\personality.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -1482,5 +1482,11 @@ Caution: Depending on your system settings, the images MAY be permanently delete
   </data>
   <data name="menu_embedded_assets" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Light\menu_embedded_assets.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="msg_save_before_quit" xml:space="preserve">
+    <value>Save changes to '{0}' before quitting?</value>
+  </data>
+  <data name="msg_link_reestablished" xml:space="preserve">
+    <value>Character link restored.</value>
   </data>
 </root>

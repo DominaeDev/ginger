@@ -13,7 +13,7 @@ namespace Ginger
 		}
 
 		public static Queue<MRUItem> mruItems = new Queue<MRUItem>();
-		public static int MaxCount = 16;
+		public static int MaxCount = 30;
 
 		public static void AddToMRU(string filename, string characterName)
 		{

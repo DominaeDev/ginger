@@ -56,7 +56,7 @@ namespace Ginger
 			public static readonly Color OutputForeground = Color.Beige;
 			public static readonly Color OutputBackground = Color.FromArgb(64, 64, 64);
 			public static readonly Color NotesForeground = Color.Black;
-			public static readonly Color NotesBackground = Color.WhiteSmoke;
+			public static readonly Color NotesBackground = ColorTranslator.FromHtml("#F9F9F9");
 			public static readonly Color Grid = SystemColors.Control;
 			public static readonly Color Workspace = SystemColors.ControlDark;
 
@@ -176,7 +176,7 @@ namespace Ginger
 			public Image LinkInactive => Resources.link_inactive;
 			public Image LinkBroken => Resources.link_broken;
 
-			public Image EmbeddedAssets => Resources.menu_embedded_assets;
+			public Image EmbeddedAssets => Resources.embedded_assets;
 			public Image MenuEmbeddedAssets => Resources.menu_embedded_assets;
 		}
 

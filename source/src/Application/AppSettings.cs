@@ -227,6 +227,7 @@ namespace Ginger
 			public static bool ImportAlternateGreetings = false;
 
 			public static bool PruneExampleChat = true;
+			public static bool MarkNSFW = true;
 			public static string AuthorNote = null;
 		}
 
@@ -357,6 +358,7 @@ namespace Ginger
 				ReadBool(ref BackyardLink.UsePortraitAsBackground, linkSection, "UsePortraitAsBackground");
 				ReadString(ref BackyardLink.BulkImportFolderName, linkSection, "BulkImportFolderName");
 				ReadBool(ref BackyardLink.PruneExampleChat, linkSection, "PruneExampleChat");
+				ReadBool(ref BackyardLink.MarkNSFW, linkSection, "MarkNSFW");
 				ReadBool(ref BackyardLink.ImportAlternateGreetings, linkSection, "ImportAlternateGreetings");
 				ReadString(ref BackyardLink.AuthorNote, linkSection, "AuthorNote");
 			}
@@ -501,6 +503,12 @@ namespace Ginger
 					Write(outputFile, "LastImagePath", Paths.LastImagePath);
 					Write(outputFile, "LastImportPath", Paths.LastImportExportPath);
 
+					// MRU list
+					WriteSection(outputFile, "MRU");
+					int mruIndex = 0;
+					foreach (var mruItem in MRUList.mruItems)
+						outputFile.WriteLine(string.Format("File{0:00} = {1}|{2}", mruIndex++, mruItem.filename ?? "", mruItem.characterName ?? ""));
+
 					// Backyard link settings
 					WriteSection(outputFile, "BackyardAI.Link");
 					Write(outputFile, "Location", BackyardLink.Location);
@@ -514,6 +522,7 @@ namespace Ginger
 					Write(outputFile, "UsePortraitAsBackground", BackyardLink.UsePortraitAsBackground);
 					Write(outputFile, "BulkImportFolderName", BackyardLink.BulkImportFolderName);
 					Write(outputFile, "PruneExampleChat", BackyardLink.PruneExampleChat);
+					Write(outputFile, "MarkNSFW", BackyardLink.MarkNSFW);
 					Write(outputFile, "ImportAlternateGreetings", BackyardLink.ImportAlternateGreetings);
 					Write(outputFile, "AuthorNote", BackyardLink.AuthorNote);
 
@@ -538,12 +547,6 @@ namespace Ginger
 						foreach (var kvp in BackyardSettings.ModelPromptTemplates.OrderBy(kvp => kvp.Key).Where(kvp => kvp.Value >= 0))
 							Write(outputFile, kvp.Key, kvp.Value);
 					}
-
-					// MRU list
-					WriteSection(outputFile, "MRU");
-					int mruIndex = 0;
-					foreach (var mruItem in MRUList.mruItems)
-						outputFile.WriteLine(string.Format("File{0:00} = {1}|{2}", mruIndex++, mruItem.filename ?? "", mruItem.characterName ?? ""));
 
 				}
 			}

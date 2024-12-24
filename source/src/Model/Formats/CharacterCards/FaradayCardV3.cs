@@ -186,7 +186,7 @@ namespace Ginger
 			else
 				card.data.loreItems = new FaradayCardV1.LoreBookEntry[0];
 
-			card.data.isNSFW = Current.IsNSFW;
+			card.data.isNSFW = Current.IsNSFW && AppSettings.BackyardLink.MarkNSFW;
 			
 			return card;
 		}

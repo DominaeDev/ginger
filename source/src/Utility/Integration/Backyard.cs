@@ -1420,6 +1420,29 @@ namespace Ginger.Integration
 								updates += cmdUpdate.ExecuteNonQuery();
 							}
 
+							// Update GroupConfig
+							using (var cmdUpdateGroup = new SQLiteCommand(connection))
+							{
+								var sbCommand = new StringBuilder();
+								sbCommand.AppendLine(
+								@"
+									UPDATE GroupConfig
+									SET
+										updatedAt = $timestamp,
+										name = $groupName,
+										isNSFW = $isNSFW
+									WHERE id = $groupId;
+								");
+								cmdUpdateGroup.CommandText = sbCommand.ToString();
+								cmdUpdateGroup.Parameters.AddWithValue("$groupId", groupId);
+								cmdUpdateGroup.Parameters.AddWithValue("$groupName", card.data.displayName ?? "");
+								cmdUpdateGroup.Parameters.AddWithValue("$isNSFW", card.data.isNSFW);
+								cmdUpdateGroup.Parameters.AddWithValue("$timestamp", updatedAt);
+
+								expectedUpdates += 1;
+								updates += cmdUpdateGroup.ExecuteNonQuery();
+							}
+
 							// Update chat data
 							using (var cmdChat = new SQLiteCommand(connection))
 							{

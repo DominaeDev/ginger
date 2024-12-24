@@ -141,7 +141,7 @@ namespace Ginger
 		private void OnClosing(object sender, FormClosingEventArgs e)
 		{
 			StealFocus();
-			if (ConfirmSave(Resources.cap_exit_app) == false)
+			if (ConfirmSaveBeforeExit() == false)
 				e.Cancel = true;
 		}
 
