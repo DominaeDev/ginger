@@ -453,6 +453,7 @@
     <Compile Include="src\Model\Recipe\ParameterResolver.cs" />
     <Compile Include="src\Model\Recipe\ParameterState.cs" />
     <Compile Include="src\Utility\Integration\AsyncFileTypeChecker.cs" />
+    <Compile Include="src\Utility\Integration\AsyncTaskQueue.cs" />
     <Compile Include="src\Utility\Integration\BackyardValidation.cs" />
     <Compile Include="src\Utility\Integration\BulkImporter.cs" />
     <Compile Include="src\Utility\Integration\BulkExporter.cs" />

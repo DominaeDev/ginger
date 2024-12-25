@@ -1341,7 +1341,9 @@ Reason: {0}</value>
     <value>Successfully imported {0}.</value>
   </data>
   <data name="msg_link_confirm_import_many" xml:space="preserve">
-    <value>This will import {0} to Backyard AI. Continue?</value>
+    <value>This will import {0} to Backyard AI.
+
+Do you want to continue?</value>
   </data>
   <data name="msg_link_import_some_characters" xml:space="preserve">
     <value>Successfully imported {0}. (Skipped {1}.)</value>
@@ -1387,7 +1389,9 @@ Some models require specific prompt templates to function properly.</value>
     <value>Something went wrong when updating characters. Operation aborted.</value>
   </data>
   <data name="msg_link_confirm_update_many" xml:space="preserve">
-    <value>This will update {0} in Backyard AI. Continue?</value>
+    <value>This will update {0} in Backyard AI.
+
+Do you want to continue?</value>
   </data>
   <data name="msg_link_update_many_characters" xml:space="preserve">
     <value>Successfully updated {0}.</value>

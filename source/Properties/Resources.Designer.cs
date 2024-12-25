@@ -2575,7 +2575,9 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will import {0} to Backyard AI. Continue?.
+        ///   Looks up a localized string similar to This will import {0} to Backyard AI.
+        ///
+        ///Do you want to continue?.
         /// </summary>
         internal static string msg_link_confirm_import_many {
             get {
@@ -2595,7 +2597,9 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will update {0} in Backyard AI. Continue?.
+        ///   Looks up a localized string similar to This will update {0} in Backyard AI.
+        ///
+        ///Do you want to continue?.
         /// </summary>
         internal static string msg_link_confirm_update_many {
             get {
