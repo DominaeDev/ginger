@@ -966,7 +966,7 @@ Do you want to scrub the chat from here?</value>
     <value>Delete all chats for this character.</value>
   </data>
   <data name="tooltip_link_repair_chat" xml:space="preserve">
-    <value>Restore legacy chat logs from old versions of Backyard AI.</value>
+    <value>Repair legacy chats that were created in older versions of Backyard AI.</value>
   </data>
   <data name="tooltip_link_scrub_chat" xml:space="preserve">
     <value>Delete this message and any messages below it.</value>
@@ -1444,19 +1444,19 @@ Do you want to continue?</value>
   <data name="cap_link_purge_images" xml:space="preserve">
     <value>Clean Backyard AI image folder</value>
   </data>
-  <data name="msg_confirm_purge_images" xml:space="preserve">
-    <value>{0} unreferenced images found. Do you want to send them to the recycle bin?
+  <data name="msg_link_purge_images_confirm" xml:space="preserve">
+    <value>{0} image(s) found without any character references. Do you want to send them to the recycle bin?
 
-Caution: Depending on your system settings, the images MAY be permanently deleted!</value>
+CAUTION: Depending on your recycle bin settings, the images may get permanently deleted.</value>
   </data>
   <data name="msg_link_purge_images_not_found" xml:space="preserve">
     <value>No unreferenced images found.</value>
   </data>
   <data name="tooltip_link_purge_images" xml:space="preserve">
-    <value>Find and remove images from the Backyard AI images folder that are not referenced by any character.</value>
+    <value>Find and remove images from the Backyard AI image folder that are not referenced by any character.</value>
   </data>
   <data name="tooltip_link_repair_images" xml:space="preserve">
-    <value>Restore broken image references that may have occured after moving a Backyard AI installation to a new device or user.</value>
+    <value>Restore broken image references in Backyard AI, for example if you've moved the installation to a new device or user.</value>
   </data>
   <data name="backup_chat_v1_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Schemas\backup_chat_v1.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
@@ -1496,5 +1496,25 @@ Caution: Depending on your system settings, the images MAY be permanently delete
   </data>
   <data name="msg_link_repaired_images" xml:space="preserve">
     <value>{0} broken images found and repaired.</value>
+  </data>
+  <data name="cap_link_bulk_repair_chats" xml:space="preserve">
+    <value>Repair legacy chats</value>
+  </data>
+  <data name="error_link_bulk_repair_chats" xml:space="preserve">
+    <value>Something went wrong when updating chats. Operation aborted.</value>
+  </data>
+  <data name="msg_link_bulk_repair_chats" xml:space="preserve">
+    <value>Repaired {0} chats in {1} characters.</value>
+  </data>
+  <data name="msg_link_bulk_repair_chats_confirm" xml:space="preserve">
+    <value>This will attempt to find and repair any legacy chats in Backyard AI.
+
+Do you want to continue?</value>
+  </data>
+  <data name="msg_link_bulk_repair_chats_none" xml:space="preserve">
+    <value>No legacy chats found.</value>
+  </data>
+  <data name="animation" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\animation.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

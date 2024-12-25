@@ -15,6 +15,8 @@ namespace Ginger
 
 		private ImageRef _image = null;
 
+		public bool IsAnimation { get; set; }
+
 		public PortraitPreview()
 		{
 			InitializeComponent();
@@ -22,9 +24,9 @@ namespace Ginger
 			AllowDrop = true;
 		}
 
-		protected override void OnPaint(PaintEventArgs pe)
+		protected override void OnPaint(PaintEventArgs e)
 		{
-			base.OnPaint(pe);
+			base.OnPaint(e);
 
 			if (Image == null)
 			{
@@ -32,7 +34,12 @@ namespace Ginger
 				stringFormat.Alignment = StringAlignment.Center;
 				stringFormat.LineAlignment = StringAlignment.Center;
 
-				pe.Graphics.DrawString(Resources.msg_drop_image, Font, Brushes.White, ClientRectangle, stringFormat);
+				e.Graphics.DrawString(Resources.msg_drop_image, Font, Brushes.White, ClientRectangle, stringFormat);
+			}
+
+			if (IsAnimation)
+			{
+				e.Graphics.DrawImageUnscaled(Resources.animation, Width - 30, Height - 30);
 			}
 		}
 
@@ -72,11 +79,12 @@ namespace Ginger
 			});
 		}
 
-		public void SetImage(ImageRef image)
+		public void SetImage(ImageRef image, bool bAnimation = false)
 		{
 			if (image == _image)
 				return;
 			_image = image;
+			IsAnimation = _image != null && bAnimation;
 
 			// Clear existing image
 			if (this.Image != null)

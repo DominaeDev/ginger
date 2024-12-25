@@ -128,7 +128,7 @@ namespace Ginger
 			label_Lore_Value.Text = lastLoreCount.ToString();
 
 			// Portrait
-			portraitImage.SetImage(Current.Card.portraitImage);
+			portraitImage.SetImage(Current.Card.portraitImage, Current.Card.assets.HasMainPortraitOverride());
 
 			if (Current.Card.portraitImage != null)
 			{

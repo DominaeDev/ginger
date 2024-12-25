@@ -2579,7 +2579,7 @@ namespace Ginger
 
 			if (unknownImages.Count > 0)
 			{
-				var mr = MessageBox.Show(string.Format(Resources.msg_confirm_purge_images, unknownImages.Count), Resources.cap_link_purge_images, MessageBoxButtons.YesNo, MessageBoxIcon.Stop,  MessageBoxDefaultButton.Button2);
+				var mr = MessageBox.Show(string.Format(Resources.msg_link_purge_images_confirm, unknownImages.Count), Resources.cap_link_purge_images, MessageBoxButtons.YesNo, MessageBoxIcon.Stop,  MessageBoxDefaultButton.Button2);
 				
 				if (mr == DialogResult.Yes)
 				{
@@ -2645,6 +2645,77 @@ namespace Ginger
 
 			SetStatusBarMessage(Resources.status_link_update_model_settings, Constants.StatusBarMessageInterval);
 			return true;
+		}
+
+		private bool RepairLegacyChats()
+		{
+			// Refresh character list
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+			{
+				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_bulk_repair_chats, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				AppSettings.BackyardLink.Enabled = false;
+				return false;
+			}
+
+			var groups = Backyard.Groups.ToArray();
+
+			// Confirm
+			if (MessageBox.Show(Resources.msg_link_bulk_repair_chats_confirm, Resources.cap_link_bulk_repair_chats, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+				return false;
+
+			var updater = new LegacyChatUpdater();
+
+			var progressDlg = new ProgressBarDialog();
+			progressDlg.Message = "Repairing...";
+
+			progressDlg.onCancel += (s, e) => {
+				updater.Cancel();
+				progressDlg.Close();
+			};
+			updater.onProgress += (value) => {
+				progressDlg.Percentage = value;
+			};
+			updater.onComplete += (result) => {
+				progressDlg.Percentage = 100;
+				progressDlg.TopMost = false;
+				progressDlg.Close();
+
+				CompleteRepairLegacyChats(result);
+				_bCanRegenerate = true;
+				_bCanIdle = true;
+			};
+
+			updater.Enqueue(groups);
+
+			_bCanRegenerate = false;
+			_bCanIdle = false;
+			updater.Start();
+			progressDlg.ShowDialog(this);
+			return true;
+		}
+
+		private void CompleteRepairLegacyChats(LegacyChatUpdater.Result result)
+		{
+			if (result.error == LegacyChatUpdater.Error.NoError)
+			{
+				if (result.numCharacters > 0)
+				{
+					MessageBox.Show(this, string.Format(Resources.msg_link_bulk_repair_chats, result.numChats, result.numCharacters), Resources.cap_link_bulk_repair_chats, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				else
+				{
+					MessageBox.Show(this, Resources.msg_link_bulk_repair_chats_none, Resources.cap_link_bulk_repair_chats, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				
+			}
+			else if (result.error == LegacyChatUpdater.Error.Cancelled)
+			{
+				MessageBox.Show(this, Resources.error_canceled, Resources.cap_link_bulk_repair_chats, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				MessageBox.Show(this, Resources.error_link_bulk_repair_chats, Resources.cap_link_bulk_repair_chats, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 	}
 }

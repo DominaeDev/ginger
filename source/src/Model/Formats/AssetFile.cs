@@ -677,6 +677,11 @@ namespace Ginger
 			}
 		}
 
+		public bool HasMainPortraitOverride()
+		{
+			return GetMainPortraitOverride() != null;
+		}
+
 		public AssetFile GetMainPortraitOverride()
 		{
 			return this.FirstOrDefault(a => a.isMainPortraitOverride

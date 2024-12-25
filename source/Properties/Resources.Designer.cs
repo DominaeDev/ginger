@@ -182,6 +182,16 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap animation {
+            get {
+                object obj = ResourceManager.GetObject("animation", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap appicon {
             get {
                 object obj = ResourceManager.GetObject("appicon", resourceCulture);
@@ -510,6 +520,15 @@ namespace Ginger.Properties {
         internal static string cap_link_branch_chat {
             get {
                 return ResourceManager.GetString("cap_link_branch_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repair legacy chats.
+        /// </summary>
+        internal static string cap_link_bulk_repair_chats {
+            get {
+                return ResourceManager.GetString("cap_link_bulk_repair_chats", resourceCulture);
             }
         }
         
@@ -1483,6 +1502,15 @@ namespace Ginger.Properties {
         internal static string error_link_branch_chat {
             get {
                 return ResourceManager.GetString("error_link_branch_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Something went wrong when updating chats. Operation aborted..
+        /// </summary>
+        internal static string error_link_bulk_repair_chats {
+            get {
+                return ResourceManager.GetString("error_link_bulk_repair_chats", resourceCulture);
             }
         }
         
@@ -2489,17 +2517,6 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} unreferenced images found. Do you want to send them to the recycle bin?
-        ///
-        ///Caution: Depending on your system settings, the images MAY be permanently deleted!.
-        /// </summary>
-        internal static string msg_confirm_purge_images {
-            get {
-                return ResourceManager.GetString("msg_confirm_purge_images", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Dismiss changes?.
         /// </summary>
         internal static string msg_dismiss_changes {
@@ -2560,6 +2577,35 @@ namespace Ginger.Properties {
         internal static string msg_incremental_file_exists {
             get {
                 return ResourceManager.GetString("msg_incremental_file_exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repaired {0} chats in {1} characters..
+        /// </summary>
+        internal static string msg_link_bulk_repair_chats {
+            get {
+                return ResourceManager.GetString("msg_link_bulk_repair_chats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will attempt to find and repair any legacy chats in Backyard AI.
+        ///
+        ///Do you want to continue?.
+        /// </summary>
+        internal static string msg_link_bulk_repair_chats_confirm {
+            get {
+                return ResourceManager.GetString("msg_link_bulk_repair_chats_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No legacy chats found..
+        /// </summary>
+        internal static string msg_link_bulk_repair_chats_none {
+            get {
+                return ResourceManager.GetString("msg_link_bulk_repair_chats_none", resourceCulture);
             }
         }
         
@@ -2711,6 +2757,17 @@ namespace Ginger.Properties {
         internal static string msg_link_purge_chat {
             get {
                 return ResourceManager.GetString("msg_link_purge_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} image(s) found without any character references. Do you want to send them to the recycle bin?
+        ///
+        ///CAUTION: Depending on your recycle bin settings, the images may get permanently deleted..
+        /// </summary>
+        internal static string msg_link_purge_images_confirm {
+            get {
+                return ResourceManager.GetString("msg_link_purge_images_confirm", resourceCulture);
             }
         }
         
@@ -4596,7 +4653,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Find and remove images from the Backyard AI images folder that are not referenced by any character..
+        ///   Looks up a localized string similar to Find and remove images from the Backyard AI image folder that are not referenced by any character..
         /// </summary>
         internal static string tooltip_link_purge_images {
             get {
@@ -4614,7 +4671,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Restore legacy chat logs from old versions of Backyard AI..
+        ///   Looks up a localized string similar to Repair legacy chats that were created in older versions of Backyard AI..
         /// </summary>
         internal static string tooltip_link_repair_chat {
             get {
@@ -4623,7 +4680,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Restore broken image references that may have occured after moving a Backyard AI installation to a new device or user..
+        ///   Looks up a localized string similar to Restore broken image references in Backyard AI, for example if you&apos;ve moved the installation to a new device or user..
         /// </summary>
         internal static string tooltip_link_repair_images {
             get {

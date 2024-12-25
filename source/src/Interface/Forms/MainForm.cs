@@ -257,6 +257,7 @@ namespace Ginger
 			restoreBackupMenuItem.ToolTipText = Resources.tooltip_link_restore_backup;
 			repairBrokenImagesMenuItem.ToolTipText = Resources.tooltip_link_repair_images;
 			purgeUnusedImagesMenuItem.ToolTipText = Resources.tooltip_link_purge_images;
+			repairLegacyChatsMenuItem.ToolTipText = Resources.tooltip_link_repair_chat;
 
 			RegisterIdleHandler(recipeList);
 
@@ -2510,6 +2511,11 @@ namespace Ginger
 		private void editCurrentModelSettingsMenuItem_Click(object sender, EventArgs e)
 		{
 			EditCurrentModelSettings();
+		}
+
+		private void repairLegacyChatsMenuItem_Click(object sender, EventArgs e)
+		{
+			RepairLegacyChats();
 		}
 	}
 

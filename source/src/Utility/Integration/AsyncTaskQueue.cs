@@ -221,7 +221,7 @@ namespace Ginger
 
 	public abstract class AsyncTask<TWorker,A,R> where TWorker : IAsyncTask<A,R>, new()
 	{
-		private TWorker _worker;
+		protected TWorker _worker;
 		private AsyncTaskQueue<A, R> _queue;
 
 		protected struct AsyncResult
@@ -251,6 +251,11 @@ namespace Ginger
 
 		protected abstract void Progress(int percent);
 		protected abstract void Completed(AsyncResult result);
+
+		public virtual void Enqueue(A args)
+        {
+            _queue.Enqueue(args);
+        }
 
 		public virtual void Enqueue(IEnumerable<A> args)
         {

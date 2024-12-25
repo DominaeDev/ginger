@@ -488,6 +488,7 @@
     <Compile Include="src\Utility\Integration\BackupUtil.cs" />
     <Compile Include="src\Utility\Integration\Backyard.cs" />
     <Compile Include="src\Utility\Integration\ModelInfo.cs" />
+    <Compile Include="src\Utility\Integration\LegacyChatUpdater.cs" />
     <Compile Include="src\Utility\Measurement.cs" />
     <Compile Include="src\Utility\Random\RandomNoise.cs" />
     <Compile Include="src\Utility\ReplaceWord.cs" />
@@ -956,21 +957,6 @@
     <None Include="Resources\Recipes\Other\group_greeting_recipe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Icons\link_active.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\link_broken.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\link_connected.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\link_disconnected.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\link_inactive.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Schemas\cai_chat_v2_schema.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -1099,6 +1085,7 @@
     <None Include="Resources\Icons\Dark\dark_link_inactive.png" />
     <None Include="Resources\Icons\Dark\dark_embedded_assets.png" />
     <None Include="Resources\Icons\Dark\dark_menu_embedded_assets.png" />
+    <None Include="Resources\Icons\animation.png" />
     <Content Include="Resources\Icons\Light\arrow_down.png" />
     <Content Include="Resources\Icons\Light\arrow_left.png" />
     <Content Include="Resources\Icons\Light\arrow_right.png" />
