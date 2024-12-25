@@ -700,18 +700,23 @@ namespace Ginger
 				return false;
 			}
 
+			int width, height;
+			Utility.GetImageDimensions(bytes, out width, out height);
+
 			// Remove existing
 			this.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
 			int idxExisting = this.FindIndex(a => a.isMainPortraitOverride);
 			if (idxExisting != -1)
 				this.RemoveAt(idxExisting);
-
+			
 			// Add new asset
 			asset = new AssetFile() {
 				name = AssetFile.MainAssetName,
 				uriType = AssetFile.UriType.Embedded,
 				assetType = AssetFile.AssetType.Icon,
 				data = AssetData.FromBytes(bytes),
+				knownWidth = width,
+				knownHeight = height,
 				ext = ext,
 			};
 			this.Insert(0, asset);

@@ -4641,9 +4641,9 @@ namespace Ginger.Integration
 					{
 						existingPortrait = imageInstances.FirstOrDefault(kvp => string.Compare(Path.GetFileName(kvp.imageUrl), imageLinks[idxPortraitLink].filename, StringComparison.InvariantCultureIgnoreCase) == 0);
 						portraitUID = mainPortraitAsset.uid;
+						assets.Remove(mainPortraitAsset);
 					}
 				}
-				assets.Remove(mainPortraitAsset);
 			}
 			
 			if (portraitUID == null)
@@ -4675,6 +4675,23 @@ namespace Ginger.Integration
 				});
 
 				lsImageLinks.Add(imageLinks[idxPortraitLink]);
+			}
+			else if (mainPortraitAsset != null)
+			{
+				var filename = Utility.CreateRandomFilename(mainPortraitAsset.ext);
+
+				results.Add(new ImageOutput() {
+					instanceId = Cuid.NewCuid(),
+					imageUrl = Path.Combine(destPath, filename),
+					data = mainPortraitAsset.data,
+					width = mainPortraitAsset.knownWidth,
+					height = mainPortraitAsset.knownHeight,
+				});
+				lsImageLinks.Add(new Link.Image() {
+					uid = mainPortraitAsset.uid,
+					filename = filename,
+				});
+				assets.Remove(mainPortraitAsset);
 			}
 			else
 			{

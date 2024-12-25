@@ -2517,9 +2517,20 @@ namespace Ginger
 				MessageBox.Show(Resources.error_link_repair_images, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
-			
+
 			// Success
-			MessageBox.Show(string.Format(Resources.msg_link_repaired_images, modified, skipped), Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			if (skipped > 0)
+			{
+				MessageBox.Show(string.Format(Resources.msg_link_repaired_images_skipped, modified, skipped), Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else if (modified > 0)
+			{
+				MessageBox.Show(string.Format(Resources.msg_link_repaired_images, modified), Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else
+			{
+				MessageBox.Show(string.Format(Resources.msg_link_no_images_repaired, modified), Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
 		}
 
 		private void PurgeUnusedImages()

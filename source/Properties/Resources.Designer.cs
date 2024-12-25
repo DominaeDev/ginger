@@ -2691,7 +2691,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No broken images were found..
+        ///   Looks up a localized string similar to No broken images found..
         /// </summary>
         internal static string msg_link_no_images_repaired {
             get {
@@ -2711,7 +2711,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No unreferenced images were found..
+        ///   Looks up a localized string similar to No unreferenced images found..
         /// </summary>
         internal static string msg_link_purge_images_not_found {
             get {
@@ -2760,11 +2760,21 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} broken images found and repaired. ({1} skipped.).
+        ///   Looks up a localized string similar to {0} broken images found and repaired..
         /// </summary>
         internal static string msg_link_repaired_images {
             get {
                 return ResourceManager.GetString("msg_link_repaired_images", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Found and repaired {0} broken images.
+        ///Skipped {1} images that couldn&apos;t be repaired..
+        /// </summary>
+        internal static string msg_link_repaired_images_skipped {
+            get {
+                return ResourceManager.GetString("msg_link_repaired_images_skipped", resourceCulture);
             }
         }
         
