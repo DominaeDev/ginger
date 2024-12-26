@@ -1866,6 +1866,27 @@ namespace Ginger
 				ext = ext.Substring(1);
 			return lowercase ? ext.ToLowerInvariant() : ext;
 		}
+
+		public static string GetSubpath(string parentPath, string filename)
+		{
+			if (string.IsNullOrEmpty(parentPath) || string.IsNullOrEmpty(filename))
+				return null;
+
+			if (filename.BeginsWith(parentPath, true) == false)
+				return null;
+
+			string subpath = Path.GetDirectoryName(filename).Substring(parentPath.Length);
+			if (subpath.BeginsWith('\\') || subpath.BeginsWith('/'))
+				subpath = subpath.Substring(1);
+			return subpath;
+		}
+
+		public static string[] SplitPath(string path)
+		{
+			return path.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries)
+				.Select(s => s.Trim())
+				.ToArray();
+		}
 	}
 
 }

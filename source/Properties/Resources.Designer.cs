@@ -2601,7 +2601,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No legacy chats found..
+        ///   Looks up a localized string similar to No legacy chats found. Everything is OK..
         /// </summary>
         internal static string msg_link_bulk_repair_chats_none {
             get {
@@ -2741,7 +2741,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No broken images found..
+        ///   Looks up a localized string similar to No broken images found. Everything is OK..
         /// </summary>
         internal static string msg_link_no_images_repaired {
             get {

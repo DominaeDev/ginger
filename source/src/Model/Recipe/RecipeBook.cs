@@ -113,17 +113,9 @@ namespace Ginger
 		public static IEnumerable<Recipe> allRecipes { get { return recipes; } }
 		public static IEnumerable<RecipePreset> allPresets { get { return presets; } }
 
-		private static string[] SplitPath(string path)
-		{
-			return path.Split(new char[] { '/' })
-				.Select(s => s.Trim())
-				.Where(s => s.Length > 0)
-				.ToArray();
-		}
-
 		public static string[] GetFolders(string root, Recipe.Drawer drawer)
 		{
-			string[] path = SplitPath(root);
+			string[] path = Utility.SplitPath(root);
 
 			Func<string[], string[], bool> fnBeginsWith = (r, sub) => {
 				if (r.Length >= sub.Length)
@@ -160,7 +152,7 @@ namespace Ginger
 
 		public static int[] GetRecipes(string root, Recipe.Drawer drawer)
 		{
-			string[] path = SplitPath(root);
+			string[] path = Utility.SplitPath(root);
 
 			Func<string[], string[], bool> fnExact = (a, b) => {
 				if (a.Length != b.Length)
@@ -199,7 +191,7 @@ namespace Ginger
 
 		public static string[] GetPresetFolders(string root)
 		{
-			string[] path = SplitPath(root);
+			string[] path = Utility.SplitPath(root);
 
 			Func<string[], string[], bool> fnBeginsWith = (r, sub) => {
 				if (r.Length >= sub.Length)
@@ -224,7 +216,7 @@ namespace Ginger
 
 		public static string[] GetPresets(string root)
 		{
-			string[] path = SplitPath(root);
+			string[] path = Utility.SplitPath(root);
 
 			Func<string[], string[], bool> fnExact = (a, b) => {
 				if (a.Length != b.Length)

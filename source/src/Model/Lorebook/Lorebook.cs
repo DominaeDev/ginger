@@ -15,6 +15,7 @@ namespace Ginger
 		public List<Entry> entries = new List<Entry>();
 		public string filename;
 		public UnusedProperties unused = null;
+		public string[] paths;
 
 		public enum Sorting
 		{

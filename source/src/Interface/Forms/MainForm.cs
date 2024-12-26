@@ -579,6 +579,29 @@ namespace Ginger
 				return;
 			}*/
 
+			if (drawer == Recipe.Drawer.Lore)
+			{
+				var newLorebookItem = new ToolStripMenuItem("New lorebook");
+				newLorebookItem.Click += (s, e) => {
+					var book = new Lorebook();
+					book.entries.Add(new Lorebook.Entry());
+					recipeList.AddLorebook(book);
+				};
+				items.Add(newLorebookItem);
+				var importItem = new ToolStripMenuItem("Load from file...");
+				importItem.Click += (s, e) => {
+					ImportLorebook(false);
+				};
+				items.Add(importItem);
+
+				if (Lorebooks.books.Count > 0)
+				{
+					items.Add(new ToolStripSeparator());
+					PopulateLorebookMenu(items, context);
+				}
+				return;
+			}
+
 			if (drawer == Recipe.Drawer.Snippets && string.IsNullOrEmpty(root))
 			{
 				var newSnippetItem = new ToolStripMenuItem("New snippet...");
@@ -648,60 +671,76 @@ namespace Ginger
 
 			lsRecipes = lsRecipes.OrderBy(r => r.order).ToList();
 
-			// Lorebooks
-			if (drawer == Recipe.Drawer.Lore && string.IsNullOrEmpty(root))
+			// Add folder items
+			items.AddRange(lsFolders.Select(c => c.menuItem).ToArray());
+			if (lsFolders.Count > 0 && lsRecipes.Count > 0)
+				items.Add(new ToolStripSeparator());
+
+			AddMenuItemsInGroups(items, lsRecipes);
+		}
+
+		public void PopulateLorebookMenu(ToolStripItemCollection items, Context context, string root = "")
+		{
+			var folders = Lorebooks.GetFolders(root);
+			var lorebooks = Lorebooks.GetLorebooksInFolder(root);
+
+			var lsFolders = new List<RecipeMenuItem>();
+			var lsLorebooks = new List<RecipeMenuItem>();
+
+			// Folders
+			foreach (var folder in folders)
 			{
-				var newLorebookItem = new ToolStripMenuItem("New lorebook");
-				newLorebookItem.Click += (s, e) => {
-					var book = new Lorebook();
-					book.entries.Add(new Lorebook.Entry());
-					recipeList.AddLorebook(book);
-				};
-				items.Add(newLorebookItem);
+				var menuItem = new ToolStripMenuItem();
+				menuItem.Image = Theme.Current.MenuFolder;
+				menuItem.Text = Utility.EscapeMenu(folder);
 
-				var importItem = new ToolStripMenuItem("Load from file...");
-				importItem.Click += (s, e) => {
-					ImportLorebook(false);
-				};
-				items.Add(importItem);
-				if (Lorebooks.books.Count > 0)
-				{
-					items.Add(new ToolStripSeparator());
+				if (string.IsNullOrEmpty(root))
+					PopulateLorebookMenu(menuItem.DropDownItems, context, folder);
+				else
+					PopulateLorebookMenu(menuItem.DropDownItems, context, string.Concat(root, "/", folder));
 
-					foreach (var book in Lorebooks.books.OrderBy(b => b.name))
-					{
-						var menuItem = new ToolStripMenuItem();
-						menuItem.Text = Utility.EscapeMenu(book.name);
-						menuItem.Image = Theme.Current.MenuLore;
-						menuItem.Click += (s, e) => {
-							recipeList.AddLorebook(book);
-						};
-						lsRecipes.Add(new RecipeMenuItem(menuItem));
-					}
-				}
+				lsFolders.Add(new RecipeMenuItem(menuItem));
 			}
 
-			// Add category items
+			foreach (var book in lorebooks)
+			{
+				var menuItem = new ToolStripMenuItem();
+				menuItem.Text = Utility.EscapeMenu(book.name);
+				menuItem.Image = Theme.Current.MenuLore;
+				menuItem.Click += (s, e) => {
+					recipeList.AddLorebook(book);
+				};
+				lsLorebooks.Add(new RecipeMenuItem(menuItem));
+			}
+
+			lsLorebooks = lsLorebooks.OrderBy(r => r.order).ToList();
+
+			// Add folder items
 			items.AddRange(lsFolders.Select(c => c.menuItem).ToArray());
-			if (folders.Length > 0 && recipesByUID.Length > 0)
-				items.Add("-");
+			if (lsFolders.Count > 0 && lsLorebooks.Count > 0)
+				items.Add(new ToolStripSeparator());
 
 			// Split into groups
-			if (lsRecipes.Count >= Constants.Drawer.SplitMenuAfter)
+			AddMenuItemsInGroups(items, lsLorebooks);
+		}
+
+		private static void AddMenuItemsInGroups(ToolStripItemCollection items, List<RecipeMenuItem> lsMenuItems)
+		{
+			if (lsMenuItems.Count >= Constants.Drawer.SplitMenuAfter)
 			{
-				int numPartitions = lsRecipes.Count / Constants.Drawer.RecipesPerSplit;
-				if (lsRecipes.Count % Constants.Drawer.RecipesPerSplit != 0)
+				int numPartitions = lsMenuItems.Count / Constants.Drawer.RecipesPerSplit;
+				if (lsMenuItems.Count % Constants.Drawer.RecipesPerSplit != 0)
 					numPartitions++;
 
 				int perPartition = Constants.Drawer.RecipesPerSplit;
 
 				var partitions = new List<List<RecipeMenuItem>>();
 				int n = 0;
-				for (int i = 0; i < numPartitions && n < lsRecipes.Count; ++i)
+				for (int i = 0; i < numPartitions && n < lsMenuItems.Count; ++i)
 				{
 					partitions.Add(new List<RecipeMenuItem>());
-					for (int j = 0; j < perPartition && n < lsRecipes.Count; ++j)
-						partitions[i].Add(lsRecipes[n++]);
+					for (int j = 0; j < perPartition && n < lsMenuItems.Count; ++j)
+						partitions[i].Add(lsMenuItems[n++]);
 				}
 
 				for (int i = 0; i < partitions.Count; ++i)
@@ -720,7 +759,7 @@ namespace Ginger
 						letterZ = 'Z';
 
 					var menuItem = new ToolStripMenuItem(string.Format("{0} - {1}", char.ToUpper(letterA), char.ToUpper(letterZ)));
-				
+
 					var recipeGroups = partition
 						.GroupBy(r => r.order / 10)
 						.Select(g => new {
@@ -740,7 +779,7 @@ namespace Ginger
 			}
 			else
 			{
-				var recipeGroups = lsRecipes
+				var recipeGroups = lsMenuItems
 					.GroupBy(r => r.order / 10)
 					.Select(g => new {
 						group = g.Key,
@@ -781,13 +820,15 @@ namespace Ginger
 
 				if (recipeTemplate.order >= 10 && bSeparator == false)
 				{
-					items.Add("-");
+					items.Add(new ToolStripSeparator());
 					bSeparator = true;
 				}
 
 				items.Add(menuItem);
 			}
 		}
+
+		
 
 		private void AddRecipe(RecipeTemplate recipeTemplate)
 		{
@@ -1203,7 +1244,7 @@ namespace Ginger
 
 			// Separator
 			if (folders.Length > 0 && presets.Length > 0)
-				items.Add("-");
+				items.Add(new ToolStripSeparator());
 
 			// Categories
 			foreach (var folder in folders)
@@ -1359,7 +1400,7 @@ namespace Ginger
 			}
 			if (MRUList.mruItems.Count > 0)
 			{
-				items.Add("-");
+				items.Add(new ToolStripSeparator());
 
 				var menuItem = new ToolStripMenuItem("Clear list");
 				menuItem.ToolTipText = Resources.tooltip_clear_mru;
@@ -1419,7 +1460,7 @@ namespace Ginger
 			}
 
 			// Add new
-			items.Add("-");
+			items.Add(new ToolStripSeparator());
 			var addActor = new ToolStripMenuItem("Add actor");
 			addActor.Click += AddSupportingCharacterMenuItem_Click;
 			items.Add(addActor);
