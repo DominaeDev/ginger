@@ -1079,7 +1079,7 @@ namespace Ginger
 				Current.Filename = filename;
 				RefreshTitle();
 
-				MRUList.AddToMRU(filename, Current.Card.name);
+				MRUList.AddCurrent();
 
 				SetStatusBarMessage(Resources.status_file_save, Constants.StatusBarMessageInterval);
 

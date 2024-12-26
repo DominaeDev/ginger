@@ -261,6 +261,7 @@ namespace Ginger
 			if (card == null)
 				return false;
 
+			Reset();
 			Instance.ReadGingerCard(card, portrait);
 			Link = card.backyardLinkInfo;
 			return true;
@@ -271,6 +272,7 @@ namespace Ginger
 			if (card == null)
 				return false;
 
+			Reset();
 			Instance.ReadFaradayCard(card, portrait);
 			Instance.ConvertCharacterMarkers(Name, Card.userPlaceholder);
 			return true;
@@ -281,7 +283,7 @@ namespace Ginger
 			if (card == null)
 				return false;
 
-
+			Reset();
 			Instance.ReadTavernCard(card, portrait);
 			Instance.ConvertCharacterMarkers(Name, Card.userPlaceholder);
 			return true;
@@ -292,6 +294,7 @@ namespace Ginger
 			if (card == null)
 				return false;
 
+			Reset();
 			Instance.ReadTavernCard(card, portrait);
 			Instance.ConvertCharacterMarkers(Name, Card.userPlaceholder);
 			return true;
@@ -302,6 +305,7 @@ namespace Ginger
 			if (card == null)
 				return false;
 
+			Reset();
 			Instance.ReadAgnaisticCard(card);
 			Instance.ConvertCharacterMarkers(Name, Card.userPlaceholder);
 			return true;
@@ -312,6 +316,7 @@ namespace Ginger
 			if (card == null)
 				return false;
 
+			Reset();
 			Instance.ReadPygmalionCard(card);
 			Instance.ConvertCharacterMarkers(Name, Card.userPlaceholder);
 			return true;
@@ -322,6 +327,7 @@ namespace Ginger
 			if (card == null)
 				return false;
 
+			Reset();
 			Instance.ReadTextGenWebUICard(card);
 			Instance.ConvertCharacterMarkers(Name, Card.userPlaceholder);
 			return true;

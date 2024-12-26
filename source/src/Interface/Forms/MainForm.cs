@@ -1047,7 +1047,7 @@ namespace Ginger
 
 				Current.Filename = filename;
 
-				MRUList.AddToMRU(filename, Current.Card.name);
+				MRUList.AddCurrent();
 			}
 			else
 			{

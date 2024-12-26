@@ -15,12 +15,26 @@ namespace Ginger
 		public static Queue<MRUItem> mruItems = new Queue<MRUItem>();
 		public static int MaxCount = 30;
 
-		public static void AddToMRU(string filename, string characterName)
+		public static void AddCurrent()
 		{
+			if (string.IsNullOrEmpty(Current.Filename))
+				return;
+
+			AddToMRU(Current.Filename, Current.Card.name, Current.HasActiveLink);
+		}
+
+		public static void AddToMRU(string filename, string characterName, bool hasLink = false)
+		{
+			if (string.IsNullOrEmpty(filename))
+				return; // Error
+
 			if (string.IsNullOrEmpty(characterName))
 				characterName = Path.GetFileNameWithoutExtension(filename);
 
 			RemoveFromMRU(filename);
+
+			if (hasLink)
+				characterName = string.Concat("(Linked) ", characterName);
 
 			mruItems.Enqueue(new MRUItem() {
 				filename = filename,

@@ -280,7 +280,7 @@ namespace Ginger {
 			// 
 			this.breakLinkMenuItem.Name = "breakLinkMenuItem";
 			this.breakLinkMenuItem.Size = new System.Drawing.Size(198, 22);
-			this.breakLinkMenuItem.Text = "Break character link";
+			this.breakLinkMenuItem.Text = "Unlink character";
 			this.breakLinkMenuItem.Click += new System.EventHandler(this.breakLinkMenuItem_Click);
 			// 
 			// themeMenuItem
@@ -1588,21 +1588,21 @@ namespace Ginger {
 			// applyToLastChatMenuItem
 			// 
 			this.applyToLastChatMenuItem.Name = "applyToLastChatMenuItem";
-			this.applyToLastChatMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.applyToLastChatMenuItem.Size = new System.Drawing.Size(163, 22);
 			this.applyToLastChatMenuItem.Text = "Most recent chat";
 			this.applyToLastChatMenuItem.Click += new System.EventHandler(this.applyToLastChatMenuItem_Click);
 			// 
 			// applyToFirstChatMenuItem
 			// 
 			this.applyToFirstChatMenuItem.Name = "applyToFirstChatMenuItem";
-			this.applyToFirstChatMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.applyToFirstChatMenuItem.Size = new System.Drawing.Size(163, 22);
 			this.applyToFirstChatMenuItem.Text = "Oldest chat";
 			this.applyToFirstChatMenuItem.Click += new System.EventHandler(this.applyToFirstChatMenuItem_Click);
 			// 
 			// applyToAllChatsMenuItem
 			// 
 			this.applyToAllChatsMenuItem.Name = "applyToAllChatsMenuItem";
-			this.applyToAllChatsMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.applyToAllChatsMenuItem.Size = new System.Drawing.Size(163, 22);
 			this.applyToAllChatsMenuItem.Text = "All chats";
 			this.applyToAllChatsMenuItem.Click += new System.EventHandler(this.applyToAllChatsMenuItem_Click);
 			// 
