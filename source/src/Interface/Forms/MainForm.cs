@@ -258,6 +258,7 @@ namespace Ginger
 			repairBrokenImagesMenuItem.ToolTipText = Resources.tooltip_link_repair_images;
 			purgeUnusedImagesMenuItem.ToolTipText = Resources.tooltip_link_purge_images;
 			repairLegacyChatsMenuItem.ToolTipText = Resources.tooltip_link_repair_chat;
+			writeAuthorNoteMenuItem.ToolTipText = Resources.tooltip_link_author_note;
 
 			RegisterIdleHandler(recipeList);
 
@@ -567,7 +568,7 @@ namespace Ginger
 			var lsFolders = new List<RecipeMenuItem>();
 			var lsRecipes = new List<RecipeMenuItem>();
 
-			if (drawer == Recipe.Drawer.Components)
+/*			if (drawer == Recipe.Drawer.Components)
 			{
 				PopulateComponentMenu("", items, context);
 
@@ -576,7 +577,7 @@ namespace Ginger
 				PopulateComponentMenu("Other", otherFolder.DropDownItems, context);
 				items.Add(otherFolder);
 				return;
-			}
+			}*/
 
 			if (drawer == Recipe.Drawer.Snippets && string.IsNullOrEmpty(root))
 			{
@@ -685,7 +686,7 @@ namespace Ginger
 			if (folders.Length > 0 && recipesByUID.Length > 0)
 				items.Add("-");
 
-			// Split into groups?
+			// Split into groups
 			if (lsRecipes.Count >= Constants.Drawer.SplitMenuAfter)
 			{
 				int numPartitions = lsRecipes.Count / Constants.Drawer.RecipesPerSplit;
@@ -1338,6 +1339,7 @@ namespace Ginger
 			enableAutosaveMenuItem.Checked = AppSettings.BackyardLink.Autosave;
 			usePortraitAsBackgroundMenuItem.Checked = AppSettings.BackyardLink.UsePortraitAsBackground;
 			importAltGreetingsMenuItem.Checked = AppSettings.BackyardLink.ImportAlternateGreetings;
+			writeAuthorNoteMenuItem.Checked = AppSettings.BackyardLink.WriteAuthorNote;
 
 
 			Theme.Apply(menuStrip);
@@ -2516,6 +2518,11 @@ namespace Ginger
 		private void repairLegacyChatsMenuItem_Click(object sender, EventArgs e)
 		{
 			RepairLegacyChats();
+		}
+
+		private void writeAuthorNoteMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.BackyardLink.WriteAuthorNote = !AppSettings.BackyardLink.WriteAuthorNote;
 		}
 	}
 

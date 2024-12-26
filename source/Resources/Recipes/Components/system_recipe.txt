@@ -1,6 +1,6 @@
 <Ginger id="__system">
 	<Name>Model instructions</Name>
-	<Order>5</Order>
+	<Order>100</Order>
 	<Color>#bfd0db</Color>
 	<Multiple>True</Multiple>
 	<Requires>not __actor</Requires>
@@ -9,7 +9,15 @@
 	<!-- Parameters -->
 	<Text id="system" style="component">
 		<Label>Instructions</Label>
+		<Description>Instructions to the model. Not meant for character descriptions.</Description>
 	</Text>
 	
-	<System>{system:local}</System>
+	<Toggle id="important">
+		<Label>Vital</Label>
+		<Default>no</Default>
+		<Description>Mark this as important, to be given more attention than other instructions.</Description>
+	</Toggle>
+	
+	<System important="false" rule="not important">{system}</System>
+	<System important="true" rule="important">{system}</System>
 </Ginger>

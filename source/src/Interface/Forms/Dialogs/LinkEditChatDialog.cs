@@ -414,9 +414,13 @@ namespace Ginger
 			// Fetch latest chat settings
 			ChatInstance latestChat;
 			if (ConfirmChatExists(_groupInstance.instanceId, out latestChat))
+			{
 				args.parameters = latestChat.parameters;
+				args.staging = latestChat.staging;
+			}
 			else
 				args.parameters = AppSettings.BackyardSettings.UserSettings;
+
 
 			ChatInstance chatInstance = null;
 			var error = RunTask(() => Backyard.CreateNewChat(args, _groupInstance.instanceId, out chatInstance), "Creating chat...");

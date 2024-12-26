@@ -228,6 +228,7 @@ namespace Ginger
 
 			public static bool PruneExampleChat = true;
 			public static bool MarkNSFW = true;
+			public static bool WriteAuthorNote = false;
 			public static string AuthorNote = null;
 		}
 
@@ -359,6 +360,7 @@ namespace Ginger
 				ReadString(ref BackyardLink.BulkImportFolderName, linkSection, "BulkImportFolderName");
 				ReadBool(ref BackyardLink.PruneExampleChat, linkSection, "PruneExampleChat");
 				ReadBool(ref BackyardLink.MarkNSFW, linkSection, "MarkNSFW");
+				ReadBool(ref BackyardLink.WriteAuthorNote, linkSection, "WriteAuthorNote");
 				ReadBool(ref BackyardLink.ImportAlternateGreetings, linkSection, "ImportAlternateGreetings");
 				ReadString(ref BackyardLink.AuthorNote, linkSection, "AuthorNote");
 			}
@@ -523,6 +525,7 @@ namespace Ginger
 					Write(outputFile, "BulkImportFolderName", BackyardLink.BulkImportFolderName);
 					Write(outputFile, "PruneExampleChat", BackyardLink.PruneExampleChat);
 					Write(outputFile, "MarkNSFW", BackyardLink.MarkNSFW);
+					Write(outputFile, "WriteAuthorNote", BackyardLink.WriteAuthorNote);
 					Write(outputFile, "ImportAlternateGreetings", BackyardLink.ImportAlternateGreetings);
 					Write(outputFile, "AuthorNote", BackyardLink.AuthorNote);
 

@@ -84,17 +84,14 @@ namespace Ginger
 
 			if (string.IsNullOrEmpty(outputSystem) == false)
 			{
-				if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
-					sbOutput.AppendLine(Header("MODEL INSTRUCTIONS"));
-				else
-					sbOutput.AppendLine(Header("SYSTEM PROMPT"));
+				sbOutput.AppendLine(Header("MODEL INSTRUCTIONS"));
 				sbOutput.AppendLine();
 				sbOutput.AppendLine(outputSystem);
 				sbOutput.AppendLine();
 			}
 			if (string.IsNullOrEmpty(outputSystemPostHistory) == false)
 			{
-				sbOutput.AppendLine(Header("POST HISTORY INSTRUCTIONS"));
+				sbOutput.AppendLine(Header("MODEL INSTRUCTIONS (VITAL)"));
 				sbOutput.AppendLine();
 				sbOutput.AppendLine(outputSystemPostHistory);
 				sbOutput.AppendLine();

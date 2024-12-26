@@ -1,8 +1,8 @@
 ﻿<Ginger id="__attribute" version="1.0">
-	<Name>Other/Custom attribute</Name>
+	<Name>Custom attribute</Name>
 	<Title>Custom attribute</Title>
 	<Description>Add a custom character attribute</Description>
-	<Order>10</Order>
+	<Order>500</Order>
 	<Color>#fefefe</Color>
 	<Multiple>Yes</Multiple>
 	<Flags>__component, __internal</Flags>

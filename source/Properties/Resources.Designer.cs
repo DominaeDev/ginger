@@ -241,10 +241,10 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__attribute&quot; version=&quot;1.0&quot;&gt;
-        ///	&lt;Name&gt;Other/Custom attribute&lt;/Name&gt;
+        ///	&lt;Name&gt;Custom attribute&lt;/Name&gt;
         ///	&lt;Title&gt;Custom attribute&lt;/Title&gt;
         ///	&lt;Description&gt;Add a custom character attribute&lt;/Description&gt;
-        ///	&lt;Order&gt;10&lt;/Order&gt;
+        ///	&lt;Order&gt;500&lt;/Order&gt;
         ///	&lt;Color&gt;#fefefe&lt;/Color&gt;
         ///	&lt;Multiple&gt;Yes&lt;/Multiple&gt;
         ///	&lt;Flags&gt;__component, __internal&lt;/Flags&gt;
@@ -254,7 +254,8 @@ namespace Ginger.Properties {
         ///		&lt;Description&gt;Attribute name. (E.g., Personality, Appearance, Likes, Dislikes, ...)&lt;/Description&gt;
         ///	&lt;/Text&gt;
         ///	&lt;Text id=&quot;text-value&quot; rule=&quot;type:local is text&quot;&gt;
-        ///		&lt;Label&gt;Value&lt;/Lab [rest of string was truncated]&quot;;.
+        ///		&lt;Label&gt;Value&lt;/Label&gt;
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string attribute_recipe {
             get {
@@ -2225,13 +2226,13 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__grammar&quot;&gt;
-        ///	&lt;Name&gt;Other/Grammar&lt;/Name&gt;
+        ///	&lt;Name&gt;Grammar&lt;/Name&gt;
         ///	&lt;Description&gt;
         ///		Custom grammar definition.
         ///		(Only supported in Backyard AI)
         ///	&lt;/Description&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
-        ///	&lt;Order&gt;3&lt;/Order&gt;
+        ///	&lt;Order&gt;103&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;grammar, __grammar, __component, __internal&lt;/Flags&gt;
@@ -2242,7 +2243,7 @@ namespace Ginger.Properties {
         ///text ::= [[a-zA-Z0-9,.?!&quot; &apos;:;\n]]+]]&gt;&lt;/Default&gt;
         ///		&lt;/Text&gt;
         ///
-        ///	&lt;Grammar&gt;{gra [rest of string was truncated]&quot;;.
+        ///	&lt;Grammar&gt;{grammar [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string grammar_recipe {
             get {
@@ -2261,7 +2262,7 @@ namespace Ginger.Properties {
         ///	
         ///	&lt;!-- Parameters --&gt;
         ///	&lt;Text id=&quot;greeting&quot; style=&quot;component&quot;&gt;
-        ///		&lt;Label&gt;Message&lt;/Label&gt;
+        ///		&lt;Label&gt;First message&lt;/Label&gt;
         ///	&lt;/Text&gt;
         ///	
         ///	&lt;Greeting&gt;{greeting:local}&lt;/Greeting&gt;
@@ -2275,24 +2276,23 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__group-greeting&quot;&gt;
-        ///	&lt;Name&gt;Other/Greeting (Group only)&lt;/Name&gt;
+        ///	&lt;Name&gt;Greeting (Group only)&lt;/Name&gt;
         ///	&lt;Title&gt;Greeting (Group only)&lt;/Title&gt;
         ///	&lt;Description&gt;
         ///		Greeting for group chats.
         ///	&lt;/Description&gt;
         ///	&lt;Color&gt;FloralWhite&lt;/Color&gt;
-        ///	&lt;Order&gt;2&lt;/Order&gt;
+        ///	&lt;Order&gt;102&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;__group-greeting, __component, __internal, __ccv3&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
         ///	&lt;Text id=&quot;greeting&quot; style=&quot;component&quot;&gt;
-        ///		&lt;Label&gt;Message&lt;/Label&gt;
+        ///		&lt;Label&gt;First message&lt;/Label&gt;
         ///	&lt;/Text&gt;
         ///	
-        ///	&lt;Greeting group=&quot;true&quot;&gt;{greeting:local}&lt;/Greeting&gt;
-        /// [rest of string was truncated]&quot;;.
+        ///	&lt;Greeting group=&quot;true&quot;&gt;{greeting:local}&lt;/Greeting&gt; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string group_greeting_recipe {
             get {
@@ -3074,7 +3074,7 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__persona&quot;&gt;
-        ///	&lt;Name&gt;Character persona&lt;/Name&gt;
+        ///	&lt;Name&gt;Persona&lt;/Name&gt;
         ///	&lt;Order&gt;0&lt;/Order&gt;
         ///	&lt;Color&gt;HoneyDew&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
@@ -3082,7 +3082,7 @@ namespace Ginger.Properties {
         ///	
         ///	&lt;!-- Parameters --&gt;
         ///	&lt;Text id=&quot;persona&quot; style=&quot;component&quot;&gt;
-        ///		&lt;Label&gt;Description&lt;/Label&gt;
+        ///		&lt;Label&gt;Character description&lt;/Label&gt;
         ///	&lt;/Text&gt;
         ///	
         ///	&lt;Persona&gt;{persona:local}&lt;/Persona&gt;
@@ -3106,13 +3106,13 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__personality&quot;&gt;
-        ///	&lt;Name&gt;Other/Personality summary&lt;/Name&gt;
+        ///	&lt;Name&gt;Personality summary&lt;/Name&gt;
         ///	&lt;Title&gt;Personality summary&lt;/Title&gt;
         ///	&lt;Description&gt;
         ///		This is equivalent to the &quot;Personality summary&quot; field in SillyTavern.
         ///		(Used for compatibility)
         ///	&lt;/Description&gt;
-        ///	&lt;Order&gt;0&lt;/Order&gt;
+        ///	&lt;Order&gt;100&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Flags&gt;persona, __personality, __component, __internal&lt;/Flags&gt;
         ///	
@@ -3120,7 +3120,7 @@ namespace Ginger.Properties {
         ///		&lt;Label&gt;Personality&lt;/Label&gt;
         ///	&lt;/Text&gt;
         ///	
-        ///	&lt;Node path=&quot;persona/output/personality&quot; style=&quot;space&quot; order=&quot;1000&quot; m [rest of string was truncated]&quot;;.
+        ///	&lt;Node path=&quot;persona/output/personality&quot; style=&quot;space&quot; order=&quot;1000&quot; mode= [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string personality_recipe {
             get {
@@ -3130,21 +3130,20 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__post-history&quot;&gt;
-        ///	&lt;Name&gt;Other/Model instructions (Important)&lt;/Name&gt;
+        ///	&lt;Name&gt;Model instructions&lt;/Name&gt;
         ///	&lt;Description&gt;
         ///		Equivalent to the &quot;Jailbreak&quot;/&quot;Post history instructions&quot; field in SillyTavern.
         ///		(Used for compatibility.)
         ///	&lt;/Description&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
-        ///	&lt;Order&gt;1&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
-        ///	&lt;Flags&gt;system-prompt, model, __post-history, __component, __formatting, __internal&lt;/Flags&gt;
+        ///	&lt;Flags&gt;system-prompt, model, __post-history, __component, __formatting, __internal, __hidden&lt;/Flags&gt;
         ///	
+        ///	&lt;!-- Parameters --&gt;
         ///	&lt;Text id=&quot;system&quot; style=&quot;component&quot;&gt;
         ///		&lt;Label&gt;Instructions&lt;/Label&gt;
-        ///	&lt;/Text&gt;
-        ///	        /// [rest of string was truncated]&quot;;.
+        ///		&lt;Description&gt;In [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string post_history_recipe {
             get {
@@ -3403,7 +3402,7 @@ namespace Ginger.Properties {
         ///	
         ///	&lt;!-- Parameters --&gt;
         ///	&lt;Text id=&quot;scenario&quot; style=&quot;component&quot;&gt;
-        ///		&lt;Label&gt;Scenario&lt;/Label&gt;
+        ///		&lt;Label&gt;Scenario description&lt;/Label&gt;
         ///	&lt;/Text&gt;
         ///	
         ///	&lt;Scenario&gt;{scenario:local}&lt;/Scenario&gt;
@@ -3704,7 +3703,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__system&quot;&gt;
         ///	&lt;Name&gt;Model instructions&lt;/Name&gt;
-        ///	&lt;Order&gt;5&lt;/Order&gt;
+        ///	&lt;Order&gt;100&lt;/Order&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
@@ -3713,10 +3712,12 @@ namespace Ginger.Properties {
         ///	&lt;!-- Parameters --&gt;
         ///	&lt;Text id=&quot;system&quot; style=&quot;component&quot;&gt;
         ///		&lt;Label&gt;Instructions&lt;/Label&gt;
+        ///		&lt;Description&gt;Instructions to the model. Not meant for character descriptions.&lt;/Description&gt;
         ///	&lt;/Text&gt;
         ///	
-        ///	&lt;System&gt;{system:local}&lt;/System&gt;
-        ///&lt;/Ginger&gt;.
+        ///	&lt;Toggle id=&quot;important&quot;&gt;
+        ///		&lt;Label&gt;Vital&lt;/Label&gt;
+        ///		&lt;De [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string system_recipe {
             get {
@@ -4432,6 +4433,15 @@ namespace Ginger.Properties {
         internal static string tooltip_link_apply_to_last {
             get {
                 return ResourceManager.GetString("tooltip_link_apply_to_last", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Insert model instructions marked as vital into the character&apos;s author&apos;s note..
+        /// </summary>
+        internal static string tooltip_link_author_note {
+            get {
+                return ResourceManager.GetString("tooltip_link_author_note", resourceCulture);
             }
         }
         
@@ -5172,13 +5182,13 @@ namespace Ginger.Properties {
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__user-persona&quot;&gt;
         ///	&lt;Name&gt;User persona&lt;/Name&gt;
         ///	&lt;Color&gt;#ddf5ef&lt;/Color&gt;
-        ///	&lt;Order&gt;1&lt;/Order&gt;
+        ///	&lt;Order&gt;8&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;user-persona, __user, __component, __formatting, __internal&lt;/Flags&gt;
         ///	
         ///	&lt;Text id=&quot;user-persona&quot; style=&quot;component&quot;&gt;
-        ///		&lt;Label&gt;Description&lt;/Label&gt;
+        ///		&lt;Label&gt;User description&lt;/Label&gt;
         ///	&lt;/Text&gt;
         ///	
         ///	&lt;User&gt;{user-persona:local}&lt;/User&gt;

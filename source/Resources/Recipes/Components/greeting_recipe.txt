@@ -8,7 +8,7 @@
 	
 	<!-- Parameters -->
 	<Text id="greeting" style="component">
-		<Label>Message</Label>
+		<Label>First message</Label>
 	</Text>
 	
 	<Greeting>{greeting:local}</Greeting>

@@ -1576,7 +1576,9 @@ namespace Ginger
 			else if (Current.HasLink == false)
 				return Backyard.Error.NotFound;
 
-			FaradayCardV4 card = FaradayCardV4.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked));
+			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
+			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+			card.authorNote = output.system_post_history.ToFaraday();
 
 			// Check if character exists, has newer changes
 			bool hasChanges;
@@ -1629,6 +1631,8 @@ namespace Ginger
 
 			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
 			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+			card.authorNote = output.system_post_history.ToFaraday();
+
 			Backyard.ImageInput[] imageInput = Backyard.GatherImages();
 			BackupData.Chat[] chats = null;
 			if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1)

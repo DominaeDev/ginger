@@ -1,5 +1,5 @@
 <Ginger id="__persona">
-	<Name>Character persona</Name>
+	<Name>Persona</Name>
 	<Order>0</Order>
 	<Color>HoneyDew</Color>
 	<Multiple>True</Multiple>
@@ -7,7 +7,7 @@
 	
 	<!-- Parameters -->
 	<Text id="persona" style="component">
-		<Label>Description</Label>
+		<Label>Character description</Label>
 	</Text>
 	
 	<Persona>{persona:local}</Persona>

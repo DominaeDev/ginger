@@ -133,6 +133,7 @@ namespace Ginger
 		// Not JSON
 		public string hubCharacterId;
 		public string hubAuthorUsername;
+		public string authorNote;
 
 		public string comment
 		{

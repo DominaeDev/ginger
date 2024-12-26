@@ -7,7 +7,7 @@
 	
 	<!-- Parameters -->
 	<Text id="scenario" style="component">
-		<Label>Scenario</Label>
+		<Label>Scenario description</Label>
 	</Text>
 	
 	<Scenario>{scenario:local}</Scenario>

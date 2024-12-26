@@ -1,18 +1,18 @@
 <Ginger id="__group-greeting">
-	<Name>Other/Greeting (Group only)</Name>
+	<Name>Greeting (Group only)</Name>
 	<Title>Greeting (Group only)</Title>
 	<Description>
 		Greeting for group chats.
 	</Description>
 	<Color>FloralWhite</Color>
-	<Order>2</Order>
+	<Order>102</Order>
 	<Multiple>True</Multiple>
 	<Requires>not __actor</Requires>
 	<Flags>__group-greeting, __component, __internal, __ccv3</Flags>
 	
 	<!-- Parameters -->
 	<Text id="greeting" style="component">
-		<Label>Message</Label>
+		<Label>First message</Label>
 	</Text>
 	
 	<Greeting group="true">{greeting:local}</Greeting>

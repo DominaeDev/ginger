@@ -218,6 +218,8 @@ namespace Ginger
 				{
 					context.SetFlag("__faraday");
 					context.SetFlag("__backyard");
+					if (option.Contains(Option.Linked))
+						context.SetFlag("__link");
 				}
 				else if (option.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3))
 					context.SetFlag("__tavern");
@@ -341,7 +343,8 @@ namespace Ginger
 
 			// (Silly tavern) Build important block separately
 			GingerString postHistory = GingerString.Empty;
-			if (options.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3 | Option.Snippet | Option.Bake))
+			if (options.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3 | Option.Snippet | Option.Bake) // SillyTavern
+				|| (options.Contains(Option.Export | Option.Linked) && AppSettings.BackyardLink.WriteAuthorNote)) // Backyard, linked (author's note)
 				postHistory = GingerString.FromOutput(blockBuilder.Build("system/important"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 
 			// (Silly tavern) Build personality block

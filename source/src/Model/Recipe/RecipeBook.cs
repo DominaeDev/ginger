@@ -84,22 +84,24 @@ namespace Ginger
 				recipes.Add(global_recipe);
 
 			// Load recipes from resources
-			recipes.Add(CreateRecipeFromResource(Resources.internal_global_recipe,	Recipe.Type.Component, Recipe.Drawer.Undefined));
-			recipes.Add(CreateRecipeFromResource(Resources.system_recipe,			Recipe.Type.Component, Recipe.Drawer.Model));
-			recipes.Add(CreateRecipeFromResource(Resources.persona_recipe,			Recipe.Type.Component, Recipe.Drawer.Character));
-			recipes.Add(CreateRecipeFromResource(Resources.user_recipe,				Recipe.Type.Component, Recipe.Drawer.Character));
-			recipes.Add(CreateRecipeFromResource(Resources.scenario_recipe,			Recipe.Type.Component, Recipe.Drawer.Story));
-			recipes.Add(CreateRecipeFromResource(Resources.example_recipe,			Recipe.Type.Component, Recipe.Drawer.Components));
-			recipes.Add(CreateRecipeFromResource(Resources.greeting_recipe,			Recipe.Type.Component, Recipe.Drawer.Components));
-			recipes.Add(CreateRecipeFromResource(Resources.lorebook_recipe,			Recipe.Type.Lore, Recipe.Drawer.Lore));
+			recipes.Add(CreateRecipeFromResource(Resources.internal_global_recipe,	Recipe.Type.Component,	Recipe.Drawer.Undefined));
+			recipes.Add(CreateRecipeFromResource(Resources.system_recipe,			Recipe.Type.Component,	Recipe.Drawer.Model));
+			recipes.Add(CreateRecipeFromResource(Resources.persona_recipe,			Recipe.Type.Component,	Recipe.Drawer.Character));
+			recipes.Add(CreateRecipeFromResource(Resources.user_recipe,				Recipe.Type.Component,	Recipe.Drawer.Character));
+			recipes.Add(CreateRecipeFromResource(Resources.scenario_recipe,			Recipe.Type.Component,	Recipe.Drawer.Story));
+			recipes.Add(CreateRecipeFromResource(Resources.example_recipe,			Recipe.Type.Component,	Recipe.Drawer.Components));
+			recipes.Add(CreateRecipeFromResource(Resources.greeting_recipe,			Recipe.Type.Component,	Recipe.Drawer.Components));
+			recipes.Add(CreateRecipeFromResource(Resources.lorebook_recipe,			Recipe.Type.Lore,		Recipe.Drawer.Lore));
 
 			// Other components
-			recipes.Add(CreateRecipeFromResource(Resources.attribute_recipe,	Recipe.Type.Component, Recipe.Drawer.Components));
-			recipes.Add(CreateRecipeFromResource(Resources.personality_recipe,	Recipe.Type.Component, Recipe.Drawer.Components));
-			recipes.Add(CreateRecipeFromResource(Resources.grammar_recipe,		Recipe.Type.Component, Recipe.Drawer.Components));
-			recipes.Add(CreateRecipeFromResource(Resources.post_history_recipe,	Recipe.Type.Component, Recipe.Drawer.Components));
-			recipes.Add(CreateRecipeFromResource(Resources.group_greeting_recipe,	Recipe.Type.Component, Recipe.Drawer.Components));
-			recipes.Add(CreateRecipeFromResource(Resources.prune_scenario_recipe,	Recipe.Type.Component, Recipe.Drawer.Undefined));
+			recipes.Add(CreateRecipeFromResource(Resources.attribute_recipe,		Recipe.Type.Component,	Recipe.Drawer.Components));
+			recipes.Add(CreateRecipeFromResource(Resources.personality_recipe,		Recipe.Type.Component,	Recipe.Drawer.Components));
+			recipes.Add(CreateRecipeFromResource(Resources.grammar_recipe,			Recipe.Type.Component,	Recipe.Drawer.Components));
+			recipes.Add(CreateRecipeFromResource(Resources.post_history_recipe,		Recipe.Type.Component,	Recipe.Drawer.Components));
+			recipes.Add(CreateRecipeFromResource(Resources.group_greeting_recipe,	Recipe.Type.Component,	Recipe.Drawer.Components));
+
+			// Hidden (Internal) components
+			recipes.Add(CreateRecipeFromResource(Resources.prune_scenario_recipe,	Recipe.Type.Component,	Recipe.Drawer.Undefined));
 
 			// Load macros
 			Current.LoadMacros();

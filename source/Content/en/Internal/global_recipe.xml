@@ -21,11 +21,11 @@
 	</Node>
 		
 	<!-- Important block -->
-	<Node path="system/important" style="default" mode="exclude" order="-0" rule="not (__bake or __snippet or __tavern)">
+	<Node path="system/important" style="default" mode="exclude" order="-0" rule="not (__bake or __snippet or __tavern or __link)">
 		### IMPORTANT:  
 		{inner}
 	</Node>
-	<Node path="system/important" style="line" mode="exclude" order="-0" rule="__tavern"/>
+	<Node path="system/important" style="line" mode="exclude" order="-0" rule="__tavern or __link"/>
 	
 	<Node path="system/important/output" mode="exclude" style="default"/>
 	

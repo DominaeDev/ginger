@@ -1,11 +1,11 @@
 <Ginger id="__personality">
-	<Name>Other/Personality summary</Name>
+	<Name>Personality summary</Name>
 	<Title>Personality summary</Title>
 	<Description>
 		This is equivalent to the "Personality summary" field in SillyTavern.
 		(Used for compatibility)
 	</Description>
-	<Order>0</Order>
+	<Order>100</Order>
 	<Multiple>True</Multiple>
 	<Flags>persona, __personality, __component, __internal</Flags>
 	

@@ -1,11 +1,11 @@
 <Ginger id="__grammar">
-	<Name>Other/Grammar</Name>
+	<Name>Grammar</Name>
 	<Description>
 		Custom grammar definition.
 		(Only supported in Backyard AI)
 	</Description>
 	<Color>#bfd0db</Color>
-	<Order>3</Order>
+	<Order>103</Order>
 	<Multiple>True</Multiple>
 	<Requires>not __actor</Requires>
 	<Flags>grammar, __grammar, __component, __internal</Flags>

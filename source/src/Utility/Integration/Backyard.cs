@@ -1990,7 +1990,7 @@ namespace Ginger.Integration
 									cmdCreate.Parameters.AddWithValue("$repeatLastN", chatParameters.repeatLastN);
 									cmdCreate.Parameters.AddWithValue("$promptTemplate", chatParameters.promptTemplate);
 									cmdCreate.Parameters.AddWithValue("$pruneExample", AppSettings.BackyardLink.PruneExampleChat);
-									cmdCreate.Parameters.AddWithValue("$authorNote", AppSettings.BackyardLink.AuthorNote ?? "");
+									cmdCreate.Parameters.AddWithValue("$authorNote", Utility.FirstNonEmpty(card.authorNote, AppSettings.BackyardLink.AuthorNote) ?? "");
 
 									expectedUpdates += 1;
 
@@ -2050,6 +2050,7 @@ namespace Ginger.Integration
 											greeting = card.data.greeting,
 											example = card.data.example,
 											grammar = card.data.grammar,
+											authorNote = Utility.FirstNonEmpty(card.authorNote, AppSettings.BackyardLink.AuthorNote),
 										};
 
 										var parameters = chats[i].parameters ?? new ChatParameters();
