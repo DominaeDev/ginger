@@ -344,7 +344,8 @@ namespace Ginger
 			// (Silly tavern) Build important block separately
 			GingerString postHistory = GingerString.Empty;
 			if (options.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3 | Option.Snippet | Option.Bake) // SillyTavern
-				|| (options.Contains(Option.Export | Option.Linked) && AppSettings.BackyardLink.WriteAuthorNote)) // Backyard, linked (author's note)
+				|| ((options.Contains(Option.Export | Option.Linked) || options.Contains(Option.Preview | Option.Linked)) 
+				&& AppSettings.BackyardLink.WriteAuthorNote)) // Backyard, linked (author's note)
 				postHistory = GingerString.FromOutput(blockBuilder.Build("system/important"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 
 			// (Silly tavern) Build personality block
@@ -828,12 +829,14 @@ namespace Ginger
 			var nodes = new Dictionary<BlockID, string>();
 			var attributes = new List<AttributeBlock>();
 
-			// Standard output:
-
+			// Post-history instructions
 			GingerString postHistory = GingerString.Empty;
-			if (options.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3 | Option.Snippet | Option.Bake))
+			if (options.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3 | Option.Snippet | Option.Bake) // SillyTavern
+				|| ((options.Contains(Option.Export | Option.Linked) || options.Contains(Option.Preview | Option.Linked)) 
+				&& AppSettings.BackyardLink.WriteAuthorNote)) // Backyard, linked (author's note)
 				postHistory = GingerString.FromOutput(blockBuilder.Build("system/important"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 
+			// Standard output:
 			var systemOutput = GingerString.FromOutput(blockBuilder.Build("system/output"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 			var personaOutput = GingerString.FromOutput(blockBuilder.Build("persona/output"), characterIndex, bMain, Text.EvalOption.OutputFormatting);
 			var userPersonaOutput = GingerString.FromOutput(blockBuilder.Build("user/output"), characterIndex, bMain, Text.EvalOption.OutputFormatting);

@@ -229,7 +229,6 @@ namespace Ginger
 			public static bool PruneExampleChat = true;
 			public static bool MarkNSFW = true;
 			public static bool WriteAuthorNote = false;
-			public static string AuthorNote = null;
 		}
 
 		public static bool LoadFromIni(string filePath)
@@ -362,7 +361,6 @@ namespace Ginger
 				ReadBool(ref BackyardLink.MarkNSFW, linkSection, "MarkNSFW");
 				ReadBool(ref BackyardLink.WriteAuthorNote, linkSection, "WriteAuthorNote");
 				ReadBool(ref BackyardLink.ImportAlternateGreetings, linkSection, "ImportAlternateGreetings");
-				ReadString(ref BackyardLink.AuthorNote, linkSection, "AuthorNote");
 			}
 			
 			BackyardSettings.Presets.Clear();
@@ -527,7 +525,6 @@ namespace Ginger
 					Write(outputFile, "MarkNSFW", BackyardLink.MarkNSFW);
 					Write(outputFile, "WriteAuthorNote", BackyardLink.WriteAuthorNote);
 					Write(outputFile, "ImportAlternateGreetings", BackyardLink.ImportAlternateGreetings);
-					Write(outputFile, "AuthorNote", BackyardLink.AuthorNote);
 
 					// Backyard model settings
 					WriteSection(outputFile, "BackyardAI.ModelSettings.Default");

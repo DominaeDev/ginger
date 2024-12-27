@@ -130,7 +130,7 @@ namespace Ginger
 			public FaradayCardV1.LoreBookEntry[] loreItems = new FaradayCardV1.LoreBookEntry[0];
 		}
 
-		// Not JSON
+		// Transient values, not in JSON
 		public string hubCharacterId;
 		public string hubAuthorUsername;
 		public string authorNote;
@@ -175,10 +175,8 @@ namespace Ginger
 					card.data.persona = string.Concat(card.data.persona, "\n\n", userPersona).Trim();
 			}
 
-			// Join system prompt + post_history (jic. post_history should be empty)
-			string system_post = output.system_post_history.ToFaraday();
-			if (string.IsNullOrEmpty(system_post) == false)
-				card.data.system = string.Join("\n", card.data.system, system_post).TrimStart();
+			// system_post_history is equivalent to the author note.
+			card.authorNote = output.system_post_history.ToFaraday();
 
 			// Insert default system prompt if empty
 			if (string.IsNullOrWhiteSpace(card.data.system))

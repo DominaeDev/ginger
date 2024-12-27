@@ -24,6 +24,8 @@ namespace Ginger
 				options |= Generator.Option.Faraday;
 			else if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern)
 				options |= Generator.Option.SillyTavernV2;
+			if (Backyard.ConnectionEstablished && Current.HasActiveLink)
+				options |= Generator.Option.Linked;
 
 			Generator.Output output = Generator.Generate(options);
 
@@ -1578,7 +1580,6 @@ namespace Ginger
 
 			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
 			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
-			card.authorNote = output.system_post_history.ToFaraday();
 
 			// Check if character exists, has newer changes
 			bool hasChanges;
@@ -1592,7 +1593,7 @@ namespace Ginger
 			if (hasChanges)
 			{
 				// Overwrite prompt
-				var mr = MessageBox.Show(Resources.msg_link_confirm_overwrite, Resources.cap_link_overwrite, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+				var mr = MessageBox.Show(Resources.msg_link_confirm_overwrite, Resources.cap_link_overwrite, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
 				if (mr == DialogResult.Cancel)
 					return Backyard.Error.CancelledByUser;
 				else if (mr == DialogResult.No)
@@ -1631,7 +1632,6 @@ namespace Ginger
 
 			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
 			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
-			card.authorNote = output.system_post_history.ToFaraday();
 
 			Backyard.ImageInput[] imageInput = Backyard.GatherImages();
 			BackupData.Chat[] chats = null;
@@ -1931,7 +1931,7 @@ namespace Ginger
 
 			// Confirm overwrite?
 			bool bFileExists = filenames.ContainsAny(fn => File.Exists(fn));
-			if (bFileExists && MessageBox.Show(Resources.msg_link_export_overwrite_files, Resources.cap_overwrite_files, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			if (bFileExists && MessageBox.Show(Resources.msg_link_export_overwrite_files, Resources.cap_overwrite_files, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 			{
 				return false;
 			}

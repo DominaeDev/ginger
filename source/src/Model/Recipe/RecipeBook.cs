@@ -306,6 +306,7 @@ namespace Ginger
 			if (recipe.LoadFromXml(xmlDoc.DocumentElement) && Current.Character.AddRecipe(recipe))
 			{
 				recipe.type = type;
+				recipe.ResetParameters();
 				return recipe;
 			}
 			return default(Recipe);
@@ -320,6 +321,7 @@ namespace Ginger
 			{
 				recipe.type = type;
 				recipe.drawer = drawer;
+				recipe.ResetParameters();
 				return recipe;
 			}
 			return default(Recipe);

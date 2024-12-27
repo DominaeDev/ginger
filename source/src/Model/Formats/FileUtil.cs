@@ -1462,9 +1462,17 @@ namespace Ginger
 
 		public static bool Export(string filename, FileType fileType)
 		{
+			Generator.Option options = Generator.Option.None;
+			if (fileType.Contains(FileType.Faraday))
+				options |= Generator.Option.Faraday;
+			if (fileType.Contains(FileType.TavernV2))
+				options |= Generator.Option.SillyTavernV2;
+			if (fileType.Contains(FileType.TavernV3))
+				options |= Generator.Option.SillyTavernV3;
+
 			// Save as...
-			var output = Generator.Generate(Generator.Option.Export);
-			var gingerExt = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet));
+			var output = Generator.Generate(Generator.Option.Export | options);
+			var gingerExt = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet | options));
 
 			if (fileType.Contains(FileType.TavernV2 | FileType.Json)) // Tavern V2 (json)
 			{

@@ -34,13 +34,17 @@ namespace Ginger
 			string outputGrammar = output.grammar.ToOutputPreview();
 			string outputUserPersona = output.userPersona.ToOutputPreview();
 
-			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday 
+				&& (Integration.Backyard.ConnectionEstablished && AppSettings.BackyardLink.WriteAuthorNote) == false)
 			{
 				// Combine system prompts
 				if (string.IsNullOrEmpty(outputSystemPostHistory) == false)
 					outputSystem = string.Join("\r\n", outputSystem, outputSystemPostHistory).TrimStart();
 				outputSystemPostHistory = null;
 
+			}
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
+			{
 				// Replace {original}
 				string original = FaradayCardV4.OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)];
 				if (string.IsNullOrWhiteSpace(outputSystem) == false)

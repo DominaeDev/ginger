@@ -71,7 +71,6 @@ namespace Ginger.Integration
 		public ChatStaging()
 		{
 			pruneExampleChat = AppSettings.BackyardLink.PruneExampleChat;
-			authorNote = AppSettings.BackyardLink.AuthorNote;
 		}
 
 		public string system = "";					// Chat.modelInstructions
@@ -859,12 +858,6 @@ namespace Ginger.Integration
 		#endregion
 
 		#region Characters
-		public static Error ImportCharacter(CharacterInstance character, out FaradayCardV4 card, out string[] imageUrls)
-		{
-			string[] tmp;
-			return ImportCharacter(character, out card, out imageUrls, out tmp);
-		}
-
 		public static Error ImportCharacter(CharacterInstance character, out FaradayCardV4 card, out string[] imageUrls, out string[] backgroundUrls)
 		{
 			if (ConnectionEstablished == false)
@@ -888,7 +881,7 @@ namespace Ginger.Integration
 						@"
 							SELECT 
 								A.id, A.createdAt, A.updatedAt, A.displayName, A.name, A.persona, 
-								C.context, C.customDialogue, C.modelInstructions, C.greetingDialogue, C.grammar
+								C.context, C.customDialogue, C.modelInstructions, C.greetingDialogue, C.grammar, C.authorNote
 							FROM CharacterConfigVersion as A
 							INNER JOIN _CharacterConfigToGroupConfig AS B 
 								ON B.A = $charId
@@ -930,6 +923,7 @@ namespace Ginger.Integration
 							string system = reader.GetString(8);
 							string greeting = reader.GetString(9);
 							string grammar = reader[10] as string;
+							string authorNote = reader.GetString(11);
 
 							// Get info from group
 							string hubCharId = null;
@@ -955,6 +949,7 @@ namespace Ginger.Integration
 
 							card.hubCharacterId = hubCharId;
 							card.hubAuthorUsername = hubAuthorUsername;
+							card.authorNote = authorNote;
 						}
 					}
 
@@ -1462,6 +1457,17 @@ namespace Ginger.Integration
 										WHERE groupConfigId = $groupId;
 									");
 									cmdChat.Parameters.AddWithValue("$groupId", groupId);
+
+									if (AppSettings.BackyardLink.WriteAuthorNote)
+									{
+										sbCommand.AppendLine(
+										@"
+											UPDATE Chat
+											SET 
+												authorNote = $authorNote
+											WHERE groupConfigId = $groupId;
+										");
+									}
 								}
 								else
 								{
@@ -1482,6 +1488,17 @@ namespace Ginger.Integration
 										cmdChat.Parameters.AddWithValue("$chatId", chats.OrderByDescending(c => c.updateDate).Select(c => c.instanceId).First());
 									else // First
 										cmdChat.Parameters.AddWithValue("$chatId", chats.OrderBy(c => c.creationDate).Select(c => c.instanceId).First());
+
+									if (AppSettings.BackyardLink.WriteAuthorNote)
+									{
+										sbCommand.AppendLine(
+										@"
+											UPDATE Chat
+											SET 
+												authorNote = $authorNote
+											WHERE id = $chatId;
+										");
+									}
 								}
 								
 								cmdChat.CommandText = sbCommand.ToString();
@@ -1490,6 +1507,7 @@ namespace Ginger.Integration
 								cmdChat.Parameters.AddWithValue("$example", card.data.example ?? "");
 								cmdChat.Parameters.AddWithValue("$greeting", card.data.greeting ?? "");
 								cmdChat.Parameters.AddWithValue("$grammar", card.data.grammar ?? "");
+								cmdChat.Parameters.AddWithValue("$authorNote", card.authorNote ?? "");
 								cmdChat.Parameters.AddWithValue("$timestamp", updatedAt);
 
 								int nChats = cmdChat.ExecuteNonQuery();
@@ -1990,7 +2008,7 @@ namespace Ginger.Integration
 									cmdCreate.Parameters.AddWithValue("$repeatLastN", chatParameters.repeatLastN);
 									cmdCreate.Parameters.AddWithValue("$promptTemplate", chatParameters.promptTemplate);
 									cmdCreate.Parameters.AddWithValue("$pruneExample", AppSettings.BackyardLink.PruneExampleChat);
-									cmdCreate.Parameters.AddWithValue("$authorNote", Utility.FirstNonEmpty(card.authorNote, AppSettings.BackyardLink.AuthorNote) ?? "");
+									cmdCreate.Parameters.AddWithValue("$authorNote", card.authorNote ?? "");
 
 									expectedUpdates += 1;
 
@@ -2045,12 +2063,12 @@ namespace Ginger.Integration
 										cmdCreate.Parameters.AddWithValue($"$chatUpdatedAt{i:000}", chats[i].updateDate.ToUnixTimeMilliseconds());
 
 										var staging = chats[i].staging ?? new ChatStaging() {
-											system = card.data.system,
-											scenario = card.data.scenario,
-											greeting = card.data.greeting,
-											example = card.data.example,
-											grammar = card.data.grammar,
-											authorNote = Utility.FirstNonEmpty(card.authorNote, AppSettings.BackyardLink.AuthorNote),
+											system = card.data.system ?? "",
+											scenario = card.data.scenario ?? "",
+											greeting = card.data.greeting ?? "",
+											example = card.data.example ?? "",
+											grammar = card.data.grammar ?? "",
+											authorNote = card.authorNote ?? "",
 										};
 
 										var parameters = chats[i].parameters ?? new ChatParameters();

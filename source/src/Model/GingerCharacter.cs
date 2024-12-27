@@ -98,6 +98,7 @@ namespace Ginger
 			Card.textStyle = DetectTextStyle(card.data.example, card.data.greeting);
 
 			AddChannel(character, GingerString.FromFaraday(card.data.system).ToParameter(), Resources.system_recipe);
+			AddChannel(character, GingerString.FromFaraday(card.authorNote).ToParameter(), Resources.post_history_recipe);
 			AddChannel(character, GingerString.FromFaraday(card.data.persona).ToParameter(), Resources.persona_recipe);
 			AddChannel(character, GingerString.FromFaraday(card.data.scenario).ToParameter(), Resources.scenario_recipe);
 			AddChannel(character, GingerString.FromFaraday(card.data.greeting).ToParameter(), Resources.greeting_recipe);
@@ -398,6 +399,7 @@ namespace Ginger
 			if (recipe.LoadFromXml(xmlDoc.DocumentElement))
 			{
 				recipe.type = Recipe.Type.Component;
+				recipe.ResetParameters();
 				return recipe;
 			}
 			return default(Recipe);
