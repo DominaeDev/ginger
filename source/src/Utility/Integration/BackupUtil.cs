@@ -117,20 +117,27 @@ namespace Ginger.Integration
 			// Write png file
 			try
 			{
-				Image portraitImage;
+				Image portraitImage = null;
 				if (backup.images.Count > 0) // Convert portrait
 				{
 					string ext = Utility.GetFileExt(backup.images[0].filename);
 					if (ext == "png")
 						Utility.LoadImageFromMemory(backup.images[0].data, out portraitImage);
+					else if (ext == "webp")
+					{
+						nonPNGImageData = backup.images[0].data;
+						nonPNGImageExt = ext;
+						Utility.LoadWebPFromMemory(backup.images[0].data, out portraitImage);
+					}
 					else
 					{
 						nonPNGImageData = backup.images[0].data;
-						portraitImage = DefaultPortrait.Image;
 						nonPNGImageExt = ext;
+						Utility.LoadImageFromMemory(backup.images[0].data, out portraitImage);
 					}
 				}
-				else
+				
+				if (portraitImage == null)
 					portraitImage = DefaultPortrait.Image;
 
 				// Write character card (png)
