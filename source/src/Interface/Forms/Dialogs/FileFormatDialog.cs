@@ -5,13 +5,6 @@ namespace Ginger
 {
 	public partial class FileFormatDialog : FormEx
 	{
-		public struct Format
-		{
-			public string Name;
-			public string Ext;
-			public FileUtil.FileType FileType;
-		}
-
 		private string[] Filters = new string[] {
 			"Character Card V2 JSON (*.json)",
 			"Character Card V3 JSON (*.json)",
@@ -22,6 +15,7 @@ namespace Ginger
 			"Backyard AI PNG (*.png)",
 			"CharX file (*.charx)",
 			"Text generation web ui YAML (*.yaml)",
+			"Ginger backup file (*.zip)",
 		};
 
 		public FileUtil.FileType FileFormat { get; private set; }
@@ -36,6 +30,7 @@ namespace Ginger
 			FileUtil.FileType.Faraday | FileUtil.FileType.Png | FileUtil.FileType.Character,
 			FileUtil.FileType.TavernV3 | FileUtil.FileType.CharX | FileUtil.FileType.Character,
 			FileUtil.FileType.TextGenWebUI | FileUtil.FileType.Yaml | FileUtil.FileType.Character,
+			FileUtil.FileType.Ginger | FileUtil.FileType.Backup | FileUtil.FileType.Character,
 		};
 
 		public FileFormatDialog()

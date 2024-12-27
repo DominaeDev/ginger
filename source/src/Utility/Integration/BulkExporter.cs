@@ -129,7 +129,11 @@ namespace Ginger.Integration
 			for (int i = 0; i < args.instances.Length; ++i)
 			{
 				string exportedFilename;
-				Error error = ExportCharacter(args.instances[i], args.fileType, out exportedFilename);
+				Error error;
+				if (args.fileType.Contains(FileUtil.FileType.Backup))
+					error = ExportBackup(args.instances[i], out exportedFilename);
+				else
+					error = ExportCharacter(args.instances[i], args.fileType, out exportedFilename);
 
 				if (error == Error.NoError)
 				{
@@ -173,7 +177,6 @@ namespace Ginger.Integration
 					succeeded = 0,
 				};
 			}
-				
 
 			int count = workResult.filenames.Length;
 			_completed += count;
@@ -242,7 +245,7 @@ namespace Ginger.Integration
 			GingerCharacter character = new GingerCharacter();
 			character.ReadFaradayCard(faradayCard, null);
 
-			var prevInstance = Current.Instance;
+			var stash = Current.Stash();
 			Current.Instance = character;
 
 			// Load images/backgrounds
@@ -281,9 +284,60 @@ namespace Ginger.Integration
 			}
 			finally
 			{
-				Current.Instance = prevInstance;
+				Current.Restore(stash);
 			}
 		}
-		
+
+		private Error ExportBackup(CharacterInstance characterInstance, out string filename)
+		{
+			if (Backyard.ConnectionEstablished == false)
+			{
+				filename = default(string);
+				return Error.DatabaseError;
+			}
+
+			BackupData backupData;
+			var importError = BackupUtil.CreateBackup(characterInstance, out backupData);
+			if (importError != Backyard.Error.NoError)
+			{
+				filename = default(string);
+				return Error.DatabaseError;
+			}
+
+			try
+			{
+				string intermediateFilename = Path.GetRandomFileName();
+				var writeError = BackupUtil.WriteBackup(intermediateFilename, backupData);
+
+				// Write to disk
+				if (writeError == FileUtil.Error.NoError)
+				{
+					filename = intermediateFilename;
+					return Error.NoError;
+				}
+				else if (writeError == FileUtil.Error.DiskFullError)
+				{
+					filename = default(string);
+					return Error.DiskFullError;
+				}
+				else
+				{
+					filename = default(string);
+					return Error.FileError;
+				}
+			}
+			catch (IOException e)
+			{
+				filename = default(string);
+				if (e.HResult == Win32.HR_ERROR_DISK_FULL || e.HResult == Win32.HR_ERROR_HANDLE_DISK_FULL)
+					return Error.DiskFullError;
+				return Error.FileError;
+			}
+			catch (Exception e)
+			{
+				filename = default(string);
+				return Error.UnknownError;
+			}
+		}
 	}
 }

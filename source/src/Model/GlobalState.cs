@@ -415,5 +415,34 @@ namespace Ginger
 
 			imageLinks = lsImageLinks.ToArray();
 		}
+
+		public struct StashInfo
+		{
+			public GingerCharacter instance;
+			public Backyard.Link link;
+			public bool isDirty;
+			public bool isFileDirty;
+		}
+
+		public static StashInfo Stash()
+		{
+			var stash = new StashInfo() {
+				instance = Instance,
+				link = Link,
+				isDirty = _bDirty,
+				isFileDirty = _bFileDirty,
+			};
+			Link = null;
+			return stash;
+		}
+
+		public static void Restore(StashInfo stash)
+		{
+			Instance = stash.instance;
+			Link = stash.link;
+			_bDirty = stash.isDirty;
+			_bFileDirty = stash.isFileDirty;
+		}
 	}
+
 }

@@ -101,12 +101,13 @@ namespace Ginger.Integration
 			return Backyard.Error.NoError;
 		}
 
-		public static bool WriteBackup(string filename, BackupData backup)
+		public static FileUtil.Error WriteBackup(string filename, BackupData backup)
 		{
 			byte[] nonPNGImageData = null;
 			string nonPNGImageExt = "png";
 			var intermediateCardFilename = Path.GetTempFileName();
 
+			// Write png file
 			try
 			{
 				Image portraitImage;
@@ -147,24 +148,30 @@ namespace Ginger.Integration
 					}
 				}
 			}
+			catch (IOException e)
+			{
+				if (e.HResult == Win32.HR_ERROR_DISK_FULL || e.HResult == Win32.HR_ERROR_HANDLE_DISK_FULL)
+					return FileUtil.Error.DiskFullError;
+				return FileUtil.Error.FileWriteError;
+			}
 			catch
 			{
 				File.Delete(intermediateCardFilename);
-				return false;
+				return FileUtil.Error.NoError;
 			}
 
 			try
 			{
-				// Write json
+				// Write json to PNG
 				string faradayJson = backup.characterCard.ToJson();
 				var faradayBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(faradayJson));
 				if (FileUtil.WriteExifMetaData(intermediateCardFilename, faradayBase64) == false)
-					return false; // Error
+					return FileUtil.Error.FileWriteError; // Error
 
 				// Read in temporary file
 				byte[] cardBytes = Utility.LoadFile(intermediateCardFilename);
 				if (cardBytes == null)
-					return false;
+					return FileUtil.Error.FileReadError;
 
 				// Delete temporary file
 				File.Delete(intermediateCardFilename);
@@ -275,12 +282,12 @@ namespace Ginger.Integration
 				if (File.Exists(filename))
 					File.Delete(filename);
 				File.Move(intermediateFilename, filename);
-				return true;
+				return FileUtil.Error.NoError;
 			}
 			catch
 			{
 			}
-			return false;
+			return FileUtil.Error.UnknownError;
 		}
 
 		public static FileUtil.Error ReadBackup(string filename, out BackupData backup)

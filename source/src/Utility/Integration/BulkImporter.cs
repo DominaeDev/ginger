@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Timers;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 
 namespace Ginger.Integration
 {
@@ -137,7 +138,11 @@ namespace Ginger.Integration
 			for (int i = 0; i < args.filenames.Length; ++i)
 			{
 				CharacterInstance importedCharacter;
-				WorkerError error = ImportCharacter(args.filenames[i], args.parentFolder, out importedCharacter);
+				WorkerError error;
+				if (Utility.GetFileExt(args.filenames[i]) == "zip")
+					error = ImportBackup(args.filenames[i], args.parentFolder, out importedCharacter);
+				else
+					error = ImportCharacter(args.filenames[i], args.parentFolder, out importedCharacter);
 
 				switch (error)
 				{
@@ -245,13 +250,12 @@ namespace Ginger.Integration
 				return WorkerError.DatabaseError;
 			}
 
-			GingerCharacter prevInstance = Current.Instance;
+			var stash = Current.Stash();
 			Current.Instance = new GingerCharacter();
 			Current.Instance.Reset();
 
 			try
 			{
-
 				string ext = (Path.GetExtension(filename) ?? "").ToLowerInvariant();
 
 				int jsonErrors = 0;
@@ -307,8 +311,53 @@ namespace Ginger.Integration
 			}
 			finally
 			{
-				Current.Instance = prevInstance;
+				Current.Restore(stash);
 			}
+		}
+
+		private WorkerError ImportBackup(string filename, FolderInstance parentFolder, out CharacterInstance characterInstance)
+		{
+			BackupData backupData;
+			var readError = BackupUtil.ReadBackup(filename, out backupData);
+			if (readError != FileUtil.Error.NoError)
+			{
+				characterInstance = default(CharacterInstance);
+				return WorkerError.Skipped;
+			}
+
+			IEnumerable<Backyard.ImageInput> images = backupData.images
+				.Select(i => new Backyard.ImageInput {
+					asset = new AssetFile() {
+						name = i.filename,
+						data = AssetData.FromBytes(i.data),
+						ext = i.ext,
+						assetType = AssetFile.AssetType.Icon,
+					},
+					fileExt = i.ext,
+				});
+
+			images = images.Union(backupData.backgrounds
+				.Select(i => new Backyard.ImageInput {
+					asset = new AssetFile() {
+						name = i.filename,
+						data = AssetData.FromBytes(i.data),
+						ext = i.ext,
+						assetType = AssetFile.AssetType.Background,
+					},
+					fileExt = i.ext,
+				}));
+
+			// Use default model settings
+			foreach (var chat in backupData.chats)
+				chat.parameters = AppSettings.BackyardSettings.UserSettings;
+
+			// Write character to database
+			Backyard.Link.Image[] imageLinks; // Ignored
+			Backyard.Error error = Backyard.CreateNewCharacter(backupData.characterCard, images.ToArray(), backupData.chats.ToArray(), out characterInstance, out imageLinks, parentFolder);
+
+			if (error != Backyard.Error.NoError)
+				return WorkerError.DatabaseError;
+			return WorkerError.NoError;
 		}
 	}
 }

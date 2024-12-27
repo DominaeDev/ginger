@@ -309,11 +309,16 @@ namespace Ginger
 
 		private bool ImportCharacterJson()
 		{
+			int filter = AppSettings.User.LastImportCharacterFilter;
+			if (filter < 0 || filter > 5)
+				filter = 0;
+
 			// Open file...
 			importFileDialog.Title = Resources.cap_import_character;
 			importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml";
-			importFileDialog.FilterIndex = AppSettings.User.LastImportCharacterFilter;
+			importFileDialog.FilterIndex = filter;
 			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			importFileDialog.FileName = "";
 			var result = importFileDialog.ShowDialog();
 			if (result != DialogResult.OK)
 				return false;
@@ -580,15 +585,19 @@ namespace Ginger
 			else if (string.IsNullOrWhiteSpace(Current.Character.spokenName) == false)
 				filename = Current.Character.spokenName;
 
+			int filter = AppSettings.User.LastExportCharacterFilter;
+			if (filter < 0 || filter > 9)
+				filter = 0; 
+
 			if (string.IsNullOrEmpty(filename) == false)
 			{
-				if (AppSettings.User.LastExportCharacterFilter == 5
-					|| AppSettings.User.LastExportCharacterFilter == 6
-					|| AppSettings.User.LastExportCharacterFilter == 7) // png
+				if (filter == 5
+					|| filter == 6
+					|| filter == 7) // png
 					filename = string.Concat(filename, ".png");
-				else if (AppSettings.User.LastExportCharacterFilter == 8) // charx
+				else if (filter == 8) // charx
 					filename = string.Concat(filename, ".charx");
-				else if (AppSettings.User.LastExportCharacterFilter == 9) // yaml
+				else if (filter == 9) // yaml
 					filename = string.Concat(filename, ".yaml");
 				else // json
 					filename = string.Concat(filename, ".json");
@@ -599,7 +608,7 @@ namespace Ginger
 			exportFileDialog.Filter = "Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard AI PNG|*.png|CharX file|*.charx|Text generation web ui YAML|*.yaml";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
-			exportFileDialog.FilterIndex = AppSettings.User.LastExportCharacterFilter;
+			exportFileDialog.FilterIndex = filter;
 			exportFileDialog.OverwritePrompt = true;
 			var result = exportFileDialog.ShowDialog();
 			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
@@ -1893,6 +1902,8 @@ namespace Ginger
 				ext = "charx";
 			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.Yaml))
 				ext = "yaml";
+			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.Backup))
+				ext = "zip";
 			else
 				return false; // Error
 
@@ -1919,14 +1930,27 @@ namespace Ginger
 			AppSettings.Paths.LastImportExportPath = outputDirectory;
 		
 			var filenames = new List<string>(dlg.Characters.Length);
-			foreach (var character in dlg.Characters)
+			if (formatDialog.FileFormat.Contains(FileUtil.FileType.Backup))
 			{
-				filenames.Add(Path.Combine(outputDirectory, 
-					Utility.MakeUniqueFilename(string.Format("{0}_{1}.{2}",
-						character.displayName,
-						character.creationDate.ToFileTimeUtc() / 1000L,
-						ext))
-				));
+				string now = DateTime.Now.ToString("yyyy-MM-dd");
+				foreach (var character in dlg.Characters)
+				{
+					filenames.Add(Path.Combine(outputDirectory,
+						Utility.MakeUniqueFilename(string.Concat(character.displayName.Replace(" ", "_"), " - ", now, ".backup.zip"))
+					));
+				}
+			}
+			else
+			{
+				foreach (var character in dlg.Characters)
+				{
+					filenames.Add(Path.Combine(outputDirectory,
+						Utility.MakeUniqueFilename(string.Format("{0}_{1}.{2}",
+							character.displayName,
+							character.creationDate.ToFileTimeUtc() / 1000L,
+							ext))
+					));
+				}
 			}
 
 			// Confirm overwrite?
@@ -2080,14 +2104,18 @@ namespace Ginger
 			try
 			{
 				importFileDialog.Title = Resources.cap_import_character;
-				importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml";
+				importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml;*.zip|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml|Ginger backup files|*.zip";
 				importFileDialog.FilterIndex = AppSettings.User.LastImportCharacterFilter;
 				importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 				importFileDialog.Multiselect = true;
+				importFileDialog.FileName = "";
 
 				var mr = importFileDialog.ShowDialog();
 				if (mr != DialogResult.OK || importFileDialog.FileNames.Length == 0)
 					return false;
+
+				AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileNames[0]);
+				AppSettings.User.LastImportCharacterFilter = importFileDialog.FilterIndex;
 			}
 			finally
 			{
@@ -2152,9 +2180,6 @@ namespace Ginger
 			// Confirm
 			if (MessageBox.Show(string.Format(Resources.msg_link_confirm_import_many, NumCharacters(filenames.Length)), Resources.cap_link_import_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
 				return false;
-
-			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(filenames[0]);
-			AppSettings.User.LastImportCharacterFilter = importFileDialog.FilterIndex;
 
 			// Create Ginger import folder
 			FolderInstance importFolder;
@@ -2370,7 +2395,7 @@ namespace Ginger
 			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
 			AppSettings.User.LastExportChatFilter = exportFileDialog.FilterIndex;
 
-			if (BackupUtil.WriteBackup(exportFileDialog.FileName, backup) == false)
+			if (BackupUtil.WriteBackup(exportFileDialog.FileName, backup) != FileUtil.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_write_file, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;

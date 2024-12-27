@@ -18,11 +18,14 @@ namespace Ginger
 			NoError,
 			InvalidData,
 			InvalidJson,
-			NoDataFound,
-			FileReadError,
-			FileNotFound,
 			UnrecognizedFormat,
+			NoDataFound,
+			FileNotFound,
+			FileReadError,
+			FileWriteError,
+			DiskFullError,
 			FallbackError,
+			UnknownError,
 		}
 
 		public static readonly Encoding UTF8WithoutBOM = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
@@ -852,6 +855,7 @@ namespace Ginger
 			Csv				= 1 << 2,
 			Yaml			= 1 << 3,
 			CharX			= 1 << 4,
+			Backup			= 1 << 5,
 
 			Character		= 1 << 10,
 			Lorebook		= 1 << 11,
@@ -888,6 +892,9 @@ namespace Ginger
 
 			if (ext == ".charx")
 				return FileType.CharX;
+
+			if (ext == ".zip")
+				return FileType.Backup;
 			
 			if (ext != ".png")
 				return FileType.Unknown;
