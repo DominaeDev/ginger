@@ -20,7 +20,7 @@ namespace Ginger
 
 		public static TextFileChat FromChat(ChatInstance chatInstance, string[] names)
 		{
-			if (chatInstance == null || chatInstance.history.isEmpty)
+			if (chatInstance == null)
 				return null;
 
 			var lsMessages = new List<Message>(chatInstance.history.count);

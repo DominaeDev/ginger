@@ -27,6 +27,7 @@ namespace Ginger.Integration
 		public class Chat
 		{
 			public string name;
+			public string[] participants;
 			public DateTime creationDate;
 			public DateTime updateDate;
 			public ChatHistory history;
@@ -74,8 +75,14 @@ namespace Ginger.Integration
 							bgName = string.Format("background_{0:00}.{1}", index + 1, Utility.GetFileExt(c.staging.background.imageUrl));
 					}
 
+					List<CharacterInstance> participants = new List<CharacterInstance>(4);
+					participants.Add(c.participants.Select(id => Backyard.GetCharacter(id)).FirstOrDefault(cc => cc.isUser)); // User first
+					participants.AddRange(c.participants.Select(id => Backyard.GetCharacter(id)).Where(cc => cc.isUser == false));
+
 					return new BackupData.Chat() {
 						name = c.name,
+						participants = participants.Select(cc => cc.name).ToArray(),
+
 						history = c.history,
 						staging = c.staging,
 						parameters = c.parameters,
@@ -176,23 +183,48 @@ namespace Ginger.Integration
 				// Delete temporary file
 				File.Delete(intermediateCardFilename);
 
+				// Write chat logs
 				List<KeyValuePair<string, string>> chats = new List<KeyValuePair<string, string>>();
-				foreach (var chat in backup.chats.OrderBy(c => c.creationDate))
+				foreach (var backupChat in backup.chats.OrderBy(c => c.creationDate))
 				{
-					string chatFilename = string.Format("chatLog_{0}_{1}.json", backup.characterCard.data.displayName, chat.creationDate.ToUnixTimeSeconds()).Replace(" ", "_");
+					// Backyard-compatible format
+					{
+						string chatFilename = string.Format("chatLog_{0}_{1}.json", backup.characterCard.data.displayName, backupChat.creationDate.ToUnixTimeSeconds()).Replace(" ", "_");
 
-					var chatBackup = BackyardChatBackupV2.FromChat(new BackupData.Chat() {
-						name = chat.name,
-						creationDate = chat.creationDate,
-						updateDate = chat.updateDate,
-						staging = chat.staging,
-						parameters = chat.parameters,
-						backgroundName = chat.backgroundName,
-						history = ChatHistory.LegacyFix(chat.history),
-					});
-					string json = chatBackup.ToJson();
-					if (json != null)
-						chats.Add(new KeyValuePair<string, string>(chatFilename, json));
+						var chat = BackyardChatBackupV2.FromChat(new BackupData.Chat() {
+							name = backupChat.name,
+							creationDate = backupChat.creationDate,
+							updateDate = backupChat.updateDate,
+							staging = backupChat.staging,
+							parameters = backupChat.parameters,
+							backgroundName = backupChat.backgroundName,
+							history = ChatHistory.LegacyFix(backupChat.history),
+						});
+						string json = chat.ToJson();
+						if (json != null)
+							chats.Add(new KeyValuePair<string, string>(chatFilename, json));
+					}
+
+					// Ginger format
+					{
+						string chatFilename = string.Format("chatLog_{0}_{1}.ginger.json", backup.characterCard.data.displayName, backupChat.creationDate.ToUnixTimeSeconds()).Replace(" ", "_");
+
+						var gingerChat = GingerChat.FromBackup(new BackupData.Chat() {
+							name = backupChat.name,
+							participants = backupChat.participants,
+							creationDate = backupChat.creationDate,
+							updateDate = backupChat.updateDate,
+							staging = backupChat.staging,
+							parameters = backupChat.parameters,
+							backgroundName = backupChat.backgroundName,
+							history = ChatHistory.LegacyFix(backupChat.history),
+						});
+
+						string json = gingerChat.ToJson();
+						if (json != null)
+							chats.Add(new KeyValuePair<string, string>(chatFilename, json));
+					}
+
 				}
 
 				// Create zip archive
@@ -295,7 +327,7 @@ namespace Ginger.Integration
 			FaradayCardV4 characterCard = null;
 			List<BackupData.Image> images = new List<BackupData.Image>();
 			List<BackupData.Image> backgrounds = new List<BackupData.Image>();
-			List<BackupData.Chat> chats = new List<BackupData.Chat>();
+			Dictionary<string, BackupData.Chat> chats = new Dictionary<string, BackupData.Chat>();
 
 			try
 			{
@@ -350,7 +382,14 @@ namespace Ginger.Integration
 									dataStream.Read(buffer, 0, (int)dataSize);
 									string chatJson = new string(Encoding.UTF8.GetChars(buffer));
 
-									if (BackyardChatBackupV2.Validate(chatJson))
+									if (entryName.EndsWith(".ginger") && GingerChat.Validate(chatJson))
+									{
+										entryName = Path.GetFileNameWithoutExtension(entryName);
+										var chat = GingerChat.FromJson(chatJson);
+										if (chat != null)
+											chats.Set(entryName.ToLowerInvariant(), chat.ToBackupChat());
+									}
+									else if (BackyardChatBackupV2.Validate(chatJson))
 									{
 										var chatBackup = BackyardChatBackupV2.FromJson(chatJson);
 										if (chatBackup != null)
@@ -359,7 +398,7 @@ namespace Ginger.Integration
 											if (chat.name == null)
 												chat.name = ChatInstance.DefaultName;
 
-											chats.Add(chat);
+											chats.TryAdd(entryName.ToLowerInvariant(), chat);
 										}
 									}
 									else if (BackyardChatBackupV1.Validate(chatJson))
@@ -371,7 +410,7 @@ namespace Ginger.Integration
 											if (chat.name == null)
 												chat.name = ChatInstance.DefaultName;
 
-											chats.Add(chat);
+											chats.TryAdd(entryName.ToLowerInvariant(), chat);
 										}
 									}
 								}
@@ -435,7 +474,7 @@ namespace Ginger.Integration
 
 				backup = new BackupData() {
 					characterCard = characterCard,
-					chats = chats,
+					chats = chats.Values.ToList(),
 					images = images,
 					backgrounds = backgrounds,
 				};

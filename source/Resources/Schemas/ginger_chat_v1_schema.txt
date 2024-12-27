@@ -1,65 +1,117 @@
 {
-  "type": "object",
-  "properties": {
-    "title": {
-      "required": false,
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "createdAt": {
-      "required": false,
-      "type": "integer"
-    },
-    "speakers": {
-      "required": true,
-      "type": "object",
-      "additionalProperties": {
-        "type": [
-          "string",
-          "null"
-        ]
-      }
-    },
-    "messages": {
-      "required": true,
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "type": [
-          "object",
-          "null"
-        ],
-        "properties": {
-          "speaker": {
-            "required": true,
-            "type": "string"
-          },
-          "message": {
-            "required": true,
-            "type": "string"
-          },
-          "timestamp": {
-            "required": false,
-            "type": "integer"
-          },
-          "regens": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "type": [
-                "string",
-                "null"
-              ]
-            }
-          }
-        }
-      }
-    }
-  }
+	"type": "object",
+	"properties": {
+		"title": {
+			"type": ["string", "null"]
+		},
+		"createdAt": {
+			"type": "integer"
+		},
+		"speakers": {
+			"required": true,
+			"required": false,
+			"type": ["object"],
+			"properties": {}
+		},
+		"staging": {
+			"type": ["object", "null"],
+			"properties": {
+				"system": {
+					"type": ["string", "null"]
+				},
+				"greeting": {
+					"type": ["string", "null"]
+				},
+				"scenario": {
+					"type": ["string", "null"]
+				},
+				"example": {
+					"type": ["string", "null"]
+				},
+				"grammar": {
+					"type": ["string", "null"]
+				},
+				"authorNote": {
+					"type": ["string", "null"]
+				},
+				"pruneExampleChat": {
+					"type": "boolean"
+				},
+				"ttsAutoPlay": {
+					"type": "boolean"
+				},
+				"ttsInputFilter": {
+					"type": ["string", "null"]
+				}
+			}
+		},
+		"parameters": {
+			"type": ["object", "null"],
+			"properties": {
+				"model": {
+					"type": ["string", "null"]
+				},
+				"temperature": {
+					"required": true,
+					"type": "number"
+				},
+				"topP": {
+					"required": true,
+					"type": "number"
+				},
+				"minP": {
+					"required": true,
+					"type": "number"
+				},
+				"topK": {
+					"required": true,
+					"type": "integer"
+				},
+				"minPEnabled": {
+					"required": true,
+					"type": "boolean"
+				},
+				"repeatLastN": {
+					"required": true,
+					"type": "integer"
+				},
+				"repeatPenalty": {
+					"required": true,
+					"type": "number"
+				},
+				"promptTemplate": {
+					"type": ["string", "null"]
+				}
+			}
+		},
+		"background": {
+			"type": ["string", "null"]
+		},
+		"messages": {
+			"required": true,
+			"type": ["array", "null"],
+			"items": {
+				"type": ["object", "null"],
+				"properties": {
+					"speaker": {
+						"required": true,
+						"type": "string"
+					},
+					"text": {
+						"required": true,
+						"type": "string"
+					},
+					"timestamp": {
+						"type": "integer"
+					},
+					"regens": {
+						"type": ["array", "null"],
+						"items": {
+							"type": ["string", "null"]
+						}
+					}
+				}
+			}
+		}
+	}
 }

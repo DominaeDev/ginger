@@ -306,7 +306,7 @@ namespace Ginger.Integration
 
 			try
 			{
-				string intermediateFilename = Path.GetRandomFileName();
+				string intermediateFilename = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 				var writeError = BackupUtil.WriteBackup(intermediateFilename, backupData);
 
 				// Write to disk

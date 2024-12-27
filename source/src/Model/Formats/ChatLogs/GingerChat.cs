@@ -18,6 +18,7 @@ namespace Ginger
 		{
 //			JsonSchemaGenerator generator = new JsonSchemaGenerator();
 //			JsonSchema schema = generator.Generate(typeof(GingerChat));
+//			string json = schema.ToString();
 			_schema = JsonSchema.Parse(Resources.ginger_chat_v1_schema);
 		}
 
@@ -30,6 +31,15 @@ namespace Ginger
 		[JsonProperty("speakers", Required = Required.Always)]
 		[JsonConverter(typeof(JsonSpeakerListConverter))]
 		public SpeakerList speakers = new SpeakerList();
+		
+		[JsonProperty("staging", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+		public Staging staging = null;
+
+		[JsonProperty("parameters", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+		public Parameters parameters = null;
+
+		[JsonProperty("background", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+		public string backgroundName = null;
 
 		public class SpeakerList : List<Speaker>
 		{
@@ -59,17 +69,78 @@ namespace Ginger
 			public string[] regens = null;
 		}
 
+		[JsonProperty("messages", Required = Required.Always)]
 		public Message[] messages;
 
 		public struct Speaker
 		{
 			public string id;
 			public string name;
-
 		}
+
+		public class Staging
+		{
+			[JsonProperty("system", Required = Required.AllowNull)]
+			public string system = null;
+
+			[JsonProperty("greeting", Required = Required.AllowNull)]
+			public string greeting = null;
+
+			[JsonProperty("scenario", Required = Required.AllowNull)]
+			public string scenario = null;
+
+			[JsonProperty("example", Required = Required.AllowNull)]
+			public string example = null;
+
+			[JsonProperty("grammar", Required = Required.AllowNull)]
+			public string grammar = null;
+
+			[JsonProperty("authorNote", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+			public string authorNote = "";
+
+			[JsonProperty("pruneExampleChat")]
+			public bool pruneExampleChat = true;
+
+			[JsonProperty("ttsAutoPlay")]
+			public bool ttsAutoPlay = false;
+
+			[JsonProperty("ttsInputFilter", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+			public string ttsInputFilter = null;
+		}
+
+		public class Parameters
+		{
+			[JsonProperty("model", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+			public string model = "";
+
+			[JsonProperty("temperature")]
+			public decimal temperature = 1.2m;
+
+			[JsonProperty("topP")]
+			public decimal topP = 0.9m;
+
+			[JsonProperty("minP")]
+			public decimal minP = 0.1m;
+
+			[JsonProperty("topK")]
+			public int topK = 30;
+
+			[JsonProperty("minPEnabled")]
+			public bool minPEnabled = true;
+
+			[JsonProperty("repeatLastN")]
+			public int repeatLastN = 256;
+
+			[JsonProperty("repeatPenalty")]
+			public decimal repeatPenalty = 1.05m;
+
+			[JsonProperty("promptTemplate", Required = Required.Default, NullValueHandling = NullValueHandling.Include)]
+			public string promptTemplate = null;
+		}
+
 		public static GingerChat FromChat(ChatInstance chatInstance, SpeakerList speakers)
 		{
-			if (speakers == null || chatInstance == null || chatInstance.history.isEmpty)
+			if (speakers == null || chatInstance == null)
 				return null;
 
 			var lsMessages = new List<Message>(chatInstance.history.count);
@@ -101,6 +172,81 @@ namespace Ginger
 				createdAt = chatInstance.creationDate.ToUnixTimeMilliseconds(),
 				messages = lsMessages.ToArray(),
 			};
+		}
+
+		public static GingerChat FromBackup(BackupData.Chat backup)
+		{
+			if (backup == null)
+				return null;
+
+			var speakers = new SpeakerList();
+			for (int i = 0; i < backup.participants.Length; ++i)
+			{
+				speakers.Add(new Speaker() {
+					id = i.ToString(),
+					name = backup.participants[i],
+				});
+			}
+
+			var lsMessages = new List<Message>(backup.history.count);
+
+			foreach (var message in backup.history.messages) // Include greeting
+			{
+				if (message.swipes.Length > 1)
+				{
+					lsMessages.Add(new Message() {
+						speakerId = speakers[message.speaker].id,
+						text = message.text,
+						regens = message.swipes,
+						timestamp = message.creationDate.ToUnixTimeMilliseconds(),
+					});
+				}
+				else
+				{
+					lsMessages.Add(new Message() {
+						speakerId = speakers[message.speaker].id,
+						text = message.text,
+						timestamp = message.creationDate.ToUnixTimeMilliseconds(),
+					});
+				}
+			}
+
+			var chat = new GingerChat() {
+				title = backup.name,
+				speakers = speakers,
+				createdAt = backup.creationDate.ToUnixTimeMilliseconds(),
+				messages = lsMessages.ToArray(),
+			};
+			chat.backgroundName = backup.backgroundName;
+			if (backup.staging != null)
+			{
+				chat.staging = new Staging() {
+					system = backup.staging.system ?? "",
+					scenario = backup.staging.scenario ?? "",
+					greeting = backup.staging.greeting ?? "",
+					example = backup.staging.example ?? "",
+					grammar = backup.staging.grammar ?? "",
+					authorNote = backup.staging.authorNote ?? "",
+					pruneExampleChat = backup.staging.pruneExampleChat,
+					ttsAutoPlay = backup.staging.ttsAutoPlay,
+					ttsInputFilter = backup.staging.ttsInputFilter ?? "default",
+				};
+			}
+			if (backup.parameters != null)
+			{
+				chat.parameters = new Parameters() {
+					model = backup.parameters.model ?? Backyard.DefaultModel,
+					temperature = backup.parameters.temperature,
+					topP = backup.parameters.topP,
+					minP = backup.parameters.minP,
+					topK = backup.parameters.topK,
+					minPEnabled = backup.parameters.minPEnabled,
+					repeatLastN = backup.parameters.repeatLastN,
+					repeatPenalty = backup.parameters.repeatPenalty,
+					promptTemplate = backup.parameters.promptTemplate,
+				};
+			}
+			return chat;
 		}
 
 		public ChatHistory ToChat()
@@ -151,9 +297,52 @@ namespace Ginger
 			}
 
 			return new ChatHistory() {
-				name = this.title,
+				name = Utility.FirstNonEmpty(this.title, ChatInstance.DefaultName),
 				messages = result.ToArray(),
 			};
+		}
+
+		public BackupData.Chat ToBackupChat()
+		{
+			var chat = new BackupData.Chat() {
+				name = title ?? ChatInstance.DefaultName,
+				creationDate = DateTimeExtensions.FromUnixTime(createdAt),
+				updateDate = DateTimeExtensions.FromUnixTime(createdAt),
+				backgroundName = backgroundName,
+				history = ToChat(),
+			};
+
+			if (this.staging != null)
+			{
+				chat.staging = new ChatStaging() {
+					system = this.staging.system ?? "",
+					scenario = this.staging.scenario ?? "",
+					greeting = this.staging.greeting ?? "",
+					example = this.staging.example ?? "",
+					grammar = this.staging.grammar ?? "",
+					pruneExampleChat = this.staging.pruneExampleChat,
+					authorNote = this.staging.authorNote ?? "",
+					ttsAutoPlay = this.staging.ttsAutoPlay,
+					ttsInputFilter = this.staging.ttsInputFilter ?? "default",
+				};
+			}
+
+			if (this.parameters != null)
+			{
+				chat.parameters = new ChatParameters() {
+					model = this.parameters.model ?? Backyard.DefaultModel,
+					temperature = this.parameters.temperature,
+					topP = this.parameters.topP,
+					minP = this.parameters.minP,
+					minPEnabled = this.parameters.minPEnabled,
+					topK = this.parameters.topK,
+					repeatPenalty = this.parameters.repeatPenalty,
+					repeatLastN = this.parameters.repeatLastN,
+					promptTemplate = this.parameters.promptTemplate,
+				};
+			}
+
+			return chat;
 		}
 
 		private void Anonymize(ref string text)
