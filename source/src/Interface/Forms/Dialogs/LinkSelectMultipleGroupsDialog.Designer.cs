@@ -1,7 +1,7 @@
 ﻿
 namespace Ginger
 {
-	partial class LinkSelectMultipleGroupDialog
+	partial class LinkSelectMultipleGroupsDialog
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -36,7 +36,7 @@ namespace Ginger
 			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
             treeNode1,
             treeNode2});
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectMultipleGroupDialog));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectMultipleGroupsDialog));
 			this.btnCancel = new Ginger.ButtonEx();
 			this.btnOk = new Ginger.ButtonEx();
 			this.listPanel = new System.Windows.Forms.Panel();

@@ -186,6 +186,8 @@ namespace Ginger {
 			this.statusBarActor = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
+			this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripSeparator();
+			this.deleteCharactersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -1435,7 +1437,9 @@ namespace Ginger {
             this.bulkEditModelSettingsMenuItem,
             this.toolStripMenuItem15,
             this.bulkImportMenuItem,
-            this.bulkExportMenuItem});
+            this.bulkExportMenuItem,
+            this.toolStripMenuItem12,
+            this.deleteCharactersMenuItem});
 			this.bulkOperationsMenuItem.Name = "bulkOperationsMenuItem";
 			this.bulkOperationsMenuItem.Size = new System.Drawing.Size(250, 22);
 			this.bulkOperationsMenuItem.Text = "Bulk operations";
@@ -1718,6 +1722,18 @@ namespace Ginger {
 			this.statusConnectionIcon.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusConnectionIcon.Size = new System.Drawing.Size(24, 17);
 			// 
+			// toolStripMenuItem12
+			// 
+			this.toolStripMenuItem12.Name = "toolStripMenuItem12";
+			this.toolStripMenuItem12.Size = new System.Drawing.Size(279, 6);
+			// 
+			// deleteCharactersMenuItem
+			// 
+			this.deleteCharactersMenuItem.Name = "deleteCharactersMenuItem";
+			this.deleteCharactersMenuItem.Size = new System.Drawing.Size(282, 22);
+			this.deleteCharactersMenuItem.Text = "Delete characters...";
+			this.deleteCharactersMenuItem.Click += new System.EventHandler(this.deleteCharactersMenuItem_Click);
+			// 
 			// MainForm
 			// 
 			this.AllowDrop = true;
@@ -1914,6 +1930,8 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripStatusLabel statusEmbeddedAssets;
 		private System.Windows.Forms.ToolStripMenuItem repairLegacyChatsMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem writeAuthorNoteMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem12;
+		private System.Windows.Forms.ToolStripMenuItem deleteCharactersMenuItem;
 	}
 }
 

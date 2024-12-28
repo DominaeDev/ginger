@@ -588,6 +588,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete characters.
+        /// </summary>
+        internal static string cap_link_delete_characters {
+            get {
+                return ResourceManager.GetString("cap_link_delete_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete chat.
         /// </summary>
         internal static string cap_link_delete_chat {
@@ -2189,34 +2198,33 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to {
-        ///  &quot;type&quot;: &quot;object&quot;,
-        ///  &quot;properties&quot;: {
-        ///    &quot;title&quot;: {
-        ///      &quot;required&quot;: false,
-        ///      &quot;type&quot;: [
-        ///        &quot;string&quot;,
-        ///        &quot;null&quot;
-        ///      ]
-        ///    },
-        ///    &quot;createdAt&quot;: {
-        ///      &quot;required&quot;: false,
-        ///      &quot;type&quot;: &quot;integer&quot;
-        ///    },
-        ///    &quot;speakers&quot;: {
-        ///      &quot;required&quot;: true,
-        ///      &quot;type&quot;: &quot;object&quot;,
-        ///      &quot;additionalProperties&quot;: {
-        ///        &quot;type&quot;: [
-        ///          &quot;string&quot;,
-        ///          &quot;null&quot;
-        ///        ]
-        ///      }
-        ///    },
-        ///    &quot;messages&quot;: {
-        ///      &quot;required&quot;: true,
-        ///      &quot;type&quot;: [
-        ///        &quot;array&quot;,
-        ///        &quot;nul [rest of string was truncated]&quot;;.
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;title&quot;: {
+        ///			&quot;type&quot;: [&quot;string&quot;, &quot;null&quot;]
+        ///		},
+        ///		&quot;createdAt&quot;: {
+        ///			&quot;type&quot;: &quot;integer&quot;
+        ///		},
+        ///		&quot;speakers&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;required&quot;: false,
+        ///			&quot;type&quot;: [&quot;object&quot;],
+        ///			&quot;properties&quot;: {}
+        ///		},
+        ///		&quot;staging&quot;: {
+        ///			&quot;type&quot;: [&quot;object&quot;, &quot;null&quot;],
+        ///			&quot;properties&quot;: {
+        ///				&quot;system&quot;: {
+        ///					&quot;type&quot;: [&quot;string&quot;, &quot;null&quot;]
+        ///				},
+        ///				&quot;greeting&quot;: {
+        ///					&quot;type&quot;: [&quot;string&quot;, &quot;null&quot;]
+        ///				},
+        ///				&quot;scenario&quot;: {
+        ///					&quot;type&quot;: [&quot;string&quot;, &quot;null&quot;]
+        ///				},
+        ///				&quot;example&quot;:  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ginger_chat_v1_schema {
             get {
@@ -2685,6 +2693,17 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will permanently delete {0} from Backyard AI.
+        ///
+        ///Are you sure you want to delete {1}?.
+        /// </summary>
+        internal static string msg_link_delete_characters_confirm {
+            get {
+                return ResourceManager.GetString("msg_link_delete_characters_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This will delete &apos;{0}&apos; and all of its messages. This action cannot be reversed.
         ///
         ///Are you sure you want to permanently delete this chat?.
@@ -2692,6 +2711,37 @@ namespace Ginger.Properties {
         internal static string msg_link_delete_confirm {
             get {
                 return ResourceManager.GetString("msg_link_delete_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully deleted {0} from Backyard AI..
+        /// </summary>
+        internal static string msg_link_deleted_characters {
+            get {
+                return ResourceManager.GetString("msg_link_deleted_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully deleted {0} from Backyard AI, including the group chats they participating in..
+        /// </summary>
+        internal static string msg_link_deleted_characters_and_groups {
+            get {
+                return ResourceManager.GetString("msg_link_deleted_characters_and_groups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One ore more of the selected characters are participating in group chats.
+        ///
+        ///Choose &apos;Yes&apos; to delete associated group chats.
+        ///Choose &apos;No&apos; to keep associated group chats.
+        ///Choose &apos;Cancel&apos; to abort..
+        /// </summary>
+        internal static string msg_link_evict_from_group_confirm {
+            get {
+                return ResourceManager.GetString("msg_link_evict_from_group_confirm", resourceCulture);
             }
         }
         

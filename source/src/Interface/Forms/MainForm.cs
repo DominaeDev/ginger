@@ -2565,6 +2565,11 @@ namespace Ginger
 		{
 			AppSettings.BackyardLink.WriteAuthorNote = !AppSettings.BackyardLink.WriteAuthorNote;
 		}
+
+		private void deleteCharactersMenuItem_Click(object sender, EventArgs e)
+		{
+			DeleteBackyardCharacters();
+		}
 	}
 
 	public interface IIdleHandler

@@ -44,44 +44,7 @@ namespace Ginger
 
 			btnOk.Enabled = false;
 		}
-
-		private string GetGroupName(GroupInstance group)
-		{
-			if (string.IsNullOrEmpty(group.name) == false)
-			{
-				return group.name;
-			}
-			else
-			{
-				var characters = group.members
-					.Select(id => _charactersById.GetOrDefault(id))
-					.OrderBy(c => c.creationDate)
-					.Where(c => c.isUser == false)
-					.ToArray();
-
-				if (characters.Length > 1)
-				{
-					return string.Concat(characters[0].displayName ?? Constants.DefaultCharacterName, " (and others)");
-
-/*					string[] memberNames = characters
-						.Select(c => c.name ?? Constants.DefaultCharacterName)
-						.OrderBy(c => c)
-						.ToArray();
-					string groupTitle = string.Join(", ", memberNames.Take(3));
-					if (memberNames.Length > 3)
-						groupTitle += ", ...";
-					
-					return groupTitle; */
-				}
-				else
-				{
-					return characters
-						.Select(c => c.displayName)
-						.FirstOrDefault() ?? Constants.DefaultCharacterName;
-				}
-			}
-		}
-
+				
 		private DateTime GetLatestMessageTime(GroupInstance group)
 		{
 			Backyard.ChatCount count;
@@ -151,7 +114,7 @@ namespace Ginger
 			if (AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByName)
 			{
 				sortedGroups = sortedGroups
-					.OrderBy(g => GetGroupName(g))
+					.OrderBy(g => g.GetDisplayName())
 					.ThenByDescending(c => c.creationDate);
 			}
 			else if (AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByCreation)
@@ -200,7 +163,7 @@ namespace Ginger
 			TreeNode parentNode;
 			nodes.TryGetValue(group.folderId, out parentNode);
 
-			string groupLabel = GetGroupName(group);
+			string groupLabel = group.GetDisplayName();
 			var sbTooltip = new StringBuilder();
 
 			CharacterInstance[] characters = group.members

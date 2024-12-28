@@ -43,6 +43,36 @@ namespace Ginger.Integration
 		{
 			get { return string.IsNullOrEmpty(instanceId) || members == null || members.Length == 0; }
 		}
+
+		public string[] GetMemberNames(bool includingUser = false)
+		{
+			if (includingUser)
+			{
+				return this.members
+					.Select(id => Backyard.GetCharacter(id))
+					.OrderBy(c => !c.isUser)
+					.Select(c => c.displayName)
+					.ToArray();
+			}
+			else
+			{
+				return this.members
+					.Select(id => Backyard.GetCharacter(id).name)
+					.ToArray();
+			}
+		}
+
+		public string GetDisplayName()
+		{
+			if (string.IsNullOrEmpty(this.name) == false)
+				return this.name;
+
+			var names = GetMemberNames(false);
+			if (members.Length == 1)
+				return names[0] ?? Constants.DefaultCharacterName;
+			else
+				return string.Concat(names[0] ?? Constants.DefaultCharacterName, " (and others)");
+		}
 	}
 
 	public struct FolderInstance
@@ -2311,6 +2341,563 @@ namespace Ginger.Integration
 				return Error.Unknown;
 			}
 		}
+
+		public struct ConfirmDeleteResult
+		{
+			public string[] characterIds;
+			public string[] soloGroupIds;
+			public string[] multiGroupIds;
+			public string[] imageIds;
+			public string[] imageUrls;
+		}
+
+		public static Error ConfirmDeleteCharacters(CharacterInstance[] characterInstances, out ConfirmDeleteResult result)
+		{
+			if (ConnectionEstablished == false)
+			{
+				result = default(ConfirmDeleteResult);
+				return Error.NotConnected;
+			}
+
+			if (characterInstances == null || characterInstances.Length == 0)
+			{
+				result = default(ConfirmDeleteResult);
+				return Error.InvalidArgument;
+			}
+
+			HashSet<string> characterIds = new HashSet<string>(characterInstances.Select(c => c.instanceId));
+			HashSet<string> configIds = new HashSet<string>(characterInstances.Select(c => c.configId));
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					// Fetch character-group memberships
+					var groupMembers = new Dictionary<string, HashSet<string>>(); // group, characterIds...
+					using (var cmdGroup = connection.CreateCommand())
+					{
+						cmdGroup.CommandText =
+						@"
+							SELECT 
+								A, B
+							FROM _CharacterConfigToGroupConfig
+						";
+
+						using (var reader = cmdGroup.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string characterId = reader.GetString(0);
+								string groupId = reader.GetString(1);
+
+								if (groupMembers.ContainsKey(groupId) == false)
+									groupMembers.Add(groupId, new HashSet<string>());
+
+								groupMembers[groupId].Add(characterId);
+							}
+						}
+					}
+
+					groupMembers = groupMembers
+						.Where(kvp => kvp.Value.ContainsAnyIn(characterIds))
+						.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+					// AppImage
+					Dictionary<string, string> images = new Dictionary<string, string>();
+					using (var cmdAppImage = connection.CreateCommand())
+					{
+						cmdAppImage.CommandText =
+						@"
+							SELECT 
+								A.B, B.id, B.imageUrl
+							FROM _AppImageToCharacterConfigVersion as A
+							INNER JOIN AppImage as B ON B.id = A.A
+						";
+
+						using (var reader = cmdAppImage.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string configId = reader.GetString(0);
+								string imageId = reader.GetString(1);
+								string imageUrl = reader.GetString(2);
+								if (configIds.Contains(configId))
+									images.Add(imageId, imageUrl);
+							}
+						}
+					}
+
+
+					List<string> backgroundUrls = new List<string>();
+
+					if (CheckFeature(Feature.ChatBackgrounds))
+					{
+						// Find backgrounds (chats)
+						var groupIds = groupMembers.Keys.ToArray();
+						using (var cmdBackgrounds = connection.CreateCommand())
+						{
+							var sbCommand = new StringBuilder();
+							sbCommand.Append(
+							@"
+								SELECT imageUrl
+								FROM BackgroundChatImage
+								WHERE chatId IN (
+									SELECT id
+									FROM Chat
+									WHERE groupConfigId IN (
+								");
+
+							for (int i = 0; i < groupIds.Length; ++i)
+							{
+								if (i > 0)
+									sbCommand.Append(", ");
+								sbCommand.AppendFormat("'{0}'", groupIds[i]);
+							}
+							sbCommand.AppendLine("));");
+							cmdBackgrounds.CommandText = sbCommand.ToString();
+
+							using (var reader = cmdBackgrounds.ExecuteReader())
+							{
+								while (reader.Read())
+									backgroundUrls.Add(reader.GetString(0));
+							}
+						}
+					}
+
+					var soloGroupIds = groupMembers.Where(kvp => kvp.Value.Except(characterIds).Count() <= 1).Select(kvp => kvp.Key).ToArray();
+					var multiGroupIds = groupMembers.Where(kvp => kvp.Value.Except(characterIds).Count() > 1).Select(kvp => kvp.Key).ToArray();
+
+					result = new ConfirmDeleteResult() {
+						characterIds = groupMembers
+							.SelectMany(kvp => kvp.Value)
+							.Distinct()
+							.Intersect(characterIds)
+							.ToArray(),
+						soloGroupIds = soloGroupIds,
+						multiGroupIds = multiGroupIds,
+						imageIds = images.Keys.ToArray(),
+						imageUrls = images.Values.Union(backgroundUrls).Distinct().ToArray(),
+					};
+
+					return Error.NoError;
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				result = default(ConfirmDeleteResult);
+				return Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				result = default(ConfirmDeleteResult);
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				result = default(ConfirmDeleteResult);
+				return Error.Unknown;
+			}
+		}
+
+		public static Error DeleteCharacters(string[] characterIds, string[] groupIds, string[] imageIds, bool bEvictFromGroup)
+		{
+			if (ConnectionEstablished == false)
+				return Error.NotConnected;
+
+			if (characterIds == null || characterIds.Length == 0 || groupIds == null || groupIds.Length == 0)
+				return Error.InvalidArgument;
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					// Get config ids
+					Dictionary<string, string> configIds = new Dictionary<string, string>();
+					using (var cmdConfigs = connection.CreateCommand())
+					{
+						var sbCommand = new StringBuilder();
+						sbCommand.Append(
+						@"
+							SELECT 
+								id, characterConfigId
+							FROM CharacterConfigVersion
+							WHERE characterConfigId IN (");
+
+						for (int i = 0; i < characterIds.Length; ++i)
+						{
+							if (i > 0)
+								sbCommand.Append(", ");
+							sbCommand.AppendFormat("'{0}'", characterIds[i]);
+						}
+						sbCommand.AppendLine(");");
+
+						cmdConfigs.CommandText = sbCommand.ToString();
+						using (var reader = cmdConfigs.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string configId = reader.GetString(0);
+								string characterId = reader.GetString(1);
+								configIds.Add(configId, characterId);
+							}
+						}
+					}
+
+					// Find lore items
+					List<string> loreItems = new List<string>();
+					using (var cmdLore = connection.CreateCommand())
+					{
+						cmdLore.CommandText =
+						@"
+							SELECT 
+								A, B
+							FROM _AppCharacterLorebookItemToCharacterConfigVersion
+						";
+
+						using (var reader = cmdLore.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string loreId = reader.GetString(0);
+								string configId = reader.GetString(1);
+								if (configIds.ContainsKey(configId))
+									loreItems.Add(loreId);
+							}
+						}
+					}
+
+					// Delete from database
+					int updates = 0;
+					int expectedUpdates = 0;
+
+					using (var transaction = connection.BeginTransaction())
+					{
+						try
+						{
+							if (bEvictFromGroup)
+							{
+								using (var cmdEvict = connection.CreateCommand())
+								{
+									var sbCommand = new StringBuilder();
+
+									// Evict characters from group chats
+									sbCommand.AppendLine(
+									@"
+										DELETE FROM _CharacterConfigToGroupConfig
+										WHERE A IN (
+									");
+
+									for (int i = 0; i < characterIds.Length; ++i)
+									{
+										if (i > 0)
+											sbCommand.Append(", ");
+										sbCommand.AppendFormat("'{0}'", characterIds[i]);
+									}
+									sbCommand.AppendLine(");");
+									cmdEvict.CommandText = sbCommand.ToString();
+
+									int nEvicted = cmdEvict.ExecuteNonQuery();
+									expectedUpdates += nEvicted;
+									updates += nEvicted;
+								}
+							}
+
+							using (var cmdDelete = connection.CreateCommand())
+							{
+								var sbCommand = new StringBuilder();
+
+								// Delete images
+								if (imageIds.Length > 0)
+								{
+									sbCommand.AppendLine(
+									@"
+										DELETE FROM AppImage
+										WHERE id IN (
+									");
+									for (int i = 0; i < imageIds.Length; ++i)
+									{
+										if (i > 0)
+											sbCommand.Append(", ");
+										sbCommand.AppendFormat("'{0}'", imageIds[i]);
+									}
+									sbCommand.AppendLine(");");
+									expectedUpdates += imageIds.Length;
+								}
+
+								// Lore items
+								if (loreItems.Count > 0)
+								{
+									sbCommand.AppendLine(
+									@"
+										DELETE FROM AppCharacterLorebookItem
+										WHERE id IN (
+									");
+									for (int i = 0; i < loreItems.Count; ++i)
+									{
+										if (i > 0)
+											sbCommand.Append(", ");
+										sbCommand.AppendFormat("'{0}'", loreItems[i]);
+									}
+									sbCommand.AppendLine(");");
+									expectedUpdates += loreItems.Count;
+								}
+
+								// Delete groups
+								if (groupIds.Length > 0)
+								{
+									sbCommand.AppendLine(
+									@"
+										DELETE FROM GroupConfig
+										WHERE id IN (
+									");
+
+									for (int i = 0; i < groupIds.Length; ++i)
+									{
+										if (i > 0)
+											sbCommand.Append(", ");
+										sbCommand.AppendFormat("'{0}'", groupIds[i]);
+									}
+									sbCommand.AppendLine(");");
+									expectedUpdates += groupIds.Length;
+								}
+
+								if (characterIds.Length > 0)
+								{
+									// Delete characters
+									sbCommand.AppendLine(
+									@"
+										DELETE FROM CharacterConfig
+										WHERE id IN (
+									");
+
+									for (int i = 0; i < characterIds.Length; ++i)
+									{
+										if (i > 0)
+											sbCommand.Append(", ");
+										sbCommand.AppendFormat("'{0}'", characterIds[i]);
+									}
+									sbCommand.AppendLine(");");
+									expectedUpdates += characterIds.Length;
+								}
+
+								cmdDelete.CommandText = sbCommand.ToString();
+								updates += cmdDelete.ExecuteNonQuery();
+							}
+									
+							if (updates != expectedUpdates)
+							{
+								transaction.Rollback();
+								return Error.SQLCommandFailed;
+							}
+
+							transaction.Commit();
+							return Error.NoError;
+						}
+						catch (Exception e)
+						{
+							transaction.Rollback();
+							return Error.SQLCommandFailed;
+						}
+					}
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Disconnect();
+				return Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				Disconnect();
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				Disconnect();
+				return Error.Unknown;
+			}
+		}
+
+		public static Error DeleteOrphanedUsers(out string[] imageUrls)
+		{
+			if (ConnectionEstablished == false)
+			{
+				imageUrls = null;
+				return Error.NotConnected;
+			}
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					// Get user config ids
+					List<string> configIds = new List<string>();
+					List<string> characterIds = new List<string>();
+					using (var cmdUsers = connection.CreateCommand())
+					{
+						cmdUsers.CommandText =
+						@"
+							SELECT 
+								A.id, B.id
+							FROM CharacterConfig as A
+							INNER JOIN CharacterConfigVersion as B ON A.id = B.characterConfigId
+							WHERE A.isUserControlled = 1
+								AND A.isTemplateChar = 0
+								AND NOT EXISTS (
+									SELECT 1 from _CharacterConfigToGroupConfig C WHERE C.A = A.id
+								);";
+
+						using (var reader = cmdUsers.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string instanceId = reader.GetString(0);
+								string configId = reader.GetString(1);
+								characterIds.Add(instanceId);
+								configIds.Add(configId);
+							}
+						}
+					}
+
+					if (configIds.Count == 0)
+					{
+						imageUrls = null;
+						return Error.NoError;
+					}
+
+					// AppImage
+					Dictionary<string, string> images = new Dictionary<string, string>();
+					using (var cmdAppImage = connection.CreateCommand())
+					{
+						var sbCommand = new StringBuilder();
+						sbCommand.AppendLine(
+						@"
+							SELECT 
+								B.id, B.imageUrl
+							FROM _AppImageToCharacterConfigVersion as A
+							INNER JOIN AppImage as B ON B.id = A.A
+							WHERE B.id IN (
+								SELECT A
+								FROM _AppImageToCharacterConfigVersion
+								WHERE B IN (
+						");
+						
+						for (int i = 0; i < configIds.Count; ++i)
+						{
+							if (i > 0)
+								sbCommand.Append(", ");
+							sbCommand.AppendFormat("'{0}'", configIds[i]);
+						}
+						sbCommand.AppendLine("));");
+						cmdAppImage.CommandText = sbCommand.ToString();
+
+						using (var reader = cmdAppImage.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string imageId = reader.GetString(0);
+								string imageUrl = reader.GetString(1);
+								images.Add(imageId, imageUrl);
+							}
+						}
+					}
+
+					// Delete from database
+					int updates = 0;
+					int expectedUpdates = 0;
+					var imageIds = images.Keys.ToArray();
+
+					using (var transaction = connection.BeginTransaction())
+					{
+						try
+						{
+							using (var cmdDelete = connection.CreateCommand())
+							{
+								var sbCommand = new StringBuilder();
+
+								// Delete images
+								if (imageIds.Length > 0)
+								{
+									sbCommand.AppendLine(
+									@"
+										DELETE FROM AppImage
+										WHERE id IN (
+									");
+									for (int i = 0; i < imageIds.Length; ++i)
+									{
+										if (i > 0)
+											sbCommand.Append(", ");
+										sbCommand.AppendFormat("'{0}'", imageIds[i]);
+									}
+									sbCommand.AppendLine(");");
+									expectedUpdates += imageIds.Length;
+								}
+
+								// Delete characters
+								sbCommand.AppendLine(
+								@"
+									DELETE FROM CharacterConfig
+									WHERE id IN (
+								");
+
+								for (int i = 0; i < characterIds.Count; ++i)
+								{
+									if (i > 0)
+										sbCommand.Append(", ");
+									sbCommand.AppendFormat("'{0}'", characterIds[i]);
+								}
+								sbCommand.AppendLine(");");
+								cmdDelete.CommandText = sbCommand.ToString();
+
+								expectedUpdates += characterIds.Count;
+								updates += cmdDelete.ExecuteNonQuery();
+							}
+
+							if (updates != expectedUpdates)
+							{
+								transaction.Rollback();
+								imageUrls = null;
+								return Error.SQLCommandFailed;
+							}
+
+							transaction.Commit();
+							imageUrls = images.Values.ToArray();
+							return Error.NoError;
+						}
+						catch (Exception e)
+						{
+							transaction.Rollback();
+							imageUrls = null;
+							return Error.SQLCommandFailed;
+						}
+					}
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Disconnect();
+				imageUrls = null;
+				return Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				Disconnect();
+				imageUrls = null;
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				Disconnect();
+				imageUrls = null;
+				return Error.Unknown;
+			}
+		}
+
 		#endregion
 
 		#region Chat
@@ -2531,16 +3118,19 @@ namespace Ginger.Integration
 								}
 
 								ChatBackground background = null;
-								int idxBackground = backgrounds.FindIndex(b => b.chatId == chatId);
-								if (idxBackground != -1)
+								if (CheckFeature(Feature.ChatBackgrounds))
 								{
-									var bg = backgrounds[idxBackground];
-									background = new ChatBackground() {
-										instanceId = bg.instanceId,
-										imageUrl = bg.imageUrl,
-										width = bg.width,
-										height = bg.height,
-									};
+									int idxBackground = backgrounds.FindIndex(b => b.chatId == chatId);
+									if (idxBackground != -1)
+									{
+										var bg = backgrounds[idxBackground];
+										background = new ChatBackground() {
+											instanceId = bg.instanceId,
+											imageUrl = bg.imageUrl,
+											width = bg.width,
+											height = bg.height,
+										};
+									}
 								}
 
 								chats.Add(new _Chat() {
@@ -5367,27 +5957,30 @@ namespace Ginger.Integration
 
 					// BackgroundChatImage
 					var backgroundImages = new List<_ImageInfo>();
-					using (var cmdGetBackgrounds = connection.CreateCommand())
+					if (CheckFeature(Feature.ChatBackgrounds))
 					{
-						cmdGetBackgrounds.CommandText =
-						@"
+						using (var cmdGetBackgrounds = connection.CreateCommand())
+						{
+							cmdGetBackgrounds.CommandText =
+							@"
 							SELECT id, imageUrl, chatId FROM BackgroundChatImage
 							WHERE chatId IN (
 								SELECT id
 								FROM Chat)";
 
-						using (var reader = cmdGetBackgrounds.ExecuteReader())
-						{
-							while (reader.Read())
+							using (var reader = cmdGetBackgrounds.ExecuteReader())
 							{
-								string id = reader.GetString(0);
-								string imageUrl = reader.GetString(1);
+								while (reader.Read())
+								{
+									string id = reader.GetString(0);
+									string imageUrl = reader.GetString(1);
 
-								backgroundImages.Add(new _ImageInfo() {
-									instanceId = id,
-									filename = Path.GetFileName(imageUrl),
-									imageUrl = imageUrl,
-								});
+									backgroundImages.Add(new _ImageInfo() {
+										instanceId = id,
+										filename = Path.GetFileName(imageUrl),
+										imageUrl = imageUrl,
+									});
+								}
 							}
 						}
 					}
@@ -5447,27 +6040,26 @@ namespace Ginger.Integration
 									}
 									sbCommand.AppendLine(
 									$@"
-								) 
-								UPDATE AppImage
-									SET
-										imageUrl = updated.imageUrl
-									FROM updated
-									WHERE (AppImage.id = updated.id);");
+									) UPDATE AppImage
+										SET
+											imageUrl = updated.imageUrl
+										FROM updated
+										WHERE (AppImage.id = updated.id);");
 									cmdUpdateAppImage.CommandText = sbCommand.ToString();
 									updates += cmdUpdateAppImage.ExecuteNonQuery();
 								}
 							}
 
 							// Background images
-							if (modifiedBackgroundImages.Count > 0)
+							if (CheckFeature(Feature.ChatBackgrounds) && modifiedBackgroundImages.Count > 0)
 							{
 								using (var cmdUpdateBackgrounds = connection.CreateCommand())
 								{
 									var sbCommand = new StringBuilder();
 									sbCommand.AppendLine(
 									$@"
-									WITH updated(id, imageUrl) AS (VALUES
-								");
+										WITH updated(id, imageUrl) AS (VALUES
+									");
 
 									for (int i = 0; i < modifiedBackgroundImages.Count; ++i)
 									{
@@ -5481,13 +6073,12 @@ namespace Ginger.Integration
 										expectedUpdates += 1;
 									}
 									sbCommand.AppendLine(
-									$@"
-								) 
-								UPDATE BackgroundChatImage
-									SET
-										imageUrl = updated.imageUrl
-									FROM updated
-									WHERE (BackgroundChatImage.id = updated.id);");
+									$@"  
+										) UPDATE BackgroundChatImage
+										SET
+											imageUrl = updated.imageUrl
+										FROM updated
+										WHERE (BackgroundChatImage.id = updated.id);");
 
 									cmdUpdateBackgrounds.CommandText = sbCommand.ToString();
 									updates += cmdUpdateBackgrounds.ExecuteNonQuery();
@@ -5576,22 +6167,27 @@ namespace Ginger.Integration
 					}
 
 					// BackgroundChatImage
-					using (var cmdGetBackgrounds = connection.CreateCommand())
+					if (CheckFeature(Feature.ChatBackgrounds))
 					{
-						cmdGetBackgrounds.CommandText =
-						@"
-							SELECT id, imageUrl, chatId FROM BackgroundChatImage
-							WHERE chatId IN (
-								SELECT id
-								FROM Chat)";
-
-						using (var reader = cmdGetBackgrounds.ExecuteReader())
+						using (var cmdGetBackgrounds = connection.CreateCommand())
 						{
-							while (reader.Read())
-							{
-								string imageUrl = reader.GetString(1);
+							cmdGetBackgrounds.CommandText =
+							@"
+								SELECT id, imageUrl, chatId FROM BackgroundChatImage
+								WHERE chatId IN (
+									SELECT id
+									FROM Chat
+								);
+							";
 
-								lsImageUrls.Add(imageUrl);
+							using (var reader = cmdGetBackgrounds.ExecuteReader())
+							{
+								while (reader.Read())
+								{
+									string imageUrl = reader.GetString(1);
+
+									lsImageUrls.Add(imageUrl);
+								}
 							}
 						}
 					}
