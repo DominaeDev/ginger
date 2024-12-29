@@ -1518,7 +1518,8 @@ Do you want to continue?</value>
     <value>..\Resources\Icons\animation.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="tooltip_link_author_note" xml:space="preserve">
-    <value>Insert model instructions marked as vital into the character's author's note.</value>
+    <value>Use the author's note for 'vital' model instructions.
+(This is equivalent to how the jailbreak / post history instructions work in Silly Tavern.)</value>
   </data>
   <data name="cap_link_delete_characters" xml:space="preserve">
     <value>Delete characters</value>
@@ -1545,5 +1546,11 @@ Choose 'Cancel' to abort.</value>
     <value>This will permanently delete {0} from Backyard AI, including all associated chats, images, and any group chats they are participating in.
 
 Are you sure you want to proceed?</value>
+  </data>
+  <data name="dark_delete_character" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_delete_character.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="delete_character" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Light\delete_character.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

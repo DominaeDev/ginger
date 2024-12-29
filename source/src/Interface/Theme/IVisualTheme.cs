@@ -99,5 +99,6 @@ namespace Ginger
 		Image LinkBroken { get; }
 		Image EmbeddedAssets { get; }
 		Image MenuEmbeddedAssets { get; }
+		Image DeleteCharacters { get; }
 	}
 }

@@ -1311,8 +1311,6 @@ namespace Ginger
 			lightThemeMenuItem.Checked = !AppSettings.Settings.DarkTheme;
 			darkThemeMenuItem.Checked = AppSettings.Settings.DarkTheme;
 
-			embeddedAssetsMenuItem.Image = Theme.Current.MenuEmbeddedAssets;
-
 			// Spell checking
 			foreach (var kvp in _spellCheckLangMenuItems)
 			{
@@ -2485,6 +2483,9 @@ namespace Ginger
 
 			userNotes.richTextBox.ForeColor = Theme.Current.NotesForeground;
 			userNotes.richTextBox.BackColor = Theme.Current.NotesBackground;
+
+			embeddedAssetsMenuItem.Image = Theme.Current.MenuEmbeddedAssets;
+			deleteCharactersMenuItem.Image = Theme.Current.DeleteCharacters;
 
 			if (_findDialog != null && _findDialog.IsDisposed == false)
 				_findDialog.ApplyTheme();

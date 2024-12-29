@@ -1082,6 +1082,16 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap dark_delete_character {
+            get {
+                object obj = ResourceManager.GetObject("dark_delete_character", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap dark_delete_small {
             get {
                 object obj = ResourceManager.GetObject("dark_delete_small", resourceCulture);
@@ -1355,6 +1365,16 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap delete {
             get {
                 object obj = ResourceManager.GetObject("delete", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap delete_character {
+            get {
+                object obj = ResourceManager.GetObject("delete_character", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -4498,7 +4518,8 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Insert model instructions marked as vital into the character&apos;s author&apos;s note..
+        ///   Looks up a localized string similar to Use the author&apos;s note for &apos;vital&apos; model instructions.
+        ///(This is equivalent to how the jailbreak / post history instructions work in Silly Tavern.).
         /// </summary>
         internal static string tooltip_link_author_note {
             get {

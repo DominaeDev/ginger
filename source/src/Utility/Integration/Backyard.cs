@@ -2688,6 +2688,31 @@ namespace Ginger.Integration
 			}
 		}
 
+		public static Error DeleteOrphanedUsers()
+		{
+			string[] imageUrls;
+			Error error = DeleteOrphanedUsers(out imageUrls);
+			if (error != Error.NoError)
+				return error;
+
+			// Delete image files
+			if (imageUrls != null && imageUrls.Length > 0)
+			{
+				try
+				{
+					foreach (var imageUrl in imageUrls)
+					{
+						if (File.Exists(imageUrl))
+							File.Delete(imageUrl);
+					}
+				}
+				catch
+				{
+				}
+			}
+			return Error.NoError;
+		}
+
 		public static Error DeleteOrphanedUsers(out string[] imageUrls)
 		{
 			if (ConnectionEstablished == false)

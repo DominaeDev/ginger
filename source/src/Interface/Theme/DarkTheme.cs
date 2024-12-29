@@ -180,6 +180,7 @@ namespace Ginger
 
 			public Image EmbeddedAssets => Resources.dark_embedded_assets;
 			public Image MenuEmbeddedAssets => Resources.dark_menu_embedded_assets;
+			public Image DeleteCharacters => Resources.dark_delete_character;
 		}
 
 		public class ToolStripColorTable : ProfessionalColorTable

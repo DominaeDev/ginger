@@ -178,6 +178,7 @@ namespace Ginger
 
 			public Image EmbeddedAssets => Resources.embedded_assets;
 			public Image MenuEmbeddedAssets => Resources.menu_embedded_assets;
+			public Image DeleteCharacters => Resources.delete_character;
 		}
 
 	}

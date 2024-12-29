@@ -1086,6 +1086,7 @@
     <None Include="Resources\Icons\Dark\dark_embedded_assets.png" />
     <None Include="Resources\Icons\Dark\dark_menu_embedded_assets.png" />
     <None Include="Resources\Icons\animation.png" />
+    <None Include="Resources\Icons\Dark\dark_delete_character.png" />
     <Content Include="Resources\Icons\Light\arrow_down.png" />
     <Content Include="Resources\Icons\Light\arrow_left.png" />
     <Content Include="Resources\Icons\Light\arrow_right.png" />
@@ -1097,6 +1098,7 @@
     <Content Include="Resources\Icons\Light\component_small.png" />
     <Content Include="Resources\Icons\Light\cross.png" />
     <Content Include="Resources\Icons\Light\delete.png" />
+    <None Include="Resources\Icons\Light\delete_character.png" />
     <Content Include="Resources\Icons\Light\delete_small.png" />
     <Content Include="Resources\Icons\Light\delete_strike.png" />
     <None Include="Resources\Icons\Light\embedded_assets.png" />
