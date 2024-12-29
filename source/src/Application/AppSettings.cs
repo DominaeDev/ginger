@@ -228,7 +228,8 @@ namespace Ginger
 
 			public static bool PruneExampleChat = true;
 			public static bool MarkNSFW = true;
-			public static bool WriteAuthorNote = false;
+			public static bool WriteAuthorNote = true;
+			public static bool WriteUserPersona = true;
 		}
 
 		public static bool LoadFromIni(string filePath)
@@ -360,6 +361,7 @@ namespace Ginger
 				ReadBool(ref BackyardLink.PruneExampleChat, linkSection, "PruneExampleChat");
 				ReadBool(ref BackyardLink.MarkNSFW, linkSection, "MarkNSFW");
 				ReadBool(ref BackyardLink.WriteAuthorNote, linkSection, "WriteAuthorNote");
+				ReadBool(ref BackyardLink.WriteUserPersona, linkSection, "WriteUserPersona");
 				ReadBool(ref BackyardLink.ImportAlternateGreetings, linkSection, "ImportAlternateGreetings");
 			}
 			
@@ -524,6 +526,7 @@ namespace Ginger
 					Write(outputFile, "PruneExampleChat", BackyardLink.PruneExampleChat);
 					Write(outputFile, "MarkNSFW", BackyardLink.MarkNSFW);
 					Write(outputFile, "WriteAuthorNote", BackyardLink.WriteAuthorNote);
+					Write(outputFile, "WriteUserPersona", BackyardLink.WriteUserPersona);
 					Write(outputFile, "ImportAlternateGreetings", BackyardLink.ImportAlternateGreetings);
 
 					// Backyard model settings

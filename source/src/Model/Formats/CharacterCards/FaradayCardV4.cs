@@ -130,10 +130,11 @@ namespace Ginger
 			public FaradayCardV1.LoreBookEntry[] loreItems = new FaradayCardV1.LoreBookEntry[0];
 		}
 
-		// Transient values, not in JSON
+		// Transient values, not part of JSON
 		public string hubCharacterId;
 		public string hubAuthorUsername;
 		public string authorNote;
+		public string userPersona;
 
 		public string comment
 		{

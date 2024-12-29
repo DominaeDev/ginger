@@ -1588,7 +1588,16 @@ namespace Ginger
 				return Backyard.Error.NotFound;
 
 			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
+
+			string userPersona = null;
+			if (AppSettings.BackyardLink.WriteUserPersona)
+			{
+				userPersona = output.userPersona.ToFaraday();
+				output.userPersona = GingerString.Empty;
+			}
 			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+			if (userPersona != null)
+				card.userPersona = userPersona;
 
 			// Check if character exists, has newer changes
 			bool hasChanges;
@@ -1640,7 +1649,16 @@ namespace Ginger
 			}
 
 			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
+			
+			string userPersona = null;
+			if (AppSettings.BackyardLink.WriteUserPersona)
+			{
+				userPersona = output.userPersona.ToFaraday();
+				output.userPersona = GingerString.Empty;
+			}
 			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+			if (userPersona != null)
+				card.userPersona = userPersona;
 
 			Backyard.ImageInput[] imageInput = Backyard.GatherImages();
 			BackupData.Chat[] chats = null;

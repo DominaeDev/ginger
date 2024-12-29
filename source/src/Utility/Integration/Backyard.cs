@@ -1258,6 +1258,527 @@ namespace Ginger.Integration
 				return Error.Unknown;
 			}
 		}
+		
+		public static Error CreateNewCharacter(FaradayCardV4 card, ImageInput[] imageInput, BackupData.Chat[] chats, out CharacterInstance characterInstance, out Link.Image[] imageLinks, FolderInstance folder = default(FolderInstance))
+		{
+			if (ConnectionEstablished == false)
+			{
+				characterInstance = default(CharacterInstance);
+				imageLinks = null;
+				return Error.NotConnected;
+			}
+
+			if (card == null)
+			{
+				characterInstance = default(CharacterInstance);
+				imageLinks = null;
+				return Error.InvalidArgument;
+			}
+
+			if (chats != null && chats.ContainsAny(c => c.history != null && c.history.numSpeakers > 2))
+			{
+				characterInstance = default(CharacterInstance);
+				imageLinks = null;
+				return Error.InvalidArgument;
+			}
+
+			FolderInstance parentFolder = folder;
+			if (parentFolder.isEmpty)
+			{
+				// Get root folder
+				parentFolder = _Folders.Values.FirstOrDefault(f => f.isRoot);
+				if (parentFolder.isEmpty)
+				{
+					characterInstance = default(CharacterInstance);
+					imageLinks = null;
+					return Error.Unknown;
+				}
+			}
+
+			// Prepare image information
+			List<ImageOutput> images = new List<ImageOutput>();
+			List<ImageOutput> backgrounds = new List<ImageOutput>();
+			ImageOutput[] imageOutput;
+			Dictionary<string, ImageOutput> backgroundUrlByName = new Dictionary<string, ImageOutput>();
+			if (PrepareImages(imageInput, out imageOutput, out imageLinks))
+			{
+				for (int i = 0; i < imageOutput.Length && i < imageInput.Length; ++i)
+				{
+					if (imageInput[i].asset != null && imageInput[i].asset.assetType == AssetFile.AssetType.Background)
+					{
+						backgrounds.Add(imageOutput[i]);
+						backgroundUrlByName.TryAdd(imageInput[i].asset.name ?? "", imageOutput[i]);
+					}
+					else
+						images.Add(imageOutput[i]);
+				}
+
+				if (CheckFeature(Feature.ChatBackgrounds))
+				{
+					if (chats == null || chats.Length == 0)
+						backgrounds = backgrounds.Take(1).ToList();
+				}
+				else
+					backgrounds.Clear();
+
+				imageOutput = Utility.ConcatenateArrays(images.ToArray(), backgrounds.ToArray());
+			}
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					string characterId	= Cuid.NewCuid();
+					string configId		= Cuid.NewCuid();
+					string groupId		= Cuid.NewCuid();
+					string userId		= null;
+					DateTime now = DateTime.Now;
+					long createdAt = now.ToUnixTimeMilliseconds();
+					string folderOrder = null;
+					string[] chatIds = null;
+					ChatParameters chatParameters = AppSettings.BackyardSettings.UserSettings;
+
+					// Fetch default user
+					using (var cmdUser = connection.CreateCommand())
+					{ 
+						cmdUser.CommandText =
+						@"
+							SELECT id
+							FROM CharacterConfig
+							WHERE isDefaultUserCharacter = 1;
+						";
+
+						userId = cmdUser.ExecuteScalar() as string;
+						if (userId == null)
+						{
+							characterInstance = default(CharacterInstance);
+							imageLinks = null;
+							return Error.SQLCommandFailed; // Requires default user
+						}
+					}
+
+					// Fetch folder sort position
+					using (var cmdFolderOrder = connection.CreateCommand())
+					{ 
+						cmdFolderOrder.CommandText =
+						@"
+							SELECT folderSortPosition
+							FROM GroupConfig
+							WHERE folderId = $folderId
+							ORDER BY folderSortPosition ASC;
+						";
+						cmdFolderOrder.Parameters.AddWithValue("$folderId", parentFolder.instanceId);
+						folderOrder = cmdFolderOrder.ExecuteScalar() as string;
+					}
+
+					// Write to database
+					using (var transaction = connection.BeginTransaction())
+					{
+						try
+						{
+							int updates = 0;
+							int expectedUpdates = 0;
+							
+							// Create custom user
+							if (AppSettings.BackyardLink.WriteUserPersona && string.IsNullOrEmpty(card.userPersona) == false)
+							{
+								ImageOutput userPortrait;
+								CreateCustomUser(connection, card.userPersona, userId, out userId, out userPortrait, ref updates, ref expectedUpdates);
+								if (string.IsNullOrEmpty(userPortrait.instanceId) == false)
+								{
+									images.Add(userPortrait);
+									imageOutput = Utility.ConcatenateArrays(imageOutput, new ImageOutput[] { userPortrait });
+								}
+							}
+
+							using (var cmdCreate = new SQLiteCommand(connection))
+							{
+								var sbCommand = new StringBuilder();
+
+								// CharacterConfig
+								sbCommand.AppendLine(
+								@"
+									INSERT INTO CharacterConfig 
+										(id, createdAt, updatedAt, 
+											isUserControlled, isDefaultUserCharacter, isTemplateChar)
+									VALUES 
+										($charId, $timestamp, $timestamp, 
+											0, 0, 0);
+								");
+
+								// CharacterConfigVersion
+								sbCommand.AppendLine(
+								@"
+									INSERT INTO CharacterConfigVersion
+										(id, createdAt, updatedAt, displayName, name, persona, characterConfigId)
+									VALUES 
+										($configId, $timestamp, $timestamp, $displayName, $name, $persona, $charId);
+								");
+								
+								// GroupConfig
+								sbCommand.AppendLine(
+								@"
+									INSERT INTO GroupConfig
+										(id, createdAt, updatedAt, isNSFW, folderId, folderSortPosition, name)
+									VALUES 
+										($groupId, $timestamp, $timestamp, $isNSFW, $folderId, $folderSortPosition, $groupName);
+								");
+
+								// _CharacterConfigToGroupConfig
+								sbCommand.AppendLine(
+								@"
+									INSERT INTO _CharacterConfigToGroupConfig
+										(A, B)
+									VALUES 
+										($charId, $groupId),
+										($userId, $groupId);
+								");
+
+								expectedUpdates += 5;
+
+								if (chats == null || chats.Length == 0)
+								{
+									string chatId = Cuid.NewCuid();
+
+									// Create first chat
+									sbCommand.AppendLine(
+									@"
+										INSERT INTO Chat
+											(id, name, createdAt, updatedAt,
+												groupConfigId, 
+												modelInstructions, context, greetingDialogue, customDialogue, grammar, 
+												model, temperature, topP, minP, minPEnabled, topK, 
+												repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, authorNote)
+										VALUES 
+											($chatId, '', $timestamp, $timestamp, 
+												$groupId,
+												$system, $scenario, $greeting, $example, $grammar, 
+												$model, $temperature, $topP, $minP, $minPEnabled, $topK, 
+												$repeatPenalty, $repeatLastN, $promptTemplate, $pruneExample, $authorNote);
+									");
+	
+									cmdCreate.Parameters.AddWithValue("$chatId", chatId);
+									cmdCreate.Parameters.AddWithValue("$system", card.data.system ?? "");
+									cmdCreate.Parameters.AddWithValue("$scenario", card.data.scenario ?? "");
+									cmdCreate.Parameters.AddWithValue("$example", card.data.example ?? "");
+									cmdCreate.Parameters.AddWithValue("$greeting", card.data.greeting ?? "");
+									cmdCreate.Parameters.AddWithValue("$grammar", card.data.grammar ?? "");
+									cmdCreate.Parameters.AddWithValue("$model", chatParameters.model ?? DefaultModel ?? "");
+									cmdCreate.Parameters.AddWithValue("$temperature", chatParameters.temperature);
+									cmdCreate.Parameters.AddWithValue("$topP", chatParameters.topP);
+									cmdCreate.Parameters.AddWithValue("$minP", chatParameters.minP);
+									cmdCreate.Parameters.AddWithValue("$minPEnabled", chatParameters.minPEnabled);
+									cmdCreate.Parameters.AddWithValue("$topK", chatParameters.topK);
+									cmdCreate.Parameters.AddWithValue("$repeatPenalty", chatParameters.repeatPenalty);
+									cmdCreate.Parameters.AddWithValue("$repeatLastN", chatParameters.repeatLastN);
+									cmdCreate.Parameters.AddWithValue("$promptTemplate", chatParameters.promptTemplate);
+									cmdCreate.Parameters.AddWithValue("$pruneExample", AppSettings.BackyardLink.PruneExampleChat);
+									cmdCreate.Parameters.AddWithValue("$authorNote", card.authorNote ?? "");
+
+									expectedUpdates += 1;
+
+									// Add background image
+									if (CheckFeature(Feature.ChatBackgrounds) && backgrounds.Count > 0)
+									{
+										// BackgroundChatImage
+										sbCommand.AppendLine(
+										$@"
+											INSERT INTO BackgroundChatImage
+												(id, imageUrl, aspectRatio, chatId)
+											VALUES 
+												($backgroundId, $backgroundImageUrl, $backgroundAspectRatio, $chatId);
+										");
+
+										cmdCreate.Parameters.AddWithValue($"$backgroundId", Cuid.NewCuid());
+										cmdCreate.Parameters.AddWithValue($"$backgroundImageUrl", backgrounds[0].imageUrl);
+										cmdCreate.Parameters.AddWithValue($"$backgroundAspectRatio", backgrounds[0].aspectRatio);
+
+										expectedUpdates += 1;
+									}
+								}
+								else // One or more chats
+								{
+									// Generate unique IDs
+									chatIds = new string[chats.Length];
+									for (int i = 0; i < chatIds.Length; ++i)
+										chatIds[i] = Cuid.NewCuid();
+
+									for (int i = 0; i < chats.Length; ++i)
+									{
+										sbCommand.AppendLine(
+										$@"
+											INSERT INTO Chat
+												(id, name, createdAt, updatedAt, 
+													groupConfigId,
+													modelInstructions, context, greetingDialogue, customDialogue, grammar,
+													model, temperature, topP, minP, minPEnabled, topK, 
+													repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, 
+													authorNote, ttsAutoPlay, ttsInputFilter)
+											VALUES 
+												($chatId{i:000}, $chatName{i:000}, $chatCreatedAt{i:000}, $chatUpdatedAt{i:000}, 
+													$groupId, 
+													$system{i:000}, $scenario{i:000}, $greeting{i:000}, $example{i:000}, $grammar{i:000}, 
+													$model{i:000}, $temperature{i:000}, $topP{i:000}, $minP{i:000}, $minPEnabled{i:000}, $topK{i:000}, 
+													$repeatPenalty{i:000}, $repeatLastN{i:000}, $promptTemplate{i:000}, $pruneExample{i:000},
+													$authorNote{i:000}, $ttsAutoPlay{i:000}, $ttsInputFilter{i:000});
+										");
+										cmdCreate.Parameters.AddWithValue($"$chatId{i:000}", chatIds[i]);
+										cmdCreate.Parameters.AddWithValue($"$chatName{i:000}", chats[i].name ?? "");
+										cmdCreate.Parameters.AddWithValue($"$chatCreatedAt{i:000}", chats[i].creationDate.ToUnixTimeMilliseconds());
+										cmdCreate.Parameters.AddWithValue($"$chatUpdatedAt{i:000}", chats[i].updateDate.ToUnixTimeMilliseconds());
+
+										var staging = chats[i].staging ?? new ChatStaging() {
+											system = card.data.system ?? "",
+											scenario = card.data.scenario ?? "",
+											greeting = card.data.greeting ?? "",
+											example = card.data.example ?? "",
+											grammar = card.data.grammar ?? "",
+											authorNote = card.authorNote ?? "",
+										};
+
+										var parameters = chats[i].parameters ?? new ChatParameters();
+										cmdCreate.Parameters.AddWithValue($"$system{i:000}", staging.system ?? "");
+										cmdCreate.Parameters.AddWithValue($"$scenario{i:000}", staging.scenario ?? "");
+										cmdCreate.Parameters.AddWithValue($"$example{i:000}", staging.example ?? "");
+										cmdCreate.Parameters.AddWithValue($"$greeting{i:000}", staging.greeting ?? "");
+										cmdCreate.Parameters.AddWithValue($"$grammar{i:000}", staging.grammar ?? "");
+										cmdCreate.Parameters.AddWithValue($"$authorNote{i:000}", staging.authorNote ?? "");
+										cmdCreate.Parameters.AddWithValue($"$pruneExample{i:000}", staging.pruneExampleChat);
+										cmdCreate.Parameters.AddWithValue($"$ttsAutoPlay{i:000}", staging.ttsAutoPlay);
+										cmdCreate.Parameters.AddWithValue($"$ttsInputFilter{i:000}", staging.ttsInputFilter);
+										cmdCreate.Parameters.AddWithValue($"$model{i:000}", parameters.model ?? DefaultModel ?? "");
+										cmdCreate.Parameters.AddWithValue($"$temperature{i:000}", parameters.temperature);
+										cmdCreate.Parameters.AddWithValue($"$topP{i:000}", parameters.topP);
+										cmdCreate.Parameters.AddWithValue($"$minP{i:000}", parameters.minP);
+										cmdCreate.Parameters.AddWithValue($"$minPEnabled{i:000}", parameters.minPEnabled);
+										cmdCreate.Parameters.AddWithValue($"$topK{i:000}", parameters.topK);
+										cmdCreate.Parameters.AddWithValue($"$repeatPenalty{i:000}", parameters.repeatPenalty);
+										cmdCreate.Parameters.AddWithValue($"$repeatLastN{i:000}", parameters.repeatLastN);
+										cmdCreate.Parameters.AddWithValue($"$promptTemplate{i:000}", parameters.promptTemplate);
+
+										// Add background images
+										if (CheckFeature(Feature.ChatBackgrounds))
+										{
+											if (string.IsNullOrEmpty(chats[i].backgroundName))
+												continue;
+
+											ImageOutput background;
+											if (backgroundUrlByName.TryGetValue(chats[i].backgroundName, out background) == false)
+												continue;
+
+											// BackgroundChatImage
+											sbCommand.AppendLine(
+											$@"
+												INSERT INTO BackgroundChatImage
+													(id, imageUrl, aspectRatio, chatId)
+												VALUES 
+													($backgroundId{i:000}, $backgroundImageUrl{i:000}, $backgroundAspectRatio{i:000}, $chatId{i:000});
+											");
+
+											cmdCreate.Parameters.AddWithValue($"$backgroundId{i:000}", Cuid.NewCuid());
+											cmdCreate.Parameters.AddWithValue($"$backgroundImageUrl{i:000}", background.imageUrl);
+											cmdCreate.Parameters.AddWithValue($"$backgroundAspectRatio{i:000}", background.aspectRatio);
+
+											expectedUpdates += 1;
+										}
+									}
+
+									expectedUpdates += chats.Length;
+								}
+
+								// Add images
+								for (int i = 0; i < images.Count; ++i)
+								{
+									// AppImage
+									sbCommand.AppendLine(
+									$@"
+										INSERT INTO AppImage
+											(id, createdAt, updatedAt, imageUrl, label, ""order"", aspectRatio)
+										VALUES 
+											($imageId{i:000}, $timestamp, $timestamp, $imageUrl{i:000}, $label{i:000}, {i}, $aspectRatio{i:000});
+									");
+
+									// _AppImageToCharacterConfigVersion
+									sbCommand.AppendLine(
+									$@"
+										INSERT INTO _AppImageToCharacterConfigVersion
+											(A, B)
+										VALUES 
+											($imageId{i:000}, $imageConfigId{i:000});
+									");
+
+									cmdCreate.Parameters.AddWithValue($"$imageId{i:000}", images[i].instanceId);
+									cmdCreate.Parameters.AddWithValue($"$imageUrl{i:000}", images[i].imageUrl);
+									cmdCreate.Parameters.AddWithValue($"$label{i:000}", images[i].label ?? "");
+									cmdCreate.Parameters.AddWithValue($"$aspectRatio{i:000}", images[i].aspectRatio);
+									cmdCreate.Parameters.AddWithValue($"$imageConfigId{i:000}", images[i].characterId ?? configId);
+
+									expectedUpdates += 2;
+								}
+
+								cmdCreate.CommandText = sbCommand.ToString();
+								cmdCreate.Parameters.AddWithValue("$charId", characterId);
+								cmdCreate.Parameters.AddWithValue("$userId", userId);
+								cmdCreate.Parameters.AddWithValue("$configId", configId);
+								cmdCreate.Parameters.AddWithValue("$groupId", groupId);
+								cmdCreate.Parameters.AddWithValue("$name", card.data.name ?? "");
+								cmdCreate.Parameters.AddWithValue("$displayName", card.data.displayName ?? "");
+								cmdCreate.Parameters.AddWithValue("$groupName", card.data.displayName ?? "");
+								cmdCreate.Parameters.AddWithValue("$persona", card.data.persona ?? "");
+								cmdCreate.Parameters.AddWithValue("$folderId", parentFolder.instanceId ?? "");
+								cmdCreate.Parameters.AddWithValue("$folderSortPosition", MakeFolderSortPosition(folderOrder));
+								cmdCreate.Parameters.AddWithValue("$isNSFW", card.data.isNSFW);
+								cmdCreate.Parameters.AddWithValue("$timestamp", createdAt);
+
+								updates += cmdCreate.ExecuteNonQuery();
+							}
+
+							if (card.data.loreItems.Length > 0)
+							{
+								// Generate unique IDs
+								var uids = new string[card.data.loreItems.Length];
+								for (int i = 0; i < uids.Length; ++i)
+									uids[i] = Cuid.NewCuid();
+
+								int hash = characterId.GetHashCode();
+								using (var cmdInsertLore = new SQLiteCommand(connection))
+								{
+									var sbCommand = new StringBuilder();
+									sbCommand.AppendLine(
+									@"
+										INSERT into AppCharacterLorebookItem (id, createdAt, updatedAt, ""order"", key, value)
+										VALUES ");
+										
+									for (int i = 0; i < card.data.loreItems.Length; ++i)
+									{
+										if (i > 0)
+											sbCommand.Append(",\n");
+										sbCommand.Append($"($id{i:000}, $timestamp, $timestamp, $order{i:000}, $key{i:000}, $value{i:000})");
+
+										cmdInsertLore.Parameters.AddWithValue($"$id{i:000}", uids[i]);
+										cmdInsertLore.Parameters.AddWithValue($"$key{i:000}", card.data.loreItems[i].key);
+										cmdInsertLore.Parameters.AddWithValue($"$value{i:000}", card.data.loreItems[i].value);
+										cmdInsertLore.Parameters.AddWithValue($"$order{i:000}", MakeLoreSortPosition(i, card.data.loreItems.Length - 1, hash));
+									}
+									sbCommand.Append(";");
+									cmdInsertLore.CommandText = sbCommand.ToString();
+									cmdInsertLore.Parameters.AddWithValue("$timestamp", createdAt);
+
+									expectedUpdates += card.data.loreItems.Length;
+									updates += cmdInsertLore.ExecuteNonQuery();
+								}
+
+								using (var cmdLoreRef = new SQLiteCommand(connection))
+								{
+									var sbCommand = new StringBuilder();
+									sbCommand.AppendLine(
+									@"
+										INSERT into _AppCharacterLorebookItemToCharacterConfigVersion (A, B)
+										VALUES ");
+										
+									for (int i = 0; i < uids.Length; ++i)
+									{
+										if (i > 0)
+											sbCommand.Append(",\n");
+										sbCommand.Append($"($id{i:000}, $configId)");
+
+										cmdLoreRef.Parameters.AddWithValue($"$id{i:000}", uids[i]);
+									}
+									sbCommand.Append(";");
+									cmdLoreRef.CommandText = sbCommand.ToString();
+									cmdLoreRef.Parameters.AddWithValue("$configId", configId);
+									cmdLoreRef.Parameters.AddWithValue("$timestamp", createdAt);
+
+									expectedUpdates += uids.Length;
+									updates += cmdLoreRef.ExecuteNonQuery();
+								}
+							}
+
+							// Write messages
+							if (chats != null)
+							{
+								var speakerIds = new string[] { userId, characterId };
+								for (int i = 0; i < chats.Length; ++i)
+									WriteChatMessages(connection, chatIds[i], chats[i].history, speakerIds, ref expectedUpdates, ref updates);
+							}
+							
+							if (updates != expectedUpdates)
+							{
+								transaction.Rollback();
+								characterInstance = default(CharacterInstance);
+								imageLinks = null;
+								return Error.SQLCommandFailed;
+							}
+
+							// Write images to disk
+							if (imageOutput != null)
+							{
+								foreach (var image in imageOutput.Where(i => i.data.isEmpty == false))
+								{
+									try
+									{
+										// Ensure images folder exists
+										string imagedir = Path.GetDirectoryName(image.imageUrl);
+										if (Directory.Exists(imagedir) == false)
+											Directory.CreateDirectory(imagedir);
+
+										using (FileStream fs = File.Open(image.imageUrl, FileMode.CreateNew, FileAccess.Write))
+										{
+											fs.Write(image.data.bytes, 0, image.data.bytes.Length);
+										}
+									}
+									catch
+									{
+										// Do nothing
+									}
+								}
+							}
+
+							characterInstance = new CharacterInstance() {
+								instanceId = characterId,
+								configId = configId,
+								groupId = groupId,
+								displayName = card.data.displayName,
+								name = card.data.name,
+								creationDate = now,
+								updateDate = now,
+								folderId = parentFolder.instanceId,
+							};
+
+							transaction.Commit();
+							return Error.NoError;
+						}
+						catch (Exception e)
+						{
+							transaction.Rollback();
+
+							characterInstance = default(CharacterInstance);
+							return Error.SQLCommandFailed;
+						}
+					}
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Disconnect();
+				characterInstance = default(CharacterInstance);
+				return Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				Disconnect();
+				characterInstance = default(CharacterInstance);
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				Disconnect();
+				characterInstance = default(CharacterInstance);
+				return Error.Unknown;
+			}
+		}
 
 		public static Error UpdateCharacter(FaradayCardV4 card, Link linkInfo, out DateTime updateDate, out Link.Image[] updatedImageLinks)
 		{
@@ -1373,26 +1894,8 @@ namespace Ginger.Integration
 								string label = reader[2] as string;
 								string aspectRatio = reader[3] as string;
 								int width, height;
+								ParseAspectRatio(aspectRatio, out width, out height);
 
-								if (string.IsNullOrEmpty(aspectRatio) == false)
-								{
-									int pos_slash = aspectRatio.IndexOf('/');
-									if (pos_slash != -1)
-									{
-										int.TryParse(aspectRatio.Substring(0, pos_slash), out width);
-										int.TryParse(aspectRatio.Substring(pos_slash + 1), out height);
-									}
-									else
-									{
-										width = 0;
-										height = 0;
-									}
-								}
-								else
-								{
-									width = 0;
-									height = 0;
-								}
 								imageInstances.Add(new ImageInstance() {
 									instanceId = instanceId,
 									imageUrl = imageUrl,
@@ -1407,7 +1910,7 @@ namespace Ginger.Integration
 					// Compile list of images to update / insert
 					ImageOutput[] images;
 					Link.Image[] imageLinks;
-					bool bUpdateImages = PrepareImageUpdates(imageInstances, linkInfo.imageLinks, out images, out imageLinks);
+					PrepareImageUpdates(imageInstances, linkInfo.imageLinks, out images, out imageLinks);
 
 					DateTime now = DateTime.Now;
 					long updatedAt = now.ToUnixTimeMilliseconds();
@@ -1420,6 +1923,62 @@ namespace Ginger.Integration
 							int updates = 0;
 							int expectedUpdates = 0;
 							
+							// Create custom user
+							if (AppSettings.BackyardLink.WriteUserPersona && string.IsNullOrEmpty(card.userPersona) == false)
+							{
+								string userId = null;
+								string userConfigId = null;
+								string existingUserName = null;
+								bool isCustomUser = false;
+
+								// Get user id
+								using (var cmdGetUser = connection.CreateCommand())
+								{
+									cmdGetUser.CommandText =
+									@"
+										SELECT 
+											A.A, C.id, B.isTemplateChar, C.name
+										FROM _CharacterConfigToGroupConfig AS A
+										INNER JOIN CharacterConfig AS B ON B.id = A.A
+										INNER JOIN CharacterConfigVersion AS C ON C.characterConfigId = B.id
+										WHERE A.B = $groupId AND B.isUserControlled = 1;
+									";
+									cmdGetUser.Parameters.AddWithValue("$groupId", groupId);
+
+									using (var reader = cmdGetUser.ExecuteReader())
+									{
+										if (reader.Read())
+										{
+											userId = reader.GetString(0);
+											userConfigId = reader.GetString(1);
+											isCustomUser = reader.GetBoolean(2) == false;
+											existingUserName = reader.GetString(3);
+										}
+									}
+								}
+
+								if (userId != null && isCustomUser == false)
+								{
+									// Create new user persona
+									ImageOutput userPortrait;
+									string oldUserId = userId;
+									CreateCustomUser(connection, card.userPersona, userId, out userId, out userPortrait, ref updates, ref expectedUpdates);
+									if (string.IsNullOrEmpty(userPortrait.instanceId) == false)
+										images = Utility.ConcatenateArrays(images, new ImageOutput[] { userPortrait });
+									
+									// Replace existing user with new user
+									ReplaceCharacterInGroup(connection, groupId, oldUserId, userId, ref updates, ref expectedUpdates);
+								}
+								else if (userConfigId != null && isCustomUser)
+								{
+									// Update user persona
+									string userName = Current.Card.userPlaceholder;
+									if (string.IsNullOrEmpty(userName) || string.Compare(userName, Constants.DefaultUserName, StringComparison.OrdinalIgnoreCase) == 0)
+										userName = Utility.FirstNonEmpty(existingUserName, Constants.DefaultUserName);
+									UpdateCustomUser(connection, userConfigId, userName, card.userPersona, ref updates, ref expectedUpdates);
+								}
+							}
+
 							// Update character persona
 							using (var cmdUpdate = new SQLiteCommand(connection))
 							{
@@ -1616,7 +2175,8 @@ namespace Ginger.Integration
 								{
 									if (i > 0)
 										sbCommand.Append(",\n");
-									sbCommand.Append($@"($imageId{i:000}, $configId)");
+									sbCommand.Append($@"($imageId{i:000}, $imageConfigId{i:000})");
+									cmdImage.Parameters.AddWithValue($"$imageConfigId{i:000}", images[i].characterId ?? configId);
 								}
 
 								expectedUpdates += images.Length * 2;
@@ -1624,6 +2184,7 @@ namespace Ginger.Integration
 								cmdImage.CommandText = sbCommand.ToString();
 								cmdImage.Parameters.AddWithValue("$configId", configId);
 								cmdImage.Parameters.AddWithValue("$timestamp", updatedAt);
+
 
 								updates += cmdImage.ExecuteNonQuery();
 							}
@@ -1768,7 +2329,7 @@ namespace Ginger.Integration
 							}
 
 							// Write images to disk
-							if (images != null && images.ContainsAny(i => i.data.isEmpty == false))
+							if (images != null)
 							{
 								foreach (var image in images.Where(i => i.data.isEmpty == false))
 								{
@@ -1828,516 +2389,6 @@ namespace Ginger.Integration
 				Disconnect();
 				updateDate = default(DateTime);
 				updatedImageLinks = null;
-				return Error.Unknown;
-			}
-		}
-
-		public static Error CreateNewCharacter(FaradayCardV4 card, ImageInput[] imageInput, BackupData.Chat[] chats, out CharacterInstance characterInstance, out Link.Image[] imageLinks, FolderInstance folder = default(FolderInstance))
-		{
-			if (ConnectionEstablished == false)
-			{
-				characterInstance = default(CharacterInstance);
-				imageLinks = null;
-				return Error.NotConnected;
-			}
-
-			if (card == null)
-			{
-				characterInstance = default(CharacterInstance);
-				imageLinks = null;
-				return Error.InvalidArgument;
-			}
-
-			if (chats != null && chats.ContainsAny(c => c.history != null && c.history.numSpeakers > 2))
-			{
-				characterInstance = default(CharacterInstance);
-				imageLinks = null;
-				return Error.InvalidArgument;
-			}
-
-			FolderInstance parentFolder = folder;
-			if (parentFolder.isEmpty)
-			{
-				// Get root folder
-				parentFolder = _Folders.Values.FirstOrDefault(f => f.isRoot);
-				if (parentFolder.isEmpty)
-				{
-					characterInstance = default(CharacterInstance);
-					imageLinks = null;
-					return Error.Unknown;
-				}
-			}
-
-			bool bAllowBackgrounds = CheckFeature(Feature.ChatBackgrounds);
-
-			// Prepare image information
-			List<ImageOutput> images = new List<ImageOutput>();
-			List<ImageOutput> backgrounds = new List<ImageOutput>();
-			ImageOutput[] imageOutput;
-			Dictionary<string, ImageOutput> backgroundUrlByName = new Dictionary<string, ImageOutput>();
-			if (PrepareImages(imageInput, out imageOutput, out imageLinks))
-			{
-				for (int i = 0; i < imageOutput.Length && i < imageInput.Length; ++i)
-				{
-					if (imageInput[i].asset != null && imageInput[i].asset.assetType == AssetFile.AssetType.Background)
-					{
-						backgrounds.Add(imageOutput[i]);
-						backgroundUrlByName.TryAdd(imageInput[i].asset.name ?? "", imageOutput[i]);
-					}
-					else
-						images.Add(imageOutput[i]);
-				}
-
-				if (bAllowBackgrounds)
-				{
-					if (chats == null || chats.Length == 0)
-						backgrounds = backgrounds.Take(1).ToList();
-				}
-				else
-					backgrounds.Clear();
-
-				imageOutput = Utility.ConcatenateArrays(images.ToArray(), backgrounds.ToArray());
-			}
-
-			try
-			{
-				using (var connection = CreateSQLiteConnection())
-				{
-					connection.Open();
-
-					string characterId	= Cuid.NewCuid();
-					string configId		= Cuid.NewCuid();
-					string groupId		= Cuid.NewCuid();
-					string userId		= null;
-					DateTime now = DateTime.Now;
-					long createdAt = now.ToUnixTimeMilliseconds();
-					string folderOrder = null;
-					string[] chatIds = null;
-					ChatParameters chatParameters = AppSettings.BackyardSettings.UserSettings;
-
-					// Fetch default user
-					using (var cmdUser = connection.CreateCommand())
-					{ 
-						cmdUser.CommandText =
-						@"
-							SELECT id
-							FROM CharacterConfig
-							WHERE isDefaultUserCharacter = 1;
-						";
-
-						userId = cmdUser.ExecuteScalar() as string;
-						if (userId == null)
-						{
-							characterInstance = default(CharacterInstance);
-							imageLinks = null;
-							return Error.SQLCommandFailed; // Requires default user
-						}
-					}
-
-					// Fetch folder sort position
-					using (var cmdFolderOrder = connection.CreateCommand())
-					{ 
-						cmdFolderOrder.CommandText =
-						@"
-							SELECT folderSortPosition
-							FROM GroupConfig
-							WHERE folderId = $folderId
-							ORDER BY folderSortPosition ASC;
-						";
-						cmdFolderOrder.Parameters.AddWithValue("$folderId", parentFolder.instanceId);
-						folderOrder = cmdFolderOrder.ExecuteScalar() as string;
-					}
-
-					// Write to database
-					using (var transaction = connection.BeginTransaction())
-					{
-						try
-						{
-							int updates = 0;
-							int expectedUpdates = 0;
-							
-							using (var cmdCreate = new SQLiteCommand(connection))
-							{
-								var sbCommand = new StringBuilder();
-
-								// CharacterConfig
-								sbCommand.AppendLine(
-								@"
-									INSERT INTO CharacterConfig 
-										(id, createdAt, updatedAt, 
-											isUserControlled, isDefaultUserCharacter, isTemplateChar)
-									VALUES 
-										($charId, $timestamp, $timestamp, 
-											0, 0, 0);
-								");
-
-								// CharacterConfigVersion
-								sbCommand.AppendLine(
-								@"
-									INSERT INTO CharacterConfigVersion
-										(id, createdAt, updatedAt, displayName, name, persona, characterConfigId)
-									VALUES 
-										($configId, $timestamp, $timestamp, $displayName, $name, $persona, $charId);
-								");
-								
-								// GroupConfig
-								sbCommand.AppendLine(
-								@"
-									INSERT INTO GroupConfig
-										(id, createdAt, updatedAt, isNSFW, folderId, folderSortPosition, name)
-									VALUES 
-										($groupId, $timestamp, $timestamp, $isNSFW, $folderId, $folderSortPosition, $groupName);
-								");
-
-								// _CharacterConfigToGroupConfig
-								sbCommand.AppendLine(
-								@"
-									INSERT INTO _CharacterConfigToGroupConfig
-										(A, B)
-									VALUES 
-										($charId, $groupId),
-										($userId, $groupId);
-								");
-
-								expectedUpdates += 5;
-
-								if (chats == null || chats.Length == 0)
-								{
-									string chatId = Cuid.NewCuid();
-
-									// Create first chat
-									sbCommand.AppendLine(
-									@"
-										INSERT INTO Chat
-											(id, name, createdAt, updatedAt,
-												groupConfigId, 
-												modelInstructions, context, greetingDialogue, customDialogue, grammar, 
-												model, temperature, topP, minP, minPEnabled, topK, 
-												repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, authorNote)
-										VALUES 
-											($chatId, '', $timestamp, $timestamp, 
-												$groupId,
-												$system, $scenario, $greeting, $example, $grammar, 
-												$model, $temperature, $topP, $minP, $minPEnabled, $topK, 
-												$repeatPenalty, $repeatLastN, $promptTemplate, $pruneExample, $authorNote);
-									");
-	
-									cmdCreate.Parameters.AddWithValue("$chatId", chatId);
-									cmdCreate.Parameters.AddWithValue("$system", card.data.system ?? "");
-									cmdCreate.Parameters.AddWithValue("$scenario", card.data.scenario ?? "");
-									cmdCreate.Parameters.AddWithValue("$example", card.data.example ?? "");
-									cmdCreate.Parameters.AddWithValue("$greeting", card.data.greeting ?? "");
-									cmdCreate.Parameters.AddWithValue("$grammar", card.data.grammar ?? "");
-									cmdCreate.Parameters.AddWithValue("$model", chatParameters.model ?? DefaultModel ?? "");
-									cmdCreate.Parameters.AddWithValue("$temperature", chatParameters.temperature);
-									cmdCreate.Parameters.AddWithValue("$topP", chatParameters.topP);
-									cmdCreate.Parameters.AddWithValue("$minP", chatParameters.minP);
-									cmdCreate.Parameters.AddWithValue("$minPEnabled", chatParameters.minPEnabled);
-									cmdCreate.Parameters.AddWithValue("$topK", chatParameters.topK);
-									cmdCreate.Parameters.AddWithValue("$repeatPenalty", chatParameters.repeatPenalty);
-									cmdCreate.Parameters.AddWithValue("$repeatLastN", chatParameters.repeatLastN);
-									cmdCreate.Parameters.AddWithValue("$promptTemplate", chatParameters.promptTemplate);
-									cmdCreate.Parameters.AddWithValue("$pruneExample", AppSettings.BackyardLink.PruneExampleChat);
-									cmdCreate.Parameters.AddWithValue("$authorNote", card.authorNote ?? "");
-
-									expectedUpdates += 1;
-
-									// Add background image
-									if (bAllowBackgrounds && backgrounds.Count > 0)
-									{
-										// BackgroundChatImage
-										sbCommand.AppendLine(
-										$@"
-											INSERT INTO BackgroundChatImage
-												(id, imageUrl, aspectRatio, chatId)
-											VALUES 
-												($backgroundId, $backgroundImageUrl, $backgroundAspectRatio, $chatId);
-										");
-
-										cmdCreate.Parameters.AddWithValue($"$backgroundId", Cuid.NewCuid());
-										cmdCreate.Parameters.AddWithValue($"$backgroundImageUrl", backgrounds[0].imageUrl);
-										cmdCreate.Parameters.AddWithValue($"$backgroundAspectRatio", backgrounds[0].aspectRatio);
-
-										expectedUpdates += 1;
-									}
-								}
-								else // One or more chats
-								{
-									// Generate unique IDs
-									chatIds = new string[chats.Length];
-									for (int i = 0; i < chatIds.Length; ++i)
-										chatIds[i] = Cuid.NewCuid();
-
-									for (int i = 0; i < chats.Length; ++i)
-									{
-										sbCommand.AppendLine(
-										$@"
-											INSERT INTO Chat
-												(id, name, createdAt, updatedAt, 
-													groupConfigId,
-													modelInstructions, context, greetingDialogue, customDialogue, grammar,
-													model, temperature, topP, minP, minPEnabled, topK, 
-													repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, 
-													authorNote, ttsAutoPlay, ttsInputFilter)
-											VALUES 
-												($chatId{i:000}, $chatName{i:000}, $chatCreatedAt{i:000}, $chatUpdatedAt{i:000}, 
-													$groupId, 
-													$system{i:000}, $scenario{i:000}, $greeting{i:000}, $example{i:000}, $grammar{i:000}, 
-													$model{i:000}, $temperature{i:000}, $topP{i:000}, $minP{i:000}, $minPEnabled{i:000}, $topK{i:000}, 
-													$repeatPenalty{i:000}, $repeatLastN{i:000}, $promptTemplate{i:000}, $pruneExample{i:000},
-													$authorNote{i:000}, $ttsAutoPlay{i:000}, $ttsInputFilter{i:000});
-										");
-										cmdCreate.Parameters.AddWithValue($"$chatId{i:000}", chatIds[i]);
-										cmdCreate.Parameters.AddWithValue($"$chatName{i:000}", chats[i].name ?? "");
-										cmdCreate.Parameters.AddWithValue($"$chatCreatedAt{i:000}", chats[i].creationDate.ToUnixTimeMilliseconds());
-										cmdCreate.Parameters.AddWithValue($"$chatUpdatedAt{i:000}", chats[i].updateDate.ToUnixTimeMilliseconds());
-
-										var staging = chats[i].staging ?? new ChatStaging() {
-											system = card.data.system ?? "",
-											scenario = card.data.scenario ?? "",
-											greeting = card.data.greeting ?? "",
-											example = card.data.example ?? "",
-											grammar = card.data.grammar ?? "",
-											authorNote = card.authorNote ?? "",
-										};
-
-										var parameters = chats[i].parameters ?? new ChatParameters();
-										cmdCreate.Parameters.AddWithValue($"$system{i:000}", staging.system ?? "");
-										cmdCreate.Parameters.AddWithValue($"$scenario{i:000}", staging.scenario ?? "");
-										cmdCreate.Parameters.AddWithValue($"$example{i:000}", staging.example ?? "");
-										cmdCreate.Parameters.AddWithValue($"$greeting{i:000}", staging.greeting ?? "");
-										cmdCreate.Parameters.AddWithValue($"$grammar{i:000}", staging.grammar ?? "");
-										cmdCreate.Parameters.AddWithValue($"$authorNote{i:000}", staging.authorNote ?? "");
-										cmdCreate.Parameters.AddWithValue($"$pruneExample{i:000}", staging.pruneExampleChat);
-										cmdCreate.Parameters.AddWithValue($"$ttsAutoPlay{i:000}", staging.ttsAutoPlay);
-										cmdCreate.Parameters.AddWithValue($"$ttsInputFilter{i:000}", staging.ttsInputFilter);
-										cmdCreate.Parameters.AddWithValue($"$model{i:000}", parameters.model ?? DefaultModel ?? "");
-										cmdCreate.Parameters.AddWithValue($"$temperature{i:000}", parameters.temperature);
-										cmdCreate.Parameters.AddWithValue($"$topP{i:000}", parameters.topP);
-										cmdCreate.Parameters.AddWithValue($"$minP{i:000}", parameters.minP);
-										cmdCreate.Parameters.AddWithValue($"$minPEnabled{i:000}", parameters.minPEnabled);
-										cmdCreate.Parameters.AddWithValue($"$topK{i:000}", parameters.topK);
-										cmdCreate.Parameters.AddWithValue($"$repeatPenalty{i:000}", parameters.repeatPenalty);
-										cmdCreate.Parameters.AddWithValue($"$repeatLastN{i:000}", parameters.repeatLastN);
-										cmdCreate.Parameters.AddWithValue($"$promptTemplate{i:000}", parameters.promptTemplate);
-
-										// Add background images
-										if (bAllowBackgrounds)
-										{
-											if (string.IsNullOrEmpty(chats[i].backgroundName))
-												continue;
-
-											ImageOutput background;
-											if (backgroundUrlByName.TryGetValue(chats[i].backgroundName, out background) == false)
-												continue;
-
-											// BackgroundChatImage
-											sbCommand.AppendLine(
-											$@"
-												INSERT INTO BackgroundChatImage
-													(id, imageUrl, aspectRatio, chatId)
-												VALUES 
-													($backgroundId{i:000}, $backgroundImageUrl{i:000}, $backgroundAspectRatio{i:000}, $chatId{i:000});
-											");
-
-											cmdCreate.Parameters.AddWithValue($"$backgroundId{i:000}", Cuid.NewCuid());
-											cmdCreate.Parameters.AddWithValue($"$backgroundImageUrl{i:000}", background.imageUrl);
-											cmdCreate.Parameters.AddWithValue($"$backgroundAspectRatio{i:000}", background.aspectRatio);
-
-											expectedUpdates += 1;
-										}
-									}
-
-									expectedUpdates += chats.Length;
-								}
-
-								// Add images
-								for (int i = 0; i < images.Count; ++i)
-								{
-									// AppImage
-									sbCommand.AppendLine(
-									$@"
-										INSERT INTO AppImage
-											(id, createdAt, updatedAt, imageUrl, label, ""order"", aspectRatio)
-										VALUES 
-											($imageId{i:000}, $timestamp, $timestamp, $imageUrl{i:000}, $label{i:000}, {i}, $aspectRatio{i:000});
-									");
-
-									// _AppImageToCharacterConfigVersion
-									sbCommand.AppendLine(
-									$@"
-										INSERT INTO _AppImageToCharacterConfigVersion
-											(A, B)
-										VALUES 
-											($imageId{i:000}, $configId);
-									");
-
-									cmdCreate.Parameters.AddWithValue($"$imageId{i:000}", imageOutput[i].instanceId);
-									cmdCreate.Parameters.AddWithValue($"$imageUrl{i:000}", imageOutput[i].imageUrl);
-									cmdCreate.Parameters.AddWithValue($"$label{i:000}", imageOutput[i].label ?? "");
-									cmdCreate.Parameters.AddWithValue($"$aspectRatio{i:000}", imageOutput[i].aspectRatio);
-
-									expectedUpdates += 2;
-								}
-
-								cmdCreate.CommandText = sbCommand.ToString();
-								cmdCreate.Parameters.AddWithValue("$charId", characterId);
-								cmdCreate.Parameters.AddWithValue("$userId", userId);
-								cmdCreate.Parameters.AddWithValue("$configId", configId);
-								cmdCreate.Parameters.AddWithValue("$groupId", groupId);
-								cmdCreate.Parameters.AddWithValue("$name", card.data.name ?? "");
-								cmdCreate.Parameters.AddWithValue("$displayName", card.data.displayName ?? "");
-								cmdCreate.Parameters.AddWithValue("$groupName", card.data.displayName ?? "");
-								cmdCreate.Parameters.AddWithValue("$persona", card.data.persona ?? "");
-								cmdCreate.Parameters.AddWithValue("$folderId", parentFolder.instanceId ?? "");
-								cmdCreate.Parameters.AddWithValue("$folderSortPosition", MakeFolderSortPosition(folderOrder));
-								cmdCreate.Parameters.AddWithValue("$isNSFW", card.data.isNSFW);
-								cmdCreate.Parameters.AddWithValue("$timestamp", createdAt);
-
-								updates += cmdCreate.ExecuteNonQuery();
-							}
-
-							if (card.data.loreItems.Length > 0)
-							{
-								// Generate unique IDs
-								var uids = new string[card.data.loreItems.Length];
-								for (int i = 0; i < uids.Length; ++i)
-									uids[i] = Cuid.NewCuid();
-
-								int hash = characterId.GetHashCode();
-								using (var cmdInsertLore = new SQLiteCommand(connection))
-								{
-									var sbCommand = new StringBuilder();
-									sbCommand.AppendLine(
-									@"
-										INSERT into AppCharacterLorebookItem (id, createdAt, updatedAt, ""order"", key, value)
-										VALUES ");
-										
-									for (int i = 0; i < card.data.loreItems.Length; ++i)
-									{
-										if (i > 0)
-											sbCommand.Append(",\n");
-										sbCommand.Append($"($id{i:000}, $timestamp, $timestamp, $order{i:000}, $key{i:000}, $value{i:000})");
-
-										cmdInsertLore.Parameters.AddWithValue($"$id{i:000}", uids[i]);
-										cmdInsertLore.Parameters.AddWithValue($"$key{i:000}", card.data.loreItems[i].key);
-										cmdInsertLore.Parameters.AddWithValue($"$value{i:000}", card.data.loreItems[i].value);
-										cmdInsertLore.Parameters.AddWithValue($"$order{i:000}", MakeLoreSortPosition(i, card.data.loreItems.Length - 1, hash));
-									}
-									sbCommand.Append(";");
-									cmdInsertLore.CommandText = sbCommand.ToString();
-									cmdInsertLore.Parameters.AddWithValue("$timestamp", createdAt);
-
-									expectedUpdates += card.data.loreItems.Length;
-									updates += cmdInsertLore.ExecuteNonQuery();
-								}
-
-								using (var cmdLoreRef = new SQLiteCommand(connection))
-								{
-									var sbCommand = new StringBuilder();
-									sbCommand.AppendLine(
-									@"
-										INSERT into _AppCharacterLorebookItemToCharacterConfigVersion (A, B)
-										VALUES ");
-										
-									for (int i = 0; i < uids.Length; ++i)
-									{
-										if (i > 0)
-											sbCommand.Append(",\n");
-										sbCommand.Append($"($id{i:000}, $configId)");
-
-										cmdLoreRef.Parameters.AddWithValue($"$id{i:000}", uids[i]);
-									}
-									sbCommand.Append(";");
-									cmdLoreRef.CommandText = sbCommand.ToString();
-									cmdLoreRef.Parameters.AddWithValue("$configId", configId);
-									cmdLoreRef.Parameters.AddWithValue("$timestamp", createdAt);
-
-									expectedUpdates += uids.Length;
-									updates += cmdLoreRef.ExecuteNonQuery();
-								}
-							}
-
-							// Write messages
-							if (chats != null)
-							{
-								var speakerIds = new string[] { userId, characterId };
-								for (int i = 0; i < chats.Length; ++i)
-									WriteChatMessages(connection, chatIds[i], chats[i].history, speakerIds, ref expectedUpdates, ref updates);
-							}
-							
-							if (updates != expectedUpdates)
-							{
-								transaction.Rollback();
-								characterInstance = default(CharacterInstance);
-								imageLinks = null;
-								return Error.SQLCommandFailed;
-							}
-
-							// Write images to disk
-							if (imageOutput != null)
-							{
-								foreach (var image in imageOutput.Where(i => i.data.isEmpty == false))
-								{
-									try
-									{
-										// Ensure images folder exists
-										string imagedir = Path.GetDirectoryName(image.imageUrl);
-										if (Directory.Exists(imagedir) == false)
-											Directory.CreateDirectory(imagedir);
-
-										using (FileStream fs = File.Open(image.imageUrl, FileMode.CreateNew, FileAccess.Write))
-										{
-											fs.Write(image.data.bytes, 0, image.data.bytes.Length);
-										}
-									}
-									catch
-									{
-										// Do nothing
-									}
-								}
-							}
-
-							characterInstance = new CharacterInstance() {
-								instanceId = characterId,
-								configId = configId,
-								groupId = groupId,
-								displayName = card.data.displayName,
-								name = card.data.name,
-								creationDate = now,
-								updateDate = now,
-								folderId = parentFolder.instanceId,
-							};
-
-							transaction.Commit();
-							return Error.NoError;
-						}
-						catch (Exception e)
-						{
-							transaction.Rollback();
-
-							characterInstance = default(CharacterInstance);
-							return Error.SQLCommandFailed;
-						}
-					}
-				}
-			}
-			catch (FileNotFoundException e)
-			{
-				Disconnect();
-				characterInstance = default(CharacterInstance);
-				return Error.NotConnected;
-			}
-			catch (SQLiteException e)
-			{
-				Disconnect();
-				characterInstance = default(CharacterInstance);
-				return Error.SQLCommandFailed;
-			}
-			catch (Exception e)
-			{
-				Disconnect();
-				characterInstance = default(CharacterInstance);
 				return Error.Unknown;
 			}
 		}
@@ -3336,26 +3387,7 @@ namespace Ginger.Integration
 									string imageUrl = reader.GetString(1);
 									string aspectRatio = reader.GetString(2);
 									int width, height;
-
-									if (string.IsNullOrEmpty(aspectRatio) == false)
-									{
-										int pos_slash = aspectRatio.IndexOf('/');
-										if (pos_slash != -1)
-										{
-											int.TryParse(aspectRatio.Substring(0, pos_slash), out width);
-											int.TryParse(aspectRatio.Substring(pos_slash + 1), out height);
-										}
-										else
-										{
-											width = 0;
-											height = 0;
-										}
-									}
-									else
-									{
-										width = 0;
-										height = 0;
-									}
+									ParseAspectRatio(aspectRatio, out width, out height);
 
 									chat.staging.background = new ChatBackground() {
 										instanceId = id,
@@ -5193,6 +5225,7 @@ namespace Ginger.Integration
 		private struct ImageOutput
 		{
 			public string instanceId;
+			public string characterId;
 			public string imageUrl;
 			public string label;
 			public int width;
@@ -5612,26 +5645,7 @@ namespace Ginger.Integration
 							string imageUrl = reader.GetString(2);
 							string aspectRatio = reader.GetString(3);
 							int width, height;
-
-							if (string.IsNullOrEmpty(aspectRatio) == false)
-							{
-								int pos_slash = aspectRatio.IndexOf('/');
-								if (pos_slash != -1)
-								{
-									int.TryParse(aspectRatio.Substring(0, pos_slash), out width);
-									int.TryParse(aspectRatio.Substring(pos_slash + 1), out height);
-								}
-								else
-								{
-									width = 0;
-									height = 0;
-								}
-							}
-							else
-							{
-								width = 0;
-								height = 0;
-							}
+							ParseAspectRatio(aspectRatio, out width, out height);
 
 							backgrounds.Add(new _Background() {
 								instanceId = id,
@@ -6016,8 +6030,8 @@ namespace Ginger.Integration
 									var sbCommand = new StringBuilder();
 									sbCommand.AppendLine(
 									$@"
-									WITH updated(id, imageUrl) AS (VALUES
-								");
+										WITH updated(id, imageUrl) AS (VALUES
+									");
 
 									for (int i = 0; i < modifiedCharacterImages.Count; ++i)
 									{
@@ -6206,6 +6220,202 @@ namespace Ginger.Integration
 				Disconnect();
 				imageUrls = null;
 				return Error.Unknown;
+			}
+		}
+				
+		private static void CreateCustomUser(SQLiteConnection connection, string userPersona, string baseUserId, out string newUserId, out ImageOutput portrait, ref int updates, ref int expectedUpdates)
+		{
+			string userName = Current.Card.userPlaceholder;
+			string userImageUrl = null;
+			int userImageWidth = 0;
+			int userImageHeight = 0;
+			newUserId = Cuid.NewCuid();
+			var configId = Cuid.NewCuid();
+			DateTime now = DateTime.Now;
+			long createdAt = now.ToUnixTimeMilliseconds();
+
+			// Get base user values
+			if (string.IsNullOrEmpty(baseUserId) == false)
+			{
+				using (var cmdBaseUser = connection.CreateCommand())
+				{
+					cmdBaseUser.CommandText =
+					@"
+						SELECT A.name, C.imageUrl, C.aspectRatio
+						FROM CharacterConfigVersion as A
+						INNER JOIN _AppImageToCharacterConfigVersion AS B ON B.B = A.id
+						INNER JOIN AppImage AS C ON C.id = B.A
+						WHERE characterConfigId = $userId
+					";
+					cmdBaseUser.Parameters.AddWithValue("$userId", baseUserId);
+
+					using (var reader = cmdBaseUser.ExecuteReader())
+					{
+						if (reader.Read())
+						{
+							string name = reader.GetString(0);
+							userImageUrl = reader[1] as string;
+							var aspectRatio = reader.GetString(2);
+							ParseAspectRatio(aspectRatio, out userImageWidth, out userImageHeight);
+
+							if (string.IsNullOrEmpty(userName) || string.Compare(userName, Constants.DefaultUserName, StringComparison.OrdinalIgnoreCase) == 0)
+								userName = Utility.FirstNonEmpty(name, Constants.DefaultUserName);
+						}
+					}
+				}
+			}
+
+			if (userImageUrl != null && File.Exists(userImageUrl))
+			{
+				var filename = Utility.CreateRandomFilename(Utility.GetFileExt(userImageUrl));
+
+				portrait = new ImageOutput() {
+					instanceId = Cuid.NewCuid(),
+					characterId = configId,
+					imageUrl = Path.Combine(AppSettings.BackyardLink.Location, "images", filename),
+					data = AssetData.FromFile(userImageUrl),
+					width = userImageWidth,
+					height = userImageHeight,
+				};
+			}
+			else
+			{
+				portrait = default(ImageOutput);
+			}
+
+			// Create new user character
+			using (var cmdCreate = new SQLiteCommand(connection))
+			{
+				var sbCommand = new StringBuilder();
+
+				// CharacterConfig
+				sbCommand.AppendLine(
+				@"
+					INSERT INTO CharacterConfig 
+						(id, createdAt, updatedAt, 
+							isUserControlled, isDefaultUserCharacter, isTemplateChar)
+					VALUES 
+						($userId, $timestamp, $timestamp, 1, 0, 0);
+				");
+
+				// CharacterConfigVersion
+				sbCommand.AppendLine(
+				@"
+					INSERT INTO CharacterConfigVersion
+						(id, createdAt, updatedAt, displayName, name, persona, characterConfigId)
+					VALUES 
+						($configId, $timestamp, $timestamp, $name, $name, $persona, $userId);
+				");
+
+				cmdCreate.Parameters.AddWithValue("$userId", newUserId);
+				cmdCreate.Parameters.AddWithValue("$configId", configId);
+				cmdCreate.Parameters.AddWithValue("$name", userName);
+				cmdCreate.Parameters.AddWithValue("$persona", userPersona ?? "");
+				cmdCreate.Parameters.AddWithValue("$timestamp", createdAt);
+
+				cmdCreate.CommandText = sbCommand.ToString();
+
+				expectedUpdates += 2;
+				updates += cmdCreate.ExecuteNonQuery();
+			}
+		}
+
+		private static void UpdateCustomUser(SQLiteConnection connection, string userConfigId, string userName, string userPersona, ref int updates, ref int expectedUpdates)
+		{
+			DateTime now = DateTime.Now;
+			long updatedAt = now.ToUnixTimeMilliseconds();
+
+			if (string.IsNullOrEmpty(userName))
+				userName = Utility.FirstNonEmpty(Current.Card.userPlaceholder, Constants.DefaultUserName);
+
+			// Create new user character
+			using (var cmdCreate = new SQLiteCommand(connection))
+			{
+				var sbCommand = new StringBuilder();
+
+				// CharacterConfigVersion
+				sbCommand.AppendLine(
+				@"
+					UPDATE CharacterConfigVersion
+					SET 
+						updatedAt = $timestamp,
+						displayName = $name,
+						name = $name,
+						persona = $persona
+					WHERE id = $userId;
+				");
+
+				cmdCreate.Parameters.AddWithValue("$userId", userConfigId);
+				cmdCreate.Parameters.AddWithValue("$name", userName);
+				cmdCreate.Parameters.AddWithValue("$persona", userPersona ?? "");
+				cmdCreate.Parameters.AddWithValue("$timestamp", updatedAt);
+
+				cmdCreate.CommandText = sbCommand.ToString();
+
+				expectedUpdates += 1;
+				updates += cmdCreate.ExecuteNonQuery();
+			}
+		}
+		
+		private static void ReplaceCharacterInGroup(SQLiteConnection connection, string groupId, string oldCharacterId, string newCharacterId, ref int updates, ref int expectedUpdates)
+		{
+			using (var cmdReplace = new SQLiteCommand(connection))
+			{
+				var sbCommand = new StringBuilder();
+
+				// _CharacterConfigToGroupConfig
+				sbCommand.AppendLine(
+				@"
+					UPDATE _CharacterConfigToGroupConfig
+					SET 
+						A = $newId
+					WHERE A = $oldId AND B = $groupId;
+				");
+
+				// Message
+				sbCommand.AppendLine(
+				@"
+					UPDATE Message
+					SET 
+						characterConfigId = $newId
+					WHERE characterConfigId = $oldId AND chatId IN (
+						SELECT id
+						FROM Chat
+						WHERE groupConfigId = $groupId
+					);
+				");
+
+				cmdReplace.Parameters.AddWithValue("$oldId", oldCharacterId);
+				cmdReplace.Parameters.AddWithValue("$newId", newCharacterId);
+				cmdReplace.Parameters.AddWithValue("$groupId", groupId);
+				cmdReplace.CommandText = sbCommand.ToString();
+
+				int nChanged = cmdReplace.ExecuteNonQuery();
+				expectedUpdates += nChanged;
+				updates += nChanged;
+			}
+		}
+
+		private static void ParseAspectRatio(string aspectRatio, out int width, out int height)
+		{
+			if (string.IsNullOrEmpty(aspectRatio) == false)
+			{
+				int pos_slash = aspectRatio.IndexOf('/');
+				if (pos_slash != -1)
+				{
+					int.TryParse(aspectRatio.Substring(0, pos_slash), out width);
+					int.TryParse(aspectRatio.Substring(pos_slash + 1), out height);
+				}
+				else
+				{
+					width = 0;
+					height = 0;
+				}
+			}
+			else
+			{
+				width = 0;
+				height = 0;
 			}
 		}
 

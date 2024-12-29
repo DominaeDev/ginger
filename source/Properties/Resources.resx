@@ -1137,7 +1137,7 @@ Do you want to start the chat over from here?</value>
     <value>Remove all messages prior to this one.</value>
   </data>
   <data name="tooltip_link_always_create" xml:space="preserve">
-    <value>Always link characters when importing or saving to Backyard AI.</value>
+    <value>When importing or saving a new character to Backyard AI, always link thecharacter.</value>
   </data>
   <data name="error_link_failed_with_reason" xml:space="preserve">
     <value>Failed to connect to Backyard AI.
@@ -1418,7 +1418,7 @@ Do you want to continue?</value>
     <value>The model is responsible for generating the character's responses.</value>
   </data>
   <data name="tooltip_link_alt_greetings" xml:space="preserve">
-    <value>When saving a new character to Backyard AI, create separate chats for each alternate greeting.</value>
+    <value>When importing or saving a new character to Backyard AI, create a chat instance for each greeting.</value>
   </data>
   <data name="cap_link_repair_images" xml:space="preserve">
     <value>Repair broken images</value>
@@ -1518,8 +1518,7 @@ Do you want to continue?</value>
     <value>..\Resources\Icons\animation.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="tooltip_link_author_note" xml:space="preserve">
-    <value>Use the author's note for 'vital' model instructions.
-(This is equivalent to how the jailbreak / post history instructions work in Silly Tavern.)</value>
+    <value>When this setting is enabled, write 'vital' model instructions to the author's note.</value>
   </data>
   <data name="cap_link_delete_characters" xml:space="preserve">
     <value>Delete characters</value>
@@ -1552,5 +1551,8 @@ Are you sure you want to proceed?</value>
   </data>
   <data name="delete_character" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Light\delete_character.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tooltip_link_user_persona" xml:space="preserve">
+    <value>When saving changes to Backyard AI, also update the user persona.</value>
   </data>
 </root>

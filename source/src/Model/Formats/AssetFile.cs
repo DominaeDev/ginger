@@ -487,6 +487,11 @@ namespace Ginger
 				_hash = hash,
 			};
 		}
+
+		public static AssetData FromFile(string filename)
+		{
+			return FromBytes(Utility.LoadFile(filename));
+		}
 	}
 
 	public class AssetCollection : List<AssetFile>, ICloneable

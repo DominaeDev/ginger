@@ -4473,7 +4473,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When saving a new character to Backyard AI, create separate chats for each alternate greeting..
+        ///   Looks up a localized string similar to When importing or saving a new character to Backyard AI, create a chat instance for each greeting..
         /// </summary>
         internal static string tooltip_link_alt_greetings {
             get {
@@ -4482,7 +4482,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Always link characters when importing or saving to Backyard AI..
+        ///   Looks up a localized string similar to When importing or saving a new character to Backyard AI, always link thecharacter..
         /// </summary>
         internal static string tooltip_link_always_create {
             get {
@@ -4518,8 +4518,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use the author&apos;s note for &apos;vital&apos; model instructions.
-        ///(This is equivalent to how the jailbreak / post history instructions work in Silly Tavern.).
+        ///   Looks up a localized string similar to When this setting is enabled, write &apos;vital&apos; model instructions to the author&apos;s note..
         /// </summary>
         internal static string tooltip_link_author_note {
             get {
@@ -4849,6 +4848,15 @@ namespace Ginger.Properties {
         internal static string tooltip_link_use_portrait_as_background {
             get {
                 return ResourceManager.GetString("tooltip_link_use_portrait_as_background", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When saving changes to Backyard AI, also update the user persona..
+        /// </summary>
+        internal static string tooltip_link_user_persona {
+            get {
+                return ResourceManager.GetString("tooltip_link_user_persona", resourceCulture);
             }
         }
         

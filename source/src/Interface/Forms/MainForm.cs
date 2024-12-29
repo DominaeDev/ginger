@@ -259,6 +259,7 @@ namespace Ginger
 			purgeUnusedImagesMenuItem.ToolTipText = Resources.tooltip_link_purge_images;
 			repairLegacyChatsMenuItem.ToolTipText = Resources.tooltip_link_repair_chat;
 			writeAuthorNoteMenuItem.ToolTipText = Resources.tooltip_link_author_note;
+			writeUserPersonaMenuItem.ToolTipText = Resources.tooltip_link_user_persona;
 
 			RegisterIdleHandler(recipeList);
 
@@ -1379,6 +1380,7 @@ namespace Ginger
 			usePortraitAsBackgroundMenuItem.Checked = AppSettings.BackyardLink.UsePortraitAsBackground;
 			importAltGreetingsMenuItem.Checked = AppSettings.BackyardLink.ImportAlternateGreetings;
 			writeAuthorNoteMenuItem.Checked = AppSettings.BackyardLink.WriteAuthorNote;
+			writeUserPersonaMenuItem.Checked = AppSettings.BackyardLink.WriteUserPersona;
 
 
 			Theme.Apply(menuStrip);
@@ -2570,6 +2572,11 @@ namespace Ginger
 		private void deleteCharactersMenuItem_Click(object sender, EventArgs e)
 		{
 			DeleteBackyardCharacters();
+		}
+
+		private void includeUserPersonaMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.BackyardLink.WriteUserPersona = !AppSettings.BackyardLink.WriteUserPersona;
 		}
 	}
 
