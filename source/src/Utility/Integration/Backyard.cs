@@ -2345,8 +2345,7 @@ namespace Ginger.Integration
 		public struct ConfirmDeleteResult
 		{
 			public string[] characterIds;
-			public string[] soloGroupIds;
-			public string[] multiGroupIds;
+			public string[] groupIds;
 			public string[] imageIds;
 			public string[] imageUrls;
 		}
@@ -2465,17 +2464,13 @@ namespace Ginger.Integration
 						}
 					}
 
-					var soloGroupIds = groupMembers.Where(kvp => kvp.Value.Except(characterIds).Count() <= 1).Select(kvp => kvp.Key).ToArray();
-					var multiGroupIds = groupMembers.Where(kvp => kvp.Value.Except(characterIds).Count() > 1).Select(kvp => kvp.Key).ToArray();
-
 					result = new ConfirmDeleteResult() {
 						characterIds = groupMembers
 							.SelectMany(kvp => kvp.Value)
 							.Distinct()
 							.Intersect(characterIds)
 							.ToArray(),
-						soloGroupIds = soloGroupIds,
-						multiGroupIds = multiGroupIds,
+						groupIds = groupMembers.Select(kvp => kvp.Key).ToArray(),
 						imageIds = images.Keys.ToArray(),
 						imageUrls = images.Values.Union(backgroundUrls).Distinct().ToArray(),
 					};
@@ -2500,7 +2495,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public static Error DeleteCharacters(string[] characterIds, string[] groupIds, string[] imageIds, bool bEvictFromGroup)
+		public static Error DeleteCharacters(string[] characterIds, string[] groupIds, string[] imageIds)
 		{
 			if (ConnectionEstablished == false)
 				return Error.NotConnected;
@@ -2577,34 +2572,6 @@ namespace Ginger.Integration
 					{
 						try
 						{
-							if (bEvictFromGroup)
-							{
-								using (var cmdEvict = connection.CreateCommand())
-								{
-									var sbCommand = new StringBuilder();
-
-									// Evict characters from group chats
-									sbCommand.AppendLine(
-									@"
-										DELETE FROM _CharacterConfigToGroupConfig
-										WHERE A IN (
-									");
-
-									for (int i = 0; i < characterIds.Length; ++i)
-									{
-										if (i > 0)
-											sbCommand.Append(", ");
-										sbCommand.AppendFormat("'{0}'", characterIds[i]);
-									}
-									sbCommand.AppendLine(");");
-									cmdEvict.CommandText = sbCommand.ToString();
-
-									int nEvicted = cmdEvict.ExecuteNonQuery();
-									expectedUpdates += nEvicted;
-									updates += nEvicted;
-								}
-							}
-
 							using (var cmdDelete = connection.CreateCommand())
 							{
 								var sbCommand = new StringBuilder();

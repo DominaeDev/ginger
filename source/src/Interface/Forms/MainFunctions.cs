@@ -2768,7 +2768,6 @@ namespace Ginger
 			var characters = dlg.Characters;
 
 			string characterNames;
-			string thisCharacter;
 
 			if (characters.Length > 1)
 			{
@@ -2780,14 +2779,12 @@ namespace Ginger
 					characterNames = Utility.CommaSeparatedList(names);
 				else
 					characterNames = Utility.ListToCommaSeparatedString(names.Take(3)) + string.Format(", and {0} others", names.Length - 3);
-				thisCharacter = "these characters";
 			}
 			else
 			{
 				characterNames = characters
 					.Select(c => c.displayName)
 					.FirstOrDefault() ?? Constants.DefaultCharacterName;
-				thisCharacter = "this character";
 			}
 
 			// Get affected character ids and group ids.
@@ -2800,25 +2797,10 @@ namespace Ginger
 			}
 
 			// Confirm delete
-			if (MessageBox.Show(string.Format(Resources.msg_link_delete_characters_confirm, characterNames, thisCharacter), Resources.cap_link_delete_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			if (MessageBox.Show(string.Format(result.characterIds.Length != result.groupIds.Length ? Resources.msg_link_delete_characters_and_group_chats_confirm : Resources.msg_link_delete_characters_confirm, characterNames), Resources.cap_link_delete_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 				return false;
 
-			bool bEvictFromGroup = false;
-			if (result.multiGroupIds.Length > 0)
-			{
-				var mr = MessageBox.Show(Resources.msg_link_evict_from_group_confirm, Resources.cap_link_delete_characters, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button3);
-				if (mr == DialogResult.Cancel)
-					return false;
-				bEvictFromGroup = mr == DialogResult.No;
-			}
-
-			string[] groupIds;
-			if (bEvictFromGroup)
-				groupIds = result.soloGroupIds;
-			else
-				groupIds = result.soloGroupIds.Union(result.multiGroupIds).ToArray();
-
-			error = RunTask(() => Backyard.DeleteCharacters(result.characterIds, groupIds, result.imageIds, bEvictFromGroup), "Deleting characters...");
+			error = RunTask(() => Backyard.DeleteCharacters(result.characterIds, result.groupIds, result.imageIds), "Deleting characters...");
 			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_delete_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -2843,8 +2825,7 @@ namespace Ginger
 			{ 
 			}
 
-			bool bDeletedGroups = result.multiGroupIds.Length > 0 && !bEvictFromGroup;
-			MessageBox.Show(this, string.Format(bDeletedGroups ? Resources.msg_link_deleted_characters_and_groups : Resources.msg_link_deleted_characters, NumCharacters(characters.Length)), Resources.cap_link_delete_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MessageBox.Show(this, string.Format(Resources.msg_link_deleted_characters, NumCharacters(characters.Length)), Resources.cap_link_delete_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			
 			return true;
 		}

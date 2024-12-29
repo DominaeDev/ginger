@@ -1524,9 +1524,9 @@ Do you want to continue?</value>
     <value>Delete characters</value>
   </data>
   <data name="msg_link_delete_characters_confirm" xml:space="preserve">
-    <value>This will permanently delete {0} from Backyard AI.
+    <value>This will permanently delete {0} from Backyard AI, including all associated chats and images.
 
-Are you sure you want to delete {1}?</value>
+Are you sure you want to proceed?</value>
   </data>
   <data name="msg_link_evict_from_group_confirm" xml:space="preserve">
     <value>One ore more of the selected characters are participating in group chats.
@@ -1540,5 +1540,10 @@ Choose 'Cancel' to abort.</value>
   </data>
   <data name="msg_link_deleted_characters_and_groups" xml:space="preserve">
     <value>Successfully deleted {0} from Backyard AI, including the group chats they participating in.</value>
+  </data>
+  <data name="msg_link_delete_characters_and_group_chats_confirm" xml:space="preserve">
+    <value>This will permanently delete {0} from Backyard AI, including all associated chats, images, and any group chats they are participating in.
+
+Are you sure you want to proceed?</value>
   </data>
 </root>

@@ -2693,9 +2693,20 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will permanently delete {0} from Backyard AI.
+        ///   Looks up a localized string similar to This will permanently delete {0} from Backyard AI, including all associated chats, images, and any group chats they are participating in.
         ///
-        ///Are you sure you want to delete {1}?.
+        ///Are you sure you want to proceed?.
+        /// </summary>
+        internal static string msg_link_delete_characters_and_group_chats_confirm {
+            get {
+                return ResourceManager.GetString("msg_link_delete_characters_and_group_chats_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will permanently delete {0} from Backyard AI, including all associated chats and images.
+        ///
+        ///Are you sure you want to proceed?.
         /// </summary>
         internal static string msg_link_delete_characters_confirm {
             get {
