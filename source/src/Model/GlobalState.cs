@@ -278,6 +278,18 @@ namespace Ginger
 			return true;
 		}
 
+		public static bool ReadFaradayCard(FaradayCardV4 card, Image portrait, UserData userInfo)
+		{
+			if (card == null)
+				return false;
+
+			Reset();
+			Instance.ReadFaradayCard(card, portrait);
+			Instance.ReadUserData(userInfo);
+			Instance.ConvertCharacterMarkers(Name, Card.userPlaceholder);
+			return true;
+		}
+
 		public static bool ReadTavernCard(TavernCardV2 card, Image portrait)
 		{
 			if (card == null)
@@ -414,6 +426,35 @@ namespace Ginger
 			}
 
 			imageLinks = lsImageLinks.ToArray();
+		}
+
+		public static void ImportImages(ImageInstance[] images, out Backyard.Link.Image[] imageLinks) // Backyard import
+		{
+			// Images
+			string[] imageUrls = images
+				.Where(i => i.imageType == ImageInstance.Type.Portrait)
+				.Select(i => i.imageUrl)
+				.ToArray();
+			Backyard.Link.Image[] portraitLinks;
+			ImportImages(imageUrls, out portraitLinks, AssetFile.AssetType.Icon);
+			
+			// Backgrounds
+			string[] backgroundUrls = images
+				.Where(i => i.imageType == ImageInstance.Type.Background)
+				.Select(i => i.imageUrl)
+				.ToArray();
+			Backyard.Link.Image[] backgroundLinks;
+			ImportImages(backgroundUrls, out backgroundLinks, AssetFile.AssetType.Background);
+
+			// User images
+			string[] userImageUrls = images
+				.Where(i => i.imageType == ImageInstance.Type.UserImage)
+				.Select(i => i.imageUrl)
+				.ToArray();
+			Backyard.Link.Image[] userPortraitLinks;
+			ImportImages(userImageUrls, out userPortraitLinks, AssetFile.AssetType.UserIcon);
+
+			imageLinks = Utility.ConcatenateArrays(portraitLinks, backgroundLinks, userPortraitLinks);
 		}
 
 		public struct StashInfo

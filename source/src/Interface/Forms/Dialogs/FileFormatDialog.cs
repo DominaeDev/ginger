@@ -15,7 +15,7 @@ namespace Ginger
 			"Backyard AI PNG (*.png)",
 			"CharX file (*.charx)",
 			"Text generation web ui YAML (*.yaml)",
-			"Ginger backup file (*.zip)",
+			"Character backup (*.zip)",
 		};
 
 		public FileUtil.FileType FileFormat { get; private set; }

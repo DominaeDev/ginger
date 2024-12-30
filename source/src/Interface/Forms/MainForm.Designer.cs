@@ -166,14 +166,15 @@ namespace Ginger {
 			this.optionsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.alwaysLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.usePortraitAsBackgroundMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.importAltGreetingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.writeUserPersonaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.writeAuthorNoteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.writeChatSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.applyToLastChatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.applyToFirstChatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.applyToAllChatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem17 = new System.Windows.Forms.ToolStripSeparator();
+			this.usePortraitAsBackgroundMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.importAltGreetingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.writeUserPersonaMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.writeAuthorNoteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem16 = new System.Windows.Forms.ToolStripSeparator();
 			this.editExportModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -189,7 +190,6 @@ namespace Ginger {
 			this.statusBarActor = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
-			this.toolStripMenuItem17 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -1564,44 +1564,16 @@ namespace Ginger {
 			// enableAutosaveMenuItem
 			// 
 			this.enableAutosaveMenuItem.Name = "enableAutosaveMenuItem";
-			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(268, 22);
+			this.enableAutosaveMenuItem.Size = new System.Drawing.Size(236, 22);
 			this.enableAutosaveMenuItem.Text = "Push updates on save";
 			this.enableAutosaveMenuItem.Click += new System.EventHandler(this.enableAutosaveMenuItem_Click);
 			// 
 			// alwaysLinkMenuItem
 			// 
 			this.alwaysLinkMenuItem.Name = "alwaysLinkMenuItem";
-			this.alwaysLinkMenuItem.Size = new System.Drawing.Size(268, 22);
+			this.alwaysLinkMenuItem.Size = new System.Drawing.Size(236, 22);
 			this.alwaysLinkMenuItem.Text = "Always link on import";
 			this.alwaysLinkMenuItem.Click += new System.EventHandler(this.alwaysLinkMenuItem_Click);
-			// 
-			// usePortraitAsBackgroundMenuItem
-			// 
-			this.usePortraitAsBackgroundMenuItem.Name = "usePortraitAsBackgroundMenuItem";
-			this.usePortraitAsBackgroundMenuItem.Size = new System.Drawing.Size(236, 22);
-			this.usePortraitAsBackgroundMenuItem.Text = "Use portrait as background";
-			this.usePortraitAsBackgroundMenuItem.Click += new System.EventHandler(this.usePortraitAsBackgroundMenuItem_Click);
-			// 
-			// importAltGreetingsMenuItem
-			// 
-			this.importAltGreetingsMenuItem.Name = "importAltGreetingsMenuItem";
-			this.importAltGreetingsMenuItem.Size = new System.Drawing.Size(236, 22);
-			this.importAltGreetingsMenuItem.Text = "Create a chat for each greeting";
-			this.importAltGreetingsMenuItem.Click += new System.EventHandler(this.importAltGreetingsMenuItem_Click);
-			// 
-			// writeUserPersonaMenuItem
-			// 
-			this.writeUserPersonaMenuItem.Name = "writeUserPersonaMenuItem";
-			this.writeUserPersonaMenuItem.Size = new System.Drawing.Size(236, 22);
-			this.writeUserPersonaMenuItem.Text = "Write to user persona";
-			this.writeUserPersonaMenuItem.Click += new System.EventHandler(this.includeUserPersonaMenuItem_Click);
-			// 
-			// writeAuthorNoteMenuItem
-			// 
-			this.writeAuthorNoteMenuItem.Name = "writeAuthorNoteMenuItem";
-			this.writeAuthorNoteMenuItem.Size = new System.Drawing.Size(236, 22);
-			this.writeAuthorNoteMenuItem.Text = "Write to author\'s note";
-			this.writeAuthorNoteMenuItem.Click += new System.EventHandler(this.writeAuthorNoteMenuItem_Click);
 			// 
 			// writeChatSettingsMenuItem
 			// 
@@ -1610,7 +1582,7 @@ namespace Ginger {
             this.applyToFirstChatMenuItem,
             this.applyToAllChatsMenuItem});
 			this.writeChatSettingsMenuItem.Name = "writeChatSettingsMenuItem";
-			this.writeChatSettingsMenuItem.Size = new System.Drawing.Size(268, 22);
+			this.writeChatSettingsMenuItem.Size = new System.Drawing.Size(236, 22);
 			this.writeChatSettingsMenuItem.Text = "Apply chat settings to";
 			// 
 			// applyToLastChatMenuItem
@@ -1634,15 +1606,48 @@ namespace Ginger {
 			this.applyToAllChatsMenuItem.Text = "All chats";
 			this.applyToAllChatsMenuItem.Click += new System.EventHandler(this.applyToAllChatsMenuItem_Click);
 			// 
+			// toolStripMenuItem17
+			// 
+			this.toolStripMenuItem17.Name = "toolStripMenuItem17";
+			this.toolStripMenuItem17.Size = new System.Drawing.Size(233, 6);
+			// 
+			// usePortraitAsBackgroundMenuItem
+			// 
+			this.usePortraitAsBackgroundMenuItem.Name = "usePortraitAsBackgroundMenuItem";
+			this.usePortraitAsBackgroundMenuItem.Size = new System.Drawing.Size(236, 22);
+			this.usePortraitAsBackgroundMenuItem.Text = "Use portrait as background";
+			this.usePortraitAsBackgroundMenuItem.Click += new System.EventHandler(this.usePortraitAsBackgroundMenuItem_Click);
+			// 
+			// importAltGreetingsMenuItem
+			// 
+			this.importAltGreetingsMenuItem.Name = "importAltGreetingsMenuItem";
+			this.importAltGreetingsMenuItem.Size = new System.Drawing.Size(236, 22);
+			this.importAltGreetingsMenuItem.Text = "Create a chat for each greeting";
+			this.importAltGreetingsMenuItem.Click += new System.EventHandler(this.importAltGreetingsMenuItem_Click);
+			// 
+			// writeUserPersonaMenuItem
+			// 
+			this.writeUserPersonaMenuItem.Name = "writeUserPersonaMenuItem";
+			this.writeUserPersonaMenuItem.Size = new System.Drawing.Size(236, 22);
+			this.writeUserPersonaMenuItem.Text = "Include user persona";
+			this.writeUserPersonaMenuItem.Click += new System.EventHandler(this.includeUserPersonaMenuItem_Click);
+			// 
+			// writeAuthorNoteMenuItem
+			// 
+			this.writeAuthorNoteMenuItem.Name = "writeAuthorNoteMenuItem";
+			this.writeAuthorNoteMenuItem.Size = new System.Drawing.Size(236, 22);
+			this.writeAuthorNoteMenuItem.Text = "Write to author\'s note";
+			this.writeAuthorNoteMenuItem.Click += new System.EventHandler(this.writeAuthorNoteMenuItem_Click);
+			// 
 			// toolStripMenuItem16
 			// 
 			this.toolStripMenuItem16.Name = "toolStripMenuItem16";
-			this.toolStripMenuItem16.Size = new System.Drawing.Size(265, 6);
+			this.toolStripMenuItem16.Size = new System.Drawing.Size(233, 6);
 			// 
 			// editExportModelSettingsMenuItem
 			// 
 			this.editExportModelSettingsMenuItem.Name = "editExportModelSettingsMenuItem";
-			this.editExportModelSettingsMenuItem.Size = new System.Drawing.Size(268, 22);
+			this.editExportModelSettingsMenuItem.Size = new System.Drawing.Size(236, 22);
 			this.editExportModelSettingsMenuItem.Text = "Default model settings...";
 			this.editExportModelSettingsMenuItem.Click += new System.EventHandler(this.editExportModelSettingsMenuItem_Click);
 			// 
@@ -1745,11 +1750,6 @@ namespace Ginger {
 			this.statusConnectionIcon.Name = "statusConnectionIcon";
 			this.statusConnectionIcon.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusConnectionIcon.Size = new System.Drawing.Size(24, 17);
-			// 
-			// toolStripMenuItem17
-			// 
-			this.toolStripMenuItem17.Name = "toolStripMenuItem17";
-			this.toolStripMenuItem17.Size = new System.Drawing.Size(233, 6);
 			// 
 			// MainForm
 			// 

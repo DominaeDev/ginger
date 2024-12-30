@@ -300,7 +300,7 @@ namespace Ginger.Integration
 					chats = Backyard.GatherChats(card, output, imageInput);
 
 				Backyard.Link.Image[] imageLinks; // Ignored
-				var writeError = Backyard.CreateNewCharacter(card, imageInput, chats, out characterInstance, out imageLinks, parentFolder);
+				var writeError = Backyard.CreateNewCharacter(card, imageInput, chats, out characterInstance, out imageLinks, null, parentFolder);
 				if (writeError != Backyard.Error.NoError)
 				{
 					characterInstance = default(CharacterInstance);
@@ -317,15 +317,17 @@ namespace Ginger.Integration
 
 		private WorkerError ImportBackup(string filename, FolderInstance parentFolder, out CharacterInstance characterInstance)
 		{
-			BackupData backupData;
-			var readError = BackupUtil.ReadBackup(filename, out backupData);
+			BackupData backup;
+			var readError = BackupUtil.ReadBackup(filename, out backup);
 			if (readError != FileUtil.Error.NoError)
 			{
 				characterInstance = default(CharacterInstance);
 				return WorkerError.Skipped;
 			}
 
-			IEnumerable<Backyard.ImageInput> images = backupData.images
+			List<Backyard.ImageInput> images = new List<Backyard.ImageInput>();
+				
+			images.AddRange(backup.images
 				.Select(i => new Backyard.ImageInput {
 					asset = new AssetFile() {
 						name = i.filename,
@@ -334,9 +336,9 @@ namespace Ginger.Integration
 						assetType = AssetFile.AssetType.Icon,
 					},
 					fileExt = i.ext,
-				});
+				}));
 
-			images = images.Union(backupData.backgrounds
+			images.AddRange(backup.backgrounds
 				.Select(i => new Backyard.ImageInput {
 					asset = new AssetFile() {
 						name = i.filename,
@@ -347,13 +349,25 @@ namespace Ginger.Integration
 					fileExt = i.ext,
 				}));
 
+			if (backup.userPortrait != null)
+			{
+				images.Add(new Backyard.ImageInput {
+					asset = new AssetFile() {
+						name = backup.userPortrait.filename,
+						data = AssetData.FromBytes(backup.userPortrait.data),
+						ext = backup.userPortrait.ext,
+						assetType = AssetFile.AssetType.UserIcon,
+					},
+					fileExt = backup.userPortrait.ext,
+				});
+			}
 			// Use default model settings
-			foreach (var chat in backupData.chats)
+			foreach (var chat in backup.chats)
 				chat.parameters = AppSettings.BackyardSettings.UserSettings;
 
 			// Write character to database
 			Backyard.Link.Image[] imageLinks; // Ignored
-			Backyard.Error error = Backyard.CreateNewCharacter(backupData.characterCard, images.ToArray(), backupData.chats.ToArray(), out characterInstance, out imageLinks, parentFolder);
+			Backyard.Error error = Backyard.CreateNewCharacter(backup.characterCard, images.ToArray(), backup.chats.ToArray(), out characterInstance, out imageLinks, backup.userInfo, parentFolder);
 
 			if (error != Backyard.Error.NoError)
 				return WorkerError.DatabaseError;

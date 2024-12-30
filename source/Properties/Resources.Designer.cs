@@ -2253,6 +2253,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {&quot;type&quot;:&quot;object&quot;,&quot;properties&quot;:{&quot;name&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;persona&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;image&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]}}}.
+        /// </summary>
+        internal static string ginger_user_data_schema_v1_schema {
+            get {
+                return ResourceManager.GetString("ginger_user_data_schema_v1_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__grammar&quot;&gt;
         ///	&lt;Name&gt;Grammar&lt;/Name&gt;
         ///	&lt;Description&gt;

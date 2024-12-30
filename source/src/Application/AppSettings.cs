@@ -229,7 +229,7 @@ namespace Ginger
 			public static bool PruneExampleChat = true;
 			public static bool MarkNSFW = true;
 			public static bool WriteAuthorNote = true;
-			public static bool WriteUserPersona = true;
+			public static bool WriteUserPersona = false;
 		}
 
 		public static bool LoadFromIni(string filePath)

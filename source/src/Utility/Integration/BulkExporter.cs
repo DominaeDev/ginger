@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Timers;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 
 namespace Ginger.Integration
 {
@@ -232,9 +233,8 @@ namespace Ginger.Integration
 
 			// Read character from Backyard
 			FaradayCardV4 faradayCard;
-			string[] imageUrls;
-			string[] backgroundUrls;
-			var importError = Backyard.ImportCharacter(characterInstance, out faradayCard, out imageUrls, out backgroundUrls);
+			ImageInstance[] images;
+			var importError = Backyard.ImportCharacter(characterInstance, out faradayCard, out images);
 			if (importError != Backyard.Error.NoError)
 			{
 				filename = default(string);
@@ -250,10 +250,7 @@ namespace Ginger.Integration
 
 			// Load images/backgrounds
 			Backyard.Link.Image[] unused;
-			Current.ImportImages(imageUrls, out unused, AssetFile.AssetType.Icon);
-			
-			if (backgroundUrls != null && backgroundUrls.Length > 0)
-				Current.ImportImages(backgroundUrls, out unused, AssetFile.AssetType.Background);
+			Current.ImportImages(images, out unused);
 
 			try
 			{

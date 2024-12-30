@@ -377,6 +377,20 @@ namespace Ginger
 			return true;
 		}
 
+		public bool ReadUserData(UserData userInfo)
+		{
+			if (userInfo == null)
+				return false;
+			Card.userPlaceholder = userInfo.name ?? Constants.DefaultUserName;
+			if (string.IsNullOrEmpty(userInfo.persona) == false)
+			{
+				GingerString userPersona = GingerString.FromFaraday(userInfo.persona);
+				AddChannel(Characters[0], userPersona.ToParameter(), Resources.user_recipe);
+				Card.userGender = Utility.InferGender(userPersona.ToString(), true);
+			}
+			return true;
+		}
+
 		private Recipe AddChannel(CharacterData character, string text, string xmlSource)
 		{
 			if (string.IsNullOrWhiteSpace(text) == false)

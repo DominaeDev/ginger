@@ -67,6 +67,7 @@ namespace Ginger
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.btnCancel.Highlighted = false;
 			this.btnCancel.Location = new System.Drawing.Point(363, 2);
 			this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 0, 0, 0);
 			this.btnCancel.Name = "btnCancel";
@@ -79,6 +80,7 @@ namespace Ginger
 			// btnOk
 			// 
 			this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnOk.Highlighted = false;
 			this.btnOk.Location = new System.Drawing.Point(242, 2);
 			this.btnOk.Margin = new System.Windows.Forms.Padding(0);
 			this.btnOk.Name = "btnOk";
@@ -194,7 +196,7 @@ namespace Ginger
 			this.Name = "LinkSelectGroupDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Select Backyard AI character";
+			this.Text = "Select character";
 			buttonLayout.ResumeLayout(false);
 			this.listPanel.ResumeLayout(false);
 			this.ResumeLayout(false);

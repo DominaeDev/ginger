@@ -647,7 +647,7 @@ namespace Ginger
 		public static T[] ConcatenateArrays<T>(params T[][] arrays)
 		{
 			if (arrays == null || arrays.Length == 0)
-				return null;
+				return new T[0];
 
 			int totalLength = 0;
 			for (int i = 0; i < arrays.Length; ++i)
@@ -1758,7 +1758,7 @@ namespace Ginger
 			}
 		}
 
-		public static string InferGender(string persona)
+		public static string InferGender(string persona, bool isUser = false)
 		{
 			if (string.IsNullOrEmpty(persona))
 				return null;
@@ -1778,7 +1778,7 @@ namespace Ginger
 			// Split text into lines/sentences
 			string[] lines = persona
 				.Split(new char[] { '\n', '.' }, StringSplitOptions.RemoveEmptyEntries)
-				.Where(s => s.Contains("{user}") == false)
+				.Where(s => isUser || s.Contains("{user}") == false)
 				.ToArray();
 
 			string primaryGuess = null;

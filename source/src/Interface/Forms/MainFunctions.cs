@@ -1511,6 +1511,7 @@ namespace Ginger
 		private bool ImportCharacterFromBackyard()
 		{
 			var dlg = new LinkSelectCharacterDialog();
+			dlg.Text = "Open Backyard AI character";
 
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
@@ -1531,9 +1532,9 @@ namespace Ginger
 
 			// Import...
 			FaradayCardV4 faradayData;
-			string[] images;
-			string[] backgrounds;
-			var importError = Backyard.ImportCharacter(dlg.SelectedCharacter, out faradayData, out images, out backgrounds);
+			ImageInstance[] images;
+			UserData userInfo;
+			var importError = Backyard.ImportCharacter(dlg.SelectedCharacter, out faradayData, out images, out userInfo);
 			if (importError == Backyard.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1548,17 +1549,10 @@ namespace Ginger
 			}
 			
 			// Success
-			Current.ReadFaradayCard(faradayData, null);
+			Current.ReadFaradayCard(faradayData, null, userInfo);
 
 			Backyard.Link.Image[] imageLinks;
-			Current.ImportImages(images, out imageLinks, AssetFile.AssetType.Icon);
-			
-			if (backgrounds != null && backgrounds.Length > 0)
-			{
-				Backyard.Link.Image[] backgroundsLinks;
-				Current.ImportImages(backgrounds, out backgroundsLinks, AssetFile.AssetType.Background);
-				imageLinks = Utility.ConcatenateArrays(imageLinks, backgroundsLinks);
-			}
+			Current.ImportImages(images, out imageLinks);
 
 			ClearStatusBarMessage();
 
@@ -1589,15 +1583,22 @@ namespace Ginger
 
 			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
 
-			string userPersona = null;
+			// User persona
+			UserData userInfo = null;
 			if (AppSettings.BackyardLink.WriteUserPersona)
 			{
-				userPersona = output.userPersona.ToFaraday();
-				output.userPersona = GingerString.Empty;
+				string userPersona = output.userPersona.ToFaraday();
+				if (string.IsNullOrEmpty(userPersona) == false)
+				{
+					userInfo = new UserData() {
+						name = Current.Card.userPlaceholder,
+						persona = userPersona,
+					};
+					output.userPersona = GingerString.Empty;
+				}
 			}
+
 			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
-			if (userPersona != null)
-				card.userPersona = userPersona;
 
 			// Check if character exists, has newer changes
 			bool hasChanges;
@@ -1620,7 +1621,7 @@ namespace Ginger
 
 			DateTime updateDate;
 			Backyard.Link.Image[] imageLinks;
-			error = Backyard.UpdateCharacter(card, Current.Link, out updateDate, out imageLinks);
+			error = Backyard.UpdateCharacter(card, Current.Link, out updateDate, out imageLinks, userInfo);
 			if (error != Backyard.Error.NoError)
 			{
 				return error;
@@ -1650,22 +1651,29 @@ namespace Ginger
 
 			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
 			
-			string userPersona = null;
+			// User persona
+			UserData userInfo = null;
 			if (AppSettings.BackyardLink.WriteUserPersona)
 			{
-				userPersona = output.userPersona.ToFaraday();
-				output.userPersona = GingerString.Empty;
+				string userPersona = output.userPersona.ToFaraday();
+				if (string.IsNullOrEmpty(userPersona) == false)
+				{
+					userInfo = new UserData() {
+						name = Current.Card.userPlaceholder,
+						persona = userPersona,
+					};
+					output.userPersona = GingerString.Empty;
+				}
 			}
+
 			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
-			if (userPersona != null)
-				card.userPersona = userPersona;
 
 			Backyard.ImageInput[] imageInput = Backyard.GatherImages();
 			BackupData.Chat[] chats = null;
 			if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1)
 				chats = Backyard.GatherChats(card, output, imageInput);
 
-			var error = Backyard.CreateNewCharacter(card, imageInput, chats, out createdCharacter, out images);
+			var error = Backyard.CreateNewCharacter(card, imageInput, chats, out createdCharacter, out images, userInfo);
 			if (error != Backyard.Error.NoError)
 			{
 				return error;
@@ -1753,24 +1761,17 @@ namespace Ginger
 
 			// Import data
 			FaradayCardV4 faradayData;
-			string[] images;
-			string[] backgrounds;
-			var importError = Backyard.ImportCharacter(characterInstance, out faradayData, out images, out backgrounds);
+			ImageInstance[] images;
+			UserData userInfo;
+			var importError = Backyard.ImportCharacter(characterInstance, out faradayData, out images, out userInfo);
 			if (importError != Backyard.Error.NoError)
 				return importError;
 
 			// Success
-			Current.ReadFaradayCard(faradayData, null);
+			Current.ReadFaradayCard(faradayData, null, userInfo);
 
 			Backyard.Link.Image[] imageLinks;
 			Current.ImportImages(images, out imageLinks);
-			
-			if (backgrounds != null && backgrounds.Length > 0)
-			{
-				Backyard.Link.Image[] backgroundsLinks;
-				Current.ImportImages(backgrounds, out backgroundsLinks, AssetFile.AssetType.Background);
-				imageLinks = Utility.ConcatenateArrays(imageLinks, backgroundsLinks);
-			}
 
 			Current.LinkWith(characterInstance, imageLinks);
 			Current.IsDirty = true;
@@ -1901,6 +1902,7 @@ namespace Ginger
 
 			// Choose character(s)
 			var dlg = new LinkSelectMultipleCharactersDialog();
+			dlg.Text = "Select characters to export";
 			dlg.Characters = Backyard.CharactersNoUser.ToArray();
 			dlg.Folders = Backyard.Folders.ToArray();
 			if (dlg.ShowDialog() != DialogResult.OK || dlg.Characters.Length == 0)
@@ -2122,7 +2124,7 @@ namespace Ginger
 			try
 			{
 				importFileDialog.Title = Resources.cap_import_character;
-				importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml;*.zip|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml|Ginger backup files|*.zip";
+				importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml;*.zip|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml|Character backup files|*.zip";
 				importFileDialog.FilterIndex = AppSettings.User.LastImportCharacterFilter;
 				importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 				importFileDialog.Multiselect = true;
@@ -2348,6 +2350,7 @@ namespace Ginger
 		private bool CreateBackyardBackup()
 		{
 			var groupDlg = new LinkSelectGroupDialog();
+			groupDlg.Text = Resources.cap_link_create_backup;
 			groupDlg.Characters = Backyard.Characters.ToArray();
 			groupDlg.Groups = Backyard.Groups.ToArray();
 			groupDlg.Folders = Backyard.Folders.ToArray();
@@ -2470,7 +2473,8 @@ namespace Ginger
 					chat.parameters = AppSettings.BackyardSettings.UserSettings;
 			}
 
-			IEnumerable<Backyard.ImageInput> images = backup.images
+			List<Backyard.ImageInput> images = new List<Backyard.ImageInput>();
+			images.AddRange(backup.images
 				.Select(i => new Backyard.ImageInput {
 					asset = new AssetFile() {
 						name = i.filename,
@@ -2479,9 +2483,9 @@ namespace Ginger
 						assetType = AssetFile.AssetType.Icon,
 					},
 					fileExt = i.ext,
-				});
+				}));
 
-			images = images.Union(backup.backgrounds
+			images.AddRange(backup.backgrounds
 				.Select(i => new Backyard.ImageInput {
 					asset = new AssetFile() {
 						name = i.filename,
@@ -2491,6 +2495,19 @@ namespace Ginger
 					},
 					fileExt = i.ext,
 				}));
+
+			if (backup.userPortrait != null)
+			{
+				images.Add(new Backyard.ImageInput {
+					asset = new AssetFile() {
+						name = backup.userPortrait.filename,
+						data = AssetData.FromBytes(backup.userPortrait.data),
+						ext = backup.userPortrait.ext,
+						assetType = AssetFile.AssetType.UserIcon,
+					},
+					fileExt = backup.userPortrait.ext,
+				});
+			}
 
 			// Create Ginger import folder
 			FolderInstance backupFolder;
@@ -2512,7 +2529,7 @@ namespace Ginger
 			// Write character
 			Backyard.Link.Image[] imageLinks; // Ignored
 			CharacterInstance returnedCharacter = default(CharacterInstance);
-			Backyard.Error error = RunTask(() => Backyard.CreateNewCharacter(backup.characterCard, images.ToArray(), backup.chats.ToArray(), out returnedCharacter, out imageLinks, backupFolder), "Restoring backup...");
+			Backyard.Error error = RunTask(() => Backyard.CreateNewCharacter(backup.characterCard, images.ToArray(), backup.chats.ToArray(), out returnedCharacter, out imageLinks, backup.userInfo, backupFolder), "Restoring backup...");
 			characterInstance = returnedCharacter;
 			if (error != Backyard.Error.NoError)
 			{
@@ -2777,7 +2794,7 @@ namespace Ginger
 
 			// Choose character(s)
 			var dlg = new LinkSelectMultipleCharactersDialog();
-			dlg.Text = Resources.cap_link_delete_characters;
+			dlg.Text = "Select characters to delete";
 			dlg.Characters = Backyard.CharactersNoUser.ToArray();
 			dlg.Folders = Backyard.Folders.ToArray();
 			if (dlg.ShowDialog() != DialogResult.OK || dlg.Characters.Length == 0)
