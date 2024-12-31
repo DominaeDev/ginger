@@ -1132,22 +1132,17 @@ namespace Ginger.Integration
 					}
 
 					// Get user info
-					if (AppSettings.BackyardLink.WriteUserPersona)
+					string userName;
+					string userPersona;
+					ImageInstance userImage;
+					if (FetchUserInfo(connection, character.groupId, out userName, out userPersona, out userImage))
 					{
-						string userName;
-						string userPersona;
-						ImageInstance userImage;
-						if (FetchUserInfo(connection, character.groupId, out userName, out userPersona, out userImage))
-						{
-							userInfo = new UserData() {
-								name = userName,
-								persona = userPersona
-							};
-							if (userImage != null)
-								lsImages.Add(userImage);
-						}
-						else
-							userInfo = null;
+						userInfo = new UserData() {
+							name = userName,
+							persona = userPersona
+						};
+						if (userImage != null)
+							lsImages.Add(userImage);
 					}
 					else
 						userInfo = null;
@@ -1365,6 +1360,8 @@ namespace Ginger.Integration
 				}
 			}
 
+			bool bAllowUserPersona = userInfo != null;
+
 			// Prepare image information
 			List<ImageOutput> images = new List<ImageOutput>();
 			List<ImageOutput> backgrounds = new List<ImageOutput>();
@@ -1393,7 +1390,7 @@ namespace Ginger.Integration
 					backgrounds.Clear();
 
 				// User portrait
-				if (AppSettings.BackyardLink.WriteUserPersona)
+				if (bAllowUserPersona)
 				{
 					int idxUserPortrait = Array.FindIndex(imageInput, i => i.asset != null && i.asset.assetType == AssetFile.AssetType.UserIcon);
 					if (idxUserPortrait != -1)
@@ -1458,9 +1455,9 @@ namespace Ginger.Integration
 						{
 							int updates = 0;
 							int expectedUpdates = 0;
-							
+
 							// Create custom user (default user as base)
-							if (AppSettings.BackyardLink.WriteUserPersona && userInfo != null)
+							if (bAllowUserPersona)
 								WriteUser(connection, null, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
 
 							using (var cmdCreate = new SQLiteCommand(connection))
@@ -1870,6 +1867,8 @@ namespace Ginger.Integration
 
 			string characterId = linkInfo.characterId;
 			int hash = characterId.GetHashCode();
+			bool bAllowUserPersona = userInfo != null;
+
 			try
 			{
 				using (var connection = CreateSQLiteConnection())
@@ -1982,13 +1981,12 @@ namespace Ginger.Integration
 					if (FetchChatBackgrounds(connection, groupId, out existingBackgrounds) == Error.NoError)
 						imageInstances.AddRange(existingBackgrounds);
 
+					// Get existing user portrait
 					ImageInstance existingUserPortrait = null;
-					if (AppSettings.BackyardLink.WriteUserPersona)
+					string userName, userPersona;
+					if (FetchUserInfo(connection, groupId, out userName, out userPersona, out existingUserPortrait))
 					{
-						// Get user (portrait)
-						string userName, userPersona;
-						if (FetchUserInfo(connection, groupId, out userName, out userPersona, out existingUserPortrait))
-							imageInstances.Add(existingUserPortrait);
+						imageInstances.Add(existingUserPortrait);
 					}
 
 					// Compile list of images to update / insert
@@ -1998,7 +1996,9 @@ namespace Ginger.Integration
 
 					List<ImageOutput> images = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Icon || i.imageType == AssetFile.AssetType.Expression).ToList();
 					List<ImageOutput> backgrounds = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Background).ToList();
-					ImageOutput userPortrait = imageOutput.FirstOrDefault(i => i.imageType == AssetFile.AssetType.UserIcon);
+					ImageOutput userPortrait = default(ImageOutput);
+					if (bAllowUserPersona)
+						userPortrait = imageOutput.FirstOrDefault(i => i.imageType == AssetFile.AssetType.UserIcon);
 
 					DateTime now = DateTime.Now;
 					long updatedAt = now.ToUnixTimeMilliseconds();
@@ -2012,10 +2012,10 @@ namespace Ginger.Integration
 							int expectedUpdates = 0;
 							
 							// Create/update custom user
-							string userId = null;
-							string userConfigId = null;
-							if (AppSettings.BackyardLink.WriteUserPersona && userInfo != null)
+							if (bAllowUserPersona)
 							{
+								string userId = null;
+								string userConfigId = null;
 								WriteUser(connection, groupId, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
 							}
 
@@ -5402,7 +5402,7 @@ namespace Ginger.Integration
 					&& (a.assetType == AssetFile.AssetType.Icon 
 						|| a.assetType == AssetFile.AssetType.Expression
 						|| a.assetType == AssetFile.AssetType.Background
-						|| (a.assetType == AssetFile.AssetType.UserIcon && AppSettings.BackyardLink.WriteUserPersona))
+						|| (a.assetType == AssetFile.AssetType.UserIcon))
 						))
 			{
 				ImageInstance existingInstance = null;
@@ -5416,6 +5416,7 @@ namespace Ginger.Integration
 					if (idxLink != -1)
 					{
 						existingInstance = imageInstances.FirstOrDefault(kvp => string.Compare(Path.GetFileName(kvp.imageUrl), imageLinks[idxLink].filename, StringComparison.InvariantCultureIgnoreCase) == 0);
+
 						if (existingInstance != null)
 						{
 							// No change

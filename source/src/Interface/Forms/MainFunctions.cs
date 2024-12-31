@@ -1547,7 +1547,13 @@ namespace Ginger
 				ClearStatusBarMessage();
 				return false;
 			}
-			
+
+			if (AppSettings.BackyardLink.WriteUserPersona == false)
+			{
+				images = images.Except(i => i.imageType == AssetFile.AssetType.UserIcon);
+				userInfo = null;
+			}
+
 			// Success
 			Current.ReadFaradayCard(faradayData, null, userInfo);
 
@@ -1766,6 +1772,12 @@ namespace Ginger
 			var importError = Backyard.ImportCharacter(characterInstance, out faradayData, out images, out userInfo);
 			if (importError != Backyard.Error.NoError)
 				return importError;
+
+			if (AppSettings.BackyardLink.WriteUserPersona == false)
+			{
+				images = images.Except(i => i.imageType == AssetFile.AssetType.UserIcon);
+				userInfo = null;
+			}
 
 			// Success
 			Current.ReadFaradayCard(faradayData, null, userInfo);

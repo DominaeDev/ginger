@@ -10,6 +10,8 @@ namespace Ginger
 {
 	public class AssetFile : ICloneable, IXmlLoadable, IXmlSaveable
 	{
+		public static readonly string MainAssetName = "main";
+
 		public string name;
 		public AssetType assetType
 		{
@@ -43,17 +45,10 @@ namespace Ginger
 		public string ext;
 		public AssetData data;
 
-		public static readonly string MainAssetName = "main";
-
 		// Meta
 		public string uid
-		{ 
-			get
-			{
-				if (string.IsNullOrEmpty(_uid))
-					_uid = Guid.NewGuid().ToString();
-				return _uid;
-			}
+		{
+			get { return _uid; }
 			set { _uid = value; }
 		}
 		private string _uid;
@@ -131,6 +126,11 @@ namespace Ginger
 			default:
 				return AssetType.Custom;
 			}
+		}
+
+		public AssetFile()
+		{
+			_uid = Guid.NewGuid().ToString();
 		}
 
 		public string GetTypeName()
@@ -614,10 +614,10 @@ namespace Ginger
 
 		public object Clone()
 		{
-			var list = new List<AssetFile>(this.Count);
+			var list = new AssetCollection();
 			for (int i = 0; i < this.Count; ++i)
 				list.Add((AssetFile)this[i].Clone());
-			return new AssetCollection(list);			
+			return list;
 		}
 
 		public bool HasDefaultIcon()
