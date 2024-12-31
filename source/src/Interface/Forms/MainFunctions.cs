@@ -2369,38 +2369,19 @@ namespace Ginger
 				return false;
 			}
 
-			var groupDlg = new LinkSelectGroupDialog();
-			groupDlg.Text = Resources.cap_link_create_backup;
-			groupDlg.Characters = Backyard.Characters.ToArray();
-			groupDlg.Groups = Backyard.Groups.ToArray();
-			groupDlg.Folders = Backyard.Folders.ToArray();
+			var dlg = new LinkSelectCharacterDialog();
+			dlg.Text = Resources.cap_link_create_backup;
+			dlg.Characters = Backyard.CharactersNoUser.ToArray();
+			dlg.Folders = Backyard.Folders.ToArray();
 
-			GroupInstance groupInstance;
-			if (groupDlg.ShowDialog() == DialogResult.OK)
-				groupInstance = groupDlg.SelectedGroup;
+			CharacterInstance characterInstance;
+			if (dlg.ShowDialog() == DialogResult.OK)
+				characterInstance = dlg.SelectedCharacter;
 			else
 				return false;
 
-			if (groupInstance.isEmpty)
-				return false;
-
-			if (groupInstance.members.Length > 2)
-			{
-				MessageBox.Show(Resources.error_link_create_backup_not_character, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Information);
-				return false;
-			}
-
-			CharacterInstance characterInstance;
-			characterInstance = groupInstance.members
-				.Select(id => Backyard.GetCharacter(id))
-				.FirstOrDefault(c => c.isUser == false);
-
 			if (string.IsNullOrEmpty(characterInstance.instanceId))
 				return false; // Error
-
-			string groupName = Utility.FirstNonEmpty(groupInstance.name, characterInstance.displayName, Constants.DefaultCharacterName);
-			if (groupInstance.members.Length > 2)
-				groupName += " et al";
 
 			BackupData backup = null;
 			var error = RunTask(() => BackupUtil.CreateBackup(characterInstance, out backup), "Creating backup...");
@@ -2421,7 +2402,7 @@ namespace Ginger
 				return false;
 			}
 
-			string filename = string.Concat(groupName.Replace(" ", "_"), " - ", DateTime.Now.ToString("yyyy-MM-dd"), ".backup.zip");
+			string filename = string.Concat(characterInstance.displayName.Replace(" ", "_"), " - ", DateTime.Now.ToString("yyyy-MM-dd"), ".backup.zip");
 
 			importFileDialog.Title = Resources.cap_link_create_backup;
 			exportFileDialog.Filter = "Character backup file|*.zip";
