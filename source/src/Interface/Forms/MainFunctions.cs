@@ -2349,6 +2349,14 @@ namespace Ginger
 
 		private bool CreateBackyardBackup()
 		{
+			// Refresh character list
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+			{
+				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				AppSettings.BackyardLink.Enabled = false;
+				return false;
+			}
+
 			var groupDlg = new LinkSelectGroupDialog();
 			groupDlg.Text = Resources.cap_link_create_backup;
 			groupDlg.Characters = Backyard.Characters.ToArray();

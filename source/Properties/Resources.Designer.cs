@@ -952,6 +952,16 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap clean {
+            get {
+                object obj = ResourceManager.GetObject("clean", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap collapsed {
             get {
                 object obj = ResourceManager.GetObject("collapsed", resourceCulture);
@@ -965,6 +975,16 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap component {
             get {
                 object obj = ResourceManager.GetObject("component", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap create_backup {
+            get {
+                object obj = ResourceManager.GetObject("create_backup", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1042,6 +1062,16 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap dark_clean {
+            get {
+                object obj = ResourceManager.GetObject("dark_clean", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap dark_collapsed {
             get {
                 object obj = ResourceManager.GetObject("dark_collapsed", resourceCulture);
@@ -1055,6 +1085,16 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap dark_component {
             get {
                 object obj = ResourceManager.GetObject("dark_component", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_create_backup {
+            get {
+                object obj = ResourceManager.GetObject("dark_create_backup", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1295,6 +1335,26 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap dark_red_dot {
             get {
                 object obj = ResourceManager.GetObject("dark_red_dot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_repair {
+            get {
+                object obj = ResourceManager.GetObject("dark_repair", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_restore_backup {
+            get {
+                object obj = ResourceManager.GetObject("dark_restore_backup", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -3478,6 +3538,26 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap red_dot {
             get {
                 object obj = ResourceManager.GetObject("red_dot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap repair {
+            get {
+                object obj = ResourceManager.GetObject("repair", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap restore_backup {
+            get {
+                object obj = ResourceManager.GetObject("restore_backup", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

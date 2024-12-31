@@ -2488,6 +2488,11 @@ namespace Ginger
 
 			embeddedAssetsMenuItem.Image = Theme.Current.MenuEmbeddedAssets;
 			deleteCharactersMenuItem.Image = Theme.Current.DeleteCharacters;
+			purgeUnusedImagesMenuItem.Image = Theme.Current.CleanIcon;
+			repairBrokenImagesMenuItem.Image = Theme.Current.RepairIcon;
+			repairLegacyChatsMenuItem.Image = Theme.Current.RepairIcon;
+			createBackupMenuItem.Image = Theme.Current.CreateBackupIcon;
+			restoreBackupMenuItem.Image = Theme.Current.RestoreBackupIcon;
 
 			if (_findDialog != null && _findDialog.IsDisposed == false)
 				_findDialog.ApplyTheme();

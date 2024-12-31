@@ -64,15 +64,15 @@ namespace Ginger.Integration
 			}
 
 			string[] imageUrls = images
-				.Where(i => i.imageType == ImageInstance.Type.Portrait)
+				.Where(i => i.imageType == AssetFile.AssetType.Icon)
 				.Select(i => i.imageUrl)
 				.ToArray();
 			string[] backgroundUrls = images
-				.Where(i => i.imageType == ImageInstance.Type.Background)
+				.Where(i => i.imageType == AssetFile.AssetType.Background)
 				.Select(i => i.imageUrl)
 				.ToArray();
 			string userImageUrl = images
-				.Where(i => i.imageType == ImageInstance.Type.UserImage)
+				.Where(i => i.imageType == AssetFile.AssetType.UserIcon)
 				.Select(i => i.imageUrl)
 				.FirstOrDefault();
 

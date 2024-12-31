@@ -100,5 +100,9 @@ namespace Ginger
 		Image EmbeddedAssets { get; }
 		Image MenuEmbeddedAssets { get; }
 		Image DeleteCharacters { get; }
+		Image CleanIcon { get; }
+		Image RepairIcon { get; }
+		Image CreateBackupIcon { get; }
+		Image RestoreBackupIcon { get; }
 	}
 }

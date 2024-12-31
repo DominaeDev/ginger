@@ -432,7 +432,7 @@ namespace Ginger
 		{
 			// Images
 			string[] imageUrls = images
-				.Where(i => i.imageType == ImageInstance.Type.Portrait)
+				.Where(i => i.imageType == AssetFile.AssetType.Icon)
 				.Select(i => i.imageUrl)
 				.ToArray();
 			Backyard.Link.Image[] portraitLinks;
@@ -440,7 +440,7 @@ namespace Ginger
 			
 			// Backgrounds
 			string[] backgroundUrls = images
-				.Where(i => i.imageType == ImageInstance.Type.Background)
+				.Where(i => i.imageType == AssetFile.AssetType.Background)
 				.Select(i => i.imageUrl)
 				.ToArray();
 			Backyard.Link.Image[] backgroundLinks;
@@ -448,7 +448,7 @@ namespace Ginger
 
 			// User images
 			string[] userImageUrls = images
-				.Where(i => i.imageType == ImageInstance.Type.UserImage)
+				.Where(i => i.imageType == AssetFile.AssetType.UserIcon)
 				.Select(i => i.imageUrl)
 				.ToArray();
 			Backyard.Link.Image[] userPortraitLinks;

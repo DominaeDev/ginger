@@ -1501,6 +1501,7 @@ namespace Ginger {
 			// 
 			// createBackupMenuItem
 			// 
+			this.createBackupMenuItem.Image = global::Ginger.Properties.Resources.create_backup;
 			this.createBackupMenuItem.Name = "createBackupMenuItem";
 			this.createBackupMenuItem.Size = new System.Drawing.Size(200, 22);
 			this.createBackupMenuItem.Text = "Create backup...";
@@ -1508,6 +1509,7 @@ namespace Ginger {
 			// 
 			// restoreBackupMenuItem
 			// 
+			this.restoreBackupMenuItem.Image = global::Ginger.Properties.Resources.restore_backup;
 			this.restoreBackupMenuItem.Name = "restoreBackupMenuItem";
 			this.restoreBackupMenuItem.Size = new System.Drawing.Size(200, 22);
 			this.restoreBackupMenuItem.Text = "Restore backup...";
@@ -1520,6 +1522,7 @@ namespace Ginger {
 			// 
 			// repairBrokenImagesMenuItem
 			// 
+			this.repairBrokenImagesMenuItem.Image = global::Ginger.Properties.Resources.repair;
 			this.repairBrokenImagesMenuItem.Name = "repairBrokenImagesMenuItem";
 			this.repairBrokenImagesMenuItem.Size = new System.Drawing.Size(200, 22);
 			this.repairBrokenImagesMenuItem.Text = "Fix broken images...";
@@ -1527,6 +1530,7 @@ namespace Ginger {
 			// 
 			// repairLegacyChatsMenuItem
 			// 
+			this.repairLegacyChatsMenuItem.Image = global::Ginger.Properties.Resources.repair;
 			this.repairLegacyChatsMenuItem.Name = "repairLegacyChatsMenuItem";
 			this.repairLegacyChatsMenuItem.Size = new System.Drawing.Size(200, 22);
 			this.repairLegacyChatsMenuItem.Text = "Fix legacy chats...";
@@ -1534,6 +1538,7 @@ namespace Ginger {
 			// 
 			// purgeUnusedImagesMenuItem
 			// 
+			this.purgeUnusedImagesMenuItem.Image = global::Ginger.Properties.Resources.clean;
 			this.purgeUnusedImagesMenuItem.Name = "purgeUnusedImagesMenuItem";
 			this.purgeUnusedImagesMenuItem.Size = new System.Drawing.Size(200, 22);
 			this.purgeUnusedImagesMenuItem.Text = "Clean up image folder...";

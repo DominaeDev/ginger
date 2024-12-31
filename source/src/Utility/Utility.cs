@@ -728,6 +728,23 @@ namespace Ginger
 			return newArray;
 		}
 
+		
+		public static T[] Except<T>(this T[] array, Func<T, bool> keySelector)
+		{
+			if (array == null || array.Length == 0)
+				return array;
+
+			return array.Except(array.Where(keySelector)).ToArray();
+		}
+		
+		public static T[] Except<T>(this T[] array, params T[] items)
+		{
+			if (array == null || array.Length == 0)
+				return array;
+
+			return array.Except((IEnumerable<T>)items).ToArray();
+		}
+
 		public static float Average(params float[] values)
 		{
 			if (values == null || values.Length == 0)
