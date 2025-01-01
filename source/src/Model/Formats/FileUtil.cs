@@ -1043,7 +1043,7 @@ namespace Ginger
 					Current.Card.portraitImage = ImageRef.FromImage(Current.Card.assets.GetPortraitImage());
 
 					// Remove portrait image (it will be re-added on save/export)
-					Current.Card.assets.RemovePortraitImage();
+//					Current.Card.assets.RemovePortraitImage();
 
 					return Error.NoError;
 				}
@@ -1184,7 +1184,7 @@ namespace Ginger
 					Current.Card.portraitImage = ImageRef.FromImage(Current.Card.assets.GetPortraitImage());
 
 					// Remove portrait image (it will be re-added on save/export)
-					Current.Card.assets.RemovePortraitImage();
+//					Current.Card.assets.RemovePortraitImage();
 				}
 				else if (ext == ".png")
 				{

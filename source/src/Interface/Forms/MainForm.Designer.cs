@@ -233,12 +233,12 @@ namespace Ginger {
 			// toolStripMenuItem5
 			// 
 			toolStripMenuItem5.Name = "toolStripMenuItem5";
-			toolStripMenuItem5.Size = new System.Drawing.Size(216, 6);
+			toolStripMenuItem5.Size = new System.Drawing.Size(261, 6);
 			// 
 			// toolStripMenuItem7
 			// 
 			toolStripMenuItem7.Name = "toolStripMenuItem7";
-			toolStripMenuItem7.Size = new System.Drawing.Size(216, 6);
+			toolStripMenuItem7.Size = new System.Drawing.Size(261, 6);
 			// 
 			// toolStripSeparator1
 			// 
@@ -981,7 +981,7 @@ namespace Ginger {
 			// 
 			this.viewRecipeMenuItem.Name = "viewRecipeMenuItem";
 			this.viewRecipeMenuItem.ShortcutKeyDisplayString = "Ctrl+Tab";
-			this.viewRecipeMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.viewRecipeMenuItem.Size = new System.Drawing.Size(264, 22);
 			this.viewRecipeMenuItem.Text = "R&ecipe";
 			this.viewRecipeMenuItem.Click += new System.EventHandler(this.ViewRecipeMenuItem_CheckedChanged);
 			// 
@@ -989,7 +989,7 @@ namespace Ginger {
 			// 
 			this.viewOutputMenuItem.Name = "viewOutputMenuItem";
 			this.viewOutputMenuItem.ShortcutKeyDisplayString = "Ctrl+Tab";
-			this.viewOutputMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.viewOutputMenuItem.Size = new System.Drawing.Size(264, 22);
 			this.viewOutputMenuItem.Text = "&Generated output";
 			this.viewOutputMenuItem.Click += new System.EventHandler(this.ViewOutputMenuItem_CheckedChanged);
 			// 
@@ -997,7 +997,7 @@ namespace Ginger {
 			// 
 			this.viewNotesMenuItem.Name = "viewNotesMenuItem";
 			this.viewNotesMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+Tab";
-			this.viewNotesMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.viewNotesMenuItem.Size = new System.Drawing.Size(264, 22);
 			this.viewNotesMenuItem.Text = "&Notes";
 			this.viewNotesMenuItem.Click += new System.EventHandler(this.ViewNotesMenuItem_Click);
 			// 
@@ -1005,14 +1005,16 @@ namespace Ginger {
 			// 
 			this.embeddedAssetsMenuItem.Image = global::Ginger.Properties.Resources.menu_embedded_assets;
 			this.embeddedAssetsMenuItem.Name = "embeddedAssetsMenuItem";
-			this.embeddedAssetsMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.embeddedAssetsMenuItem.ShortcutKeyDisplayString = "Ctrl+Alt+A";
+			this.embeddedAssetsMenuItem.Size = new System.Drawing.Size(264, 22);
 			this.embeddedAssetsMenuItem.Text = "Embedded &assets...";
 			this.embeddedAssetsMenuItem.Click += new System.EventHandler(this.embeddedAssetsMenuItem_Click);
 			// 
 			// customVariablesMenuItem
 			// 
 			this.customVariablesMenuItem.Name = "customVariablesMenuItem";
-			this.customVariablesMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.customVariablesMenuItem.ShortcutKeyDisplayString = "Ctrl+Alt+V";
+			this.customVariablesMenuItem.Size = new System.Drawing.Size(264, 22);
 			this.customVariablesMenuItem.Text = "User-defined &variables...";
 			this.customVariablesMenuItem.Click += new System.EventHandler(this.customVariablesMenuItem_Click);
 			// 
@@ -1023,7 +1025,7 @@ namespace Ginger {
 			this.collapseAllMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+E";
 			this.collapseAllMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.E)));
-			this.collapseAllMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.collapseAllMenuItem.Size = new System.Drawing.Size(264, 22);
 			this.collapseAllMenuItem.Text = "&Collapse all";
 			this.collapseAllMenuItem.Click += new System.EventHandler(this.CollapseAllMenuItem_Click);
 			// 
@@ -1033,28 +1035,28 @@ namespace Ginger {
 			this.expandAllMenuItem.Name = "expandAllMenuItem";
 			this.expandAllMenuItem.ShortcutKeyDisplayString = "Ctrl+E";
 			this.expandAllMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-			this.expandAllMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.expandAllMenuItem.Size = new System.Drawing.Size(264, 22);
 			this.expandAllMenuItem.Text = "E&xpand all";
 			this.expandAllMenuItem.Click += new System.EventHandler(this.ExpandAllMenuItem_Click);
 			// 
 			// showRecipeCategoryMenuItem
 			// 
 			this.showRecipeCategoryMenuItem.Name = "showRecipeCategoryMenuItem";
-			this.showRecipeCategoryMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.showRecipeCategoryMenuItem.Size = new System.Drawing.Size(264, 22);
 			this.showRecipeCategoryMenuItem.Text = "Show recipe category";
 			this.showRecipeCategoryMenuItem.Click += new System.EventHandler(this.showRecipeCategoryMenuItem_Click);
 			// 
 			// sortRecipesMenuItem
 			// 
 			this.sortRecipesMenuItem.Name = "sortRecipesMenuItem";
-			this.sortRecipesMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.sortRecipesMenuItem.Size = new System.Drawing.Size(264, 22);
 			this.sortRecipesMenuItem.Text = "&Sort recipes by type";
 			this.sortRecipesMenuItem.Click += new System.EventHandler(this.sortRecipesMenuItem_Click);
 			// 
 			// additionalCharactersMenuItem
 			// 
 			this.additionalCharactersMenuItem.Name = "additionalCharactersMenuItem";
-			this.additionalCharactersMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.additionalCharactersMenuItem.Size = new System.Drawing.Size(264, 22);
 			this.additionalCharactersMenuItem.Text = "Actors";
 			// 
 			// optionsToolStripMenuItem

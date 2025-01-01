@@ -11,6 +11,7 @@ namespace Ginger
 	public class AssetFile : ICloneable, IXmlLoadable, IXmlSaveable
 	{
 		public static readonly string MainAssetName = "main";
+		public static readonly string PortraitOverrideName = "Portrait (main)";
 
 		public string name;
 		public AssetType assetType
@@ -75,9 +76,21 @@ namespace Ginger
 		public bool isDefaultAsset { get { return uriType == UriType.Default; } }
 		public bool isEmbeddedAsset { get { return uriType == UriType.Embedded; } }
 		public bool isRemoteAsset { get { return uriType == UriType.Custom; } }
-
+		
+		public bool isMainAsset {
+			get
+			{
+				return isEmbeddedAsset
+				  && string.Compare(name, MainAssetName, StringComparison.OrdinalIgnoreCase) == 0;
+			}
+		}
 		public bool isMainPortraitOverride {
-			get { return assetType == AssetType.Icon && isEmbeddedAsset && string.Compare(name, MainAssetName, StringComparison.OrdinalIgnoreCase) == 0; }
+			get
+			{
+				return assetType == AssetType.Icon
+				  && isEmbeddedAsset
+				  && string.Compare(name, PortraitOverrideName, StringComparison.OrdinalIgnoreCase) == 0;
+			}
 		}
 
 		public static readonly string DefaultUri = "ccdefault:";
@@ -511,7 +524,7 @@ namespace Ginger
 				assetData = images[0].data;
 			else
 			{
-				var mainAsset = images.FirstOrDefault(a => a.name == AssetFile.MainAssetName);
+				var mainAsset = images.FirstOrDefault(a => a.isMainAsset);
 				if (mainAsset != null)
 					assetData = mainAsset.data;
 				else
@@ -540,7 +553,7 @@ namespace Ginger
 			}
 			else
 			{
-				int idx = this.FindIndex(a => string.Compare(a.name, AssetFile.MainAssetName, StringComparison.OrdinalIgnoreCase) == 0);
+				int idx = this.FindIndex(a => a.assetType == AssetFile.AssetType.Icon && a.isMainAsset);
 				if (idx != -1)
 				{
 					this.RemoveAt(idx);
@@ -591,8 +604,8 @@ namespace Ginger
 				.GroupBy(a => a.assetType)
 				.SelectMany(g => 
 				{
-                    var assetType = g.Key;
-                    var assetsOfType = g.ToList();
+					var assetType = g.Key;
+					var assetsOfType = g.ToList();
 
 					// Assign new filenames
 					int counter = 1;
@@ -620,22 +633,22 @@ namespace Ginger
 			return list;
 		}
 
-		public bool HasDefaultIcon()
-		{
-			return this.ContainsAny(a => a.assetType == AssetFile.AssetType.Icon && (a.isDefaultAsset || a.name == AssetFile.MainAssetName ));
-		}
-
-		public void AddPortraitAsset(FileUtil.FileType fileType)
+		public void AddPortraitAsset(FileUtil.FileType fileType) // Exporting
 		{
 			if (this.ContainsAny(a => a.isMainPortraitOverride))
+			{
+				int idxOverride = this.FindIndex(a => a.isMainPortraitOverride);
+				this[idxOverride].name = AssetFile.MainAssetName;
+				this.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
 				return; // A portrait image already exists
+			}
 
 			// Remove any existing default icon(s)
 			this.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
 
-			if (fileType == FileUtil.FileType.Png)
+			if (fileType == FileUtil.FileType.Png && this.ContainsNoneOf(a => a.assetType == AssetFile.AssetType.Icon && a.isMainAsset))
 			{
-				this.Insert(0, AssetFile.MakeDefault(AssetFile.AssetType.Icon, AssetFile.MainAssetName, "png")); // Add default
+				this.Insert(0, AssetFile.MakeDefault(AssetFile.AssetType.Icon, AssetFile.MainAssetName, "png")); // Add ccdefault
 				return;
 			}
 
@@ -689,9 +702,16 @@ namespace Ginger
 
 		public AssetFile GetMainPortraitOverride()
 		{
-			return this.FirstOrDefault(a => a.isMainPortraitOverride
+			var asset = this.FirstOrDefault(a => a.isMainPortraitOverride
 				&& a.isDefaultAsset == false
 				&& Utility.IsSupportedImageFileExt(a.ext));
+			if (asset == null)
+			{
+				asset = this.FirstOrDefault(a => a.assetType == AssetFile.AssetType.Icon && a.isMainAsset
+					&& a.isDefaultAsset == false
+					&& Utility.IsSupportedImageFileExt(a.ext));
+			}
+			return asset;
 		}
 
 		public bool ReplaceMainPortraitOverride(string filename, out AssetFile asset)
@@ -715,13 +735,11 @@ namespace Ginger
 
 			// Remove existing
 			this.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
-			int idxExisting = this.FindIndex(a => a.isMainPortraitOverride);
-			if (idxExisting != -1)
-				this.RemoveAt(idxExisting);
+			RemoveMainPortraitOverride();
 			
 			// Add new asset
 			asset = new AssetFile() {
-				name = AssetFile.MainAssetName,
+				name = AssetFile.PortraitOverrideName,
 				uriType = AssetFile.UriType.Embedded,
 				assetType = AssetFile.AssetType.Icon,
 				data = AssetData.FromBytes(bytes),
@@ -735,8 +753,9 @@ namespace Ginger
 
 		public bool RemoveMainPortraitOverride()
 		{
-			// Remove existing
 			int idxExisting = this.FindIndex(a => a.isMainPortraitOverride);
+			if (idxExisting == -1)
+				idxExisting = this.FindIndex(a => a.assetType == AssetFile.AssetType.Icon && a.isMainAsset);
 			if (idxExisting != -1)
 			{
 				this.RemoveAt(idxExisting);

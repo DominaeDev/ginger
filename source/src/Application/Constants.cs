@@ -190,5 +190,7 @@ namespace Ginger
 		public const Keys LinkedSave = Keys.Control | Keys.U;
 		public const Keys LinkedSaveAsNew = Keys.Control | Keys.Shift | Keys.U;
 		public const Keys LinkedChatHistory = Keys.Control | Keys.H;
+		public const Keys ViewEmbeddedAssets = Keys.Control | Keys.Alt | Keys.A;
+		public const Keys ViewUserVariables = Keys.Control | Keys.Alt | Keys.V;
 	}
 }

@@ -14,7 +14,7 @@ namespace Ginger
 		public bool Changed = false;
 		private bool _bIgnoreEvents = false;
 
-		private List<string> KnownAssetTypes = new List<string>() { "Image", "User image", "Background", "Expression", "Other" };
+		private List<string> KnownAssetTypes = new List<string>() { "Portrait", "User portrait", "Background", "Expression", "Other" };
 
 		private DataGridViewComboBoxColumn comboBoxColumn { get { return (DataGridViewComboBoxColumn)assetsDataView.Columns[2]; } }
 		private ComboBox _currentComboBox;
@@ -140,10 +140,10 @@ namespace Ginger
 			switch (asset.assetType)
 			{
 			case AssetFile.AssetType.Icon:
-				assetType = "Image";
+				assetType = "Portrait";
 				break;
 			case AssetFile.AssetType.UserIcon:
-				assetType = "User image";
+				assetType = "User portrait";
 				break;
 			case AssetFile.AssetType.Background:
 				assetType = "Background";
@@ -290,12 +290,14 @@ namespace Ginger
 			{
 				switch (value.ToLowerInvariant())
 				{
+				case "portrait":
 				case "image":
 				case "icon":
 					assetType = AssetFile.AssetType.Icon;
 					value = "icon";
 					break;
 				case "user image":
+				case "user portrait":
 				case "user_icon":
 					assetType = AssetFile.AssetType.UserIcon;
 					value = "user_icon";
@@ -353,21 +355,21 @@ namespace Ginger
 
 			switch ((value ?? "").ToLowerInvariant())
 			{
-			case "icon": 
-				value = "Image"; 
+			case "icon":
+				value = KnownAssetTypes[0]; 
 				break;
 			case "user_icon":
-				value = "User image";
+				value = KnownAssetTypes[1]; 
 				break;
 			case "background": 
-				value = "Background"; 
+				value = KnownAssetTypes[2]; 
 				break;
 			case "emotion": 
-				value = "Expression"; 
+				value = KnownAssetTypes[3]; 
 				break;
 			case "":
 			case "other": 
-				value = "Other";
+				value = KnownAssetTypes[4]; 
 				break;
 			}
 
@@ -532,7 +534,7 @@ namespace Ginger
 
 			// Open file...
 			importFileDialog.Title = Resources.cap_import_asset;
-			importFileDialog.Filter = "Image files|*.png;*.apng;*.jpg;*.jpeg;*.webp;*.avif;*.gif|Audio files|*.mp3;*.ogg;*.wav;*.aiff|Video files|*.mp4;*.webm;*.wmv;*.mov;*.mkv|Other files|*.*";
+			importFileDialog.Filter = "Image files|*.png;*.apng;*.jpg;*.jpeg;*.gif;*.webp;*.avif|Audio files|*.mp3;*.ogg;*.wav;*.aiff|Video files|*.mp4;*.webm;*.wmv;*.mov;*.mkv|Other files|*.*";
 			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastImagePath ?? Utility.AppPath("Characters");
 			var result = importFileDialog.ShowDialog();
 			if (result != DialogResult.OK)
@@ -622,8 +624,8 @@ namespace Ginger
 			{
 				var assetType = AssetFile.AssetTypeFromString(type);
 				var used_names = new Dictionary<string, int>();
-				if (assetType == AssetFile.AssetType.Icon && Current.Card.portraitImage != null)
-					used_names.Add("main", 1); // Reserve name for main portrait
+//				if (assetType == AssetFile.AssetType.Icon && Current.Card.portraitImage != null)
+//					used_names.Add(AssetFile.MainAssetName, 1); // Reserve name for main portrait
 
 				for (int i = 0; i < Assets.Count; ++i)
 				{

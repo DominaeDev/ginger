@@ -438,7 +438,7 @@ namespace Ginger
 			{
 				// Open file...
 				openFileDialog.Title = Resources.cap_open_image;
-				openFileDialog.Filter = "Image files|*.png;*.jpeg;*.jpg;*.webp";
+				openFileDialog.Filter = "Supported image formats|*.png;*.jpeg;*.jpg;*.gif;*.apng;*.webp|PNG images|*.png;*.apng|JPEG images|*.jpg;*.jpeg|GIF images|*.gif|WEBP images|*.webp";
 				openFileDialog.InitialDirectory = AppSettings.Paths.LastImagePath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 				var result = openFileDialog.ShowDialog();
 				if (result != DialogResult.OK)
@@ -1738,7 +1738,17 @@ namespace Ginger
 			}
 			else if (keyData == ShortcutKeys.LinkedChatHistory && Backyard.ConnectionEstablished)
 			{
-				OpenChatHistory();
+				chatHistoryMenuItem_Click(this, EventArgs.Empty);
+				return true;
+			}
+			else if (keyData == ShortcutKeys.ViewEmbeddedAssets)
+			{
+				embeddedAssetsMenuItem_Click(this, EventArgs.Empty);
+				return true;
+			}
+			else if (keyData == ShortcutKeys.ViewUserVariables)
+			{
+				customVariablesMenuItem_Click(this, EventArgs.Empty);
 				return true;
 			}
 
