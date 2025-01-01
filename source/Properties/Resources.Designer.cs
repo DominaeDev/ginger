@@ -3932,8 +3932,8 @@ namespace Ginger.Properties {
         ///	&lt;/Text&gt;
         ///	
         ///	&lt;Toggle id=&quot;important&quot;&gt;
-        ///		&lt;Label&gt;Vital&lt;/Label&gt;
-        ///		&lt;De [rest of string was truncated]&quot;;.
+        ///		&lt;Label&gt;Important&lt;/Label&gt;
+        ///	 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string system_recipe {
             get {
@@ -4653,7 +4653,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When this setting is enabled, write &apos;vital&apos; model instructions to the author&apos;s note..
+        ///   Looks up a localized string similar to When saving changes to Backyard AI, place important model instructions in the author&apos;s note..
         /// </summary>
         internal static string tooltip_link_author_note {
             get {
@@ -4987,7 +4987,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When saving changes to Backyard AI, also update the user persona..
+        ///   Looks up a localized string similar to When saving changes to Backyard AI, also update the user name, persona and portrait..
         /// </summary>
         internal static string tooltip_link_user_persona {
             get {

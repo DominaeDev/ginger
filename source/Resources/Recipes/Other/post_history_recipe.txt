@@ -16,9 +16,9 @@
 	</Text>
 	
 	<Toggle id="important">
-		<Label>Vital</Label>
+		<Label>Important</Label>
 		<Default>yes</Default>
-		<Description>Mark this as important, to be given more attention than other instructions.</Description>
+		<Description>Mark these instructions as important, to be given more attention than other instructions.</Description>
 	</Toggle>
 	
 	<System important="false" rule="not important">{system}</System>

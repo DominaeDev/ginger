@@ -1636,14 +1636,14 @@ namespace Ginger {
 			// 
 			this.writeUserPersonaMenuItem.Name = "writeUserPersonaMenuItem";
 			this.writeUserPersonaMenuItem.Size = new System.Drawing.Size(236, 22);
-			this.writeUserPersonaMenuItem.Text = "Include user persona";
+			this.writeUserPersonaMenuItem.Text = "Update user persona";
 			this.writeUserPersonaMenuItem.Click += new System.EventHandler(this.includeUserPersonaMenuItem_Click);
 			// 
 			// writeAuthorNoteMenuItem
 			// 
 			this.writeAuthorNoteMenuItem.Name = "writeAuthorNoteMenuItem";
 			this.writeAuthorNoteMenuItem.Size = new System.Drawing.Size(236, 22);
-			this.writeAuthorNoteMenuItem.Text = "Write to author\'s note";
+			this.writeAuthorNoteMenuItem.Text = "Update author\'s note";
 			this.writeAuthorNoteMenuItem.Click += new System.EventHandler(this.writeAuthorNoteMenuItem_Click);
 			// 
 			// toolStripMenuItem16

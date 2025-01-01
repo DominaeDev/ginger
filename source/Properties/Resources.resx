@@ -1518,7 +1518,7 @@ Do you want to continue?</value>
     <value>..\Resources\Icons\animation.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="tooltip_link_author_note" xml:space="preserve">
-    <value>When this setting is enabled, write 'vital' model instructions to the author's note.</value>
+    <value>When saving changes to Backyard AI, place important model instructions in the author's note.</value>
   </data>
   <data name="cap_link_delete_characters" xml:space="preserve">
     <value>Delete characters</value>
@@ -1556,7 +1556,7 @@ Are you sure you want to proceed?</value>
     <value>..\Resources\Schemas\ginger_user_data_schema_v1.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="tooltip_link_user_persona" xml:space="preserve">
-    <value>When saving changes to Backyard AI, also update the user persona.</value>
+    <value>When saving changes to Backyard AI, also update the user name, persona and portrait.</value>
   </data>
   <data name="clean" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Light\clean.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

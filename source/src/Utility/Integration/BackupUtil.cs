@@ -56,11 +56,14 @@ namespace Ginger.Integration
 				return error;
 			}
 
-			error = Backyard.GetChats(characterInstance.groupId, out chatInstances);
-			if (error != Backyard.Error.NoError)
+			if (characterInstance.groupId != null)
 			{
-				backupInfo = null;
-				return error;
+				error = Backyard.GetChats(characterInstance.groupId, out chatInstances);
+				if (error != Backyard.Error.NoError)
+				{
+					backupInfo = null;
+					return error;
+				}
 			}
 
 			string[] imageUrls = images
@@ -80,34 +83,38 @@ namespace Ginger.Integration
 			backupInfo = new BackupData();
 			backupInfo.characterCard = card;
 			backupInfo.userInfo = userInfo;
-			backupInfo.chats = chatInstances
-				.Select(c => 
-				{
-					string bgName = null;
-					if (c.hasBackground)
-					{
-						int index = Array.FindIndex(backgroundUrls, url => string.Compare(url, c.staging.background.imageUrl, StringComparison.OrdinalIgnoreCase) == 0);
-						if (index != -1)
-							bgName = string.Format("background_{0:00}.{1}", index + 1, Utility.GetFileExt(c.staging.background.imageUrl));
-					}
+			if (chatInstances != null)
+			{
+				backupInfo.chats = chatInstances
+					.Select(c => {
+						string bgName = null;
+						if (c.hasBackground)
+						{
+							int index = Array.FindIndex(backgroundUrls, url => string.Compare(url, c.staging.background.imageUrl, StringComparison.OrdinalIgnoreCase) == 0);
+							if (index != -1)
+								bgName = string.Format("background_{0:00}.{1}", index + 1, Utility.GetFileExt(c.staging.background.imageUrl));
+						}
 
-					List<CharacterInstance> participants = new List<CharacterInstance>(4);
-					participants.Add(c.participants.Select(id => Backyard.GetCharacter(id)).FirstOrDefault(cc => cc.isUser)); // User first
-					participants.AddRange(c.participants.Select(id => Backyard.GetCharacter(id)).Where(cc => cc.isUser == false));
+						List<CharacterInstance> participants = new List<CharacterInstance>(4);
+						participants.Add(c.participants.Select(id => Backyard.GetCharacter(id)).FirstOrDefault(cc => cc.isUser)); // User first
+						participants.AddRange(c.participants.Select(id => Backyard.GetCharacter(id)).Where(cc => cc.isUser == false));
 
-					return new BackupData.Chat() {
-						name = c.name,
-						participants = participants.Select(cc => cc.name).ToArray(),
+						return new BackupData.Chat() {
+							name = c.name,
+							participants = participants.Select(cc => cc.name).ToArray(),
 
-						history = c.history,
-						staging = c.staging,
-						parameters = c.parameters,
-						creationDate = c.creationDate,
-						updateDate = c.updateDate,
-						backgroundName = bgName,
-					};
-				})
-				.ToList();
+							history = c.history,
+							staging = c.staging,
+							parameters = c.parameters,
+							creationDate = c.creationDate,
+							updateDate = c.updateDate,
+							backgroundName = bgName,
+						};
+					})
+					.ToList();
+			}
+			else
+				backupInfo.chats = new List<BackupData.Chat>();
 			
 			// Images
 			backupInfo.images = imageUrls.Select(url => new BackupData.Image() { 

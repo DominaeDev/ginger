@@ -1515,9 +1515,6 @@ namespace Ginger
 
 		private bool ImportCharacterFromBackyard()
 		{
-			var dlg = new LinkSelectCharacterDialog();
-			dlg.Text = "Open Backyard AI character";
-
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
@@ -1525,6 +1522,8 @@ namespace Ginger
 				AppSettings.BackyardLink.Enabled = false;
 			}
 
+			var dlg = new LinkSelectCharacterDialog();
+			dlg.Text = "Open Backyard AI character";
 			dlg.Characters = Backyard.CharactersNoUser.ToArray();
 			dlg.Folders = Backyard.Folders.ToArray();
 			if (dlg.ShowDialog() != DialogResult.OK)
@@ -1591,6 +1590,13 @@ namespace Ginger
 				return Backyard.Error.NotConnected;
 			else if (Current.HasLink == false)
 				return Backyard.Error.NotFound;
+
+			// Refresh character list
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+			{
+				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				AppSettings.BackyardLink.Enabled = false;
+			}
 
 			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
 
@@ -2287,6 +2293,11 @@ namespace Ginger
 			return n == 1 ? string.Concat(n.ToString(), " character") : string.Concat(n.ToString(), " characters");
 		}
 
+		private string NumGroups(int n)
+		{
+			return n == 1 ? string.Concat(n.ToString(), " chat") : string.Concat(n.ToString(), " chats");
+		}
+
 		private bool EditManyModelSettings()
 		{
 			// Refresh character list
@@ -2299,7 +2310,7 @@ namespace Ginger
 
 			// Choose character(s)
 			var dlg = new LinkSelectMultipleGroupsDialog();
-			dlg.Text = "Select Backyard AI characters";
+			dlg.Text = "Select chats to modify";
 			dlg.Characters = Backyard.Characters.ToArray();
 			dlg.Groups = Backyard.Groups.ToArray();
 			dlg.Folders = Backyard.Folders.ToArray();
@@ -2312,7 +2323,7 @@ namespace Ginger
 				return false;
 
 			// Confirm
-			if (MessageBox.Show(string.Format(Resources.msg_link_confirm_update_many, NumCharacters(dlg.Groups.Length)), Resources.cap_link_update_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+			if (MessageBox.Show(string.Format(Resources.msg_link_confirm_update_many, NumGroups(dlg.Groups.Length)), Resources.cap_link_update_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
 				return false;
 
 			var updater = new BulkUpdateModelSettings();

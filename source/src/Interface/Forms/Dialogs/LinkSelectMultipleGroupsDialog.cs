@@ -191,6 +191,7 @@ namespace Ginger
 
 			CharacterInstance[] characters = group.members
 				.Select(id => _charactersById.GetOrDefault(id))
+				.OrderBy(c => c.creationDate)
 				.Where(c => c.isUser == false)
 				.ToArray();
 
@@ -200,7 +201,9 @@ namespace Ginger
 
 			if (characterNames.Length >= 2)
 			{
-				sbTooltip.Append("Group including ");
+				groupLabel = string.Concat("(Group chat) ", groupLabel);
+
+				sbTooltip.Append("Group chat with ");
 				sbTooltip.Append(Utility.CommaSeparatedList(characterNames));
 			}
 			else if (characterNames.Length == 1)

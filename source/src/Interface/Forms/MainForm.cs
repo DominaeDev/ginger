@@ -1370,7 +1370,8 @@ namespace Ginger
 			breakLinkMenuItem.Visible = Backyard.ConnectionEstablished && Current.HasStaleLink == false;
 			reestablishLinkMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasStaleLink;
 			reestablishLinkMenuItem.Visible = Backyard.ConnectionEstablished && Current.HasStaleLink;
-			editCurrentModelSettingsMenuItem.Enabled = Current.HasActiveLink;
+			editCurrentModelSettingsMenuItem.Enabled = Current.HasActiveLink
+				&& Backyard.GetGroupForCharacter(Current.Link.characterId).isEmpty == false;
 						
 			// Link options
 			applyToFirstChatMenuItem.Checked = AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.First;
@@ -1382,7 +1383,6 @@ namespace Ginger
 			importAltGreetingsMenuItem.Checked = AppSettings.BackyardLink.ImportAlternateGreetings;
 			writeAuthorNoteMenuItem.Checked = AppSettings.BackyardLink.WriteAuthorNote;
 			writeUserPersonaMenuItem.Checked = AppSettings.BackyardLink.WriteUserPersona;
-
 
 			Theme.Apply(menuStrip);
 		}
