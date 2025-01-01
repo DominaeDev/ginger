@@ -450,7 +450,7 @@ namespace Ginger
 			// Open file...
 			importFileDialog.FileName = "";
 			importFileDialog.Title = Resources.cap_import_chat;
-			importFileDialog.Filter = "All supported file types|*.json;*.jsonl;*.txt";
+			importFileDialog.Filter = "All supported file types|*.json;*.jsonl;*.log;*.txt";
 			importFileDialog.FilterIndex = AppSettings.User.LastImportChatFilter;
 			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			var result = importFileDialog.ShowDialog();
@@ -464,11 +464,6 @@ namespace Ginger
 			if (chatHistory == null)
 			{
 				MessageBox.Show(Resources.error_unrecognized_chat_format, Resources.cap_import_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-			else if (chatHistory.isEmpty)
-			{
-				MessageBox.Show(Resources.error_empty_chat, Resources.cap_import_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
@@ -560,12 +555,6 @@ namespace Ginger
 			if (chatInstance == null)
 				return; // Error
 
-			if (chatInstance.history.messagesWithoutGreeting.Count() == 0)
-			{
-				MessageBox.Show(Resources.error_empty_chat, Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
 			string filename = string.Format("chatLog_{0}_{1}", GetCharacterName(), chatInstance.creationDate.ToUnixTimeSeconds()).Replace(" ", "_");
 
 			bool bGroupChat = chatInstance.history.numSpeakers > 2;
@@ -582,7 +571,7 @@ namespace Ginger
 			exportFileDialog.Title = "Export chat";
 			if (bGroupChat)
 			{
-				exportFileDialog.Filter = "Ginger chat log|*.json|Text file|*.txt";
+				exportFileDialog.Filter = "Ginger chat log|*.log|Text file|*.txt";
 				if (filterIndex == SoloTextFile) // Text
 					filterIndex = GroupTextFile;
 				else
@@ -590,17 +579,21 @@ namespace Ginger
 
 				if (filterIndex == GroupTextFile) // Text
 					filename = string.Concat(filename, ".txt");
+				else if (filterIndex == GroupGinger)
+					filename = string.Concat(filename, ".log");
 				else // json
-					filename = string.Concat(filename, ".json");	
+					filename = string.Concat(filename, ".json");
 			}
 			else
 			{
-				exportFileDialog.Filter = "Backyard chat log|*.json|Ginger chat log|*.json|SillyTavern chat log|*.jsonl|Text generation web ui chat log|*.json|Text file|*.txt";
+				exportFileDialog.Filter = "Backyard chat log|*.json|Ginger chat log|*.log|SillyTavern chat log|*.jsonl|Text generation web ui chat log|*.json|Text file|*.txt";
 				
 				if (filterIndex == SoloSillyTavern)
 					filename = string.Concat(filename, ".jsonl");
 				else if (filterIndex == SoloTextFile)
 					filename = string.Concat(filename, ".txt");
+				else if (filterIndex == SoloGinger)
+					filename = string.Concat(filename, ".log");
 				else // json
 					filename = string.Concat(filename, ".json");		
 			}
@@ -635,16 +628,16 @@ namespace Ginger
 			}
 			else if (exportFileDialog.FilterIndex == SoloGinger) // Ginger
 			{
-				var speakers = new GingerChat.SpeakerList();
+				var speakers = new GingerChatV2.SpeakerList();
 				for (int i = 0; i < chatInstance.participants.Length; ++i)
 				{
-					speakers.Add(new GingerChat.Speaker() {
+					speakers.Add(new GingerChatV2.Speaker() {
 						id = i.ToString(),
 						name = _charactersById[chatInstance.participants[i]].name,
 					});
 				}
 
-				var chat = GingerChat.FromChat(chatInstance, speakers);
+				var chat = GingerChatV2.FromChat(chatInstance, speakers);
 				string json = chat.ToJson();
 				if (json != null && FileUtil.ExportTextFile(exportFileDialog.FileName, json))
 				{

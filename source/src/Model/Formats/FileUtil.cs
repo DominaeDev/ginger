@@ -1336,9 +1336,15 @@ namespace Ginger
 					if (chat != null)
 						return chat.ToChat();
 				}
-				else if (GingerChat.Validate(textData)) // Ginger
+				else if (GingerChatV2.Validate(textData)) // Ginger V2
 				{
-					var chat = GingerChat.FromJson(textData);
+					var chat = GingerChatV2.FromJson(textData);
+					if (chat != null)
+						return chat.ToChat();
+				}
+				else if (GingerChatV1.Validate(textData)) // Ginger V1
+				{
+					var chat = GingerChatV1.FromJson(textData);
 					if (chat != null)
 						return chat.ToChat();
 				}
@@ -1348,6 +1354,21 @@ namespace Ginger
 				if (TavernChat.Validate(textData)) // SillyTavern chat
 				{
 					var chat = TavernChat.FromJson(textData);
+					if (chat != null)
+						return chat.ToChat();
+				}
+			}
+			else if (ext == ".log")
+			{
+				if (GingerChatV2.Validate(textData)) // Ginger V2
+				{
+					var chat = GingerChatV2.FromJson(textData);
+					if (chat != null)
+						return chat.ToChat();
+				}
+				else if (GingerChatV1.Validate(textData)) // Ginger V1
+				{
+					var chat = GingerChatV1.FromJson(textData);
 					if (chat != null)
 						return chat.ToChat();
 				}
@@ -1432,16 +1453,16 @@ namespace Ginger
 
 			try
 			{
-				var speakers = new GingerChat.SpeakerList();
+				var speakers = new GingerChatV2.SpeakerList();
 				for (int i = 0; i < chatInstance.participants.Length; ++i)
 				{
-					speakers.Add(new GingerChat.Speaker() {
+					speakers.Add(new GingerChatV2.Speaker() {
 						id = i.ToString(),
 						name = chatInstance.participants[i],
 					});
 				}
 
-				GingerChat chat = GingerChat.FromChat(chatInstance, speakers);
+				GingerChatV2 chat = GingerChatV2.FromChat(chatInstance, speakers);
 				string json = chat.ToJson();
 				if (json == null)
 					return false;

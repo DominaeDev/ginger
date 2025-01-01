@@ -31,6 +31,7 @@ namespace Ginger
 		private bool _bWasFileDirty = false;
 
 		public static MainForm instance { get; private set; }
+		private bool IsClosing = false;
 
 		private string _shouldLoadFilename = null;
 		private FindDialog _findDialog;
@@ -2317,7 +2318,8 @@ namespace Ginger
 			}
 			else if (error == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_update_character_not_found, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_update_character_not_found, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				Current.Unlink();
 			}
 			else if (error == Backyard.Error.CancelledByUser || error == Backyard.Error.DismissedByUser)
 			{

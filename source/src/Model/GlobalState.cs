@@ -360,19 +360,32 @@ namespace Ginger
 				characterId = characterInstance.instanceId,
 				updateDate = characterInstance.updateDate,
 				imageLinks = imageLinks,
-				filenameHash = Current.Filename,
+				filename = Current.Filename,
 				isActive = true,
 			};
 			IsFileDirty = true;
 		}
 
-		public static void Unlink()
+		public static bool BreakLink()
+		{
+			if (HasActiveLink)
+			{
+				IsFileDirty = true;
+				Link.isActive = false;
+				return true;
+			}
+			return false;
+		}
+
+		public static bool Unlink()
 		{
 			if (Link != null)
-			{
-				Link.isActive = false;
+			{ 
+				Link = null;
 				IsFileDirty = true;
+				return true;
 			}
+			return false;
 		}
 
 		public static void ImportImages(string[] images, out Backyard.Link.Image[] imageLinks, AssetFile.AssetType imageType = AssetFile.AssetType.Icon) // Backyard import

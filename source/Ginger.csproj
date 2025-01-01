@@ -437,6 +437,7 @@
     </Compile>
     <Compile Include="src\Model\CardData.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\BackyardChatBackupV1.cs" />
+    <Compile Include="src\Model\Formats\ChatLogs\GingerChatV2.cs" />
     <Compile Include="src\Model\Formats\UserData.cs" />
     <Compile Include="src\Model\GingerCharacter.cs" />
     <Compile Include="src\Model\Clipboard\ChatClipboard.cs" />
@@ -462,7 +463,7 @@
     <Compile Include="src\Utility\Integration\ChatHistory.cs" />
     <Compile Include="src\Model\Formats\CharacterCards\TavernCardV3.cs" />
     <Compile Include="src\Model\Formats\CharacterCards\TextGenWebUICard.cs" />
-    <Compile Include="src\Model\Formats\ChatLogs\GingerChat.cs" />
+    <Compile Include="src\Model\Formats\ChatLogs\GingerChatV1.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\TavernChat.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\TextGenWebUIChat.cs" />
     <Compile Include="src\Model\Formats\ZipUtil.cs" />
@@ -1069,6 +1070,7 @@
     <None Include="Resources\Icons\Dark\dark_write.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Schemas\ginger_chat_v2_schema.txt" />
     <None Include="Resources\Schemas\ginger_user_data_schema_v1.schema.txt" />
     <None Include="Resources\Schemas\backup_chat_v2.schema.txt" />
     <None Include="Resources\Schemas\backup_chat_v1.schema.txt" />

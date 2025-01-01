@@ -7,7 +7,7 @@
 		"createdAt": {
 			"type": "integer"
 		},
-		"speakers": {
+		"users": {
 			"required": true,
 			"type": ["object"],
 			"properties": {}
@@ -18,7 +18,7 @@
 			"items": {
 				"type": ["object", "null"],
 				"properties": {
-					"speaker": {
+					"user": {
 						"required": true,
 						"type": "string"
 					},
@@ -29,7 +29,7 @@
 					"timestamp": {
 						"type": "integer"
 					},
-					"regens": {
+					"alt-texts": {
 						"type": ["array", "null"],
 						"items": {
 							"type": ["string", "null"]

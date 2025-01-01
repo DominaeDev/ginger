@@ -30,19 +30,20 @@ namespace Ginger.Integration
 
 	public struct GroupInstance
 	{
-		public string instanceId;			// GroupConfig.id
-		public string name;					// GroupConfig.name
-		public string folderId;				// GroupConfig.folderId
-		public string hubCharId;			// GroupConfig.hubCharId
-		public string hubAuthorUsername;	// GroupConfig.hubAuthorUsername
-		public DateTime creationDate;		// CharacterConfig.createdAt
-		public DateTime updateDate;			// CharacterConfig.updatedAt
-		public string[] members;			// CharacterConfigVersion.id ...
+		public string instanceId;           // GroupConfig.id
+		public string name;                 // GroupConfig.name
+		public string folderId;             // GroupConfig.folderId
+		public string hubCharId;            // GroupConfig.hubCharId
+		public string hubAuthorUsername;    // GroupConfig.hubAuthorUsername
+		public DateTime creationDate;       // CharacterConfig.createdAt
+		public DateTime updateDate;         // CharacterConfig.updatedAt
+		public string[] members;            // CharacterConfigVersion.id ...
 
 		public bool isEmpty
 		{
 			get { return string.IsNullOrEmpty(instanceId) || members == null || members.Length == 0; }
 		}
+		public bool isGroupChat { get { return members != null && members.Length > 2; } }
 
 		public string[] GetMemberNames(bool includingUser = false)
 		{
@@ -378,9 +379,8 @@ namespace Ginger.Integration
 			public bool isActive;
 			public bool isDirty;
 
-			public string filenameHash
+			public string filename
 			{
-				get { return _filenameHash; }
 				set
 				{
 					if (string.IsNullOrEmpty(value))
@@ -394,6 +394,10 @@ namespace Ginger.Integration
 						}
 					}
 				}
+			}
+			public string filenameHash
+			{
+				get { return _filenameHash; }
 			}
 			private string _filenameHash = null;
 
@@ -754,7 +758,6 @@ namespace Ginger.Integration
 
 					// Fetch character-group memberships
 					var groupMembers = new Dictionary<string, HashSet<string>>();
-					var characterGroups = new Dictionary<string, string>();
 					using (var cmdGroup = connection.CreateCommand())
 					{
 						cmdGroup.CommandText =
@@ -775,8 +778,6 @@ namespace Ginger.Integration
 									groupMembers.Add(groupId, new HashSet<string>());
 
 								groupMembers[groupId].Add(characterId);
-
-								characterGroups.TryAdd(characterId, groupId);
 							}
 						}
 					}
@@ -879,27 +880,20 @@ namespace Ginger.Integration
 								bool isUser = reader.GetBoolean(7);
 								int numLoreEntries = reader.GetInt32(8);
 
-								string groupId;
-								if (characterGroups.TryGetValue(instanceId, out groupId) == false)
-									continue; // No group
+								// Get group info
+								GroupInstance groupInstance = GetGroupForCharacter(instanceId);
+								if (groupInstance.isEmpty)
+									continue; // Error: No group
 
-								// Get info from group
-								string folderId = null;
-								string hubCharId = null;
-								string hubAuthorUsername = null;
-								GroupInstance groupInstance;
-								if (_Groups.TryGetValue(groupId, out groupInstance))
-								{
-									folderId = groupInstance.folderId;
-									hubCharId = groupInstance.hubCharId;
-									hubAuthorUsername = groupInstance.hubAuthorUsername;
-								}
+								string folderId = groupInstance.folderId;
+								string hubCharId = groupInstance.hubCharId;
+								string hubAuthorUsername = groupInstance.hubAuthorUsername;
 
 								_Characters.TryAdd(instanceId, 
 									new CharacterInstance() {
 										instanceId = instanceId,
 										configId = configId,
-										groupId = groupId,
+										groupId = groupInstance.instanceId,
 										displayName = displayName,
 										name = name,
 										creationDate = createdAt,

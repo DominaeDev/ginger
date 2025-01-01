@@ -1052,9 +1052,9 @@ namespace Ginger
 			if (Current.HasLink)
 			{
 				if (string.IsNullOrEmpty(Current.Link.filenameHash))
-					Current.Link.filenameHash = filename;
+					Current.Link.filename = filename;
 				else if (Current.Link.CompareFilename(filename) == false)
-					Current.Unlink(); // Saving as new
+					Current.BreakLink(); // Saving as new
 			}
 
 			// Linking: Write to Backyard database?
@@ -1094,14 +1094,14 @@ namespace Ginger
 
 				SetStatusBarMessage(Resources.status_file_save, Constants.StatusBarMessageInterval);
 
-				if (bShouldAutosave)
+				if (bShouldAutosave && IsClosing == false)
 				{
 					if (autosaveError == Backyard.Error.NoError)
 						SetStatusBarMessage(Resources.status_link_save_file_and_link, Constants.StatusBarMessageInterval);
 					else if (autosaveError == Backyard.Error.NotFound)
 					{
 						MessageBox.Show(Resources.error_link_update_character_not_found, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-						BreakLink(true);
+						Current.Unlink();
 					}
 					else if (autosaveError != Backyard.Error.NoError)
 					{
@@ -1196,6 +1196,10 @@ namespace Ginger
 					}
 				}
 
+				// Update link
+				if (Current.HasLink)
+					Current.Link.filename = filename;
+
 				if (Save(filename))
 				{
 					_bShouldRefreshSidePanel = true;
@@ -1243,6 +1247,7 @@ namespace Ginger
 			if (mr == DialogResult.No)
 				return true;
 
+			IsClosing = true;
 			return Save(Current.Filename);
 		}
 
@@ -1609,11 +1614,13 @@ namespace Ginger
 			// Check if character exists, has newer changes
 			bool hasChanges;
 			var error = Backyard.ConfirmSaveCharacter(card, Current.Link, out hasChanges);
-			if (error != Backyard.Error.NoError)
+			if (error == Backyard.Error.NotFound)
 			{
 				Current.Unlink();
 				return error;
 			}
+			if (error != Backyard.Error.NoError)
+				return error;
 
 			if (hasChanges)
 			{
@@ -1710,7 +1717,7 @@ namespace Ginger
 				CharacterInstance characterInstance;
 				if (Backyard.GetCharacter(Current.Link.characterId, out characterInstance))
 				{
-					Current.Link.filenameHash = Current.Filename;
+					Current.Link.filename = Current.Filename;
 					Current.Link.isActive = true;
 					Current.IsFileDirty = true;
 					Current.Link.RefreshState();
@@ -1735,10 +1742,8 @@ namespace Ginger
 
 		private bool BreakLink(bool bSilent = false)
 		{
-			if (Current.HasActiveLink)
+			if (Current.BreakLink())
 			{
-				Current.IsFileDirty = true;
-				Current.Link.isActive = false;
 				RefreshTitle();
 
 				if (bSilent == false)

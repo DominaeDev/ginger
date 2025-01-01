@@ -10,11 +10,11 @@ using System.Text;
 
 namespace Ginger
 {
-	public class GingerChat
+	public class GingerChatV1
 	{
 		private static JsonSchema _schema;
 
-		static GingerChat()
+		static GingerChatV1()
 		{
 //			JsonSchemaGenerator generator = new JsonSchemaGenerator();
 //			JsonSchema schema = generator.Generate(typeof(GingerChat));
@@ -138,7 +138,7 @@ namespace Ginger
 			public string promptTemplate = null;
 		}
 
-		public static GingerChat FromChat(ChatInstance chatInstance, SpeakerList speakers)
+		public static GingerChatV1 FromChat(ChatInstance chatInstance, SpeakerList speakers)
 		{
 			if (speakers == null || chatInstance == null)
 				return null;
@@ -166,7 +166,7 @@ namespace Ginger
 				}
 			}
 
-			return new GingerChat() {
+			return new GingerChatV1() {
 				title = chatInstance.name,
 				speakers = speakers,
 				createdAt = chatInstance.creationDate.ToUnixTimeMilliseconds(),
@@ -174,7 +174,7 @@ namespace Ginger
 			};
 		}
 
-		public static GingerChat FromBackup(BackupData.Chat backup)
+		public static GingerChatV1 FromBackup(BackupData.Chat backup)
 		{
 			if (backup == null)
 				return null;
@@ -211,7 +211,7 @@ namespace Ginger
 				}
 			}
 
-			var chat = new GingerChat() {
+			var chat = new GingerChatV1() {
 				title = backup.name,
 				speakers = speakers,
 				createdAt = backup.creationDate.ToUnixTimeMilliseconds(),
@@ -358,14 +358,14 @@ namespace Ginger
 			text = sb.ToString();
 		}
 
-		public static GingerChat FromJson(string json)
+		public static GingerChatV1 FromJson(string json)
 		{
 			try
 			{
 				JObject jObject = JObject.Parse(json);
 				if (jObject.IsValid(_schema))
 				{
-					var chat = JsonConvert.DeserializeObject<GingerChat>(json);
+					var chat = JsonConvert.DeserializeObject<GingerChatV1>(json);
 					return chat;
 				}
 			}

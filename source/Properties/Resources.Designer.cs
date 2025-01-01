@@ -1506,7 +1506,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The chat contains no messages..
+        ///   Looks up a localized string similar to This chat contains no messages..
         /// </summary>
         internal static string error_empty_chat {
             get {
@@ -1583,6 +1583,15 @@ namespace Ginger.Properties {
         internal static string error_link_autosave {
             get {
                 return ResourceManager.GetString("error_link_autosave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to save changes to Backyard AI. Linked character no longer exists..
+        /// </summary>
+        internal static string error_link_autosave_character_not_found {
+            get {
+                return ResourceManager.GetString("error_link_autosave_character_not_found", resourceCulture);
             }
         }
         
@@ -1876,7 +1885,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to push updates to Backyard AI. Linked character not found..
+        ///   Looks up a localized string similar to Failed to save changes. Linked character no longer exists..
         /// </summary>
         internal static string error_link_update_character_not_found {
             get {
@@ -2288,27 +2297,64 @@ namespace Ginger.Properties {
         ///		},
         ///		&quot;speakers&quot;: {
         ///			&quot;required&quot;: true,
-        ///			&quot;required&quot;: false,
         ///			&quot;type&quot;: [&quot;object&quot;],
         ///			&quot;properties&quot;: {}
         ///		},
-        ///		&quot;staging&quot;: {
-        ///			&quot;type&quot;: [&quot;object&quot;, &quot;null&quot;],
-        ///			&quot;properties&quot;: {
-        ///				&quot;system&quot;: {
-        ///					&quot;type&quot;: [&quot;string&quot;, &quot;null&quot;]
-        ///				},
-        ///				&quot;greeting&quot;: {
-        ///					&quot;type&quot;: [&quot;string&quot;, &quot;null&quot;]
-        ///				},
-        ///				&quot;scenario&quot;: {
-        ///					&quot;type&quot;: [&quot;string&quot;, &quot;null&quot;]
-        ///				},
-        ///				&quot;example&quot;:  [rest of string was truncated]&quot;;.
+        ///		&quot;messages&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: [&quot;array&quot;, &quot;null&quot;],
+        ///			&quot;items&quot;: {
+        ///				&quot;type&quot;: [&quot;object&quot;, &quot;null&quot;],
+        ///				&quot;properties&quot;: {
+        ///					&quot;speaker&quot;: {
+        ///						&quot;required&quot;: true,
+        ///						&quot;type&quot;: &quot;string&quot;
+        ///					},
+        ///					&quot;text&quot;: {
+        ///						&quot;required&quot;: true,
+        ///						&quot;type&quot;: &quot;string&quot;
+        ///			 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ginger_chat_v1_schema {
             get {
                 return ResourceManager.GetString("ginger_chat_v1_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;title&quot;: {
+        ///			&quot;type&quot;: [&quot;string&quot;, &quot;null&quot;]
+        ///		},
+        ///		&quot;createdAt&quot;: {
+        ///			&quot;type&quot;: &quot;integer&quot;
+        ///		},
+        ///		&quot;users&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: [&quot;object&quot;],
+        ///			&quot;properties&quot;: {}
+        ///		},
+        ///		&quot;messages&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: [&quot;array&quot;, &quot;null&quot;],
+        ///			&quot;items&quot;: {
+        ///				&quot;type&quot;: [&quot;object&quot;, &quot;null&quot;],
+        ///				&quot;properties&quot;: {
+        ///					&quot;user&quot;: {
+        ///						&quot;required&quot;: true,
+        ///						&quot;type&quot;: &quot;string&quot;
+        ///					},
+        ///					&quot;text&quot;: {
+        ///						&quot;required&quot;: true,
+        ///						&quot;type&quot;: &quot;string&quot;
+        ///					},
+        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ginger_chat_v2_schema {
+            get {
+                return ResourceManager.GetString("ginger_chat_v2_schema", resourceCulture);
             }
         }
         
@@ -2762,7 +2808,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Created character backup file!.
+        ///   Looks up a localized string similar to Character backup created..
         /// </summary>
         internal static string msg_link_create_backup {
             get {
