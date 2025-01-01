@@ -33,9 +33,6 @@ namespace Ginger
 
 			RemoveFromMRU(filename);
 
-			if (hasLink)
-				characterName = string.Concat("(Linked) ", characterName);
-
 			mruItems.Enqueue(new MRUItem() {
 				filename = filename,
 				characterName = characterName,

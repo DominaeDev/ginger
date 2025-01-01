@@ -433,7 +433,7 @@ namespace Ginger
 			{
 				var menu = new ContextMenuStrip();
 
-				menu.Items.Add(new ToolStripMenuItem("Change portrait", null, (s, e) => {
+				menu.Items.Add(new ToolStripMenuItem("Change character portrait", null, (s, e) => {
 					ChangePortraitImage?.Invoke(this, new PortraitPreview.ChangePortraitImageEventArgs() {
 						Filename = null,
 					});

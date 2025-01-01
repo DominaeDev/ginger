@@ -483,7 +483,7 @@ namespace Ginger.Integration
 					}
 					else // Unrecognized character
 					{
-						isActive = false; 
+						isActive = false;
 					}
 				}
 
@@ -598,8 +598,8 @@ namespace Ginger.Integration
 					for (int i = 0; i < validationTable.Length; ++i)
 					{
 						string[] table = validationTable[i];
-						string[] expectedNames = new string[(table.Length - 1)/2];
-						string[] expectedTypes = new string[(table.Length - 1)/2];
+						string[] expectedNames = new string[(table.Length - 1) / 2];
+						string[] expectedTypes = new string[(table.Length - 1) / 2];
 						string tableName = table[0];
 						for (int j = 0; j < expectedNames.Length; ++j)
 						{
@@ -656,7 +656,7 @@ namespace Ginger.Integration
 								DefaultModel = reader[0] as string;
 								string modelDirectory = reader[1] as string;
 								string modelsJson = reader[2] as string;
-								
+
 								// Read model info
 								BackyardModelDatabase.FindModels(modelDirectory, modelsJson);
 							}
@@ -724,7 +724,7 @@ namespace Ginger.Integration
 		{
 			return _Characters.ContainsKey(characterId);
 		}
-		
+
 		public static bool GetGroup(string groupId, out GroupInstance group)
 		{
 			if (groupId != null)
@@ -792,7 +792,7 @@ namespace Ginger.Integration
 
 					// Fetch group configs
 					using (var cmdGroupData = connection.CreateCommand())
-					{ 
+					{
 						cmdGroupData.CommandText =
 						@"
 							SELECT 
@@ -816,7 +816,7 @@ namespace Ginger.Integration
 								if (groupMembers.TryGetValue(instanceId, out members) == false)
 									continue; // No members?
 
-								_Groups.TryAdd(instanceId, 
+								_Groups.TryAdd(instanceId,
 									new GroupInstance() {
 										instanceId = instanceId,
 										name = name,
@@ -833,7 +833,7 @@ namespace Ginger.Integration
 
 					// Fetch app folders
 					using (var cmdFolderData = connection.CreateCommand())
-					{ 
+					{
 						cmdFolderData.CommandText =
 						@"
 							SELECT 
@@ -851,7 +851,7 @@ namespace Ginger.Integration
 								string url = reader.GetString(3);
 								bool isRoot = reader.GetBoolean(4);
 
-								_Folders.TryAdd(instanceId, 
+								_Folders.TryAdd(instanceId,
 									new FolderInstance() {
 										instanceId = instanceId,
 										parentId = parentId,
@@ -894,7 +894,7 @@ namespace Ginger.Integration
 								string hubCharId = groupInstance.hubCharId;
 								string hubAuthorUsername = groupInstance.hubAuthorUsername;
 
-								_Characters.TryAdd(instanceId, 
+								_Characters.TryAdd(instanceId,
 									new CharacterInstance() {
 										instanceId = instanceId,
 										configId = configId,
@@ -1083,8 +1083,8 @@ namespace Ginger.Integration
 
 					// Gather lorebook items
 					using (var cmdLoreItems = connection.CreateCommand())
-					{ 
-						cmdLoreItems.CommandText = 
+					{
+						cmdLoreItems.CommandText =
 						@"
 							SELECT 
 								key, value, ""order""
@@ -1108,7 +1108,7 @@ namespace Ginger.Integration
 								string order = reader.GetString(2);
 
 								entries.Add(new KeyValuePair<string, FaradayCardV1.LoreBookEntry>(order, new FaradayCardV1.LoreBookEntry() {
-									key = key, 
+									key = key,
 									value = value,
 								}));
 							}
@@ -1126,8 +1126,8 @@ namespace Ginger.Integration
 					// Gather portrait image files
 					var lsImages = new List<ImageInstance>();
 					using (var cmdImageLookup = connection.CreateCommand())
-					{ 
-						cmdImageLookup.CommandText = 
+					{
+						cmdImageLookup.CommandText =
 						@"
 							SELECT 
 								id, imageUrl, label, aspectRatio
@@ -1243,8 +1243,8 @@ namespace Ginger.Integration
 					// Find portrait image file
 					var lsImageUrls = new List<string>();
 					using (var cmdImageLookup = connection.CreateCommand())
-					{ 
-						cmdImageLookup.CommandText = 
+					{
+						cmdImageLookup.CommandText =
 						@"
 							SELECT 
 								imageUrl
@@ -1315,7 +1315,7 @@ namespace Ginger.Integration
 
 					// Fetch character config id
 					using (var cmdCharacterData = connection.CreateCommand())
-					{ 
+					{
 						cmdCharacterData.CommandText =
 						@"
 							SELECT 
@@ -1358,7 +1358,7 @@ namespace Ginger.Integration
 				return Error.Unknown;
 			}
 		}
-		
+
 		public static Error CreateNewCharacter(FaradayCardV4 card, ImageInput[] imageInput, BackupData.Chat[] chats, out CharacterInstance characterInstance, out Link.Image[] imageLinks, UserData userInfo = null, FolderInstance folder = default(FolderInstance))
 		{
 			if (ConnectionEstablished == false)
@@ -1439,10 +1439,10 @@ namespace Ginger.Integration
 				{
 					connection.Open();
 
-					string characterId	= Cuid.NewCuid();
-					string configId		= Cuid.NewCuid();
-					string groupId		= Cuid.NewCuid();
-					string userId		= null;
+					string characterId = Cuid.NewCuid();
+					string configId = Cuid.NewCuid();
+					string groupId = Cuid.NewCuid();
+					string userId = null;
 					string userConfigId = null;
 					DateTime now = DateTime.Now;
 					long createdAt = now.ToUnixTimeMilliseconds();
@@ -1452,7 +1452,7 @@ namespace Ginger.Integration
 
 					// Fetch default user
 					using (var cmdUser = connection.CreateCommand())
-					{ 
+					{
 						cmdUser.CommandText =
 						@"
 							SELECT id
@@ -1471,7 +1471,7 @@ namespace Ginger.Integration
 
 					// Fetch folder sort position
 					using (var cmdFolderOrder = connection.CreateCommand())
-					{ 
+					{
 						cmdFolderOrder.CommandText =
 						@"
 							SELECT folderSortPosition
@@ -1518,7 +1518,7 @@ namespace Ginger.Integration
 									VALUES 
 										($configId, $timestamp, $timestamp, $displayName, $name, $persona, $charId);
 								");
-								
+
 								// GroupConfig
 								sbCommand.AppendLine(
 								@"
@@ -1560,7 +1560,7 @@ namespace Ginger.Integration
 												$model, $temperature, $topP, $minP, $minPEnabled, $topK, 
 												$repeatPenalty, $repeatLastN, $promptTemplate, $pruneExample, $authorNote);
 									");
-	
+
 									cmdCreate.Parameters.AddWithValue("$chatId", chatId);
 									cmdCreate.Parameters.AddWithValue("$system", card.data.system ?? "");
 									cmdCreate.Parameters.AddWithValue("$scenario", card.data.scenario ?? "");
@@ -1730,7 +1730,7 @@ namespace Ginger.Integration
 								cmdCreate.Parameters.AddWithValue("$groupName", "");
 								cmdCreate.Parameters.AddWithValue("$persona", card.data.persona ?? "");
 								cmdCreate.Parameters.AddWithValue("$folderId", parentFolder.instanceId ?? "");
-								cmdCreate.Parameters.AddWithValue("$folderSortPosition", MakeFolderSortPosition(folderOrder));
+								cmdCreate.Parameters.AddWithValue("$folderSortPosition", MakeFolderSortPosition(SortPosition.Before, folderOrder));
 								cmdCreate.Parameters.AddWithValue("$isNSFW", card.data.isNSFW);
 								cmdCreate.Parameters.AddWithValue("$timestamp", createdAt);
 
@@ -1752,7 +1752,7 @@ namespace Ginger.Integration
 									@"
 										INSERT into AppCharacterLorebookItem (id, createdAt, updatedAt, ""order"", key, value)
 										VALUES ");
-										
+
 									for (int i = 0; i < card.data.loreItems.Length; ++i)
 									{
 										if (i > 0)
@@ -1779,7 +1779,7 @@ namespace Ginger.Integration
 									@"
 										INSERT into _AppCharacterLorebookItemToCharacterConfigVersion (A, B)
 										VALUES ");
-										
+
 									for (int i = 0; i < uids.Length; ++i)
 									{
 										if (i > 0)
@@ -1805,7 +1805,7 @@ namespace Ginger.Integration
 								for (int i = 0; i < chats.Length; ++i)
 									WriteChatMessages(connection, chatIds[i], chats[i].history, speakerIds, ref expectedUpdates, ref updates);
 							}
-							
+
 							if (updates != expectedUpdates)
 							{
 								transaction.Rollback();
@@ -1818,7 +1818,7 @@ namespace Ginger.Integration
 							foreach (var image in images
 								.Union(backgrounds)
 								.Union(new ImageOutput[] { userPortrait })
-								.Where(i => i.isDefined 
+								.Where(i => i.isDefined
 									&& i.hasAsset
 									&& File.Exists(i.imageUrl) == false))
 							{
@@ -1972,7 +1972,7 @@ namespace Ginger.Integration
 							return error;
 						}
 					}
-					else 
+					else
 						chats = new List<_Chat>();
 
 					// Get existing images
@@ -2322,7 +2322,7 @@ namespace Ginger.Integration
 							transaction.Rollback();
 						}
 					}
-					
+
 					updateDate = default(DateTime);
 					updatedImageLinks = null;
 					return Error.Unknown;
@@ -2661,7 +2661,7 @@ namespace Ginger.Integration
 								cmdDelete.CommandText = sbCommand.ToString();
 								updates += cmdDelete.ExecuteNonQuery();
 							}
-									
+
 							if (updates != expectedUpdates)
 							{
 								transaction.Rollback();
@@ -2786,7 +2786,7 @@ namespace Ginger.Integration
 								FROM _AppImageToCharacterConfigVersion
 								WHERE B IN (
 						");
-						
+
 						for (int i = 0; i < configIds.Count; ++i)
 						{
 							if (i > 0)
@@ -2902,7 +2902,7 @@ namespace Ginger.Integration
 
 		#region Chat
 
-		public struct ChatCount 
+		public struct ChatCount
 		{
 			public int count;
 			public DateTime lastMessage;
@@ -2922,10 +2922,10 @@ namespace Ginger.Integration
 				using (var connection = CreateSQLiteConnection())
 				{
 					connection.Open();
-					
+
 					counts = new Dictionary<string, ChatCount>();
 					using (var cmdChat = connection.CreateCommand())
-					{ 
+					{
 						cmdChat.CommandText =
 						@"
 							SELECT 
@@ -2962,7 +2962,7 @@ namespace Ginger.Integration
 							}
 						}
 					}
-					
+
 					return Error.NoError;
 				}
 			}
@@ -2982,7 +2982,7 @@ namespace Ginger.Integration
 				return Error.Unknown;
 			}
 		}
-		
+
 		// Intermediaries
 		private struct _Character
 		{
@@ -3554,14 +3554,14 @@ namespace Ginger.Integration
 
 					// Background image
 					bool hasBackground = CheckFeature(Feature.ChatBackgrounds)
-						&& args.staging != null 
+						&& args.staging != null
 						&& args.staging.background != null
 						&& string.IsNullOrEmpty(args.staging.background.imageUrl) == false
 						&& File.Exists(args.staging.background.imageUrl);
 
 					// Read default chat settings (latest)
 					using (var cmdGroupInfo = connection.CreateCommand())
-					{ 
+					{
 						cmdGroupInfo.CommandText =
 						@"
 							SELECT 
@@ -3655,10 +3655,10 @@ namespace Ginger.Integration
 								cmdCreateChat.Parameters.AddWithValue("$chatName", chatName ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$timestamp", createdAt);
 								cmdCreateChat.Parameters.AddWithValue("$system", staging.system ?? "");
-								cmdCreateChat.Parameters.AddWithValue("$scenario",  staging.scenario ?? "");
-								cmdCreateChat.Parameters.AddWithValue("$example",  staging.example ?? "");
-								cmdCreateChat.Parameters.AddWithValue("$greeting",  greeting ?? "");
-								cmdCreateChat.Parameters.AddWithValue("$grammar",  staging.grammar ?? "");
+								cmdCreateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
+								cmdCreateChat.Parameters.AddWithValue("$example", staging.example ?? "");
+								cmdCreateChat.Parameters.AddWithValue("$greeting", greeting ?? "");
+								cmdCreateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$authorNote", staging.authorNote ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
 								cmdCreateChat.Parameters.AddWithValue("$ttsAutoPlay", staging.ttsAutoPlay);
@@ -3705,9 +3705,9 @@ namespace Ginger.Integration
 							}
 
 							// Write messages
-							var speakerIds = groupMembers.Select(m => m.instanceId).ToArray();							
+							var speakerIds = groupMembers.Select(m => m.instanceId).ToArray();
 							var lsMessages = WriteChatMessages(connection, chatId, args.history, speakerIds, ref expectedUpdates, ref updates);
-							
+
 							if (updates != expectedUpdates)
 							{
 								transaction.Rollback();
@@ -3805,7 +3805,7 @@ namespace Ginger.Integration
 								expectedUpdates += 1;
 								updates += cmdEditChat.ExecuteNonQuery();
 							}
-							
+
 							if (updates == 0)
 							{
 								transaction.Rollback(); // Superfluous. jic.
@@ -3874,7 +3874,7 @@ namespace Ginger.Integration
 
 					// Count chats
 					using (var cmdConfirm = connection.CreateCommand())
-					{ 
+					{
 						cmdConfirm.CommandText =
 						@"
 							SELECT id
@@ -3932,7 +3932,7 @@ namespace Ginger.Integration
 
 					// Count chats
 					using (var cmdConfirm = connection.CreateCommand())
-					{ 
+					{
 						cmdConfirm.CommandText =
 						@"
 							SELECT 1
@@ -4021,7 +4021,7 @@ namespace Ginger.Integration
 								expectedUpdates += 1;
 								updates += cmdDeleteChat.ExecuteNonQuery();
 							}
-														
+
 							if (updates != expectedUpdates)
 							{
 								transaction.Rollback();
@@ -4076,7 +4076,7 @@ namespace Ginger.Integration
 					// Find chats to purge
 					var chatIds = new List<string>();
 					using (var cmdGetChats = connection.CreateCommand())
-					{ 
+					{
 						cmdGetChats.CommandText =
 						@"
 							SELECT id
@@ -4095,7 +4095,7 @@ namespace Ginger.Integration
 					if (chatIds.Count == 0)
 					{
 						return Error.NotFound;
-					}	
+					}
 
 					// Write to database
 					int updates = 0;
@@ -4166,7 +4166,7 @@ namespace Ginger.Integration
 								expectedUpdates += 1;
 								updates += cmdUpdateChat.ExecuteNonQuery();
 							}
-		
+
 							if (updates != expectedUpdates)
 							{
 								transaction.Rollback();
@@ -4257,7 +4257,7 @@ namespace Ginger.Integration
 								expectedUpdates += nDeleted;
 								updates += nDeleted;
 							}
-							
+
 							// Update chat info
 							using (var cmdEditChat = connection.CreateCommand())
 							{
@@ -4444,7 +4444,7 @@ namespace Ginger.Integration
 
 					// Confirm group exists
 					using (var cmdConfirm = connection.CreateCommand())
-					{ 
+					{
 						cmdConfirm.CommandText =
 						@"
 							SELECT 1
@@ -4463,7 +4463,7 @@ namespace Ginger.Integration
 					// Find chats for group
 					var chatIds = new List<string>();
 					using (var cmdGetChats = connection.CreateCommand())
-					{ 
+					{
 						cmdGetChats.CommandText =
 						@"
 							SELECT id
@@ -4567,7 +4567,7 @@ namespace Ginger.Integration
 							using (var cmdUpdateChat = connection.CreateCommand())
 							{
 								var sbCommand = new StringBuilder();
-									
+
 								for (int i = 0; i < repairs.Count; ++i)
 								{
 									sbCommand.AppendLine(
@@ -4584,7 +4584,7 @@ namespace Ginger.Integration
 								cmdUpdateChat.CommandText = sbCommand.ToString();
 								updates += cmdUpdateChat.ExecuteNonQuery();
 							}
-		
+
 							if (updates != expectedUpdates)
 							{
 								transaction.Rollback();
@@ -4721,7 +4721,7 @@ namespace Ginger.Integration
 								expectedUpdates += 1;
 								updates += cmdUpdateChat.ExecuteNonQuery();
 							}
-							
+
 							if (updates == 0)
 							{
 								transaction.Rollback(); // Superfluous. jic.
@@ -4865,7 +4865,7 @@ namespace Ginger.Integration
 								expectedUpdates += chatIds.Length;
 								updates += cmdUpdateChat.ExecuteNonQuery();
 							}
-							
+
 							if (updates == 0)
 							{
 								transaction.Rollback(); // Superfluous. jic.
@@ -4911,7 +4911,7 @@ namespace Ginger.Integration
 
 		#region Folder
 
-		private struct _FolderInfo 
+		private struct _FolderInfo
 		{
 			public string instanceId;
 			public string parentId;
@@ -4972,7 +4972,7 @@ namespace Ginger.Integration
 					// Fetch existing folders
 					var existingFolders = new List<_FolderInfo>();
 					using (var cmdReadFolders = connection.CreateCommand())
-					{ 
+					{
 						cmdReadFolders.CommandText =
 						@"
 							SELECT 
@@ -5149,7 +5149,8 @@ namespace Ginger.Integration
 			return string.Concat(prefix, ".", new string(n));
 		}
 
-		private static string MakeFolderSortPosition(string lastOrderKey)
+		private enum SortPosition { Before, After };
+		private static string MakeFolderSortPosition(SortPosition sortPos, string lastOrderKey)
 		{
 			RandomNoise rng = new RandomNoise();
 			const string key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -5160,8 +5161,11 @@ namespace Ginger.Integration
 
 			if (string.IsNullOrEmpty(lastOrderKey) == false)
 			{
-				// Decrement last character
-				lastOrderKey = string.Concat(lastOrderKey.Substring(0, lastOrderKey.Length - 1), (char)(lastOrderKey[lastOrderKey.Length - 1] - 1));
+				if (sortPos == SortPosition.Before)
+				{
+					// Decrement last character
+					lastOrderKey = string.Concat(lastOrderKey.Substring(0, lastOrderKey.Length - 1), (char)(lastOrderKey[lastOrderKey.Length - 1] - 1));
+				}
 				return string.Concat(lastOrderKey, ",", prefix, ".B");
 			}
 			else
@@ -6952,7 +6956,7 @@ namespace Ginger.Integration
 				cmdUpdate.Parameters.AddWithValue("$charId", characterId);
 				cmdUpdate.Parameters.AddWithValue("$timestamp", createdAt);
 				cmdUpdate.Parameters.AddWithValue("$folderId", parentFolder);
-				cmdUpdate.Parameters.AddWithValue("$folderSortPosition", MakeFolderSortPosition(folderOrder));
+				cmdUpdate.Parameters.AddWithValue("$folderSortPosition", MakeFolderSortPosition(SortPosition.Before, folderOrder));
 
 				expectedUpdates += 3;
 				updates += cmdUpdate.ExecuteNonQuery();

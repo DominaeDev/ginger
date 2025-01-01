@@ -21,11 +21,14 @@ namespace Ginger
 		{
 			Generator.Option options = Generator.Option.Preview;
 			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
+			{
 				options |= Generator.Option.Faraday;
+				if (Backyard.ConnectionEstablished)
+					options |= Generator.Option.Linked;
+			}
 			else if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern)
 				options |= Generator.Option.SillyTavernV2;
-			if (Backyard.ConnectionEstablished && Current.HasActiveLink)
-				options |= Generator.Option.Linked;
+			
 
 			Generator.Output output = Generator.Generate(options);
 

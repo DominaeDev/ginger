@@ -95,7 +95,7 @@ namespace Ginger
 			}
 			if (string.IsNullOrEmpty(outputSystemPostHistory) == false)
 			{
-				sbOutput.AppendLine(Header("MODEL INSTRUCTIONS (VITAL)"));
+				sbOutput.AppendLine(Header("MODEL INSTRUCTIONS (IMPORTANT)"));
 				sbOutput.AppendLine();
 				sbOutput.AppendLine(outputSystemPostHistory);
 				sbOutput.AppendLine();

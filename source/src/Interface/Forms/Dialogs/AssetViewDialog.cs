@@ -29,6 +29,9 @@ namespace Ginger
 			this.FormClosing += AssetViewDialog_FormClosing;
 
 			btnAdd.Click += BtnAdd_Click;
+			btnAddIcon.Click += BtnAddIcon_Click;
+			btnAddUserIcon.Click += BtnAddUserIcon_Click;
+			btnAddBackground.Click += BtnAddBackground_Click;
 			btnAddRemote.Click += BtnAddRemote_Click;
 			btnRemove.Click += BtnRemove_Click;
 			btnView.Click += BtnView_Click;
@@ -528,27 +531,6 @@ namespace Ginger
 			_bIgnoreEvents = false;
 		}
 
-		private void BtnAdd_Click(object sender, EventArgs e)
-		{
-			assetsDataView.EndEdit();
-
-			// Open file...
-			importFileDialog.Title = Resources.cap_import_asset;
-			importFileDialog.Filter = "Image files|*.png;*.apng;*.jpg;*.jpeg;*.gif;*.webp;*.avif|Audio files|*.mp3;*.ogg;*.wav;*.aiff|Video files|*.mp4;*.webm;*.wmv;*.mov;*.mkv|Other files|*.*";
-			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastImagePath ?? Utility.AppPath("Characters");
-			var result = importFileDialog.ShowDialog();
-			if (result != DialogResult.OK)
-				return;
-
-			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
-
-			_bIgnoreEvents = true;
-			foreach (var filename in importFileDialog.FileNames)
-				AddAsset(filename);
-
-			_bIgnoreEvents = false;
-		}
-
 		private void BtnAddRemote_Click(object sender, EventArgs e)
 		{
 			assetsDataView.EndEdit();
@@ -569,25 +551,26 @@ namespace Ginger
 			}
 		}
 
-		private bool AddAsset(string filename)
+		private bool AddAsset(string filename, AssetFile.AssetType suggestedType = AssetFile.AssetType.Undefined)
 		{
 			try
 			{
 				byte[] bytes = File.ReadAllBytes(filename);
 
 				string name = Path.GetFileNameWithoutExtension(filename);
-				string ext = Path.GetExtension(filename).ToLowerInvariant();
-				if (ext.Length > 0 && ext[0] == '.')
-					ext = ext.Substring(1);
+				string ext = Utility.GetFileExt(filename);
 				if (ext == "jpg")
 					ext = "jpeg";
 
-				AssetFile.AssetType assetType;
-				var imageTypes = new string[] { "jpg", "jpeg", "gif", "png", "apng", "webp", "avif" };
-				if (imageTypes.Contains(ext))
-					assetType = AssetFile.AssetType.Icon;
-				else
-					assetType = AssetFile.AssetType.Other;
+				AssetFile.AssetType assetType = suggestedType;
+				if (assetType == AssetFile.AssetType.Undefined)
+				{
+					var imageTypes = new string[] { "jpg", "jpeg", "gif", "png", "apng", "webp", "avif" };
+					if (imageTypes.Contains(ext))
+						assetType = AssetFile.AssetType.Icon;
+					else
+						assetType = AssetFile.AssetType.Other;
+				}
 
 				var data = AssetData.FromBytes(bytes);
 				if (Assets.ContainsAny(a => a.data.hash == data.hash 
@@ -721,6 +704,65 @@ namespace Ginger
 
 			return base.ProcessCmdKey(ref msg, keyData);
 		}
+
+
+		private void BtnAdd_Click(object sender, EventArgs e)
+		{
+			assetsDataView.EndEdit();
+
+			// Open file...
+			importFileDialog.Title = Resources.cap_import_asset;
+			importFileDialog.Filter = "All files|*.*|Image files|*.png;*.apng;*.jpg;*.jpeg;*.gif;*.webp;*.avif|Audio files|*.mp3;*.ogg;*.wav;*.aiff|Video files|*.mp4;*.webm;*.wmv;*.mov;*.mkv";
+			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastImagePath ?? Utility.AppPath("Characters");
+			importFileDialog.FilterIndex = 0;
+			var result = importFileDialog.ShowDialog();
+			if (result != DialogResult.OK)
+				return;
+
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
+
+			_bIgnoreEvents = true;
+			foreach (var filename in importFileDialog.FileNames)
+				AddAsset(filename);
+			_bIgnoreEvents = false;
+		}
+
+		private void AddImageAssets(AssetFile.AssetType assetType)
+		{
+			assetsDataView.EndEdit();
+
+			// Open file...
+			importFileDialog.Title = Resources.cap_import_asset;
+			importFileDialog.Filter = "Supported image formats|*.png;*.jpeg;*.jpg;*.gif;*.apng;*.webp|PNG images|*.png;*.apng|JPEG images|*.jpg;*.jpeg|GIF images|*.gif|WEBP images|*.webp";
+			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastImagePath ?? Utility.AppPath("Characters");
+			importFileDialog.FilterIndex = 0;
+			var result = importFileDialog.ShowDialog();
+			if (result != DialogResult.OK)
+				return;
+
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
+
+			_bIgnoreEvents = true;
+			foreach (var filename in importFileDialog.FileNames)
+				AddAsset(filename, assetType);
+			_bIgnoreEvents = false;
+		}
+
+		private void BtnAddIcon_Click(object sender, EventArgs e)
+		{
+			AddImageAssets(AssetFile.AssetType.Icon);
+		}
+
+		private void BtnAddUserIcon_Click(object sender, EventArgs e)
+		{
+			AddImageAssets(AssetFile.AssetType.UserIcon);
+		}
+				
+		private void BtnAddBackground_Click(object sender, EventArgs e)
+		{
+			AddImageAssets(AssetFile.AssetType.Background);
+		}
+
 
 	}
 }
