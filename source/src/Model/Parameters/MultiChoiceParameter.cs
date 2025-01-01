@@ -89,18 +89,18 @@ namespace Ginger
 				return itemID;
 			}), Text.Delimiter);
 
-			string items = Utility.ListToDelimitedString(values, Text.Delimiter);
+			string sItems = Utility.ListToDelimitedString(values, Text.Delimiter);
 
 			state.SetValue(id, text, scope);
 			state.SetValue(id + ":text", text, scope);
-			state.SetValue(id + ":items", items, scope);
+			state.SetValue(id + ":items", sItems, scope);
 			state.SetValue(id + ":value", text, scope); // Deprecated
 
 			if (scope == Parameter.Scope.Local)
 				state.SetFlags(values.Select(s => new StringHandle(s)), scope);
 			
 			if (isGlobal && scope == Parameter.Scope.Global)
-				state.Reserve(id, uid, items);
+				state.Reserve(id, uid, sItems.Replace(Text.Delimiter, ", "));
 		}
 
 		public override object Clone()

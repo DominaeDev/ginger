@@ -39,12 +39,9 @@ namespace Ginger
 			}
 
 			// Resolve parameters
-			int idxLastRecipe = -1;
 			for (int i = 0; i < recipes.Length; ++i)
 			{
 				var recipe = recipes[i];
-				if (recipe.isEnabled == false)
-					continue; // Skip
 
 				var state = parameterStates[i];
 				state.evalConfig = new ContextString.EvaluationConfig() {
@@ -56,14 +53,16 @@ namespace Ginger
 
 				foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
 				{
-					if (idxLastRecipe != -1 && parameter.isGlobal && parameterStates.IsReserved(parameter.id))
+					if (parameter.isGlobal && parameterStates.IsReserved(parameter.id))
 						continue; // Skip reserved
 					parameter.Apply(state);
 				}
 
-				CopyGlobals(parameterStates, i, globalContext);
-				globalContext.SetFlags(recipe.flags);
-				idxLastRecipe = i;
+				if (recipe.isEnabled)
+				{
+					CopyGlobals(parameterStates, i, globalContext);
+					globalContext.SetFlags(recipe.flags);
+				}
 			}
 
 			return parameterStates;

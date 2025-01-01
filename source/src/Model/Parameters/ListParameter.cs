@@ -42,7 +42,7 @@ namespace Ginger
 			state.SetValue(id + ":count", items.Count, scope);
 
 			if (isGlobal && scope == Parameter.Scope.Global)
-				state.Reserve(id, uid, sItems);
+				state.Reserve(id, uid, sItems.Replace(Text.Delimiter, ", "));
 		}
 
 		public override object Clone()

@@ -143,7 +143,7 @@ namespace Ginger
 					textBox.Text = reservedValue;
 				else
 				{
-					textBox.Text = Utility.ListToCommaSeparatedString(Collection);
+					textBox.Text = Utility.ListToCommaSeparatedString(this.parameter.value);
 					textBox.richTextBox.RefreshSyntaxHighlight(false); // Rehighlight
 				}
 				textBox.InitUndo();
@@ -165,7 +165,7 @@ namespace Ginger
 
 		private void OnValueChanged(object sender, EventArgs e)
 		{
-			if (isIgnoringEvents)
+			if (isIgnoringEvents || Enabled == false)
 				return;
 
 			this.parameter.value = Collection;

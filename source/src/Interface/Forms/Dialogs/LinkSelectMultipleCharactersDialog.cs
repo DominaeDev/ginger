@@ -1,5 +1,4 @@
-﻿using Ginger.Properties;
-using Ginger.Integration;
+﻿using Ginger.Integration;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -428,10 +427,10 @@ namespace Ginger
 
 		private void RefreshConfirmButton()
 		{
-			int count = treeView.AllNodes().Count(n => n.Tag is CharacterInstance && n.Checked);
+			int count = treeView.AllNodes().Count(n => n.Checked && n.Tag is CharacterInstance);
 
 			btnOk.Text = count > 0 ? $"Select ({count})" : "Select";
-			btnOk.Enabled = cbSelectAll.CheckState != CheckState.Unchecked;
+			btnOk.Enabled = count > 0;
 		}
 	}
 }

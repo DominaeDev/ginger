@@ -453,7 +453,7 @@ namespace Ginger
 			int count = treeView.AllNodes().Count(n => n.Tag is GroupInstance && n.Checked);
 
 			btnOk.Text = count > 0 ? $"Select ({count})" : "Select";
-			btnOk.Enabled = cbSelectAll.CheckState != CheckState.Unchecked;
+			btnOk.Enabled = count > 0;
 		}
 	}
 }
