@@ -887,6 +887,10 @@ namespace Ginger
 			duplicateMenuItem.Enabled = hasGroup && hasChat;
 			refreshMenuItem.Enabled = hasGroup;
 			repairChatsMenuItem.Enabled = hasGroup;
+			editModelSettingsMenuItem.Enabled = hasGroup;
+
+			setBackgroundMenuItem.Visible = Backyard.CheckFeature(Backyard.Feature.ChatBackgrounds);
+			setBackgroundMenuItem.Enabled = hasGroup;
 		}
 
 		private void duplicateMenuItem_Click(object sender, EventArgs e)
@@ -1236,6 +1240,27 @@ namespace Ginger
 					ToolTipText = Resources.tooltip_link_model_settings_one,
 				});
 
+				if (Backyard.CheckFeature(Backyard.Feature.ChatBackgrounds))
+				{
+					var backgroundSubmenu = new ToolStripMenuItem("Set background");
+
+					backgroundSubmenu.DropDownItems.Add(new ToolStripMenuItem("Load from file...", null, (s, e) => {
+						SetChatBackgroundFromFile(new string[] { (item.Tag as ChatInstance).instanceId });
+					}));
+
+					backgroundSubmenu.DropDownItems.Add(new ToolStripMenuItem("Same as portrait", null, (s, e) => {
+						SetChatBackgroundFromPortrait(new string[] { (item.Tag as ChatInstance).instanceId });
+					}));
+
+					backgroundSubmenu.DropDownItems.Add(new ToolStripSeparator());
+
+					backgroundSubmenu.DropDownItems.Add(new ToolStripMenuItem("Clear background", null, (s, e) => {
+						ClearChatBackground(new string[] { (item.Tag as ChatInstance).instanceId });
+					}));
+
+					menu.Items.Add(backgroundSubmenu);
+				}
+
 				menu.Items.Add(new ToolStripSeparator());
 
 				menu.Items.Add(new ToolStripMenuItem("Delete chat", null, (s, e) => {
@@ -1353,9 +1378,8 @@ namespace Ginger
 				return;
 			}
 
-			SetStatusBarMessage(Resources.status_link_paste_staging, Constants.StatusBarMessageInterval);
-
 			RefreshChats();
+			SetStatusBarMessage(Resources.status_link_paste_staging, Constants.StatusBarMessageInterval);
 		}
 
 		private void EditSettings(ChatInstance chatInstance)
@@ -1385,9 +1409,8 @@ namespace Ginger
 				return;
 			}
 
-			SetStatusBarMessage(Resources.status_link_reset_settings, Constants.StatusBarMessageInterval);
-
 			RefreshChats();
+			SetStatusBarMessage(Resources.status_link_reset_settings, Constants.StatusBarMessageInterval);
 		}
 		
 		private void EditAllSettings()
@@ -1408,7 +1431,7 @@ namespace Ginger
 
 			if (chats == null || chats.Length == 0)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("No chats.", Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
 				return;
 			}
@@ -1434,9 +1457,8 @@ namespace Ginger
 				return;
 			}
 
-			SetStatusBarMessage(Resources.status_link_update_model_settings, Constants.StatusBarMessageInterval);
-
 			RefreshChats();
+			SetStatusBarMessage(Resources.status_link_update_model_settings, Constants.StatusBarMessageInterval);
 		}
 
 		private bool ConfirmChatExists(string chatId, string errorCaption)
@@ -1572,5 +1594,211 @@ namespace Ginger
 			EditAllSettings();
 		}
 
+		private void setBackgroundFromFileMenuItem_Click(object sender, EventArgs e)
+		{
+			if (_groupInstance.isEmpty)
+				return;
+
+			if (Backyard.ConnectionEstablished == false)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+
+			ChatInstance[] chats = null;
+			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+
+			if (chats == null || chats.Length == 0)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+
+			SetChatBackgroundFromFile(chats.Select(c => c.instanceId).ToArray());
+		}
+
+		private void setBackgroundFromPortraitMenuItem_Click(object sender, EventArgs e)
+		{
+			if (_groupInstance.isEmpty)
+				return;
+
+			if (Backyard.ConnectionEstablished == false)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+
+			ChatInstance[] chats = null;
+			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+
+			if (chats == null || chats.Length == 0)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+
+			SetChatBackgroundFromPortrait(chats.Select(c => c.instanceId).ToArray());
+		}
+
+		private void clearBackgroundMenuItem_Click(object sender, EventArgs e)
+		{
+			if (_groupInstance.isEmpty)
+				return;
+
+			if (Backyard.ConnectionEstablished == false)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+
+			ChatInstance[] chats = null;
+			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+
+			if (chats == null || chats.Length == 0)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+
+			// Update chats
+			ClearChatBackground(chats.Select(c => c.instanceId).ToArray());
+		}
+
+		
+		private void SetChatBackgroundFromFile(string[] chatIds)
+		{
+			// Open file...
+			importFileDialog.Title = Resources.cap_open_image;
+			importFileDialog.Filter = "Supported image formats|*.png;*.jpeg;*.jpg;*.gif;*.apng;*.webp|PNG images|*.png;*.apng|JPEG images|*.jpg;*.jpeg|GIF images|*.gif|WEBP images|*.webp";
+			importFileDialog.InitialDirectory = AppSettings.Paths.LastImagePath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			var result = importFileDialog.ShowDialog();
+			if (result != DialogResult.OK)
+				return;
+
+			AppSettings.Paths.LastImagePath = Path.GetDirectoryName(importFileDialog.FileName);
+
+			string sourceFilename = importFileDialog.FileName;
+			var imageData = Utility.LoadFile(sourceFilename);
+			int width, height;
+			if (imageData == null || Utility.GetImageDimensions(imageData, out width, out height) == false)
+			{
+				MessageBox.Show(Resources.error_load_image, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			// Copy image
+			string destPath = Path.Combine(AppSettings.BackyardLink.Location, "images");
+			string destFilename;
+			try
+			{
+				destFilename = Path.Combine(destPath, Utility.CreateRandomFilename(Utility.GetFileExt(sourceFilename)));
+				File.Copy(sourceFilename, destFilename, true);
+			}
+			catch
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			// Update chats
+			var error = RunTask(() => Backyard.UpdateChatBackground(chatIds, destFilename, width, height), "Updating chats...");
+			if (error != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			RefreshChats();
+			SetStatusBarMessage(Resources.status_link_update_chats, Constants.StatusBarMessageInterval);
+		}
+						
+		private void SetChatBackgroundFromPortrait(string[] chatIds)
+		{
+			if (_groupInstance.isEmpty)
+				return;
+
+			var character = _groupInstance.members
+				.Select(id => _charactersById.GetOrDefault(id))
+				.Where(c => c.isUser == false)
+				.FirstOrDefault();
+
+			string[] imageUrls;
+			var error = Backyard.GetImageUrls(character, out imageUrls);
+			if (error != Backyard.Error.NoError || imageUrls.Length == 0)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Close();
+				return;
+			}
+
+			string sourceFilename = imageUrls[0];
+			var imageData = Utility.LoadFile(sourceFilename);
+			int width, height;
+			if (imageData == null || Utility.GetImageDimensions(imageData, out width, out height) == false)
+			{
+				MessageBox.Show(Resources.error_load_image, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			// Copy image
+			string destPath = Path.Combine(AppSettings.BackyardLink.Location, "images");
+			string destFilename;
+			try
+			{
+				destFilename = Path.Combine(destPath, Utility.CreateRandomFilename(Utility.GetFileExt(sourceFilename)));
+				File.Copy(sourceFilename, destFilename, true);
+			}
+			catch
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			// Update chats
+			error = RunTask(() => Backyard.UpdateChatBackground(chatIds, destFilename, width, height), "Updating chats...");
+			if (error != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			RefreshChats();
+			SetStatusBarMessage(Resources.status_link_update_chats, Constants.StatusBarMessageInterval);
+		}
+		
+		private void ClearChatBackground(string[] chatIds)
+		{
+			// Update chats
+			var error = RunTask(() => Backyard.UpdateChatBackground(chatIds, null, 0, 0), "Updating chats...");
+			if (error != Backyard.Error.NoError)
+			{
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			RefreshChats();
+			SetStatusBarMessage(Resources.status_link_update_chats, Constants.StatusBarMessageInterval);
+		}
 	}
 }

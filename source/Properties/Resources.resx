@@ -1588,4 +1588,10 @@ Are you sure you want to proceed?</value>
   <data name="error_link_autosave_character_not_found" xml:space="preserve">
     <value>Failed to save changes to Backyard AI. Linked character no longer exists.</value>
   </data>
+  <data name="cap_link_update_chat_background" xml:space="preserve">
+    <value>Change chat background</value>
+  </data>
+  <data name="status_link_update_chats" xml:space="preserve">
+    <value>Chat settings updated</value>
+  </data>
 </root>

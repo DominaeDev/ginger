@@ -517,6 +517,7 @@ namespace Ginger.Integration
 			NotFound,
 			DismissedByUser,
 			CancelledByUser,
+			UnsupportedFeature,
 			Unknown,
 		}
 
@@ -4879,6 +4880,127 @@ namespace Ginger.Integration
 							transaction.Commit();
 							return Error.NoError;
 
+						}
+						catch (Exception e)
+						{
+							transaction.Rollback();
+							return Error.SQLCommandFailed;
+						}
+					}
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Disconnect();
+				return Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				Disconnect();
+				return Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				Disconnect();
+				return Error.Unknown;
+			}
+		}
+
+		public static Error UpdateChatBackground(string[] chatIds, string imageUrl, int width, int height)
+		{
+			if (ConnectionEstablished == false)
+				return Error.NotConnected;
+
+			if (CheckFeature(Feature.ChatBackgrounds) == false)
+				return Error.UnsupportedFeature;
+
+			if (chatIds == null)
+				return Error.InvalidArgument;
+
+			if (string.IsNullOrEmpty(imageUrl) == false && (width <= 0 || width <= 0))
+				return Error.InvalidArgument;
+
+			if (chatIds.Length == 0)
+				return Error.NoError;
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					int updates = 0;
+					int expectedUpdates = 0;
+
+					DateTime now = DateTime.Now;
+					long updatedAt = now.ToUnixTimeMilliseconds();
+
+					using (var transaction = connection.BeginTransaction())
+					{
+						try
+						{
+							// Clear chat backgrounds
+							using (var cmdDelete = new SQLiteCommand(connection))
+							{
+								var sbCommand = new StringBuilder();
+
+								sbCommand.AppendLine(
+								@"
+									DELETE FROM BackgroundChatImage
+									WHERE chatId IN (");
+
+								for (int i = 0; i < chatIds.Length; ++i)
+								{
+									if (i > 0)
+										sbCommand.Append(", ");
+									sbCommand.AppendFormat("'{0}'", chatIds[i]);
+								}
+								sbCommand.AppendLine(");");
+								cmdDelete.CommandText = sbCommand.ToString();
+
+								int nDeletes = cmdDelete.ExecuteNonQuery();
+								expectedUpdates += nDeletes;
+								updates += nDeletes;
+							}
+
+							// Set chat backgrounds
+							if (string.IsNullOrEmpty(imageUrl) == false)
+							{
+								using (var cmdBackground = new SQLiteCommand(connection))
+								{
+									var sbCommand = new StringBuilder();
+
+									for (int i = 0; i < chatIds.Length; ++i)
+									{
+										// Chat
+										sbCommand.AppendLine(
+										$@"
+											INSERT INTO BackgroundChatImage
+												(id, imageUrl, aspectRatio, chatId)
+											VALUES 
+												($backgroundId{i:000}, $imageUrl, $aspectRatio, $chatId{i:000});
+										");
+
+										cmdBackground.CommandText = sbCommand.ToString();
+										cmdBackground.Parameters.AddWithValue($"$backgroundId{i:000}", Cuid.NewCuid());
+										cmdBackground.Parameters.AddWithValue($"$chatId{i:000}", chatIds[i]);
+
+										expectedUpdates += 1;
+									}
+									cmdBackground.Parameters.AddWithValue("$imageUrl", imageUrl ?? "");
+									cmdBackground.Parameters.AddWithValue("$aspectRatio", string.Format("{0}/{1}", width, height));
+									updates += cmdBackground.ExecuteNonQuery();
+								}
+							}
+
+							if (updates != expectedUpdates)
+							{
+								transaction.Rollback();
+								return Error.SQLCommandFailed;
+							}
+
+							transaction.Commit();
+							return Error.NoError;
 						}
 						catch (Exception e)
 						{

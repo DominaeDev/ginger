@@ -777,6 +777,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change chat background.
+        /// </summary>
+        internal static string cap_link_update_chat_background {
+            get {
+                return ResourceManager.GetString("cap_link_update_chat_background", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update models settings.
         /// </summary>
         internal static string cap_link_update_many_characters {
@@ -3867,6 +3876,15 @@ namespace Ginger.Properties {
         internal static string status_link_scrubbed_chat {
             get {
                 return ResourceManager.GetString("status_link_scrubbed_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat settings updated.
+        /// </summary>
+        internal static string status_link_update_chats {
+            get {
+                return ResourceManager.GetString("status_link_update_chats", resourceCulture);
             }
         }
         

@@ -57,6 +57,11 @@ namespace Ginger
 			this.refreshMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
 			this.editModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.setBackgroundMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.setBackgroundFromFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.setBackgroundFromPortraitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+			this.clearBackgroundMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			this.importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.exportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -174,6 +179,7 @@ namespace Ginger
 			this.portraitImage.BackColor = System.Drawing.Color.DimGray;
 			this.portraitImage.BackgroundImage = global::Ginger.Properties.Resources.checker;
 			this.portraitImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.portraitImage.IsAnimation = false;
 			this.portraitImage.Location = new System.Drawing.Point(3, 2);
 			this.portraitImage.Name = "portraitImage";
 			this.portraitImage.Size = new System.Drawing.Size(150, 200);
@@ -243,6 +249,7 @@ namespace Ginger
             this.refreshMenuItem,
             this.toolStripMenuItem4,
             this.editModelSettingsMenuItem,
+            this.setBackgroundMenuItem,
             this.toolStripMenuItem3,
             this.importMenuItem,
             this.exportMenuItem,
@@ -279,6 +286,43 @@ namespace Ginger
 			this.editModelSettingsMenuItem.Size = new System.Drawing.Size(184, 22);
 			this.editModelSettingsMenuItem.Text = "Edit &model settings...";
 			this.editModelSettingsMenuItem.Click += new System.EventHandler(this.editModelSettingsMenuItem_Click);
+			// 
+			// setBackgroundMenuItem
+			// 
+			this.setBackgroundMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.setBackgroundFromFileMenuItem,
+            this.setBackgroundFromPortraitMenuItem,
+            this.toolStripMenuItem2,
+            this.clearBackgroundMenuItem});
+			this.setBackgroundMenuItem.Name = "setBackgroundMenuItem";
+			this.setBackgroundMenuItem.Size = new System.Drawing.Size(184, 22);
+			this.setBackgroundMenuItem.Text = "Set background";
+			// 
+			// setBackgroundFromFileMenuItem
+			// 
+			this.setBackgroundFromFileMenuItem.Name = "setBackgroundFromFileMenuItem";
+			this.setBackgroundFromFileMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.setBackgroundFromFileMenuItem.Text = "Load from file...";
+			this.setBackgroundFromFileMenuItem.Click += new System.EventHandler(this.setBackgroundFromFileMenuItem_Click);
+			// 
+			// setBackgroundFromPortraitMenuItem
+			// 
+			this.setBackgroundFromPortraitMenuItem.Name = "setBackgroundFromPortraitMenuItem";
+			this.setBackgroundFromPortraitMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.setBackgroundFromPortraitMenuItem.Text = "Same as portrait";
+			this.setBackgroundFromPortraitMenuItem.Click += new System.EventHandler(this.setBackgroundFromPortraitMenuItem_Click);
+			// 
+			// toolStripMenuItem2
+			// 
+			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
+			// 
+			// clearBackgroundMenuItem
+			// 
+			this.clearBackgroundMenuItem.Name = "clearBackgroundMenuItem";
+			this.clearBackgroundMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.clearBackgroundMenuItem.Text = "Clear background";
+			this.clearBackgroundMenuItem.Click += new System.EventHandler(this.clearBackgroundMenuItem_Click);
 			// 
 			// toolStripMenuItem3
 			// 
@@ -330,7 +374,7 @@ namespace Ginger
 			// repairChatsMenuItem
 			// 
 			this.repairChatsMenuItem.Name = "repairChatsMenuItem";
-			this.repairChatsMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.repairChatsMenuItem.Size = new System.Drawing.Size(166, 22);
 			this.repairChatsMenuItem.Text = "&Fix legacy chats...";
 			this.repairChatsMenuItem.Click += new System.EventHandler(this.repairChatsMenuItem_Click);
 			// 
@@ -431,5 +475,10 @@ namespace Ginger
 		private System.Windows.Forms.Panel portraitPanel;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
 		private System.Windows.Forms.ToolStripMenuItem editModelSettingsMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem setBackgroundMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem clearBackgroundMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem setBackgroundFromPortraitMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem setBackgroundFromFileMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
 	}
 }

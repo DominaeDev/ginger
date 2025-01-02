@@ -346,37 +346,22 @@ namespace Ginger
 				if (Paths.LastImportExportPath == "") Paths.LastImportExportPath = null;
 			}
 
-			var linkSection = iniData.Sections["BackyardAI.Link"];
-			if (linkSection != null)
+			var backyardSection = iniData.Sections["BackyardAI"]; // Since v1.5.0
+			if (backyardSection != null && backyardSection.ContainsKey("Model") == false)
+				ReadBackyardSettings(backyardSection);
+			else
 			{
-				ReadBool(ref BackyardLink.Enabled, linkSection, "Enabled");
-				ReadBool(ref BackyardLink.Strict, linkSection, "Strict");
-				BackyardLink.LastVersion = VersionNumber.Parse(linkSection["LastVersion"]);
-				ReadBool(ref BackyardLink.Autosave, linkSection, "Autosave");
-				ReadBool(ref BackyardLink.AlwaysLinkOnImport, linkSection, "AlwaysLinkOnImport");
-				ReadString(ref BackyardLink.Location, linkSection, "Location");
-				ReadEnum(ref BackyardLink.ApplyChatSettings, linkSection, "ApplyChatSettings");
-				ReadBool(ref BackyardLink.UsePortraitAsBackground, linkSection, "UsePortraitAsBackground");
-				ReadString(ref BackyardLink.BulkImportFolderName, linkSection, "BulkImportFolderName");
-				ReadBool(ref BackyardLink.PruneExampleChat, linkSection, "PruneExampleChat");
-				ReadBool(ref BackyardLink.MarkNSFW, linkSection, "MarkNSFW");
-				ReadBool(ref BackyardLink.WriteAuthorNote, linkSection, "WriteAuthorNote");
-				ReadBool(ref BackyardLink.WriteUserPersona, linkSection, "WriteUserPersona");
-				ReadBool(ref BackyardLink.ImportAlternateGreetings, linkSection, "ImportAlternateGreetings");
+				var linkSection = iniData.Sections["BackyardAI.Link"]; // Prior to v1.5.0
+				if (linkSection != null) // Legacy
+					ReadBackyardSettings(linkSection);
 			}
-			
+
 			BackyardSettings.Presets.Clear();
 			var modelSettingsSection = iniData.Sections["BackyardAI.ModelSettings.Default"]; // Since v1.5.0
 			if (modelSettingsSection != null)
-			{
 				BackyardSettings.UserSettings = ReadModelSettings(modelSettingsSection);
-			}
-			else // Legacy < 1.5.0
-			{
-				var backyardSection = iniData.Sections["BackyardAI"];
-				if (backyardSection != null && backyardSection.ContainsKey("Model"))
-					BackyardSettings.UserSettings = ReadModelSettings(backyardSection);
-			}
+			else if (backyardSection != null && backyardSection.ContainsKey("Model")) // Prior to v1.5.0 
+				BackyardSettings.UserSettings = ReadModelSettings(backyardSection);
 
 			// Model setting presets
 			int unnamedPresetCounter = 1;
@@ -439,6 +424,24 @@ namespace Ginger
 			}
 		}
 
+		private static void ReadBackyardSettings(KeyDataCollection section)
+		{
+			ReadBool(ref BackyardLink.Enabled, section, "Enabled");
+			ReadBool(ref BackyardLink.Strict, section, "Strict");
+			BackyardLink.LastVersion = VersionNumber.Parse(section["LastVersion"]);
+			ReadBool(ref BackyardLink.Autosave, section, "Autosave");
+			ReadBool(ref BackyardLink.AlwaysLinkOnImport, section, "AlwaysLinkOnImport");
+			ReadString(ref BackyardLink.Location, section, "Location");
+			BackyardLink.Location = BackyardLink.Location.Replace('/', '\\');
+			ReadEnum(ref BackyardLink.ApplyChatSettings, section, "ApplyChatSettings");
+			ReadBool(ref BackyardLink.UsePortraitAsBackground, section, "UsePortraitAsBackground");
+			ReadString(ref BackyardLink.BulkImportFolderName, section, "BulkImportFolderName");
+			ReadBool(ref BackyardLink.PruneExampleChat, section, "PruneExampleChat");
+			ReadBool(ref BackyardLink.MarkNSFW, section, "MarkNSFW");
+			ReadBool(ref BackyardLink.WriteAuthorNote, section, "WriteAuthorNote");
+			ReadBool(ref BackyardLink.WriteUserPersona, section, "WriteUserPersona");
+			ReadBool(ref BackyardLink.ImportAlternateGreetings, section, "ImportAlternateGreetings");
+		}
 
 		public static void SaveToIni(string filePath)
 		{
@@ -511,8 +514,8 @@ namespace Ginger
 					foreach (var mruItem in MRUList.mruItems)
 						outputFile.WriteLine(string.Format("File{0:00} = {1}|{2}", mruIndex++, mruItem.filename ?? "", mruItem.characterName ?? ""));
 
-					// Backyard link settings
-					WriteSection(outputFile, "BackyardAI.Link");
+					// Backyard settings
+					WriteSection(outputFile, "BackyardAI");
 					Write(outputFile, "Location", BackyardLink.Location);
 					if (BackyardLink.LastVersion.isDefined)
 						Write(outputFile, "LastVersion", BackyardLink.LastVersion.ToFullString());
