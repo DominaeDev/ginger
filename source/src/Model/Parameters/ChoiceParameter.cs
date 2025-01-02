@@ -136,6 +136,9 @@ namespace Ginger
 				state.SetValue(id + ":value", value, scope);	// Deprecated
 				state.SetValue(id + ":index", -1, scope);
 				state.SetFlag(id + ":custom", scope);
+
+				if (isGlobal && scope == Parameter.Scope.Global)
+					state.Reserve(id, uid, value);
 			}
 			else if (selectedIndex >= 0 && selectedIndex < items.Count)
 			{
@@ -145,10 +148,10 @@ namespace Ginger
 				state.SetValue(id + ":text", textValue, scope);
 				state.SetValue(id + ":value", textValue, scope);	// Deprecated
 				state.SetValue(id + ":index", selectedIndex, scope);
-			}
 
-			if (isGlobal && scope == Parameter.Scope.Global)
-				state.Reserve(id, uid, this.value);
+				if (isGlobal && scope == Parameter.Scope.Global)
+					state.Reserve(id, uid, textValue);
+			}
 		}
 
 		public override object Clone()

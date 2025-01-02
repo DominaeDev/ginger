@@ -627,8 +627,7 @@ namespace Ginger
 				{
 					StringHandle uid;
 					string reservedValue = default(string);
-					bool isReserved = /*parameter.isEnabled
-						&&*/ parameterStates.TryGetReservedValue(parameter.id, out uid, out reservedValue)
+					bool isReserved = parameterStates.TryGetReservedValue(parameter.id, out uid, out reservedValue)
 						&& uid != parameter.uid;
 					parameterPanel.SetReserved(isReserved, reservedValue);
 

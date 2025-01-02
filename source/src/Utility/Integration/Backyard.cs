@@ -2020,10 +2020,8 @@ namespace Ginger.Integration
 					// Get existing user portrait
 					ImageInstance existingUserPortrait = null;
 					string userName, userPersona;
-					if (FetchUserInfo(connection, groupId, out userName, out userPersona, out existingUserPortrait))
-					{
+					if (FetchUserInfo(connection, groupId, out userName, out userPersona, out existingUserPortrait) && existingUserPortrait != null)
 						imageInstances.Add(existingUserPortrait);
-					}
 
 					// Compile list of images to update / insert
 					ImageOutput[] imageOutput;

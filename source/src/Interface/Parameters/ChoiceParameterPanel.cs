@@ -139,15 +139,14 @@ namespace Ginger
 
 		protected override void OnSetReserved(bool bReserved, string reservedValue)
 		{
+			if (isNotifyingValueChanged)
+				return;
+
 			cbEnabled.Enabled = !bReserved && parameter.isOptional;
 			comboBox.Enabled = !bReserved && parameter.isEnabled;
 			textBox_Custom.Enabled = !bReserved && parameter.isEnabled;
 
-			WhileIgnoringEvents(() => {
-				SelectByValue(bReserved ? reservedValue : this.parameter.value);
-				if (bReserved)
-					textBox_Custom.Visible = false;
-			});
+			SelectByValueReserved(bReserved ? reservedValue : null);
 		}
 
 		private void CbEnabled_CheckedChanged(object sender, EventArgs e)
@@ -179,7 +178,7 @@ namespace Ginger
 				this.parameter.value = textBox_Custom.Text;
 				this.parameter.selectedIndex = -2; // Custom
 				textBox_Custom.Visible = true;
-					NotifyValueChanged();
+				NotifyValueChanged();
 				return;
 			}
 			else
@@ -258,6 +257,52 @@ namespace Ginger
 		private void OnMouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
 			ParameterPanel_MouseClick(sender, e);
+		}
+
+		private void SelectByValueReserved(string reservedValue)
+		{
+			if (comboBox.Items.Count == 0)
+				return;
+
+			WhileIgnoringEvents(() => {
+				if (string.IsNullOrEmpty(reservedValue) == false) // Reserved
+				{
+					int index = this.parameter.items.FindIndex(i => string.Compare(i.value, reservedValue, true) == 0 || string.Compare(i.label, reservedValue, true) == 0);
+					if (index != -1)
+					{
+						if (parameter.isOptional)
+							index += 1; // (not set)
+						comboBox.SelectedIndex = index;
+						textBox_Custom.Visible = false;
+					}
+					else if (parameter.style == ChoiceParameter.Style.Custom)
+					{
+						comboBox.SelectedIndex = comboBox.Items.Count - 1;
+						textBox_Custom.Visible = true;
+						textBox_Custom.Text = reservedValue;
+					}
+					else
+					{
+						comboBox.SelectedIndex = 0;
+						textBox_Custom.Visible = false;
+					}
+				}
+				else
+				{
+					if (parameter.style == ChoiceParameter.Style.Custom)
+					{
+						if (this.parameter.selectedIndex == -2)
+						{
+							comboBox.SelectedIndex = comboBox.Items.Count - 1;
+							textBox_Custom.Visible = true;
+							textBox_Custom.Text = this.parameter.value;
+							return;
+						}
+					}
+
+					SelectByValue(this.parameter.value);
+				}
+			});
 		}
 	}
 }

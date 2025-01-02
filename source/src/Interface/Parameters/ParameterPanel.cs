@@ -20,6 +20,7 @@ namespace Ginger
 
 		protected bool isIgnoringEvents { get { return _bIgnoreEvents || isReserved; } }
 		private bool _bIgnoreEvents = false;
+		protected bool isNotifyingValueChanged { get; private set; }
 
 		public bool isReserved { get; private set; }
 
@@ -111,9 +112,13 @@ namespace Ginger
 
 		protected void NotifyValueChanged(StringHandle subId = default(StringHandle))
 		{
+			if (isNotifyingValueChanged)
+				return;
+			isNotifyingValueChanged = true;
 			ParameterValueChanged?.Invoke(this, new ParameterEventArgs() {
 				subId = subId,
 			});
+			isNotifyingValueChanged = false;
 			Current.IsDirty = true;
 		}
 
@@ -167,9 +172,14 @@ namespace Ginger
 
 		protected void WhileIgnoringEvents(Action action)
 		{
-			_bIgnoreEvents = true;
-			action.Invoke();
-			_bIgnoreEvents = false;
+			if (_bIgnoreEvents)
+				action.Invoke();
+			else
+			{
+				_bIgnoreEvents = true;
+				action.Invoke();
+				_bIgnoreEvents = false;
+			}
 		}
 
 		protected void NotifySizeChanged()

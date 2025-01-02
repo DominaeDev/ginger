@@ -550,7 +550,7 @@
 			this.trackBar_PenaltyTokens.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.trackBar_PenaltyTokens.LargeChange = 8;
 			this.trackBar_PenaltyTokens.Location = new System.Drawing.Point(103, 3);
-			this.trackBar_PenaltyTokens.Maximum = 512;
+			this.trackBar_PenaltyTokens.Maximum = 1024;
 			this.trackBar_PenaltyTokens.MaximumSize = new System.Drawing.Size(0, 22);
 			this.trackBar_PenaltyTokens.Minimum = 16;
 			this.trackBar_PenaltyTokens.Name = "trackBar_PenaltyTokens";
