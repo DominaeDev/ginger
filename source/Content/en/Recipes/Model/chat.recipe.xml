@@ -1,4 +1,4 @@
-﻿<Ginger id="chat-bot" version="1.3">
+﻿<Ginger id="chat-bot" version="1.4">
 	<Name>Base/Chat bot</Name>
 	<Title>Chat bot</Title>
 	<Description>
@@ -8,8 +8,7 @@
 	</Description>
 	<Author>Ginger</Author>
 	<Category>Base</Category>
-	<Requires>not base</Requires>
-	<Flags>base, chat</Flags>
+	<Flags>chat</Flags>
 	<Order>0</Order>
 	
 	<!-- Complementary recipes -->

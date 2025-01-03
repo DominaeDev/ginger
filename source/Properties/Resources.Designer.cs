@@ -3250,7 +3250,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save changes to &apos;{0}&apos; before quitting?.
+        ///   Looks up a localized string similar to Save changes to &apos;{0}&apos; before exiting?.
         /// </summary>
         internal static string msg_save_before_quit {
             get {
@@ -5375,8 +5375,8 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The gender or desired point of view of the user.
-        ///This setting affects generated text only..
+        ///   Looks up a localized string similar to The desired gender of the user.
+        ///(This setting only affects recipe output.).
         /// </summary>
         internal static string tooltip_user_gender {
             get {
@@ -5403,12 +5403,22 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A name to use in place of {user}.
-        ///(Is not stored in the character card.).
+        ///   Looks up a localized string similar to Placeholder name for the user.
+        ///(This name is saved as a local setting and is never saved in character cards.).
         /// </summary>
         internal static string tooltip_user_name {
             get {
                 return ResourceManager.GetString("tooltip_user_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Placeholder name for the user.
+        ///(This name was imported from Backyard AI and will not be saved.).
+        /// </summary>
+        internal static string tooltip_user_name_volatile {
+            get {
+                return ResourceManager.GetString("tooltip_user_name_volatile", resourceCulture);
             }
         }
         

@@ -81,7 +81,19 @@ namespace Ginger
 			textBox_characterSpokenName.Text = Current.Character._spokenName;
 			textBox_characterSpokenName.Placeholder = Utility.FirstNonEmpty(Current.Card.name, Constants.DefaultCharacterName);
 			textBox_characterSpokenName.InitUndo();
-			textBox_userPlaceholder.Text = Current.Card._userPlaceholder;
+
+			if (string.IsNullOrEmpty(Current.Card.volatileUserPlaceholder) == false && Current.Card.volatileUserPlaceholder != Current.Card._userPlaceholder)
+			{
+				textBox_userPlaceholder.Text = Current.Card.volatileUserPlaceholder;
+				textBox_userPlaceholder.ForeColor = Theme.Current.Name;
+				SetToolTip(Resources.tooltip_user_name_volatile, label_userPlaceholder, textBox_userPlaceholder);
+			}
+			else
+			{
+				textBox_userPlaceholder.Text = Current.Card._userPlaceholder;
+				textBox_userPlaceholder.ForeColor = Theme.Current.TextBoxForeground;
+				SetToolTip(Resources.tooltip_user_name, label_userPlaceholder, textBox_userPlaceholder);
+			}
 			textBox_userPlaceholder.InitUndo();
 			textBox_userPlaceholder.Enabled = AppSettings.Settings.AutoConvertNames;
 
@@ -394,8 +406,13 @@ namespace Ginger
 				NewName = newPlaceholder,
 			});
 
+			textBox_userPlaceholder.ForeColor = Theme.Current.TextBoxForeground;
+			SetToolTip(Resources.tooltip_user_name, label_userPlaceholder, textBox_userPlaceholder);
 			if (bChanged)
+			{
 				Undo.Push(Undo.Kind.Parameter, "Change user name");
+
+			}
 		}
 
 		private void TextBox_characterName_TextChanged(object sender, EventArgs e)
@@ -595,6 +612,7 @@ namespace Ginger
 			int cursorPos = textBox_userPlaceholder.SelectionStart;
 			textBox_userPlaceholder.Text = textBox_userPlaceholder.Text;
 			textBox_userPlaceholder.SelectionStart = cursorPos;
+			textBox_userPlaceholder.ForeColor = Theme.Current.TextBoxForeground;
 		}
 
 		public void SetSpokenName(string name, bool focus = true)

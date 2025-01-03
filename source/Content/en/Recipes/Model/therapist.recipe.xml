@@ -1,10 +1,9 @@
-<Ginger id="therapist-base" version="1.0">
+<Ginger id="therapist-base" version="1.1">
 	<Name>Base/Virtual therapist</Name>
 	<Title>Virtual therapist</Title>
 	<Category>Base</Category>
 	<Author>Ginger</Author>
-	<Requires>not base</Requires>
-	<Flags>base, assistant</Flags>
+	<Flags>assistant</Flags>
 	<Order>0</Order>
 
 	<Description>Base recipe for a virtual therapist capable of listening to the user, asking probing questions, and offering advice.</Description>

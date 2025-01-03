@@ -187,7 +187,7 @@ namespace Ginger
 		public bool hasCustomColor;
 		public StringBank strings = new StringBank();
 		public bool allowMultiple = false;
-		public bool isBase { get { return flags.Contains(Constants.Flag.Base); } }
+		public bool isBase { get { return flags.Contains(Constants.Flag.Base) || category == Category.Base; } }
 		public bool isInternal { get { return flags.Contains(Constants.Flag.Internal); } }
 		public bool isExternal { get { return filename == Constants.Flag.External; } }
 		public bool isSnippet { get { return type == Type.Snippet; } }
@@ -205,6 +205,8 @@ namespace Ginger
 		public bool isEnabled = true;
 		public bool isCollapsed = false;
 		public bool enableTextFormatting { get; private set; } // Components only
+
+		private static ICondition BaseExclusivityRule = Rule.Parse("not base");
 
 		public Recipe()
 		{
@@ -269,6 +271,7 @@ namespace Ginger
 			{
 				category = Category.Base;
 				categoryTag = EnumHelper.ToString(Category.Base);
+				flags.Add(Constants.Flag.Base);
 			}
 			else
 			{
@@ -403,6 +406,15 @@ namespace Ginger
 			string requires = xmlNode.GetValueElement("Requires");
 			if (string.IsNullOrEmpty(requires) == false)
 				this.requires = Rule.Parse(requires);
+
+			if (isBase)
+			{
+				// Base exclusivity requirement
+				if (this.requires != null)
+					this.requires = Condition.And(BaseExclusivityRule, this.requires);
+				else
+					this.requires = BaseExclusivityRule;
+			}
 
 			// Includes
 			var includeNode = xmlNode.GetFirstElement("Include");

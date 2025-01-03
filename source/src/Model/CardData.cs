@@ -38,10 +38,12 @@ namespace Ginger
 		public int permanentTokensSilly { get { return lastTokenCounts[2]; } }
 		public int[] lastTokenCounts = new int[3] { 0, 0, 0 };
 
+		public string volatileUserPlaceholder = null; // Not saved (from Backyard import)
+
 		public string userPlaceholder
 		{
-			get { return string.IsNullOrWhiteSpace(_userPlaceholder) ? Constants.DefaultUserName : _userPlaceholder.Trim() ?? ""; }
-			set { _userPlaceholder = value; }
+			get { return Utility.FirstNonEmpty(volatileUserPlaceholder, _userPlaceholder, Constants.DefaultUserName).Trim() ?? ""; }
+			set { _userPlaceholder = value; volatileUserPlaceholder = null; }
 		}
 
 		public enum DetailLevel

@@ -1,9 +1,8 @@
-<Ginger id="editor-base" version="1.0">
+<Ginger id="editor-base" version="1.1">
 	<Name>Base/Writing assistant</Name>
 	<Category>Base</Category>
 	<Author>Ginger</Author>
-	<Requires>not base</Requires>
-	<Flags>base, assistant</Flags>
+	<Flags>assistant</Flags>
 	<Order>0</Order>
 
 	<Description>

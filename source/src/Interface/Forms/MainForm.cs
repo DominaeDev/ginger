@@ -1218,7 +1218,7 @@ namespace Ginger
 
 			int embeddedCount = Current.Card.assets.Count(a => a.isEmbeddedAsset);
 			statusEmbeddedAssets.Image = Theme.Current.EmbeddedAssets;
-			statusEmbeddedAssets.ToolTipText = string.Format("This character card contains {0} embedded asset(s).", embeddedCount);
+			statusEmbeddedAssets.ToolTipText = string.Format("This character card contains {0} embedded asset{1}.", embeddedCount, embeddedCount != 1 ? "s": "");
 			statusEmbeddedAssets.Visible = embeddedCount > 0;
 
 			// Menu items

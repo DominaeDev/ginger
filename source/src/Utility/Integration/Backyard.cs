@@ -1178,8 +1178,8 @@ namespace Ginger.Integration
 					if (FetchUserInfo(connection, character.groupId, out userName, out userPersona, out userImage))
 					{
 						userInfo = new UserData() {
-							name = userName,
-							persona = userPersona
+							name = userName?.Trim(),
+							persona = userPersona?.Trim(),
 						};
 						if (userImage != null)
 							lsImages.Add(userImage);

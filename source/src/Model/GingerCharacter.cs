@@ -381,7 +381,8 @@ namespace Ginger
 		{
 			if (userInfo == null)
 				return false;
-			Card.userPlaceholder = userInfo.name ?? Constants.DefaultUserName;
+
+			Card.volatileUserPlaceholder = userInfo.name;
 			if (string.IsNullOrEmpty(userInfo.persona) == false)
 			{
 				GingerString userPersona = GingerString.FromFaraday(userInfo.persona);

@@ -1,4 +1,4 @@
-<Ginger id="assistant-base" version="1.1">
+<Ginger id="assistant-base" version="1.2">
 	<!-- Recipe info -->
 	<Name>Base/Virtual assistant</Name>
 	<Title>Virtual assistant</Title>
@@ -6,10 +6,7 @@
 	<Author>Ginger</Author>
 	<Category>Base</Category>
 	<Order>0</Order>
-	
-	<!-- This is a base recipe -->
-	<Requires>not base</Requires>
-	<Flags>base, assistant</Flags>
+	<Flags>assistant</Flags>
 
 	<!-- Parameters -->
 	<Choice id="topic" style="custom" required="yes">

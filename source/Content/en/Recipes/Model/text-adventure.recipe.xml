@@ -1,12 +1,10 @@
-﻿<Ginger id="text-adventure" version="1.0">
+﻿<Ginger id="text-adventure" version="1.1">
 	<!-- Preamble -->
 	<Name>Base/Text adventure</Name>
 	<Title>Text adventure</Title>
 	<Description>Base recipe for simulating a text adventure game.</Description>
 	<Author>Ginger</Author>
 	<Category>Base</Category>
-	<Requires>not base</Requires>
-	<Flags>base</Flags>
 	<Order>0</Order>
 	
 	<!-- Parameters -->
