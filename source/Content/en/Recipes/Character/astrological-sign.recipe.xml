@@ -1,13 +1,13 @@
 ﻿<Ginger id="astrological-sign" version="1.1">
 	<!-- Preamble -->
-	<Name>Identity/Astrological sign</Name>
-	<Title>Astrological sign</Title>
+	<Name>Identity/Birthday // Zodiac</Name>
+	<Title>Birthday / Zodiac</Title>
 	<Author>Ginger</Author>
 	<Category>Character</Category>
-	<Description>Assign an astrological sign.</Description>
+	<Description>Specify the character's birthday and/or zodiac sign.</Description>
 	
 	<!-- Parameters -->
-	<Choice id="astrological-sign" shared="yes" required="yes">
+	<Choice id="astrological-sign" required="yes" rule="not (birth-month or birth-day)">
 		<Label>Astrological sign</Label>
 		<Option>Aries</Option>
 		<Option>Taurus</Option>
@@ -23,9 +23,57 @@
 		<Option>Pisces</Option>
 	</Choice>
 	
+	<Choice id="birth-month" immediate="yes">
+		<Label>Birth month</Label>
+		<Option>January</Option>
+		<Option>February</Option>
+		<Option>March</Option>
+		<Option>April</Option>
+		<Option>May</Option>
+		<Option>June</Option>
+		<Option>July</Option>
+		<Option>August</Option>
+		<Option>September</Option>
+		<Option>October</Option>
+		<Option>November</Option>
+		<Option>December</Option>
+	</Choice>
+	
+	<Number id="birth-day" min="1" max="31" rule="birth-month">
+		<Label>Birth day</Label>
+	</Number>
+	
+	<String id="sign-by-date" rule="birth-month and birth-day">
+		<String rule="(birth-month:index eq 2 and birth-day ge 21) or (birth-month:index eq 3 and birth-day le 19)">Aries</String>
+		<String rule="(birth-month:index eq 3 and birth-day ge 20) or (birth-month:index eq 4 and birth-day le 20)">Taurus</String>
+		<String rule="(birth-month:index eq 4 and birth-day ge 21) or (birth-month:index eq 5 and birth-day le 21)">Gemini</String>
+		<String rule="(birth-month:index eq 5 and birth-day ge 22) or (birth-month:index eq 6 and birth-day le 22)">Cancer</String>
+		<String rule="(birth-month:index eq 6 and birth-day ge 23) or (birth-month:index eq 6 and birth-day le 22)">Leo</String>
+		<String rule="(birth-month:index eq 7 and birth-day ge 23) or (birth-month:index eq 8 and birth-day le 22)">Virgo</String>
+		<String rule="(birth-month:index eq 8 and birth-day ge 23) or (birth-month:index eq 9 and birth-day le 23)">Libra</String>
+		<String rule="(birth-month:index eq 9 and birth-day ge 24) or (birth-month:index eq 10 and birth-day le 21)">Scorpio</String>
+		<String rule="(birth-month:index eq 10 and birth-day ge 22) or (birth-month:index eq 11 and birth-day le 21)">Sagittarius</String>
+		<String rule="(birth-month:index eq 11 and birth-day ge 22) or (birth-month:index eq 0 and birth-day le 19)">Capricorn</String>
+		<String rule="(birth-month:index eq 0 and birth-day ge 20) or (birth-month:index eq 1 and birth-day le 18)">Aquarius</String>
+		<String rule="(birth-month:index eq 1 and birth-day ge 19) or (birth-month:index eq 2 and birth-day le 20)">Pisces</String>
+	</String>
+	
+	<Toggle id="show-sign" rule="birth-month or birth-day">
+		<Label>Zodiac</Label>
+		<Default>Yes</Default>
+		<Description>Include zodiac sign.</Description>
+	</Toggle>
+	
+	<SetVar id="astrological-sign" scope="global">[{astrological-sign}|{@sign-by-date}]</SetVar>
+	
 	<!-- Output -->
-	<Attribute id="astrological-sign">
-		<Name>Birth sign</Name>
+	<Attribute id="astrological-sign" rule="not (birth-month and birth-day)">
+		<Name>Zodiac sign</Name>
 		<Value>{astrological-sign}</Value>
+	</Attribute>
+	
+	<Attribute id="astrological-sign" rule="birth-month and birth-day">
+		<Name>Birthday</Name>
+		<Value>{birth-month} {birth-day}[{birth-day eq 1?st}|{birth-day eq 2?nd}|{birth-day eq 3?rd}|th] [show-sign?({@sign-by-date})]</Value>
 	</Attribute>
 </Ginger>

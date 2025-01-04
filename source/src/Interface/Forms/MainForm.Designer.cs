@@ -1505,7 +1505,7 @@ namespace Ginger {
 			// 
 			this.createBackupMenuItem.Image = global::Ginger.Properties.Resources.create_backup;
 			this.createBackupMenuItem.Name = "createBackupMenuItem";
-			this.createBackupMenuItem.Size = new System.Drawing.Size(200, 22);
+			this.createBackupMenuItem.Size = new System.Drawing.Size(217, 22);
 			this.createBackupMenuItem.Text = "Create backup...";
 			this.createBackupMenuItem.Click += new System.EventHandler(this.createBackupMenuItem_Click);
 			// 
@@ -1513,20 +1513,20 @@ namespace Ginger {
 			// 
 			this.restoreBackupMenuItem.Image = global::Ginger.Properties.Resources.restore_backup;
 			this.restoreBackupMenuItem.Name = "restoreBackupMenuItem";
-			this.restoreBackupMenuItem.Size = new System.Drawing.Size(200, 22);
+			this.restoreBackupMenuItem.Size = new System.Drawing.Size(217, 22);
 			this.restoreBackupMenuItem.Text = "Restore backup...";
 			this.restoreBackupMenuItem.Click += new System.EventHandler(this.restoreBackupMenuItem_Click);
 			// 
 			// toolStripMenuItem10
 			// 
 			this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-			this.toolStripMenuItem10.Size = new System.Drawing.Size(197, 6);
+			this.toolStripMenuItem10.Size = new System.Drawing.Size(214, 6);
 			// 
 			// repairBrokenImagesMenuItem
 			// 
 			this.repairBrokenImagesMenuItem.Image = global::Ginger.Properties.Resources.repair;
 			this.repairBrokenImagesMenuItem.Name = "repairBrokenImagesMenuItem";
-			this.repairBrokenImagesMenuItem.Size = new System.Drawing.Size(200, 22);
+			this.repairBrokenImagesMenuItem.Size = new System.Drawing.Size(217, 22);
 			this.repairBrokenImagesMenuItem.Text = "Fix broken images...";
 			this.repairBrokenImagesMenuItem.Click += new System.EventHandler(this.repairBrokenImagesMenuItem_Click);
 			// 
@@ -1534,7 +1534,7 @@ namespace Ginger {
 			// 
 			this.repairLegacyChatsMenuItem.Image = global::Ginger.Properties.Resources.repair;
 			this.repairLegacyChatsMenuItem.Name = "repairLegacyChatsMenuItem";
-			this.repairLegacyChatsMenuItem.Size = new System.Drawing.Size(200, 22);
+			this.repairLegacyChatsMenuItem.Size = new System.Drawing.Size(217, 22);
 			this.repairLegacyChatsMenuItem.Text = "Fix legacy chats...";
 			this.repairLegacyChatsMenuItem.Click += new System.EventHandler(this.repairLegacyChatsMenuItem_Click);
 			// 
@@ -1542,8 +1542,8 @@ namespace Ginger {
 			// 
 			this.purgeUnusedImagesMenuItem.Image = global::Ginger.Properties.Resources.clean;
 			this.purgeUnusedImagesMenuItem.Name = "purgeUnusedImagesMenuItem";
-			this.purgeUnusedImagesMenuItem.Size = new System.Drawing.Size(200, 22);
-			this.purgeUnusedImagesMenuItem.Text = "Clean up image folder...";
+			this.purgeUnusedImagesMenuItem.Size = new System.Drawing.Size(217, 22);
+			this.purgeUnusedImagesMenuItem.Text = "Clean out unused images...";
 			this.purgeUnusedImagesMenuItem.Click += new System.EventHandler(this.purgeUnusedImages_Click);
 			// 
 			// toolStripMenuItem14

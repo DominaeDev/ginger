@@ -278,10 +278,7 @@ namespace Ginger
 
 		protected override void OnRefreshValue()
 		{
-			if (parameter.value == default(decimal) && parameter.isOptional && parameter.GetDefaultValue() == default(decimal))
-				textBox.SetState("", 0);
-			else
-				SetValueSilent(parameter.value);
+			SetValueSilent(parameter.value);
 			cbEnabled.Checked = this.parameter.isEnabled;
 		}
 

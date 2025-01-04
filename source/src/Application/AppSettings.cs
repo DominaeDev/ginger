@@ -217,7 +217,7 @@ namespace Ginger
 			public static bool Strict = true;
 			public static string Location = null;
 			public static bool Autosave = true;
-			public static bool AlwaysLinkOnImport = false;
+			public static bool AlwaysLinkOnImport = true;
 			public static VersionNumber LastVersion;
 			public static string BulkImportFolderName = "Imported from Ginger";
 

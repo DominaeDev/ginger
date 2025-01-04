@@ -686,15 +686,21 @@ namespace Ginger
 			if (_syntaxFlags.Contains(SyntaxFlags.CodeBlock))
 				syntaxHighlighter.AddPattern(new PatternDefinition("`[^`]*`"), SyntaxStyle.Monospaced(colorCode), -1);
 
-			// Feet/Inches
-			if (_syntaxFlags.Contains(SyntaxFlags.Numbers)) 
-				syntaxHighlighter.AddPattern(new PatternDefinition("\\d+(\"|\'|st|nd|th)"), new SyntaxStyle(colorNumber), -1);
-
 			// Dialogue "..."
 			if (_syntaxFlags.Contains(SyntaxFlags.Dialogue))
 			{
-				syntaxHighlighter.AddPattern(new PatternDefinition("\"[^\"]*\""), new SyntaxStyle(colorDialogue), 0);
-				syntaxHighlighter.AddPattern(new PatternDefinition("\u201C[^\"]*\u201D"), new SyntaxStyle(colorDialogue), 0);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"(?<!\d)\x22[^\x22]*\x22"), new SyntaxStyle(colorDialogue), 0);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\u201C[^\x22]*\u201D"), new SyntaxStyle(colorDialogue), 0);
+			}
+
+			if (_syntaxFlags.Contains(SyntaxFlags.Numbers))
+			{
+				// Feet/Inches
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\d+(\'|\x22)\d*\x22?"), new SyntaxStyle(colorNumber), -2);
+				// Order
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\d+(?:st|nd|rd|th)"), new SyntaxStyle(colorNumber), -1);
+				// Digits
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"[-+#]?\b\d+(?:[.,]\d)?\b"), new SyntaxStyle(colorNumber), -1);
 			}
 
 			// Narration *...*
@@ -738,10 +744,6 @@ namespace Ginger
 			{
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"(?i)\b(he/she|him/her|his/hers|his/her|himself/herself|he's|he'll|he'd|he|him|his|himself|she'll|she's|she'd|she|her|hers|herself|they'll|they're|they've|they'd|they|them|theirs|their|themselves)\b"), new SyntaxStyle(colorPronoun), 1);
 			}
-
-			// Digits
-			if (_syntaxFlags.Contains(SyntaxFlags.Numbers))
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"[-+#]?\b\d+(?:[.,]\d)?\b"), new SyntaxStyle(colorNumber), -1);
 
 			// Names
 			if (Current.Characters != null && AppSettings.Settings.AutoConvertNames && _syntaxFlags.Contains(SyntaxFlags.Names))

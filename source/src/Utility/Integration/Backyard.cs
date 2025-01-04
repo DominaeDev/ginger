@@ -1452,22 +1452,11 @@ namespace Ginger.Integration
 					ChatParameters chatParameters = AppSettings.BackyardSettings.UserSettings;
 
 					// Fetch default user
-					using (var cmdUser = connection.CreateCommand())
+					if (FetchDefaultUser(connection, out userId) == false)
 					{
-						cmdUser.CommandText =
-						@"
-							SELECT id
-							FROM CharacterConfig
-							WHERE isDefaultUserCharacter = 1;
-						";
-
-						userId = cmdUser.ExecuteScalar() as string;
-						if (userId == null)
-						{
-							characterInstance = default(CharacterInstance);
-							imageLinks = null;
-							return Error.SQLCommandFailed; // Requires default user
-						}
+						characterInstance = default(CharacterInstance);
+						imageLinks = null;
+						return Error.SQLCommandFailed; // Requires default user
 					}
 
 					// Fetch folder sort position
@@ -6648,32 +6637,12 @@ namespace Ginger.Integration
 			DateTime now = DateTime.Now;
 			long createdAt = now.ToUnixTimeMilliseconds();
 
-			if (string.IsNullOrEmpty(templateUserId))
+			if (string.IsNullOrEmpty(templateUserId) && FetchDefaultUser(connection, out templateUserId) == false)
 			{
-				// Get default template
-				using (var cmdDefaultTemplate = connection.CreateCommand())
-				{
-					cmdDefaultTemplate.CommandText =
-					@"
-						SELECT
-							id
-						FROM CharacterConfig
-						WHERE isDefaultUserCharacter = 1
-					";
-
-					using (var reader = cmdDefaultTemplate.ExecuteReader())
-					{
-						if (reader.Read() == false)
-						{
-							newUserId = null;
-							newUserConfigId = null;
-							newPortrait = default(ImageOutput);
-							return false; // Error
-						}
-
-						templateUserId = reader.GetString(0);
-					}
-				}
+				newUserId = null;
+				newUserConfigId = null;
+				newPortrait = default(ImageOutput);
+				return false; // Error
 			}
 
 			// Get template user's values
@@ -6924,7 +6893,38 @@ namespace Ginger.Integration
 			}
 		}
 
-		public static bool FetchUserInfo(SQLiteConnection connection, string groupId, out string name, out string persona, out ImageInstance image)
+		private static bool FetchDefaultUser(SQLiteConnection connection, out string userId)
+		{
+			using (var cmdUser = connection.CreateCommand())
+			{ 
+				cmdUser.CommandText =
+				@"
+					SELECT id
+					FROM CharacterConfig
+					WHERE isDefaultUserCharacter = 1;
+				";
+
+				userId = cmdUser.ExecuteScalar() as string;
+				if (userId != null)
+					return true;
+
+				// Get any user character
+				cmdUser.CommandText =
+				@"
+					SELECT id
+					FROM CharacterConfig
+					WHERE isUserControlled = 1 and isTemplateChar = 1
+					ORDER BY ""createdAt""
+				";
+				userId = cmdUser.ExecuteScalar() as string;
+				if (userId != null)
+					return true;
+			}
+			userId = null;
+			return false;
+		}
+
+		private static bool FetchUserInfo(SQLiteConnection connection, string groupId, out string name, out string persona, out ImageInstance image)
 		{
 			// Get user
 			string configId = null;
@@ -7033,22 +7033,11 @@ namespace Ginger.Integration
 
 			// Fetch default user
 			string userId;
-			using (var cmdUser = connection.CreateCommand())
-			{ 
-				cmdUser.CommandText =
-				@"
-					SELECT id
-					FROM CharacterConfig
-					WHERE isDefaultUserCharacter = 1;
-				";
-
-				userId = cmdUser.ExecuteScalar() as string;
-				if (userId == null)
-				{
-					groupId = null;
-					chat = default(_Chat);
-					return false;
-				}
+			if (FetchDefaultUser(connection, out userId) == false)
+			{
+				groupId = null;
+				chat = default(_Chat);
+				return false;
 			}
 
 			groupId = Cuid.NewCuid();

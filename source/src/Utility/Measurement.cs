@@ -443,7 +443,7 @@ namespace Ginger
 				if (feet == 0 && inch > 0)
 					return string.Format(CultureInfo.InvariantCulture, "{1}{0:0.#}\"", inch, negative ? "-" : "");
 				else if (inch > 0)
-					return string.Format(CultureInfo.InvariantCulture, "{2}{0}'{1}", feet, inch, negative ? "-" : "");
+					return string.Format(CultureInfo.InvariantCulture, "{2}{0}'{1}\"", feet, inch, negative ? "-" : "");
 				else
 					return string.Format(CultureInfo.InvariantCulture, "{1}{0}'", feet, negative ? "-" : "");
 			}
