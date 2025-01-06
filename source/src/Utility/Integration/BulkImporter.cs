@@ -349,7 +349,7 @@ namespace Ginger.Integration
 					fileExt = i.ext,
 				}));
 
-			if (backup.userPortrait != null)
+			if (backup.userPortrait != null && backup.userPortrait.data != null && backup.userPortrait.data.Length > 0)
 			{
 				images.Add(new Backyard.ImageInput {
 					asset = new AssetFile() {

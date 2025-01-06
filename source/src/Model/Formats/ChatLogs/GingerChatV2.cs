@@ -235,7 +235,7 @@ namespace Ginger
 			if (backup.parameters != null)
 			{
 				chat.parameters = new Parameters() {
-					model = backup.parameters.model ?? Backyard.DefaultModel,
+					model = backup.parameters.model,
 					temperature = backup.parameters.temperature,
 					topP = backup.parameters.topP,
 					minP = backup.parameters.minP,
@@ -330,7 +330,7 @@ namespace Ginger
 			if (this.parameters != null)
 			{
 				chat.parameters = new ChatParameters() {
-					model = this.parameters.model ?? Backyard.DefaultModel,
+					model = this.parameters.model,
 					temperature = this.parameters.temperature,
 					topP = this.parameters.topP,
 					minP = this.parameters.minP,

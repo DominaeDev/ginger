@@ -698,7 +698,8 @@ namespace Ginger
 				// Feet/Inches
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"\d+(\'|\x22)\d*\x22?"), new SyntaxStyle(colorNumber), -2);
 				// Order
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"\d+(?:st|nd|rd|th)"), new SyntaxStyle(colorNumber), -1);
+				if (AppSettings.Settings.Locale == "en")
+					syntaxHighlighter.AddPattern(new PatternDefinition(@"\d+(?:st|nd|rd|th)"), new SyntaxStyle(colorNumber), -1);
 				// Digits
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"[-+#]?\b\d+(?:[.,]\d)?\b"), new SyntaxStyle(colorNumber), -1);
 			}

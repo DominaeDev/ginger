@@ -352,8 +352,6 @@ namespace Ginger.Integration
 		public static IEnumerable<CharacterInstance> Characters { get { return _Characters.Values; } }
 		public static IEnumerable<CharacterInstance> CharactersNoUser { get { return Characters.Where(c => c.isUser == false); } }
 		public static IEnumerable<GroupInstance> Groups { get { return _Groups.Values; } }
-		public static string DefaultModel = null;
-		public static string DefaultUserConfigId = null;
 
 		private static Dictionary<string, FolderInstance> _Folders = new Dictionary<string, FolderInstance>();
 		private static Dictionary<string, CharacterInstance> _Characters = new Dictionary<string, CharacterInstance>();
@@ -648,22 +646,17 @@ namespace Ginger.Integration
 					// Read settings
 					using (var cmdSettings = connection.CreateCommand())
 					{
-						cmdSettings.CommandText = @"SELECT model, modelDownloadLocation, modelsJson FROM AppSettings";
+						cmdSettings.CommandText = @"SELECT modelDownloadLocation, modelsJson FROM AppSettings";
 
 						using (var reader = cmdSettings.ExecuteReader())
 						{
 							if (reader.Read())
 							{
-								DefaultModel = reader[0] as string;
-								string modelDirectory = reader[1] as string;
-								string modelsJson = reader[2] as string;
+								string modelDirectory = reader[0] as string;
+								string modelsJson = reader[1] as string;
 
 								// Read model info
 								BackyardModelDatabase.FindModels(modelDirectory, modelsJson);
-							}
-							else
-							{
-								DefaultModel = null;
 							}
 						}
 					}
@@ -1449,6 +1442,7 @@ namespace Ginger.Integration
 					long createdAt = now.ToUnixTimeMilliseconds();
 					string folderOrder = null;
 					string[] chatIds = null;
+					string defaultModel = null;
 					ChatParameters chatParameters = AppSettings.BackyardSettings.UserSettings;
 
 					// Fetch default user
@@ -1458,6 +1452,9 @@ namespace Ginger.Integration
 						imageLinks = null;
 						return Error.SQLCommandFailed; // Requires default user
 					}
+
+					// Fetch default user
+					FetchDefaultModel(connection, out defaultModel);
 
 					// Fetch folder sort position
 					using (var cmdFolderOrder = connection.CreateCommand())
@@ -1557,7 +1554,7 @@ namespace Ginger.Integration
 									cmdCreate.Parameters.AddWithValue("$example", card.data.example ?? "");
 									cmdCreate.Parameters.AddWithValue("$greeting", card.data.greeting ?? "");
 									cmdCreate.Parameters.AddWithValue("$grammar", card.data.grammar ?? "");
-									cmdCreate.Parameters.AddWithValue("$model", chatParameters.model ?? DefaultModel ?? "");
+									cmdCreate.Parameters.AddWithValue("$model", chatParameters.model ?? defaultModel ?? "");
 									cmdCreate.Parameters.AddWithValue("$temperature", chatParameters.temperature);
 									cmdCreate.Parameters.AddWithValue("$topP", chatParameters.topP);
 									cmdCreate.Parameters.AddWithValue("$minP", chatParameters.minP);
@@ -1640,7 +1637,7 @@ namespace Ginger.Integration
 										cmdCreate.Parameters.AddWithValue($"$pruneExample{i:000}", staging.pruneExampleChat);
 										cmdCreate.Parameters.AddWithValue($"$ttsAutoPlay{i:000}", staging.ttsAutoPlay);
 										cmdCreate.Parameters.AddWithValue($"$ttsInputFilter{i:000}", staging.ttsInputFilter);
-										cmdCreate.Parameters.AddWithValue($"$model{i:000}", parameters.model ?? DefaultModel ?? "");
+										cmdCreate.Parameters.AddWithValue($"$model{i:000}", parameters.model ?? defaultModel ?? "");
 										cmdCreate.Parameters.AddWithValue($"$temperature{i:000}", parameters.temperature);
 										cmdCreate.Parameters.AddWithValue($"$topP{i:000}", parameters.topP);
 										cmdCreate.Parameters.AddWithValue($"$minP{i:000}", parameters.minP);
@@ -3547,6 +3544,10 @@ namespace Ginger.Integration
 						&& string.IsNullOrEmpty(args.staging.background.imageUrl) == false
 						&& File.Exists(args.staging.background.imageUrl);
 
+					// Get default model
+					string defaultModel;
+					FetchDefaultModel(connection, out defaultModel);
+
 					// Read default chat settings (latest)
 					using (var cmdGroupInfo = connection.CreateCommand())
 					{
@@ -3651,7 +3652,7 @@ namespace Ginger.Integration
 								cmdCreateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
 								cmdCreateChat.Parameters.AddWithValue("$ttsAutoPlay", staging.ttsAutoPlay);
 								cmdCreateChat.Parameters.AddWithValue("$ttsInputFilter", staging.ttsInputFilter ?? "default");
-								cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? DefaultModel ?? "");
+								cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? defaultModel ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 								cmdCreateChat.Parameters.AddWithValue("$topP", parameters.topP);
 								cmdCreateChat.Parameters.AddWithValue("$minP", parameters.minP);
@@ -4633,6 +4634,9 @@ namespace Ginger.Integration
 					DateTime now = DateTime.Now;
 					long updatedAt = now.ToUnixTimeMilliseconds();
 
+					string defaultModel;
+					FetchDefaultModel(connection, out defaultModel);
+
 					using (var transaction = connection.BeginTransaction())
 					{
 						try
@@ -4695,7 +4699,7 @@ namespace Ginger.Integration
 								}
 								if (parameters != null)
 								{
-									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? DefaultModel ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? defaultModel ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 									cmdUpdateChat.Parameters.AddWithValue("$topP", parameters.topP);
 									cmdUpdateChat.Parameters.AddWithValue("$minP", parameters.minP);
@@ -4771,6 +4775,9 @@ namespace Ginger.Integration
 					DateTime now = DateTime.Now;
 					long updatedAt = now.ToUnixTimeMilliseconds();
 
+					string defaultModel;
+					FetchDefaultModel(connection, out defaultModel);
+
 					using (var transaction = connection.BeginTransaction())
 					{
 						try
@@ -4839,7 +4846,7 @@ namespace Ginger.Integration
 								}
 								if (parameters != null)
 								{
-									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? DefaultModel ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? defaultModel ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 									cmdUpdateChat.Parameters.AddWithValue("$topP", parameters.topP);
 									cmdUpdateChat.Parameters.AddWithValue("$minP", parameters.minP);
@@ -6924,6 +6931,33 @@ namespace Ginger.Integration
 			return false;
 		}
 
+		private static bool FetchDefaultModel(SQLiteConnection connection, out string model)
+		{
+			try
+			{
+				using (var cmdSettings = connection.CreateCommand())
+				{
+					cmdSettings.CommandText = @"SELECT model FROM AppSettings";
+
+					using (var reader = cmdSettings.ExecuteReader())
+					{
+						if (reader.Read())
+						{
+							model = reader[0] as string ?? "";
+							return true;
+						}
+					}
+				}
+			}
+			catch 
+			{ 
+				// Do nothing
+			}
+
+			model = "";
+			return false;
+		}
+
 		private static bool FetchUserInfo(SQLiteConnection connection, string groupId, out string name, out string persona, out ImageInstance image)
 		{
 			// Get user
@@ -7040,6 +7074,9 @@ namespace Ginger.Integration
 				return false;
 			}
 
+			string defaultModel;
+			FetchDefaultModel(connection, out defaultModel);
+
 			groupId = Cuid.NewCuid();
 			DateTime now = DateTime.Now;
 			long createdAt = now.ToUnixTimeMilliseconds();
@@ -7104,7 +7141,7 @@ namespace Ginger.Integration
 				cmdCreateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
 				cmdCreateChat.Parameters.AddWithValue("$ttsAutoPlay", staging.ttsAutoPlay);
 				cmdCreateChat.Parameters.AddWithValue("$ttsInputFilter", staging.ttsInputFilter ?? "default");
-				cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? DefaultModel ?? "");
+				cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? defaultModel ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 				cmdCreateChat.Parameters.AddWithValue("$topP", parameters.topP);
 				cmdCreateChat.Parameters.AddWithValue("$minP", parameters.minP);

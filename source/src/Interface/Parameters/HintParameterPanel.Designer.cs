@@ -53,12 +53,11 @@
 			// 
 			this.label.AutoSize = true;
 			this.label.Dock = System.Windows.Forms.DockStyle.Top;
-			this.label.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label.Location = new System.Drawing.Point(140, 0);
 			this.label.Margin = new System.Windows.Forms.Padding(0);
 			this.label.Name = "label";
-			this.label.Padding = new System.Windows.Forms.Padding(0, 0, 0, 3);
-			this.label.Size = new System.Drawing.Size(358, 16);
+			this.label.Padding = new System.Windows.Forms.Padding(0, 1, 0, 4);
+			this.label.Size = new System.Drawing.Size(358, 18);
 			this.label.TabIndex = 0;
 			this.label.Text = "Info";
 			// 

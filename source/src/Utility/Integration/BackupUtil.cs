@@ -365,7 +365,7 @@ namespace Ginger.Integration
 						}
 
 						// User portrait
-						if (backup.userPortrait != null && backup.userPortrait.data != null || backup.userPortrait.data.Length != 0)
+						if (backup.userPortrait != null && backup.userPortrait.data != null && backup.userPortrait.data.Length > 0)
 						{
 							string entryName = string.Concat("user/", backup.userPortrait.filename);
 
