@@ -1,12 +1,12 @@
-<Ginger id="personality" version="1.0">
+<Ginger id="personality" version="1.1">
 	<Name>Personality</Name>
 	<Title>Personality</Title>
 	<Author>Ginger</Author>
 	<Category>Personality</Category>
 	<Flags>personality</Flags>
-	<Order>0</Order>
+	<Order>-100</Order>
 
-	<Description>Describe the character's personality.</Description>
+	<Description>Describe the character's personality and behavior.</Description>
 	
 	<!-- Parameters -->
 	<List id="personality-traits" shared="yes">
@@ -28,10 +28,9 @@
 	</List>
 	
 	<Text id="more" optional="yes" style="flex">
-		<Label>Additional details</Label>
+		<Label>Behavior</Label>
 		<Description>
-			Write a short description of the character's personality.
-			e.g. She is a virtuous, young woman seeking adventure...
+			Describe the character's overall behavior.
 		</Description>
 	</Text>
 
@@ -40,7 +39,11 @@
 	<!-- Personality -->
 	<Node path="persona/attributes/personality/traits">{personality-traits}</Node>
 	
-	<Node path="description/personality" rule="more">{more}.</Node>
+	<Node path="persona/behavior" style="block" order="800" mode="exclude">
+		Behavior:   
+		{inner}
+	</Node>
+	<Node path="persona/behavior/value" rule="more">{more}</Node>	
 
 	<!-- Hobbies -->
 	<Attribute>

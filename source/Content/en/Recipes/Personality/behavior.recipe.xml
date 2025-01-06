@@ -6,7 +6,8 @@
 	<Category>Behavior</Category>
 	<Description>Describe the character's behavior and mannerisms.</Description>
 	<Multiple>yes</Multiple>
-	<Order>5</Order>
+	<Flags>__hidden</Flags>
+	<Order>-100</Order>
 	
 	<!-- Parameters -->
 	<Text id="behavior" style="flex">
