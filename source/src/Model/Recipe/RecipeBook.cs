@@ -150,7 +150,7 @@ namespace Ginger
 				.ToArray();
 		}
 
-		public static int[] GetRecipes(string root, Recipe.Drawer drawer)
+		public static RecipeTemplate[] GetRecipes(string root, Recipe.Drawer drawer)
 		{
 			string[] path = Utility.SplitPath(root);
 
@@ -179,13 +179,8 @@ namespace Ginger
 						return false; // By drawer
 					return true;
 				})
-				.Select(r => new {
-					name = r.name,
-					uid = r.uid,
-					order = r.order.HasValue ? r.order.Value : 100,
-				})
-				.OrderBy(x => x.name.ToLowerInvariant())
-				.Select(x => x.uid)
+				.OrderBy(r => r.name.ToLowerInvariant())
+				.Select(r => new RecipeTemplate(r))
 				.ToArray();
 		}
 

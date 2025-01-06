@@ -565,21 +565,10 @@ namespace Ginger
 		public void PopulateRecipeMenu(Recipe.Drawer drawer, ToolStripItemCollection items, Context context, string root = "")
 		{
 			var folders = RecipeBook.GetFolders(root, drawer);
-			var recipesByUID = RecipeBook.GetRecipes(root, drawer);
+			var recipes = RecipeBook.GetRecipes(root, drawer);
 
-			var lsFolders = new List<RecipeMenuItem>();
-			var lsRecipes = new List<RecipeMenuItem>();
-
-/*			if (drawer == Recipe.Drawer.Components)
-			{
-				PopulateComponentMenu("", items, context);
-
-				items.Add(new ToolStripSeparator());
-				var otherFolder = new ToolStripMenuItem("Other");
-				PopulateComponentMenu("Other", otherFolder.DropDownItems, context);
-				items.Add(otherFolder);
-				return;
-			}*/
+			var lsFolderItems = new List<RecipeMenuItem>();
+			var lsRecipeItems = new List<RecipeMenuItem>();
 
 			if (drawer == Recipe.Drawer.Lore)
 			{
@@ -611,7 +600,7 @@ namespace Ginger
 					CreateSnippetMenuItem_Click(s, e);
 				};
 				items.Add(newSnippetItem);
-				if (folders.Length > 0 || recipesByUID.Length > 0)
+				if (folders.Length > 0 || recipes.Length > 0)
 					items.Add(new ToolStripSeparator());
 			}
 
@@ -627,14 +616,12 @@ namespace Ginger
 				else
 					PopulateRecipeMenu(drawer, menuItem.DropDownItems, context, string.Concat(root, "/", folder));
 
-				lsFolders.Add(new RecipeMenuItem(menuItem));
+				lsFolderItems.Add(new RecipeMenuItem(menuItem));
 			}
 
-			foreach (var recipeUID in recipesByUID)
+			for (int i = 0; i < recipes.Length; ++i)
 			{
-				var recipeTemplate = RecipeBook.GetRecipeByUID(recipeUID);
-				if (recipeTemplate == null)
-					continue;
+				var recipeTemplate = recipes[i];
 
 				var menuItem = new ToolStripMenuItem();
 				menuItem.Text = recipeTemplate.label;
@@ -668,17 +655,33 @@ namespace Ginger
 					};
 				}
 
-				lsRecipes.Add(new RecipeMenuItem(menuItem, recipeTemplate.order ?? 100));
+				lsRecipeItems.Add(new RecipeMenuItem(menuItem, recipeTemplate.order ?? 100));
 			}
 
-			lsRecipes = lsRecipes.OrderBy(r => r.order).ToList();
+			// Recipes above folders (order < 0)
+			var lsAboveItems = lsRecipeItems
+				.Where(r => r.order < 0)
+				.OrderByDescending(r => r.order)
+				.ToList();
 
-			// Add folder items
-			items.AddRange(lsFolders.Select(c => c.menuItem).ToArray());
-			if (lsFolders.Count > 0 && lsRecipes.Count > 0)
+			// Recipes below folders (order >= 0)
+			var lsBelowItems = lsRecipeItems
+				.Where(r => r.order >= 0)
+				.OrderBy(r => r.order)
+				.ToList();
+
+			// Above folders
+			AddMenuItemsInGroups(items, lsAboveItems);
+
+			// Folders
+			if (items.Count > 0 && lsFolderItems.Count > 0)
 				items.Add(new ToolStripSeparator());
+			items.AddRange(lsFolderItems.Select(c => c.menuItem).ToArray());
 
-			AddMenuItemsInGroups(items, lsRecipes);
+			// Below folders
+			if (items.Count > 0 && lsBelowItems.Count > 0)
+				items.Add(new ToolStripSeparator());
+			AddMenuItemsInGroups(items, lsBelowItems);
 		}
 
 		public void PopulateLorebookMenu(ToolStripItemCollection items, Context context, string root = "")
@@ -799,9 +802,7 @@ namespace Ginger
 
 		public void PopulateComponentMenu(string root, ToolStripItemCollection items, Context context)
 		{
-			var recipesByUID = RecipeBook.GetRecipes(root, Recipe.Drawer.Components);
-			var recipes = recipesByUID.Select(uid => RecipeBook.GetRecipeByUID(uid))
-				.NotNull()
+			var recipes = RecipeBook.GetRecipes(root, Recipe.Drawer.Components)
 				.OrderBy(r => r.order);
 
 			bool bSeparator = false;
@@ -829,8 +830,6 @@ namespace Ginger
 				items.Add(menuItem);
 			}
 		}
-
-		
 
 		private void AddRecipe(RecipeTemplate recipeTemplate)
 		{
@@ -2328,8 +2327,8 @@ namespace Ginger
 			}
 			else if (error == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_update_character_not_found, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-				Current.Unlink();
+				MessageBox.Show(Resources.error_link_character_not_found, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Current.BreakLink();
 			}
 			else if (error == Backyard.Error.CancelledByUser || error == Backyard.Error.DismissedByUser)
 			{

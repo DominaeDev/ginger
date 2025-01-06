@@ -1104,7 +1104,7 @@ namespace Ginger
 					else if (autosaveError == Backyard.Error.NotFound)
 					{
 						MessageBox.Show(Resources.error_link_update_character_not_found, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-						Current.Unlink();
+						Current.BreakLink();
 					}
 					else if (autosaveError != Backyard.Error.NoError)
 					{
@@ -1625,7 +1625,7 @@ namespace Ginger
 			var error = Backyard.ConfirmSaveCharacter(card, Current.Link, out hasChanges);
 			if (error == Backyard.Error.NotFound)
 			{
-				Current.Unlink();
+				Current.BreakLink();
 				return error;
 			}
 			if (error != Backyard.Error.NoError)
@@ -1732,16 +1732,15 @@ namespace Ginger
 					Current.Link.RefreshState();
 					RefreshTitle();
 
-					MessageBox.Show(Resources.msg_link_reestablished, Resources.cap_link_reestablish, MessageBoxButtons.OK, MessageBoxIcon.Information);
-					// SetStatusBarMessage(Resources.status_link_reestablished, Constants.StatusBarMessageInterval);
+					// MessageBox.Show(Resources.msg_link_reestablished, Resources.cap_link_reestablish, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					SetStatusBarMessage(Resources.status_link_reestablished, Constants.StatusBarMessageInterval);
 					return true;
 				}
 				else
 				{
 					if (MessageBox.Show(Resources.error_link_reestablish, Resources.cap_link_reestablish, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
 					{
-						Current.Link = null;
-						Current.IsFileDirty = true;
+						Current.Unlink();
 						RefreshTitle();
 					}
 				}
@@ -1777,7 +1776,10 @@ namespace Ginger
 			// Get character instance
 			CharacterInstance characterInstance;
 			if (Backyard.GetCharacter(Current.Link.characterId, out characterInstance) == false)
+			{
+				Current.BreakLink();
 				return Backyard.Error.NotFound;
+			}
 
 			// Import data
 			FaradayCardV4 faradayData;
@@ -2681,7 +2683,7 @@ namespace Ginger
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
-				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_edit_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				AppSettings.BackyardLink.Enabled = false;
 				return false;
 			}
@@ -2689,21 +2691,21 @@ namespace Ginger
 			var groupInstance = Backyard.GetGroupForCharacter(Current.Link.characterId);
 			if (groupInstance.isEmpty)
 			{
-				MessageBox.Show(string.Format(Resources.error_link_character_not_found, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(string.Format(Resources.error_link_character_not_found, Backyard.LastError ?? ""), Resources.cap_link_edit_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Current.BreakLink();
 				return false;
 			}
-
 
 			ChatInstance[] chats = null;
 			if (groupInstance.isEmpty == false && RunTask(() => Backyard.GetChats(groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
 			if (chats == null || chats.Length == 0)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_edit_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
@@ -2718,12 +2720,12 @@ namespace Ginger
 			var error = RunTask(() => Backyard.UpdateChatParameters(chatIds, dlg.Parameters, null), "Updating model settings...");
 			if (error == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_edit_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;;
 			}
 			if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_edit_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(Resources.error_link_general, Resources.cap_link_edit_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
@@ -2822,26 +2824,6 @@ namespace Ginger
 
 			var characters = dlg.Characters;
 
-			string characterNames;
-
-			if (characters.Length > 1)
-			{
-				string[] names = characters
-					.Select(c => c.name ?? Constants.DefaultCharacterName)
-					.OrderBy(c => c)
-					.ToArray();
-				if (names.Length <= 4)
-					characterNames = Utility.CommaSeparatedList(names);
-				else
-					characterNames = Utility.ListToCommaSeparatedString(names.Take(3)) + string.Format(", and {0} others", names.Length - 3);
-			}
-			else
-			{
-				characterNames = characters
-					.Select(c => c.displayName)
-					.FirstOrDefault() ?? Constants.DefaultCharacterName;
-			}
-
 			// Get affected character ids and group ids.
 			Backyard.ConfirmDeleteResult result;
 			Backyard.Error error = Backyard.ConfirmDeleteCharacters(characters, out result);
@@ -2852,7 +2834,7 @@ namespace Ginger
 			}
 
 			// Confirm delete
-			if (MessageBox.Show(string.Format(result.characterIds.Length != result.groupIds.Length ? Resources.msg_link_delete_characters_and_group_chats_confirm : Resources.msg_link_delete_characters_confirm, characterNames), Resources.cap_link_delete_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			if (MessageBox.Show(string.Format(result.characterIds.Length != result.groupIds.Length ? Resources.msg_link_delete_characters_and_group_chats_confirm : Resources.msg_link_delete_characters_confirm, NumCharacters(characters.Length)), Resources.cap_link_delete_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 				return false;
 
 			error = RunTask(() => Backyard.DeleteCharacters(result.characterIds, result.groupIds, result.imageIds), "Deleting characters...");

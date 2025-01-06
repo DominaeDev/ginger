@@ -1015,7 +1015,7 @@ Do you want to continue?</value>
   <data name="cap_link_paste_settings" xml:space="preserve">
     <value>Paste chat settings</value>
   </data>
-  <data name="cap_link_edit_settings" xml:space="preserve">
+  <data name="cap_link_edit_chat_settings" xml:space="preserve">
     <value>Edit chat settings</value>
   </data>
   <data name="status_link_reset_settings" xml:space="preserve">
@@ -1468,10 +1468,7 @@ CAUTION: Depending on your recycle bin settings, the images may get permanently 
     <value>..\Resources\Schemas\backyard_models_schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="error_link_character_not_found" xml:space="preserve">
-    <value>Character entry not found.</value>
-  </data>
-  <data name="error_link_update_character_not_found" xml:space="preserve">
-    <value>Failed to save changes. Linked character no longer exists.</value>
+    <value>Character not found in Backyard AI. To re-establish the link, save the character as new.</value>
   </data>
   <data name="appicon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\appicon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -1597,5 +1594,11 @@ Are you sure you want to proceed?</value>
   <data name="tooltip_user_name_volatile" xml:space="preserve">
     <value>Placeholder name for the user.
 (This name was imported from Backyard AI and will not be saved.)</value>
+  </data>
+  <data name="cap_link_edit_model_settings" xml:space="preserve">
+    <value>Edit model settings</value>
+  </data>
+  <data name="error_link_update_character_not_found" xml:space="preserve">
+    <value>Unable to save changes to Backyard AI. Character not found.</value>
   </data>
 </root>

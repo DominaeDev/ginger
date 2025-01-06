@@ -1465,14 +1465,14 @@ namespace Ginger {
 			// 
 			this.bulkImportMenuItem.Name = "bulkImportMenuItem";
 			this.bulkImportMenuItem.Size = new System.Drawing.Size(282, 22);
-			this.bulkImportMenuItem.Text = "Import multiple characters...";
+			this.bulkImportMenuItem.Text = "Import characters...";
 			this.bulkImportMenuItem.Click += new System.EventHandler(this.bulkImportMenuItem_Click);
 			// 
 			// bulkExportMenuItem
 			// 
 			this.bulkExportMenuItem.Name = "bulkExportMenuItem";
 			this.bulkExportMenuItem.Size = new System.Drawing.Size(282, 22);
-			this.bulkExportMenuItem.Text = "Export multiple characters...";
+			this.bulkExportMenuItem.Text = "Export characters...";
 			this.bulkExportMenuItem.Click += new System.EventHandler(this.bulkExportMenuItem_Click);
 			// 
 			// toolStripMenuItem12

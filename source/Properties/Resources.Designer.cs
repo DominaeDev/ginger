@@ -617,9 +617,18 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Edit chat settings.
         /// </summary>
-        internal static string cap_link_edit_settings {
+        internal static string cap_link_edit_chat_settings {
             get {
-                return ResourceManager.GetString("cap_link_edit_settings", resourceCulture);
+                return ResourceManager.GetString("cap_link_edit_chat_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit model settings.
+        /// </summary>
+        internal static string cap_link_edit_model_settings {
+            get {
+                return ResourceManager.GetString("cap_link_edit_model_settings", resourceCulture);
             }
         }
         
@@ -1623,7 +1632,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Character entry not found..
+        ///   Looks up a localized string similar to Character not found in Backyard AI. To re-establish the link, save the character as new..
         /// </summary>
         internal static string error_link_character_not_found {
             get {
@@ -1894,7 +1903,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to save changes. Linked character no longer exists..
+        ///   Looks up a localized string similar to Unable to save changes to Backyard AI. Character not found..
         /// </summary>
         internal static string error_link_update_character_not_found {
             get {
