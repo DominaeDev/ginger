@@ -582,7 +582,7 @@ namespace Ginger
 
 			int value;
 			if (int.TryParse(textBox_RepeatTokens.Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out value))
-				value = Math.Min(Math.Max(value, 16), 1024);
+				value = Math.Min(Math.Max(value, 16), 512);
 			else
 				value = 16;
 
