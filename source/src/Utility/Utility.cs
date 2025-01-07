@@ -83,29 +83,26 @@ namespace Ginger
 				return false;
 			}
 
-			if (ext == "webp" && LoadWebPFromFile(filename, out image))
-				return true;
-
-			else
+			try
 			{
-				try
-				{
-					byte[] bytes = File.ReadAllBytes(filename);
+				byte[] bytes = File.ReadAllBytes(filename);
 
-					// Png, Jpeg, ...
-					using (var stream = new MemoryStream(bytes))
-					{
-						image = Image.FromStream(stream);
-						return true;
-					}
-				}
-				catch
+				// WebP
+				if (IsWebP(bytes))
+					return LoadWebPFromMemory(bytes, out image);
+
+				// Png, Jpeg, ...
+				using (var stream = new MemoryStream(bytes))
 				{
-					image = default(Image);
-					return false;
+					image = Image.FromStream(stream);
+					return true;
 				}
 			}
-			
+			catch
+			{
+				image = default(Image);
+				return false;
+			}
 		}
 
 		public static bool LoadImageFromMemory(byte[] bytes, out Image image)
@@ -204,6 +201,9 @@ namespace Ginger
 
 		public static bool IsAnimatedWebP(byte[] bytes)
 		{
+			if (IsWebP(bytes) == false)
+				return false;
+
 			try
 			{
 				using (var webp = new WebP())
@@ -213,6 +213,33 @@ namespace Ginger
 					string format;
 					webp.GetInfo(bytes, out w, out h, out alpha, out animation, out format);
 					return animation;
+				}
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		public static bool IsWebP(byte[] buffer)
+		{
+			if (buffer == null || buffer.Length < 12)
+				return false;
+
+			return buffer[ 0] == 'R' && buffer[ 1] == 'I' && buffer[ 2] == 'F' && buffer[ 3] == 'F'
+				&& buffer[ 8] == 'W' && buffer[ 9] == 'E' && buffer[10] == 'B' && buffer[11] == 'P';
+		}
+
+		public static bool IsWebPFile(string filename)
+		{
+			byte[] buffer = new byte[12];
+			try
+			{
+				using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+				{
+					int bytes_read = fs.Read(buffer, 0, buffer.Length);
+					fs.Close();
+					return IsWebP(buffer);
 				}
 			}
 			catch

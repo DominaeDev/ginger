@@ -283,7 +283,7 @@ namespace Ginger.Integration
 					if (nonPNGImageData != null && nonPNGImageData.Length > 0)
 					{
 						string entryName = string.Format("images/image_00.{0}", nonPNGImageExt);
-						var fileEntry = zip.CreateEntry(string.Format(entryName, CompressionLevel.NoCompression));
+						var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
 						using (Stream writer = fileEntry.Open())
 						{
 							for (long n = nonPNGImageData.Length; n > 0;)
@@ -303,8 +303,7 @@ namespace Ginger.Integration
 
 						string ext = Utility.GetFileExt(backup.images[i].filename);
 						string entryName = string.Format("images/image_{0:00}.{1}", i, ext);
-
-						var fileEntry = zip.CreateEntry(string.Format(entryName, CompressionLevel.NoCompression));
+						var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
 						using (Stream writer = fileEntry.Open())
 						{
 							for (long n = backup.images[i].data.Length; n > 0;)
@@ -324,8 +323,7 @@ namespace Ginger.Integration
 
 						string ext = Utility.GetFileExt(backup.backgrounds[i].filename);
 						string entryName = string.Format("backgrounds/background_{0:00}.{1}", i + 1, ext);
-
-						var fileEntry = zip.CreateEntry(string.Format(entryName, CompressionLevel.NoCompression));
+						var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
 						using (Stream writer = fileEntry.Open())
 						{
 							for (long n = backup.backgrounds[i].data.Length; n > 0;)
@@ -340,9 +338,8 @@ namespace Ginger.Integration
 					// Write chat files
 					for (int i = 0; i < chats.Count; ++i)
 					{
-						string entryName = string.Concat("logs/", chats[i].Key);
-
-						var fileEntry = zip.CreateEntry(string.Format(entryName, CompressionLevel.NoCompression));
+						string entryName = string.Concat("logs/", Utility.ValidFilename(chats[i].Key));
+						var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
 						using (Stream writer = fileEntry.Open())
 						{
 							byte[] textBuffer = Encoding.UTF8.GetBytes(chats[i].Value);
@@ -356,7 +353,7 @@ namespace Ginger.Integration
 						// User info
 						{
 							string entryName = string.Concat("user/user.json");
-							var fileEntry = zip.CreateEntry(string.Format(entryName, CompressionLevel.NoCompression));
+							var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
 							using (Stream writer = fileEntry.Open())
 							{
 								byte[] textBuffer = Encoding.UTF8.GetBytes(backup.userInfo.ToJson());
@@ -368,8 +365,7 @@ namespace Ginger.Integration
 						if (backup.userPortrait != null && backup.userPortrait.data != null && backup.userPortrait.data.Length > 0)
 						{
 							string entryName = string.Concat("user/", backup.userPortrait.filename);
-
-							var fileEntry = zip.CreateEntry(string.Format(entryName, CompressionLevel.NoCompression));
+							var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
 							using (Stream writer = fileEntry.Open())
 							{
 								for (long n = backup.userPortrait.data.Length; n > 0;)
@@ -391,8 +387,8 @@ namespace Ginger.Integration
 			}
 			catch
 			{
+				return FileUtil.Error.UnknownError;
 			}
-			return FileUtil.Error.UnknownError;
 		}
 
 		public static FileUtil.Error ReadBackup(string filename, out BackupData backup)
