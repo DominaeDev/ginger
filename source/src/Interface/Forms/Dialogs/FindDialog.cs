@@ -60,7 +60,11 @@ namespace Ginger
 
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
-			
+			if (keyData == ShortcutKeys.FindNext || keyData == ShortcutKeys.FindPrevious)
+			{
+				BtnOk_Click(this, EventArgs.Empty);
+				return true;
+			}
 			return false;
 		}
 
