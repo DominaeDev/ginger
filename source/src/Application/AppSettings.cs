@@ -262,6 +262,8 @@ namespace Ginger
 			BackyardSettings.Presets.Clear();
 			BackyardSettings.ModelPromptTemplates.Clear();
 
+			bool bLegacy = false;
+
 			var settingsSection = iniData.Sections["Settings"];
 			if (settingsSection != null)
 			{
@@ -353,7 +355,10 @@ namespace Ginger
 			{
 				var linkSection = iniData.Sections["BackyardAI.Link"]; // Prior to v1.5.0
 				if (linkSection != null) // Legacy
+				{
 					ReadBackyardSettings(linkSection);
+					bLegacy = true;
+				}
 			}
 
 			BackyardSettings.Presets.Clear();
@@ -361,7 +366,10 @@ namespace Ginger
 			if (modelSettingsSection != null)
 				BackyardSettings.UserSettings = ReadModelSettings(modelSettingsSection);
 			else if (backyardSection != null && backyardSection.ContainsKey("Model")) // Prior to v1.5.0 
+			{
 				BackyardSettings.UserSettings = ReadModelSettings(backyardSection);
+				bLegacy = true;
+			}
 
 			// Model setting presets
 			int unnamedPresetCounter = 1;
@@ -421,6 +429,12 @@ namespace Ginger
 
 					MRUList.AddToMRU(filename, characterName);
 				}
+			}
+
+			if (bLegacy)
+			{
+				// Filter indices changed in v1.5.0
+				User.LastExportCharacterFilter = 0;
 			}
 		}
 

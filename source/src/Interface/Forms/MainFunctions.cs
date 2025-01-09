@@ -594,21 +594,21 @@ namespace Ginger
 
 			if (string.IsNullOrEmpty(filename) == false)
 			{
-				if (filter == 5
-					|| filter == 6
-					|| filter == 7) // png
+				if (filter == 1
+					|| filter == 2
+					|| filter == 3) // png
 					filename = string.Concat(filename, ".png");
-				else if (filter == 8) // charx
-					filename = string.Concat(filename, ".charx");
-				else if (filter == 9) // yaml
+				else if (filter == 8) // yaml
 					filename = string.Concat(filename, ".yaml");
+				else if (filter == 9) // charx
+					filename = string.Concat(filename, ".charx");
 				else // json
 					filename = string.Concat(filename, ".json");
 			}
 
 			// Save as...
 			exportFileDialog.Title = Resources.cap_export_character;
-			exportFileDialog.Filter = "Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard AI PNG|*.png|CharX file|*.charx|Text generation web ui YAML|*.yaml";
+			exportFileDialog.Filter = "Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard AI PNG|*.png|Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Text generation web ui YAML|*.yaml|CharX file|*.charx";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			exportFileDialog.FilterIndex = filter;
@@ -623,32 +623,32 @@ namespace Ginger
 			FileUtil.FileType fileType;
 			switch (exportFileDialog.FilterIndex)
 			{
-			case 1: // Tavern V2
-				fileType = FileUtil.FileType.TavernV2 | FileUtil.FileType.Json;
-				break;
-			case 2: // Tavern V3
-				fileType = FileUtil.FileType.TavernV3 | FileUtil.FileType.Json;
-				break;
-			case 3: // Agnaistic
-				fileType = FileUtil.FileType.Agnaistic | FileUtil.FileType.Json;
-				break;
-			case 4: // Pygmalion / CAI
-				fileType = FileUtil.FileType.Pygmalion | FileUtil.FileType.Json;
-				break;
-			case 5: // PNGv2
+			case 1: // PNGv2
 				fileType = FileUtil.FileType.TavernV2 | FileUtil.FileType.Png;
 				break;
-			case 6: // PNGv3
+			case 2: // PNGv3
 				fileType = FileUtil.FileType.TavernV3 | FileUtil.FileType.Png;
 				break;
-			case 7: // Faraday PNG
+			case 3: // Faraday PNG
 				fileType = FileUtil.FileType.Faraday | FileUtil.FileType.Png;
 				break;
-			case 8: // CharX
-				fileType = FileUtil.FileType.TavernV3 | FileUtil.FileType.CharX;
+			case 4: // Tavern V2
+				fileType = FileUtil.FileType.TavernV2 | FileUtil.FileType.Json;
 				break;
-			case 9: // Text Generation WebUI Yaml
+			case 5: // Tavern V3
+				fileType = FileUtil.FileType.TavernV3 | FileUtil.FileType.Json;
+				break;
+			case 6: // Agnaistic
+				fileType = FileUtil.FileType.Agnaistic | FileUtil.FileType.Json;
+				break;
+			case 7: // Pygmalion / CAI
+				fileType = FileUtil.FileType.Pygmalion | FileUtil.FileType.Json;
+				break;
+			case 8: // Text Generation WebUI Yaml
 				fileType = FileUtil.FileType.TextGenWebUI | FileUtil.FileType.Yaml;
+				break;
+			case 9: // CharX
+				fileType = FileUtil.FileType.TavernV3 | FileUtil.FileType.CharX;
 				break;
 			default:
 				fileType = FileUtil.FileType.Unknown;
@@ -1984,7 +1984,12 @@ namespace Ginger
 				foreach (var character in dlg.Characters)
 				{
 					filenames.Add(Path.Combine(outputDirectory,
-						Utility.MakeUniqueFilename(string.Concat(character.displayName.Replace(" ", "_"), " - ", now, ".backup.zip"))
+						Utility.MakeUniqueFilename(
+							string.Format("{0}_{1}_{2}.backup.zip",
+								character.displayName.Replace(" ", "_"),
+								character.creationDate.ToFileTimeUtc() / 1000L,
+								now)
+						)
 					));
 				}
 			}
@@ -2031,7 +2036,7 @@ namespace Ginger
 			};
 
 			for (int i = 0; i < filenames.Count; ++i)
-				exporter.Enqueue(dlg.Characters[i]);
+				exporter.Enqueue(dlg.Characters[i], filenames[i]);
 
 			_bCanRegenerate = false;
 			_bCanIdle = false;
@@ -2043,81 +2048,17 @@ namespace Ginger
 
 		private void CompleteExport(BulkExporter.Result result, List<string> filenames)
 		{
-			int skipped = 0;
-			List<string> removeFilenames = new List<string>();
 			if (result.error == BulkExporter.Error.NoError)
 			{
-				// Move intermediate files
-				for (int i = 0; i < result.filenames.Length && i < filenames.Count; ++i)
-				{
-					try
-					{
-						string tempFilename = result.filenames[i];
-						if (string.IsNullOrEmpty(tempFilename) == false && File.Exists(tempFilename))
-						{
-							if (File.Exists(filenames[i]))
-								File.Delete(filenames[i]);
-							File.Move(tempFilename, filenames[i]);
-						}
-					}
-					catch (IOException e)
-					{
-						if (e.HResult == Win32.HR_ERROR_DISK_FULL 
-							|| e.HResult == Win32.HR_ERROR_HANDLE_DISK_FULL)
-						{
-							removeFilenames.AddRange(result.filenames);
-							result.error = BulkExporter.Error.DiskFullError;
-							break;
-						}
-						else if (e.HResult == Win32.HR_ERROR_ACCESS_DENIED 
-							|| e.HResult == Win32.HR_ERROR_WRITE_PROTECT
-							|| e.HResult == Win32.HR_ERROR_FILE_EXISTS)
-						{
-							skipped++;
-							removeFilenames.Add(result.filenames[i]); // Skip
-						}
-						else
-						{
-							removeFilenames.AddRange(result.filenames);
-							result.error = BulkExporter.Error.FileError;
-							break;
-						}
-					}
-					catch
-					{
-						skipped++;
-						removeFilenames.Add(result.filenames[i]); // Skip
-					}
-				}
-			}
-			else
-			{
-				removeFilenames.AddRange(result.filenames);
-			}
-
-			// Delete temp files
-			foreach (var filename in removeFilenames)
-			{
-				try
-				{
-					if (string.IsNullOrEmpty(filename) == false && File.Exists(filename))
-						File.Delete(filename);
-				}
-				catch
-				{
-					// Do nothing
-				}
-			}
-
-			if (result.error == BulkExporter.Error.NoError)
-			{
+				int succeeded = result.filenames.Count;
+				int skipped = filenames.Count - succeeded;
 				if (skipped > 0)
 				{
-					MessageBox.Show(this, string.Format(Resources.msg_link_export_some_characters, NumCharacters(result.succeeded - skipped), skipped), Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MessageBox.Show(this, string.Format(Resources.msg_link_export_some_characters, NumCharacters(succeeded), skipped), Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 				else
 				{
-					MessageBox.Show(this, string.Format(Resources.msg_link_export_many_characters, NumCharacters(result.succeeded)), Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MessageBox.Show(this, string.Format(Resources.msg_link_export_many_characters, NumCharacters(succeeded)), Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 			}
 			else if (result.error == BulkExporter.Error.Cancelled)

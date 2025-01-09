@@ -19,6 +19,7 @@ namespace Ginger.Integration
 		private struct WorkerArguments
 		{
 			public CharacterInstance[] instances;
+			public string[] target_filenames;
 			public FileUtil.FileType fileType;
 		}
 
@@ -34,19 +35,18 @@ namespace Ginger.Integration
 
 		public struct Result
 		{
-			public string[] filenames;
-			public int succeeded;
+			public List<string> filenames;
 			public Error error;
 		}
 
 		private struct WorkerResult
 		{
-			public string[] filenames;
-			public int succeeded;
+			public string[] temp_filenames;
+			public string[] dest_filenames;
 			public Error error;
 		}
 
-		public Queue<CharacterInstance> _queue = new Queue<CharacterInstance>();
+		public Queue<KeyValuePair<CharacterInstance, string>> _queue = new Queue<KeyValuePair<CharacterInstance, string>>(); // char, dest filename
 		public Result _result;
 
 		private bool isBusy { get { return _bgWorker != null && _bgWorker.IsBusy; } }
@@ -74,9 +74,9 @@ namespace Ginger.Integration
 			_timer.Dispose();
 		}
 
-		public void Enqueue(CharacterInstance characterInstance)
+		public void Enqueue(CharacterInstance characterInstance, string filename)
 		{
-			_queue.Enqueue(characterInstance);
+			_queue.Enqueue(new KeyValuePair<CharacterInstance, string>(characterInstance, filename));
 		}
 
 		public bool Start(FileUtil.FileType fileType)
@@ -105,11 +105,17 @@ namespace Ginger.Integration
 			}
 
 			var instances = new List<CharacterInstance>(BatchSize);
+			var filenames = new List<string>(BatchSize);
 			for (int i = 0; i < BatchSize && _queue.Count > 0; ++i)
-				instances.Add(_queue.Dequeue());
+			{
+				var kvp = _queue.Dequeue();
+				instances.Add(kvp.Key);
+				filenames.Add(kvp.Value);
+			}
 
 			var workerArgs = new WorkerArguments() {
 				instances = instances.ToArray(),
+				target_filenames = filenames.ToArray(),
 				fileType = _fileType,
 			};
 
@@ -125,24 +131,25 @@ namespace Ginger.Integration
 		{
 			WorkerArguments args = (WorkerArguments)e.Argument;
 			WorkerResult results = new WorkerResult();
-			results.filenames = new string[args.instances.Length];
+			results.temp_filenames = new string[args.instances.Length];
+			results.dest_filenames = args.target_filenames;
 
 			for (int i = 0; i < args.instances.Length; ++i)
 			{
-				string exportedFilename;
+				string intermediateFilename;
 				Error error;
 				if (args.fileType.Contains(FileUtil.FileType.Backup))
-					error = ExportBackup(args.instances[i], out exportedFilename);
+					error = ExportBackup(args.instances[i], out intermediateFilename);
 				else
-					error = ExportCharacter(args.instances[i], args.fileType, out exportedFilename);
+					error = ExportCharacter(args.instances[i], args.fileType, out intermediateFilename);
 
 				if (error == Error.NoError)
 				{
-					results.succeeded += 1;
-					results.filenames[i] = exportedFilename;
+					results.temp_filenames[i] = intermediateFilename;
 				}
 				else
 				{
+					results.dest_filenames[i] = null;
 					results.error = error;
 					e.Result = results;
 					return;
@@ -174,22 +181,79 @@ namespace Ginger.Integration
 			{
 				workResult = new WorkerResult() {
 					error = Error.UnknownError,
-					filenames = new string[0],
-					succeeded = 0,
 				};
 			}
 
-			int count = workResult.filenames.Length;
-			_completed += count;
+			// Copy files
+			List<string> exportedFilenames = new List<string>();
+			List<string> removeFilenames = new List<string>();
 
-			if (_result.filenames == null)
+			// Move intermediate files
+			if (workResult.temp_filenames != null && workResult.dest_filenames != null)
 			{
-				_result.filenames = new string[workResult.filenames.Length];
-				Array.Copy(workResult.filenames, _result.filenames, workResult.filenames.Length);
+				for (int i = 0; i < workResult.temp_filenames.Length && i < workResult.dest_filenames.Length; ++i)
+				{
+					try
+					{
+						string tempFilename = workResult.temp_filenames[i];
+						string destFilename = workResult.dest_filenames[i];
+						if (string.IsNullOrEmpty(tempFilename) == false && File.Exists(tempFilename))
+						{
+							if (File.Exists(destFilename))
+								File.Delete(destFilename);
+							File.Move(tempFilename, destFilename);
+							exportedFilenames.Add(destFilename);
+						}
+					}
+					catch (IOException e)
+					{
+						if (e.HResult == Win32.HR_ERROR_DISK_FULL
+							|| e.HResult == Win32.HR_ERROR_HANDLE_DISK_FULL)
+						{
+							removeFilenames.AddRange(workResult.temp_filenames);
+							workResult.error = Error.DiskFullError;
+							break;
+						}
+						else if (e.HResult == Win32.HR_ERROR_ACCESS_DENIED
+							|| e.HResult == Win32.HR_ERROR_WRITE_PROTECT
+							|| e.HResult == Win32.HR_ERROR_FILE_EXISTS)
+						{
+							removeFilenames.Add(workResult.temp_filenames[i]); // Skip
+						}
+						else
+						{
+							removeFilenames.AddRange(workResult.temp_filenames);
+							workResult.error = Error.FileError;
+							break;
+						}
+					}
+					catch
+					{
+						removeFilenames.Add(workResult.temp_filenames[i]); // Skip
+					}
+				}
 			}
-			else
-				_result.filenames = Utility.ConcatenateArrays(_result.filenames, workResult.filenames);
-			_result.succeeded += workResult.succeeded;
+			
+			// Delete temp files
+			foreach (var filename in removeFilenames)
+			{
+				try
+				{
+					if (string.IsNullOrEmpty(filename) == false && File.Exists(filename))
+						File.Delete(filename);
+				}
+				catch
+				{
+					// Do nothing
+				}
+			}
+
+			_completed += exportedFilenames.Count;
+
+			// Combine results
+			if (_result.filenames == null)
+				_result.filenames = new List<string>();
+			_result.filenames.AddRange(exportedFilenames);
 
 			onProgress?.Invoke(100 * _completed / _totalCount);
 

@@ -1017,13 +1017,25 @@ namespace Ginger
 				return Error.FileReadError;
 			}
 
+			var fileType = DetectJsonFileType(json);
+
+			// Text generation WebUI (yaml)
+			if (fileType.Contains(FileType.TextGenWebUI))
+			{
+				var textGenWebUICard = TextGenWebUICard.FromYaml(json);
+				if (textGenWebUICard != null)
+				{
+					jsonErrors = 0;
+					Current.ReadTextGenWebUICard(textGenWebUICard);
+					return Error.NoError;
+				}
+			}
+
 			if (IsValidJson(json) == false)
 			{
 				jsonErrors = 0;
 				return Error.InvalidJson;
 			}	
-
-			var fileType = DetectJsonFileType(json);
 
 			// Tavern (v3)
 			if (fileType.Contains(FileType.TavernV3))
@@ -1079,18 +1091,6 @@ namespace Ginger
 				{
 					jsonErrors = 0;
 					Current.ReadPygmalionCard(pygmalionCard);
-					return Error.NoError;
-				}
-			}
-
-			// Text generation WebUI (yaml)
-			if (fileType.Contains(FileType.TextGenWebUI))
-			{
-				var textGenWebUICard = TextGenWebUICard.FromYaml(json);
-				if (textGenWebUICard != null)
-				{
-					jsonErrors = 0;
-					Current.ReadTextGenWebUICard(textGenWebUICard);
 					return Error.NoError;
 				}
 			}

@@ -26,8 +26,10 @@ namespace Ginger.Integration
 			public string displayName;
 			[JsonProperty("localFilename", Required = Required.Always)]
 			public string filename;
-			[JsonProperty("fileFormat", Required = Required.Always)]
-			public string fileFormat;
+			[JsonProperty("cloudPlan", Required = Required.Default, NullValueHandling = NullValueHandling.Include)]
+			public string cloudPlan;
+			[JsonProperty("isDeprecated", Required = Required.Default)]
+			public bool isDeprecated;
 		}
 
 		[JsonProperty("files", Required = Required.Always)]
@@ -41,6 +43,17 @@ namespace Ginger.Integration
 		public string promptTemplate;
 		public string fileFormat;
 		public bool isCustomLocalModel;
+
+		public enum CloudPlan
+		{
+			Undefined = 0,
+			Free,
+			Standard,
+			Advanced,
+			Pro,
+		}
+		public CloudPlan cloudPlan;
+		public bool isCloudModel { get { return cloudPlan != CloudPlan.Undefined; } }
 
 		public bool Compare(string nameOrId)
 		{
@@ -62,13 +75,15 @@ namespace Ginger.Integration
 		private static List<BackyardModel> _Models = new List<BackyardModel>();
 		private static List<BackyardModelInfo> _Entries = new List<BackyardModelInfo>();
 
+		private static string FreeCloudModel = "cloud.llama2.7b.fimbulvetr.gguf_v2.q8_0";
+
 		static BackyardModelDatabase()
 		{
 			_backyardModelsSchema = JsonSchema.Parse(Resources.backyard_models_schema);
 
-			// JsonSchemaGenerator generator = new JsonSchemaGenerator();
-			// JsonSchema schema = generator.Generate(typeof(BackyardModelInfo[]));
-			// string jsonSchema = schema.ToString();
+//			JsonSchemaGenerator generator = new JsonSchemaGenerator();
+//			JsonSchema schema = generator.Generate(typeof(BackyardModelInfo[]));
+//			string jsonSchema = schema.ToString();
 		}
 
 		public static bool FindModels(string downloadPath, string json)
@@ -97,7 +112,8 @@ namespace Ginger.Integration
 			try
 			{
 				JArray list = JArray.Parse(json);
-				if (list.IsValid(_backyardModelsSchema))
+				IList<string> errors;
+				if (list.IsValid(_backyardModelsSchema, out errors))
 				{
 					foreach (var entry in list)
 					{
@@ -123,6 +139,7 @@ namespace Ginger.Integration
 							promptTemplate = modelInfo.promptTemplate,
 							fileFormat = Utility.GetFileExt(fn),
 							isCustomLocalModel = false,
+							cloudPlan = BackyardModel.CloudPlan.Undefined,
 						};
 					}
 					else
@@ -133,11 +150,39 @@ namespace Ginger.Integration
 							fileFormat = Utility.GetFileExt(fn),
 							promptTemplate = null,
 							isCustomLocalModel = true,
+							cloudPlan = BackyardModel.CloudPlan.Undefined,
 						};
 					}
 				})
 				.OrderBy(i => i.displayName)
 				.ToList();
+
+			// Cloud models
+			_Models.AddRange(_Entries
+				.Where(m => m.files.ContainsAny(f => f.cloudPlan != null))
+				.SelectMany(m => 
+				{
+					return m.files
+						.Where(f => f.isDeprecated == false && f.cloudPlan != null)
+						.Select(f => {
+							BackyardModel.CloudPlan cloudPlan = EnumHelper.FromString(f.cloudPlan, BackyardModel.CloudPlan.Undefined);
+							if (string.Compare(f.id, FreeCloudModel, StringComparison.Ordinal) == 0)
+								cloudPlan = BackyardModel.CloudPlan.Free;
+
+							return new BackyardModel() {
+								id = f.id,
+								displayName = string.Format("Cloud ({0}) - {1}", EnumHelper.ToString(cloudPlan), m.displayName),
+								promptTemplate = m.promptTemplate,
+								fileFormat = "",
+								isCustomLocalModel = false,
+								cloudPlan = cloudPlan,
+							};
+						})
+						.Where(mm => mm.cloudPlan != BackyardModel.CloudPlan.Undefined);
+				})
+				.OrderBy(mm => mm.cloudPlan)
+				.ThenBy(mm => mm.displayName)
+			);
 			return true;
 		}
 

@@ -25,6 +25,10 @@ namespace Ginger
 		private System.Timers.Timer _statusbarTimer = new System.Timers.Timer();
 		private bool _bEditing = false;
 
+		// Find
+		private ChatSearchable[] _chatSearchables = null;
+		private FindDialog _findDialog;
+
 		#region Win32 stuff
 		public const uint LVM_SETHOTCURSOR = 4158;
 
@@ -52,7 +56,6 @@ namespace Ginger
 			importMenuItem.ToolTipText = Resources.tooltip_link_import_chat;
 			exportMenuItem.ToolTipText = Resources.tooltip_link_export_chat;
 			duplicateMenuItem.ToolTipText = Resources.tooltip_link_duplicate_chat;
-			repairChatsMenuItem.ToolTipText = Resources.tooltip_link_repair_chat;
 			editModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_all;
 		}
 
@@ -202,6 +205,7 @@ namespace Ginger
 				return;
 			}
 
+			_chatSearchables = null;
 			_selectedChatInstance = null;
 			_bEditing = false;
 			chatInstanceList.BeginUpdate();
@@ -310,7 +314,8 @@ namespace Ginger
 				SelectChat(0);
 			else
 				Unselect();
-			
+
+			HideFindDialog();
 			RefreshStatusBarMessage();
 			RefreshTitle();
 		}
@@ -324,7 +329,7 @@ namespace Ginger
 			chatView.Items.Clear();
 		}
 
-		private void ViewChat(ChatInstance chatInstance)
+		private void ViewChat(ChatInstance chatInstance, int select = -1)
 		{
 			chatView.Items.Clear();
 			if (chatInstance == null)
@@ -379,6 +384,11 @@ namespace Ginger
 			}
 			chatView.Items.AddRange(lines.ToArray());
 			chatView.listBox.TopIndex = 0; // chatView.Items.Count - 1;
+
+			if (select >= 0)
+			{
+				chatView.listBox.SelectedIndex = select;
+			}
 
 			var sbStatus = new StringBuilder();
 			int messageCount = chatInstance.history.count;
@@ -741,7 +751,7 @@ namespace Ginger
 				e.Handled = true;
 			}
 		}
-		
+
 		private void ChatInstanceList_BeforeLabelEdit(object sender, LabelEditEventArgs e)
 		{
 			_bEditing = true;
@@ -886,11 +896,15 @@ namespace Ginger
 			exportMenuItem.Enabled = hasGroup && hasChat;
 			duplicateMenuItem.Enabled = hasGroup && hasChat;
 			refreshMenuItem.Enabled = hasGroup;
-			repairChatsMenuItem.Enabled = hasGroup;
 			editModelSettingsMenuItem.Enabled = hasGroup;
 
 			setBackgroundMenuItem.Visible = Backyard.CheckFeature(Backyard.Feature.ChatBackgrounds);
 			setBackgroundMenuItem.Enabled = hasGroup;
+			
+			bool bCanFindNext = hasGroup && string.IsNullOrEmpty(AppSettings.User.FindMatch) == false;
+			findMenuItem.Enabled = hasGroup;
+			findNextMenuItem.Enabled = bCanFindNext;
+			findPreviousMenuItem.Enabled = bCanFindNext;	
 		}
 
 		private void duplicateMenuItem_Click(object sender, EventArgs e)
@@ -963,33 +977,6 @@ namespace Ginger
 			{
 				PopulateChatList(true);
 				SetStatusBarMessage(Resources.status_link_purged_chat, Constants.StatusBarMessageInterval);
-			}
-		}
-
-		private void repairChatsMenuItem_Click(object sender, EventArgs e)
-		{
-			if (_groupInstance.isEmpty)
-				return; // Error
-
-			var mr = MessageBox.Show(string.Format(Resources.msg_link_repair_chat, GetGroupTitle(_groupInstance)), Resources.cap_link_repair_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
-			if (mr != DialogResult.Yes)
-				return;
-
-			int modified = 0;
-			var error = RunTask(() => Backyard.RepairChats(_groupInstance, out modified), "Repairing chats...");
-			if (error == Backyard.Error.NotConnected)
-			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_repair_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Close();
-			}
-			else if (error != Backyard.Error.NoError)
-			{
-				MessageBox.Show(Resources.error_link_repair_chat, Resources.cap_link_repair_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-			else
-			{
-				PopulateChatList(true);
-				MessageBox.Show(string.Format(Resources.msg_link_repaired_chat, modified), Resources.cap_link_repair_chat, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 		}
 
@@ -1510,9 +1497,24 @@ namespace Ginger
 					return true;
 				}
 			}
-			if (keyData == Keys.F5)
+			else if (keyData == Keys.F5)
 			{
 				refreshMenuItem_Click(this, EventArgs.Empty);
+				return true;
+			}
+			else if (keyData == ShortcutKeys.Find)
+			{
+				findMenuItem_Click(this, EventArgs.Empty);
+				return true;
+			}
+			else if (keyData == ShortcutKeys.FindNext)
+			{
+				findNextMenuItem_Click(this, EventArgs.Empty);
+				return true;
+			}
+			else if (keyData == ShortcutKeys.FindPrevious)
+			{
+				findPreviousMenuItem_Click(this, EventArgs.Empty);
 				return true;
 			}
 
@@ -1800,5 +1802,189 @@ namespace Ginger
 			RefreshChats();
 			SetStatusBarMessage(Resources.status_link_update_chats, Constants.StatusBarMessageInterval);
 		}
+
+		private void findMenuItem_Click(object sender, EventArgs e)
+		{
+			if (_findDialog != null && !_findDialog.IsDisposed)
+				_findDialog.Close(); // Close existing
+
+			if (_groupInstance.isEmpty)
+				return;
+
+			_findDialog = new FindDialog();
+			_findDialog.Find += OnFind;
+			_findDialog.Show(this);
+		}
+
+		private void findNextMenuItem_Click(object sender, EventArgs e)
+		{
+			if (_groupInstance.isEmpty)
+				return;
+
+			OnFind(this, new FindDialog.FindEventArgs() {
+				match = AppSettings.User.FindMatch ?? "",
+				matchCase = AppSettings.User.FindMatchCase,
+				wholeWord = AppSettings.User.FindWholeWords,
+				reverse = false,
+			});
+		}
+
+		private void findPreviousMenuItem_Click(object sender, EventArgs e)
+		{
+			if (_groupInstance.isEmpty)
+				return;
+
+			OnFind(this, new FindDialog.FindEventArgs() {
+				match = AppSettings.User.FindMatch ?? "",
+				matchCase = AppSettings.User.FindMatchCase,
+				wholeWord = AppSettings.User.FindWholeWords,
+				reverse = true,
+			});
+		}
+
+		private void OnFind(object sender, FindDialog.FindEventArgs e)
+		{
+			if (string.IsNullOrEmpty(e.match) || _groupInstance.isEmpty)
+				return;
+
+			if (_chatSearchables == null)
+			{
+				ChatInstance[] chats = null;
+				if (_groupInstance.isEmpty == false && RunTask(() => Backyard.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
+				{
+					MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					Close();
+					return;
+				}
+
+				if (chats == null || chats.Length == 0)
+				{
+					MessageBox.Show("No chats.", Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					Close();
+					return;
+				}
+
+				_chatSearchables = chats.Select(c => new ChatSearchable(c)).ToArray();
+			}
+
+			if (_chatSearchables.Length == 0)
+			{
+				// Nothing to search
+				MessageBox.Show(Resources.msg_no_match, Resources.cap_find, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return;
+			}
+
+			ChatSearchable[] searchables;
+			if (e.reverse)
+				searchables = _chatSearchables.Reverse().ToArray();
+			else
+				searchables = _chatSearchables;
+
+			int offset = 0;
+			int idxFocused = 0;
+			if (_selectedChatInstance != null)
+			{
+				idxFocused = Array.FindIndex(searchables, s => s.chat.instanceId == _selectedChatInstance.instanceId);
+				if (idxFocused == -1)
+					idxFocused = 0;
+
+				if (chatView.listBox.SelectedIndex >= 0)
+				{
+					if (!e.reverse)
+						offset = chatView.listBox.SelectedIndex + 1;
+					else
+					{
+						offset = chatView.listBox.SelectedIndex - 1;
+						if (offset < 0)
+							idxFocused++;
+					}
+				}
+			}
+
+			for (int i = 0; i < searchables.Length + 1; ++i) // +1 Search the first textbox again as we wrap around.
+			{
+				int index = (idxFocused + i) % searchables.Length;
+				var searchable = searchables[index];
+				int find = searchable.Find(e.match, e.matchCase, e.wholeWord, e.reverse, i == 0 ? offset : -1);
+				if (find != -1)
+				{
+					SelectChat(searchable.chat.instanceId, false);
+					ViewChat(searchable.chat, find);
+					return; // Success
+				}
+			}
+
+			MessageBox.Show(Resources.msg_no_match, Resources.cap_find, MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
+
+		private void HideFindDialog()
+		{
+			if (_findDialog != null)
+				_findDialog.Hide();
+		}
 	}
+
+	public class ChatSearchable : ISearchable
+	{
+		public bool Enabled { get { return true; } }
+		public TextBoxBase SearchableControl { get { return null; } }
+
+		public ChatInstance chat;
+		private string[] _messages;
+
+		public ChatSearchable(ChatInstance chat)
+		{
+			this.chat = chat;
+			_messages = chat.history.messages.Select(m => m.text ?? "").ToArray();
+		}
+
+		public int Find(string match, bool matchCase, bool matchWord, bool reverse, int startIndex = -1)
+		{
+			var comparison = matchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+
+			if (!reverse)
+			{
+				if (startIndex >= 0)
+					startIndex = Math.Min(startIndex, _messages.Length);
+				else
+					startIndex = 0;
+
+				for (int idxMsg = startIndex; idxMsg < _messages.Length; ++idxMsg)
+				{
+					int idx;
+					if (matchWord)
+						idx = Utility.FindWholeWord(_messages[idxMsg], match, 0, comparison);
+					else
+						idx = _messages[idxMsg].IndexOf(match, 0, comparison);
+					if (idx != -1)
+						return idxMsg;
+				}
+			}
+			else
+			{
+				if (startIndex >= 0)
+					startIndex = Math.Min(startIndex, _messages.Length);
+				else
+					startIndex = _messages.Length - 1;
+
+				for (int idxMsg = startIndex; idxMsg >= 0; --idxMsg)
+				{
+					int idx;
+					if (matchWord)
+						idx = Utility.FindWholeWord(_messages[idxMsg], match, 0, comparison);
+					else
+						idx = _messages[idxMsg].IndexOf(match, 0, comparison);
+					if (idx != -1)
+						return idxMsg;
+				}
+			}
+			return -1;
+		}
+
+		public void FocusAndSelect(int start, int length)
+		{
+			return;
+		}
+	}
+
 }

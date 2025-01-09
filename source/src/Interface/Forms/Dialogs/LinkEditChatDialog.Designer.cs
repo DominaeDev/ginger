@@ -33,11 +33,11 @@ namespace Ginger
 			System.Windows.Forms.ColumnHeader columnTitle;
 			System.Windows.Forms.ColumnHeader columnDate;
 			System.Windows.Forms.Panel leftPanel;
-			System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Today", System.Windows.Forms.HorizontalAlignment.Left);
-			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
+			System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Today", System.Windows.Forms.HorizontalAlignment.Left);
+			System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem(new string[] {
             "Untitled Chat",
             "19:35"}, 0);
-			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem(new string[] {
+			System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem(new string[] {
             "Untitled Chat #2",
             "15:30"}, 1);
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkEditChatDialog));
@@ -68,8 +68,10 @@ namespace Ginger
 			this.duplicateMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolsMenu = new System.Windows.Forms.ToolStripMenuItem();
-			this.repairChatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.findMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.findNextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.findPreviousMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.statusBar = new System.Windows.Forms.StatusStrip();
 			this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusChatLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -130,14 +132,14 @@ namespace Ginger
             columnDate});
 			this.chatInstanceList.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.chatInstanceList.FullRowSelect = true;
-			listViewGroup1.Header = "Today";
-			listViewGroup1.Name = "listViewGroup1";
+			listViewGroup2.Header = "Today";
+			listViewGroup2.Name = "listViewGroup1";
 			this.chatInstanceList.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup1});
+            listViewGroup2});
 			this.chatInstanceList.HideSelection = false;
 			this.chatInstanceList.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2});
+            listViewItem3,
+            listViewItem4});
 			this.chatInstanceList.LabelEdit = true;
 			this.chatInstanceList.LabelWrap = false;
 			this.chatInstanceList.Location = new System.Drawing.Point(3, 19);
@@ -233,7 +235,7 @@ namespace Ginger
 			// 
 			this.menuBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileMenu,
-            this.toolsMenu});
+            this.editToolStripMenuItem});
 			this.menuBar.Location = new System.Drawing.Point(0, 0);
 			this.menuBar.MinimumSize = new System.Drawing.Size(400, 0);
 			this.menuBar.Name = "menuBar";
@@ -301,26 +303,26 @@ namespace Ginger
 			// setBackgroundFromFileMenuItem
 			// 
 			this.setBackgroundFromFileMenuItem.Name = "setBackgroundFromFileMenuItem";
-			this.setBackgroundFromFileMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.setBackgroundFromFileMenuItem.Size = new System.Drawing.Size(168, 22);
 			this.setBackgroundFromFileMenuItem.Text = "Load from file...";
 			this.setBackgroundFromFileMenuItem.Click += new System.EventHandler(this.setBackgroundFromFileMenuItem_Click);
 			// 
 			// setBackgroundFromPortraitMenuItem
 			// 
 			this.setBackgroundFromPortraitMenuItem.Name = "setBackgroundFromPortraitMenuItem";
-			this.setBackgroundFromPortraitMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.setBackgroundFromPortraitMenuItem.Size = new System.Drawing.Size(168, 22);
 			this.setBackgroundFromPortraitMenuItem.Text = "Same as portrait";
 			this.setBackgroundFromPortraitMenuItem.Click += new System.EventHandler(this.setBackgroundFromPortraitMenuItem_Click);
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(165, 6);
 			// 
 			// clearBackgroundMenuItem
 			// 
 			this.clearBackgroundMenuItem.Name = "clearBackgroundMenuItem";
-			this.clearBackgroundMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.clearBackgroundMenuItem.Size = new System.Drawing.Size(168, 22);
 			this.clearBackgroundMenuItem.Text = "Clear background";
 			this.clearBackgroundMenuItem.Click += new System.EventHandler(this.clearBackgroundMenuItem_Click);
 			// 
@@ -363,20 +365,39 @@ namespace Ginger
 			this.closeToolStripMenuItem.Text = "&Close";
 			this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
 			// 
-			// toolsMenu
+			// editToolStripMenuItem
 			// 
-			this.toolsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.repairChatsMenuItem});
-			this.toolsMenu.Name = "toolsMenu";
-			this.toolsMenu.Size = new System.Drawing.Size(46, 20);
-			this.toolsMenu.Text = "&Tools";
+			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.findMenuItem,
+            this.findNextMenuItem,
+            this.findPreviousMenuItem});
+			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+			this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+			this.editToolStripMenuItem.Text = "&Edit";
 			// 
-			// repairChatsMenuItem
+			// findMenuItem
 			// 
-			this.repairChatsMenuItem.Name = "repairChatsMenuItem";
-			this.repairChatsMenuItem.Size = new System.Drawing.Size(166, 22);
-			this.repairChatsMenuItem.Text = "&Fix legacy chats...";
-			this.repairChatsMenuItem.Click += new System.EventHandler(this.repairChatsMenuItem_Click);
+			this.findMenuItem.Name = "findMenuItem";
+			this.findMenuItem.ShortcutKeyDisplayString = "Ctrl+F";
+			this.findMenuItem.Size = new System.Drawing.Size(196, 22);
+			this.findMenuItem.Text = "Find...";
+			this.findMenuItem.Click += new System.EventHandler(this.findMenuItem_Click);
+			// 
+			// findNextMenuItem
+			// 
+			this.findNextMenuItem.Name = "findNextMenuItem";
+			this.findNextMenuItem.ShortcutKeyDisplayString = "F3";
+			this.findNextMenuItem.Size = new System.Drawing.Size(196, 22);
+			this.findNextMenuItem.Text = "Find next";
+			this.findNextMenuItem.Click += new System.EventHandler(this.findNextMenuItem_Click);
+			// 
+			// findPreviousMenuItem
+			// 
+			this.findPreviousMenuItem.Name = "findPreviousMenuItem";
+			this.findPreviousMenuItem.ShortcutKeyDisplayString = "Shift+F3";
+			this.findPreviousMenuItem.Size = new System.Drawing.Size(196, 22);
+			this.findPreviousMenuItem.Text = "Find previous";
+			this.findPreviousMenuItem.Click += new System.EventHandler(this.findPreviousMenuItem_Click);
 			// 
 			// statusBar
 			// 
@@ -462,8 +483,6 @@ namespace Ginger
 		private System.Windows.Forms.ToolStripMenuItem exportMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem toolsMenu;
-		private System.Windows.Forms.ToolStripMenuItem repairChatsMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem duplicateMenuItem;
 		private System.Windows.Forms.StatusStrip statusBar;
 		private System.Windows.Forms.ToolStripStatusLabel statusLabel;
@@ -480,5 +499,9 @@ namespace Ginger
 		private System.Windows.Forms.ToolStripMenuItem setBackgroundFromPortraitMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem setBackgroundFromFileMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem findMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem findNextMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem findPreviousMenuItem;
 	}
 }
