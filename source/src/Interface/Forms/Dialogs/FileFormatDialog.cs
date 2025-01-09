@@ -6,30 +6,30 @@ namespace Ginger
 	public partial class FileFormatDialog : FormEx
 	{
 		private string[] Filters = new string[] {
+			"Character Card V2 PNG (*.png)",
+			"Character Card V3 PNG (*.png)",
+			"Backyard AI PNG (*.png)",
 			"Character Card V2 JSON (*.json)",
 			"Character Card V3 JSON (*.json)",
 			"Agnai Character JSON (*.json)",
 			"PygmalionAI Character JSON (*.json)",
-			"Character Card V2 PNG (*.png)",
-			"Character Card V3 PNG (*.png)",
-			"Backyard AI PNG (*.png)",
-			"CharX file (*.charx)",
 			"Text generation web ui YAML (*.yaml)",
+			"CharX file (*.charx)",
 			"Character backup (*.zip)",
 		};
 
 		public FileUtil.FileType FileFormat { get; private set; }
 
 		private FileUtil.FileType[] FileTypes = new FileUtil.FileType[] {
+			FileUtil.FileType.TavernV2 | FileUtil.FileType.Png | FileUtil.FileType.Character,
+			FileUtil.FileType.TavernV3 | FileUtil.FileType.Png | FileUtil.FileType.Character,
+			FileUtil.FileType.Faraday | FileUtil.FileType.Png | FileUtil.FileType.Character,
 			FileUtil.FileType.TavernV2 | FileUtil.FileType.Json | FileUtil.FileType.Character,
 			FileUtil.FileType.TavernV3 | FileUtil.FileType.Json | FileUtil.FileType.Character,
 			FileUtil.FileType.Agnaistic | FileUtil.FileType.Json | FileUtil.FileType.Character,
 			FileUtil.FileType.Pygmalion | FileUtil.FileType.Json | FileUtil.FileType.Character,
-			FileUtil.FileType.TavernV2 | FileUtil.FileType.Png | FileUtil.FileType.Character,
-			FileUtil.FileType.TavernV3 | FileUtil.FileType.Png | FileUtil.FileType.Character,
-			FileUtil.FileType.Faraday | FileUtil.FileType.Png | FileUtil.FileType.Character,
-			FileUtil.FileType.TavernV3 | FileUtil.FileType.CharX | FileUtil.FileType.Character,
 			FileUtil.FileType.TextGenWebUI | FileUtil.FileType.Yaml | FileUtil.FileType.Character,
+			FileUtil.FileType.TavernV3 | FileUtil.FileType.CharX | FileUtil.FileType.Character,
 			FileUtil.FileType.Ginger | FileUtil.FileType.Backup | FileUtil.FileType.Character,
 		};
 
