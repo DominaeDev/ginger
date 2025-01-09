@@ -1,15 +1,13 @@
 ﻿<Ginger id="goblin-core" version="1.2">
 	<!-- Preamble -->
-	<Name>Archetype/Goblin</Name>
+	<Name>Goblin</Name>
 	<Title>Goblin</Title>
+	<Description>Base recipe for a goblin character.</Description>
 	<Author>Ginger</Author>
 	<Category>Archetype</Category>
 	<Flags>humanoid, biped, goblin, core</Flags>
 	<Requires>not core</Requires>
-	<Order>200</Order>
-	<Description>
-		Base recipe for a goblin character.
-	</Description>
+	<Order>-200</Order>
 	
 	<!-- Complementary recipes -->
 	<Include>basic-info</Include>

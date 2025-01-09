@@ -1,11 +1,11 @@
 <Ginger id="erp-chat" version="1.2">
-	<Name>Base/Erotic roleplay</Name>
+	<Name>Erotic roleplay</Name>
 	<Title>Erotic roleplay</Title>
 	<Description>Base recipe for a chat bot with a focus on erotic roleplay (ERP).</Description>
 	<Author>Ginger</Author>
 	<Category>Base</Category>
 	<Flags>chat, nsfw</Flags>
-	<Order>0</Order>
+	<Order>-50</Order>
 	
 	<!-- Complementary recipes -->
 	<Include>basic-info</Include>

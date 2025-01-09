@@ -1,12 +1,14 @@
 ﻿<Ginger id="terminal-illness" version="1.0">
-	<Name>Role/Terminally ill</Name>
+	<Name>Terminally ill</Name>
 	<Title>Terminally ill</Title>
 	<Description>The character has an incurable, terminal disease.</Description>
 	<Author>Ginger</Author>
-	<Category>Role</Category>
+	<Category>Trait</Category>
 	
 	<!-- Parameters -->
-	<Text id="illness" label="Illness"/>
+	<Text id="illness">
+		<Label>Name of illness</Label>
+	</Text>
 	
 	<!-- Output -->	
 	<Persona rule="illness">

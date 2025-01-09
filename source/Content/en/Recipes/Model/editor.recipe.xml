@@ -1,9 +1,9 @@
 <Ginger id="editor-base" version="1.1">
-	<Name>Base/Writing assistant</Name>
+	<Name>Writing assistant</Name>
 	<Category>Base</Category>
 	<Author>Ginger</Author>
 	<Flags>assistant</Flags>
-	<Order>0</Order>
+	<Order>-100</Order>
 
 	<Description>
 		Base recipe for a virtual writing assistant that can assist the user with grammar and spelling, and offer creative writing advice.

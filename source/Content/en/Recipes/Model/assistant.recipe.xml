@@ -1,11 +1,11 @@
 <Ginger id="assistant-base" version="1.2">
 	<!-- Recipe info -->
-	<Name>Base/Virtual assistant</Name>
+	<Name>Virtual assistant</Name>
 	<Title>Virtual assistant</Title>
 	<Description>Base recipe for a virtual assistant that can answer questions and provide advice.</Description>
 	<Author>Ginger</Author>
 	<Category>Base</Category>
-	<Order>0</Order>
+	<Order>-100</Order>
 	<Flags>assistant</Flags>
 
 	<!-- Parameters -->

@@ -1,13 +1,12 @@
 ﻿<Ginger id="story-plot" version="1.0">
 	<!-- Preamble -->
-	<Name>Story/Sequence of events</Name>
+	<Name>Sequence of events</Name>
 	<Title>Sequence of events</Title>
 	<Description>Describe the story as a sequence of events.</Description>
 	<Author>Ginger</Author>
 	<Category>Story</Category>
 	<Flags>plot</Flags>
 	<Multiple>True</Multiple>
-	<Order>10</Order>
 	
 	<!-- Parameters -->
 	<Slider id="count" min="1" max="10">

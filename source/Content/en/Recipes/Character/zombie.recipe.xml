@@ -1,11 +1,11 @@
 ﻿<Ginger version="1.1">
 	<!-- Preamble -->
-	<Name>Archetype/Zombie</Name>
+	<Name>Zombie</Name>
 	<Title>Zombie</Title>
 	<Author>Ginger</Author>
 	<Category>Archetype</Category>
 	<Description>The character is the living dead.</Description>
-	<Order>200</Order>
+	<Order>-200</Order>
 	<Flags>zombie, undead</Flags>
 	<Requires>not undead</Requires>
 	

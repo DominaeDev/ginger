@@ -1098,9 +1098,7 @@ Do you want to import it anyway? (Messages from characters outside the group wil
     <value>Not connected to Backyard AI.</value>
   </data>
   <data name="msg_link_connected" xml:space="preserve">
-    <value>Successfully connected to Backyard AI.
-
-You can now open and save characters directly.</value>
+    <value>Successfully connected to Backyard AI.</value>
   </data>
   <data name="tavern_chat_header_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Schemas\tavern_chat_header_schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
@@ -1600,5 +1598,11 @@ Are you sure you want to proceed?</value>
   </data>
   <data name="error_link_update_character_not_found" xml:space="preserve">
     <value>Unable to save changes to Backyard AI. Character not found.</value>
+  </data>
+  <data name="dark_traits" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_traits.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="traits" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Light\traits.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

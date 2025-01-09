@@ -1,10 +1,10 @@
 ﻿<Ginger id="addiction" version="1.1">
 	<!-- Preamble -->
-	<Name>Quirks/Addiction</Name>
-	<Title>Addiction</Title>
+	<Name>Addicted</Name>
+	<Title>Addicted</Title>
 	<Author>Ginger</Author>
-	<Category>Quirk</Category>
-	<Description>The character is addicted to something.</Description>
+	<Category>Trait</Category>
+	<Description>The character has an addiction.</Description>
 	<Flags>nsfw</Flags>
 	
 	<!-- Parameters -->

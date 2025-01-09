@@ -1,5 +1,5 @@
 ﻿<Ginger id="chat-bot" version="1.4">
-	<Name>Base/Chat bot</Name>
+	<Name>Chat bot</Name>
 	<Title>Chat bot</Title>
 	<Description>
 		A base recipe for a bot in the style of a one-on-one online chat.
@@ -9,7 +9,7 @@
 	<Author>Ginger</Author>
 	<Category>Base</Category>
 	<Flags>chat</Flags>
-	<Order>0</Order>
+	<Order>-50</Order>
 	
 	<!-- Complementary recipes -->
 	<Include>basic-info</Include>

@@ -282,33 +282,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;type&quot;: &quot;array&quot;,
-        ///  &quot;items&quot;: {
-        ///    &quot;type&quot;: [
-        ///      &quot;object&quot;,
-        ///      &quot;null&quot;
-        ///    ],
-        ///    &quot;properties&quot;: {
-        ///      &quot;displayName&quot;: {
-        ///        &quot;required&quot;: true,
-        ///        &quot;type&quot;: &quot;string&quot;
-        ///      },
-        ///      &quot;promptFormat&quot;: {
-        ///        &quot;required&quot;: true,
-        ///        &quot;type&quot;: &quot;string&quot;
-        ///      },
-        ///      &quot;ctxSize&quot;: {
-        ///        &quot;required&quot;: true,
-        ///        &quot;type&quot;: &quot;integer&quot;
-        ///      },
-        ///      &quot;files&quot;: {
-        ///        &quot;required&quot;: true,
-        ///        &quot;type&quot;: &quot;array&quot;,
-        ///        &quot;items&quot;: {
-        ///          &quot;type&quot;: [
-        ///            &quot;object&quot;,
-        ///       [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to {&quot;type&quot;:&quot;array&quot;,&quot;items&quot;:{&quot;type&quot;:[&quot;object&quot;,&quot;null&quot;],&quot;properties&quot;:{&quot;displayName&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;promptFormat&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;ctxSize&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;integer&quot;},&quot;files&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;array&quot;,&quot;items&quot;:{&quot;type&quot;:[&quot;object&quot;,&quot;null&quot;],&quot;properties&quot;:{&quot;displayName&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;localFilename&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;fileFormat&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;cloudPlan&quot;:{&quot;required&quot;:true,&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;isDeprecated&quot;:{&quot;r [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string backyard_models_schema {
             get {
@@ -1403,6 +1377,16 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap dark_story {
             get {
                 object obj = ResourceManager.GetObject("dark_story", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_traits {
+            get {
+                object obj = ResourceManager.GetObject("dark_traits", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -2815,9 +2799,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully connected to Backyard AI.
-        ///
-        ///You can now open and save characters directly..
+        ///   Looks up a localized string similar to Successfully connected to Backyard AI..
         /// </summary>
         internal static string msg_link_connected {
             get {
@@ -5437,6 +5419,16 @@ namespace Ginger.Properties {
         internal static string tooltip_version {
             get {
                 return ResourceManager.GetString("tooltip_version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap traits {
+            get {
+                object obj = ResourceManager.GetObject("traits", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

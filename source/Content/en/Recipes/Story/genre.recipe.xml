@@ -4,6 +4,7 @@
 	<Description>Specify one or more genres for the story.</Description>
 	<Author>Ginger</Author>
 	<Category>Story</Category>
+	<Order>-101</Order>
 	
 	<!-- Parameters -->
 	<Choice id="genre" style="multiple">

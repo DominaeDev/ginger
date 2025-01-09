@@ -7,6 +7,7 @@
 	<Category>Character</Category>
 	<Flags>trans, transgender, override-gender</Flags>
 	<Requires>not (override-gender or custom-gender)</Requires>
+	<Order>0</Order>
 	
 	<!-- Parameters -->
 	<Choice id="trans-gender" required="yes">

@@ -422,8 +422,8 @@ namespace Ginger {
 			this.buttonRow.Controls.Add(this.btnAdd_Snippets, 6, 0);
 			this.buttonRow.Controls.Add(this.btnAdd_Other, 5, 0);
 			this.buttonRow.Controls.Add(this.btnAdd_World, 4, 0);
-			this.buttonRow.Controls.Add(this.btnAdd_Mind, 3, 0);
-			this.buttonRow.Controls.Add(this.btnAdd_Traits, 2, 0);
+			this.buttonRow.Controls.Add(this.btnAdd_Traits, 3, 0);
+			this.buttonRow.Controls.Add(this.btnAdd_Mind, 2, 0);
 			this.buttonRow.Controls.Add(this.btnAdd_Character, 1, 0);
 			this.buttonRow.Controls.Add(this.btnAdd_Model, 0, 0);
 			this.buttonRow.Dock = System.Windows.Forms.DockStyle.Top;
@@ -514,11 +514,11 @@ namespace Ginger {
 			this.btnAdd_Mind.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_Mind.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnAdd_Mind.Image = global::Ginger.Properties.Resources.personality;
-			this.btnAdd_Mind.Location = new System.Drawing.Point(289, 0);
+			this.btnAdd_Mind.Location = new System.Drawing.Point(193, 0);
 			this.btnAdd_Mind.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
 			this.btnAdd_Mind.Name = "btnAdd_Mind";
 			this.btnAdd_Mind.Size = new System.Drawing.Size(94, 64);
-			this.btnAdd_Mind.TabIndex = 3;
+			this.btnAdd_Mind.TabIndex = 2;
 			this.btnAdd_Mind.UseVisualStyleBackColor = false;
 			this.btnAdd_Mind.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Mind_MouseClick);
 			// 
@@ -530,12 +530,12 @@ namespace Ginger {
 			this.btnAdd_Traits.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
 			this.btnAdd_Traits.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_Traits.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_Traits.Image = global::Ginger.Properties.Resources.characteristic;
-			this.btnAdd_Traits.Location = new System.Drawing.Point(193, 0);
+			this.btnAdd_Traits.Image = global::Ginger.Properties.Resources.traits;
+			this.btnAdd_Traits.Location = new System.Drawing.Point(289, 0);
 			this.btnAdd_Traits.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
 			this.btnAdd_Traits.Name = "btnAdd_Traits";
 			this.btnAdd_Traits.Size = new System.Drawing.Size(94, 64);
-			this.btnAdd_Traits.TabIndex = 2;
+			this.btnAdd_Traits.TabIndex = 3;
 			this.btnAdd_Traits.UseVisualStyleBackColor = false;
 			this.btnAdd_Traits.MouseClick += new System.Windows.Forms.MouseEventHandler(this.btnAdd_Trait_Click);
 			// 

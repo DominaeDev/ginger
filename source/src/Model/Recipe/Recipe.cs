@@ -95,7 +95,7 @@ namespace Ginger
 			Model,
 			Character,
 			Mind,
-			Appearance,
+			Traits,
 			Story,
 
 			Components,
@@ -282,7 +282,17 @@ namespace Ginger
 			drawer = Constants.DrawerFromCategory[category];
 			var sDrawer = xmlNode.GetValueElement("Drawer", null);
 			if (sDrawer != null) // Override
-				drawer = EnumHelper.FromString(sDrawer, drawer);
+			{
+				switch (sDrawer.ToLowerInvariant())
+				{
+				case "appearance":
+					drawer = Drawer.Traits;
+					break;
+				default:
+					drawer = EnumHelper.FromString(sDrawer, drawer);
+					break;
+				}
+			}
 
 			// Version
 			version = VersionNumber.Parse(xmlNode.GetAttribute("version", null));
@@ -573,9 +583,13 @@ namespace Ginger
 
 		public string GetTitle()
 		{
+			StringBuilder sb = new StringBuilder(Utility.EscapeMenu(title));
+
 			if (string.IsNullOrEmpty(categoryTag) == false && AppSettings.Settings.ShowRecipeCategory)
-				return string.Format("[{0}] {1}", categoryTag, Utility.EscapeMenu(title));
-			return Utility.EscapeMenu(title);
+				sb.Insert(0, string.Concat("[",categoryTag,"] "));
+			if (isNSFW)
+				sb.Append(" (NSFW)");
+			return sb.ToString();
 		}
 
 		public object Clone()

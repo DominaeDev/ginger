@@ -3,10 +3,10 @@
 	<Title>Appearance</Title>
 	<Description>Describe the general appearance of the character.</Description>
 	<Author>Ginger</Author>
-	<Category>Appearance</Category>
+	<Category>Character</Category>
 	<Requires>not appearance</Requires>
 	<Flags>appearance</Flags>
-	<Order>0</Order>
+	<Order>101</Order>
 			
 	<!-- Parameters -->
 	<!-- Body type -->

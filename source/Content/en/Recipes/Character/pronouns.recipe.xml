@@ -1,5 +1,5 @@
 <Ginger id="pronouns" version="1.0">
-	<Name>Identity/Pronouns</Name>
+	<Name>Gender/Pronouns</Name>
 	<Description>Override the pronouns used for the character.</Description>
 	<Author>Ginger</Author>
 	<Category>Character</Category>

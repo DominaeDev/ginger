@@ -1,8 +1,9 @@
 <Ginger id="sexuality" version="1.1">
-	<Name>Sexuality/Sexuality</Name>
+	<Name>Sexuality/Sexual orientation</Name>
 	<Description>Describe the sexual preferences of this character.</Description>
 	<Author>Ginger</Author>
 	<Category>Sexual</Category>
+	<Order>0</Order>
 	
 	<!-- Parameters -->
 	<Choice id="sexuality" style="custom" required="yes" shared="yes">

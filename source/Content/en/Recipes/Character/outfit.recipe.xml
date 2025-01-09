@@ -2,9 +2,9 @@
 	<Name>Outfit // Clothes</Name>
 	<Description>Describe what the character is wearing.</Description>
 	<Author>Ginger</Author>
-	<Category>Appearance</Category>
-	<Order>0</Order>
+	<Category>Character</Category>
 	<Flags>outfit</Flags>
+	<Order>101</Order>
 	
 	<!-- Parameters --> 
 	<Text id="top">

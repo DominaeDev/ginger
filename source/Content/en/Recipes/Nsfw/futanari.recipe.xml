@@ -5,6 +5,7 @@
 	<Category>Character</Category>
 	<Flags>nsfw, futanari, override-gender, pronouns</Flags>
 	<Requires>not override-gender</Requires>
+	<Order>0</Order>
 	
 	<!-- Parameters -->
 	<Choice id="futa-kind" required="yes">

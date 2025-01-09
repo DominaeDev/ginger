@@ -1,8 +1,8 @@
 <Ginger version="1.0">
-	<Name>Quirks/Fears</Name>
+	<Name>Fears</Name>
 	<Description>Describe the character's fears and phobias.</Description>
 	<Author>Ginger</Author>
-	<Category>Emotion</Category>
+	<Category>Mind</Category>
 		
 	<!-- Parameters -->
 	<List id="fears">

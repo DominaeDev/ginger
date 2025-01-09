@@ -1,11 +1,11 @@
 ﻿<Ginger id="companion-base" version="1.3">
-	<Name>Base/Virtual companion</Name>
+	<Name>Virtual companion</Name>
 	<Title>Virtual companion</Title>
 	<Description>A base recipe for a one-on-one conversation in the style of a virtual AI companion.</Description>
 	<Author>Ginger</Author>
 	<Category>Base</Category>
 	<Flags>companion</Flags>
-	<Order>0</Order>
+	<Order>-100</Order>
 	
 	<!-- Complementary recipes -->
 	<Include>basic-info</Include>

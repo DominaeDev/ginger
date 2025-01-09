@@ -1,11 +1,9 @@
 <Ginger version="1.1">
-	<Name>Anatomy/Height</Name>
+	<Name>Attribute/Height</Name>
 	<Title>Height</Title>
 	<Description>Describes the character's height.</Description>
 	<Author>Ginger</Author>
-	<Category>Appearance</Category>
-	<Order>10</Order>
-	<Priority>0</Priority>
+	<Category>Body</Category>
 	
 	<!-- Parameters -->
 	<Number id="height" style="length" min="0" shared="yes">
@@ -21,5 +19,90 @@
 		<Name>Height</Name>
 		<Value>[less-detail?{height}|{height.ftin} ({height.cm})]</Value>
 	</Attribute>
+	
+	<Toggle id="size-difference">
+		<Label>Size difference</Label>
+		<Description>There is a significant size difference between this character and the user.</Description>
+	</Toggle>
 
+	<!-- Parameters --> 
+	<Choice id="size" required="yes" rule="size-difference">
+		<Label>Comparative size</Label>
+		<Default>Giant</Default>
+		<Description>The comparative size of the character</Description>
+		<Option id="size-mouse">Mouse-sized</Option>
+		<Option id="size-doll">Doll-sized</Option>
+		<Option id="size-half">Half-sized</Option>
+		<Option id="size-giant">Giant</Option>
+		<Option id="size-house">House</Option>
+		<Option id="size-mountain">Mountain</Option>
+	</Choice>
+		
+	<String id="size">
+		<String rule="size:index eq 0">miniscule</String>
+		<String rule="size:index eq 1">tiny</String>
+		<String rule="size:index eq 2">smaller</String>
+		<String rule="size:index eq 3">larger</String>
+		<String rule="size:index eq 4">enormous</String>
+		<String rule="size:index eq 5">colossal</String>
+	</String>
+	
+	<!-- Output -->	
+	<Rule id="smaller">size:index lt 3</Rule>
+	<Rule id="bigger">size:index ge 3</Rule>
+	
+	<System rule="size-difference" important="yes">
+		One of the more unique aspects of the relationship between [char] and [user] is the significant difference in size between the two of them.
+		Any physical interaction between [char] and [user] should reflect their disparity in size.
+		Please pay attention to [char's] [@size] size in situations involving physicality, appearance, and anatomy.
+		[nsfw?Especially in sex scenes, it is important to remind the reader of [char's] size in relation to [user] and to adjust the interplay accordingly.]
+	</System>	
+	<System rule="size-difference and bigger">
+		Due to their relative size difference, [char] looks down at [user] [nsfw?, and some positions and interactions may be physically impossible].
+	</System>
+	<System rule="size-difference and smaller">
+		Due to their relative size difference, [char] looks up at [user] [nsfw?, and some positions and interactions may be physically impossible].
+	</System>
+	
+	<!-- Append existing height -->
+	<Node path="persona/attributes/height" order="50" style="space" rule="size-difference" mode="replace">Height: {inner}</Node>
+	<Node path="persona/attributes/height/extra" style="space" rule="height and size-difference and size-mouse">[nocap](mouse-sized)</Node>
+	<Node path="persona/attributes/height/extra" style="space" rule="height and size-difference and size-doll">[nocap](doll-sized)</Node>
+	<Node path="persona/attributes/height/extra" style="space" rule="height and size-difference and size-half">[nocap](dwarf-sized)</Node>
+	<Node path="persona/attributes/height/extra" style="space" rule="height and size-difference and size-giant">[nocap](giant-sized)</Node>
+	<Node path="persona/attributes/height/extra" style="space" rule="height and size-difference and size-house">[nocap](house-sized)</Node>
+	<Node path="persona/attributes/height/extra" style="space" rule="height and size-difference and size-mountain">[nocap](mountain-sized)</Node>
+	
+	<Persona rule="size-difference and size-mouse">
+		[char] is miniscule; no bigger than an average mouse. [They] are small enough to fit within the palm of [user's] hand [height?, or about {height}].
+		[more-detail?From [char's] perspective, [user] is as tall as a house.]
+	</Persona>
+	
+	<Persona rule="size-difference and size-doll">
+		[char] is very small; about the size of an infant, or a doll. [The] length of [their] entire body is barely more than the length of [user's] lower arm. 
+		The top of [their] head only reaches to [user's] knees [height?, or about {height}].
+		[more-detail?From [char's] perspective, [user] is as large as a giant.]
+	</Persona>	
+	
+	<Persona rule="size-difference and size-half">
+		[char] is very small; barely half the size of [user]. The top of [their] head only reaches to [user's] waist [height?, or about {height}].
+		[more-detail?From [char's] perspective, [user] is about twice [their] size.]
+	</Persona>
+	
+	<Persona rule="size-difference and size-giant">
+		Compared to [user], [char] is practically a giant [height?, towering at about {height}]. 
+		[more-detail?From [char's] perspective, [user] is very small in comparison.]
+	</Persona>
+
+	<Persona rule="size-difference and size-house">
+		The first thing anyone notices and remembers about [char] is their enormous size, which rivals that of a two story house [height?, towering at about {height}].
+		Everything beneath [their] feet is enveloped in [their] shadow, which can span for miles.
+		[more-detail?From [char's] perspective, [user] is no bigger or more threatening than a mouse.]
+	</Persona>
+
+	<Persona rule="size-difference and size-mountain">
+		[char] is the size of a colossus, as tall as a mountain by no exaggeration, [height?, towering at about {height}].
+		Everything beneath [their] feet is enveloped in [their] shadow, which can span for miles.
+		[more-detail?From [char's] perspective, [user] is no bigger or more threatening than an ant.]
+	</Persona>
 </Ginger>

@@ -156,7 +156,7 @@ namespace Ginger
 		
 			public Image ButtonModel => Resources.model;
 			public Image ButtonCharacter => Resources.persona;
-			public Image ButtonTraits => Resources.characteristic;
+			public Image ButtonTraits => Resources.traits;
 			public Image ButtonMind => Resources.personality;
 			public Image ButtonStory => Resources.story;
 			public Image ButtonComponents => Resources.component;

@@ -1095,6 +1095,7 @@
     <None Include="Resources\Icons\Dark\dark_create_backup.png" />
     <None Include="Resources\Icons\Dark\dark_repair.png" />
     <None Include="Resources\Icons\Dark\dark_restore_backup.png" />
+    <None Include="Resources\Icons\Dark\dark_traits.png" />
     <Content Include="Resources\Icons\Light\arrow_down.png" />
     <Content Include="Resources\Icons\Light\arrow_left.png" />
     <Content Include="Resources\Icons\Light\arrow_right.png" />
@@ -1130,6 +1131,7 @@
     <Content Include="Resources\Icons\Light\snippet.png" />
     <Content Include="Resources\Icons\Light\snippet_small.png" />
     <Content Include="Resources\Icons\Light\story.png" />
+    <None Include="Resources\Icons\Light\traits.png" />
     <Content Include="Resources\Icons\Light\tree_folder.png" />
     <Content Include="Resources\Icons\Light\write.png" />
   </ItemGroup>

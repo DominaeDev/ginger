@@ -5,6 +5,7 @@
 	<Author>Ginger</Author>
 	<Category>Character</Category>
 	<Flags>basic-info</Flags>
+	<Order>100</Order>
 	
 	<!-- Parameters -->
 	<Text id="full-name" raw="yes" shared="yes">

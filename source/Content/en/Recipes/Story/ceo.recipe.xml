@@ -1,10 +1,12 @@
 ﻿<Ginger id="company-ceo" version="1.0">
 	<!-- Preamble -->
-	<Name>Role/CEO</Name>
+	<Name>Job/CEO</Name>
 	<Title>CEO</Title>
 	<Author>Ginger</Author>
-	<Category>Role</Category>
+	<Category>Job</Category>
 	<Description>The character is the CEO of a major corporation.</Description>
+	<Requires>not job</Requires>
+	<Flags>job</Flags>
 	
 	<!-- Company name -->
 	<Text id="company-name" shared="yes">

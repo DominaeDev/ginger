@@ -1,13 +1,13 @@
 ﻿<Ginger id="synopsis" version="1.0">
 	<!-- Preamble -->
-	<Name>Story/Synopsis</Name>
+	<Name>Synopsis</Name>
 	<Title>Synopsis</Title>
 	<Description>Describe the outline for the story</Description>
 	<Author>Ginger</Author>
 	<Category>Story</Category>
 	<Flags>plot</Flags>
 	<Multiple>Yes</Multiple>
-	<Order>0</Order>
+	<Order>-100</Order>
 	
 	<!-- Parameters -->
 	<Text id="text" style="flex">

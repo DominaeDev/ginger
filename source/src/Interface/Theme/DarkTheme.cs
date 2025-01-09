@@ -157,7 +157,7 @@ namespace Ginger
 
 			public Image ButtonModel => Resources.dark_model;
 			public Image ButtonCharacter => Resources.dark_persona;
-			public Image ButtonTraits => Resources.dark_characteristic;
+			public Image ButtonTraits => Resources.dark_traits;
 			public Image ButtonMind => Resources.dark_personality;
 			public Image ButtonStory => Resources.dark_story;
 			public Image ButtonComponents => Resources.dark_component;

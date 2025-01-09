@@ -1,6 +1,6 @@
-﻿<Ginger id="astrological-sign" version="1.2">
+﻿<Ginger id="birthday-zodiac" version="1.0">
 	<!-- Preamble -->
-	<Name>Identity/Birthday // Zodiac</Name>
+	<Name>Attribute/Birthday // Zodiac</Name>
 	<Title>Birthday / Zodiac</Title>
 	<Author>Ginger</Author>
 	<Category>Character</Category>

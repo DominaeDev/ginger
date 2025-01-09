@@ -1,10 +1,10 @@
 ﻿<Ginger id="dungeon-master-base" version="1.2">
-	<Name>Base/Dungeon master</Name>
+	<Name>Dungeon master</Name>
 	<Title>Dungeon master</Title>
 	<Description>Base recipe for a roleplaying session in the style of table-top roleplaying game.</Description>
 	<Author>Ginger</Author>
 	<Category>Base</Category>
-	<Order>0</Order>
+	<Order>-100</Order>
 
 	<!-- Parameters -->
 	<Choice id="type" required="yes">

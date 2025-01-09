@@ -1,0 +1,21 @@
+<Ginger id="age" version="1.0">
+	<Name>Attribute/Age</Name>
+	<Title>Age</Title>
+	<Description>Define the character's age.</Description>
+	<Author>Ginger</Author>
+	<Category>Character</Category>
+	
+	<!-- Parameters -->
+	<Number id="age" min="0" shared="yes">
+		<Label>Age</Label>
+		<Description>The character's age in years.</Description>
+		<Suffix>years</Suffix>
+	</Number>
+	
+	<!-- Age -->
+	<Attribute>
+		<Name>Age</Name>
+		<Value>{age}</Value>
+	</Attribute>
+
+</Ginger>

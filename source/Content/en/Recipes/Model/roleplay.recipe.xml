@@ -1,11 +1,11 @@
 ﻿<Ginger id="roleplay-base" version="1.2">
-	<Name>Base/Roleplay</Name>
+	<Name>Roleplay</Name>
 	<Title>Roleplay</Title>
 	<Description>Base recipe for a chat bot with a focus on roleplay.</Description>
 	<Author>Ginger</Author>
 	<Category>Base</Category>
 	<Flags>chat, description</Flags>
-	<Order>0</Order>
+	<Order>-50</Order>
 	
 	<!-- Complementary recipes -->
 	<Include>basic-info</Include>

@@ -1,11 +1,11 @@
 ﻿<Ginger version="1.0">
-	<Name>Role/Royalty</Name>
+	<Name>Job/Royalty</Name>
 	<Title>Royalty</Title>
 	<Description>The character is royalty.</Description>
 	<Author>Ginger</Author>
-	<Category>Role</Category>
-	<Flags>role</Flags>
-	<Requires>not role</Requires>
+	<Category>job</Category>
+	<Requires>not job</Requires>
+	<Flags>job</Flags>
 	
 	<!-- Parameters -->
 	<Choice id="kind" required="true">

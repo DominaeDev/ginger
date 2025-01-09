@@ -990,7 +990,7 @@ namespace Ginger
 
 				MainForm.instance.PopulateRecipeMenu(Recipe.Drawer.Model, model.DropDownItems, context);
 				MainForm.instance.PopulateRecipeMenu(Recipe.Drawer.Character, character.DropDownItems, context);
-				MainForm.instance.PopulateRecipeMenu(Recipe.Drawer.Appearance, traits.DropDownItems, context);
+				MainForm.instance.PopulateRecipeMenu(Recipe.Drawer.Traits, traits.DropDownItems, context);
 				MainForm.instance.PopulateRecipeMenu(Recipe.Drawer.Story, story.DropDownItems, context);
 				MainForm.instance.PopulateRecipeMenu(Recipe.Drawer.Mind, mind.DropDownItems, context);
 				MainForm.instance.PopulateRecipeMenu(Recipe.Drawer.Snippets, snippets.DropDownItems, context);

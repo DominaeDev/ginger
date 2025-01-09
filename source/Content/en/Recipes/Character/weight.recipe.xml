@@ -1,9 +1,8 @@
 <Ginger version="1.1">
-	<Name>Anatomy/Weight</Name>
+	<Name>Attribute/Weight</Name>
 	<Description>Specify the character's weight.</Description>
 	<Author>Ginger</Author>
 	<Category>Body</Category>
-	<Order>10</Order>
 	
 	<!-- Parameters -->
 	<Number id="weight" style="weight" min="0" shared="yes">

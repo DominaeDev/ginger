@@ -227,8 +227,8 @@ namespace Ginger
 
 			SetToolTip(btnAdd_Model, "Bot instructions");
 			SetToolTip(btnAdd_Character, "Character");
-			SetToolTip(btnAdd_Traits, "Appearance & Traits");
-			SetToolTip(btnAdd_Mind, "Personality & Behavior");
+			SetToolTip(btnAdd_Mind, "Personality");
+			SetToolTip(btnAdd_Traits, "Traits");
 			SetToolTip(btnAdd_World, "Story & World");
 			SetToolTip(btnAdd_Other, "Components");
 			SetToolTip(btnAdd_Snippets, "Snippets");
@@ -890,7 +890,7 @@ namespace Ginger
 
 		private void btnAdd_Trait_Click(object sender, MouseEventArgs e)
 		{
-			ShowRecipeMenu(Recipe.Drawer.Appearance, btnAdd_Traits, new Point(e.X, e.Y));
+			ShowRecipeMenu(Recipe.Drawer.Traits, btnAdd_Traits, new Point(e.X, e.Y));
 		}
 
 		private void BtnAdd_Mind_MouseClick(object sender, MouseEventArgs e)

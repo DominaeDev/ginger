@@ -1,12 +1,13 @@
 ﻿<Ginger id="android" version="1.0">
 	<!-- Preamble -->
-	<Name>Archetype/Android</Name>
+	<Name>Android</Name>
 	<Title>Android</Title>
 	<Author>Ginger</Author>
 	<Description>Base recipe for a humanoid android character.</Description>
 	<Category>Archetype</Category>
 	<Requires>not core</Requires>
 	<Flags>core, biped</Flags>
+	<Order>-100</Order>
 	
 	<!-- Complementary recipes -->
 	<Include>basic-info</Include>

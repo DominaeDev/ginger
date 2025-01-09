@@ -1,11 +1,11 @@
 <Ginger id="humanoid" version="1.1">
-	<Name>Archetype/Humanoid</Name>
+	<Name>Humanoid</Name>
 	<Description>Base recipe for a humanoid character.</Description>
 	<Author>Ginger</Author>
 	<Category>Archetype</Category>
 	<Requires>not core</Requires>
 	<Flags>core, biped</Flags>
-	<Order>0</Order>
+	<Order>-50</Order>
 	
 	<!-- Complementary recipes -->
 	<Include>basic-info</Include>

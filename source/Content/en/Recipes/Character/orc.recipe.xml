@@ -1,12 +1,12 @@
 ﻿<Ginger id="orc-core" version="1.2">
 	<!-- Preamble -->
-	<Name>Archetype/Orc</Name>
+	<Name>Orc</Name>
 	<Title>Orc</Title>
 	<Author>Ginger</Author>
 	<Category>Archetype</Category>
 	<Flags>humanoid, biped, orc, core</Flags>
 	<Requires>not core</Requires>
-	<Order>200</Order>
+	<Order>-200</Order>
 	<Description>
 		Base recipe for an orc character.
 	</Description>

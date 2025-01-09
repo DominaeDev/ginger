@@ -1,5 +1,5 @@
 ﻿<Ginger version="1.1">
-	<Name>Archetype/Centaur</Name>
+	<Name>Centaur</Name>
 	<Title>Centaur</Title>
 	<Description>
 		Base recipe for a centaur character.
@@ -9,7 +9,7 @@
 	<Category>Archetype</Category>
 	<Requires>not core</Requires>
 	<Flags>core, quadruped</Flags>
-	<Order>200</Order>
+	<Order>-200</Order>
 			
 	<!-- Complementary recipes -->
 	<Include>basic-info</Include>

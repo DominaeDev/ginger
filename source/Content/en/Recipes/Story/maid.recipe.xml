@@ -1,10 +1,10 @@
 ﻿<Ginger id="maid" version="1.0">
-	<Name>Role/Butler // Maid</Name>
+	<Name>Job/House servant</Name>
 	<Description>The character is a butler or maid.</Description>
 	<Author>Ginger</Author>
-	<Category>Role</Category>
-	<Requires>not role</Requires>
-	<Flags>role</Flags>
+	<Category>Job</Category>
+	<Requires>not job</Requires>
+	<Flags>job</Flags>
 	
 	<!-- Parameters -->
 	<Choice id="type" style="radio" required="yes">
