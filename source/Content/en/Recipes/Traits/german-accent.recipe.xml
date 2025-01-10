@@ -1,5 +1,5 @@
-﻿<Ginger version="1.0">
-	<Name>Speech/German accent</Name>
+﻿<Ginger id="german-accent" version="1.0">
+	<Name>Speech/Accent/German</Name>
 	<Title>German accent</Title>
 	<Description>The character speaks with a German accent.</Description>
 	<Author>Ginger</Author>

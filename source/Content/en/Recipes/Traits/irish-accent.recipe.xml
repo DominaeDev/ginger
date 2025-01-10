@@ -1,5 +1,6 @@
-﻿<Ginger version="1.0">
-	<Name>Speech/Irish accent</Name>
+﻿<Ginger id="irish-accent" version="1.0">
+	<Name>Speech/Accent/Irish</Name>
+	<Title>Irish accent</Title>
 	<Description>The character speaks with an Irish accent.</Description>
 	<Author>Ginger</Author>
 	<Category>Speech</Category>

@@ -1,8 +1,8 @@
 ﻿<Ginger id="pious" version="1.2">
-	<Name>Personality/Pious</Name>
+	<Name>Religious</Name>
 	<Description>The character is religious.</Description>
 	<Author>Ginger</Author>
-	<Category>Personality</Category>
+	<Category>Trait</Category>
 	
 	<!-- Parameters -->
 	<Choice id="deity" style="custom">

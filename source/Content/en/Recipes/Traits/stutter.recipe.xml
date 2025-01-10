@@ -1,5 +1,6 @@
-<Ginger version="1.0">
-	<Name>Speech/Stutter</Name>
+<Ginger id="stutter" version="1.0">
+	<Name>Speech/Impediment/Stutter</Name>
+	<Title>Stutter</Title>
 	<Description>The character speaks with a stutter.</Description>
 	<Author>Ginger</Author>
 	<Category>Speech</Category>

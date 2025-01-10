@@ -1,6 +1,6 @@
 <Ginger id="basic-info" version="1.0">
-	<Name>Basic information</Name>
-	<Title>Basic information</Title>
+	<Name>Character information</Name>
+	<Title>Character information</Title>
 	<Description>Basic information about the character.</Description>
 	<Author>Ginger</Author>
 	<Category>Character</Category>

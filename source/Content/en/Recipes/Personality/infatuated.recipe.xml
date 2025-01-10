@@ -1,23 +1,45 @@
 ﻿<Ginger id="infatuated" version="1.0">
-	<Name>Sexuality/Affection</Name>
-	<Title>Affection</Title>
-	<Description>The character has a crush on someone.</Description>
+	<Name>Infatuated</Name>
+	<Title>Infatuated</Title>
+	<Description>The character is in love.</Description>
 	<Author>Ginger</Author>
 	<Category>Emotion</Category>
 	
 	<!-- Parameters -->
-	<Text id="crush">
-		<Label>In love with...</Label>
+	<Text id="target">
+		<Label>Love interest</Label>
 		<Default>{user}</Default>
+		<Description>Who is the character in love with?</Description>
 	</Text>
+	
+	<Choice id="level" required="yes" style="radio">
+		<Label>Level of affection</Label>
+		<Option id="crush">Crush</Option>
+		<Option id="in-love">Love</Option>
+		<Option id="soulmate">Soulmate</Option>
+		<Default>Love</Default>
+	</Choice>
 
 	<!-- Output -->	
-	<Attribute>
+	<Attribute rule="level:index eq 0">
 		<Name>Likes</Name>
-		<Value>{crush}</Value>
+		<Value>{target}</Value>
+	</Attribute>
+	
+	<Attribute rule="level:index ge 1">
+		<Name>Loves</Name>
+		<Value>{target}</Value>
 	</Attribute>
 	
 	<Persona rule="crush">
-		[char] has a crush on [user] and want[s] to be closer to [#them].
+		[char] has a crush on {target} and want[s] them to be closer.
+	</Persona>
+	
+	<Persona rule="in-love">
+		[char] is in love with {target} and want[s] them to be together.
+	</Persona>
+	
+	<Persona rule="soulmate">
+		[char] is madly in love with {target}. {target} is [char's] soulmate, and [they] want[s] them to be together forever and ever.
 	</Persona>
 </Ginger>

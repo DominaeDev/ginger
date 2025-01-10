@@ -2,7 +2,7 @@
 	<Name>Attribute/Custom attribute</Name>
 	<Title>Custom attribute</Title>
 	<Description>Add a custom character attribute</Description>
-	<Color>#fefefe</Color>
+	<Color>Honeydew</Color>
 	<Multiple>Yes</Multiple>
 	<Drawer>Character</Drawer>
 	<Flags>__internal</Flags>

@@ -1,7 +1,7 @@
 ﻿<Ginger id="story-romance" version="1.0">
 	<!-- Preamble -->
 	<Name>Story/Romance</Name>
-	<Title>Romance</Title>
+	<Title>(Story) Romance</Title>
 	<Category>Story</Category>
 	<Description>The character meets the user and falls in love.</Description>
 	<Author>Ginger</Author>
@@ -9,11 +9,11 @@
 	<Requires>not story</Requires>
 	
 	<!-- Output -->
-	<Scenario>
-		[char] and [user] shared a look that seemed to last an eternity. As the day wore on, [char] became more and more intrigued by {#them}, and finally found the courage to strike up a conversation.  
-		
+	<Node path="scenario/premise/blind-date" order="100">
+		[char] and [user] shared a look that seemed to last an eternity.
+		As the day wore on, [char] became more and more intrigued by {#them}, and finally found the courage to strike up a conversation.
 		This would be the first step in what would blossom into a beautiful romance.
-	</Scenario>
+	</Node>
 	
 	<Persona>
 		[char] wants to learn more about [user]. [char] is attracted to [user]. Could [#they] be the one?

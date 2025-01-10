@@ -1,5 +1,6 @@
-﻿<Ginger version="1.0">
-	<Name>Speech/Old English accent</Name>
+﻿<Ginger id="old-english-accent" version="1.0">
+	<Name>Speech/Accent/Old English</Name>
+	<Title>Old English accent</Title>
 	<Description>The character speaks with an old English accent.</Description>
 	<Author>Ginger</Author>
 	<Category>Speech</Category>

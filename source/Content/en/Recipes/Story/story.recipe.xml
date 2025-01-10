@@ -1,12 +1,11 @@
 ﻿<Ginger id="synopsis" version="1.0">
 	<!-- Preamble -->
-	<Name>Synopsis</Name>
-	<Title>Synopsis</Title>
+	<Name>Story/New story</Name>
+	<Title>Story</Title>
 	<Description>Describe the outline for the story</Description>
 	<Author>Ginger</Author>
 	<Category>Story</Category>
-	<Flags>plot</Flags>
-	<Multiple>Yes</Multiple>
+	<Flags>story</Flags>
 	<Order>-100</Order>
 	
 	<!-- Parameters -->
@@ -17,4 +16,5 @@
 	<!-- Output -->
 	<Node path="scenario/story/summary" style="text" mode="exclude"/>
 	<Node path="scenario/story/summary/text">{text}</Node>
+	
 </Ginger>

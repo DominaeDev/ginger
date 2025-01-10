@@ -219,7 +219,13 @@ namespace Ginger
 					context.SetFlag("__faraday");
 					context.SetFlag("__backyard");
 					if (option.Contains(Option.Linked))
+					{
 						context.SetFlag("__link");
+						if (AppSettings.BackyardLink.WriteUserPersona)
+							context.SetFlag("__write-user");
+						if (AppSettings.BackyardLink.WriteAuthorNote)
+							context.SetFlag("__author-note");
+					}
 				}
 				else if (option.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3))
 					context.SetFlag("__tavern");

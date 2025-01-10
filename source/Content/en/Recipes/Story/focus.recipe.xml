@@ -4,7 +4,7 @@
 	<Description>Pay extra attention and focus on one or more topic.</Description>
 	<Author>Ginger</Author>
 	<Category>Story</Category>
-	<Order>-101</Order>
+	<Order>-105</Order>
 	
 	<!-- Parameters -->
 	<List id="focus">

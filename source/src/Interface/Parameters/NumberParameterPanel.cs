@@ -110,11 +110,18 @@ namespace Ginger
 			textBox.Enabled = !bReserved && parameter.isEnabled;
 
 			WhileIgnoringEvents(() => {
-				decimal number;
 				if (bReserved)
-					decimal.TryParse(reservedValue, NumberStyles.Float, CultureInfo.InvariantCulture, out number);
-				else
-					number = parameter.value;
+				{
+					decimal number;
+					if (decimal.TryParse(reservedValue, NumberStyles.Float, CultureInfo.InvariantCulture, out number))
+						SetValue(number);
+					else
+					{
+						textBox.Text = reservedValue;
+						textBox.InitUndo();
+					}
+					return;
+				}
 
 				if (parameter.value == default(decimal) && parameter.isOptional && parameter.GetDefaultValue() == default(decimal))
 				{
@@ -122,7 +129,7 @@ namespace Ginger
 					textBox.InitUndo();
 				}
 				else
-					SetValue(number);
+					SetValue(parameter.value);
 			});
 		}
 

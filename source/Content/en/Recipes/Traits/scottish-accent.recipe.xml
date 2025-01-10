@@ -1,5 +1,6 @@
-﻿<Ginger version="1.0">
-	<Name>Speech/Scottish accent</Name>
+﻿<Ginger id="scottish-accent" version="1.0">
+	<Name>Speech/Accent/Scottish</Name>
+	<Title>Scottish accent</Title>
 	<Description>The character speaks with a Scottish accent.</Description>
 	<Author>Ginger</Author>
 	<Category>Speech</Category>

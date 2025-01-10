@@ -76,16 +76,25 @@
 	</Node>
 
 	<!-- Story block -->
-	<Node path="scenario/story" order="200">
+	<Node path="scenario/premise" order="190" rule="not less-detail">
+		PREMISE:  
+		{inner}  
+	</Node>
+	<Node path="scenario/premise" order="190" rule="less-detail"/>
+	
+	<!-- Story block -->
+	<Node path="scenario/story" order="200" rule="not less-detail">
 		STORY:  
 		{inner}  
 	</Node>
+	<Node path="scenario/story" order="200" rule="less-detail"/>
 	
-	<!-- Story block -->
-	<Node path="scenario/hint" order="800" style="bullet-list">
-		Story hints:  
+	<!-- Story hints -->
+	<Node path="scenario/hint" order="800" style="bullet-list" rule="not less-detail">
+		STORY HINTS:  
 		{inner}  
 	</Node>	
+	<Node path="scenario/hint" order="800" style="bullet-list" rule="less-detail"/>
 
 	<!-- World block -->
 	<Node path="scenario/world" style="paragraph" order="400"/>

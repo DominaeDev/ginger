@@ -1,5 +1,6 @@
-﻿<Ginger version="1.0">
-	<Name>Speech/French accent</Name>
+﻿<Ginger id="french-accent" version="1.0">
+	<Name>Speech/Accent/French</Name>
+	<Title>French accent</Title>
 	<Description>The character has speaks with a French accent.</Description>
 	<Author>Ginger</Author>
 	<Category>Speech</Category>
