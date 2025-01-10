@@ -1,9 +1,9 @@
 ﻿<Ginger version="1.0">
-	<Name>Body part/Pointy ears</Name>
+	<Name>Anatomy/Feature/Pointy ears</Name>
 	<Title>Pointy ears</Title>
 	<Description>The character has pointy ears.</Description>
 	<Author>Ginger</Author>
-	<Category>Feature</Category>
+	<Category>Body</Category>
 	<Requires>not (animal or anthro)</Requires>
 	
 	<!-- Features -->

@@ -1,6 +1,6 @@
 ﻿<Ginger id="location" version="1.0">
 	<!-- Preamble -->
-	<Name>Locations/Add location</Name>
+	<Name>Locations/New location</Name>
 	<Title>Location</Title>
 	<Description>Describe a location or place for the story.</Description>
 	<Author>Ginger</Author>

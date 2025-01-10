@@ -1,9 +1,9 @@
 ﻿<Ginger version="1.0">
-	<Name>Body part/Horns</Name>
+	<Name>Anatomy/Feature/Horns</Name>
 	<Title>Horns</Title>
 	<Description>The character has horns.</Description>
 	<Author>Ginger</Author>
-	<Category>Feature</Category>
+	<Category>Body</Category>
 	<Requires>not (animal or anthro)</Requires>
 	
 	<!-- Features -->

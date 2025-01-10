@@ -1,9 +1,9 @@
 ﻿<Ginger version="1.0">
-	<Name>Body part/Paws</Name>
+	<Name>Anatomy/Feature/Paws</Name>
 	<Title>Paws</Title>
 	<Description>The character has claws.</Description>
 	<Author>Ginger</Author>
-	<Category>Feature</Category>
+	<Category>Body</Category>
 	<Requires>not (animal or anthro)</Requires>
 	
 	<!-- Parameters -->

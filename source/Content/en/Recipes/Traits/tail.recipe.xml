@@ -1,9 +1,9 @@
 ﻿<Ginger version="1.0">
-	<Name>Body part/Tail</Name>
+	<Name>Anatomy/Feature/Tail</Name>
 	<Title>Tail</Title>
 	<Description>The character has a tail.</Description>
 	<Author>Ginger</Author>
-	<Category>Feature</Category>
+	<Category>Body</Category>
 	<Requires>not (animal or anthro)</Requires>
 	
 	<!-- Features -->

@@ -1,9 +1,9 @@
 ﻿<Ginger version="1.0">
-	<Name>Body part/Wings</Name>
+	<Name>Anatomy/Feature/Wings</Name>
 	<Title>Wings</Title>
 	<Description>The character has wings.</Description>
 	<Author>Ginger</Author>
-	<Category>Feature</Category>
+	<Category>Body</Category>
 	<Requires>not (animal or anthro)</Requires>
 	
 	<!-- Features -->

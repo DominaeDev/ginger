@@ -12,6 +12,7 @@
 		<Option>Maid</Option>
 		<Option>Butler</Option>
 	</Choice>
+	
 	<Text id="title">
 		<Label>User's title</Label>
 		<Placeholder>Master</Placeholder>

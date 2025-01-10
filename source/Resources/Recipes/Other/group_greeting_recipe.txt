@@ -1,6 +1,6 @@
 <Ginger id="__group-greeting">
-	<Name>Greeting (Group only)</Name>
-	<Title>Greeting (Group only)</Title>
+	<Name>Greeting (Groups only)</Name>
+	<Title>Greeting (Groups only)</Title>
 	<Description>
 		Greeting for group chats.
 	</Description>

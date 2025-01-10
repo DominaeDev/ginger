@@ -1,77 +1,78 @@
 ﻿<Ginger id="__attribute" version="1.0">
-	<Name>Custom attribute</Name>
+	<Name>Attribute/Custom attribute</Name>
 	<Title>Custom attribute</Title>
 	<Description>Add a custom character attribute</Description>
-	<Order>500</Order>
 	<Color>#fefefe</Color>
 	<Multiple>Yes</Multiple>
-	<Flags>__component, __internal</Flags>
+	<Drawer>Character</Drawer>
+	<Flags>__internal</Flags>
+	<Order>-100</Order>
 
 	<Text id="name">
 		<Label>Name</Label>
 		<Description>Attribute name. (E.g., Personality, Appearance, Likes, Dislikes, ...)</Description>
 	</Text>
-	<Text id="text-value" rule="type:local is text">
-		<Label>Value</Label>
+	<Text id="text-value" rule="type:id is text">
+		<Label>Text</Label>
 	</Text>
-	<Text id="long-value" style="flex" rule="type:local is long">
-		<Label>Value</Label>
+	<Text id="long-value" style="flex" rule="type:id is long">
+		<Label>Text</Label>
 	</Text>
-	<List id="list-value" rule="type:local is list">
-		<Label>Value</Label>
+	<List id="list-value" rule="type:id is list">
+		<Label>List</Label>
 	</List>
-	<Number id="number-value" rule="type:local is number">
+	<Number id="number-value" rule="type:id is number">
 		<Label>Value</Label>
 	</Number>
-	<Number id="length-value" style="length" rule="type:local is length">
+	<Number id="length-value" style="length" rule="type:id is length">
 		<Label>Value</Label>
 	</Number>
-	<Number id="weight-value" style="weight" rule="type:local is weight">
+	<Number id="weight-value" style="weight" rule="type:id is weight">
 		<Label>Value</Label>
 	</Number>
-	<Number id="volume-value" style="volume" rule="type:local is volume">
+	<Number id="volume-value" style="volume" rule="type:id is volume">
 		<Label>Value</Label>
 	</Number>
 	<Choice id="type" required="true" immediate="true">
 		<Label>Type</Label>
 		<Option>Text</Option>
 		<Option id="long">Text (multi-line)</Option>
-		<Option>List</Option>
-		<Option>Number</Option>
-		<Option>Length</Option>
-		<Option>Weight</Option>
-		<Option>Volume</Option>
+		<Option id="list">List</Option>
+		<Option id="number">Number</Option>
+		<Option id="length">Measurement (Length)</Option>
+		<Option id="weight">Measurement (Weight)</Option>
+		<Option id="volume">Measurement (Volume)</Option>
 	</Choice>
 
-	<Attribute style="attribute" rule="type:local is text">
+	<Attribute style="attribute" rule="type:id is text">
 		<Name>{name:local}</Name>
 		<Value>{text-value}</Value>
 	</Attribute>
-	<Attribute style="text" rule="type:local is long">
+	<Attribute style="text" rule="type:id is long">
 		<Name>{name:local}</Name>
 		<Value>{long-value}</Value>
 	</Attribute>
-	<Attribute style="list" rule="type:local is list">
+	<Attribute style="list" rule="type:id is list">
 		<Name>{name:local}</Name>
 		<Value>{list-value}</Value>
 	</Attribute>
-	<Attribute style="number" rule="type:local is number">
+	<Attribute style="number" rule="type:id is number">
 		<Name>{name:local}</Name>
 		<Value>{number-value}</Value>
 	</Attribute>
-	<Attribute style="attribute" rule="type:local is length and less-detail">
+	<Attribute style="attribute" rule="type:id is length and less-detail">
 		<Name>{name:local}</Name>
 		<Value>{length-value}</Value>
 	</Attribute>
-	<Attribute style="attribute" rule="type:local is length and normal-detail">
+	<Attribute style="attribute" rule="type:id is length and normal-detail">
 		<Name>{name:local}</Name>
 		<Value>{length-value.ftin} ({length-value.cm})</Value>
 	</Attribute>
-	<Attribute style="attribute" rule="type:local is weight">
+	<Attribute style="attribute" rule="type:id is weight">
 		<Name>{name:local}</Name>
 		<Value>{weight-value}</Value>
 	</Attribute>
-	<Attribute style="attribute" rule="type:local is volume">
+	<Attribute style="attribute" rule="type:id is volume">
 		<Name>{name:local}</Name>
 		<Value>{volume-value}</Value>
 	</Attribute>

@@ -1,12 +1,12 @@
 <Ginger id="appearance" version="1.1">
-	<Name>Appearance</Name>
+	<Name>Appearance/Appearance</Name>
 	<Title>Appearance</Title>
 	<Description>Describe the general appearance of the character.</Description>
 	<Author>Ginger</Author>
 	<Category>Character</Category>
 	<Requires>not appearance</Requires>
 	<Flags>appearance</Flags>
-	<Order>101</Order>
+	<Order>-100</Order>
 			
 	<!-- Parameters -->
 	<!-- Body type -->

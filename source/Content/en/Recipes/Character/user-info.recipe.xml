@@ -1,6 +1,6 @@
 <Ginger id="user-info" version="1.0">
-	<Name>User/Add user information</Name>
-	<Title>User information</Title>
+	<Name>User/User description</Name>
+	<Title>User description</Title>
 	<Description>Basic information about the user.</Description>
 	<Author>Ginger</Author>
 	<Category>User</Category>

@@ -1,6 +1,6 @@
 ﻿<Ginger id="addiction" version="1.1">
 	<!-- Preamble -->
-	<Name>Addicted</Name>
+	<Name>Trait/Addicted</Name>
 	<Title>Addicted</Title>
 	<Author>Ginger</Author>
 	<Category>Trait</Category>
@@ -9,7 +9,7 @@
 	
 	<!-- Parameters -->
 	<Choice id="addiction" required="yes" style="custom">
-		<Label>Addiction</Label>
+		<Label>Addicted to</Label>
 		<Option>Alcohol</Option>
 		<Option>Drugs</Option>
 		<Option>Sex</Option>

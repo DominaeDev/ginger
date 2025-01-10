@@ -94,7 +94,7 @@ namespace Ginger
 			recipes.Add(CreateRecipeFromResource(Resources.lorebook_recipe,			Recipe.Type.Lore,		Recipe.Drawer.Lore));
 
 			// Other components
-			recipes.Add(CreateRecipeFromResource(Resources.attribute_recipe,		Recipe.Type.Component,	Recipe.Drawer.Components));
+			recipes.Add(CreateRecipeFromResource(Resources.attribute_recipe,		Recipe.Type.Recipe,	Recipe.Drawer.Character));
 			recipes.Add(CreateRecipeFromResource(Resources.personality_recipe,		Recipe.Type.Component,	Recipe.Drawer.Components));
 			recipes.Add(CreateRecipeFromResource(Resources.grammar_recipe,			Recipe.Type.Component,	Recipe.Drawer.Components));
 			recipes.Add(CreateRecipeFromResource(Resources.post_history_recipe,		Recipe.Type.Component,	Recipe.Drawer.Components));

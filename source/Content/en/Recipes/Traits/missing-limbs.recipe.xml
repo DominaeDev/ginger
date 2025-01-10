@@ -1,9 +1,9 @@
 ﻿<Ginger id="missing-limbs" version="1.0">
 	<!-- Preamble -->
-	<Name>Body part/Missing limbs</Name>
+	<Name>Anatomy/Missing limbs</Name>
 	<Title>Missing limbs</Title>
 	<Author>Ginger</Author>
-	<Category>Feature</Category>
+	<Category>Body</Category>
 	<Description>The character is missing one or more limbs.</Description>
 	
 	<!-- Arms -->

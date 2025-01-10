@@ -7,22 +7,6 @@
 	<Description>Specify the character's birthday and/or zodiac sign.</Description>
 	
 	<!-- Parameters -->
-	<Choice id="astrological-sign" required="yes" rule="not (birth-month or birth-day)">
-		<Label>Astrological sign</Label>
-		<Option>Aries</Option>
-		<Option>Taurus</Option>
-		<Option>Gemini</Option>
-		<Option>Cancer</Option>
-		<Option>Leo</Option>
-		<Option>Virgo</Option>
-		<Option>Libra</Option>
-		<Option>Scorpio</Option>
-		<Option>Sagittarius</Option>
-		<Option>Capricorn</Option>
-		<Option>Aquarius</Option>
-		<Option>Pisces</Option>
-	</Choice>
-	
 	<Choice id="birth-month" immediate="yes">
 		<Label>Birth month</Label>
 		<Option>January</Option>
@@ -42,7 +26,32 @@
 	<Number id="birth-day" min="1" max="31" rule="birth-month">
 		<Label>Birth day</Label>
 	</Number>
+
+	<Choice id="astrological-sign" required="yes" rule="not (birth-month or birth-day)">
+		<Label>Astrological sign</Label>
+		<Option>Aries</Option>
+		<Option>Taurus</Option>
+		<Option>Gemini</Option>
+		<Option>Cancer</Option>
+		<Option>Leo</Option>
+		<Option>Virgo</Option>
+		<Option>Libra</Option>
+		<Option>Scorpio</Option>
+		<Option>Sagittarius</Option>
+		<Option>Capricorn</Option>
+		<Option>Aquarius</Option>
+		<Option>Pisces</Option>
+	</Choice>
 	
+	<Toggle id="show-sign" rule="birth-month or birth-day">
+		<Label>Include sign</Label>
+		<Default>Yes</Default>
+		<Description>Include the character's zodiac sign.</Description>
+	</Toggle>
+		
+	<SetVar id="astrological-sign" scope="global">[{astrological-sign}|{@sign-by-date}]</SetVar>
+
+	<!-- Output -->
 	<String id="sign-by-date" rule="birth-month and birth-day">
 		<String rule="(birth-month:index eq 2 and birth-day ge 21) or (birth-month:index eq 3 and birth-day le 19)">Aries</String>
 		<String rule="(birth-month:index eq 3 and birth-day ge 20) or (birth-month:index eq 4 and birth-day le 20)">Taurus</String>
@@ -57,16 +66,7 @@
 		<String rule="(birth-month:index eq 0 and birth-day ge 20) or (birth-month:index eq 1 and birth-day le 18)">Aquarius</String>
 		<String rule="(birth-month:index eq 1 and birth-day ge 19) or (birth-month:index eq 2 and birth-day le 20)">Pisces</String>
 	</String>
-	
-	<Toggle id="show-sign" rule="birth-month or birth-day">
-		<Label>Zodiac</Label>
-		<Default>Yes</Default>
-		<Description>Include zodiac sign.</Description>
-	</Toggle>
-	
-	<SetVar id="astrological-sign" scope="global">[{astrological-sign}|{@sign-by-date}]</SetVar>
-	
-	<!-- Output -->
+
 	<Attribute id="astrological-sign" rule="not (birth-month and birth-day)">
 		<Name>Zodiac sign</Name>
 		<Value>{astrological-sign}</Value>

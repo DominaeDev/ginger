@@ -21,7 +21,7 @@ namespace Ginger
 			{ Recipe.Drawer.Lore,				ColorTranslator.FromHtml("#f2e6f2") },
 			{ Recipe.Drawer.Model,				ColorTranslator.FromHtml("#bfd0db") },
 			{ Recipe.Drawer.Character,			Color.Honeydew },
-			{ Recipe.Drawer.Traits,			ColorTranslator.FromHtml("#fffef0") },
+			{ Recipe.Drawer.Traits,				ColorTranslator.FromHtml("#fffef0") },
 			{ Recipe.Drawer.Mind,				Color.Azure },
 			{ Recipe.Drawer.Story,				Color.Linen  },
 		};
@@ -29,21 +29,22 @@ namespace Ginger
 		public static Dictionary<Recipe.Category, Color> RecipeColorByCategory = new Dictionary<Recipe.Category, Color>
 		{
 			{ Recipe.Category.Undefined,		Color.Gainsboro },
-
 			{ Recipe.Category.Base,			    ColorTranslator.FromHtml("#98acb9") },
 			{ Recipe.Category.Model,			ColorTranslator.FromHtml("#bfd0db") },
 			{ Recipe.Category.Modifier,			ColorTranslator.FromHtml("#bfd0db") },
-		   
+	   
 			{ Recipe.Category.Archetype,		Color.Honeydew },
 			{ Recipe.Category.Character,		Color.Honeydew },
-			{ Recipe.Category.Job,				Color.Honeydew },
+			{ Recipe.Category.Appearance,	    Color.Honeydew },
+			{ Recipe.Category.Body,				Color.Honeydew },
+			{ Recipe.Category.Special,		    Color.Honeydew },
 
-			{ Recipe.Category.Appearance,	    ColorTranslator.FromHtml("#fffef0") },
-			{ Recipe.Category.Speech,		    ColorTranslator.FromHtml("#fffef0") },
 			{ Recipe.Category.Trait,		    ColorTranslator.FromHtml("#fffef0") },
-			{ Recipe.Category.Special,		    ColorTranslator.FromHtml("#fffef0") },
-			{ Recipe.Category.Body,				ColorTranslator.FromHtml("#fffef0") },
 			{ Recipe.Category.Feature,			ColorTranslator.FromHtml("#fffef0") },
+			{ Recipe.Category.Job,				ColorTranslator.FromHtml("#fffef0") },
+			{ Recipe.Category.Relationship,	    ColorTranslator.FromHtml("#fffef0") },
+			{ Recipe.Category.Speech,		    ColorTranslator.FromHtml("#fffef0") },
+			{ Recipe.Category.Role,				ColorTranslator.FromHtml("#fffef0") },
 
 			{ Recipe.Category.Personality,	    ColorTranslator.FromHtml("#d2f0f0") },
 			{ Recipe.Category.Mind,				Color.Azure },
@@ -51,10 +52,8 @@ namespace Ginger
 			{ Recipe.Category.Quirk,			Color.Azure },
 			{ Recipe.Category.Emotion,          Color.Azure },
 			{ Recipe.Category.Sexual,           ColorTranslator.FromHtml("#fff0f8") },
-			{ Recipe.Category.Role,				ColorTranslator.FromHtml("#d2f0f0") },
 
 			{ Recipe.Category.User,			    ColorTranslator.FromHtml("#ddf5ef") },
-			{ Recipe.Category.Relationship,	    ColorTranslator.FromHtml("#ddf5ef") },
 
 			{ Recipe.Category.Story,			Color.Linen },
 			{ Recipe.Category.World,			Color.Linen },
@@ -86,6 +85,7 @@ namespace Ginger
 			{ Recipe.Category.Trait,			Recipe.Drawer.Traits },
 			{ Recipe.Category.Feature,			Recipe.Drawer.Traits },
 			{ Recipe.Category.Job,				Recipe.Drawer.Traits },
+			{ Recipe.Category.Role,             Recipe.Drawer.Traits },
 			{ Recipe.Category.Relationship,		Recipe.Drawer.Traits },
 			{ Recipe.Category.Speech,			Recipe.Drawer.Traits },
 			
@@ -96,7 +96,6 @@ namespace Ginger
 			{ Recipe.Category.Emotion,			Recipe.Drawer.Mind },
 			{ Recipe.Category.Sexual,			Recipe.Drawer.Mind },
 
-			{ Recipe.Category.Role,             Recipe.Drawer.Story },
 			{ Recipe.Category.Story,			Recipe.Drawer.Story },
 			{ Recipe.Category.World,			Recipe.Drawer.Story },
 			{ Recipe.Category.User,				Recipe.Drawer.Story },

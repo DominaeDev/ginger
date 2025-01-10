@@ -1,5 +1,5 @@
 <Ginger id="personality" version="1.1">
-	<Name>Add personality</Name>
+	<Name>New personality</Name>
 	<Title>Personality</Title>
 	<Author>Ginger</Author>
 	<Category>Personality</Category>
@@ -28,7 +28,7 @@
 	</List>
 	
 	<Text id="more" optional="yes" style="flex">
-		<Label>Behavior</Label>
+		<Label>Additional details</Label>
 		<Description>
 			Describe the character's overall behavior.
 		</Description>

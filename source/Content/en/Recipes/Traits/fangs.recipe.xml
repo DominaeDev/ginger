@@ -1,9 +1,9 @@
 ﻿<Ginger version="1.0">
-	<Name>Body part/Fangs</Name>
+	<Name>Anatomy/Feature/Fangs</Name>
 	<Title>Fangs</Title>
 	<Description>The character has fangs.</Description>
 	<Author>Ginger</Author>
-	<Category>Feature</Category>
+	<Category>Body</Category>
 	<Requires>not (animal or anthro)</Requires>
 	
 	<Node path="appearance/body">
