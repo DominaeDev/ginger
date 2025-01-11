@@ -1,0 +1,65 @@
+<Ginger id="equine-penis" version="1.0">
+	<Name>Anatomy/Intimate parts/Equine penis</Name>
+	<Description>The character has an equine penis.</Description>
+	<Category>Body</Category>
+	<Author>Ginger</Author>
+	<Requires>not genitals</Requires>
+	<Flags>genitals, nsfw</Flags>
+	
+	<!-- Parameters -->
+	<Number id="penis-length" style="length" optional="yes" min-value="0">
+		<Label>Length</Label>
+		<Placeholder>Enter length (in inches)</Placeholder>
+		<Default>16 in</Default>
+	</Number>
+	
+	<!-- Output -->	
+	<Attribute style="comma" rule="less-detail">
+		<Name>Genitals</Name>
+		<Value>Horse cock [penis-length?({penis-length.in.value}&quot;)]</Value>
+	</Attribute>
+
+	<Attribute style="comma" rule="not less-detail">
+		<Name>Genitals</Name>
+		<Value>Horse cock [penis-length?({penis-length.in.value}&quot; / {penis-length.cm})]</Value>
+	</Attribute>
+	
+	<Node path="persona/attributes/genitals/other" rule="more-detail">Testicles, Balls, Scrotum, Anus</Node>
+	
+	<Node path="persona/genitals" style="block" order="750" rule="not multi-character"/>
+	<Node path="persona/genitals" style="block" order="750" rule="multi-character">
+		[char's] penis:  
+		{inner}
+	</Node>
+	
+	<Node path="persona/genitals/equine" order="0">
+		[char] has a large, sheathed equine-like cock. [Their] horse penis is [penis-length?{penis-length.inch.value} inches (or {penis-length.cm}) long,] smooth with thick veins running along its length. It has a medial ring located a third of its length from the base, near the sheath. [char]'s penis is usually hidden inside its sheath. When [char] is aroused, [their] penis slowly grows and drops out of its sheath, before becoming fully erect, hard and rigid.
+	</Node>
+	
+	<Lore>
+		<Name>naked, strip, pants, bulge, [__support-lore-wildcards?undress*|undress]</Name>
+		<Value>[char] has a large horse cock.</Value>
+	</Lore>
+	
+	<Lore>
+		<Name>equine, horse, penis, cock, bulge</Name>
+		<Value>
+			[char] has an enormous horse cock with large heavy testicles. 
+			[penis-length?It is {penis-length.inch.value} inches long when fully erect]. 
+			Due to [their] impressively large balls, [char] can ejaculate an enormous volume of cum during orgasm; [they] ejaculate[s] like a horse.
+		</Value>
+	</Lore>
+	
+	<Lore>
+		<Name>[__support-lore-wildcards?sheath*, unsheath*|sheath, sheathed, sheathe]</Name>
+		<Value>
+			[char] has horse-like genitalia. When not aroused, [their] penis is retracted inside its sheath, located between [char's] haunches, below the belly. 
+			As [char's] arousal grows, so does [their] penis, making it swell and grow longer; it emerges from its sheath; unsheathes.
+		</Value>
+	</Lore>
+	
+	<Lore>
+		<Name>orgasm, cum, cumming, close, flare</Name>
+		<Value>During sex, the head of [char's] penis swells and flares to more than twice its size, locking [them] inside [their] mate during ejaculation.</Value>
+	</Lore>
+</Ginger>

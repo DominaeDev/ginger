@@ -1,7 +1,7 @@
 <Ginger id="user-info" version="1.0">
 	<Name>User/User description</Name>
 	<Title>User description</Title>
-	<Description>Basic information about the user.</Description>
+	<Description>Basic information about User.</Description>
 	<Author>Ginger</Author>
 	<Category>User</Category>
 	<Order>0</Order>
@@ -9,7 +9,6 @@
 	<!-- Parameters -->
 	<Choice id="user-gender" style="custom" shared="yes">
 		<Label>Gender</Label>
-		<Description>Assign a gender to the user. (Supplemental only)</Description>
 		<Option>Male</Option>
 		<Option>Female</Option>
 	</Choice>

@@ -884,6 +884,9 @@ namespace Ginger
 			if (endOfWord > 0)
 				s = s.Substring(0, endOfWord);
 
+			// Bug fix
+			s = s.Replace('-', ' ');
+			
 			return AvsAnLib.AvsAn.Query(s).Article;
 		}
 

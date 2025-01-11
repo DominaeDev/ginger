@@ -2,8 +2,8 @@
 	<Name>Sexuality/Libido</Name>
 	<Category>Sexual</Category>
 	<Author>Ginger</Author>
-	<Flags>nsfw</Flags>
 	<Description>Describe the character's sexual desire.</Description>
+	<Flags>nsfw</Flags>
 	
 	<!-- Parameters -->
 	<Choice id="libido" style="slider">
@@ -25,8 +25,8 @@
 	<SetFlag rule="experience is none">Virgin</SetFlag>
 	
 	<List id="sexual-likes">
-		<Label>Sexual likes</Label>
-		<Placeholder>Things they enjoy during sex...</Placeholder>
+		<Label>Sexual kinks</Label>
+		<Placeholder>Enter one or more kinks, separated by commas</Placeholder>
 	</List>
 	
 	<!-- Output -->	

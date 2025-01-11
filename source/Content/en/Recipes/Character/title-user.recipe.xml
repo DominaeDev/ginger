@@ -1,7 +1,7 @@
 ﻿<Ginger id="title-user" version="1.1">
 	<Name>User/Title</Name>
 	<Title>Title for user</Title>
-	<Description>Specify a title for the user.</Description>
+	<Description>Specify a title for User.</Description>
 	<Author>Ginger</Author>
 	<Category>User</Category>
 	<Requires>not title-user</Requires>

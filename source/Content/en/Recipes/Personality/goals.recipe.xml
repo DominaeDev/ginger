@@ -22,7 +22,7 @@
 	
 	<!-- Output -->	
 	<Attribute style="list">
-		<Name>[goals.count gt 1?Goals|Goal]</Name>
+		<Name>Goals</Name>
 		<Value>{goals}</Value>
 	</Attribute>
 	

@@ -15,14 +15,9 @@
 	</Text>
 	
 	<!-- Output -->	
-	<Attribute style="list" rule="less-detail">
+	<Attribute style="list" order="300">
 		<Name>Fears</Name>
-		<Value>fears</Value>
-	</Attribute>
-
-	<Attribute rule="fears and normal-detail">
-		<Name>Fears</Name>
-		<Value>[char] is absolutely terrified of {fears.list}.</Value>
+		<Value>{fears}</Value>
 	</Attribute>
 
 	<Node path="description/fears" rule="more">{more}.</Node>

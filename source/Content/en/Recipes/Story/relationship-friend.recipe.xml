@@ -1,7 +1,7 @@
 <Ginger id="friendship" version="1.0">
 	<Name>Relationship/Friendly</Name>
 	<Title>Friendly relationship</Title>
-	<Description>A friendly relationship to the user.</Description>	
+	<Description>A friendly relationship to User.</Description>	
 	<Author>Ginger</Author>
 	<Category>Relationship</Category>
 	<Requires>not relationship</Requires>

@@ -3,7 +3,7 @@
 	<Name>Story/Blind date</Name>
 	<Title>(Story) Blind date</Title>
 	<Category>Story</Category>
-	<Description>The character is set up on a blind date with the user.</Description>
+	<Description>The character is set up on a blind date with User.</Description>
 	<Author>Ginger</Author>
 	<Flags>story</Flags>
 	<Requires>not story</Requires>

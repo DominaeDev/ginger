@@ -1,7 +1,7 @@
 ﻿<Ginger id="honorific-user" version="1.1">
 	<Name>User/Honorific</Name>
 	<Title>Honorific for user</Title>
-	<Description>Specify an honorific for the user.</Description>
+	<Description>Specify an honorific for User.</Description>
 	<Author>Ginger</Author>
 	<Category>User</Category>
 	<Requires>not title-user</Requires>

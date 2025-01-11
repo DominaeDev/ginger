@@ -62,21 +62,21 @@
 	</String>
 	
 	<!-- Age -->
-	<Attribute>
+	<Attribute rule="age:local">
 		<Name>Age</Name>
 		<Value>{age}</Value>
 	</Attribute>
 	
-	<Node path="description/age" rule="age and more-detail and not immortal" order="0">[char] is [a] {age.numeral} year old [race?{gender} {race.lower}|[@age-group]].</Node>
+	<Node path="description/age" rule="age:local and more-detail and not immortal" order="0" mode="exclude">[char] is [a] {age.numeral} year old [race?{gender} {race.lower}|[@age-group]].</Node>
 
 	<!-- Nationality -->
-	<Attribute>
+	<Attribute rule="nationality:local">
 		<Name>Nationality</Name>
 		<Value>{nationality}</Value>
 	</Attribute>
 	
 	<!-- Occupation -->
-	<Attribute>
+	<Attribute rule="occupation:local">
 		<Name>Occupation</Name>
 		<Value>{occupation}</Value>
 	</Attribute>

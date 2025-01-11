@@ -1,7 +1,7 @@
 ﻿<Ginger id="stay-in-character" version="1.0">
 	<Name>Modifier/Stay in character</Name>
 	<Title>Stay in character</Title>
-	<Description>Forbid acting for the user</Description>
+	<Description>Forbid acting for User.</Description>
 	<Author>Ginger</Author>
 	<Category>Modifier</Category>
 	

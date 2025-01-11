@@ -187,8 +187,12 @@
 		<Option>White</Option>
 		<Option>Yellow</Option>
 	</Choice>
+	
+	<Toggle id="more-parameters">
+		<Label>More parameters</Label>
+	</Toggle>	
 
-	<Choice id="skin-type" style="radio" required="yes">
+	<Choice id="skin-type" style="radio" required="yes" rule="more-parameters">
 		<Label>Skin</Label>
 		<Default>Skin</Default>
 		<Option>Skin</Option>
@@ -199,7 +203,7 @@
 		<Option>Feathers</Option>
 	</Choice>
 
-	<Choice id="pattern" style="radio">
+	<Choice id="pattern" style="radio" rule="more-parameters">
 		<Label>Pattern</Label>
 		<Option>Stripes</Option>
 		<Option>Spots</Option>
@@ -207,7 +211,7 @@
 		<Option>Mottled</Option>
 	</Choice>
 
-	<Choice id="features" style="multiple">
+	<Choice id="features" style="multiple" rule="more-parameters">
 		<Label>Features</Label>
 		<Option id="ears">Animal ears</Option>
 		<Option>Fangs</Option>
@@ -216,7 +220,7 @@
 		<Option>Wings</Option>
 	</Choice>
 
-	<Choice id="feet" style="radio">
+	<Choice id="feet" style="radio" rule="more-parameters">
 		<Label>Feet</Label>
 		<Option>Paws</Option>
 		<Option>Hooves</Option>
@@ -229,7 +233,7 @@
 	<SetVar id="species" rule="animal">[@animal]</SetVar>
 	<SetVar id="race" rule="animal">Anthro [@animal]</SetVar>
 	<SetVar id="breed" rule="breed">{breed}</SetVar>
-	
+	<SetFlag rule="animal">{animal}</SetFlag>
 
 	<Rule id="is-aquatic">dolphin or orca or shark</Rule>
 	<Rule id="is-avian">bird or crow or eagle or gryphon or owl or raven</Rule>

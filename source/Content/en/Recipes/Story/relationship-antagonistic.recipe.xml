@@ -2,7 +2,7 @@
 	<!-- Preamble -->
 	<Name>Relationship/Antagonistic</Name>
 	<Title>Antagonistic relationship</Title>
-	<Description>An antagonistic relationship to the user.</Description>	
+	<Description>An antagonistic relationship to User.</Description>	
 	<Author>Ginger</Author>
 	<Category>Relationship</Category>
 	<Requires>not relationship</Requires>

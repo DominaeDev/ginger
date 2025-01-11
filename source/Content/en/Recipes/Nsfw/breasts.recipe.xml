@@ -1,17 +1,17 @@
-<Ginger version="1.1">
-	<Name>Anatomy/Genitals/Breasts</Name>
+<Ginger id="breasts" version="1.1">
+	<Name>Anatomy/Intimate parts/Breasts</Name>
 	<Title>Breasts</Title>
 	<Description>Describe the character's breasts.</Description>
 	<Author>Ginger</Author>
 	<Category>Body</Category>
 	<Requires>not breasts</Requires>
 	<Flags>breasts, nsfw</Flags>
-	<Order>150</Order>
+	<Order>0</Order>
 	
 	<!-- Parameters -->
-	<Choice id="cup-size" shared="yes">
-		<Label>Cup size</Label>
-		<Option id="flat">None / Flat</Option>
+	<Choice id="breast-size">
+		<Label>Breast size</Label>
+		<Option id="flat">None (Flat)</Option>
 		<Option id="very-small">Very small</Option>
 		<Option id="small">Small</Option>
 		<Option id="average">Average</Option>
@@ -31,6 +31,7 @@
 		<Option id="j">J-cup</Option>
 		<Option id="k">K-cup</Option>
 	</Choice>
+	<SetVar id="cup-size" rule="has-cup">{breast-size}</SetVar>
 	
 	<Choice id="nipples">
 		<Option>Small</Option>
@@ -39,7 +40,10 @@
 		<Option>Inverted</Option>
 	</Choice>
 	
-	<Toggle id="pierced"/>
+	<Toggle id="pierced">
+		<Label>Pierced</Label>
+	</Toggle>
+	<SetFlag rule="pierced">pierced-nipples, nipple-piercings</SetFlag>
 	
 	<Text id="more" style="flex">
 		<Label>Additional details</Label>
@@ -47,44 +51,51 @@
 	
 	<!-- Output -->	
 	<String id="adjective">
-		<String rule="cup-size:index eq 1">tiny; subdued</String> <!-- Very small -->
-		<String rule="cup-size:index eq 2">small; cute</String> <!-- Small -->
-		<String rule="cup-size:index eq 3">modest; perky</String> <!-- Average -->
-		<String rule="cup-size:index eq 4">large; full</String> <!-- Large -->
-		<String rule="cup-size:index eq 5">massive; heavy</String> <!-- Very large -->
-		<String rule="cup-size:index eq 6">absolutely enormous; gravity defying</String> <!-- Extreme -->
-		<String rule="cup-size:index eq 7">very small; petite</String> <!-- AA -->
-		<String rule="cup-size:index eq 8">tiny; cute</String> <!-- A -->
-		<String rule="cup-size:index in 9~10">small; perky</String>  <!-- B-C -->
-		<String rule="cup-size:index in 11~13">large; heavy</String>  <!-- D-F -->
-		<String rule="cup-size:index in 14~16">sizeable; large; heavy</String> <!-- G-I -->
-		<String rule="cup-size:index ge 17">impressively enormous</String> <!-- J-K -->
+		<String rule="breast-size:index eq 1">tiny; subdued</String> <!-- Very small -->
+		<String rule="breast-size:index eq 2">small; cute</String> <!-- Small -->
+		<String rule="breast-size:index eq 3">modest; perky</String> <!-- Average -->
+		<String rule="breast-size:index eq 4">large; soft; full</String> <!-- Large -->
+		<String rule="breast-size:index eq 5">massive; soft; heavy</String> <!-- Very large -->
+		<String rule="breast-size:index eq 6">absolutely enormous; pillowy; gravity defying</String> <!-- Extreme -->
+		<String rule="breast-size:index eq 7">very small; petite</String> <!-- AA -->
+		<String rule="breast-size:index eq 8">tiny; cute</String> <!-- A -->
+		<String rule="breast-size:index in 9~10">small; perky</String>  <!-- B-C -->
+		<String rule="breast-size:index in 11~13">large; soft; heavy</String>  <!-- D-F -->
+		<String rule="breast-size:index in 14~16">sizeable; large; soft; heavy</String> <!-- G-I -->
+		<String rule="breast-size:index ge 17">impressively enormous</String> <!-- J-K -->
 	</String>
 
 	<String id="curve">
-		<String rule="cup-size:index in 1~2 or cup-size:index in 7~10">delicate</String> <!-- Small -->
-		<String rule="cup-size:index in 3~4 or cup-size:index in 11~13">gentle</String> <!-- Average -->
-		<String rule="cup-size:index in 5~6 or cup-size:index ge 14">voluptuos</String> <!-- Large-->
+		<String rule="brease-size:index in 1~2 or breast-size:index in 7~10">delicate</String> <!-- Small -->
+		<String rule="brease-size:index in 3~4 or breast-size:index in 11~13">perky</String> <!-- Average -->
+		<String rule="brease-size:index in 5~6 or breast-size:index ge 14">voluptuos</String> <!-- Large-->
 	</String>
 	
 	<String id="nipples">
 		<String rule="nipples:index is 0">delicate</String> <!-- Small -->
-		<String rule="nipples:index is 1">gentle</String> <!-- Average -->
+		<String rule="nipples:index is 1">perky</String> <!-- Average -->
 		<String rule="nipples:index is 2">voluptuos</String> <!-- Large-->
 	</String>
 
-	<Rule id="is-flat">cup-size:index eq 0</Rule>
-	<Rule id="has-breasts">not is-flat</Rule>
-	<Rule id="has-cup-size">cup-size:index ge 7</Rule>
-
-	<Attribute rule="has-cup">
+	<Rule id="is-flat">breast-size:index eq 0</Rule>
+	<Rule id="has-breasts">breast-size:index gt 0</Rule>
+	<Rule id="has-cup">breast-size:index ge 7</Rule>
+	
+	<Macro id="cup">{breast-size:id.upper}-cup</Macro>
+	
+	<Attribute rule="has-cup" style="comma">
 		<Name>Breasts</Name>
-		<Value>{cup-size.upper}-cup</Value>
+		<Value>[cup]</Value>
 	</Attribute>
 			
 	<Attribute rule="has-breasts and not has-cup">
 		<Name>Breasts</Name>
-		<Value>{cup-size}</Value>
+		<Value>{breast-size}</Value>
+	</Attribute>
+	
+	<Attribute rule="has-breasts and nipples and nipples:index neq 1">
+		<Name>Breasts</Name>
+		<Value>{nipples.lower} nipples</Value>
 	</Attribute>
 
 	<Attribute rule="is-flat">
@@ -96,8 +107,8 @@
 		[They] [don't] have visible breasts. [Their] chest is completely flat and smooth.
 	</Node>
 	
-	<Node path="appearance/breasts" rule="has-breasts and cup-size">
-		[Their] breasts are [!list:[@adjective]][has-cup-size?, and would fit comfortably in [a] [cup-size.upper]-cup bra]].
+	<Node path="appearance/breasts" rule="has-breasts and breast-size">
+		[Their] breasts are [!list:[@adjective]][has-cup?, and would fit comfortably in [a] [cup] bra]].
 	</Node>
 		
 	<Node path="appearance/breasts" rule="nipples:index is 0"> <!-- Small -->

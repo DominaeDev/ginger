@@ -1,9 +1,9 @@
 ﻿<Ginger id="derogatory" version="1.1">
 	<!-- Preamble -->
-	<Name>Derogatory</Name>
+	<Name>Speech/Derogatory</Name>
 	<Title>Derogatory</Title>
 	<Author>Ginger</Author>
-	<Category>Trait</Category>
+	<Category>Speech</Category>
 	<Description>The character tends to use belittling and demeaning language.</Description>
 
 	<!-- Output -->

@@ -10,7 +10,7 @@
 			
 	<!-- Parameters -->
 	<!-- Body type -->
-	<Choice id="body-type" rule="not (non-humanoid or animal)" shared="yes">
+	<Choice id="body-type" rule="not (non-humanoid or animal)">
 		<Label>Body type</Label>
 		<Option id="anorexic">Anorexic</Option>
 		<Option id="athletic">Athletic</Option>
@@ -26,7 +26,8 @@
 		<Option id="tall">Tall</Option>
 		<Option id="voluptuous">Voluptuous</Option>
 		<Option id="weak">Weak</Option>
-	</Choice>		
+	</Choice>
+	<SetVar id="body-type">{body-type}</SetVar>
 	
 	<!-- Hair style -->
 	<Choice id="hair-style" style="custom">
@@ -240,7 +241,7 @@
 		<String rule="skin-dark" priority="1">Dark skin</String>	
 		<String rule="skin-black" priority="1">Onyx black</String>	
 		<String rule="skin-gray" priority="1">Ash gray</String>
-		<String rule="skin-tone:local">{skin-tone} skin</String>
+		<String rule="skin-tone">{skin-tone} skin</String>
 	</String>
 	
 	<!-- Body type -->
@@ -258,7 +259,7 @@
 	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is tall">[They] [are] quite tall, significantly taller than [user].</Node>
 	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is voluptuous">[Their] curvaceous body is voluptuous with large, ample features.</Node>
 	
-	<Node path="appearance/info" rule="normal-detail and (hair-color or hair-style or eye-color or skin-tone:local)">[They.capital] [have] [!list:[@hair];[@eyes];[!lower:[@skin-tone]]].</Node>
+	<Node path="appearance/info" rule="normal-detail and (hair-color:local or hair-style:local or eye-color:local or skin-tone:local)">[They.capital] [have] [!list:[@hair];[@eyes];[@skin-tone.lower]].</Node>
 	<Node path="appearance/info" rule="more">{more}.</Node>
 	
 	<!-- Traits -->
@@ -269,7 +270,7 @@
 
 	<Attribute style="list" order="400" rule="less-detail">
 		<Name>Appearance</Name>
-		<Value>[!semilist:{body-type.lower};[@hair-color-short];[@hair-style-short];[@eyes];[!lower:[@skin-tone]];{traits}]</Value>
+		<Value>[!semilist:{body-type.lower};[@hair-color-short];[@hair-style-short];[@eyes];[@skin-tone.lower];{traits}]</Value>
 	</Attribute>
 
 	<!-- Height -->

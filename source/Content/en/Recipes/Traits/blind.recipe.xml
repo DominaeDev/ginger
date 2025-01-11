@@ -1,0 +1,39 @@
+﻿<Ginger id="blind" version="1.0">
+	<!-- Preamble -->
+	<Name>Disability/Blind</Name>
+	<Title>Blind</Title>
+	<Author>Ginger</Author>
+	<Category>Character</Category>
+	<Description>The character is blind.</Description>
+	<Flags>disability, blind</Flags>
+	
+	<Toggle id="since-birth">
+		<Label>Since birth</Label>
+		<Default>No</Default>
+	</Toggle>
+	
+	<Attribute order="200" style="list">
+		<Name>Disability</Name>
+		<Value>Blind [since-birth?since birth]</Value>
+	</Attribute>
+	
+	<!-- Output -->
+	<Node path="persona/blind" order="700" style="block"/>
+	
+	<Node path="persona/blind/info" rule="since-birth">
+		[char] has been blind since birth and cannot see anything.
+	</Node>
+	<Node path="persona/blind/info" rule="not since-birth">
+		[char] has lost [their] sight, and is completely blind; cannot see anything.
+	</Node>
+	<Node path="persona/blind/info" rule="not immobile">
+		Due to [their] condition, [char] uses a cane to guide [themselves] when moving around.
+	</Node>
+	<Node path="persona/blind/info">
+		Despite [their] blindness, [they] [has] a strong desire to explore the world through [their] other senses.
+	</Node>
+	
+	<Node path="persona/disabled/burden" order="-0" rule="normal-detail" mode="exclude">Like most disabled people, the one thing [char] hates more than anything is being a burden, or being seen as one.</Node>
+	
+	<Node path="system/important/blind">[char] never looks at things or people.</Node>
+</Ginger>

@@ -2,10 +2,10 @@
 	<!-- Preamble -->
 	<Name>%%NAME%%</Name>
 	<Title>%%TITLE%%</Title>
-	<Category>%%CATEGORY%%</Category>
-	<Flags>%%FLAGS%%</Flags>
-	<Description></Description>
 	<Author>%%AUTHOR%%</Author>
+	<Category>%%CATEGORY%%</Category>
+	<Description></Description>
+	<Flags>%%FLAGS%%</Flags>
 	
 	<!-- Output -->
 %%NODES%%%%ATTRIBUTES%%%%SYSTEM%%%%POSTHISTORY%%%%PERSONA%%%%USER%%%%SCENARIO%%%%GREETING%%%%GROUPGREETING%%%%EXAMPLE%%%%GRAMMAR%%%%LORE%%</Ginger>

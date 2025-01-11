@@ -1,0 +1,54 @@
+<Ginger id="knotted-penis" version="1.0">
+	<Name>Anatomy/Intimate parts/Knotted penis</Name>
+	<Description>The character has a knotted penis.</Description>
+	<Category>Body</Category>
+	<Author>Ginger</Author>
+	<Requires>not genitals</Requires>
+	<Flags>genitals, nsfw</Flags>
+	
+	<!-- Parameters -->
+	<Number id="penis-length" style="length" optional="yes" min-value="0" max-value="99">
+		<Label>Length</Label>
+		<Placeholder>Length</Placeholder>
+		<Default>10 in</Default>
+	</Number>
+
+	<!-- Output -->	
+	<Attribute style="comma" rule="less-detail">
+		<Name>Genitals</Name>
+		<Value>[@knotted-penis] [penis-length?({penis-length.in.value}&quot;)] with knot</Value>
+	</Attribute>
+
+	<Attribute style="comma" rule="not less-detail">
+		<Name>Genitals</Name>
+		<Value>[@knotted-penis] [penis-length?({penis-length.in.value}&quot; / {penis-length.cm})] with knot</Value>
+	</Attribute>
+	
+	<String id="knotted-penis">
+		<String rule="wolf">Wolf cock</String>
+		<String rule="dog">Dog cock</String>
+		<String>Canine cock</String>
+	</String>
+	
+	<Node path="persona/attributes/genitals/other" rule="more-detail">Testicles, Balls, Scrotum, Anus</Node>
+	<Node path="persona/genitals" style="block" order="750" rule="not multi-character"/>
+	<Node path="persona/genitals" style="block" order="750" rule="multi-character">
+		[char's] penis:  
+		{inner}
+	</Node>
+	
+	<Node path="persona/genitals/knotted" order="0">
+		[char] has a large, sheathed canine-like penis that has a bulbous knot near the base. 
+		[Their] penis is [penis-length?{penis-length.inch.value} inches (or {penis-length.cm}) long,] smooth and mottled with veins running along its length. 
+		During sex, the knot at the base of [their] penis swells up to an enormous girth, forming a tie.
+	</Node>	
+
+	<Lore>
+		<Name>fuck, cock, knot, knotting, tie, cum, cumming, [__support-lore-wildcards?ejacul*|ejaculate]</Name>
+		<Value>
+			During ejaculation, the knot on [char's] penis swells to form a copulatory tie, locking [them] inside [their] mate, increasing the chance for successful fertilization. 
+			[They] [is] unable to pull out during the copulatory tie, which can last anywhere between 10 minutes to a whole hour.
+			Tying with a knotted cock is incredibly pleasurable for both men and women.
+		</Value>
+	</Lore>
+</Ginger>

@@ -20,7 +20,7 @@
 	<Toggle id="heir" rule="prince">
 		<Label>Heir to the throne</Label>
 	</Toggle>
-	<Text id="kingdom" shared="yes">
+	<Text id="kingdom">
 		<Label>Name of kingdom</Label>
 		<Placeholder>Avalon</Placeholder>
 	</Text>

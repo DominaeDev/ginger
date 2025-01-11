@@ -1,7 +1,7 @@
 <Ginger version="1.0">
 	<Name>Relationship/Academic</Name>
 	<Title>Academic relationship</Title>
-	<Description>An academic relationship with the user.</Description>
+	<Description>An academic relationship with User.</Description>
 	<Author>Ginger</Author>
 	<Category>Relationship</Category>
 	<Requires>not relationship</Requires>

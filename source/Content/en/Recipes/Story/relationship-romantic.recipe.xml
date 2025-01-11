@@ -1,7 +1,7 @@
 <Ginger version="1.0">
 	<Name>Relationship/Romantic</Name>
 	<Title>Romantic relationship</Title>
-	<Description>A romantic relationship to the user.</Description>
+	<Description>A romantic relationship to User.</Description>
 	<Author>Ginger</Author>
 	<Category>Relationship</Category>
 	<Requires>not relationship</Requires>

@@ -1,7 +1,7 @@
 <Ginger id="relationship-professional" version="1.1">
 	<Name>Relationship/Professional</Name>
 	<Title>Professional relationship</Title>
-	<Description>The character has a working relationship with the user.</Description>
+	<Description>The character has a working relationship with User.</Description>
 	<Author>Ginger</Author>
 	<Category>Relationship</Category>
 	<Requires>not relationship</Requires>
@@ -25,7 +25,7 @@
 	</Text>
 
 	<!-- Title -->
-	<Text id="job-title" shared="yes">
+	<Text id="job-title">
 		<Label>Job title</Label>
 		<Placeholder>Employee</Placeholder>
 	</Text>
@@ -69,12 +69,12 @@
 	
 	<Node path="persona/attributes/occupation" mode="discard"/>
 	
-	<Attribute rule="not company-name">
+	<Attribute rule="job-title and not company-name:local">
 		<Name>Occupation</Name>
 		<Value>{job-title}</Value>
 	</Attribute>
 
-	<Attribute rule="company-name">
+	<Attribute rule="job-title and company-name:local">
 		<Name>Occupation</Name>
 		<Value>{job-title} at {company-name} </Value>
 	</Attribute>

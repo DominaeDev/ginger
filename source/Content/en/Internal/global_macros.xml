@@ -86,7 +86,7 @@
 	<Rule id="is-feminine">is-woman or use-feminine-pronoun</Rule>
 	<Rule id="is-man">male or man or trans-male</Rule>
 	<Rule id="is-woman">female or woman or trans-female or is-futanari</Rule>
-	<Rule id="is-futanari">futanari or futa or shemale</Rule>
+	<Rule id="is-futanari">futanari or futa or shemale or ladyboy or new-half</Rule>
 	<Rule id="is-adult">age and age ge 18</Rule>
 	<Rule id="is-group">multi-character</Rule>
 

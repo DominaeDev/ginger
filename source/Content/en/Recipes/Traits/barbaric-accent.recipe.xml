@@ -1,5 +1,6 @@
-﻿<Ginger version="1.0">
-	<Name>Speech/Caveman speak</Name>
+﻿<Ginger id="caveman-speak" version="1.0">
+	<Name>Speech/Accent/Caveman speak</Name>
+	<Title>Caveman speak</Title>
 	<Description>The character speaks like a caveman.</Description>
 	<Author>Ginger</Author>
 	<Category>Speech</Category>

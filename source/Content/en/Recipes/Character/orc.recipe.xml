@@ -66,7 +66,7 @@
 		<Value>Orc</Value>
 	</Attribute>
 		
-	<Attribute order="20" rule="complexion:local" mode="replace">
+	<Attribute order="20" rule="skin-tone:local" mode="replace">
 		<Name>Skin</Name>
 		<Value>{skin-tone}</Value>
 	</Attribute>
@@ -81,7 +81,7 @@
 		<Value>[less-detail?{height}|{height.ftin} ({height.cm})]</Value>
 	</Attribute>
 
-	<Attribute order="100" rule="not height:local">
+	<Attribute order="100" rule="not height">
 		<Name>Height</Name>
 		<Value>Significantly taller than most humans.</Value>
 	</Attribute>
@@ -97,12 +97,12 @@
 	</Attribute>
 	
 	<Node path="persona/description/orc" order="0">
-		[char] is an orc [skin-tone:local?(large {skin-tone.lower}-skinned humanoid)]. 
+		[char] is an orc [skin-tone?(large {skin-tone.lower}-skinned humanoid)]. 
 	</Node>
 	
 	<Node path="persona/description/orc" rule="normal-detail">
 		While orcs share many similarities with humans, their many differences stand out in stark contrast. 
-		The most obvious being their [!list:[skin-tone:local?{skin-tone} skin]; large, muscular size], much taller than the average human.
+		The most obvious being their [!list:[skin-tone?{skin-tone} skin]; large, muscular size], much taller than the average human.
 	</Node>
 
 	<Node path="persona/description/orc" rule="caste">

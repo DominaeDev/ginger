@@ -9,14 +9,15 @@
 	<Choice id="sexuality" style="custom" required="yes" shared="yes">
 		<Label>Sexual orientation</Label>
 		<Placeholder>Enter sexual orientation</Placeholder>
-		<Option>Heterosexual</Option>
-		<Option>Bisexual</Option>
-		<Option>Homosexual</Option>
-		<Option>Pansexual</Option>
+		<Option id="heterosexual">Heterosexual</Option>
+		<Option id="bisexual">Bisexual</Option>
+		<Option id="homosexual">Homosexual</Option>
+		<Option id="pansexual">Pansexual</Option>
 		<Option id="asexual">None</Option>
 	</Choice>
 	
-	<SetFlag rule="sexuality:local">{sexuality:local}</SetFlag>
+	<SetFlag rule="sexuality:local">{sexuality:id}</SetFlag>
+	<SetFlag rule="homosexual">gay</SetFlag>
 	
 	<List id="fetishes">
 		<Label>Turn-ons</Label>

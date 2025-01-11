@@ -1,10 +1,10 @@
-﻿<Ginger version="1.0">
+﻿<Ginger id="beautiful" version="1.0">
 	<!-- Preamble -->
-	<Name>Appearance/Beautiful</Name>
+	<Name>Beautiful</Name>
 	<Title>Beautiful</Title>
 	<Description>The character is very beautiful.</Description>
 	<Author>Ginger</Author>
-	<Category>Appearance</Category>
+	<Category>Trait</Category>
 	<Requires>not attraction-trait</Requires>
 	<Flags>attraction-trait</Flags>
 		

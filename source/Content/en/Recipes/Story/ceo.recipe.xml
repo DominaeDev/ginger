@@ -17,12 +17,12 @@
 	<SetVar id="job-title">CEO</SetVar>
 
 	<!-- Output -->
-	<Attribute rule="not company-name">
+	<Attribute rule="not company-name:local" mode="replace">
 		<Name>Occupation</Name>
-		<Value>{job-title}</Value>
+		<Value>CEO</Value>
 	</Attribute>
 
-	<Attribute rule="company-name">
+	<Attribute rule="company-name:local" mode="replace">
 		<Name>Occupation</Name>
 		<Value>CEO of {company-name} </Value>
 	</Attribute>

@@ -45,6 +45,9 @@
 	<Node path="persona/attributes/likes" style="list" order="200">[!__attrib:Likes]{inner}</Node>
 	<Node path="persona/attributes/dislikes" style="list" order="200">[!__attrib:Dislikes]{inner}</Node>
 	<Node path="persona/attributes/hobbies" style="list" order="200">[!__attrib:Hobbies]{inner}</Node>
+	<Node path="persona/attributes/fears" style="list" order="300">[!__attrib:Fears]{inner}</Node>
+	<Node path="persona/attributes/goals" style="list" order="300">[!__attrib:Goals]{inner}</Node>
+	<Node path="persona/attributes/priorities" style="list" order="300">[!__attrib:Priorities]{inner}</Node>
 	<Node path="persona/attributes/appearance" style="list" order="400">[!__attrib:Appearance]{inner}</Node>
 
 	<!-- Description block -->
@@ -100,7 +103,7 @@
 	<Node path="scenario/world" style="paragraph" order="400"/>
 		
 	<!-- Attribute: Name -->
-	<Attribute rule="more-detail and not (__single or full-name)" order="0" mode="sibling">
+	<Attribute rule="normal-detail and not (__single or full-name)" order="0" mode="sibling">
 		<Name>Name</Name>
 		<Value>{char}</Value>
 	</Attribute>

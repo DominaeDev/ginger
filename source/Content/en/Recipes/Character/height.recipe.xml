@@ -15,24 +15,19 @@
 		</Description>
 	</Number>
 	
-	<Attribute order="100" rule="height:local">
-		<Name>Height</Name>
-		<Value>[less-detail?{height}|{height.ftin} ({height.cm})]</Value>
-	</Attribute>
-	
 	<Toggle id="size-difference">
 		<Label>Size difference</Label>
-		<Description>There is a significant size difference between this character and the user.</Description>
+		<Description>There is a significant size difference between this character and User.</Description>
 	</Toggle>
+	<SetFlag rule="size-difference">size-difference</SetFlag>
 
-	<!-- Parameters --> 
 	<Choice id="size" required="yes" rule="size-difference">
-		<Label>Comparative size</Label>
+		<Label>Relative size</Label>
 		<Default>Giant</Default>
 		<Description>The comparative size of the character</Description>
-		<Option id="size-mouse">Mouse-sized</Option>
-		<Option id="size-doll">Doll-sized</Option>
-		<Option id="size-half">Half-sized</Option>
+		<Option id="size-mouse">Mouse</Option>
+		<Option id="size-doll">Doll</Option>
+		<Option id="size-half">Half</Option>
 		<Option id="size-giant">Giant</Option>
 		<Option id="size-house">House</Option>
 		<Option id="size-mountain">Mountain</Option>
@@ -50,6 +45,13 @@
 	<!-- Output -->	
 	<Rule id="smaller">size:index lt 3</Rule>
 	<Rule id="bigger">size:index ge 3</Rule>
+	<SetFlag rule="smaller">size-small</SetFlag>
+	<SetFlag rule="bugger">size-large</SetFlag>
+	
+	<Attribute order="100" rule="height:local">
+		<Name>Height</Name>
+		<Value>[less-detail?{height}|{height.ftin} ({height.cm})]</Value>
+	</Attribute>
 	
 	<System rule="size-difference" important="yes">
 		One of the more unique aspects of the relationship between [char] and [user] is the significant difference in size between the two of them.

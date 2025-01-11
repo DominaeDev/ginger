@@ -18,7 +18,7 @@ namespace Ginger
 	{
 		ICondition[] conditions { get; }
 		bool Evaluate(IContextual contextual, EvaluationCookie cookie);
-		bool Validate();
+		bool Validate(IRuleSupplier[] ruleSuppliers);
 	}
 
 	public interface IConditionalExpression : ICondition
@@ -39,14 +39,14 @@ namespace Ginger
 
 		public abstract bool Evaluate(IContextual contextual, EvaluationCookie cookie = default(EvaluationCookie));
 
-		public bool Validate()
+		public bool Validate(IRuleSupplier[] ruleSuppliers)
 		{
 			if (_conditions == null || _conditions.Length == 0)
 				return false;
 
 			for (int i = 0; i < _conditions.Length; ++i)
 			{
-				if (_conditions[i] == null || _conditions[i].Validate() == false)
+				if (_conditions[i] == null || _conditions[i].Validate(ruleSuppliers) == false)
 					return false;
 			}
 			return true;
@@ -67,14 +67,14 @@ namespace Ginger
 
 		public abstract bool Evaluate(IContextual contextual, EvaluationCookie cookie = default(EvaluationCookie));
 
-		public bool Validate()
+		public bool Validate(IRuleSupplier[] ruleSuppliers)
 		{
 			if (_conditions == null || _conditions.Length == 0)
 				return false;
 
 			for (int i = 0; i < _conditions.Length; ++i)
 			{
-				if (_conditions[i] == null || _conditions[i].Validate() == false)
+				if (_conditions[i] == null || _conditions[i].Validate(ruleSuppliers) == false)
 					return false;
 			}
 			return true;
@@ -270,7 +270,7 @@ namespace Ginger
 			return true;
 		}
 
-		public bool Validate()
+		public bool Validate(IRuleSupplier[] ruleSuppliers)
 		{
 			return true;
 		}

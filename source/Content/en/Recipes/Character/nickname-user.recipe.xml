@@ -1,7 +1,7 @@
 ﻿<Ginger id="user-nickname" version="1.0">
 	<Name>User/Nickname</Name>
 	<Title>Nickname for user</Title>
-	<Description>Specify a nickname to use for the user.</Description>
+	<Description>Specify a nickname to use for User.</Description>
 	<Author>Ginger</Author>
 	<Category>User</Category>
 	
@@ -16,6 +16,6 @@
 		[char] calls [user] by [#their] nickname "{user-nickname}".
 	</Persona>
 	
-	<Node path="user/attributes/nickname" rule="user-nickname">Nickname: "{user-nickname}"</Node>
+	<Node path="user/attributes/nickname" rule="user-nickname:local">Nickname: "{user-nickname}"</Node>
 
 </Ginger>

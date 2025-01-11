@@ -1,0 +1,25 @@
+﻿<Ginger id="occupation" version="1.0">
+	<!-- Preamble -->
+	<Name>Attribute/Occupation</Name>
+	<Category>Character</Category>
+	<Description>Descripe the character's occupation</Description>
+	<Author>Ginger</Author>
+	
+	<!-- Parameters -->
+	<Text id="occupation" shared="yes">
+		<Label>Occupation</Label>
+	</Text>
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
+	
+	<!-- Occupation -->
+	<Attribute rule="occupation:local">
+		<Name>Occupation</Name>
+		<Value>{occupation}</Value>
+	</Attribute>
+
+	<!-- Background -->
+	<Node path="description/occupation" rule="more">{more}.</Node>
+
+</Ginger>

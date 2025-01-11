@@ -1,17 +1,19 @@
-<Ginger version="1.0">
-	<Name>Anatomy/Genitals/Penis</Name>
+<Ginger id="penis" version="1.0">
+	<Name>Anatomy/Intimate parts/Penis</Name>
+	<Title>Penis</Title>
 	<Description>Describe the character's penis.</Description>
 	<Author>Ginger</Author>
 	<Category>Body</Category>
 	<Requires>not genitals</Requires>
 	<Flags>genitals, nsfw</Flags>
-	<Order>150</Order>
+	<Order>5</Order>
 
 	<!-- Parameters -->
-	<Number id="penis-length" style="length" shared="yes">
-		<Label>Size</Label>
+	<Number id="penis-length" style="length">
+		<Label>Penis size</Label>
 		<Placeholder>Length (cm/in)</Placeholder>
 	</Number>
+	<SetVar id="penis-length">{penis-length:value}</SetVar>
 	
 	<!-- Output -->	
 	

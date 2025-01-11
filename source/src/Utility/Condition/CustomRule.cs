@@ -45,7 +45,7 @@ namespace Ginger
 			var context = contextual.context;
 
 			if (expressionType == ExpressionType.Unknown)
-				Validate();
+				Validate(cookie.ruleSuppliers);
 
 			switch (expressionType)
 			{
@@ -120,7 +120,7 @@ namespace Ginger
 			return false;
 		}
 
-		public bool Validate()
+		public bool Validate(IRuleSupplier[] ruleSuppliers)
 		{
 			if (string.IsNullOrEmpty(expression))
 			{
@@ -152,21 +152,33 @@ namespace Ginger
 
 				// Selector?
 				var subExpression = expression.Substring(colon + 1).Trim();
-				
+
 				// Custom rule?
-				if (Current.Strings.GetRuleBank().HasRule(subExpression))
+				if (ruleSuppliers == null)
+					ruleSuppliers = new IRuleSupplier[] { Current.Strings };
+
+				for (int i = 0; i < ruleSuppliers.Length; ++i)
 				{
-					expressionType = ExpressionType.RuleReference;
-					return true;
+					if (ruleSuppliers[i].GetRuleBank().HasRule(subExpression))
+					{
+						expressionType = ExpressionType.RuleReference;
+						return true;
+					}
 				}
 			}
 			else
 			{
 				// Custom rule?
-				if (Current.Strings.GetRuleBank().HasRule(expression))
+				if (ruleSuppliers == null)
+					ruleSuppliers = new IRuleSupplier[] { Current.Strings };
+
+				for (int i = 0; i < ruleSuppliers.Length; ++i)
 				{
-					expressionType = ExpressionType.RuleReference;
-					return true;
+					if (ruleSuppliers[i].GetRuleBank().HasRule(expression))
+					{
+						expressionType = ExpressionType.RuleReference;
+						return true;
+					}
 				}
 			}
 
@@ -182,20 +194,20 @@ namespace Ginger
 
 			if (bValidate)
 			{
-				if (condition.Validate())
+				if (condition.Validate(null))
 					RuleBank.ResolveRule(ref condition, Current.Strings.GetRuleBank());
 			}
 			return condition;
 		}
 
-		public static bool TryParse(string expression, out ICondition condition, bool bValidate = true)
+		public static bool TryParse(string expression, out ICondition condition, bool bValidate = false)
 		{
 			if (Condition.ParseExpression<Rule>(expression, out condition) == false)
 				return false;
 
 			if (bValidate)
 			{
-				if (condition.Validate())
+				if (condition.Validate(null))
 					RuleBank.ResolveRule(ref condition, Current.Strings.GetRuleBank());
 			}
 			return true;

@@ -1,7 +1,7 @@
 <Ginger version="1.1" id="family-member">
 	<Name>Relationship/Familial</Name>
 	<Title>Familial relationship</Title>
-	<Description>A familial relationship to the user.</Description>
+	<Description>The character is related to User.</Description>
 	<Author>Ginger</Author>
 	<Category>Relationship</Category>
 	<Requires>not relationship</Requires>

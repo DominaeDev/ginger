@@ -1,9 +1,9 @@
-﻿<Ginger version="1.0">
+﻿<Ginger id="sexy" version="1.0">
 	<!-- Preamble -->
-	<Name>Appearance/Sexy</Name>
+	<Name>Sexy</Name>
 	<Title>Sexy</Title>
 	<Author>Ginger</Author>
-	<Category>Appearance</Category>
+	<Category>Trait</Category>
 	<Description>The character oozes sex appeal.</Description>
 	<Requires>not attraction-trait</Requires>
 	<Flags>attraction-trait</Flags>

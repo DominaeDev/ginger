@@ -35,15 +35,16 @@ namespace Ginger
 	   
 			{ Recipe.Category.Archetype,		Color.Honeydew },
 			{ Recipe.Category.Character,		Color.Honeydew },
-			{ Recipe.Category.Appearance,	    Color.Honeydew },
-			{ Recipe.Category.Body,				Color.Honeydew },
 			{ Recipe.Category.Special,		    Color.Honeydew },
 
+			{ Recipe.Category.Appearance,	    ColorTranslator.FromHtml("#fffef0") },
+			{ Recipe.Category.Body,				ColorTranslator.FromHtml("#fffef0") },
 			{ Recipe.Category.Trait,		    ColorTranslator.FromHtml("#fffef0") },
 			{ Recipe.Category.Feature,			ColorTranslator.FromHtml("#fffef0") },
-			{ Recipe.Category.Job,				ColorTranslator.FromHtml("#fffef0") },
-			{ Recipe.Category.Relationship,	    ColorTranslator.FromHtml("#fffef0") },
 			{ Recipe.Category.Speech,		    ColorTranslator.FromHtml("#fffef0") },
+
+			{ Recipe.Category.Relationship,	    ColorTranslator.FromHtml("#fffef0") },
+			{ Recipe.Category.Job,				ColorTranslator.FromHtml("#fffef0") },
 			{ Recipe.Category.Role,				ColorTranslator.FromHtml("#fffef0") },
 
 			{ Recipe.Category.Personality,	    ColorTranslator.FromHtml("#d2f0f0") },

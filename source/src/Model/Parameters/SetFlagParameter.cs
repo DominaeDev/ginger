@@ -6,8 +6,6 @@ namespace Ginger
 {
 	public class SetFlagParameter : BaseParameter<string>, IInvisibleParameter
 	{
-		private HashSet<StringHandle> flags = new HashSet<StringHandle>();
-
 		public SetFlagParameter() : base()
 		{
 			isEnabled = true;
@@ -24,12 +22,8 @@ namespace Ginger
 
 		public override bool LoadFromXml(XmlNode xmlNode)
 		{
-			string value = xmlNode.GetTextValue();
-			flags = new HashSet<StringHandle>(Utility.ListFromCommaSeparatedString(value).Select(s => new StringHandle(s)));
-			if (flags.Count == 0)
-				return false;
-
-			id = Utility.ListToCommaSeparatedString(flags);
+			value = xmlNode.GetTextValue().SingleLine();
+			id = new StringHandle(string.Concat("__flag_", value));
 			scope = xmlNode.GetAttributeEnum("scope", Parameter.Scope.Global);
 
 			if (xmlNode.HasAttribute("rule"))
@@ -40,7 +34,7 @@ namespace Ginger
 		public override void SaveToXml(XmlNode xmlNode)
 		{
 			var node = xmlNode.AddElement("SetFlag");
-			node.AddTextValue(Utility.ListToCommaSeparatedString(flags));
+			node.AddTextValue(value);
 
 			if (scope != Parameter.Scope.Global)
 				node.AddAttribute("scope", EnumHelper.ToString(scope).ToLowerInvariant());
@@ -51,15 +45,22 @@ namespace Ginger
 
 		public override void OnApply(ParameterState state, Parameter.Scope scope)
 		{
-			if (this.scope.Contains(scope))
+			if (string.IsNullOrEmpty(value) == false && this.scope.Contains(scope))
+			{
+				string sValue;
+				if (value.IndexOfAny(new char[] { '{', '}', '[', ']' }) != -1)
+					sValue = Text.Eval(value, state.evalContext, state.evalConfig);
+				else
+					sValue = value;
+
+				var flags = new HashSet<StringHandle>(Utility.ListFromCommaSeparatedString(sValue).Select(s => new StringHandle(s)));
 				state.SetFlags(flags, scope);
+			}
 		}
 
 		public override object Clone()
 		{
-			var clone = CreateClone<SetFlagParameter>();
-			clone.flags = new HashSet<StringHandle>(this.flags);
-			return clone;
+			return CreateClone<SetFlagParameter>();
 		}
 
 		public override int GetHashCode()

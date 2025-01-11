@@ -103,7 +103,7 @@ namespace Ginger
 			// Validate
 			foreach (var kvp in _rules)
 			{
-				if (kvp.Value.Validate() == false)
+				if (kvp.Value.Validate(new IRuleSupplier[] { this, Current.Strings }) == false)
 				{
 					removeList.Add(kvp.Key);
 				}

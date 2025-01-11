@@ -16,7 +16,7 @@
 	</Choice>
 	
 	<!-- Output -->
-	<Attribute id="blood-type">
+	<Attribute id="blood-type:local">
 		<Name>Blood type</Name>
 		<Value>{blood-type}</Value>
 	</Attribute>

@@ -9,7 +9,7 @@
 	<Description>Describe the character's personality and behavior.</Description>
 	
 	<!-- Parameters -->
-	<List id="personality-traits" shared="yes">
+	<List id="personality-traits">
 		<Label>Personality traits</Label>
 		<Description>
 			Use adjectives to describe the character's personality.
@@ -17,14 +17,14 @@
 		</Description>
 	</List>
 
-	<List id="hobbies" shared="yes">
-		<Label>Hobbies</Label>
-	</List>
-	<List id="likes" shared="yes">
+	<List id="likes">
 		<Label>Likes</Label>
 	</List>
-	<List id="dislikes" shared="yes">
+	<List id="dislikes">
 		<Label>Dislikes</Label>
+	</List>
+	<List id="hobbies">
+		<Label>Hobbies</Label>
 	</List>
 	
 	<Text id="more" optional="yes" style="flex">
@@ -52,9 +52,15 @@
 	</Attribute>
 
 	<!-- Likes -->
-	<Node path="persona/attributes/likes/traits">{likes}</Node>
+	<Attribute>
+		<Name>Likes</Name>
+		<Value>{likes}</Value>
+	</Attribute>
 	
 	<!-- Dislikes-->
-	<Node path="persona/attributes/dislikes/traits">{dislikes}</Node>
+	<Attribute>
+		<Name>Dislikes</Name>
+		<Value>{dislikes}</Value>
+	</Attribute>
 
 </Ginger>

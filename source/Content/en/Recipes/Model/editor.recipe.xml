@@ -6,7 +6,7 @@
 	<Order>-100</Order>
 
 	<Description>
-		Base recipe for a virtual writing assistant that can assist the user with grammar and spelling, and offer creative writing advice.
+		Base recipe for a virtual writing assistant that can assist User with grammar and spelling, and offer creative writing advice.
 	</Description>
 
 	<System>
