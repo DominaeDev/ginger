@@ -5,7 +5,7 @@ The goal of this project is to provide an easy to use tool for both new and expe
 
 ## Download
 
-[Click here to download the latest version (v1.4.0)](https://github.com/DominaeDev/ginger/releases/tag/release-1.4.0)
+[Click here to download the latest version (v1.5.0)](https://github.com/DominaeDev/ginger/releases/tag/release-1.5.0)
 
 ## Features
 
