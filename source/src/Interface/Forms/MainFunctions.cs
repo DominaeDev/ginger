@@ -1082,7 +1082,11 @@ namespace Ginger
 					Current.IsLinkDirty = false;
 			}
 
-			if (FileUtil.Export(filename, (Image)(Current.Card.portraitImage ?? DefaultPortrait.Image), formats))
+			Image portraitImage = Current.Card.portraitImage;
+			if (portraitImage == null)
+				portraitImage = GetPortraitToSave();
+
+			if (FileUtil.Export(filename, portraitImage ?? DefaultPortrait.Image, formats))
 			{
 				SaveNotes(filename);
 
@@ -1122,6 +1126,42 @@ namespace Ginger
 				MessageBox.Show(Resources.error_save_character_card, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
+		}
+
+		private Image GetPortraitToSave()
+		{
+			if (Current.Card.portraitImage != null)
+				return Current.Card.portraitImage;
+
+			if (Current.Card.assets == null)
+				return null;
+
+			var mainPortraitOverride = Current.Card.assets.GetMainPortraitOverride();
+			if (mainPortraitOverride != null)
+			{
+				if (mainPortraitOverride.data.isEmpty)
+					return null; // Error
+
+				Image image;
+				if (Utility.LoadImageFromMemory(mainPortraitOverride.data.bytes, out image))
+					return image;
+			}
+
+			var portraitAsset = Current.Card.assets.GetPortraitAsset();
+			if (portraitAsset != null)
+			{
+				// Promote to override
+				portraitAsset.name = AssetFile.PortraitOverrideName;
+
+				Image image;
+				if (Utility.LoadImageFromMemory(portraitAsset.data.bytes, out image))
+				{
+					Current.Card.portraitImage = ImageRef.FromImage(image);
+					_bShouldRefreshSidePanel = true;
+					return image;
+				}
+			}
+			return null;
 		}
 
 		private bool SaveAs()
@@ -2269,7 +2309,7 @@ namespace Ginger
 				return false;
 
 			// Confirm
-			if (MessageBox.Show(string.Format(Resources.msg_link_confirm_update_many, NumGroups(dlg.Groups.Length)), Resources.cap_link_update_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+			if (MessageBox.Show(string.Format(Resources.msg_link_confirm_update_many, NumCharacters(dlg.Groups.Length)), Resources.cap_link_update_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
 				return false;
 
 			var updater = new BulkUpdateModelSettings();

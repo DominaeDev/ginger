@@ -513,28 +513,31 @@ namespace Ginger
 		public AssetCollection(AssetCollection other) : base(other) {}
 		public AssetCollection(IEnumerable<AssetFile> other) : base(other) {}
 
-		public Image GetPortraitImage()
+		public AssetFile GetPortraitAsset()
 		{
-			var images = this.Where(a => a.assetType == AssetFile.AssetType.Icon).ToList();
+			var images = this.Where(a => a.assetType == AssetFile.AssetType.Icon && a.isDefaultAsset == false).ToList();
 			if (images.Count == 0)
 				return null;
 			
-			AssetData assetData;
+			AssetFile assetData;
 			if (images.Count == 1)
-				assetData = images[0].data;
+				return images[0];
+
+			var mainAsset = images.FirstOrDefault(a => a.isMainAsset);
+			if (mainAsset != null)
+				return mainAsset;
 			else
-			{
-				var mainAsset = images.FirstOrDefault(a => a.isMainAsset);
-				if (mainAsset != null)
-					assetData = mainAsset.data;
-				else
-					assetData = images[0].data;
-			}
-			if (assetData.length == 0)
+				return images[0];
+		}
+
+		public Image GetPortraitImage()
+		{
+			var portraitAsset = GetPortraitAsset();
+			if (portraitAsset == null || portraitAsset.data.isEmpty)
 				return null;
 
 			Image image;
-			if (Utility.LoadImageFromMemory(assetData.bytes, out image))
+			if (Utility.LoadImageFromMemory(portraitAsset.data.bytes, out image))
 				return image;
 
 			return null;

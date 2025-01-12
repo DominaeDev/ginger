@@ -1427,7 +1427,7 @@ namespace Ginger {
 			this.editCurrentModelSettingsMenuItem.Name = "editCurrentModelSettingsMenuItem";
 			this.editCurrentModelSettingsMenuItem.ShortcutKeyDisplayString = "Ctrl+M";
 			this.editCurrentModelSettingsMenuItem.Size = new System.Drawing.Size(250, 22);
-			this.editCurrentModelSettingsMenuItem.Text = "Change model settings...";
+			this.editCurrentModelSettingsMenuItem.Text = "Edit model settings...";
 			this.editCurrentModelSettingsMenuItem.Click += new System.EventHandler(this.editCurrentModelSettingsMenuItem_Click);
 			// 
 			// toolStripMenuItem13
@@ -1655,7 +1655,7 @@ namespace Ginger {
 			// 
 			this.editExportModelSettingsMenuItem.Name = "editExportModelSettingsMenuItem";
 			this.editExportModelSettingsMenuItem.Size = new System.Drawing.Size(236, 22);
-			this.editExportModelSettingsMenuItem.Text = "Default model settings...";
+			this.editExportModelSettingsMenuItem.Text = "Set default model settings...";
 			this.editExportModelSettingsMenuItem.Click += new System.EventHandler(this.editExportModelSettingsMenuItem_Click);
 			// 
 			// helpToolStripMenuItem

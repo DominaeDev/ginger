@@ -113,6 +113,10 @@ namespace Ginger
 				return false;
 			}
 
+			// WebP
+			if (IsWebP(bytes))
+				return LoadWebPFromMemory(bytes, out image);
+
 			// Load image first
 			try
 			{
@@ -143,7 +147,7 @@ namespace Ginger
 			}
 		}
 
-		public static bool LoadWebPFromMemory(byte[] bytes, out Image image)
+		private static bool LoadWebPFromMemory(byte[] bytes, out Image image)
 		{
 			try
 			{
