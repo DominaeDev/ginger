@@ -1,5 +1,5 @@
 ﻿<Ginger id="maid" version="1.0">
-	<Name>Job/House servant</Name>
+	<Name>Role/House servant</Name>
 	<Description>The character is a butler or maid.</Description>
 	<Author>Ginger</Author>
 	<Category>Job</Category>

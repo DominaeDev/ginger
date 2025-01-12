@@ -1,5 +1,5 @@
 ﻿<Ginger id="enslaved" version="1.0">
-	<Name>Job/Slave</Name>
+	<Name>Role/Slave</Name>
 	<Title>Slave</Title>
 	<Description>The character has become enslaved to User.</Description>
 	<Author>Ginger</Author>

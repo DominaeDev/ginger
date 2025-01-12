@@ -3,7 +3,7 @@
 	<Name>Disability/Missing limbs</Name>
 	<Title>Missing limbs</Title>
 	<Author>Ginger</Author>
-	<Category>Body</Category>
+	<Category>Trait</Category>
 	<Description>The character is missing one or more limbs.</Description>
 	<Flags>disability, missing-limbs</Flags>
 	<Requires>not paralyzed</Requires>

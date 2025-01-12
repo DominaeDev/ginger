@@ -5,7 +5,7 @@
 	<Category>Archetype</Category>
 	<Requires>not core</Requires>
 	<Flags>core, biped</Flags>
-	<Order>-50</Order>
+	<Order>-100</Order>
 	
 	<!-- Complementary recipes -->
 	<Include>basic-info</Include>

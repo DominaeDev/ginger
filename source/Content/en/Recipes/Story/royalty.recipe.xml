@@ -1,5 +1,5 @@
-﻿<Ginger version="1.0">
-	<Name>Job/Royalty</Name>
+﻿<Ginger id="royalty" version="1.0">
+	<Name>Role/Royalty</Name>
 	<Title>Royalty</Title>
 	<Description>The character is royalty.</Description>
 	<Author>Ginger</Author>

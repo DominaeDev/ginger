@@ -3,7 +3,7 @@
 	<Name>Disability/Blind</Name>
 	<Title>Blind</Title>
 	<Author>Ginger</Author>
-	<Category>Character</Category>
+	<Category>Trait</Category>
 	<Description>The character is blind.</Description>
 	<Flags>disability, blind</Flags>
 	

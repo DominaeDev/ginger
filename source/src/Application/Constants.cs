@@ -70,25 +70,21 @@ namespace Ginger
 
 		public static Dictionary<Recipe.Category, Recipe.Drawer> DrawerFromCategory = new Dictionary<Recipe.Category, Recipe.Drawer>
 		{
-			{ Recipe.Category.Undefined,		Recipe.Drawer.Character },
+			{ Recipe.Category.Undefined,		Recipe.Drawer.Traits },
 			{ Recipe.Category.Base,				Recipe.Drawer.Model },
 			{ Recipe.Category.Model,			Recipe.Drawer.Model },
 			{ Recipe.Category.Modifier,			Recipe.Drawer.Model },
 			
 			{ Recipe.Category.Archetype,		Recipe.Drawer.Character },
-			{ Recipe.Category.Chat,				Recipe.Drawer.Character },
 			{ Recipe.Category.Character,		Recipe.Drawer.Character },
-			{ Recipe.Category.Custom,			Recipe.Drawer.Character },
-			{ Recipe.Category.Special,			Recipe.Drawer.Character },
 			{ Recipe.Category.Body,				Recipe.Drawer.Character },
 			{ Recipe.Category.Appearance,		Recipe.Drawer.Character },
 			
 			{ Recipe.Category.Trait,			Recipe.Drawer.Traits },
 			{ Recipe.Category.Feature,			Recipe.Drawer.Traits },
-			{ Recipe.Category.Job,				Recipe.Drawer.Traits },
-			{ Recipe.Category.Role,             Recipe.Drawer.Traits },
-			{ Recipe.Category.Relationship,		Recipe.Drawer.Traits },
 			{ Recipe.Category.Speech,			Recipe.Drawer.Traits },
+			{ Recipe.Category.Special,			Recipe.Drawer.Traits },
+			{ Recipe.Category.Custom,			Recipe.Drawer.Traits },
 			
 			{ Recipe.Category.Personality,		Recipe.Drawer.Mind },
 			{ Recipe.Category.Mind,				Recipe.Drawer.Mind },
@@ -96,7 +92,11 @@ namespace Ginger
 			{ Recipe.Category.Quirk,			Recipe.Drawer.Mind },
 			{ Recipe.Category.Emotion,			Recipe.Drawer.Mind },
 			{ Recipe.Category.Sexual,			Recipe.Drawer.Mind },
+			{ Recipe.Category.Job,				Recipe.Drawer.Mind },
+			{ Recipe.Category.Role,             Recipe.Drawer.Mind },
+			{ Recipe.Category.Relationship,		Recipe.Drawer.Mind },
 
+			{ Recipe.Category.Chat,				Recipe.Drawer.Story },
 			{ Recipe.Category.Story,			Recipe.Drawer.Story },
 			{ Recipe.Category.World,			Recipe.Drawer.Story },
 			{ Recipe.Category.User,				Recipe.Drawer.Story },

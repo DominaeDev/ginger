@@ -2,7 +2,7 @@
 	<Name>Attribute/Title</Name>
 	<Description>Give the character a title.</Description>
 	<Author>Ginger</Author>
-	<Category>Identity</Category>
+	<Category>Character</Category>
 	<Requires>not title</Requires>
 	<Flags>title</Flags>
 	

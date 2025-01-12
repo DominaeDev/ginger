@@ -1,5 +1,6 @@
-﻿<Ginger version="1.0">
-	<Name>Favorite things</Name>
+﻿<Ginger id="favorite-things" version="1.0">
+	<Name>Favorites</Name>
+	<Title>Favorites</Title>
 	<Description>Describe some of the character's favorite things.</Description>
 	<Author>Ginger</Author>
 	<Category>Mind</Category>

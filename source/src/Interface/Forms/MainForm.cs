@@ -227,9 +227,9 @@ namespace Ginger
 
 			SetToolTip(btnAdd_Model, "Bot instructions");
 			SetToolTip(btnAdd_Character, "Character");
-			SetToolTip(btnAdd_Mind, "Personality");
+			SetToolTip(btnAdd_Mind, "Personality / Role");
 			SetToolTip(btnAdd_Traits, "Traits");
-			SetToolTip(btnAdd_World, "Story & World");
+			SetToolTip(btnAdd_World, "Story / World");
 			SetToolTip(btnAdd_Other, "Components");
 			SetToolTip(btnAdd_Snippets, "Snippets");
 			SetToolTip(btnAdd_Lore, "Lorebooks");
@@ -600,8 +600,6 @@ namespace Ginger
 					CreateSnippetMenuItem_Click(s, e);
 				};
 				items.Add(newSnippetItem);
-				if (folders.Length > 0 || recipes.Length > 0)
-					items.Add(new ToolStripSeparator());
 			}
 
 			// Folders

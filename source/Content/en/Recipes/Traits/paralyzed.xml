@@ -3,7 +3,7 @@
 	<Name>Disability/Paralyzed</Name>
 	<Title>Paralyzed</Title>
 	<Author>Ginger</Author>
-	<Category>Character</Category>
+	<Category>Trait</Category>
 	<Description>The character is fully or partially paralyzed.</Description>
 	<Flags>disability, paralyzed, immobile</Flags>
 	<Requires>not missing-limbs</Requires>
