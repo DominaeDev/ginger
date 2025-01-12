@@ -5338,6 +5338,9 @@ namespace Ginger.Integration
 			string portraitUID = null;
 
 			var mainPortraitAsset = assets.GetMainPortraitOverride();
+			if (portraitImage == null && mainPortraitAsset == null)
+				mainPortraitAsset = assets.GetPortraitAsset(); // Use first portrait asset
+
 			if (mainPortraitAsset != null) // Has embedded asset
 			{
 				if (imageLinks != null)
@@ -6011,15 +6014,17 @@ namespace Ginger.Integration
 		{
 			var lsImages = new List<ImageInput>();
 			var assets = (AssetCollection)Current.Card.assets.Clone();
-			AssetFile mainPortraitAsset = assets.GetMainPortraitOverride();
+			AssetFile mainPortraitOverride = assets.GetMainPortraitOverride();
+			if (Current.Card.portraitImage == null && mainPortraitOverride == null)
+				mainPortraitOverride = assets.GetPortraitAsset();
 
-			if (mainPortraitAsset != null) // Embedded portrait (animated)
+			if (mainPortraitOverride != null) // Embedded portrait (animated)
 			{
 				lsImages.Add(new ImageInput() {
-					asset = mainPortraitAsset,
-					fileExt = mainPortraitAsset.ext,
+					asset = mainPortraitOverride,
+					fileExt = mainPortraitOverride.ext,
 				});
-				assets.Remove(mainPortraitAsset);
+				assets.Remove(mainPortraitOverride);
 			}
 			else if (Current.Card.portraitImage != null) // Main portrait (not animated)
 			{
@@ -6038,20 +6043,20 @@ namespace Ginger.Integration
 
 			// Portrait as background?
 			if (AppSettings.BackyardLink.UsePortraitAsBackground
-				&& (Current.Card.portraitImage != null || mainPortraitAsset != null)
+				&& (Current.Card.portraitImage != null || mainPortraitOverride != null)
 				&& assets.ContainsNoneOf(a => a.assetType == AssetFile.AssetType.Background))
 			{
 				if (assets == null)
 					assets = new AssetCollection();
 
 				AssetFile portraitBackground;
-				if (mainPortraitAsset != null)
+				if (mainPortraitOverride != null)
 				{
 					portraitBackground = new AssetFile() {
 						name = "Portrait background",
-						ext = mainPortraitAsset.ext,
+						ext = mainPortraitOverride.ext,
 						assetType = AssetFile.AssetType.Background,
-						data = mainPortraitAsset.data,
+						data = mainPortraitOverride.data,
 						uriType = AssetFile.UriType.Embedded,
 					};
 				}

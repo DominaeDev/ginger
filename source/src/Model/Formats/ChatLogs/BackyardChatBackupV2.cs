@@ -30,15 +30,6 @@ namespace Ginger
 		[JsonProperty("updatedAt", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
 		public long? updatedAt;
 
-		[JsonProperty("staging", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
-		public Staging staging = null;
-
-		[JsonProperty("parameters", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
-		public Parameters parameters = null;
-
-		[JsonProperty("background", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
-		public string backgroundName = null;
-
 		// Same as Backyard chat
 		[JsonProperty("chat", Required = Required.Always)]
 		public Chat chat = new Chat();
@@ -46,66 +37,6 @@ namespace Ginger
 		// Same as Backyard chat
 		[JsonProperty("version", Required = Required.Always)]
 		public int version = 2; // For Backyard compatibility
-
-		public class Staging
-		{
-			[JsonProperty("system", Required = Required.AllowNull)]
-			public string system = null;
-
-			[JsonProperty("greeting", Required = Required.AllowNull)]
-			public string greeting = null;
-
-			[JsonProperty("scenario", Required = Required.AllowNull)]
-			public string scenario = null;
-
-			[JsonProperty("example", Required = Required.AllowNull)]
-			public string example = null;
-
-			[JsonProperty("grammar", Required = Required.AllowNull)]
-			public string grammar = null;
-
-			[JsonProperty("authorNote", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
-			public string authorNote = "";
-
-			[JsonProperty("pruneExampleChat")]
-			public bool pruneExampleChat = true;
-
-			[JsonProperty("ttsAutoPlay")]
-			public bool ttsAutoPlay = false;
-
-			[JsonProperty("ttsInputFilter", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
-			public string ttsInputFilter = null;
-		}
-
-		public class Parameters
-		{
-			[JsonProperty("model", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
-			public string model = "";
-
-			[JsonProperty("temperature")]
-			public decimal temperature = 1.2m;
-
-			[JsonProperty("topP")]
-			public decimal topP = 0.9m;
-
-			[JsonProperty("minP")]
-			public decimal minP = 0.1m;
-
-			[JsonProperty("topK")]
-			public int topK = 30;
-
-			[JsonProperty("minPEnabled")]
-			public bool minPEnabled = true;
-
-			[JsonProperty("repeatLastN")]
-			public int repeatLastN = 256;
-
-			[JsonProperty("repeatPenalty")]
-			public decimal repeatPenalty = 1.05m;
-
-			[JsonProperty("promptTemplate", Required = Required.Default, NullValueHandling = NullValueHandling.Include)]
-			public string promptTemplate = null;
-		}
 
 		public class Chat
 		{
@@ -163,35 +94,6 @@ namespace Ginger
 			backup.name = chat.name ?? ChatInstance.DefaultName;
 			backup.createdAt = chat.creationDate.ToUnixTimeMilliseconds();
 			backup.updatedAt = chat.updateDate.ToUnixTimeMilliseconds();
-			backup.backgroundName = chat.backgroundName;
-			if (chat.staging != null)
-			{
-				backup.staging = new Staging() {
-					system = chat.staging.system ?? "",
-					scenario = chat.staging.scenario ?? "",
-					greeting = chat.staging.greeting ?? "",
-					example = chat.staging.example ?? "",
-					grammar = chat.staging.grammar ?? "",
-					authorNote = chat.staging.authorNote ?? "",
-					pruneExampleChat = chat.staging.pruneExampleChat,
-					ttsAutoPlay = chat.staging.ttsAutoPlay,
-					ttsInputFilter = chat.staging.ttsInputFilter ?? "default",
-				};
-			}
-			if (chat.parameters != null)
-			{
-				backup.parameters = new Parameters() {
-					model = chat.parameters.model,
-					temperature = chat.parameters.temperature,
-					topP = chat.parameters.topP,
-					minP = chat.parameters.minP,
-					topK = chat.parameters.topK,
-					minPEnabled = chat.parameters.minPEnabled,
-					repeatLastN = chat.parameters.repeatLastN,
-					repeatPenalty = chat.parameters.repeatPenalty,
-					promptTemplate = chat.parameters.promptTemplate,
-				};
-			}
 			backup.chat.items = lsEntries.ToArray();
 			return backup;
 		}
@@ -237,46 +139,10 @@ namespace Ginger
 				}
 			}
 
-			ChatStaging staging = null;
-			ChatParameters parameters = null;
-
-			if (this.staging != null)
-			{
-				staging = new ChatStaging() {
-					system = this.staging.system ?? "",
-					scenario = this.staging.scenario ?? "",
-					greeting = this.staging.greeting ?? "",
-					example = this.staging.example ?? "",
-					grammar = this.staging.grammar ?? "",
-					pruneExampleChat = this.staging.pruneExampleChat,
-					authorNote = this.staging.authorNote ?? "",
-					ttsAutoPlay = this.staging.ttsAutoPlay,
-					ttsInputFilter = this.staging.ttsInputFilter ?? "default",
-				};
-			}
-
-			if (this.parameters != null)
-			{
-				parameters = new ChatParameters() {
-					model = this.parameters.model,
-					temperature = this.parameters.temperature,
-					topP = this.parameters.topP,
-					minP = this.parameters.minP,
-					minPEnabled = this.parameters.minPEnabled,
-					topK = this.parameters.topK,
-					repeatPenalty = this.parameters.repeatPenalty,
-					repeatLastN = this.parameters.repeatLastN,
-					promptTemplate = this.parameters.promptTemplate,
-				};
-			}
-
 			return new BackupData.Chat() {
 				name = name ?? ChatInstance.DefaultName,
 				creationDate = createdAt.HasValue ? DateTimeExtensions.FromUnixTime(createdAt.Value) : DateTime.Now,
 				updateDate = updatedAt.HasValue ? DateTimeExtensions.FromUnixTime(updatedAt.Value) : DateTime.Now,
-				staging = staging,
-				parameters = parameters,
-				backgroundName = backgroundName,
 				history = new ChatHistory() {
 					messages = messages.ToArray(),
 				},

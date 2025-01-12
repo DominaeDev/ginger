@@ -326,6 +326,8 @@ namespace Ginger
 					ttsInputFilter = this.staging.ttsInputFilter ?? "default",
 				};
 			}
+			else
+				chat.staging = null;
 
 			if (this.parameters != null)
 			{
@@ -341,6 +343,8 @@ namespace Ginger
 					promptTemplate = this.parameters.promptTemplate,
 				};
 			}
+			else
+				chat.parameters = null;
 
 			return chat;
 		}

@@ -79,6 +79,13 @@ namespace Ginger.Integration
 				.Select(i => i.imageUrl)
 				.FirstOrDefault();
 
+			if (AppSettings.BackyardLink.BackupUserPersona == false)
+			{
+				// Strip user persona
+				userInfo = null;
+				userImageUrl = null;
+			}
+
 			// Create backup
 			backupInfo = new BackupData();
 			backupInfo.characterCard = card;
@@ -99,13 +106,16 @@ namespace Ginger.Integration
 						participants.Add(c.participants.Select(id => Backyard.GetCharacter(id)).FirstOrDefault(cc => cc.isUser)); // User first
 						participants.AddRange(c.participants.Select(id => Backyard.GetCharacter(id)).Where(cc => cc.isUser == false));
 
+						ChatStaging staging = AppSettings.BackyardLink.BackupChatSettings ? c.staging : null;
+						ChatParameters parameters = AppSettings.BackyardLink.BackupChatSettings ? c.parameters : null;
+
 						return new BackupData.Chat() {
 							name = c.name,
 							participants = participants.Select(cc => cc.name).ToArray(),
 
 							history = c.history,
-							staging = c.staging,
-							parameters = c.parameters,
+							staging = staging,
+							parameters = parameters,
 							creationDate = c.creationDate,
 							updateDate = c.updateDate,
 							backgroundName = bgName,
@@ -155,13 +165,15 @@ namespace Ginger.Integration
 				if (backup.images.Count > 0) // Convert portrait
 				{
 					string ext = Utility.GetFileExt(backup.images[0].filename);
-					if (ext == "png")
-						Utility.LoadImageFromMemory(backup.images[0].data, out portraitImage);
-					else if (ext == "webp")
+					if (Utility.IsWebP(backup.images[0].data))
 					{
 						nonPNGImageData = backup.images[0].data;
-						nonPNGImageExt = ext;
-						Utility.LoadWebPFromMemory(backup.images[0].data, out portraitImage);
+						nonPNGImageExt = "webp";
+						Utility.LoadImageFromMemory(backup.images[0].data, out portraitImage);
+					}
+					else if (ext == "png")
+					{
+						Utility.LoadImageFromMemory(backup.images[0].data, out portraitImage);
 					}
 					else
 					{
