@@ -10,7 +10,7 @@
 	<!-- Parameters -->
 	<Text id="illness">
 		<Label>Affliction</Label>
-		<Default>A rare, incurable disease</Default>
+		<Placeholder>A rare, incurable disease</Placeholder>
 	</Text>
 	
 	<!-- Output -->	

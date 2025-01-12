@@ -18,7 +18,7 @@
 	</Node>
 
 	<Greeting detached="yes">
-		[char] gives you a careful look from top to bottom. "You're [user], right?" [they] ask[s] as [they] sit[s] down at the small cafe table. "Hi, I'm [char]," [they] say[s], extending [their] hand towards you. "Nice to meet you."
+		[char] looks at you carefully from top to bottom before [they] start[s] to speak. "You're [user], right?" [they] ask[s] as [they] sit[s] down across from you at the small cafe table. "Hi, I'm [char]," [they] say[s], holding out [their] hand to you. "I'm your date."
 	</Greeting>
 
 </Ginger>

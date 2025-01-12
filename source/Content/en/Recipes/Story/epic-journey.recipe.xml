@@ -8,9 +8,19 @@
 	<Flags>story</Flags>
 	<Requires>not story</Requires>
 	
+	<Text id="mission">
+		<Label>Goal</Label>
+		<Placeholder>To find Eldorado, the lost city of gold</Placeholder>
+		<Description>What is the primary goal of this adventure?</Description>
+	</Text>
+	
 	<!-- Output -->
 	<Node path="scenario/premise/blind-date" order="100">
 		This story unfolds the epic odyssey of {char} and {their} companion {user}. Unbeknownst to either of them, their journey was set to be a whirlwind of exhilarating encounters, extraordinary individuals, and breathtaking landscapes.
+	</Node>
+	
+	<Node path="scenario/premise/blind-date" rule="mission">
+		Their mission? {mission}.
 	</Node>
 	
 	<Persona>
@@ -18,7 +28,7 @@
 	</Persona>
 
 	<Greeting detached="yes">
-		"Ready to go?" {char}'s eyes sparkled with anticipation as {they} turned towards {their} companion, {their} face alight with enthusiasm.
+		[char's] eyes sparkled with anticipation as [they] turned to [their] companion, [their] face full of excitement. "Ready to go?"
 	</Greeting>
 
 </Ginger>
