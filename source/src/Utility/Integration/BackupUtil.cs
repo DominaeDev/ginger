@@ -106,16 +106,13 @@ namespace Ginger.Integration
 						participants.Add(c.participants.Select(id => Backyard.GetCharacter(id)).FirstOrDefault(cc => cc.isUser)); // User first
 						participants.AddRange(c.participants.Select(id => Backyard.GetCharacter(id)).Where(cc => cc.isUser == false));
 
-						ChatStaging staging = AppSettings.BackyardLink.BackupChatSettings ? c.staging : null;
-						ChatParameters parameters = AppSettings.BackyardLink.BackupChatSettings ? c.parameters : null;
-
 						return new BackupData.Chat() {
 							name = c.name,
 							participants = participants.Select(cc => cc.name).ToArray(),
 
 							history = c.history,
-							staging = staging,
-							parameters = parameters,
+							staging = c.staging,
+							parameters = AppSettings.BackyardLink.BackupModelSettings ? c.parameters : null,
 							creationDate = c.creationDate,
 							updateDate = c.updateDate,
 							backgroundName = bgName,

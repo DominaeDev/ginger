@@ -230,7 +230,7 @@ namespace Ginger
 			public static bool MarkNSFW = true;
 			public static bool WriteAuthorNote = true;
 			public static bool WriteUserPersona = false;
-			public static bool BackupChatSettings = true;
+			public static bool BackupModelSettings = true;
 			public static bool BackupUserPersona = true;
 		}
 
@@ -457,7 +457,7 @@ namespace Ginger
 			ReadBool(ref BackyardLink.WriteAuthorNote, section, "WriteAuthorNote");
 			ReadBool(ref BackyardLink.WriteUserPersona, section, "WriteUserPersona");
 			ReadBool(ref BackyardLink.ImportAlternateGreetings, section, "ImportAlternateGreetings");
-			ReadBool(ref BackyardLink.BackupChatSettings, section, "BackupChatSettings");
+			ReadBool(ref BackyardLink.BackupModelSettings, section, "BackupModelSettings");
 			ReadBool(ref BackyardLink.BackupUserPersona, section, "BackupUserPersona");
 		}
 
@@ -549,7 +549,7 @@ namespace Ginger
 					Write(outputFile, "WriteAuthorNote", BackyardLink.WriteAuthorNote);
 					Write(outputFile, "WriteUserPersona", BackyardLink.WriteUserPersona);
 					Write(outputFile, "ImportAlternateGreetings", BackyardLink.ImportAlternateGreetings);
-					Write(outputFile, "BackupChatSettings", BackyardLink.BackupChatSettings);
+					Write(outputFile, "BackupModelSettings", BackyardLink.BackupModelSettings);
 					Write(outputFile, "BackupUserPersona", BackyardLink.BackupUserPersona);
 
 					// Backyard model settings

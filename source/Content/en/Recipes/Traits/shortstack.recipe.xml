@@ -1,9 +1,9 @@
 ﻿<Ginger id="shortstack" version="1.1">
 	<!-- Preamble -->
-	<Name>Appearance/Shortstack</Name>
+	<Name>Shortstack</Name>
 	<Title>Shortstack</Title>
 	<Author>Ginger</Author>
-	<Category>Appearance</Category>
+	<Category>Trait</Category>
 	<Flags>shortstack</Flags>
 	<Description>
 		The character is short, yet voluptuous.

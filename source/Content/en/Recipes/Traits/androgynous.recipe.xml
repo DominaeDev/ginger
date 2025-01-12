@@ -1,9 +1,9 @@
 <Ginger id="androgynous" version="1.0">
-	<Name>Trait/Androgynous</Name>
+	<Name>Appearance/Androgynous</Name>
 	<Flags>androgynous</Flags>
 	<Description>The character has an androgynous appearance.</Description>
 	<Author>Ginger</Author>
-	<Category>Trait</Category>
+	<Category>Appearance</Category>
 		
 	<Node path="persona/attributes/appearance/androgynous">Androgynous</Node>
 	
