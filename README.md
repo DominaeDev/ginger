@@ -5,7 +5,7 @@ The goal of this project is to provide an easy to use tool for both new and expe
 
 ## Download
 
-[Click here to download the latest version (v1.5.0)](https://github.com/DominaeDev/ginger/releases/tag/release-1.5.0)
+[Click here to download the latest version (v1.5.1)](https://github.com/DominaeDev/ginger/releases/tag/release-1.5.1)
 
 ## Features
 
@@ -32,6 +32,14 @@ The goal of this project is to provide an easy to use tool for both new and expe
 * Gender swapping through automated pronoun replacement.
 * Import, export, and merge lorebooks.
 
+### Backyard AI integration
+* Create and edit Backyard characters seamlessly and directly from inside Ginger.
+* Edit characters live as you chat with them.
+* Chat management tools.
+* Create and restore comprehensive backups of your most beloved characters.
+* Utility functions
+* And more...
+
 ### Other features
 * Create and share your own recipes and snippets.
 * Convert between different character cards and lorebooks file formats.
@@ -42,7 +50,7 @@ The goal of this project is to provide an easy to use tool for both new and expe
 
 ## Compatible with...
 * SillyTavern
-* Backyard AI (formerly Faraday)
+* Backyard AI
 * Agnai.chat
 * JanitorAI
 * Chub.ai
