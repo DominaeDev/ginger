@@ -217,7 +217,7 @@
             "(Not set)",
             "Male",
             "Female",
-            "Other..."});
+            "(Other)"});
 			this.comboBox_gender.Location = new System.Drawing.Point(0, 23);
 			this.comboBox_gender.Margin = new System.Windows.Forms.Padding(0);
 			this.comboBox_gender.MaxDropDownItems = 20;

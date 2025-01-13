@@ -197,6 +197,10 @@ namespace Ginger
 		public void Reset()
 		{
 			_genderOverride = null;
+			
+			_bIgnoreEvents = true;
+			comboBox_gender.SelectedIndex = 0;
+			_bIgnoreEvents = false;
 		}
 
 		public void RefreshTokenCount()
@@ -718,16 +722,16 @@ namespace Ginger
 				if (string.IsNullOrWhiteSpace(Current.Character.gender) == false)
 				{
 					if (string.Compare(Current.Character.gender, "male", true) == 0)
-						comboBox_gender.SelectedItem = comboBox_gender.Items[1];
+						comboBox_gender.SelectedIndex = 1;
 					else if (string.Compare(Current.Character.gender, "female", true) == 0)
-						comboBox_gender.SelectedItem = comboBox_gender.Items[2];
+						comboBox_gender.SelectedIndex = 2;
 					else if (string.IsNullOrWhiteSpace(Current.Character.gender) == false)
-						comboBox_gender.SelectedItem = comboBox_gender.Items[3];
+						comboBox_gender.SelectedIndex = 3;
 					else
-						comboBox_gender.SelectedItem = comboBox_gender.Items[0];
+						comboBox_gender.SelectedIndex = 0;
 				}
-				else
-					comboBox_gender.SelectedItem = comboBox_gender.Items[0];
+				else if (comboBox_gender.SelectedIndex != 3)
+					comboBox_gender.SelectedIndex = 0;
 
 				// Custom gender
 				if (comboBox_gender.SelectedIndex == 3)
