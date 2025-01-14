@@ -35,7 +35,7 @@
 		<Option>Yellow</Option>
 	</Choice>
 	
-	<Number id="height" style="length" min="0">
+	<Number id="height" style="length" min="0" shared="yes">
 		<Label>Height</Label>
 		<Default>7'</Default>
 		<Placeholder>Height (cm/ft)</Placeholder>
@@ -62,8 +62,6 @@
 	<SetVar id="race-adjective">Centaurean</SetVar>
 	<SetFlag>centaur, quadruped</SetFlag>
 	<Erase>biped</Erase>
-	<Erase rule="height:local">height</Erase>
-	<SetFlag rule="height:local">height</SetFlag>
 	
 	<!-- Output -->
 	<Attribute order="20">
