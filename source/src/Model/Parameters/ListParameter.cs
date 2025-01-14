@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace Ginger
 {
-	public class ListParameter : BaseParameter<HashSet<string>>
+	public class ListParameter : BaseParameter<HashSet<string>>, IResettableParameter
 	{
 		public ListParameter() : base()
 		{
@@ -13,15 +13,6 @@ namespace Ginger
 		public ListParameter(Recipe recipe) : base(recipe)
 		{
 			value = new HashSet<string>();
-		}
-
-		public override bool LoadFromXml(XmlNode xmlNode)
-		{
-			if (base.LoadFromXml(xmlNode) == false)
-				return false;
-
-//			value = GetDefaultValue();
-			return true;
 		}
 
 		public override void SaveToXml(XmlNode xmlNode)
@@ -65,9 +56,9 @@ namespace Ginger
 			return hash;
 		}
 
-		public override HashSet<string> GetDefaultValue()
+		public void ResetValue(string value)
 		{
-			return new HashSet<string>(Utility.ListFromCommaSeparatedString(defaultValue));
+			this.value = new HashSet<string>(Utility.ListFromCommaSeparatedString(value));;
 		}
 	}
 }

@@ -71,10 +71,5 @@ namespace Ginger
 			hash ^= "Erase".GetHashCode();
 			return hash;
 		}
-
-		public override string GetDefaultValue()
-		{
-			return null;
-		}
 	}
 }

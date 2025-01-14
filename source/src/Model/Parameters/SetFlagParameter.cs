@@ -69,10 +69,5 @@ namespace Ginger
 			hash ^= "SetFlag".GetHashCode();
 			return hash;
 		}
-
-		public override string GetDefaultValue()
-		{
-			return null;
-		}
 	}
 }

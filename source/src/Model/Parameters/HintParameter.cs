@@ -48,9 +48,5 @@ namespace Ginger
 			return hash;
 		}
 
-		public override string GetDefaultValue()
-		{
-			return null;
-		}
 	}
 }

@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace Ginger
 {
-	public class MeasurementParameter : BaseParameter<string>
+	public class MeasurementParameter : BaseParameter<string>, IResettableParameter
 	{
 		public readonly decimal minValue = 0;
 		public decimal maxValue = decimal.MinValue;
@@ -27,8 +27,6 @@ namespace Ginger
 		{
 			if (base.LoadFromXml(xmlNode) == false)
 				return false;
-
-//			value = GetDefaultValue();
 
 			maxValue = xmlNode.GetAttributeDecimal("max", decimal.MaxValue);
 			mode = xmlNode.GetAttributeEnum("style", NumberParameter.Mode.Length);
@@ -115,9 +113,9 @@ namespace Ginger
 			return hash;
 		}
 
-		public override string GetDefaultValue()
+		public void ResetValue(string value)
 		{
-			return defaultValue;
+			this.value = value;
 		}
 	}
 }

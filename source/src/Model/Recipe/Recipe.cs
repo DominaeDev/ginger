@@ -771,6 +771,9 @@ namespace Ginger
 
 		public void ResetParameters()
 		{
+			if (parameters.ContainsAny(p => p is IResettableParameter) == false)
+				return;
+
 			Context evalContext = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly);
 			var evalConfig = new ContextString.EvaluationConfig() {
 				macroSuppliers = new IMacroSupplier[] { Current.Strings },
@@ -779,23 +782,22 @@ namespace Ginger
 			};
 
 			char[] brackets = new char[] { '{', '[' };
-
 			var characterNames = new string[] { Current.Name };
 			var userName = Current.Card.userPlaceholder;
 
-			foreach (var parameter in parameters)
+			foreach (var parameter in parameters.OfType<IResettableParameter>())
 			{
+				string defaultValue = parameter.defaultValue;
+
 				// Evaluate default value
-				if (string.IsNullOrEmpty(parameter.defaultValue) == false && parameter.defaultValue.IndexOfAny(brackets, 0) != -1)
+				if (string.IsNullOrEmpty(defaultValue) == false && defaultValue.IndexOfAny(brackets, 0) != -1)
 				{
-					var defaultValue = GingerString.FromString(Text.Eval(parameter.defaultValue, evalContext, evalConfig, Text.EvalOption.Minimal)).ToParameter();
+					defaultValue = GingerString.FromString(Text.Eval(defaultValue, evalContext, evalConfig, Text.EvalOption.Minimal)).ToParameter();
 					if (AppSettings.Settings.AutoConvertNames)
 						defaultValue = GingerString.WithNames(defaultValue, characterNames, userName);
-					parameter.defaultValue = defaultValue;
-
 				}
 
-				parameter.ResetToDefault();
+				parameter.ResetValue(defaultValue);
 			}
 		}
 

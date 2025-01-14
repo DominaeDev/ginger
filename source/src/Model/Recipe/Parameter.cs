@@ -27,7 +27,12 @@ namespace Ginger
 		void Apply(ParameterState parameterState);
 		Type GetParameterType();
 		object GetValue();
-		void ResetToDefault();
+	}
+
+	public interface IResettableParameter
+	{
+		string defaultValue { get; set; }
+		void ResetValue(string value);
 	}
 
 	public interface IInvisibleParameter {}
@@ -271,13 +276,6 @@ namespace Ginger
 			other.isEnabled = this.isEnabled;
 		}
 
-		public void ResetToDefault() // Called on instantiation
-		{
-			var defaultValue = GetDefaultValue();
-			if (defaultValue != null) // Parameters with no default behavior return null here
-				value = defaultValue;
-		}
-
 		private bool IsActive(ParameterState parameterState)
 		{
 			if (condition == null)
@@ -311,8 +309,6 @@ namespace Ginger
 		{ 
 			return value;
 		}
-
-		public abstract T GetDefaultValue();
 
 		public override int GetHashCode()
 		{
@@ -402,20 +398,20 @@ namespace Ginger
 				else
 				{
 					var stringParameter = parameter as BaseParameter<string>;
-					if (!string.IsNullOrEmpty(stringParameter.value) && stringParameter.value != stringParameter.GetDefaultValue())
+					if (!string.IsNullOrEmpty(stringParameter.value) && stringParameter.value != stringParameter.defaultValue)
 						value = Parameter.ToClipboard(stringParameter.value);
 				}
 			}
 			else if (parameter is BaseParameter<bool>)
 			{
 				var boolParameter = parameter as BaseParameter<bool>;
-				if (boolParameter.value != boolParameter.GetDefaultValue())
+				if (boolParameter.value != Utility.StringToBool(boolParameter.defaultValue))
 					value = boolParameter.value ? "true" : "false";
 			}
 			else if (parameter is BaseParameter<decimal>)
 			{
 				var numberParameter = parameter as BaseParameter<decimal>;
-				if (numberParameter.value != default(decimal) && numberParameter.value != numberParameter.GetDefaultValue())
+				if (numberParameter.value != default(decimal) && numberParameter.value != Utility.StringToDecimal(numberParameter.defaultValue))
 					value = numberParameter.value.ToString(CultureInfo.InvariantCulture);
 			}
 			else if (parameter is BaseParameter<HashSet<string>>)

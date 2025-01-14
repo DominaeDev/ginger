@@ -2,7 +2,7 @@
 
 namespace Ginger
 {
-	public class BooleanParameter : BaseParameter<bool>
+	public class BooleanParameter : BaseParameter<bool>, IResettableParameter
 	{
 		public BooleanParameter() : base()
 		{
@@ -11,12 +11,6 @@ namespace Ginger
 		public BooleanParameter(Recipe recipe) : base(recipe)
 		{
 			isEnabled = true;
-		}
-
-		public override bool LoadFromXml(XmlNode xmlNode)
-		{
-			return base.LoadFromXml(xmlNode);
-//			value = GetDefaultValue();
 		}
 
 		public override void SaveToXml(XmlNode xmlNode)
@@ -45,9 +39,9 @@ namespace Ginger
 			return hash;
 		}
 
-		public override bool GetDefaultValue()
+		public void ResetValue(string value)
 		{
-			return Utility.StringToBool(defaultValue);
+			this.value = Utility.StringToBool(value);
 		}
 	}
 }

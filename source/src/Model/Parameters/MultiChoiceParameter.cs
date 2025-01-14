@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace Ginger
 {
-	public class MultiChoiceParameter : BaseParameter<HashSet<string>>
+	public class MultiChoiceParameter : BaseParameter<HashSet<string>>, IResettableParameter
 	{
 		public struct Item
 		{
@@ -27,8 +27,6 @@ namespace Ginger
 		{
 			if (base.LoadFromXml(xmlNode) == false)
 				return false;
-
-//			value = GetDefaultValue();
 
 			var itemNode = xmlNode.GetFirstElement("Option");
 			while (itemNode != null)
@@ -131,9 +129,9 @@ namespace Ginger
 			this.value = new HashSet<string>(value.Intersect(items.Select(i => i.id.ToString())));
 		}
 
-		public override HashSet<string> GetDefaultValue()
+		public void ResetValue(string value)
 		{
-			return new HashSet<string>(Utility.ListFromCommaSeparatedString(defaultValue));
+			this.value = new HashSet<string>(Utility.ListFromCommaSeparatedString(value));
 		}
 	}
 }

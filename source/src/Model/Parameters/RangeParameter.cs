@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace Ginger
 {
-	public class RangeParameter : BaseParameter<decimal>
+	public class RangeParameter : BaseParameter<decimal>, IResettableParameter
 	{
 		public enum Mode
 		{
@@ -33,7 +33,6 @@ namespace Ginger
 			if (base.LoadFromXml(xmlNode) == false)
 				return false;
 
-//			value = GetDefaultValue();
 			suffix = xmlNode.GetValueElement("Suffix", null);
 
 			decimal min = xmlNode.GetAttributeDecimal("min", decimal.MinValue);
@@ -134,9 +133,9 @@ namespace Ginger
 			return hash;
 		}
 
-		public override decimal GetDefaultValue()
+		public void ResetValue(string value)
 		{
-			return Utility.StringToDecimal(defaultValue);
+			this.value = Utility.StringToDecimal(value);
 		}
 	}
 }

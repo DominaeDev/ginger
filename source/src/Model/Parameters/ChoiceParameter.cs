@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace Ginger
 {
-	public class ChoiceParameter : BaseParameter<string>
+	public class ChoiceParameter : BaseParameter<string>, IResettableParameter
 	{
 		public struct Item
 		{
@@ -40,8 +40,6 @@ namespace Ginger
 				return false;
 
 			style = xmlNode.GetAttributeEnum("style", Style.Default);
-
-//			value = GetDefaultValue();
 
 			var itemNode = xmlNode.GetFirstElement("Option");
 			while (itemNode != null)
@@ -178,9 +176,9 @@ namespace Ginger
 			return hash;
 		}
 
-		public override string GetDefaultValue()
+		public void ResetValue(string value)
 		{
-			return defaultValue;
+			this.value = value;
 		}
 	}
 }

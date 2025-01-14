@@ -2,7 +2,7 @@
 
 namespace Ginger
 {
-	public class TextParameter : BaseParameter<string>
+	public class TextParameter : BaseParameter<string>, IResettableParameter
 	{
 		public enum Mode
 		{
@@ -47,7 +47,6 @@ namespace Ginger
 				break;
 			}
 
-//			value = GetDefaultValue();
 			isRaw = xmlNode.GetAttributeBool("raw", false);
 			return true;
 		}
@@ -106,9 +105,9 @@ namespace Ginger
 			return hash;
 		}
 
-		public override string GetDefaultValue()
+		public void ResetValue(string value)
 		{
-			return defaultValue;
+			this.value = value;
 		}
 	}
 
