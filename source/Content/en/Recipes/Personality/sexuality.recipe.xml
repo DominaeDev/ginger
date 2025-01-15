@@ -13,7 +13,7 @@
 		<Option id="bisexual">Bisexual</Option>
 		<Option id="homosexual">Homosexual</Option>
 		<Option id="pansexual">Pansexual</Option>
-		<Option id="asexual">None</Option>
+		<Option id="asexual">Asexual</Option>
 	</Choice>
 	
 	<SetFlag rule="sexuality:local">{sexuality:id}</SetFlag>
@@ -39,17 +39,17 @@
 	</Attribute>
 	
 	<String id="attracted-to">
-		<String rule="attracted-custom" priority="1">{attracted-custom.list.lower}</String>
-		<String rule="male and heterosexual:local">women</String>
-		<String rule="male and homosexual:local">other men</String>
-		<String rule="female and heterosexual:local">men</String>
-		<String rule="female and homosexual:local">other women</String>
+		<String rule="attracted-custom" priority="2">{attracted-custom.list.lower}</String>
+		<String rule="male and heterosexual:local" priority="1">women</String>
+		<String rule="male and homosexual:local" priority="1">other men</String>
+		<String rule="female and heterosexual:local" priority="1">men</String>
+		<String rule="female and homosexual:local" priority="1">other women</String>
 		<String rule="bisexual:local">both men and women</String>
 		<String rule="pansexual:local">all genders</String>
 		<String rule="asexual:local">neither men nor women</String>
 	</String>
 	
-	<Rule id="has-attraction">not sexuality:custom or attracted-custom</Rule>
+	<Rule id="has-attraction">((male or female) and (heterosexual or homosexual)) or bisexual or pansexual or asexual or attracted-custom</Rule>
 	
 	<Node path="description/sexuality" order="300" rule="normal-detail and has-attraction">[char] is attracted to [@attracted-to].</Node>
 	<Node path="description/sexuality" order="300" rule="more">{more}.</Node>

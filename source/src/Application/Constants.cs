@@ -111,7 +111,6 @@ namespace Ginger
 		{
 			public static readonly string Base = "base";
 			public static readonly string NSFW = "nsfw";
-			public static readonly string OverrideGender = "override-gender";
 			public static readonly string Actor = "__actor";
 			public static readonly string Internal = "__internal";
 			public static readonly string External = "__external";

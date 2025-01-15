@@ -24,6 +24,7 @@ namespace Ginger
 		private bool _bIgnoreEvents = false;
 		private int lastLoreCount = 0;
 		private string _genderOverride = null;
+		private string _userGenderOverride = null;
 
 		private string CardName { get { return textBox_characterName.Text.Trim(); } }
 		private string SpokenName { get { return textBox_characterSpokenName.Text.Trim(); } }
@@ -116,17 +117,6 @@ namespace Ginger
 			// Gender
 			RefreshGender(false);
 
-			// User gender
-			if (string.IsNullOrWhiteSpace(Current.Card.userGender) == false)
-			{
-				if (string.Compare(Current.Card.userGender, "any", true) == 0)
-					comboBox_userGender.SelectedItem = comboBox_userGender.Items[3];
-				else
-					comboBox_userGender.Text = Current.Card.userGender;
-			}
-			else
-				comboBox_userGender.SelectedItem = comboBox_userGender.Items[0];
-
 			// Detail level
 			comboBox_Detail.SelectedItem = comboBox_Detail.Items[EnumHelper.ToInt(Current.Card.detailLevel) + 1];
 
@@ -197,6 +187,7 @@ namespace Ginger
 		public void Reset()
 		{
 			_genderOverride = null;
+			_userGenderOverride = null;
 			
 			_bIgnoreEvents = true;
 			comboBox_gender.SelectedIndex = 0;
@@ -713,6 +704,13 @@ namespace Ginger
 					_genderOverride = newGender;
 				else
 					_genderOverride = null;
+
+				string userGender = Current.Card.userGender;
+				string newUserGender;
+				if (context.TryGetValue("user-gender", out newUserGender) && string.Compare(userGender, newUserGender, StringComparison.OrdinalIgnoreCase) != 0)
+					_userGenderOverride = newUserGender;
+				else
+					_userGenderOverride = null;
 			}
 
 			if (string.IsNullOrEmpty(_genderOverride))
@@ -754,6 +752,36 @@ namespace Ginger
 				textBox_customGender.Visible = true; 
 				textBox_customGender.Enabled = false;
 				textBox_customGender.Text = _genderOverride;
+			}
+
+			// User gender
+			if (string.IsNullOrEmpty(_userGenderOverride))
+			{
+				comboBox_userGender.Enabled = true;
+
+				if (string.IsNullOrWhiteSpace(Current.Card.userGender) == false)
+				{
+					if (string.Compare(Current.Card.userGender, "any", true) == 0)
+						comboBox_userGender.SelectedIndex = 3;
+					if (string.Compare(Current.Card.userGender, "male", StringComparison.OrdinalIgnoreCase) == 0)
+						comboBox_userGender.SelectedIndex = 1; // Male
+					else if (string.Compare(Current.Card.userGender, "female", StringComparison.OrdinalIgnoreCase) == 0)
+						comboBox_userGender.SelectedIndex = 2; // Female
+					else
+						comboBox_userGender.Text = Current.Card.userGender;
+				}
+				else
+					comboBox_userGender.SelectedIndex = 0; // (Not set)
+			}
+			else
+			{
+				comboBox_userGender.Enabled = false;
+				if (string.Compare(_userGenderOverride, "male", StringComparison.OrdinalIgnoreCase) == 0)
+					comboBox_userGender.SelectedIndex = 1; // Male
+				else if (string.Compare(_userGenderOverride, "female", StringComparison.OrdinalIgnoreCase) == 0)
+					comboBox_userGender.SelectedIndex = 2; // Female
+				else
+					comboBox_userGender.Text = _userGenderOverride;
 			}
 		}
 

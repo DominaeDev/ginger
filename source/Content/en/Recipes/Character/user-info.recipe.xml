@@ -5,13 +5,16 @@
 	<Author>Ginger</Author>
 	<Category>User</Category>
 	<Order>0</Order>
+	<Flags>detail-optional</Flags>
 	
 	<!-- Parameters -->
-	<Choice id="user-gender" style="custom" shared="yes">
+	<Choice id="user-gender" style="custom">
 		<Label>Gender</Label>
 		<Option>Male</Option>
 		<Option>Female</Option>
 	</Choice>
+	<SetVar id="user-gender" scope="global">{user-gender}</SetVar>
+	
 	<Number id="user-age" min="0">
 		<Label>Age</Label>
 		<Suffix>years</Suffix>
@@ -31,6 +34,10 @@
 		<Option>Pansexual</Option>
 		<Option>Asexual</Option>
 	</Choice>
+	
+	<List id="attracted-custom" rule="user-sexuality:custom">
+		<Label>Attracted to</Label>
+	</List>
 	
 	<Text id="more" style="flex">
 		<Label>Additional details</Label>
@@ -68,8 +75,8 @@
 		</String>
 	</String>
 		
-	<String id="attraction" rule="normal-detail and (user-male or user-female) and not user-sexuality:custom">(attracted to [@attracted-to])</String>
 	<String id="attracted-to">
+		<String rule="attracted-custom" priority="1">{attracted-custom.list.lower}</String>
 		<String rule="user-male and user-sexuality is heterosexual">women</String>
 		<String rule="user-male and user-sexuality is homosexual">other men</String>
 		<String rule="user-female and user-sexuality is heterosexual">men</String>
@@ -78,6 +85,11 @@
 		<String rule="user-sexuality is pansexual">all genders</String>
 		<String rule="user-sexuality is asexual">neither men nor women</String>
 	</String>
+	
+	<Rule id="has-attraction">((user-male or user-female) and (heterosexual or homosexual)) or bisexual or pansexual or asexual or attracted-custom</Rule>
+	
+	<!-- Gender -->
+	<Node path="user/attributes/gender" order="10" rule="user-gender">Gender: {user-gender}</Node>
 	
 	<!-- Age -->
 	<Node path="user/attributes/age" order="20" rule="user-age">Age: {user-age}</Node>
@@ -89,12 +101,9 @@
 	<Node path="user/attributes/occupation" order="50" rule="user-occupation">Occupation: {user-occupation}</Node>
 	
 	<!-- Sexuality -->
-	<Node path="user/description/sexuality" order="10" rule="user-sexuality is heterosexual and normal-detail">[user] is straight [@attraction].</Node>
-	<Node path="user/description/sexuality" order="10" rule="user-sexuality is bisexual and not normal-detail">[user] is bisexual [@attraction].</Node>
-	<Node path="user/description/sexuality" order="10" rule="user-sexuality is homosexual and normal-detail">[user] is [female?a lesbian|homosexual] [@attraction].</Node>
-	<Node path="user/description/sexuality" order="10" rule="user-sexuality is pansexual and normal-detail">[user] is pansexual [@attraction].</Node>
-	<Node path="user/description/sexuality" order="10" rule="user-sexuality is asexual and normal-detail">[user] is asexual [@attraction].</Node>
-
+	<Node path="user/attributes/sexuality" order="50" rule="user-sexuality">Sexuality: {user-sexuality}</Node>
+	<Node path="user/description/sexuality" order="300" rule="normal-detail and has-attraction">[user] is attracted to [@attracted-to].</Node>
+	
 	<!-- Background -->
 	<Node path="user/description/background" rule="more">{more}.</Node>
 
