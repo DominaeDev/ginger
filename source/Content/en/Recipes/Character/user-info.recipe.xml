@@ -22,7 +22,7 @@
 	<Text id="user-nationality">
 		<Label>Nationality</Label>
 	</Text>
-	<Choice id="user-sexuality" style="custom" rule="allow-nsfw">
+	<Choice id="user-sexuality" style="custom">
 		<Label>Sexual orientation</Label>
 		<Placeholder>Enter sexual orientation</Placeholder>
 		<Option>Heterosexual</Option>

@@ -5,7 +5,7 @@
 	<Author>Ginger</Author>
 	<Category>Character</Category>
 	<Requires>not appearance</Requires>
-	<Flags>appearance</Flags>
+	<Flags>appearance, detail-optional</Flags>
 	<Order>-100</Order>
 			
 	<!-- Parameters -->
@@ -252,7 +252,7 @@
 	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is muscular">[They] [have] the body of a body-builder, with impressively large muscles and broad shoulders.</Node>
 	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is plump">[Their] body is rather plump, with soft, round features.</Node>
 	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is short">[They] [are] quite short, substantially shorter than [user].</Node>
-	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is shortstack">[They] [are] very short, has very wide hips, thick thighs and a huge [allow-nsfw?ass|posterior].</Node>
+	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is shortstack">[They] [are] very short, has very wide hips, thick thighs and a large posterior.</Node>
 	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is skinny">[char] has a skinny, lithe body.</Node>
 	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is slender">[Their] body is lean, slender and flexible[is-woman?, with a narrow waist].</Node>
 	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is small">[Their] body is small, with a slim and petite frame.</Node>

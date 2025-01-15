@@ -4,7 +4,7 @@
 	<Description>A base recipe for a one-on-one conversation in the style of a virtual AI companion.</Description>
 	<Author>Ginger</Author>
 	<Category>Base</Category>
-	<Flags>companion</Flags>
+	<Flags>companion, nsfw-optional</Flags>
 	<Order>-100</Order>
 	
 	<!-- Complementary recipes -->

@@ -3,7 +3,7 @@
 	<Description>Describe what the character is wearing.</Description>
 	<Author>Ginger</Author>
 	<Category>Character</Category>
-	<Flags>outfit</Flags>
+	<Flags>outfit, detail-optional, nsfw-optional</Flags>
 	<Order>-100</Order>
 	
 	<!-- Parameters --> 
@@ -66,7 +66,7 @@
 	</String>
 	
 	<String id="lore-key">
-		[!commalist:
+		{!commalist:
 		[__support-lore-wildcards?clothe*|clothes];
 		outfit; looks; appearance; wear; wearing; wears; put on; dress; dressed;
 		[__support-lore-wildcards?look * [char]; look *[char]; looked * [char]; looked *[char]|look at [char]; looked at [char]]; 
@@ -75,14 +75,14 @@
 			[__support-lore-wildcards?undergar*|undergarments];
 		[endif]
 		
-		[if allow-nsfw or nsfw]
+		[if allow-nsfw]
 			[__support-lore-wildcards?undress*|undress; undressed];
 			[__support-lore-wildcards?strip*|strip;stripped]; 
 			[__support-lore-wildcards?remove*;|remove;removed];
 			take off;
 			took off;
 			[endif]
-		]
+		}
 	</String>
 	
 	<Lore rule="not in-persona and (has-outfit or has-underwear)">

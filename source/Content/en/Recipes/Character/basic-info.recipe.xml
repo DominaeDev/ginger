@@ -4,7 +4,7 @@
 	<Description>Basic information about the character.</Description>
 	<Author>Ginger</Author>
 	<Category>Character</Category>
-	<Flags>basic-info</Flags>
+	<Flags>basic-info, detail-optional</Flags>
 	<Order>100</Order>
 	
 	<!-- Parameters -->

@@ -4,7 +4,7 @@
 	<Author>Ginger</Author>
 	<Category>Location</Category>
 	<Requires>not location</Requires>
-	<Flags>location</Flags>
+	<Flags>location, detail-optional</Flags>
 
 	<Scenario>
 		Location: "Dorm"

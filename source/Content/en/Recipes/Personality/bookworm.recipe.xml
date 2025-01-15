@@ -3,6 +3,7 @@
 	<Description>The character loves to read books.</Description>
 	<Author>Ginger</Author>
 	<Category>Personality</Category>
+	<Flags>detail-optional</Flags>
 	
 	<Attribute>
 		<Name>Personality</Name>

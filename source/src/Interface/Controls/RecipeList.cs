@@ -1122,6 +1122,8 @@ namespace Ginger
 
 			Current.IsDirty = true;
 			Undo.Push(Undo.Kind.Parameter, "Toggle recipe NSFW content");
+
+			RefreshParameterVisibility();
 		}
 
 		private void OnChangeDetailLevel(object sender, Recipe.DetailLevel detailLevel)

@@ -4,6 +4,7 @@
 	<Description>The character's got a foul mouth.</Description>
 	<Author>Ginger</Author>
 	<Category>Speech</Category>
+	<Flags>nsfw-optional</Flags>
 	
 	<Attribute style="block">
 		<Name>Speech pattern</Name>

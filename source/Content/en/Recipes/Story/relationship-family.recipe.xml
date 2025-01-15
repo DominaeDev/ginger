@@ -5,7 +5,7 @@
 	<Author>Ginger</Author>
 	<Category>Relationship</Category>
 	<Requires>not relationship</Requires>
-	<Flags>relationship</Flags>
+	<Flags>relationship, detail-optional</Flags>
 	
 	<!-- Parameters -->
 	<Choice id="family-member" required="yes">

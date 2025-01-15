@@ -5,7 +5,7 @@
 	<Author>Ginger</Author>
 	<Category>Trait</Category>
 	<Description>The character has an addiction.</Description>
-	<Flags>nsfw</Flags>
+	<Flags>nsfw, detail-optional</Flags>
 	
 	<!-- Parameters -->
 	<Choice id="addiction" required="yes" style="custom">
