@@ -202,6 +202,7 @@ namespace Ginger
 
 			this.DisableThenDoThenEnable(() => {
 				this.Text = sbOutput.TrimEnd().ToString();
+				this.InitUndo();
 			});
 		}
 

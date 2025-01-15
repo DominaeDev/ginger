@@ -583,6 +583,7 @@ namespace Ginger
 				return null;
 
 			Recipe recipe = RecipeBook.CreateRecipeFromResource(xmlSource);
+			recipe.ResetParameters();
 			(recipe.parameters[0] as TextParameter).value = text;
 			return recipe;
 		}
