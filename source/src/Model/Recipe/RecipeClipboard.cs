@@ -42,7 +42,10 @@ namespace Ginger
 				instanceNode.AddAttribute("collapse", recipe.isCollapsed);
 				if (recipe.canToggleTextFormatting)
 					instanceNode.AddAttribute("format", recipe.enableTextFormatting);
-
+				if (recipe.levelOfDetail != Recipe.DetailLevel.Default)
+					instanceNode.AddAttribute("lod", EnumHelper.ToString(recipe.levelOfDetail));
+				if (recipe.enableNSFWContent == false)
+					instanceNode.AddAttribute("allow-nsfw", false);
 				// Parameters
 				foreach (var parameter in recipe.parameters)
 					parameter.SaveValueToXml(instanceNode);

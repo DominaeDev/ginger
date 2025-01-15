@@ -124,6 +124,8 @@ namespace Ginger
 			panel.OnBake += OnBakeSingle;
 			panel.OnEnable += OnEnableRecipe;
 			panel.OnToggleRaw += OnToggleRaw;
+			panel.OnToggleNSFW += OnToggleNSFW;
+			panel.OnChangeDetailLevel += OnChangeDetailLevel;
 			panel.OnSaveAsSnippet += OnSaveAsSnippet;
 			panel.OnSaveAsRecipe += OnSaveAsRecipe;
 			panel.OnSaveLorebook += OnSaveLorebook;
@@ -215,6 +217,8 @@ namespace Ginger
 					panel.OnBake += OnBakeSingle;
 					panel.OnEnable += OnEnableRecipe;
 					panel.OnToggleRaw += OnToggleRaw;
+					panel.OnToggleNSFW += OnToggleNSFW;
+					panel.OnChangeDetailLevel += OnChangeDetailLevel;
 					panel.OnSaveAsSnippet += OnSaveAsSnippet;
 					panel.OnSaveAsRecipe += OnSaveAsRecipe;
 					panel.OnSaveLorebook += OnSaveLorebook;
@@ -1103,7 +1107,35 @@ namespace Ginger
 			recipe.EnableTextFormatting(!recipe.enableTextFormatting);
 
 			Current.IsDirty = true;
-			Undo.Push(Undo.Kind.Parameter, "Toggle raw");
+			Undo.Push(Undo.Kind.Parameter, "Toggle recipe formatting");
+		}
+
+		private void OnToggleNSFW(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			var panel = sender as RecipePanel;
+			var recipe = panel.recipe;
+
+			recipe.enableNSFWContent = !recipe.enableNSFWContent;
+
+			Current.IsDirty = true;
+			Undo.Push(Undo.Kind.Parameter, "Toggle recipe NSFW content");
+		}
+
+		private void OnChangeDetailLevel(object sender, Recipe.DetailLevel detailLevel)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			var panel = sender as RecipePanel;
+			var recipe = panel.recipe;
+
+			recipe.levelOfDetail = detailLevel;
+
+			Current.IsDirty = true;
+			Undo.Push(Undo.Kind.Parameter, "Change recipe detail level");
 		}
 
 		public void RefreshLoreTokenCounts(Dictionary<string, int> loreTokens)

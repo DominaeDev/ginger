@@ -86,7 +86,7 @@ namespace Ginger
 		{
 			get
 			{
-				return AllRecipes.ContainsAny(r => r.isEnabled && r.isNSFW)
+				return AllRecipes.ContainsAny(r => r.isEnabled && r.isNSFW && r.enableNSFWContent)
 					|| Card.tags.ContainsAny(t => string.Compare(t, "nsfw", true) == 0);
 			}
 		}
@@ -221,6 +221,9 @@ namespace Ginger
 					{
 						if (sourceRecipe.enableTextFormatting == false)
 							addedRecipe.EnableTextFormatting(false);
+						addedRecipe.enableNSFWContent = sourceRecipe.enableNSFWContent;
+						addedRecipe.levelOfDetail = sourceRecipe.levelOfDetail;
+						
 						Recipe.CopyParameterValues(sourceRecipe, addedRecipe);
 					}
 				}

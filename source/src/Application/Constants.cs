@@ -122,8 +122,10 @@ namespace Ginger
 			public static readonly string Grammar = "__grammar";
 			public static readonly string DontBake = "__nobake";
 			public static readonly string Hidden = "__hidden";
-			public static readonly string ToggleFormatting = "__formatting";
 			public static readonly string PruneScenario = "__prune-scenario";
+			public static readonly string ToggleFormatting = "__formatting";
+			public static readonly string ToggleNSFW = "nsfw-optional";
+			public static readonly string LevelOfDetail = "detail-optional";
 		}
 
 		public static readonly string DefaultCharacterName = "Unnamed";

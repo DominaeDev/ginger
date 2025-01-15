@@ -22,6 +22,8 @@ namespace Ginger
 		public event EventHandler OnBake;
 		public event EventHandler OnEnable;
 		public event EventHandler OnToggleRaw;
+		public event EventHandler OnToggleNSFW;
+		public event EventHandler<Recipe.DetailLevel> OnChangeDetailLevel;
 		public event EventHandler OnCopy;
 		public event EventHandler OnPaste;
 		public event EventHandler OnSaveAsSnippet;
@@ -379,17 +381,82 @@ namespace Ginger
 				Checked = recipe.isEnabled,
 			});
 
-			if (recipe.canToggleTextFormatting)
+			var optionsMenu = new ToolStripMenuItem("Options");
+
+			if (recipe.isComponent) // Components
 			{
-				menu.Items.Add(new ToolStripMenuItem("Formatting", null, (s, e) => 
-				{
+				optionsMenu.DropDownItems.Add(new ToolStripMenuItem("Format text", null, (s, e) => {
 					CommitChange();
 					OnToggleRaw?.Invoke(this, EventArgs.Empty);
 				}) {
 					Checked = recipe.enableTextFormatting,
+					Enabled = recipe.canToggleTextFormatting,
 					ToolTipText = Resources.tooltip_recipe_formatting,
 				});
 			}
+			else // Recipes
+			{
+				if (recipe.flags.Contains(Constants.Flag.LevelOfDetail))
+				{
+					var lodMenu = new ToolStripMenuItem("Detail level");
+					if (recipe.flags.Contains(Constants.Flag.LevelOfDetail))
+					{
+						lodMenu.DropDownItems.Add(new ToolStripMenuItem("(Default)", null, (s, e) => {
+							CommitChange();
+							OnChangeDetailLevel?.Invoke(this, Recipe.DetailLevel.Default);
+						}) {
+							Checked = recipe.levelOfDetail == Recipe.DetailLevel.Default,
+							ToolTipText = "Use the default detail setting for this recipe.",
+						});
+
+						lodMenu.DropDownItems.Add(new ToolStripSeparator());
+
+						lodMenu.DropDownItems.Add(new ToolStripMenuItem("Less detail", null, (s, e) => {
+							CommitChange();
+							OnChangeDetailLevel?.Invoke(this, Recipe.DetailLevel.Less);
+						}) {
+							Checked = recipe.levelOfDetail == Recipe.DetailLevel.Less,
+						});
+
+						lodMenu.DropDownItems.Add(new ToolStripMenuItem("Normal detail", null, (s, e) => {
+							CommitChange();
+							OnChangeDetailLevel?.Invoke(this, Recipe.DetailLevel.Normal);
+						}) {
+							Checked = recipe.levelOfDetail == Recipe.DetailLevel.Normal,
+						});
+
+						lodMenu.DropDownItems.Add(new ToolStripMenuItem("More detail", null, (s, e) => {
+							CommitChange();
+							OnChangeDetailLevel?.Invoke(this, Recipe.DetailLevel.More);
+						}) {
+							Checked = recipe.levelOfDetail == Recipe.DetailLevel.More,
+						});
+					}
+					else
+						lodMenu.Enabled = false;
+					optionsMenu.DropDownItems.Add(lodMenu);
+				}
+
+				if (AppSettings.Settings.AllowNSFW)
+				{
+					if (optionsMenu.DropDownItems.Count > 0)
+						optionsMenu.DropDownItems.Add(new ToolStripSeparator());
+
+					bool bCanToggleNSFW = recipe.flags.Contains(Constants.Flag.ToggleNSFW);
+					optionsMenu.DropDownItems.Add(new ToolStripMenuItem("Allow NSFW content", null, (s, e) => {
+						CommitChange();
+						OnToggleNSFW?.Invoke(this, EventArgs.Empty);
+					}) {
+						Checked = (bCanToggleNSFW && recipe.enableNSFWContent) || (!bCanToggleNSFW && recipe.flags.Contains(Constants.Flag.NSFW)),
+						Enabled = bCanToggleNSFW,
+						ToolTipText = "Allow this recipe to include explicit text in its output.",
+					});
+				}
+				
+			}
+			optionsMenu.Enabled = optionsMenu.DropDownItems.Count > 0;
+
+			menu.Items.Add(optionsMenu);
 
 			menu.Items.Add("-");
 

@@ -205,6 +205,15 @@ namespace Ginger
 		public bool isEnabled = true;
 		public bool isCollapsed = false;
 		public bool enableTextFormatting { get; private set; } // Components only
+		public enum DetailLevel
+		{
+			Default = 0,
+			Less = 1,
+			Normal = 2,
+			More = 3,
+		}
+		public DetailLevel levelOfDetail = DetailLevel.Default;
+		public bool enableNSFWContent = true;
 
 		private static ICondition BaseExclusivityRule = Rule.Parse("not base");
 
@@ -608,7 +617,6 @@ namespace Ginger
 			clone.instanceIndex = this.instanceIndex;
 			clone.isEnabled = this.isEnabled;
 			clone.isCollapsed = this.isCollapsed;
-			clone.enableTextFormatting = this.enableTextFormatting;
 			clone.version = this.version;
 			clone.description = this.description;
 			clone.author = this.author;
@@ -621,6 +629,8 @@ namespace Ginger
 			clone.strings = this.strings;
 			clone.includes = new List<StringHandle>(this.includes);
 			clone.enableTextFormatting = this.enableTextFormatting;
+			clone.enableNSFWContent = this.enableNSFWContent;
+			clone.levelOfDetail = this.levelOfDetail;
 
 			clone.blocks = new List<Block>(this.blocks.Count);
 			for (int i = 0; i < this.blocks.Count; ++i)
@@ -696,6 +706,8 @@ namespace Ginger
 			to.isEnabled = from.isEnabled;
 			to.isCollapsed = from.isCollapsed;
 			to.enableTextFormatting = from.enableTextFormatting;
+			to.levelOfDetail = from.levelOfDetail;
+			to.enableNSFWContent = from.enableNSFWContent;
 
 			for (int i = 0; i < from.parameters.Count; ++i)
 			{
