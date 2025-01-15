@@ -19,6 +19,10 @@
 	<SetFlag rule="sexuality:local">{sexuality:id}</SetFlag>
 	<SetFlag rule="homosexual">gay</SetFlag>
 	
+	<List id="attracted-custom" rule="sexuality:custom">
+		<Label>Attracted to</Label>
+	</List>
+	
 	<List id="fetishes">
 		<Label>Turn-ons</Label>
 	</List>
@@ -35,6 +39,7 @@
 	</Attribute>
 	
 	<String id="attracted-to">
+		<String rule="attracted-custom" priority="1">{attracted-custom.list.lower}</String>
 		<String rule="male and heterosexual:local">women</String>
 		<String rule="male and homosexual:local">other men</String>
 		<String rule="female and heterosexual:local">men</String>
@@ -44,7 +49,9 @@
 		<String rule="asexual:local">neither men nor women</String>
 	</String>
 	
-	<Node path="description/sexuality" order="300" rule="normal-detail">[char] is attracted to [@attracted-to].</Node>
+	<Rule id="has-attraction">not sexuality:custom or attracted-custom</Rule>
+	
+	<Node path="description/sexuality" order="300" rule="normal-detail and has-attraction">[char] is attracted to [@attracted-to].</Node>
 	<Node path="description/sexuality" order="300" rule="more">{more}.</Node>
 
 	<Attribute style="list">

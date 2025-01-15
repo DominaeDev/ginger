@@ -44,35 +44,35 @@
 		<Option id="volume">Measurement (Volume)</Option>
 	</Choice>
 
-	<Attribute style="attribute" rule="type:id is text">
+	<Attribute style="attribute" rule="type:id is text" order="300">
 		<Name>{name:local}</Name>
 		<Value>{text-value}</Value>
 	</Attribute>
-	<Attribute style="text" rule="type:id is long">
+	<Attribute style="text" rule="type:id is long" order="300">
 		<Name>{name:local}</Name>
 		<Value>{long-value}</Value>
 	</Attribute>
-	<Attribute style="list" rule="type:id is list">
+	<Attribute style="list" rule="type:id is list" order="300">
 		<Name>{name:local}</Name>
 		<Value>{list-value}</Value>
 	</Attribute>
-	<Attribute style="number" rule="type:id is number">
+	<Attribute style="number" rule="type:id is number" order="300">
 		<Name>{name:local}</Name>
 		<Value>{number-value}</Value>
 	</Attribute>
-	<Attribute style="attribute" rule="type:id is length and less-detail">
+	<Attribute style="attribute" rule="type:id is length and less-detail" order="300">
 		<Name>{name:local}</Name>
 		<Value>{length-value}</Value>
 	</Attribute>
-	<Attribute style="attribute" rule="type:id is length and normal-detail">
+	<Attribute style="attribute" rule="type:id is length and normal-detail" order="300">
 		<Name>{name:local}</Name>
 		<Value>{length-value.ftin} ({length-value.cm})</Value>
 	</Attribute>
-	<Attribute style="attribute" rule="type:id is weight">
+	<Attribute style="attribute" rule="type:id is weight" order="300">
 		<Name>{name:local}</Name>
 		<Value>{weight-value}</Value>
 	</Attribute>
-	<Attribute style="attribute" rule="type:id is volume">
+	<Attribute style="attribute" rule="type:id is volume" order="300">
 		<Name>{name:local}</Name>
 		<Value>{volume-value}</Value>
 	</Attribute>
