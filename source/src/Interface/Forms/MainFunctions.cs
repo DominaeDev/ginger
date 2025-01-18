@@ -208,6 +208,7 @@ namespace Ginger
 			}
 
 			Recipe recipe = RecipeBook.CreateRecipeFromResource(xmlSource, Recipe.Type.Component, drawer);
+			recipe.ResetParameters();
 			(recipe.parameters[0] as TextParameter).value = text;
 			return recipe;
 		}
