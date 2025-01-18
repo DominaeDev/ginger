@@ -53,4 +53,5 @@
 	
 	<Node path="persona/output/age" rule="age" order="100" mode="exclude">[char] is [a] {age.numeral} year old [race?{gender} {race.lower}|[@age-group]].</Node>
 	
+	<Adjective order="age" rule="age">{age}-year-old</Adjective>
 </Ginger>

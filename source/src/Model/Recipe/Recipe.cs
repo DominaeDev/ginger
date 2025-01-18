@@ -180,6 +180,8 @@ namespace Ginger
 		public List<Block> blocks = new List<Block>();
 		public List<Template> templates = new List<Template>();
 		public List<LoreItem> loreItems = new List<LoreItem>();
+		public List<CharacterAdjective> adjectives = new List<CharacterAdjective>();
+		public List<CharacterNoun> nouns = new List<CharacterNoun>();
 		public ICondition requires = null;
 		public HashSet<StringHandle> flags = new HashSet<StringHandle>();
 		public List<StringHandle> includes = new List<StringHandle>();
@@ -463,6 +465,28 @@ namespace Ginger
 			// Strings (and rules)
 			strings.LoadFromXml(xmlNode);
 
+			// Adjectives
+			adjectives.Clear();
+			var adjectiveNode = xmlNode.GetFirstElement("Adjective");
+			while (adjectiveNode != null)
+			{
+				var adjective = new CharacterAdjective();
+				if (adjective.LoadFromXml(adjectiveNode))
+					adjectives.Add(adjective);
+				adjectiveNode = adjectiveNode.GetNextSibling();
+			}
+
+			// Nouns
+			nouns.Clear();
+			var nounNode = xmlNode.GetFirstElement("Noun");
+			while (nounNode != null)
+			{
+				var noun = new CharacterNoun();
+				if (noun.LoadFromXml(nounNode))
+					nouns.Add(noun);
+				nounNode = nounNode.GetNextSibling();
+			}
+
 			uid = GetHashCode();
 			return true;
 		}
@@ -684,6 +708,27 @@ namespace Ginger
 					order = other.order,
 				});
 			}
+			clone.adjectives = new List<CharacterAdjective>(this.adjectives.Count);
+			for (int i = 0; i < this.adjectives.Count; ++i)
+			{
+				var other = this.adjectives[i];
+				clone.adjectives.Add(new CharacterAdjective() {
+					value = other.value,
+					priority = other.priority,
+					condition = other.condition,
+					order = other.order,
+				});
+			}
+			clone.nouns = new List<CharacterNoun>(this.nouns.Count);
+			for (int i = 0; i < this.nouns.Count; ++i)
+			{
+				var other = this.nouns[i];
+				clone.nouns.Add(new CharacterNoun() {
+					value = other.value,
+					priority = other.priority,
+					condition = other.condition
+				});
+			}
 
 			return clone;
 		}
@@ -816,6 +861,8 @@ namespace Ginger
 				hash ^= Utility.MakeHashCode(blocks, Utility.HashOption.None);
 				hash ^= Utility.MakeHashCode(loreItems, Utility.HashOption.None);
 				hash ^= Utility.MakeHashCode(parameters, Utility.HashOption.None);
+				hash ^= Utility.MakeHashCode(adjectives, Utility.HashOption.None);
+				hash ^= Utility.MakeHashCode(nouns, Utility.HashOption.None);
 				return hash;
 			}
 		}

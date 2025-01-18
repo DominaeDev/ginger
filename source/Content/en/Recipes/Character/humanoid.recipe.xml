@@ -13,7 +13,7 @@
 	<Include>Personality</Include>
 	
 	<!-- Parameters -->
-	<Choice id="_race" style="custom">
+	<Choice id="humanoid-race" style="custom">
 		<Label>Species/Race</Label>
 		<Placeholder>Elf, Orc, Goblin, etc.</Placeholder>
 		<Option>Alien</Option>
@@ -101,7 +101,7 @@
 		<String rule="beastfolk">[is-woman?Beastwoman|Beastman]</String>
 		<String rule="merfolk">[is-woman?Mermaid|Merman]</String>
 		<String rule="lizardfolk">[is-woman?Lizardwoman|Lizardman]</String>
-		<String>{_race}</String>
+		<String>{humanoid-race}</String>
 	</String>
 	
 	<Attribute>
@@ -109,7 +109,7 @@
 		<Value>[@race]</Value>
 	</Attribute>
 	
-	<Node path="persona/description/race" rule="_race">[Char] is [a] {gender} {@race.lower}.</Node>
+	<Node path="persona/description/race" rule="humanoid-race">[char] is [a] {gender} {@race.lower}.</Node>
 
 	<!-- Skin tone -->
 	<String id="skin-tone">
@@ -160,5 +160,11 @@
 	
 	<!-- More -->
 	<Node path="appearance/body" order="0" rule="more">{more}.</Node>
-			
+	
+	<!-- Descriptor -->
+	<Adjective order="color" rule="normal-detail and skin-tone">{skin-tone.lower}-skinned</Adjective>
+	
+	<Noun rule="beastfolk or merfolk or lizardfolk">[@race.lower]</Noun>
+	<Noun rule="not (beastfolk or merfolk or lizardfolk)">{gender} {humanoid-race.lower}</Noun>
+
 </Ginger>

@@ -118,7 +118,10 @@
 		<Name>Gender</Name>
 		<Value>{gender.capital}</Value>
 	</Attribute>
-		
+	
+	<!-- Character adjectives/noun -->
+	<Noun priority="-100">[person]</Noun>
+			
 	<Name>__global</Name>
 	<Flags>__nobake, __internal, __hidden</Flags>
 </Ginger>

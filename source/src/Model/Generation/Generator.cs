@@ -476,6 +476,9 @@ namespace Ginger
 			// Prepare contexts
 			Context[] recipeContexts = ParameterResolver.GetLocalContexts(recipes.ToArray(), globalContext);
 
+			// Adjectives & nouns
+			CompileAdjectivesAndNoun(recipes, recipeContexts, randomizer);
+
 			// Evaluate lorebooks, blocks, and attributes
 			for (int i = 0; i < recipes.Count; ++i)
 			{
@@ -552,7 +555,7 @@ namespace Ginger
 
 						string attributeLabel = Text.Eval(string.Format("[!__attrib:{0}]", attributeName), localContext, evalConfig,
 							Text.EvalOption.None);
-						
+
 						blockBuilder.AddAttribute(attribute, attributeName, attributeLabel, text);
 					}
 					else
@@ -560,7 +563,6 @@ namespace Ginger
 						blockBuilder.Add(block, text);
 					}
 				}
-
 			}
 
 			// Evaluate recipe components
@@ -574,8 +576,8 @@ namespace Ginger
 
 				foreach (var template in recipe.templates)
 				{
-					if (string.IsNullOrEmpty(template.text) 
-						|| template.channel == Recipe.Component.Invalid 
+					if (string.IsNullOrEmpty(template.text)
+						|| template.channel == Recipe.Component.Invalid
 						|| template.isDetached)
 						continue;
 
@@ -807,7 +809,136 @@ namespace Ginger
 				group_greetings = group_greetings,
 				lore = Lorebook.Merge(loreEntries),
 			};
-		
+
+		}
+
+		private struct AdjectiveNoun
+		{
+			public string value;
+			public int order;
+			public int priority;
+		}
+
+		private static void CompileAdjectivesAndNoun(List<Recipe> recipes, Context[] recipeContexts, IRandom randomizer)
+		{
+			List<AdjectiveNoun> lsAdjectives = new List<AdjectiveNoun>();
+			List<AdjectiveNoun> lsNouns = new List<AdjectiveNoun>();
+
+			for (int iRecipe = 0; iRecipe < recipes.Count; ++iRecipe)
+			{
+				var recipe = recipes[iRecipe];
+				if (recipe.isEnabled == false)
+					continue;
+
+				var localContext = recipeContexts[iRecipe];
+
+				foreach (var adjective in recipe.adjectives)
+				{
+					if (adjective.condition != null
+						&& adjective.condition.Evaluate(localContext,
+							new EvaluationCookie() {
+								randomizer = randomizer,
+								ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
+							}
+						) == false)
+						continue;
+
+					string text = Text.Eval(adjective.value, localContext,
+						new ContextString.EvaluationConfig() {
+							macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
+							referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
+							ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
+							randomizer = randomizer,
+						}, Text.EvalOption.Minimal);
+
+					if (string.IsNullOrEmpty(text))
+						continue;
+
+					var words = Utility.ListFromCommaSeparatedString(text);
+					lsAdjectives.Add(new AdjectiveNoun() {
+						value = randomizer.Item(words),
+						order = adjective.order,
+						priority = adjective.order,
+					});
+				}
+
+				foreach (var noun in recipe.nouns)
+				{
+					if (noun.condition != null
+						&& noun.condition.Evaluate(localContext,
+							new EvaluationCookie() {
+								randomizer = randomizer,
+								ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
+							}
+						) == false)
+						continue;
+
+					string text = Text.Eval(noun.value, localContext,
+						new ContextString.EvaluationConfig() {
+							macroSuppliers = new IMacroSupplier[] { recipe.strings, Current.Strings },
+							referenceSuppliers = new IStringReferenceSupplier[] { recipe.strings, Current.Strings },
+							ruleSuppliers = new IRuleSupplier[] { recipe.strings, Current.Strings },
+							randomizer = randomizer,
+						}, Text.EvalOption.Minimal);
+
+					if (string.IsNullOrEmpty(text))
+						continue;
+
+					var words = Utility.ListFromCommaSeparatedString(text);
+					lsNouns.Add(new AdjectiveNoun() {
+						value = randomizer.Item(words),
+						priority = noun.priority,
+					});
+				}
+			}
+
+			// Compile adjectives
+			var adjectives = lsAdjectives
+				.DistinctBy(a => a.value.ToLowerInvariant())
+				.GroupBy(a => a.order)
+				.Select(g => new {
+					order = g.First().order,
+					values = g.ToList().Shuffle(randomizer)
+						.OrderByDescending(gg => gg.priority)
+						.Select(gg => gg.value),
+				})
+				.OrderBy(x => x.order)
+				.SelectMany(x => {
+					switch (x.order)
+					{
+					case 0: // Opinion
+					case 2: // Quality
+						return x.values.Take(2);
+					default:
+						return x.values.Take(1);
+					}
+				});
+
+			string sAdjectives = string.Join(Text.Delimiter, adjectives);
+			if (sAdjectives.Length > 0)
+			{
+				for (int i = 0; i < recipeContexts.Length; ++i)
+					recipeContexts[i].SetValue("char-adjectives", sAdjectives);
+			}
+
+			// Choose noun
+			var sNoun = lsNouns
+				.DistinctBy(n => n.value.ToLowerInvariant())
+				.GroupBy(n => n.priority)
+				.Select(g => new {
+					priority = g.First().priority,
+					value = g.Select(gg => gg.value).ToList(),
+				})
+				.OrderByDescending(x => x.priority)
+				.Take(1)
+				.Select(x => x.value.Shuffle(randomizer).FirstOrDefault())
+				.FirstOrDefault();
+
+			if (string.IsNullOrEmpty(sNoun) == false)
+			{
+				for (int i = 0; i < recipeContexts.Length; ++i)
+					recipeContexts[i].SetValue("char-noun", sNoun);
+			}
 		}
 
 		public struct OutputWithNodes
