@@ -47,6 +47,7 @@ namespace Ginger
 		private void SidePanel_Load(object sender, EventArgs e)
 		{
 			this.portraitImage.ChangePortraitImage += OnChangePortraitImage;
+			root.VerticalScroll.Visible = false;
 
 			SetToolTip(Resources.tooltip_character_name, label_characterName, textBox_characterName);
 			SetToolTip(Resources.tooltip_spoken_name, label_characterSpokenName, textBox_characterSpokenName);
@@ -922,5 +923,11 @@ namespace Ginger
 			RefreshValues();
 			portraitImage.BackgroundImage = Theme.Current.Checker;
 		}
+
+		public void RefreshLayout()
+		{ 
+			root.Height = (int)(this.ClientSize.Height - group_Character.Height - 4 );
+		}
+
 	}
 }
