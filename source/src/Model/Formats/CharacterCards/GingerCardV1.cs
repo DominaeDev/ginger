@@ -119,6 +119,8 @@ namespace Ginger
 						bool isActive = instanceNode.GetAttributeBool("active", true);
 						bool isCollapsed = instanceNode.GetAttributeBool("collapse", false);
 						bool enableTextFormatting = instanceNode.GetAttributeBool("format", true);
+						bool enableNSFWContent = instanceNode.GetAttributeBool("allow-nsfw", true);
+						var levelOfDetail = instanceNode.GetAttributeEnum("lod", Recipe.DetailLevel.Default);
 
 						Recipe recipe;
 						Recipe recipeTemplate;
@@ -131,6 +133,8 @@ namespace Ginger
 								recipe = template.Instantiate();
 								if (recipe.canToggleTextFormatting && !enableTextFormatting)
 									recipe.EnableTextFormatting(false);
+								recipe.enableNSFWContent = enableNSFWContent;
+								recipe.levelOfDetail = levelOfDetail;
 							}
 							else
 							{
@@ -293,6 +297,10 @@ namespace Ginger
 						instanceNode.AddAttribute("collapse", recipe.isCollapsed);
 						if (recipe.canToggleTextFormatting)
 							instanceNode.AddAttribute("format", recipe.enableTextFormatting);
+						if (recipe.levelOfDetail != Recipe.DetailLevel.Default)
+							instanceNode.AddAttribute("lod", EnumHelper.ToString(recipe.levelOfDetail));
+						if (recipe.enableNSFWContent == false)
+							instanceNode.AddAttribute("allow-nsfw", false);
 
 						// Parameters
 						foreach (var parameter in recipe.parameters)

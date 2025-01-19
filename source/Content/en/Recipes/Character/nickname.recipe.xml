@@ -4,6 +4,7 @@
 	<Description>Give the character a nickname.</Description>
 	<Author>Ginger</Author>
 	<Category>Character</Category>
+	<Flags>detail-optional</Flags>
 	
 	<!-- Parameters -->
 	<Text id="nickname" raw="true" shared="yes">

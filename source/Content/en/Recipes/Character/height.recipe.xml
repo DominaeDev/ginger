@@ -4,6 +4,7 @@
 	<Description>Describes the character's height.</Description>
 	<Author>Ginger</Author>
 	<Category>Body</Category>
+	<Flags>detail-optional</Flags>
 	
 	<!-- Parameters -->
 	<Number id="height" style="length" min="0" shared="yes">

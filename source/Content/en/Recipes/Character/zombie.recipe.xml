@@ -6,7 +6,7 @@
 	<Category>Archetype</Category>
 	<Description>The character is the living dead.</Description>
 	<Order>-200</Order>
-	<Flags>zombie, undead</Flags>
+	<Flags>zombie, undead, detail-optional</Flags>
 	<Requires>not undead</Requires>
 	
 	<!-- Complementary recipes -->
