@@ -58,7 +58,6 @@
 			System.Windows.Forms.Panel infoPanel;
 			System.Windows.Forms.TableLayoutPanel genderTable;
 			System.Windows.Forms.Panel portraitPanel;
-			this.root = new System.Windows.Forms.Panel();
 			this.label_Context_Value = new System.Windows.Forms.Label();
 			this.label_TokenBudget_Value = new System.Windows.Forms.Label();
 			this.label_Tokens_Permanent_Value = new System.Windows.Forms.Label();
@@ -83,7 +82,6 @@
 			this.label_creator = new System.Windows.Forms.Label();
 			this.textBox_version = new Ginger.TextBoxEx();
 			this.label_version = new System.Windows.Forms.Label();
-			this.group_Character = new Ginger.GroupBoxEx();
 			this.textBox_customGender = new Ginger.TextBoxEx();
 			this.comboBox_gender = new Ginger.ComboBoxEx();
 			this.label_gender = new System.Windows.Forms.Label();
@@ -92,6 +90,8 @@
 			this.textBox_characterName = new Ginger.TextBoxEx();
 			this.label_characterName = new System.Windows.Forms.Label();
 			this.portraitImage = new Ginger.PortraitPreview();
+			this.root = new System.Windows.Forms.Panel();
+			this.group_Character = new Ginger.GroupBoxEx();
 			spacer_0 = new System.Windows.Forms.Panel();
 			spacer_1 = new System.Windows.Forms.Panel();
 			spacer_2 = new System.Windows.Forms.Panel();
@@ -121,7 +121,6 @@
 			infoPanel = new System.Windows.Forms.Panel();
 			genderTable = new System.Windows.Forms.TableLayoutPanel();
 			portraitPanel = new System.Windows.Forms.Panel();
-			this.root.SuspendLayout();
 			group_Stats.SuspendLayout();
 			panel_right.SuspendLayout();
 			panel_left.SuspendLayout();
@@ -138,11 +137,12 @@
 			tableLayoutPanel1.SuspendLayout();
 			left.SuspendLayout();
 			right.SuspendLayout();
-			this.group_Character.SuspendLayout();
 			infoPanel.SuspendLayout();
 			genderTable.SuspendLayout();
 			portraitPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).BeginInit();
+			this.root.SuspendLayout();
+			this.group_Character.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// spacer_0
@@ -181,25 +181,9 @@
 			spacer_3.Size = new System.Drawing.Size(600, 4);
 			spacer_3.TabIndex = 10;
 			// 
-			// root
-			// 
-			this.root.AutoScroll = true;
-			this.root.Controls.Add(group_Stats);
-			this.root.Controls.Add(spacer_3);
-			this.root.Controls.Add(group_Generation);
-			this.root.Controls.Add(spacer_2);
-			this.root.Controls.Add(group_User);
-			this.root.Controls.Add(spacer_1);
-			this.root.Controls.Add(group_CardInfo);
-			this.root.Dock = System.Windows.Forms.DockStyle.Top;
-			this.root.Location = new System.Drawing.Point(0, 246);
-			this.root.Name = "root";
-			this.root.Size = new System.Drawing.Size(600, 526);
-			this.root.TabIndex = 5;
-			// 
 			// group_Stats
 			// 
-			group_Stats.Collapsed = false;
+			group_Stats.Collapsible = true;
 			group_Stats.Controls.Add(panel_right);
 			group_Stats.Controls.Add(panel_left);
 			group_Stats.Dock = System.Windows.Forms.DockStyle.Top;
@@ -409,7 +393,7 @@
 			// 
 			// group_Generation
 			// 
-			group_Generation.Collapsed = false;
+			group_Generation.Collapsible = true;
 			group_Generation.Controls.Add(tableLayoutPanel3);
 			group_Generation.Dock = System.Windows.Forms.DockStyle.Top;
 			group_Generation.Location = new System.Drawing.Point(0, 299);
@@ -569,7 +553,7 @@
 			// 
 			// group_User
 			// 
-			group_User.Collapsed = false;
+			group_User.Collapsible = true;
 			group_User.Controls.Add(tableLayoutPanel2);
 			group_User.Dock = System.Windows.Forms.DockStyle.Top;
 			group_User.Location = new System.Drawing.Point(0, 224);
@@ -682,7 +666,7 @@
 			// 
 			// group_CardInfo
 			// 
-			group_CardInfo.Collapsed = false;
+			group_CardInfo.Collapsible = true;
 			group_CardInfo.Controls.Add(this.textBox_tags);
 			group_CardInfo.Controls.Add(this.label_tags);
 			group_CardInfo.Controls.Add(this.textBox_creatorNotes);
@@ -837,19 +821,6 @@
 			this.label_version.Size = new System.Drawing.Size(288, 21);
 			this.label_version.TabIndex = 9;
 			this.label_version.Text = "Version";
-			// 
-			// group_Character
-			// 
-			this.group_Character.Collapsed = false;
-			this.group_Character.Controls.Add(infoPanel);
-			this.group_Character.Controls.Add(portraitPanel);
-			this.group_Character.Dock = System.Windows.Forms.DockStyle.Top;
-			this.group_Character.Location = new System.Drawing.Point(0, 0);
-			this.group_Character.Name = "group_Character";
-			this.group_Character.Padding = new System.Windows.Forms.Padding(6, 3, 3, 6);
-			this.group_Character.Size = new System.Drawing.Size(600, 242);
-			this.group_Character.TabIndex = 0;
-			this.group_Character.TabStop = false;
 			// 
 			// infoPanel
 			// 
@@ -1017,6 +988,35 @@
 			this.portraitImage.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseClick);
 			this.portraitImage.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseDoubleClick);
 			// 
+			// root
+			// 
+			this.root.AutoScroll = true;
+			this.root.Controls.Add(group_Stats);
+			this.root.Controls.Add(spacer_3);
+			this.root.Controls.Add(group_Generation);
+			this.root.Controls.Add(spacer_2);
+			this.root.Controls.Add(group_User);
+			this.root.Controls.Add(spacer_1);
+			this.root.Controls.Add(group_CardInfo);
+			this.root.Dock = System.Windows.Forms.DockStyle.Top;
+			this.root.Location = new System.Drawing.Point(0, 246);
+			this.root.Name = "root";
+			this.root.Size = new System.Drawing.Size(600, 526);
+			this.root.TabIndex = 5;
+			// 
+			// group_Character
+			// 
+			this.group_Character.Collapsible = false;
+			this.group_Character.Controls.Add(infoPanel);
+			this.group_Character.Controls.Add(portraitPanel);
+			this.group_Character.Dock = System.Windows.Forms.DockStyle.Top;
+			this.group_Character.Location = new System.Drawing.Point(0, 0);
+			this.group_Character.Name = "group_Character";
+			this.group_Character.Padding = new System.Windows.Forms.Padding(6, 3, 3, 6);
+			this.group_Character.Size = new System.Drawing.Size(600, 242);
+			this.group_Character.TabIndex = 0;
+			this.group_Character.TabStop = false;
+			// 
 			// SidePanel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1027,7 +1027,6 @@
 			this.Name = "SidePanel";
 			this.Size = new System.Drawing.Size(600, 772);
 			this.Load += new System.EventHandler(this.SidePanel_Load);
-			this.root.ResumeLayout(false);
 			group_Stats.ResumeLayout(false);
 			panel_right.ResumeLayout(false);
 			panel_left.ResumeLayout(false);
@@ -1048,13 +1047,14 @@
 			left.PerformLayout();
 			right.ResumeLayout(false);
 			right.PerformLayout();
-			this.group_Character.ResumeLayout(false);
 			infoPanel.ResumeLayout(false);
 			infoPanel.PerformLayout();
 			genderTable.ResumeLayout(false);
 			genderTable.PerformLayout();
 			portraitPanel.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).EndInit();
+			this.root.ResumeLayout(false);
+			this.group_Character.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}

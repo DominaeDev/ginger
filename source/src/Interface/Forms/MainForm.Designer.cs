@@ -41,6 +41,28 @@ namespace Ginger {
 			this.lightThemeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.darkThemeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitContainer = new System.Windows.Forms.SplitContainer();
+			this.sidePanel = new Ginger.SidePanel();
+			this.tabControl = new System.Windows.Forms.CustomTabControl();
+			this.tabRecipe = new System.Windows.Forms.TabPage();
+			this.panelRecipe = new System.Windows.Forms.Panel();
+			this.recipeList = new Ginger.RecipeList();
+			this.buttonRow = new System.Windows.Forms.TableLayoutPanel();
+			this.btnAdd_Lore = new System.Windows.Forms.Button();
+			this.btnAdd_Snippets = new System.Windows.Forms.Button();
+			this.btnAdd_Other = new System.Windows.Forms.Button();
+			this.btnAdd_World = new System.Windows.Forms.Button();
+			this.btnAdd_Traits = new System.Windows.Forms.Button();
+			this.btnAdd_Mind = new System.Windows.Forms.Button();
+			this.btnAdd_Character = new System.Windows.Forms.Button();
+			this.btnAdd_Model = new System.Windows.Forms.Button();
+			this.tabOutput = new System.Windows.Forms.TabPage();
+			this.panelOutput = new System.Windows.Forms.Panel();
+			this.outputBox = new Ginger.OutputPreview();
+			this.group_Debug = new System.Windows.Forms.GroupBox();
+			this.outputBox_Raw2 = new Ginger.TextBoxEx();
+			this.outputBox_Raw = new Ginger.TextBoxEx();
+			this.tabNotes = new System.Windows.Forms.TabPage();
+			this.userNotes = new Ginger.Interface.Controls.UserNotes();
 			this.menuStrip = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.newMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -168,28 +190,6 @@ namespace Ginger {
 			this.statusBarActor = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
-			this.sidePanel = new Ginger.SidePanel();
-			this.tabControl = new System.Windows.Forms.CustomTabControl();
-			this.tabRecipe = new System.Windows.Forms.TabPage();
-			this.panelRecipe = new System.Windows.Forms.Panel();
-			this.recipeList = new Ginger.RecipeList();
-			this.buttonRow = new System.Windows.Forms.TableLayoutPanel();
-			this.btnAdd_Lore = new System.Windows.Forms.Button();
-			this.btnAdd_Snippets = new System.Windows.Forms.Button();
-			this.btnAdd_Other = new System.Windows.Forms.Button();
-			this.btnAdd_World = new System.Windows.Forms.Button();
-			this.btnAdd_Traits = new System.Windows.Forms.Button();
-			this.btnAdd_Mind = new System.Windows.Forms.Button();
-			this.btnAdd_Character = new System.Windows.Forms.Button();
-			this.btnAdd_Model = new System.Windows.Forms.Button();
-			this.tabOutput = new System.Windows.Forms.TabPage();
-			this.panelOutput = new System.Windows.Forms.Panel();
-			this.outputBox = new Ginger.OutputPreview();
-			this.group_Debug = new System.Windows.Forms.GroupBox();
-			this.outputBox_Raw2 = new Ginger.TextBoxEx();
-			this.outputBox_Raw = new Ginger.TextBoxEx();
-			this.tabNotes = new System.Windows.Forms.TabPage();
-			this.userNotes = new Ginger.Interface.Controls.UserNotes();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -203,8 +203,6 @@ namespace Ginger {
 			this.splitContainer.Panel1.SuspendLayout();
 			this.splitContainer.Panel2.SuspendLayout();
 			this.splitContainer.SuspendLayout();
-			this.menuStrip.SuspendLayout();
-			this.statusBar.SuspendLayout();
 			this.tabControl.SuspendLayout();
 			this.tabRecipe.SuspendLayout();
 			this.panelRecipe.SuspendLayout();
@@ -213,6 +211,8 @@ namespace Ginger {
 			this.panelOutput.SuspendLayout();
 			this.group_Debug.SuspendLayout();
 			this.tabNotes.SuspendLayout();
+			this.menuStrip.SuspendLayout();
+			this.statusBar.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// toolStripMenuItem3
@@ -334,6 +334,358 @@ namespace Ginger {
 			this.splitContainer.TabIndex = 0;
 			this.splitContainer.TabStop = false;
 			this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer_SplitterMoved);
+			// 
+			// sidePanel
+			// 
+			this.sidePanel.Dock = System.Windows.Forms.DockStyle.Top;
+			this.sidePanel.Location = new System.Drawing.Point(0, 0);
+			this.sidePanel.Margin = new System.Windows.Forms.Padding(0);
+			this.sidePanel.Name = "sidePanel";
+			this.sidePanel.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.sidePanel.Size = new System.Drawing.Size(450, 772);
+			this.sidePanel.TabIndex = 0;
+			// 
+			// tabControl
+			// 
+			this.tabControl.Alignment = System.Windows.Forms.TabAlignment.Right;
+			this.tabControl.Controls.Add(this.tabRecipe);
+			this.tabControl.Controls.Add(this.tabOutput);
+			this.tabControl.Controls.Add(this.tabNotes);
+			this.tabControl.DisplayStyleProvider.CloserColor = System.Drawing.Color.DarkGray;
+			this.tabControl.DisplayStyleProvider.FocusTrack = false;
+			this.tabControl.DisplayStyleProvider.HotTrack = true;
+			this.tabControl.DisplayStyleProvider.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.tabControl.DisplayStyleProvider.Opacity = 1F;
+			this.tabControl.DisplayStyleProvider.Overlap = 0;
+			this.tabControl.DisplayStyleProvider.Padding = new System.Drawing.Point(6, 3);
+			this.tabControl.DisplayStyleProvider.Radius = 10;
+			this.tabControl.DisplayStyleProvider.ShowTabCloser = false;
+			this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tabControl.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.tabControl.HotTrack = true;
+			this.tabControl.Location = new System.Drawing.Point(0, 0);
+			this.tabControl.Multiline = true;
+			this.tabControl.Name = "tabControl";
+			this.tabControl.SelectedIndex = 0;
+			this.tabControl.Size = new System.Drawing.Size(806, 775);
+			this.tabControl.TabIndex = 6;
+			this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
+			// 
+			// tabRecipe
+			// 
+			this.tabRecipe.BackColor = System.Drawing.SystemColors.Control;
+			this.tabRecipe.Controls.Add(this.panelRecipe);
+			this.tabRecipe.Location = new System.Drawing.Point(4, 4);
+			this.tabRecipe.Name = "tabRecipe";
+			this.tabRecipe.Size = new System.Drawing.Size(773, 767);
+			this.tabRecipe.TabIndex = 0;
+			this.tabRecipe.Text = "Recipe";
+			// 
+			// panelRecipe
+			// 
+			this.panelRecipe.Controls.Add(this.recipeList);
+			this.panelRecipe.Controls.Add(this.buttonRow);
+			this.panelRecipe.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelRecipe.Location = new System.Drawing.Point(0, 0);
+			this.panelRecipe.Name = "panelRecipe";
+			this.panelRecipe.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
+			this.panelRecipe.Size = new System.Drawing.Size(773, 767);
+			this.panelRecipe.TabIndex = 6;
+			// 
+			// recipeList
+			// 
+			this.recipeList.AutoScrollMargin = new System.Drawing.Size(0, 22);
+			this.recipeList.BackColor = System.Drawing.Color.Gray;
+			this.recipeList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.recipeList.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.recipeList.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.recipeList.GradientColor = System.Drawing.Color.DarkGray;
+			this.recipeList.Location = new System.Drawing.Point(0, 68);
+			this.recipeList.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+			this.recipeList.Name = "recipeList";
+			this.recipeList.Size = new System.Drawing.Size(770, 699);
+			this.recipeList.TabIndex = 0;
+			// 
+			// buttonRow
+			// 
+			this.buttonRow.ColumnCount = 8;
+			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+			this.buttonRow.Controls.Add(this.btnAdd_Lore, 7, 0);
+			this.buttonRow.Controls.Add(this.btnAdd_Snippets, 6, 0);
+			this.buttonRow.Controls.Add(this.btnAdd_Other, 5, 0);
+			this.buttonRow.Controls.Add(this.btnAdd_World, 4, 0);
+			this.buttonRow.Controls.Add(this.btnAdd_Traits, 3, 0);
+			this.buttonRow.Controls.Add(this.btnAdd_Mind, 2, 0);
+			this.buttonRow.Controls.Add(this.btnAdd_Character, 1, 0);
+			this.buttonRow.Controls.Add(this.btnAdd_Model, 0, 0);
+			this.buttonRow.Dock = System.Windows.Forms.DockStyle.Top;
+			this.buttonRow.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
+			this.buttonRow.Location = new System.Drawing.Point(0, 0);
+			this.buttonRow.Name = "buttonRow";
+			this.buttonRow.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
+			this.buttonRow.RowCount = 1;
+			this.buttonRow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.buttonRow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64F));
+			this.buttonRow.Size = new System.Drawing.Size(770, 68);
+			this.buttonRow.TabIndex = 5;
+			// 
+			// btnAdd_Lore
+			// 
+			this.btnAdd_Lore.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.btnAdd_Lore.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.btnAdd_Lore.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
+			this.btnAdd_Lore.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
+			this.btnAdd_Lore.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
+			this.btnAdd_Lore.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnAdd_Lore.Image = global::Ginger.Properties.Resources.snippet;
+			this.btnAdd_Lore.Location = new System.Drawing.Point(673, 0);
+			this.btnAdd_Lore.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
+			this.btnAdd_Lore.Name = "btnAdd_Lore";
+			this.btnAdd_Lore.Size = new System.Drawing.Size(97, 64);
+			this.btnAdd_Lore.TabIndex = 7;
+			this.btnAdd_Lore.UseVisualStyleBackColor = false;
+			this.btnAdd_Lore.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Lore_MouseClick);
+			// 
+			// btnAdd_Snippets
+			// 
+			this.btnAdd_Snippets.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.btnAdd_Snippets.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.btnAdd_Snippets.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
+			this.btnAdd_Snippets.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
+			this.btnAdd_Snippets.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
+			this.btnAdd_Snippets.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnAdd_Snippets.Image = global::Ginger.Properties.Resources.lore;
+			this.btnAdd_Snippets.Location = new System.Drawing.Point(577, 0);
+			this.btnAdd_Snippets.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
+			this.btnAdd_Snippets.Name = "btnAdd_Snippets";
+			this.btnAdd_Snippets.Size = new System.Drawing.Size(94, 64);
+			this.btnAdd_Snippets.TabIndex = 6;
+			this.btnAdd_Snippets.UseVisualStyleBackColor = false;
+			this.btnAdd_Snippets.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Snippets_MouseClick);
+			// 
+			// btnAdd_Other
+			// 
+			this.btnAdd_Other.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.btnAdd_Other.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.btnAdd_Other.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
+			this.btnAdd_Other.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
+			this.btnAdd_Other.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
+			this.btnAdd_Other.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnAdd_Other.Image = global::Ginger.Properties.Resources.component;
+			this.btnAdd_Other.Location = new System.Drawing.Point(481, 0);
+			this.btnAdd_Other.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
+			this.btnAdd_Other.Name = "btnAdd_Other";
+			this.btnAdd_Other.Size = new System.Drawing.Size(94, 64);
+			this.btnAdd_Other.TabIndex = 5;
+			this.btnAdd_Other.UseVisualStyleBackColor = false;
+			this.btnAdd_Other.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Other_MouseClick);
+			// 
+			// btnAdd_World
+			// 
+			this.btnAdd_World.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.btnAdd_World.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.btnAdd_World.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
+			this.btnAdd_World.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
+			this.btnAdd_World.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
+			this.btnAdd_World.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnAdd_World.Image = global::Ginger.Properties.Resources.story;
+			this.btnAdd_World.Location = new System.Drawing.Point(385, 0);
+			this.btnAdd_World.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
+			this.btnAdd_World.Name = "btnAdd_World";
+			this.btnAdd_World.Size = new System.Drawing.Size(94, 64);
+			this.btnAdd_World.TabIndex = 4;
+			this.btnAdd_World.UseVisualStyleBackColor = false;
+			this.btnAdd_World.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Scenario_MouseClick);
+			// 
+			// btnAdd_Traits
+			// 
+			this.btnAdd_Traits.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.btnAdd_Traits.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.btnAdd_Traits.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
+			this.btnAdd_Traits.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
+			this.btnAdd_Traits.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
+			this.btnAdd_Traits.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnAdd_Traits.Image = global::Ginger.Properties.Resources.traits;
+			this.btnAdd_Traits.Location = new System.Drawing.Point(289, 0);
+			this.btnAdd_Traits.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
+			this.btnAdd_Traits.Name = "btnAdd_Traits";
+			this.btnAdd_Traits.Size = new System.Drawing.Size(94, 64);
+			this.btnAdd_Traits.TabIndex = 3;
+			this.btnAdd_Traits.UseVisualStyleBackColor = false;
+			this.btnAdd_Traits.MouseClick += new System.Windows.Forms.MouseEventHandler(this.btnAdd_Trait_Click);
+			// 
+			// btnAdd_Mind
+			// 
+			this.btnAdd_Mind.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.btnAdd_Mind.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.btnAdd_Mind.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
+			this.btnAdd_Mind.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
+			this.btnAdd_Mind.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
+			this.btnAdd_Mind.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnAdd_Mind.Image = global::Ginger.Properties.Resources.personality;
+			this.btnAdd_Mind.Location = new System.Drawing.Point(193, 0);
+			this.btnAdd_Mind.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
+			this.btnAdd_Mind.Name = "btnAdd_Mind";
+			this.btnAdd_Mind.Size = new System.Drawing.Size(94, 64);
+			this.btnAdd_Mind.TabIndex = 2;
+			this.btnAdd_Mind.UseVisualStyleBackColor = false;
+			this.btnAdd_Mind.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Mind_MouseClick);
+			// 
+			// btnAdd_Character
+			// 
+			this.btnAdd_Character.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.btnAdd_Character.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.btnAdd_Character.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
+			this.btnAdd_Character.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
+			this.btnAdd_Character.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
+			this.btnAdd_Character.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnAdd_Character.Image = global::Ginger.Properties.Resources.persona;
+			this.btnAdd_Character.Location = new System.Drawing.Point(97, 0);
+			this.btnAdd_Character.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
+			this.btnAdd_Character.Name = "btnAdd_Character";
+			this.btnAdd_Character.Size = new System.Drawing.Size(94, 64);
+			this.btnAdd_Character.TabIndex = 1;
+			this.btnAdd_Character.UseVisualStyleBackColor = false;
+			this.btnAdd_Character.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Character_MouseClick);
+			// 
+			// btnAdd_Model
+			// 
+			this.btnAdd_Model.BackColor = System.Drawing.Color.WhiteSmoke;
+			this.btnAdd_Model.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.btnAdd_Model.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
+			this.btnAdd_Model.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
+			this.btnAdd_Model.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
+			this.btnAdd_Model.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnAdd_Model.Image = global::Ginger.Properties.Resources.model;
+			this.btnAdd_Model.Location = new System.Drawing.Point(0, 0);
+			this.btnAdd_Model.Margin = new System.Windows.Forms.Padding(0, 0, 1, 0);
+			this.btnAdd_Model.Name = "btnAdd_Model";
+			this.btnAdd_Model.Size = new System.Drawing.Size(95, 64);
+			this.btnAdd_Model.TabIndex = 0;
+			this.btnAdd_Model.UseVisualStyleBackColor = true;
+			this.btnAdd_Model.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAddModel_MouseClick);
+			// 
+			// tabOutput
+			// 
+			this.tabOutput.BackColor = System.Drawing.SystemColors.Control;
+			this.tabOutput.Controls.Add(this.panelOutput);
+			this.tabOutput.Location = new System.Drawing.Point(4, 4);
+			this.tabOutput.Name = "tabOutput";
+			this.tabOutput.Size = new System.Drawing.Size(773, 767);
+			this.tabOutput.TabIndex = 1;
+			this.tabOutput.Text = "Output";
+			// 
+			// panelOutput
+			// 
+			this.panelOutput.AutoScroll = true;
+			this.panelOutput.AutoSize = true;
+			this.panelOutput.Controls.Add(this.outputBox);
+			this.panelOutput.Controls.Add(this.group_Debug);
+			this.panelOutput.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelOutput.Location = new System.Drawing.Point(0, 0);
+			this.panelOutput.Name = "panelOutput";
+			this.panelOutput.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
+			this.panelOutput.Size = new System.Drawing.Size(773, 767);
+			this.panelOutput.TabIndex = 4;
+			// 
+			// outputBox
+			// 
+			this.outputBox.AcceptsReturn = true;
+			this.outputBox.AcceptsTab = true;
+			this.outputBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+			this.outputBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.outputBox.CausesValidation = false;
+			this.outputBox.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.outputBox.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.outputBox.ForeColor = System.Drawing.Color.Beige;
+			this.outputBox.HighlightBorder = false;
+			this.outputBox.InnerBorder = false;
+			this.outputBox.Location = new System.Drawing.Point(0, 464);
+			this.outputBox.Multiline = true;
+			this.outputBox.Name = "outputBox";
+			this.outputBox.Placeholder = null;
+			this.outputBox.ReadOnly = true;
+			this.outputBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.outputBox.Size = new System.Drawing.Size(770, 303);
+			this.outputBox.TabIndex = 3;
+			this.outputBox.TabStop = false;
+			// 
+			// group_Debug
+			// 
+			this.group_Debug.AutoSize = true;
+			this.group_Debug.Controls.Add(this.outputBox_Raw2);
+			this.group_Debug.Controls.Add(this.outputBox_Raw);
+			this.group_Debug.Dock = System.Windows.Forms.DockStyle.Top;
+			this.group_Debug.Location = new System.Drawing.Point(0, 0);
+			this.group_Debug.Name = "group_Debug";
+			this.group_Debug.Size = new System.Drawing.Size(770, 464);
+			this.group_Debug.TabIndex = 8;
+			this.group_Debug.TabStop = false;
+			this.group_Debug.Text = "JSON";
+			this.group_Debug.Visible = false;
+			// 
+			// outputBox_Raw2
+			// 
+			this.outputBox_Raw2.AcceptsReturn = true;
+			this.outputBox_Raw2.AcceptsTab = true;
+			this.outputBox_Raw2.BackColor = System.Drawing.SystemColors.Window;
+			this.outputBox_Raw2.Dock = System.Windows.Forms.DockStyle.Top;
+			this.outputBox_Raw2.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.outputBox_Raw2.Location = new System.Drawing.Point(3, 241);
+			this.outputBox_Raw2.Margin = new System.Windows.Forms.Padding(0);
+			this.outputBox_Raw2.Multiline = true;
+			this.outputBox_Raw2.Name = "outputBox_Raw2";
+			this.outputBox_Raw2.Placeholder = null;
+			this.outputBox_Raw2.ReadOnly = true;
+			this.outputBox_Raw2.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.outputBox_Raw2.Size = new System.Drawing.Size(764, 220);
+			this.outputBox_Raw2.TabIndex = 3;
+			this.outputBox_Raw2.TabStop = false;
+			// 
+			// outputBox_Raw
+			// 
+			this.outputBox_Raw.AcceptsReturn = true;
+			this.outputBox_Raw.AcceptsTab = true;
+			this.outputBox_Raw.BackColor = System.Drawing.SystemColors.Window;
+			this.outputBox_Raw.Dock = System.Windows.Forms.DockStyle.Top;
+			this.outputBox_Raw.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.outputBox_Raw.Location = new System.Drawing.Point(3, 21);
+			this.outputBox_Raw.Margin = new System.Windows.Forms.Padding(0);
+			this.outputBox_Raw.Multiline = true;
+			this.outputBox_Raw.Name = "outputBox_Raw";
+			this.outputBox_Raw.Placeholder = null;
+			this.outputBox_Raw.ReadOnly = true;
+			this.outputBox_Raw.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.outputBox_Raw.Size = new System.Drawing.Size(764, 220);
+			this.outputBox_Raw.TabIndex = 2;
+			this.outputBox_Raw.TabStop = false;
+			// 
+			// tabNotes
+			// 
+			this.tabNotes.BackColor = System.Drawing.SystemColors.Control;
+			this.tabNotes.Controls.Add(this.userNotes);
+			this.tabNotes.Location = new System.Drawing.Point(4, 4);
+			this.tabNotes.Name = "tabNotes";
+			this.tabNotes.Size = new System.Drawing.Size(773, 767);
+			this.tabNotes.TabIndex = 2;
+			this.tabNotes.Text = "Notes";
+			// 
+			// userNotes
+			// 
+			this.userNotes.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.userNotes.Location = new System.Drawing.Point(0, 0);
+			this.userNotes.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+			this.userNotes.Name = "userNotes";
+			this.userNotes.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
+			this.userNotes.Size = new System.Drawing.Size(773, 767);
+			this.userNotes.TabIndex = 0;
 			// 
 			// menuStrip
 			// 
@@ -1405,359 +1757,6 @@ namespace Ginger {
 			this.statusConnectionIcon.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusConnectionIcon.Size = new System.Drawing.Size(24, 17);
 			// 
-			// sidePanel
-			// 
-			this.sidePanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
-			this.sidePanel.Dock = System.Windows.Forms.DockStyle.Top;
-			this.sidePanel.Location = new System.Drawing.Point(0, 0);
-			this.sidePanel.Margin = new System.Windows.Forms.Padding(0);
-			this.sidePanel.Name = "sidePanel";
-			this.sidePanel.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.sidePanel.Size = new System.Drawing.Size(450, 772);
-			this.sidePanel.TabIndex = 0;
-			// 
-			// tabControl
-			// 
-			this.tabControl.Alignment = System.Windows.Forms.TabAlignment.Right;
-			this.tabControl.Controls.Add(this.tabRecipe);
-			this.tabControl.Controls.Add(this.tabOutput);
-			this.tabControl.Controls.Add(this.tabNotes);
-			this.tabControl.DisplayStyleProvider.CloserColor = System.Drawing.Color.DarkGray;
-			this.tabControl.DisplayStyleProvider.FocusTrack = false;
-			this.tabControl.DisplayStyleProvider.HotTrack = true;
-			this.tabControl.DisplayStyleProvider.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.tabControl.DisplayStyleProvider.Opacity = 1F;
-			this.tabControl.DisplayStyleProvider.Overlap = 0;
-			this.tabControl.DisplayStyleProvider.Padding = new System.Drawing.Point(6, 3);
-			this.tabControl.DisplayStyleProvider.Radius = 10;
-			this.tabControl.DisplayStyleProvider.ShowTabCloser = false;
-			this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tabControl.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.tabControl.HotTrack = true;
-			this.tabControl.Location = new System.Drawing.Point(0, 0);
-			this.tabControl.Multiline = true;
-			this.tabControl.Name = "tabControl";
-			this.tabControl.SelectedIndex = 0;
-			this.tabControl.Size = new System.Drawing.Size(806, 775);
-			this.tabControl.TabIndex = 6;
-			this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
-			// 
-			// tabRecipe
-			// 
-			this.tabRecipe.BackColor = System.Drawing.SystemColors.Control;
-			this.tabRecipe.Controls.Add(this.panelRecipe);
-			this.tabRecipe.Location = new System.Drawing.Point(4, 4);
-			this.tabRecipe.Name = "tabRecipe";
-			this.tabRecipe.Size = new System.Drawing.Size(773, 767);
-			this.tabRecipe.TabIndex = 0;
-			this.tabRecipe.Text = "Recipe";
-			// 
-			// panelRecipe
-			// 
-			this.panelRecipe.Controls.Add(this.recipeList);
-			this.panelRecipe.Controls.Add(this.buttonRow);
-			this.panelRecipe.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelRecipe.Location = new System.Drawing.Point(0, 0);
-			this.panelRecipe.Name = "panelRecipe";
-			this.panelRecipe.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-			this.panelRecipe.Size = new System.Drawing.Size(773, 767);
-			this.panelRecipe.TabIndex = 6;
-			// 
-			// recipeList
-			// 
-			this.recipeList.AutoScrollMargin = new System.Drawing.Size(0, 22);
-			this.recipeList.BackColor = System.Drawing.Color.Gray;
-			this.recipeList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.recipeList.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.recipeList.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.recipeList.GradientColor = System.Drawing.Color.DarkGray;
-			this.recipeList.Location = new System.Drawing.Point(0, 68);
-			this.recipeList.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-			this.recipeList.Name = "recipeList";
-			this.recipeList.Size = new System.Drawing.Size(770, 699);
-			this.recipeList.TabIndex = 0;
-			// 
-			// buttonRow
-			// 
-			this.buttonRow.ColumnCount = 8;
-			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
-			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
-			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
-			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
-			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
-			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
-			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
-			this.buttonRow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
-			this.buttonRow.Controls.Add(this.btnAdd_Lore, 7, 0);
-			this.buttonRow.Controls.Add(this.btnAdd_Snippets, 6, 0);
-			this.buttonRow.Controls.Add(this.btnAdd_Other, 5, 0);
-			this.buttonRow.Controls.Add(this.btnAdd_World, 4, 0);
-			this.buttonRow.Controls.Add(this.btnAdd_Traits, 3, 0);
-			this.buttonRow.Controls.Add(this.btnAdd_Mind, 2, 0);
-			this.buttonRow.Controls.Add(this.btnAdd_Character, 1, 0);
-			this.buttonRow.Controls.Add(this.btnAdd_Model, 0, 0);
-			this.buttonRow.Dock = System.Windows.Forms.DockStyle.Top;
-			this.buttonRow.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
-			this.buttonRow.Location = new System.Drawing.Point(0, 0);
-			this.buttonRow.Name = "buttonRow";
-			this.buttonRow.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
-			this.buttonRow.RowCount = 1;
-			this.buttonRow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.buttonRow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64F));
-			this.buttonRow.Size = new System.Drawing.Size(770, 68);
-			this.buttonRow.TabIndex = 5;
-			// 
-			// btnAdd_Lore
-			// 
-			this.btnAdd_Lore.BackColor = System.Drawing.Color.WhiteSmoke;
-			this.btnAdd_Lore.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.btnAdd_Lore.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
-			this.btnAdd_Lore.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
-			this.btnAdd_Lore.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
-			this.btnAdd_Lore.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_Lore.Image = global::Ginger.Properties.Resources.snippet;
-			this.btnAdd_Lore.Location = new System.Drawing.Point(673, 0);
-			this.btnAdd_Lore.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
-			this.btnAdd_Lore.Name = "btnAdd_Lore";
-			this.btnAdd_Lore.Size = new System.Drawing.Size(97, 64);
-			this.btnAdd_Lore.TabIndex = 7;
-			this.btnAdd_Lore.UseVisualStyleBackColor = false;
-			this.btnAdd_Lore.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Lore_MouseClick);
-			// 
-			// btnAdd_Snippets
-			// 
-			this.btnAdd_Snippets.BackColor = System.Drawing.Color.WhiteSmoke;
-			this.btnAdd_Snippets.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.btnAdd_Snippets.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
-			this.btnAdd_Snippets.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
-			this.btnAdd_Snippets.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
-			this.btnAdd_Snippets.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_Snippets.Image = global::Ginger.Properties.Resources.lore;
-			this.btnAdd_Snippets.Location = new System.Drawing.Point(577, 0);
-			this.btnAdd_Snippets.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
-			this.btnAdd_Snippets.Name = "btnAdd_Snippets";
-			this.btnAdd_Snippets.Size = new System.Drawing.Size(94, 64);
-			this.btnAdd_Snippets.TabIndex = 6;
-			this.btnAdd_Snippets.UseVisualStyleBackColor = false;
-			this.btnAdd_Snippets.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Snippets_MouseClick);
-			// 
-			// btnAdd_Other
-			// 
-			this.btnAdd_Other.BackColor = System.Drawing.Color.WhiteSmoke;
-			this.btnAdd_Other.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.btnAdd_Other.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
-			this.btnAdd_Other.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
-			this.btnAdd_Other.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
-			this.btnAdd_Other.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_Other.Image = global::Ginger.Properties.Resources.component;
-			this.btnAdd_Other.Location = new System.Drawing.Point(481, 0);
-			this.btnAdd_Other.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
-			this.btnAdd_Other.Name = "btnAdd_Other";
-			this.btnAdd_Other.Size = new System.Drawing.Size(94, 64);
-			this.btnAdd_Other.TabIndex = 5;
-			this.btnAdd_Other.UseVisualStyleBackColor = false;
-			this.btnAdd_Other.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Other_MouseClick);
-			// 
-			// btnAdd_World
-			// 
-			this.btnAdd_World.BackColor = System.Drawing.Color.WhiteSmoke;
-			this.btnAdd_World.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.btnAdd_World.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
-			this.btnAdd_World.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
-			this.btnAdd_World.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
-			this.btnAdd_World.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_World.Image = global::Ginger.Properties.Resources.story;
-			this.btnAdd_World.Location = new System.Drawing.Point(385, 0);
-			this.btnAdd_World.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
-			this.btnAdd_World.Name = "btnAdd_World";
-			this.btnAdd_World.Size = new System.Drawing.Size(94, 64);
-			this.btnAdd_World.TabIndex = 4;
-			this.btnAdd_World.UseVisualStyleBackColor = false;
-			this.btnAdd_World.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Scenario_MouseClick);
-			// 
-			// btnAdd_Traits
-			// 
-			this.btnAdd_Traits.BackColor = System.Drawing.Color.WhiteSmoke;
-			this.btnAdd_Traits.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.btnAdd_Traits.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
-			this.btnAdd_Traits.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
-			this.btnAdd_Traits.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
-			this.btnAdd_Traits.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_Traits.Image = global::Ginger.Properties.Resources.traits;
-			this.btnAdd_Traits.Location = new System.Drawing.Point(289, 0);
-			this.btnAdd_Traits.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
-			this.btnAdd_Traits.Name = "btnAdd_Traits";
-			this.btnAdd_Traits.Size = new System.Drawing.Size(94, 64);
-			this.btnAdd_Traits.TabIndex = 3;
-			this.btnAdd_Traits.UseVisualStyleBackColor = false;
-			this.btnAdd_Traits.MouseClick += new System.Windows.Forms.MouseEventHandler(this.btnAdd_Trait_Click);
-			// 
-			// btnAdd_Mind
-			// 
-			this.btnAdd_Mind.BackColor = System.Drawing.Color.WhiteSmoke;
-			this.btnAdd_Mind.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.btnAdd_Mind.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
-			this.btnAdd_Mind.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
-			this.btnAdd_Mind.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
-			this.btnAdd_Mind.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_Mind.Image = global::Ginger.Properties.Resources.personality;
-			this.btnAdd_Mind.Location = new System.Drawing.Point(193, 0);
-			this.btnAdd_Mind.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
-			this.btnAdd_Mind.Name = "btnAdd_Mind";
-			this.btnAdd_Mind.Size = new System.Drawing.Size(94, 64);
-			this.btnAdd_Mind.TabIndex = 2;
-			this.btnAdd_Mind.UseVisualStyleBackColor = false;
-			this.btnAdd_Mind.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Mind_MouseClick);
-			// 
-			// btnAdd_Character
-			// 
-			this.btnAdd_Character.BackColor = System.Drawing.Color.WhiteSmoke;
-			this.btnAdd_Character.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.btnAdd_Character.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
-			this.btnAdd_Character.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
-			this.btnAdd_Character.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
-			this.btnAdd_Character.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_Character.Image = global::Ginger.Properties.Resources.persona;
-			this.btnAdd_Character.Location = new System.Drawing.Point(97, 0);
-			this.btnAdd_Character.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
-			this.btnAdd_Character.Name = "btnAdd_Character";
-			this.btnAdd_Character.Size = new System.Drawing.Size(94, 64);
-			this.btnAdd_Character.TabIndex = 1;
-			this.btnAdd_Character.UseVisualStyleBackColor = false;
-			this.btnAdd_Character.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Character_MouseClick);
-			// 
-			// btnAdd_Model
-			// 
-			this.btnAdd_Model.BackColor = System.Drawing.Color.WhiteSmoke;
-			this.btnAdd_Model.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.btnAdd_Model.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
-			this.btnAdd_Model.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
-			this.btnAdd_Model.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
-			this.btnAdd_Model.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAdd_Model.Image = global::Ginger.Properties.Resources.model;
-			this.btnAdd_Model.Location = new System.Drawing.Point(0, 0);
-			this.btnAdd_Model.Margin = new System.Windows.Forms.Padding(0, 0, 1, 0);
-			this.btnAdd_Model.Name = "btnAdd_Model";
-			this.btnAdd_Model.Size = new System.Drawing.Size(95, 64);
-			this.btnAdd_Model.TabIndex = 0;
-			this.btnAdd_Model.UseVisualStyleBackColor = true;
-			this.btnAdd_Model.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAddModel_MouseClick);
-			// 
-			// tabOutput
-			// 
-			this.tabOutput.BackColor = System.Drawing.SystemColors.Control;
-			this.tabOutput.Controls.Add(this.panelOutput);
-			this.tabOutput.Location = new System.Drawing.Point(4, 4);
-			this.tabOutput.Name = "tabOutput";
-			this.tabOutput.Size = new System.Drawing.Size(773, 767);
-			this.tabOutput.TabIndex = 1;
-			this.tabOutput.Text = "Output";
-			// 
-			// panelOutput
-			// 
-			this.panelOutput.AutoScroll = true;
-			this.panelOutput.AutoSize = true;
-			this.panelOutput.Controls.Add(this.outputBox);
-			this.panelOutput.Controls.Add(this.group_Debug);
-			this.panelOutput.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelOutput.Location = new System.Drawing.Point(0, 0);
-			this.panelOutput.Name = "panelOutput";
-			this.panelOutput.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-			this.panelOutput.Size = new System.Drawing.Size(122, 92);
-			this.panelOutput.TabIndex = 4;
-			// 
-			// outputBox
-			// 
-			this.outputBox.AcceptsReturn = true;
-			this.outputBox.AcceptsTab = true;
-			this.outputBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-			this.outputBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.outputBox.CausesValidation = false;
-			this.outputBox.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.outputBox.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.outputBox.ForeColor = System.Drawing.Color.Beige;
-			this.outputBox.HighlightBorder = false;
-			this.outputBox.InnerBorder = false;
-			this.outputBox.Location = new System.Drawing.Point(0, 464);
-			this.outputBox.Multiline = true;
-			this.outputBox.Name = "outputBox";
-			this.outputBox.Placeholder = null;
-			this.outputBox.ReadOnly = true;
-			this.outputBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.outputBox.Size = new System.Drawing.Size(102, 0);
-			this.outputBox.TabIndex = 3;
-			this.outputBox.TabStop = false;
-			// 
-			// group_Debug
-			// 
-			this.group_Debug.AutoSize = true;
-			this.group_Debug.Controls.Add(this.outputBox_Raw2);
-			this.group_Debug.Controls.Add(this.outputBox_Raw);
-			this.group_Debug.Dock = System.Windows.Forms.DockStyle.Top;
-			this.group_Debug.Location = new System.Drawing.Point(0, 0);
-			this.group_Debug.Name = "group_Debug";
-			this.group_Debug.Size = new System.Drawing.Size(102, 464);
-			this.group_Debug.TabIndex = 8;
-			this.group_Debug.TabStop = false;
-			this.group_Debug.Text = "JSON";
-			this.group_Debug.Visible = false;
-			// 
-			// outputBox_Raw2
-			// 
-			this.outputBox_Raw2.AcceptsReturn = true;
-			this.outputBox_Raw2.AcceptsTab = true;
-			this.outputBox_Raw2.BackColor = System.Drawing.SystemColors.Window;
-			this.outputBox_Raw2.Dock = System.Windows.Forms.DockStyle.Top;
-			this.outputBox_Raw2.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.outputBox_Raw2.Location = new System.Drawing.Point(3, 241);
-			this.outputBox_Raw2.Margin = new System.Windows.Forms.Padding(0);
-			this.outputBox_Raw2.Multiline = true;
-			this.outputBox_Raw2.Name = "outputBox_Raw2";
-			this.outputBox_Raw2.Placeholder = null;
-			this.outputBox_Raw2.ReadOnly = true;
-			this.outputBox_Raw2.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.outputBox_Raw2.Size = new System.Drawing.Size(96, 220);
-			this.outputBox_Raw2.TabIndex = 3;
-			this.outputBox_Raw2.TabStop = false;
-			// 
-			// outputBox_Raw
-			// 
-			this.outputBox_Raw.AcceptsReturn = true;
-			this.outputBox_Raw.AcceptsTab = true;
-			this.outputBox_Raw.BackColor = System.Drawing.SystemColors.Window;
-			this.outputBox_Raw.Dock = System.Windows.Forms.DockStyle.Top;
-			this.outputBox_Raw.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.outputBox_Raw.Location = new System.Drawing.Point(3, 21);
-			this.outputBox_Raw.Margin = new System.Windows.Forms.Padding(0);
-			this.outputBox_Raw.Multiline = true;
-			this.outputBox_Raw.Name = "outputBox_Raw";
-			this.outputBox_Raw.Placeholder = null;
-			this.outputBox_Raw.ReadOnly = true;
-			this.outputBox_Raw.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.outputBox_Raw.Size = new System.Drawing.Size(96, 220);
-			this.outputBox_Raw.TabIndex = 2;
-			this.outputBox_Raw.TabStop = false;
-			// 
-			// tabNotes
-			// 
-			this.tabNotes.BackColor = System.Drawing.SystemColors.Control;
-			this.tabNotes.Controls.Add(this.userNotes);
-			this.tabNotes.Location = new System.Drawing.Point(4, 4);
-			this.tabNotes.Name = "tabNotes";
-			this.tabNotes.Size = new System.Drawing.Size(773, 767);
-			this.tabNotes.TabIndex = 2;
-			this.tabNotes.Text = "Notes";
-			// 
-			// userNotes
-			// 
-			this.userNotes.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.userNotes.Location = new System.Drawing.Point(0, 0);
-			this.userNotes.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-			this.userNotes.Name = "userNotes";
-			this.userNotes.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-			this.userNotes.Size = new System.Drawing.Size(122, 92);
-			this.userNotes.TabIndex = 0;
-			// 
 			// MainForm
 			// 
 			this.AllowDrop = true;
@@ -1779,10 +1778,6 @@ namespace Ginger {
 			this.splitContainer.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
 			this.splitContainer.ResumeLayout(false);
-			this.menuStrip.ResumeLayout(false);
-			this.menuStrip.PerformLayout();
-			this.statusBar.ResumeLayout(false);
-			this.statusBar.PerformLayout();
 			this.tabControl.ResumeLayout(false);
 			this.tabRecipe.ResumeLayout(false);
 			this.panelRecipe.ResumeLayout(false);
@@ -1794,6 +1789,10 @@ namespace Ginger {
 			this.group_Debug.ResumeLayout(false);
 			this.group_Debug.PerformLayout();
 			this.tabNotes.ResumeLayout(false);
+			this.menuStrip.ResumeLayout(false);
+			this.menuStrip.PerformLayout();
+			this.statusBar.ResumeLayout(false);
+			this.statusBar.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
