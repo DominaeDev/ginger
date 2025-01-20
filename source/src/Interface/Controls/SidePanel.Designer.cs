@@ -32,7 +32,6 @@
 			System.Windows.Forms.Panel spacer_1;
 			System.Windows.Forms.Panel spacer_2;
 			System.Windows.Forms.Panel spacer_3;
-			Ginger.GroupBoxEx group_Stats;
 			System.Windows.Forms.Panel panel_right;
 			System.Windows.Forms.Panel panel_left;
 			System.Windows.Forms.Label label_Context;
@@ -41,23 +40,20 @@
 			System.Windows.Forms.Label label_Tokens;
 			System.Windows.Forms.Label label_Lore;
 			System.Windows.Forms.Label label_Image;
-			Ginger.GroupBoxEx group_Generation;
 			System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
 			System.Windows.Forms.Panel panel4;
 			System.Windows.Forms.Panel panel3;
 			System.Windows.Forms.Panel panel5;
-			Ginger.GroupBoxEx group_User;
 			System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
 			System.Windows.Forms.Panel panel1;
 			System.Windows.Forms.Panel panel2;
-			Ginger.GroupBoxEx group_CardInfo;
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SidePanel));
 			System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 			System.Windows.Forms.Panel left;
 			System.Windows.Forms.Panel right;
 			System.Windows.Forms.Panel infoPanel;
 			System.Windows.Forms.TableLayoutPanel genderTable;
 			System.Windows.Forms.Panel portraitPanel;
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SidePanel));
 			this.label_Context_Value = new System.Windows.Forms.Label();
 			this.label_TokenBudget_Value = new System.Windows.Forms.Label();
 			this.label_Tokens_Permanent_Value = new System.Windows.Forms.Label();
@@ -74,10 +70,6 @@
 			this.label_userPlaceholder = new System.Windows.Forms.Label();
 			this.comboBox_userGender = new Ginger.ComboBoxEx();
 			this.label_userGender = new System.Windows.Forms.Label();
-			this.textBox_tags = new Ginger.CollectionTextBox();
-			this.label_tags = new System.Windows.Forms.Label();
-			this.textBox_creatorNotes = new Ginger.TextBoxEx();
-			this.label_creatorNotes = new System.Windows.Forms.Label();
 			this.textBox_creator = new Ginger.TextBoxEx();
 			this.label_creator = new System.Windows.Forms.Label();
 			this.textBox_version = new Ginger.TextBoxEx();
@@ -90,13 +82,20 @@
 			this.textBox_characterName = new Ginger.TextBoxEx();
 			this.label_characterName = new System.Windows.Forms.Label();
 			this.portraitImage = new Ginger.PortraitPreview();
+			this.group_Stats = new Ginger.GroupBoxEx();
+			this.group_Generation = new Ginger.GroupBoxEx();
+			this.group_User = new Ginger.GroupBoxEx();
+			this.group_CardInfo = new Ginger.GroupBoxEx();
+			this.textBox_tags = new Ginger.CollectionTextBox();
+			this.label_tags = new System.Windows.Forms.Label();
+			this.textBox_creatorNotes = new Ginger.TextBoxEx();
+			this.label_creatorNotes = new System.Windows.Forms.Label();
 			this.root = new System.Windows.Forms.Panel();
 			this.group_Character = new Ginger.GroupBoxEx();
 			spacer_0 = new System.Windows.Forms.Panel();
 			spacer_1 = new System.Windows.Forms.Panel();
 			spacer_2 = new System.Windows.Forms.Panel();
 			spacer_3 = new System.Windows.Forms.Panel();
-			group_Stats = new Ginger.GroupBoxEx();
 			panel_right = new System.Windows.Forms.Panel();
 			panel_left = new System.Windows.Forms.Panel();
 			label_Context = new System.Windows.Forms.Label();
@@ -105,35 +104,28 @@
 			label_Tokens = new System.Windows.Forms.Label();
 			label_Lore = new System.Windows.Forms.Label();
 			label_Image = new System.Windows.Forms.Label();
-			group_Generation = new Ginger.GroupBoxEx();
 			tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			panel4 = new System.Windows.Forms.Panel();
 			panel3 = new System.Windows.Forms.Panel();
 			panel5 = new System.Windows.Forms.Panel();
-			group_User = new Ginger.GroupBoxEx();
 			tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
 			panel1 = new System.Windows.Forms.Panel();
 			panel2 = new System.Windows.Forms.Panel();
-			group_CardInfo = new Ginger.GroupBoxEx();
 			tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			left = new System.Windows.Forms.Panel();
 			right = new System.Windows.Forms.Panel();
 			infoPanel = new System.Windows.Forms.Panel();
 			genderTable = new System.Windows.Forms.TableLayoutPanel();
 			portraitPanel = new System.Windows.Forms.Panel();
-			group_Stats.SuspendLayout();
 			panel_right.SuspendLayout();
 			panel_left.SuspendLayout();
-			group_Generation.SuspendLayout();
 			tableLayoutPanel3.SuspendLayout();
 			panel4.SuspendLayout();
 			panel3.SuspendLayout();
 			panel5.SuspendLayout();
-			group_User.SuspendLayout();
 			tableLayoutPanel2.SuspendLayout();
 			panel1.SuspendLayout();
 			panel2.SuspendLayout();
-			group_CardInfo.SuspendLayout();
 			tableLayoutPanel1.SuspendLayout();
 			left.SuspendLayout();
 			right.SuspendLayout();
@@ -141,6 +133,10 @@
 			genderTable.SuspendLayout();
 			portraitPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).BeginInit();
+			this.group_Stats.SuspendLayout();
+			this.group_Generation.SuspendLayout();
+			this.group_User.SuspendLayout();
+			this.group_CardInfo.SuspendLayout();
 			this.root.SuspendLayout();
 			this.group_Character.SuspendLayout();
 			this.SuspendLayout();
@@ -180,20 +176,6 @@
 			spacer_3.Name = "spacer_3";
 			spacer_3.Size = new System.Drawing.Size(600, 4);
 			spacer_3.TabIndex = 10;
-			// 
-			// group_Stats
-			// 
-			group_Stats.Collapsible = true;
-			group_Stats.Controls.Add(panel_right);
-			group_Stats.Controls.Add(panel_left);
-			group_Stats.Dock = System.Windows.Forms.DockStyle.Top;
-			group_Stats.Location = new System.Drawing.Point(0, 374);
-			group_Stats.Name = "group_Stats";
-			group_Stats.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
-			group_Stats.Size = new System.Drawing.Size(600, 152);
-			group_Stats.TabIndex = 4;
-			group_Stats.TabStop = false;
-			group_Stats.Text = "Stats";
 			// 
 			// panel_right
 			// 
@@ -391,19 +373,6 @@
 			label_Image.TabIndex = 3;
 			label_Image.Text = "Image dimensions:";
 			// 
-			// group_Generation
-			// 
-			group_Generation.Collapsible = true;
-			group_Generation.Controls.Add(tableLayoutPanel3);
-			group_Generation.Dock = System.Windows.Forms.DockStyle.Top;
-			group_Generation.Location = new System.Drawing.Point(0, 299);
-			group_Generation.Name = "group_Generation";
-			group_Generation.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
-			group_Generation.Size = new System.Drawing.Size(600, 71);
-			group_Generation.TabIndex = 3;
-			group_Generation.TabStop = false;
-			group_Generation.Text = "Text generation";
-			// 
 			// tableLayoutPanel3
 			// 
 			tableLayoutPanel3.ColumnCount = 3;
@@ -467,7 +436,7 @@
 			this.label_textStyle.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			this.label_textStyle.Size = new System.Drawing.Size(315, 21);
 			this.label_textStyle.TabIndex = 9;
-			this.label_textStyle.Text = "Chat format";
+			this.label_textStyle.Text = "Dialogue format";
 			// 
 			// panel3
 			// 
@@ -511,7 +480,7 @@
 			this.label_Detail.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			this.label_Detail.Size = new System.Drawing.Size(204, 21);
 			this.label_Detail.TabIndex = 2;
-			this.label_Detail.Text = "Detail";
+			this.label_Detail.Text = "Detail level";
 			// 
 			// panel5
 			// 
@@ -550,19 +519,6 @@
 			this.label_More.Size = new System.Drawing.Size(60, 21);
 			this.label_More.TabIndex = 4;
 			this.label_More.Text = "Misc.";
-			// 
-			// group_User
-			// 
-			group_User.Collapsible = true;
-			group_User.Controls.Add(tableLayoutPanel2);
-			group_User.Dock = System.Windows.Forms.DockStyle.Top;
-			group_User.Location = new System.Drawing.Point(0, 224);
-			group_User.Name = "group_User";
-			group_User.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
-			group_User.Size = new System.Drawing.Size(600, 71);
-			group_User.TabIndex = 2;
-			group_User.TabStop = false;
-			group_User.Text = "User profile";
 			// 
 			// tableLayoutPanel2
 			// 
@@ -618,7 +574,7 @@
 			this.label_userPlaceholder.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			this.label_userPlaceholder.Size = new System.Drawing.Size(315, 21);
 			this.label_userPlaceholder.TabIndex = 1;
-			this.label_userPlaceholder.Text = "Name";
+			this.label_userPlaceholder.Text = "Placeholder name";
 			// 
 			// panel2
 			// 
@@ -662,74 +618,7 @@
 			this.label_userGender.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			this.label_userGender.Size = new System.Drawing.Size(204, 21);
 			this.label_userGender.TabIndex = 9;
-			this.label_userGender.Text = "Gender / PoV";
-			// 
-			// group_CardInfo
-			// 
-			group_CardInfo.Collapsible = true;
-			group_CardInfo.Controls.Add(this.textBox_tags);
-			group_CardInfo.Controls.Add(this.label_tags);
-			group_CardInfo.Controls.Add(this.textBox_creatorNotes);
-			group_CardInfo.Controls.Add(this.label_creatorNotes);
-			group_CardInfo.Controls.Add(tableLayoutPanel1);
-			group_CardInfo.Dock = System.Windows.Forms.DockStyle.Top;
-			group_CardInfo.Location = new System.Drawing.Point(0, 0);
-			group_CardInfo.Name = "group_CardInfo";
-			group_CardInfo.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
-			group_CardInfo.Size = new System.Drawing.Size(600, 220);
-			group_CardInfo.TabIndex = 1;
-			group_CardInfo.TabStop = false;
-			group_CardInfo.Text = "Card information";
-			// 
-			// textBox_tags
-			// 
-			this.textBox_tags.Collection = ((System.Collections.Generic.HashSet<string>)(resources.GetObject("textBox_tags.Collection")));
-			this.textBox_tags.Dock = System.Windows.Forms.DockStyle.Top;
-			this.textBox_tags.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.textBox_tags.Location = new System.Drawing.Point(6, 189);
-			this.textBox_tags.Margin = new System.Windows.Forms.Padding(0);
-			this.textBox_tags.MaxLength = 256;
-			this.textBox_tags.Name = "textBox_tags";
-			this.textBox_tags.Placeholder = "Enter tags separated by commas";
-			this.textBox_tags.Size = new System.Drawing.Size(588, 23);
-			this.textBox_tags.TabIndex = 7;
-			this.textBox_tags.TextChanged += new System.EventHandler(this.TextBox_tags_TextChanged);
-			// 
-			// label_tags
-			// 
-			this.label_tags.AutoEllipsis = true;
-			this.label_tags.Dock = System.Windows.Forms.DockStyle.Top;
-			this.label_tags.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label_tags.Location = new System.Drawing.Point(6, 166);
-			this.label_tags.Name = "label_tags";
-			this.label_tags.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-			this.label_tags.Size = new System.Drawing.Size(588, 23);
-			this.label_tags.TabIndex = 8;
-			this.label_tags.Text = "Tags";
-			// 
-			// textBox_creatorNotes
-			// 
-			this.textBox_creatorNotes.Dock = System.Windows.Forms.DockStyle.Top;
-			this.textBox_creatorNotes.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.textBox_creatorNotes.Location = new System.Drawing.Point(6, 86);
-			this.textBox_creatorNotes.Multiline = true;
-			this.textBox_creatorNotes.Name = "textBox_creatorNotes";
-			this.textBox_creatorNotes.Placeholder = "Enter name...";
-			this.textBox_creatorNotes.Size = new System.Drawing.Size(588, 80);
-			this.textBox_creatorNotes.TabIndex = 6;
-			this.textBox_creatorNotes.TextChanged += new System.EventHandler(this.TextBox_creatorNotes_TextChanged);
-			// 
-			// label_creatorNotes
-			// 
-			this.label_creatorNotes.AutoEllipsis = true;
-			this.label_creatorNotes.Dock = System.Windows.Forms.DockStyle.Top;
-			this.label_creatorNotes.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label_creatorNotes.Location = new System.Drawing.Point(6, 63);
-			this.label_creatorNotes.Name = "label_creatorNotes";
-			this.label_creatorNotes.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-			this.label_creatorNotes.Size = new System.Drawing.Size(588, 23);
-			this.label_creatorNotes.TabIndex = 3;
-			this.label_creatorNotes.Text = "Comment";
+			this.label_userGender.Text = "Gender";
 			// 
 			// tableLayoutPanel1
 			// 
@@ -883,7 +772,7 @@
             "(Not set)",
             "Male",
             "Female",
-            "(Other)"});
+            "(Custom)"});
 			this.comboBox_gender.Location = new System.Drawing.Point(0, 23);
 			this.comboBox_gender.Margin = new System.Windows.Forms.Padding(0);
 			this.comboBox_gender.MaxDropDownItems = 20;
@@ -933,7 +822,7 @@
 			this.label_characterSpokenName.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
 			this.label_characterSpokenName.Size = new System.Drawing.Size(417, 23);
 			this.label_characterSpokenName.TabIndex = 0;
-			this.label_characterSpokenName.Text = "Character name (goes by)";
+			this.label_characterSpokenName.Text = "Goes by";
 			// 
 			// textBox_characterName
 			// 
@@ -961,7 +850,7 @@
 			this.label_characterName.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			this.label_characterName.Size = new System.Drawing.Size(417, 21);
 			this.label_characterName.TabIndex = 0;
-			this.label_characterName.Text = "Card name";
+			this.label_characterName.Text = "Character name";
 			// 
 			// portraitPanel
 			// 
@@ -988,16 +877,123 @@
 			this.portraitImage.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseClick);
 			this.portraitImage.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseDoubleClick);
 			// 
+			// group_Stats
+			// 
+			this.group_Stats.Collapsible = true;
+			this.group_Stats.Controls.Add(panel_right);
+			this.group_Stats.Controls.Add(panel_left);
+			this.group_Stats.Dock = System.Windows.Forms.DockStyle.Top;
+			this.group_Stats.Location = new System.Drawing.Point(0, 374);
+			this.group_Stats.Name = "group_Stats";
+			this.group_Stats.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
+			this.group_Stats.Size = new System.Drawing.Size(600, 152);
+			this.group_Stats.TabIndex = 4;
+			this.group_Stats.TabStop = false;
+			this.group_Stats.Text = "Statistics";
+			// 
+			// group_Generation
+			// 
+			this.group_Generation.Collapsible = true;
+			this.group_Generation.Controls.Add(tableLayoutPanel3);
+			this.group_Generation.Dock = System.Windows.Forms.DockStyle.Top;
+			this.group_Generation.Location = new System.Drawing.Point(0, 299);
+			this.group_Generation.Name = "group_Generation";
+			this.group_Generation.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
+			this.group_Generation.Size = new System.Drawing.Size(600, 71);
+			this.group_Generation.TabIndex = 3;
+			this.group_Generation.TabStop = false;
+			this.group_Generation.Text = "Output settings";
+			// 
+			// group_User
+			// 
+			this.group_User.Collapsible = true;
+			this.group_User.Controls.Add(tableLayoutPanel2);
+			this.group_User.Dock = System.Windows.Forms.DockStyle.Top;
+			this.group_User.Location = new System.Drawing.Point(0, 224);
+			this.group_User.Name = "group_User";
+			this.group_User.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
+			this.group_User.Size = new System.Drawing.Size(600, 71);
+			this.group_User.TabIndex = 2;
+			this.group_User.TabStop = false;
+			this.group_User.Text = "User / Point of view";
+			// 
+			// group_CardInfo
+			// 
+			this.group_CardInfo.Collapsible = true;
+			this.group_CardInfo.Controls.Add(this.textBox_tags);
+			this.group_CardInfo.Controls.Add(this.label_tags);
+			this.group_CardInfo.Controls.Add(this.textBox_creatorNotes);
+			this.group_CardInfo.Controls.Add(this.label_creatorNotes);
+			this.group_CardInfo.Controls.Add(tableLayoutPanel1);
+			this.group_CardInfo.Dock = System.Windows.Forms.DockStyle.Top;
+			this.group_CardInfo.Location = new System.Drawing.Point(0, 0);
+			this.group_CardInfo.Name = "group_CardInfo";
+			this.group_CardInfo.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
+			this.group_CardInfo.Size = new System.Drawing.Size(600, 220);
+			this.group_CardInfo.TabIndex = 1;
+			this.group_CardInfo.TabStop = false;
+			this.group_CardInfo.Text = "Card information";
+			// 
+			// textBox_tags
+			// 
+			this.textBox_tags.Collection = ((System.Collections.Generic.HashSet<string>)(resources.GetObject("textBox_tags.Collection")));
+			this.textBox_tags.Dock = System.Windows.Forms.DockStyle.Top;
+			this.textBox_tags.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.textBox_tags.Location = new System.Drawing.Point(6, 189);
+			this.textBox_tags.Margin = new System.Windows.Forms.Padding(0);
+			this.textBox_tags.MaxLength = 256;
+			this.textBox_tags.Name = "textBox_tags";
+			this.textBox_tags.Placeholder = "Enter tags separated by commas";
+			this.textBox_tags.Size = new System.Drawing.Size(588, 23);
+			this.textBox_tags.TabIndex = 7;
+			this.textBox_tags.TextChanged += new System.EventHandler(this.TextBox_tags_TextChanged);
+			// 
+			// label_tags
+			// 
+			this.label_tags.AutoEllipsis = true;
+			this.label_tags.Dock = System.Windows.Forms.DockStyle.Top;
+			this.label_tags.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label_tags.Location = new System.Drawing.Point(6, 166);
+			this.label_tags.Name = "label_tags";
+			this.label_tags.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
+			this.label_tags.Size = new System.Drawing.Size(588, 23);
+			this.label_tags.TabIndex = 8;
+			this.label_tags.Text = "Tags";
+			// 
+			// textBox_creatorNotes
+			// 
+			this.textBox_creatorNotes.Dock = System.Windows.Forms.DockStyle.Top;
+			this.textBox_creatorNotes.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.textBox_creatorNotes.Location = new System.Drawing.Point(6, 86);
+			this.textBox_creatorNotes.Multiline = true;
+			this.textBox_creatorNotes.Name = "textBox_creatorNotes";
+			this.textBox_creatorNotes.Placeholder = "Enter name...";
+			this.textBox_creatorNotes.Size = new System.Drawing.Size(588, 80);
+			this.textBox_creatorNotes.TabIndex = 6;
+			this.textBox_creatorNotes.TextChanged += new System.EventHandler(this.TextBox_creatorNotes_TextChanged);
+			// 
+			// label_creatorNotes
+			// 
+			this.label_creatorNotes.AutoEllipsis = true;
+			this.label_creatorNotes.Dock = System.Windows.Forms.DockStyle.Top;
+			this.label_creatorNotes.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label_creatorNotes.Location = new System.Drawing.Point(6, 63);
+			this.label_creatorNotes.Name = "label_creatorNotes";
+			this.label_creatorNotes.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
+			this.label_creatorNotes.Size = new System.Drawing.Size(588, 23);
+			this.label_creatorNotes.TabIndex = 3;
+			this.label_creatorNotes.Text = "Comment";
+			// 
 			// root
 			// 
 			this.root.AutoScroll = true;
-			this.root.Controls.Add(group_Stats);
+			this.root.Controls.Add(this.group_Stats);
 			this.root.Controls.Add(spacer_3);
-			this.root.Controls.Add(group_Generation);
+			this.root.Controls.Add(this.group_Generation);
 			this.root.Controls.Add(spacer_2);
-			this.root.Controls.Add(group_User);
+			this.root.Controls.Add(this.group_User);
 			this.root.Controls.Add(spacer_1);
-			this.root.Controls.Add(group_CardInfo);
+			this.root.Controls.Add(this.group_CardInfo);
 			this.root.Dock = System.Windows.Forms.DockStyle.Top;
 			this.root.Location = new System.Drawing.Point(0, 246);
 			this.root.Name = "root";
@@ -1027,21 +1023,16 @@
 			this.Name = "SidePanel";
 			this.Size = new System.Drawing.Size(600, 772);
 			this.Load += new System.EventHandler(this.SidePanel_Load);
-			group_Stats.ResumeLayout(false);
 			panel_right.ResumeLayout(false);
 			panel_left.ResumeLayout(false);
-			group_Generation.ResumeLayout(false);
 			tableLayoutPanel3.ResumeLayout(false);
 			panel4.ResumeLayout(false);
 			panel3.ResumeLayout(false);
 			panel5.ResumeLayout(false);
-			group_User.ResumeLayout(false);
 			tableLayoutPanel2.ResumeLayout(false);
 			panel1.ResumeLayout(false);
 			panel1.PerformLayout();
 			panel2.ResumeLayout(false);
-			group_CardInfo.ResumeLayout(false);
-			group_CardInfo.PerformLayout();
 			tableLayoutPanel1.ResumeLayout(false);
 			left.ResumeLayout(false);
 			left.PerformLayout();
@@ -1053,6 +1044,11 @@
 			genderTable.PerformLayout();
 			portraitPanel.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).EndInit();
+			this.group_Stats.ResumeLayout(false);
+			this.group_Generation.ResumeLayout(false);
+			this.group_User.ResumeLayout(false);
+			this.group_CardInfo.ResumeLayout(false);
+			this.group_CardInfo.PerformLayout();
 			this.root.ResumeLayout(false);
 			this.group_Character.ResumeLayout(false);
 			this.ResumeLayout(false);
@@ -1094,5 +1090,9 @@
 		private System.Windows.Forms.Label label_More;
 		private System.Windows.Forms.Panel root;
 		private GroupBoxEx group_Character;
+		private GroupBoxEx group_Stats;
+		private GroupBoxEx group_Generation;
+		private GroupBoxEx group_User;
+		private GroupBoxEx group_CardInfo;
 	}
 }

@@ -35,19 +35,29 @@ namespace Ginger
 		public SidePanel()
 		{
 			InitializeComponent();
-
-			_bIgnoreEvents = true;
-			comboBox_gender.SelectedItem = comboBox_gender.Items[0]; // (Not set)
-			comboBox_userGender.SelectedIndex = 0; // (Not set)
-			comboBox_Detail.SelectedIndex = 0; // Default
-			comboBox_textStyle.SelectedIndex = 0; // (Not set)
-			_bIgnoreEvents = false;
 		}
 
 		private void SidePanel_Load(object sender, EventArgs e)
 		{
 			this.portraitImage.ChangePortraitImage += OnChangePortraitImage;
 			root.VerticalScroll.Visible = false;
+
+			group_CardInfo.OnCollapse += Group_CardInfo_OnCollapse;
+			group_User.OnCollapse += Group_User_OnCollapse;
+			group_Generation.OnCollapse += Group_Generation_OnCollapse;
+			group_Stats.OnCollapse += Group_Stats_OnCollapse;
+
+			_bIgnoreEvents = true;
+			comboBox_gender.SelectedItem = comboBox_gender.Items[0]; // (Not set)
+			comboBox_userGender.SelectedIndex = 0; // (Not set)
+			comboBox_Detail.SelectedIndex = 0; // Default
+			comboBox_textStyle.SelectedIndex = 0; // (Not set)
+
+			group_CardInfo.Collapsed = !AppSettings.User.ShowCardInfo;
+			group_User.Collapsed = !AppSettings.User.ShowUserInfo;
+			group_Generation.Collapsed = !AppSettings.User.ShowOutputSettings;
+			group_Stats.Collapsed = !AppSettings.User.ShowStats;
+			_bIgnoreEvents = false;
 
 			SetToolTip(Resources.tooltip_character_name, label_characterName, textBox_characterName);
 			SetToolTip(Resources.tooltip_spoken_name, label_characterSpokenName, textBox_characterSpokenName);
@@ -928,6 +938,33 @@ namespace Ginger
 		{ 
 			root.Height = (int)(this.ClientSize.Height - group_Character.Height - 4 );
 		}
+		
+		private void Group_CardInfo_OnCollapse(object sender, bool bCollapsed)
+		{
+			if (_bIgnoreEvents)
+				return;
+			AppSettings.User.ShowCardInfo = !bCollapsed;
+		}
+		
+		private void Group_User_OnCollapse(object sender, bool bCollapsed)
+		{
+			if (_bIgnoreEvents)
+				return;
+			AppSettings.User.ShowUserInfo = !bCollapsed;
+		}
 
+		private void Group_Generation_OnCollapse(object sender, bool bCollapsed)
+		{
+			if (_bIgnoreEvents)
+				return;
+			AppSettings.User.ShowOutputSettings = !bCollapsed;
+		}
+		
+		private void Group_Stats_OnCollapse(object sender, bool bCollapsed)
+		{
+			if (_bIgnoreEvents)
+				return;
+			AppSettings.User.ShowStats = !bCollapsed;
+		}
 	}
 }

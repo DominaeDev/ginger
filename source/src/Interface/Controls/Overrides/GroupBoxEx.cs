@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -10,10 +11,23 @@ namespace Ginger
 		public bool Collapsible { get; set; }
 
 		[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		public bool Collapsed { get; set; }
-
+		public bool Collapsed 
+		{ 
+			get { return _bCollapsed; }
+			set
+			{
+				if (Collapsible && _bCollapsed != value)
+				{
+					_bCollapsed = value;
+					SetCollapsed(value);
+				}
+			}
+		}
+		private bool _bCollapsed = false;
 		public int CollapsedHeight = 22;
 		private int _height;
+
+		public event EventHandler<bool> OnCollapse;
 
 		public GroupBoxEx()
 		{
@@ -26,7 +40,7 @@ namespace Ginger
 			if (e.Button == MouseButtons.Left)
 			{
 				if (Collapsible && e.Y <= CollapsedHeight)
-					SetCollapsed(!Collapsed);
+					Collapsed = !Collapsed;
 			}
 		}
 
@@ -103,24 +117,8 @@ namespace Ginger
 			borderPen.Dispose();
 		}
 
-		public bool Collapse()
-		{
-			SetCollapsed(true);
-			return true;
-		}
-
-		public bool Expand()
-		{
-			SetCollapsed(false);
-			return true;
-		}
-
 		private void SetCollapsed(bool bCollapsed)
 		{
-			if (Collapsible == false)
-				return;
-
-			this.Collapsed = bCollapsed;
 			TabStop = !bCollapsed;
 
 			if (bCollapsed)
@@ -137,7 +135,8 @@ namespace Ginger
 					childControl.Visible = true;
 				this.Size = new Size(this.Size.Width, _height);
 			}
-						
+
+			OnCollapse?.Invoke(this, bCollapsed);
 		}
 	}
 }
