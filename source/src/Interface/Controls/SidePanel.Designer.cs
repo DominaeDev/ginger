@@ -28,10 +28,6 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Windows.Forms.Panel spacer_0;
-			System.Windows.Forms.Panel spacer_1;
-			System.Windows.Forms.Panel spacer_2;
-			System.Windows.Forms.Panel spacer_3;
 			System.Windows.Forms.Panel panel_right;
 			System.Windows.Forms.Panel panel_left;
 			System.Windows.Forms.Label label_Context;
@@ -40,10 +36,7 @@
 			System.Windows.Forms.Label label_Tokens;
 			System.Windows.Forms.Label label_Lore;
 			System.Windows.Forms.Label label_Image;
-			System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-			System.Windows.Forms.Panel panel4;
-			System.Windows.Forms.Panel panel3;
-			System.Windows.Forms.Panel panel5;
+			System.Windows.Forms.TableLayoutPanel table_Format;
 			System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
 			System.Windows.Forms.Panel panel1;
 			System.Windows.Forms.Panel panel2;
@@ -54,18 +47,14 @@
 			System.Windows.Forms.TableLayoutPanel genderTable;
 			System.Windows.Forms.Panel portraitPanel;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SidePanel));
+			System.Windows.Forms.Panel panel3;
+			System.Windows.Forms.Panel panel4;
 			this.label_Context_Value = new System.Windows.Forms.Label();
 			this.label_TokenBudget_Value = new System.Windows.Forms.Label();
 			this.label_Tokens_Permanent_Value = new System.Windows.Forms.Label();
 			this.label_Tokens_Value = new System.Windows.Forms.Label();
 			this.label_Lore_Value = new System.Windows.Forms.Label();
 			this.label_Image_Value = new System.Windows.Forms.Label();
-			this.comboBox_textStyle = new Ginger.ComboBoxEx();
-			this.label_textStyle = new System.Windows.Forms.Label();
-			this.comboBox_Detail = new Ginger.ComboBoxEx();
-			this.label_Detail = new System.Windows.Forms.Label();
-			this.btn_More = new System.Windows.Forms.Button();
-			this.label_More = new System.Windows.Forms.Label();
 			this.textBox_userPlaceholder = new Ginger.TextBoxEx();
 			this.label_userPlaceholder = new System.Windows.Forms.Label();
 			this.comboBox_userGender = new Ginger.ComboBoxEx();
@@ -82,7 +71,17 @@
 			this.textBox_characterName = new Ginger.TextBoxEx();
 			this.label_characterName = new System.Windows.Forms.Label();
 			this.portraitImage = new Ginger.PortraitPreview();
+			this.root = new System.Windows.Forms.Panel();
 			this.group_Stats = new Ginger.GroupBoxEx();
+			this.group_Components = new Ginger.GroupBoxEx();
+			this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+			this.cbIncludeModelInstructions = new System.Windows.Forms.CheckBox();
+			this.cbIncludeScenario = new System.Windows.Forms.CheckBox();
+			this.cbIncludeAttributes = new System.Windows.Forms.CheckBox();
+			this.cbIncludeGreetings = new System.Windows.Forms.CheckBox();
+			this.cbIncludeExampleChat = new System.Windows.Forms.CheckBox();
+			this.cbIncludeLore = new System.Windows.Forms.CheckBox();
+			this.cbIncludeGrammar = new System.Windows.Forms.CheckBox();
 			this.group_Generation = new Ginger.GroupBoxEx();
 			this.group_User = new Ginger.GroupBoxEx();
 			this.group_CardInfo = new Ginger.GroupBoxEx();
@@ -90,12 +89,11 @@
 			this.label_tags = new System.Windows.Forms.Label();
 			this.textBox_creatorNotes = new Ginger.TextBoxEx();
 			this.label_creatorNotes = new System.Windows.Forms.Label();
-			this.root = new System.Windows.Forms.Panel();
 			this.group_Character = new Ginger.GroupBoxEx();
-			spacer_0 = new System.Windows.Forms.Panel();
-			spacer_1 = new System.Windows.Forms.Panel();
-			spacer_2 = new System.Windows.Forms.Panel();
-			spacer_3 = new System.Windows.Forms.Panel();
+			this.label_Detail = new System.Windows.Forms.Label();
+			this.comboBox_Detail = new Ginger.ComboBoxEx();
+			this.label_textStyle = new System.Windows.Forms.Label();
+			this.comboBox_textStyle = new Ginger.ComboBoxEx();
 			panel_right = new System.Windows.Forms.Panel();
 			panel_left = new System.Windows.Forms.Panel();
 			label_Context = new System.Windows.Forms.Label();
@@ -104,10 +102,7 @@
 			label_Tokens = new System.Windows.Forms.Label();
 			label_Lore = new System.Windows.Forms.Label();
 			label_Image = new System.Windows.Forms.Label();
-			tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-			panel4 = new System.Windows.Forms.Panel();
-			panel3 = new System.Windows.Forms.Panel();
-			panel5 = new System.Windows.Forms.Panel();
+			table_Format = new System.Windows.Forms.TableLayoutPanel();
 			tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
 			panel1 = new System.Windows.Forms.Panel();
 			panel2 = new System.Windows.Forms.Panel();
@@ -117,12 +112,11 @@
 			infoPanel = new System.Windows.Forms.Panel();
 			genderTable = new System.Windows.Forms.TableLayoutPanel();
 			portraitPanel = new System.Windows.Forms.Panel();
+			panel3 = new System.Windows.Forms.Panel();
+			panel4 = new System.Windows.Forms.Panel();
 			panel_right.SuspendLayout();
 			panel_left.SuspendLayout();
-			tableLayoutPanel3.SuspendLayout();
-			panel4.SuspendLayout();
-			panel3.SuspendLayout();
-			panel5.SuspendLayout();
+			table_Format.SuspendLayout();
 			tableLayoutPanel2.SuspendLayout();
 			panel1.SuspendLayout();
 			panel2.SuspendLayout();
@@ -133,49 +127,17 @@
 			genderTable.SuspendLayout();
 			portraitPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).BeginInit();
+			this.root.SuspendLayout();
 			this.group_Stats.SuspendLayout();
+			this.group_Components.SuspendLayout();
+			this.tableLayoutPanel4.SuspendLayout();
 			this.group_Generation.SuspendLayout();
 			this.group_User.SuspendLayout();
 			this.group_CardInfo.SuspendLayout();
-			this.root.SuspendLayout();
 			this.group_Character.SuspendLayout();
+			panel3.SuspendLayout();
+			panel4.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// spacer_0
-			// 
-			spacer_0.Dock = System.Windows.Forms.DockStyle.Top;
-			spacer_0.Location = new System.Drawing.Point(0, 242);
-			spacer_0.Margin = new System.Windows.Forms.Padding(0);
-			spacer_0.Name = "spacer_0";
-			spacer_0.Size = new System.Drawing.Size(600, 4);
-			spacer_0.TabIndex = 8;
-			// 
-			// spacer_1
-			// 
-			spacer_1.Dock = System.Windows.Forms.DockStyle.Top;
-			spacer_1.Location = new System.Drawing.Point(0, 220);
-			spacer_1.Margin = new System.Windows.Forms.Padding(0);
-			spacer_1.Name = "spacer_1";
-			spacer_1.Size = new System.Drawing.Size(600, 4);
-			spacer_1.TabIndex = 9;
-			// 
-			// spacer_2
-			// 
-			spacer_2.Dock = System.Windows.Forms.DockStyle.Top;
-			spacer_2.Location = new System.Drawing.Point(0, 295);
-			spacer_2.Margin = new System.Windows.Forms.Padding(0);
-			spacer_2.Name = "spacer_2";
-			spacer_2.Size = new System.Drawing.Size(600, 4);
-			spacer_2.TabIndex = 10;
-			// 
-			// spacer_3
-			// 
-			spacer_3.Dock = System.Windows.Forms.DockStyle.Top;
-			spacer_3.Location = new System.Drawing.Point(0, 370);
-			spacer_3.Margin = new System.Windows.Forms.Padding(0);
-			spacer_3.Name = "spacer_3";
-			spacer_3.Size = new System.Drawing.Size(600, 4);
-			spacer_3.TabIndex = 10;
 			// 
 			// panel_right
 			// 
@@ -188,7 +150,7 @@
 			panel_right.Dock = System.Windows.Forms.DockStyle.Fill;
 			panel_right.Location = new System.Drawing.Point(206, 19);
 			panel_right.Name = "panel_right";
-			panel_right.Size = new System.Drawing.Size(388, 125);
+			panel_right.Size = new System.Drawing.Size(371, 125);
 			panel_right.TabIndex = 1;
 			// 
 			// label_Context_Value
@@ -201,7 +163,7 @@
 			this.label_Context_Value.MinimumSize = new System.Drawing.Size(100, 16);
 			this.label_Context_Value.Name = "label_Context_Value";
 			this.label_Context_Value.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.label_Context_Value.Size = new System.Drawing.Size(388, 21);
+			this.label_Context_Value.Size = new System.Drawing.Size(371, 21);
 			this.label_Context_Value.TabIndex = 5;
 			this.label_Context_Value.Text = "2048";
 			// 
@@ -215,7 +177,7 @@
 			this.label_TokenBudget_Value.MinimumSize = new System.Drawing.Size(100, 16);
 			this.label_TokenBudget_Value.Name = "label_TokenBudget_Value";
 			this.label_TokenBudget_Value.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.label_TokenBudget_Value.Size = new System.Drawing.Size(388, 21);
+			this.label_TokenBudget_Value.Size = new System.Drawing.Size(371, 21);
 			this.label_TokenBudget_Value.TabIndex = 6;
 			this.label_TokenBudget_Value.Text = "-";
 			// 
@@ -229,7 +191,7 @@
 			this.label_Tokens_Permanent_Value.MinimumSize = new System.Drawing.Size(100, 16);
 			this.label_Tokens_Permanent_Value.Name = "label_Tokens_Permanent_Value";
 			this.label_Tokens_Permanent_Value.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.label_Tokens_Permanent_Value.Size = new System.Drawing.Size(388, 21);
+			this.label_Tokens_Permanent_Value.Size = new System.Drawing.Size(371, 21);
 			this.label_Tokens_Permanent_Value.TabIndex = 3;
 			this.label_Tokens_Permanent_Value.Text = "0";
 			// 
@@ -243,7 +205,7 @@
 			this.label_Tokens_Value.MinimumSize = new System.Drawing.Size(100, 16);
 			this.label_Tokens_Value.Name = "label_Tokens_Value";
 			this.label_Tokens_Value.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.label_Tokens_Value.Size = new System.Drawing.Size(388, 21);
+			this.label_Tokens_Value.Size = new System.Drawing.Size(371, 21);
 			this.label_Tokens_Value.TabIndex = 4;
 			this.label_Tokens_Value.Text = "0";
 			// 
@@ -257,7 +219,7 @@
 			this.label_Lore_Value.MinimumSize = new System.Drawing.Size(100, 16);
 			this.label_Lore_Value.Name = "label_Lore_Value";
 			this.label_Lore_Value.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.label_Lore_Value.Size = new System.Drawing.Size(388, 21);
+			this.label_Lore_Value.Size = new System.Drawing.Size(371, 21);
 			this.label_Lore_Value.TabIndex = 7;
 			this.label_Lore_Value.Text = "0";
 			// 
@@ -271,7 +233,7 @@
 			this.label_Image_Value.MinimumSize = new System.Drawing.Size(100, 16);
 			this.label_Image_Value.Name = "label_Image_Value";
 			this.label_Image_Value.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.label_Image_Value.Size = new System.Drawing.Size(388, 21);
+			this.label_Image_Value.Size = new System.Drawing.Size(371, 21);
 			this.label_Image_Value.TabIndex = 2;
 			this.label_Image_Value.Text = "-";
 			// 
@@ -373,159 +335,29 @@
 			label_Image.TabIndex = 3;
 			label_Image.Text = "Image dimensions:";
 			// 
-			// tableLayoutPanel3
+			// table_Format
 			// 
-			tableLayoutPanel3.ColumnCount = 3;
-			tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60F));
-			tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
-			tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 63F));
-			tableLayoutPanel3.Controls.Add(panel4, 0, 0);
-			tableLayoutPanel3.Controls.Add(panel3, 1, 0);
-			tableLayoutPanel3.Controls.Add(panel5, 2, 0);
-			tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Top;
-			tableLayoutPanel3.Location = new System.Drawing.Point(6, 19);
-			tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0);
-			tableLayoutPanel3.Name = "tableLayoutPanel3";
-			tableLayoutPanel3.RowCount = 1;
-			tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			tableLayoutPanel3.Size = new System.Drawing.Size(588, 44);
-			tableLayoutPanel3.TabIndex = 6;
-			// 
-			// panel4
-			// 
-			panel4.Controls.Add(this.comboBox_textStyle);
-			panel4.Controls.Add(this.label_textStyle);
-			panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-			panel4.Location = new System.Drawing.Point(0, 0);
-			panel4.Margin = new System.Windows.Forms.Padding(0);
-			panel4.Name = "panel4";
-			panel4.Size = new System.Drawing.Size(315, 44);
-			panel4.TabIndex = 0;
-			// 
-			// comboBox_textStyle
-			// 
-			this.comboBox_textStyle.Dock = System.Windows.Forms.DockStyle.Top;
-			this.comboBox_textStyle.DropDownHeight = 120;
-			this.comboBox_textStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboBox_textStyle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.comboBox_textStyle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.comboBox_textStyle.IntegralHeight = false;
-			this.comboBox_textStyle.Items.AddRange(new object[] {
-            "(Not set)",
-            "Chat: Dialogue / *Narration*",
-            "Novel: \"Dialogue\" / Narration",
-            "Mixed: \"Dialogue\" / *Narration*",
-            "Decorative: “Dialogue” / Narration",
-            "Bold: Dialogue / **Narration**",
-            "Brackets: Dialogue / (Narration)",
-            "CJK: 「Dialogue」/ Narration"});
-			this.comboBox_textStyle.Location = new System.Drawing.Point(0, 21);
-			this.comboBox_textStyle.MaxDropDownItems = 20;
-			this.comboBox_textStyle.Name = "comboBox_textStyle";
-			this.comboBox_textStyle.Size = new System.Drawing.Size(315, 23);
-			this.comboBox_textStyle.TabIndex = 4;
-			this.comboBox_textStyle.SelectedValueChanged += new System.EventHandler(this.ComboBox_textStyle_SelectedValueChanged);
-			// 
-			// label_textStyle
-			// 
-			this.label_textStyle.AutoEllipsis = true;
-			this.label_textStyle.Dock = System.Windows.Forms.DockStyle.Top;
-			this.label_textStyle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label_textStyle.Location = new System.Drawing.Point(0, 0);
-			this.label_textStyle.Name = "label_textStyle";
-			this.label_textStyle.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.label_textStyle.Size = new System.Drawing.Size(315, 21);
-			this.label_textStyle.TabIndex = 9;
-			this.label_textStyle.Text = "Dialogue format";
-			// 
-			// panel3
-			// 
-			panel3.Controls.Add(this.comboBox_Detail);
-			panel3.Controls.Add(this.label_Detail);
-			panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-			panel3.Location = new System.Drawing.Point(315, 0);
-			panel3.Margin = new System.Windows.Forms.Padding(0);
-			panel3.Name = "panel3";
-			panel3.Padding = new System.Windows.Forms.Padding(6, 0, 0, 0);
-			panel3.Size = new System.Drawing.Size(210, 44);
-			panel3.TabIndex = 1;
-			// 
-			// comboBox_Detail
-			// 
-			this.comboBox_Detail.Dock = System.Windows.Forms.DockStyle.Top;
-			this.comboBox_Detail.DropDownHeight = 120;
-			this.comboBox_Detail.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboBox_Detail.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.comboBox_Detail.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.comboBox_Detail.IntegralHeight = false;
-			this.comboBox_Detail.Items.AddRange(new object[] {
-            "Less detail",
-            "Normal detail",
-            "More detail"});
-			this.comboBox_Detail.Location = new System.Drawing.Point(6, 21);
-			this.comboBox_Detail.MaxDropDownItems = 20;
-			this.comboBox_Detail.Name = "comboBox_Detail";
-			this.comboBox_Detail.Size = new System.Drawing.Size(204, 23);
-			this.comboBox_Detail.TabIndex = 0;
-			this.comboBox_Detail.SelectedValueChanged += new System.EventHandler(this.ComboBox_Detail_SelectedValueChanged);
-			// 
-			// label_Detail
-			// 
-			this.label_Detail.AutoEllipsis = true;
-			this.label_Detail.Dock = System.Windows.Forms.DockStyle.Top;
-			this.label_Detail.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label_Detail.Location = new System.Drawing.Point(6, 0);
-			this.label_Detail.MinimumSize = new System.Drawing.Size(100, 16);
-			this.label_Detail.Name = "label_Detail";
-			this.label_Detail.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.label_Detail.Size = new System.Drawing.Size(204, 21);
-			this.label_Detail.TabIndex = 2;
-			this.label_Detail.Text = "Detail level";
-			// 
-			// panel5
-			// 
-			panel5.Controls.Add(this.btn_More);
-			panel5.Controls.Add(this.label_More);
-			panel5.Dock = System.Windows.Forms.DockStyle.Fill;
-			panel5.Location = new System.Drawing.Point(531, 0);
-			panel5.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
-			panel5.Name = "panel5";
-			panel5.Size = new System.Drawing.Size(57, 44);
-			panel5.TabIndex = 2;
-			// 
-			// btn_More
-			// 
-			this.btn_More.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btn_More.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
-			this.btn_More.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btn_More.Image = global::Ginger.Properties.Resources.menu;
-			this.btn_More.Location = new System.Drawing.Point(0, 21);
-			this.btn_More.Margin = new System.Windows.Forms.Padding(0);
-			this.btn_More.Name = "btn_More";
-			this.btn_More.Size = new System.Drawing.Size(36, 23);
-			this.btn_More.TabIndex = 3;
-			this.btn_More.UseVisualStyleBackColor = true;
-			this.btn_More.MouseClick += new System.Windows.Forms.MouseEventHandler(this.btn_More_MouseClick);
-			// 
-			// label_More
-			// 
-			this.label_More.AutoEllipsis = true;
-			this.label_More.Dock = System.Windows.Forms.DockStyle.Top;
-			this.label_More.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label_More.Location = new System.Drawing.Point(0, 0);
-			this.label_More.MinimumSize = new System.Drawing.Size(60, 16);
-			this.label_More.Name = "label_More";
-			this.label_More.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.label_More.Size = new System.Drawing.Size(60, 21);
-			this.label_More.TabIndex = 4;
-			this.label_More.Text = "Misc.";
+			table_Format.ColumnCount = 2;
+			table_Format.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			table_Format.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			table_Format.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			table_Format.Controls.Add(panel4, 0, 0);
+			table_Format.Controls.Add(panel3, 1, 0);
+			table_Format.Dock = System.Windows.Forms.DockStyle.Top;
+			table_Format.Location = new System.Drawing.Point(6, 19);
+			table_Format.Margin = new System.Windows.Forms.Padding(0);
+			table_Format.Name = "table_Format";
+			table_Format.RowCount = 1;
+			table_Format.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			table_Format.Size = new System.Drawing.Size(571, 44);
+			table_Format.TabIndex = 6;
 			// 
 			// tableLayoutPanel2
 			// 
-			tableLayoutPanel2.ColumnCount = 3;
-			tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60F));
-			tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
-			tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 63F));
+			tableLayoutPanel2.ColumnCount = 2;
+			tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			tableLayoutPanel2.Controls.Add(panel1, 0, 0);
 			tableLayoutPanel2.Controls.Add(panel2, 1, 0);
 			tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top;
@@ -534,7 +366,7 @@
 			tableLayoutPanel2.Name = "tableLayoutPanel2";
 			tableLayoutPanel2.RowCount = 1;
 			tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			tableLayoutPanel2.Size = new System.Drawing.Size(588, 44);
+			tableLayoutPanel2.Size = new System.Drawing.Size(571, 44);
 			tableLayoutPanel2.TabIndex = 5;
 			// 
 			// panel1
@@ -545,7 +377,7 @@
 			panel1.Location = new System.Drawing.Point(0, 0);
 			panel1.Margin = new System.Windows.Forms.Padding(0);
 			panel1.Name = "panel1";
-			panel1.Size = new System.Drawing.Size(315, 44);
+			panel1.Size = new System.Drawing.Size(285, 44);
 			panel1.TabIndex = 0;
 			// 
 			// textBox_userPlaceholder
@@ -557,7 +389,7 @@
 			this.textBox_userPlaceholder.MaxLength = 256;
 			this.textBox_userPlaceholder.Name = "textBox_userPlaceholder";
 			this.textBox_userPlaceholder.Placeholder = "User";
-			this.textBox_userPlaceholder.Size = new System.Drawing.Size(315, 23);
+			this.textBox_userPlaceholder.Size = new System.Drawing.Size(285, 23);
 			this.textBox_userPlaceholder.TabIndex = 3;
 			this.textBox_userPlaceholder.TextChanged += new System.EventHandler(this.TextBox_userPlaceholder_TextChanged);
 			this.textBox_userPlaceholder.Leave += new System.EventHandler(this.TextBox_userPlaceholder_Leave);
@@ -572,7 +404,7 @@
 			this.label_userPlaceholder.MinimumSize = new System.Drawing.Size(100, 16);
 			this.label_userPlaceholder.Name = "label_userPlaceholder";
 			this.label_userPlaceholder.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.label_userPlaceholder.Size = new System.Drawing.Size(315, 21);
+			this.label_userPlaceholder.Size = new System.Drawing.Size(285, 21);
 			this.label_userPlaceholder.TabIndex = 1;
 			this.label_userPlaceholder.Text = "Placeholder name";
 			// 
@@ -581,11 +413,11 @@
 			panel2.Controls.Add(this.comboBox_userGender);
 			panel2.Controls.Add(this.label_userGender);
 			panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-			panel2.Location = new System.Drawing.Point(315, 0);
+			panel2.Location = new System.Drawing.Point(285, 0);
 			panel2.Margin = new System.Windows.Forms.Padding(0);
 			panel2.Name = "panel2";
 			panel2.Padding = new System.Windows.Forms.Padding(6, 0, 0, 0);
-			panel2.Size = new System.Drawing.Size(210, 44);
+			panel2.Size = new System.Drawing.Size(286, 44);
 			panel2.TabIndex = 1;
 			// 
 			// comboBox_userGender
@@ -603,8 +435,9 @@
             "Male/Female"});
 			this.comboBox_userGender.Location = new System.Drawing.Point(6, 21);
 			this.comboBox_userGender.MaxDropDownItems = 20;
+			this.comboBox_userGender.MaximumSize = new System.Drawing.Size(180, 0);
 			this.comboBox_userGender.Name = "comboBox_userGender";
-			this.comboBox_userGender.Size = new System.Drawing.Size(204, 23);
+			this.comboBox_userGender.Size = new System.Drawing.Size(180, 23);
 			this.comboBox_userGender.TabIndex = 4;
 			this.comboBox_userGender.SelectedValueChanged += new System.EventHandler(this.ComboBox_userGender_SelectedValueChanged);
 			// 
@@ -616,7 +449,7 @@
 			this.label_userGender.Location = new System.Drawing.Point(6, 0);
 			this.label_userGender.Name = "label_userGender";
 			this.label_userGender.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.label_userGender.Size = new System.Drawing.Size(204, 21);
+			this.label_userGender.Size = new System.Drawing.Size(280, 21);
 			this.label_userGender.TabIndex = 9;
 			this.label_userGender.Text = "Gender";
 			// 
@@ -633,7 +466,7 @@
 			tableLayoutPanel1.Name = "tableLayoutPanel1";
 			tableLayoutPanel1.RowCount = 1;
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			tableLayoutPanel1.Size = new System.Drawing.Size(588, 44);
+			tableLayoutPanel1.Size = new System.Drawing.Size(571, 44);
 			tableLayoutPanel1.TabIndex = 0;
 			// 
 			// left
@@ -644,7 +477,7 @@
 			left.Location = new System.Drawing.Point(0, 0);
 			left.Margin = new System.Windows.Forms.Padding(0);
 			left.Name = "left";
-			left.Size = new System.Drawing.Size(294, 44);
+			left.Size = new System.Drawing.Size(285, 44);
 			left.TabIndex = 0;
 			// 
 			// textBox_creator
@@ -655,7 +488,7 @@
 			this.textBox_creator.MaxLength = 256;
 			this.textBox_creator.Name = "textBox_creator";
 			this.textBox_creator.Placeholder = "Your name";
-			this.textBox_creator.Size = new System.Drawing.Size(294, 23);
+			this.textBox_creator.Size = new System.Drawing.Size(285, 23);
 			this.textBox_creator.TabIndex = 4;
 			this.textBox_creator.TextChanged += new System.EventHandler(this.TextBox_creator_TextChanged);
 			// 
@@ -668,7 +501,7 @@
 			this.label_creator.MinimumSize = new System.Drawing.Size(100, 16);
 			this.label_creator.Name = "label_creator";
 			this.label_creator.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.label_creator.Size = new System.Drawing.Size(294, 21);
+			this.label_creator.Size = new System.Drawing.Size(285, 21);
 			this.label_creator.TabIndex = 1;
 			this.label_creator.Text = "Creator";
 			// 
@@ -677,11 +510,11 @@
 			right.Controls.Add(this.textBox_version);
 			right.Controls.Add(this.label_version);
 			right.Dock = System.Windows.Forms.DockStyle.Fill;
-			right.Location = new System.Drawing.Point(294, 0);
+			right.Location = new System.Drawing.Point(285, 0);
 			right.Margin = new System.Windows.Forms.Padding(0);
 			right.Name = "right";
 			right.Padding = new System.Windows.Forms.Padding(6, 0, 0, 0);
-			right.Size = new System.Drawing.Size(294, 44);
+			right.Size = new System.Drawing.Size(286, 44);
 			right.TabIndex = 1;
 			// 
 			// textBox_version
@@ -707,7 +540,7 @@
 			this.label_version.Location = new System.Drawing.Point(6, 0);
 			this.label_version.Name = "label_version";
 			this.label_version.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.label_version.Size = new System.Drawing.Size(288, 21);
+			this.label_version.Size = new System.Drawing.Size(280, 21);
 			this.label_version.TabIndex = 9;
 			this.label_version.Text = "Version";
 			// 
@@ -723,7 +556,7 @@
 			infoPanel.Location = new System.Drawing.Point(176, 16);
 			infoPanel.Name = "infoPanel";
 			infoPanel.Padding = new System.Windows.Forms.Padding(1, 0, 3, 0);
-			infoPanel.Size = new System.Drawing.Size(421, 220);
+			infoPanel.Size = new System.Drawing.Size(421, 224);
 			infoPanel.TabIndex = 5;
 			// 
 			// genderTable
@@ -858,7 +691,7 @@
 			portraitPanel.Dock = System.Windows.Forms.DockStyle.Left;
 			portraitPanel.Location = new System.Drawing.Point(6, 16);
 			portraitPanel.Name = "portraitPanel";
-			portraitPanel.Size = new System.Drawing.Size(170, 220);
+			portraitPanel.Size = new System.Drawing.Size(170, 224);
 			portraitPanel.TabIndex = 11;
 			// 
 			// portraitImage
@@ -877,48 +710,182 @@
 			this.portraitImage.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseClick);
 			this.portraitImage.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseDoubleClick);
 			// 
+			// root
+			// 
+			this.root.AutoScroll = true;
+			this.root.Controls.Add(this.group_Stats);
+			this.root.Controls.Add(this.group_Components);
+			this.root.Controls.Add(this.group_Generation);
+			this.root.Controls.Add(this.group_User);
+			this.root.Controls.Add(this.group_CardInfo);
+			this.root.Dock = System.Windows.Forms.DockStyle.Top;
+			this.root.Location = new System.Drawing.Point(0, 246);
+			this.root.Name = "root";
+			this.root.Size = new System.Drawing.Size(600, 526);
+			this.root.TabIndex = 5;
+			// 
 			// group_Stats
 			// 
+			this.group_Stats.BottomMargin = 4;
 			this.group_Stats.Collapsible = true;
 			this.group_Stats.Controls.Add(panel_right);
 			this.group_Stats.Controls.Add(panel_left);
 			this.group_Stats.Dock = System.Windows.Forms.DockStyle.Top;
-			this.group_Stats.Location = new System.Drawing.Point(0, 374);
+			this.group_Stats.Location = new System.Drawing.Point(0, 477);
 			this.group_Stats.Name = "group_Stats";
 			this.group_Stats.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
-			this.group_Stats.Size = new System.Drawing.Size(600, 152);
+			this.group_Stats.Size = new System.Drawing.Size(583, 152);
 			this.group_Stats.TabIndex = 4;
 			this.group_Stats.TabStop = false;
 			this.group_Stats.Text = "Statistics";
 			// 
+			// group_Components
+			// 
+			this.group_Components.BottomMargin = 4;
+			this.group_Components.Collapsible = true;
+			this.group_Components.Controls.Add(this.tableLayoutPanel4);
+			this.group_Components.Dock = System.Windows.Forms.DockStyle.Top;
+			this.group_Components.Location = new System.Drawing.Point(0, 373);
+			this.group_Components.Name = "group_Components";
+			this.group_Components.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
+			this.group_Components.Size = new System.Drawing.Size(583, 104);
+			this.group_Components.TabIndex = 9;
+			this.group_Components.TabStop = false;
+			this.group_Components.Text = "Output components";
+			// 
+			// tableLayoutPanel4
+			// 
+			this.tableLayoutPanel4.ColumnCount = 3;
+			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+			this.tableLayoutPanel4.Controls.Add(this.cbIncludeModelInstructions, 0, 0);
+			this.tableLayoutPanel4.Controls.Add(this.cbIncludeScenario, 1, 0);
+			this.tableLayoutPanel4.Controls.Add(this.cbIncludeAttributes, 2, 0);
+			this.tableLayoutPanel4.Controls.Add(this.cbIncludeGreetings, 0, 1);
+			this.tableLayoutPanel4.Controls.Add(this.cbIncludeExampleChat, 1, 1);
+			this.tableLayoutPanel4.Controls.Add(this.cbIncludeLore, 2, 1);
+			this.tableLayoutPanel4.Controls.Add(this.cbIncludeGrammar, 0, 2);
+			this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Top;
+			this.tableLayoutPanel4.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.tableLayoutPanel4.Location = new System.Drawing.Point(6, 19);
+			this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(0);
+			this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+			this.tableLayoutPanel4.RowCount = 3;
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.tableLayoutPanel4.Size = new System.Drawing.Size(571, 75);
+			this.tableLayoutPanel4.TabIndex = 10;
+			// 
+			// cbIncludeModelInstructions
+			// 
+			this.cbIncludeModelInstructions.AutoSize = true;
+			this.cbIncludeModelInstructions.Location = new System.Drawing.Point(3, 3);
+			this.cbIncludeModelInstructions.Name = "cbIncludeModelInstructions";
+			this.cbIncludeModelInstructions.Size = new System.Drawing.Size(125, 19);
+			this.cbIncludeModelInstructions.TabIndex = 0;
+			this.cbIncludeModelInstructions.Text = "Model instructions";
+			this.cbIncludeModelInstructions.UseVisualStyleBackColor = true;
+			this.cbIncludeModelInstructions.CheckedChanged += new System.EventHandler(this.cbIncludeModelInstructions_CheckedChanged);
+			// 
+			// cbIncludeScenario
+			// 
+			this.cbIncludeScenario.AutoSize = true;
+			this.cbIncludeScenario.Location = new System.Drawing.Point(193, 3);
+			this.cbIncludeScenario.Name = "cbIncludeScenario";
+			this.cbIncludeScenario.Size = new System.Drawing.Size(71, 19);
+			this.cbIncludeScenario.TabIndex = 1;
+			this.cbIncludeScenario.Text = "Scenario";
+			this.cbIncludeScenario.UseVisualStyleBackColor = true;
+			this.cbIncludeScenario.CheckedChanged += new System.EventHandler(this.cbIncludeScenario_CheckedChanged);
+			// 
+			// cbIncludeAttributes
+			// 
+			this.cbIncludeAttributes.AutoSize = true;
+			this.cbIncludeAttributes.Location = new System.Drawing.Point(383, 3);
+			this.cbIncludeAttributes.Name = "cbIncludeAttributes";
+			this.cbIncludeAttributes.Size = new System.Drawing.Size(78, 19);
+			this.cbIncludeAttributes.TabIndex = 2;
+			this.cbIncludeAttributes.Text = "Attributes";
+			this.cbIncludeAttributes.UseVisualStyleBackColor = true;
+			this.cbIncludeAttributes.CheckedChanged += new System.EventHandler(this.cbIncludeAttributes_CheckedChanged);
+			// 
+			// cbIncludeGreetings
+			// 
+			this.cbIncludeGreetings.AutoSize = true;
+			this.cbIncludeGreetings.Location = new System.Drawing.Point(3, 28);
+			this.cbIncludeGreetings.Name = "cbIncludeGreetings";
+			this.cbIncludeGreetings.Size = new System.Drawing.Size(71, 19);
+			this.cbIncludeGreetings.TabIndex = 3;
+			this.cbIncludeGreetings.Text = "Greeting";
+			this.cbIncludeGreetings.UseVisualStyleBackColor = true;
+			this.cbIncludeGreetings.CheckedChanged += new System.EventHandler(this.cbIncludeGreetings_CheckedChanged);
+			// 
+			// cbIncludeExampleChat
+			// 
+			this.cbIncludeExampleChat.AutoSize = true;
+			this.cbIncludeExampleChat.Location = new System.Drawing.Point(193, 28);
+			this.cbIncludeExampleChat.Name = "cbIncludeExampleChat";
+			this.cbIncludeExampleChat.Size = new System.Drawing.Size(97, 19);
+			this.cbIncludeExampleChat.TabIndex = 4;
+			this.cbIncludeExampleChat.Text = "Example chat";
+			this.cbIncludeExampleChat.UseVisualStyleBackColor = true;
+			this.cbIncludeExampleChat.CheckedChanged += new System.EventHandler(this.cbIncludeExampleChat_CheckedChanged);
+			// 
+			// cbIncludeLore
+			// 
+			this.cbIncludeLore.AutoSize = true;
+			this.cbIncludeLore.Location = new System.Drawing.Point(383, 28);
+			this.cbIncludeLore.Name = "cbIncludeLore";
+			this.cbIncludeLore.Size = new System.Drawing.Size(76, 19);
+			this.cbIncludeLore.TabIndex = 5;
+			this.cbIncludeLore.Text = "Lorebook";
+			this.cbIncludeLore.UseVisualStyleBackColor = true;
+			this.cbIncludeLore.CheckedChanged += new System.EventHandler(this.cbIncludeLore_CheckedChanged);
+			// 
+			// cbIncludeGrammar
+			// 
+			this.cbIncludeGrammar.AutoSize = true;
+			this.cbIncludeGrammar.Location = new System.Drawing.Point(3, 53);
+			this.cbIncludeGrammar.Name = "cbIncludeGrammar";
+			this.cbIncludeGrammar.Size = new System.Drawing.Size(76, 19);
+			this.cbIncludeGrammar.TabIndex = 6;
+			this.cbIncludeGrammar.Text = "Grammar";
+			this.cbIncludeGrammar.UseVisualStyleBackColor = true;
+			this.cbIncludeGrammar.CheckedChanged += new System.EventHandler(this.cbIncludeGrammar_CheckedChanged);
+			// 
 			// group_Generation
 			// 
+			this.group_Generation.BottomMargin = 4;
 			this.group_Generation.Collapsible = true;
-			this.group_Generation.Controls.Add(tableLayoutPanel3);
+			this.group_Generation.Controls.Add(table_Format);
 			this.group_Generation.Dock = System.Windows.Forms.DockStyle.Top;
 			this.group_Generation.Location = new System.Drawing.Point(0, 299);
 			this.group_Generation.Name = "group_Generation";
 			this.group_Generation.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
-			this.group_Generation.Size = new System.Drawing.Size(600, 71);
+			this.group_Generation.Size = new System.Drawing.Size(583, 74);
 			this.group_Generation.TabIndex = 3;
 			this.group_Generation.TabStop = false;
 			this.group_Generation.Text = "Output settings";
 			// 
 			// group_User
 			// 
+			this.group_User.BottomMargin = 4;
 			this.group_User.Collapsible = true;
 			this.group_User.Controls.Add(tableLayoutPanel2);
 			this.group_User.Dock = System.Windows.Forms.DockStyle.Top;
 			this.group_User.Location = new System.Drawing.Point(0, 224);
 			this.group_User.Name = "group_User";
 			this.group_User.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
-			this.group_User.Size = new System.Drawing.Size(600, 71);
+			this.group_User.Size = new System.Drawing.Size(583, 75);
 			this.group_User.TabIndex = 2;
 			this.group_User.TabStop = false;
 			this.group_User.Text = "User / Point of view";
 			// 
 			// group_CardInfo
 			// 
+			this.group_CardInfo.BottomMargin = 4;
 			this.group_CardInfo.Collapsible = true;
 			this.group_CardInfo.Controls.Add(this.textBox_tags);
 			this.group_CardInfo.Controls.Add(this.label_tags);
@@ -929,7 +896,7 @@
 			this.group_CardInfo.Location = new System.Drawing.Point(0, 0);
 			this.group_CardInfo.Name = "group_CardInfo";
 			this.group_CardInfo.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
-			this.group_CardInfo.Size = new System.Drawing.Size(600, 220);
+			this.group_CardInfo.Size = new System.Drawing.Size(583, 224);
 			this.group_CardInfo.TabIndex = 1;
 			this.group_CardInfo.TabStop = false;
 			this.group_CardInfo.Text = "Card information";
@@ -944,7 +911,7 @@
 			this.textBox_tags.MaxLength = 256;
 			this.textBox_tags.Name = "textBox_tags";
 			this.textBox_tags.Placeholder = "Enter tags separated by commas";
-			this.textBox_tags.Size = new System.Drawing.Size(588, 23);
+			this.textBox_tags.Size = new System.Drawing.Size(571, 23);
 			this.textBox_tags.TabIndex = 7;
 			this.textBox_tags.TextChanged += new System.EventHandler(this.TextBox_tags_TextChanged);
 			// 
@@ -956,7 +923,7 @@
 			this.label_tags.Location = new System.Drawing.Point(6, 166);
 			this.label_tags.Name = "label_tags";
 			this.label_tags.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-			this.label_tags.Size = new System.Drawing.Size(588, 23);
+			this.label_tags.Size = new System.Drawing.Size(571, 23);
 			this.label_tags.TabIndex = 8;
 			this.label_tags.Text = "Tags";
 			// 
@@ -968,7 +935,7 @@
 			this.textBox_creatorNotes.Multiline = true;
 			this.textBox_creatorNotes.Name = "textBox_creatorNotes";
 			this.textBox_creatorNotes.Placeholder = "Enter name...";
-			this.textBox_creatorNotes.Size = new System.Drawing.Size(588, 80);
+			this.textBox_creatorNotes.Size = new System.Drawing.Size(571, 80);
 			this.textBox_creatorNotes.TabIndex = 6;
 			this.textBox_creatorNotes.TextChanged += new System.EventHandler(this.TextBox_creatorNotes_TextChanged);
 			// 
@@ -980,28 +947,13 @@
 			this.label_creatorNotes.Location = new System.Drawing.Point(6, 63);
 			this.label_creatorNotes.Name = "label_creatorNotes";
 			this.label_creatorNotes.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-			this.label_creatorNotes.Size = new System.Drawing.Size(588, 23);
+			this.label_creatorNotes.Size = new System.Drawing.Size(571, 23);
 			this.label_creatorNotes.TabIndex = 3;
 			this.label_creatorNotes.Text = "Comment";
 			// 
-			// root
-			// 
-			this.root.AutoScroll = true;
-			this.root.Controls.Add(this.group_Stats);
-			this.root.Controls.Add(spacer_3);
-			this.root.Controls.Add(this.group_Generation);
-			this.root.Controls.Add(spacer_2);
-			this.root.Controls.Add(this.group_User);
-			this.root.Controls.Add(spacer_1);
-			this.root.Controls.Add(this.group_CardInfo);
-			this.root.Dock = System.Windows.Forms.DockStyle.Top;
-			this.root.Location = new System.Drawing.Point(0, 246);
-			this.root.Name = "root";
-			this.root.Size = new System.Drawing.Size(600, 526);
-			this.root.TabIndex = 5;
-			// 
 			// group_Character
 			// 
+			this.group_Character.BottomMargin = 4;
 			this.group_Character.Collapsible = false;
 			this.group_Character.Controls.Add(infoPanel);
 			this.group_Character.Controls.Add(portraitPanel);
@@ -1009,26 +961,114 @@
 			this.group_Character.Location = new System.Drawing.Point(0, 0);
 			this.group_Character.Name = "group_Character";
 			this.group_Character.Padding = new System.Windows.Forms.Padding(6, 3, 3, 6);
-			this.group_Character.Size = new System.Drawing.Size(600, 242);
+			this.group_Character.Size = new System.Drawing.Size(600, 246);
 			this.group_Character.TabIndex = 0;
 			this.group_Character.TabStop = false;
+			// 
+			// label_Detail
+			// 
+			this.label_Detail.AutoEllipsis = true;
+			this.label_Detail.Dock = System.Windows.Forms.DockStyle.Top;
+			this.label_Detail.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label_Detail.Location = new System.Drawing.Point(6, 0);
+			this.label_Detail.MinimumSize = new System.Drawing.Size(100, 16);
+			this.label_Detail.Name = "label_Detail";
+			this.label_Detail.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
+			this.label_Detail.Size = new System.Drawing.Size(280, 21);
+			this.label_Detail.TabIndex = 2;
+			this.label_Detail.Text = "Detail level";
+			// 
+			// comboBox_Detail
+			// 
+			this.comboBox_Detail.Dock = System.Windows.Forms.DockStyle.Top;
+			this.comboBox_Detail.DropDownHeight = 120;
+			this.comboBox_Detail.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBox_Detail.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.comboBox_Detail.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.comboBox_Detail.IntegralHeight = false;
+			this.comboBox_Detail.Items.AddRange(new object[] {
+            "Less detail",
+            "Normal detail",
+            "More detail"});
+			this.comboBox_Detail.Location = new System.Drawing.Point(6, 21);
+			this.comboBox_Detail.MaxDropDownItems = 20;
+			this.comboBox_Detail.MaximumSize = new System.Drawing.Size(180, 0);
+			this.comboBox_Detail.Name = "comboBox_Detail";
+			this.comboBox_Detail.Size = new System.Drawing.Size(180, 23);
+			this.comboBox_Detail.TabIndex = 0;
+			this.comboBox_Detail.SelectedValueChanged += new System.EventHandler(this.ComboBox_Detail_SelectedValueChanged);
+			// 
+			// panel3
+			// 
+			panel3.Controls.Add(this.comboBox_Detail);
+			panel3.Controls.Add(this.label_Detail);
+			panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+			panel3.Location = new System.Drawing.Point(285, 0);
+			panel3.Margin = new System.Windows.Forms.Padding(0);
+			panel3.Name = "panel3";
+			panel3.Padding = new System.Windows.Forms.Padding(6, 0, 0, 0);
+			panel3.Size = new System.Drawing.Size(286, 44);
+			panel3.TabIndex = 1;
+			// 
+			// label_textStyle
+			// 
+			this.label_textStyle.AutoEllipsis = true;
+			this.label_textStyle.Dock = System.Windows.Forms.DockStyle.Top;
+			this.label_textStyle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label_textStyle.Location = new System.Drawing.Point(0, 0);
+			this.label_textStyle.Name = "label_textStyle";
+			this.label_textStyle.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
+			this.label_textStyle.Size = new System.Drawing.Size(285, 21);
+			this.label_textStyle.TabIndex = 9;
+			this.label_textStyle.Text = "Dialogue format";
+			// 
+			// comboBox_textStyle
+			// 
+			this.comboBox_textStyle.Dock = System.Windows.Forms.DockStyle.Top;
+			this.comboBox_textStyle.DropDownHeight = 120;
+			this.comboBox_textStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBox_textStyle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.comboBox_textStyle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.comboBox_textStyle.IntegralHeight = false;
+			this.comboBox_textStyle.Items.AddRange(new object[] {
+            "(Not set)",
+            "Chat: Dialogue / *Narration*",
+            "Novel: \"Dialogue\" / Narration",
+            "Mixed: \"Dialogue\" / *Narration*",
+            "Decorative: “Dialogue” / Narration",
+            "Bold: Dialogue / **Narration**",
+            "Brackets: Dialogue / (Narration)",
+            "CJK: 「Dialogue」/ Narration"});
+			this.comboBox_textStyle.Location = new System.Drawing.Point(0, 21);
+			this.comboBox_textStyle.MaxDropDownItems = 20;
+			this.comboBox_textStyle.Name = "comboBox_textStyle";
+			this.comboBox_textStyle.Size = new System.Drawing.Size(285, 23);
+			this.comboBox_textStyle.TabIndex = 4;
+			this.comboBox_textStyle.SelectedValueChanged += new System.EventHandler(this.ComboBox_textStyle_SelectedValueChanged);
+			// 
+			// panel4
+			// 
+			panel4.Controls.Add(this.comboBox_textStyle);
+			panel4.Controls.Add(this.label_textStyle);
+			panel4.Dock = System.Windows.Forms.DockStyle.Fill;
+			panel4.Location = new System.Drawing.Point(0, 0);
+			panel4.Margin = new System.Windows.Forms.Padding(0);
+			panel4.Name = "panel4";
+			panel4.Size = new System.Drawing.Size(285, 44);
+			panel4.TabIndex = 0;
 			// 
 			// SidePanel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.root);
-			this.Controls.Add(spacer_0);
 			this.Controls.Add(this.group_Character);
 			this.Name = "SidePanel";
 			this.Size = new System.Drawing.Size(600, 772);
 			this.Load += new System.EventHandler(this.SidePanel_Load);
 			panel_right.ResumeLayout(false);
 			panel_left.ResumeLayout(false);
-			tableLayoutPanel3.ResumeLayout(false);
-			panel4.ResumeLayout(false);
-			panel3.ResumeLayout(false);
-			panel5.ResumeLayout(false);
+			table_Format.ResumeLayout(false);
 			tableLayoutPanel2.ResumeLayout(false);
 			panel1.ResumeLayout(false);
 			panel1.PerformLayout();
@@ -1044,13 +1084,18 @@
 			genderTable.PerformLayout();
 			portraitPanel.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).EndInit();
+			this.root.ResumeLayout(false);
 			this.group_Stats.ResumeLayout(false);
+			this.group_Components.ResumeLayout(false);
+			this.tableLayoutPanel4.ResumeLayout(false);
+			this.tableLayoutPanel4.PerformLayout();
 			this.group_Generation.ResumeLayout(false);
 			this.group_User.ResumeLayout(false);
 			this.group_CardInfo.ResumeLayout(false);
 			this.group_CardInfo.PerformLayout();
-			this.root.ResumeLayout(false);
 			this.group_Character.ResumeLayout(false);
+			panel3.ResumeLayout(false);
+			panel4.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -1071,28 +1116,35 @@
 		private System.Windows.Forms.Label label_Tokens_Value;
 		private System.Windows.Forms.Label label_Context_Value;
 		private TextBoxEx textBox_characterSpokenName;
-		private ComboBoxEx comboBox_Detail;
 		private System.Windows.Forms.Label label_gender;
 		private System.Windows.Forms.Label label_characterSpokenName;
 		private System.Windows.Forms.Label label_characterName;
 		private System.Windows.Forms.Label label_userPlaceholder;
 		private System.Windows.Forms.Label label_userGender;
-		private System.Windows.Forms.Label label_Detail;
 		private System.Windows.Forms.Label label_TokenBudget_Value;
-		private ComboBoxEx comboBox_textStyle;
-		private System.Windows.Forms.Label label_textStyle;
 		private System.Windows.Forms.Label label_Lore_Value;
 		private System.Windows.Forms.Label label_tags;
 		private System.Windows.Forms.Label label_creatorNotes;
 		private System.Windows.Forms.Label label_creator;
 		private System.Windows.Forms.Label label_version;
-		private System.Windows.Forms.Button btn_More;
-		private System.Windows.Forms.Label label_More;
 		private System.Windows.Forms.Panel root;
 		private GroupBoxEx group_Character;
 		private GroupBoxEx group_Stats;
 		private GroupBoxEx group_Generation;
 		private GroupBoxEx group_User;
 		private GroupBoxEx group_CardInfo;
+		private GroupBoxEx group_Components;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+		private System.Windows.Forms.CheckBox cbIncludeModelInstructions;
+		private System.Windows.Forms.CheckBox cbIncludeScenario;
+		private System.Windows.Forms.CheckBox cbIncludeAttributes;
+		private System.Windows.Forms.CheckBox cbIncludeGreetings;
+		private System.Windows.Forms.CheckBox cbIncludeExampleChat;
+		private System.Windows.Forms.CheckBox cbIncludeLore;
+		private System.Windows.Forms.CheckBox cbIncludeGrammar;
+		private ComboBoxEx comboBox_textStyle;
+		private System.Windows.Forms.Label label_textStyle;
+		private ComboBoxEx comboBox_Detail;
+		private System.Windows.Forms.Label label_Detail;
 	}
 }

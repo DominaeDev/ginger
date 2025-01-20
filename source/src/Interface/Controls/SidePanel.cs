@@ -45,6 +45,7 @@ namespace Ginger
 			group_CardInfo.OnCollapse += Group_CardInfo_OnCollapse;
 			group_User.OnCollapse += Group_User_OnCollapse;
 			group_Generation.OnCollapse += Group_Generation_OnCollapse;
+			group_Components.OnCollapse += Group_Components_OnCollapse;
 			group_Stats.OnCollapse += Group_Stats_OnCollapse;
 
 			_bIgnoreEvents = true;
@@ -56,6 +57,7 @@ namespace Ginger
 			group_CardInfo.Collapsed = !AppSettings.User.ShowCardInfo;
 			group_User.Collapsed = !AppSettings.User.ShowUserInfo;
 			group_Generation.Collapsed = !AppSettings.User.ShowOutputSettings;
+			group_Components.Collapsed = !AppSettings.User.ShowOutputComponents;
 			group_Stats.Collapsed = !AppSettings.User.ShowStats;
 			_bIgnoreEvents = false;
 
@@ -68,13 +70,21 @@ namespace Ginger
 			SetToolTip(Resources.tooltip_text_style, label_textStyle, comboBox_textStyle);
 			SetToolTip(Resources.tooltip_tokens, label_Tokens_Value);
 			SetToolTip(Resources.tooltip_tokens_permanent, label_Tokens_Permanent_Value);
-			SetToolTip(Resources.tooltip_misc_settings, label_More, btn_More);
 
 			SetToolTip(Resources.tooltip_creator, label_creator, textBox_creator);
 			SetToolTip(Resources.tooltip_version, label_version, textBox_version);
 
 			SetToolTip(Resources.tooltip_creator_notes, label_creatorNotes, textBox_creatorNotes);
 			SetToolTip(Resources.tooltip_tags, label_tags, textBox_tags);
+
+			SetToolTip(Resources.tooltip_include_model, cbIncludeModelInstructions);
+			SetToolTip(Resources.tooltip_include_scenario, cbIncludeScenario);
+			SetToolTip(Resources.tooltip_include_attributes, cbIncludeAttributes);
+			SetToolTip(Resources.tooltip_include_greeting, cbIncludeGreetings);
+			SetToolTip(Resources.tooltip_include_example, cbIncludeExampleChat);
+			SetToolTip(Resources.tooltip_include_lore, cbIncludeLore);
+			SetToolTip(Resources.tooltip_include_grammar, cbIncludeGrammar);
+
 		}
 
 		private void OnChangePortraitImage(object sender, PortraitPreview.ChangePortraitImageEventArgs e)
@@ -135,7 +145,6 @@ namespace Ginger
 			comboBox_textStyle.SelectedIndex = EnumHelper.ToInt(Current.Card.textStyle);
 
 			RefreshTokenCount();
-			RefreshSettingsButton();
 
 			// Lore count
 			label_Lore_Value.Text = lastLoreCount.ToString();
@@ -153,6 +162,15 @@ namespace Ginger
 				SetToolTip(Resources.tooltip_no_portrait_image, portraitImage);
 				label_Image_Value.Text = "-";
 			}
+
+			// Output components
+			cbIncludeModelInstructions.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitSystemPrompt);
+			cbIncludeScenario.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitScenario);
+			cbIncludeAttributes.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitAttributes);
+			cbIncludeGreetings.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitGreeting);
+			cbIncludeExampleChat.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitExample);
+			cbIncludeLore.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitLore);
+			cbIncludeGrammar.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitGrammar);
 
 			_bIgnoreEvents = false;
 		}
@@ -796,131 +814,14 @@ namespace Ginger
 			}
 		}
 
-		private void btn_More_MouseClick(object sender, MouseEventArgs args)
-		{
-			ShowTextGenerationOptions(sender as Control, new Point(args.X + 10, args.Y + 10));
-		}
-
-		private void ShowTextGenerationOptions(Control sender, Point location)
-		{
-			ContextMenuStrip menu = new ContextMenuStrip();
-
-			var system = AddSettingsMenu(menu, "Model instructions", CardData.Flag.OmitSystemPrompt);
-			var persona = AddSettingsMenu(menu, "Character persona", CardData.Flag.OmitAttributes);
-			var user = AddSettingsMenu(menu, "User persona", CardData.Flag.UserPersonaInScenario);
-			var scenario = AddSettingsMenu(menu, "Scenario", CardData.Flag.OmitScenario | CardData.Flag.PruneScenario);
-			var example = AddSettingsMenu(menu, "Example chat", CardData.Flag.OmitExample);
-			var greeting = AddSettingsMenu(menu, "Greeting", CardData.Flag.OmitGreeting);
-			var grammar = AddSettingsMenu(menu, "Grammar", CardData.Flag.OmitGrammar);
-			var lore = AddSettingsMenu(menu, "Lore", CardData.Flag.OmitLore);
-
-			AddSetting(system,
-				CardData.Flag.OmitSystemPrompt,
-				"Enable model instructions",
-				Resources.tooltip_enable_model_instructions,
-				true);
-			AddSetting(persona,
-				CardData.Flag.OmitAttributes,
-				"Enable attributes",
-				Resources.tooltip_enable_attributes,
-				true);
-
-			AddSetting(scenario,
-				CardData.Flag.OmitScenario,
-				"Enable scenario",
-				Resources.tooltip_enable_scenario,
-				true);
-			scenario.DropDownItems.Add(new ToolStripSeparator());
-			AddSetting(scenario,
-				CardData.Flag.PruneScenario,
-				"Prune scenario",
-				Resources.tooltip_prune_scenario)
-				.Enabled = Current.Card.extraFlags.Contains(CardData.Flag.OmitScenario) == false;
-
-			AddSetting(user,
-				CardData.Flag.UserPersonaInScenario,
-				"In character persona",
-				Resources.tooltip_user_in_persona,
-				true);
-			AddSetting(user,
-				CardData.Flag.UserPersonaInScenario,
-				"In scenario",
-				Resources.tooltip_user_in_scenario,
-				false);
-
-			AddSetting(example,
-				CardData.Flag.OmitExample,
-				"Enable example chat",
-				Resources.tooltip_enable_example,
-				true);
-			AddSetting(greeting,
-				CardData.Flag.OmitGreeting,
-				"Enable greeting",
-				Resources.tooltip_enable_greetings,
-				true);
-			AddSetting(grammar,
-				CardData.Flag.OmitGrammar,
-				"Enable grammar",
-				Resources.tooltip_enable_grammar,
-				true);
-			AddSetting(lore,
-				CardData.Flag.OmitLore,
-				"Enable lore",
-				Resources.tooltip_enable_lore,
-				true);
-			menu.Items.Add(new ToolStripSeparator());
-			menu.Items.Add(new ToolStripMenuItem("Reset settings", null, (s, e) => {
-				Current.Card.extraFlags = CardData.Flag.Default;
-				Current.IsDirty = true;
-				RefreshSettingsButton();
-			}));
-
-			Theme.Apply(menu);
-			menu.Show(sender, location);
-		}
-
-		private static ToolStripMenuItem AddSettingsMenu(ContextMenuStrip menu, string label, CardData.Flag flags)
-		{
-			var item = new ToolStripMenuItem(label);
-			menu.Items.Add(item);
-			if (Current.Card.extraFlags.ContainsAny(flags))
-				item.Image = Theme.Current.MenuRedDot;
-			return item;
-		}
-
-		private ToolStripMenuItem AddSetting(ContextMenuStrip menu, CardData.Flag flag, string label, string tooltip, bool inverse = false)
-		{
-			var menuItem = new ToolStripMenuItem(label, null, (s, e) => { ChangeFlag(flag); }) {
-				Checked = Current.Card.extraFlags.Contains(flag) != inverse,
-				ToolTipText = tooltip,
-			};
-			menu.Items.Add(menuItem);
-			return menuItem;
-		}
-
-		private ToolStripMenuItem AddSetting(ToolStripMenuItem parentItem, CardData.Flag flag, string label, string tooltip, bool inverse = false)
-		{
-			var menuItem = new ToolStripMenuItem(label, null, (s, e) => { ChangeFlag(flag); }) {
-				Checked = Current.Card.extraFlags.Contains(flag) != inverse,
-				ToolTipText = tooltip,
-			};
-			parentItem.DropDownItems.Add(menuItem);
-			return menuItem;
-		}
-
-		private void ChangeFlag(CardData.Flag flag)
+		private void SetExtraFlag(CardData.Flag flag, bool enabled)
 		{
 			if (Current.Card.extraFlags.Contains(flag))
 				Current.Card.extraFlags &= ~flag;
 			else
 				Current.Card.extraFlags |= flag;
-			RefreshSettingsButton();
-			Current.IsDirty = true;
-		}
 
-		private void RefreshSettingsButton()
-		{
-			btn_More.Image = Current.Card.extraFlags != CardData.Flag.Default ? Theme.Current.MenuEditIcon : Theme.Current.MenuIcon;
+			Current.IsDirty = true;
 		}
 
 		public void ApplyVisualTheme()
@@ -959,12 +860,80 @@ namespace Ginger
 				return;
 			AppSettings.User.ShowOutputSettings = !bCollapsed;
 		}
+
+		private void Group_Components_OnCollapse(object sender, bool bCollapsed)
+		{
+			if (_bIgnoreEvents)
+				return;
+			AppSettings.User.ShowOutputComponents = !bCollapsed;
+		}
 		
 		private void Group_Stats_OnCollapse(object sender, bool bCollapsed)
 		{
 			if (_bIgnoreEvents)
 				return;
 			AppSettings.User.ShowStats = !bCollapsed;
+		}
+
+		private void cbIncludeModelInstructions_CheckedChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			SetExtraFlag(CardData.Flag.OmitSystemPrompt, cbIncludeModelInstructions.Checked);
+		}
+
+		private void cbIncludeScenario_CheckedChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			SetExtraFlag(CardData.Flag.OmitScenario, cbIncludeScenario.Checked);
+		}
+
+		private void cbIncludeAttributes_CheckedChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			SetExtraFlag(CardData.Flag.OmitAttributes, cbIncludeAttributes.Checked);
+		}
+
+		private void cbIncludeGreetings_CheckedChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			SetExtraFlag(CardData.Flag.OmitGreeting, cbIncludeGreetings.Checked);
+		}
+
+		private void cbIncludeExampleChat_CheckedChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			SetExtraFlag(CardData.Flag.OmitExample, cbIncludeExampleChat.Checked);
+		}
+
+		private void cbIncludeLore_CheckedChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			SetExtraFlag(CardData.Flag.OmitLore, cbIncludeLore.Checked);
+		}
+
+		private void cbIncludeGrammar_CheckedChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			SetExtraFlag(CardData.Flag.OmitGrammar, cbIncludeGrammar.Checked);
+		}
+
+		private void btn_More_MouseClick(object sender, MouseEventArgs e)
+		{
+
 		}
 	}
 }

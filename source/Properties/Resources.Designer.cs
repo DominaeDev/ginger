@@ -4607,6 +4607,70 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Include character attributes in the output.
+        /// </summary>
+        internal static string tooltip_include_attributes {
+            get {
+                return ResourceManager.GetString("tooltip_include_attributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include example chat in the output.
+        /// </summary>
+        internal static string tooltip_include_example {
+            get {
+                return ResourceManager.GetString("tooltip_include_example", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include grammar in the output
+        ///(Only supported by Backyard AI).
+        /// </summary>
+        internal static string tooltip_include_grammar {
+            get {
+                return ResourceManager.GetString("tooltip_include_grammar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include greeting(s) in the output.
+        /// </summary>
+        internal static string tooltip_include_greeting {
+            get {
+                return ResourceManager.GetString("tooltip_include_greeting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include lorebook in the output.
+        /// </summary>
+        internal static string tooltip_include_lore {
+            get {
+                return ResourceManager.GetString("tooltip_include_lore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include model instructions in the output.
+        /// </summary>
+        internal static string tooltip_include_model {
+            get {
+                return ResourceManager.GetString("tooltip_include_model", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include scenario in the output.
+        /// </summary>
+        internal static string tooltip_include_scenario {
+            get {
+                return ResourceManager.GetString("tooltip_include_scenario", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Linking allows changes made in Ginger to be saved back to Backyard AI..
         /// </summary>
         internal static string tooltip_link_about_linking {

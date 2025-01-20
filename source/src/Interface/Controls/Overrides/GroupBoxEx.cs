@@ -24,8 +24,11 @@ namespace Ginger
 			}
 		}
 		private bool _bCollapsed = false;
-		public int CollapsedHeight = 22;
 		private int _height;
+		public int CollapsedHeight = 22;
+		
+		[Browsable(true)]
+		public int BottomMargin { get; set; }
 
 		public event EventHandler<bool> OnCollapse;
 
@@ -64,7 +67,7 @@ namespace Ginger
 				int textHalfHeight = textSize.Height / 2;
 				Rectangle rect = this.ClientRectangle;
 
-				rect = new Rectangle(rect.X, rect.Y + textHalfHeight, rect.Width - 1, rect.Height - textHalfHeight - 1);
+				rect = new Rectangle(rect.X, rect.Y + textHalfHeight, rect.Width - 1, rect.Height - textHalfHeight - BottomMargin - 1);
 
 				if (!Collapsed)
 				{
@@ -108,7 +111,7 @@ namespace Ginger
 				Rectangle rect = new Rectangle(this.ClientRectangle.X,
 					this.ClientRectangle.Y + (int)(strSize.Height / 2),
 					this.ClientRectangle.Width - 1,
-					this.ClientRectangle.Height - (int)(strSize.Height / 2) - 1);
+					this.ClientRectangle.Height - (int)(strSize.Height / 2) - BottomMargin - 1);
 				g.DrawRectangle(borderPen, rect);
 			}
 
