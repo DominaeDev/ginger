@@ -959,5 +959,21 @@ namespace Ginger
 
 			SetExtraFlag(CardData.Flag.PruneScenario, cbPruneScenario.Checked);
 		}
+
+		private void rbUserInPersona_Click(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			SetExtraFlag(CardData.Flag.UserPersonaInScenario, !rbUserInPersona.Checked);
+		}
+
+		private void rbUserInScenario_Click(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			SetExtraFlag(CardData.Flag.UserPersonaInScenario, rbUserInPersona.Checked);
+		}
 	}
 }
