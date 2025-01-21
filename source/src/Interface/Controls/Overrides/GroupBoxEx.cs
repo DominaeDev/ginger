@@ -87,11 +87,11 @@ namespace Ginger
 					using (Pen stipplePen = new Pen(Theme.Current.GroupBoxBorder, 1))
 					{
 						stipplePen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
-						g.DrawLine(borderPen, new Point(rect.X, rect.Y - 1), new Point(rect.X + this.Padding.Left - 4, rect.Y - 1));
-						g.DrawLine(borderPen, new Point(rect.X, rect.Y + 1), new Point(rect.X + this.Padding.Left - 4, rect.Y + 1));
+						g.DrawLine(stipplePen, new Point(rect.X, rect.Y - 1), new Point(rect.X + this.Padding.Left - 2, rect.Y - 1));
+						g.DrawLine(stipplePen, new Point(rect.X, rect.Y + 2), new Point(rect.X + this.Padding.Left - 2, rect.Y + 2));
 
 						g.DrawLine(stipplePen, new Point(rect.X + this.Padding.Left + textSize.Width, rect.Y - 1), new Point(rect.X + rect.Width, rect.Y - 1));
-						g.DrawLine(stipplePen, new Point(rect.X + this.Padding.Left + textSize.Width, rect.Y + 1), new Point(rect.X + rect.Width, rect.Y + 1));
+						g.DrawLine(stipplePen, new Point(rect.X + this.Padding.Left + textSize.Width, rect.Y + 2), new Point(rect.X + rect.Width, rect.Y + 2));
 					}
 				}
 

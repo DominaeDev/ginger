@@ -71,19 +71,22 @@ namespace Ginger
 			SetToolTip(Resources.tooltip_tokens, label_Tokens_Value);
 			SetToolTip(Resources.tooltip_tokens_permanent, label_Tokens_Permanent_Value);
 
-			SetToolTip(Resources.tooltip_creator, label_creator, textBox_creator);
-			SetToolTip(Resources.tooltip_version, label_version, textBox_version);
-
-			SetToolTip(Resources.tooltip_creator_notes, label_creatorNotes, textBox_creatorNotes);
-			SetToolTip(Resources.tooltip_tags, label_tags, textBox_tags);
+//			SetToolTip(Resources.tooltip_creator, label_creator, textBox_creator);
+//			SetToolTip(Resources.tooltip_version, label_version, textBox_version);
+//			SetToolTip(Resources.tooltip_creator_notes, label_creatorNotes, textBox_creatorNotes);
+//			SetToolTip(Resources.tooltip_tags, label_tags, textBox_tags);
 
 			SetToolTip(Resources.tooltip_include_model, cbIncludeModelInstructions);
 			SetToolTip(Resources.tooltip_include_scenario, cbIncludeScenario);
 			SetToolTip(Resources.tooltip_include_attributes, cbIncludeAttributes);
+			SetToolTip(Resources.tooltip_include_user_persona, cbIncludeUser);
 			SetToolTip(Resources.tooltip_include_greeting, cbIncludeGreetings);
 			SetToolTip(Resources.tooltip_include_example, cbIncludeExampleChat);
 			SetToolTip(Resources.tooltip_include_lore, cbIncludeLore);
 			SetToolTip(Resources.tooltip_include_grammar, cbIncludeGrammar);
+			SetToolTip(Resources.tooltip_prune_scenario, cbPruneScenario);
+			SetToolTip(Resources.tooltip_user_in_persona, rbUserInPersona);
+			SetToolTip(Resources.tooltip_user_in_scenario, rbUserInScenario);
 
 		}
 
@@ -167,10 +170,18 @@ namespace Ginger
 			cbIncludeModelInstructions.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitSystemPrompt);
 			cbIncludeScenario.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitScenario);
 			cbIncludeAttributes.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitAttributes);
+			cbIncludeUser.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitUserPersona);
 			cbIncludeGreetings.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitGreeting);
 			cbIncludeExampleChat.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitExample);
 			cbIncludeLore.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitLore);
 			cbIncludeGrammar.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitGrammar);
+
+			rbUserInPersona.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario);
+			rbUserInScenario.Checked = Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario);
+			rbUserInPersona.Enabled = cbIncludeUser.Checked;
+			rbUserInScenario.Enabled = cbIncludeUser.Checked;
+			
+			cbPruneScenario.Checked = Current.Card.extraFlags.Contains(CardData.Flag.PruneScenario);
 
 			_bIgnoreEvents = false;
 		}
@@ -899,6 +910,16 @@ namespace Ginger
 			SetExtraFlag(CardData.Flag.OmitAttributes, cbIncludeAttributes.Checked);
 		}
 
+		private void cbIncludeUser_CheckedChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			SetExtraFlag(CardData.Flag.OmitUserPersona, cbIncludeUser.Checked);
+			rbUserInPersona.Enabled = cbIncludeUser.Checked;
+			rbUserInScenario.Enabled = cbIncludeUser.Checked;
+		}
+
 		private void cbIncludeGreetings_CheckedChanged(object sender, EventArgs e)
 		{
 			if (_bIgnoreEvents)
@@ -931,9 +952,12 @@ namespace Ginger
 			SetExtraFlag(CardData.Flag.OmitGrammar, cbIncludeGrammar.Checked);
 		}
 
-		private void btn_More_MouseClick(object sender, MouseEventArgs e)
+		private void cbPruneScenario_CheckedChanged(object sender, EventArgs e)
 		{
+			if (_bIgnoreEvents)
+				return;
 
+			SetExtraFlag(CardData.Flag.PruneScenario, cbPruneScenario.Checked);
 		}
 	}
 }

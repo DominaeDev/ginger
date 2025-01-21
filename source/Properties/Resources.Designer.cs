@@ -4459,8 +4459,8 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The gender of the character.
-        ///This setting affects generated text only..
+        ///   Looks up a localized string similar to The character&apos;s gender.
+        ///(This setting also affects the pronouns used in generated text.).
         /// </summary>
         internal static string tooltip_character_gender {
             get {
@@ -4469,8 +4469,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name of this character card.
-        ///Commonly, this is the same as the character&apos;s name..
+        ///   Looks up a localized string similar to The name of the character, or the card.
         /// </summary>
         internal static string tooltip_character_name {
             get {
@@ -4667,6 +4666,15 @@ namespace Ginger.Properties {
         internal static string tooltip_include_scenario {
             get {
                 return ResourceManager.GetString("tooltip_include_scenario", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include user persona in the output.
+        /// </summary>
+        internal static string tooltip_include_user_persona {
+            get {
+                return ResourceManager.GetString("tooltip_include_user_persona", resourceCulture);
             }
         }
         
@@ -5273,8 +5281,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If enabled, inserts the scenario as example chat, allowing 
-        ///it to leave the context over time..
+        ///   Looks up a localized string similar to Place the scenario in the example chat. This allows it to leave the context as the story progresses..
         /// </summary>
         internal static string tooltip_prune_scenario {
             get {
@@ -5382,8 +5389,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The spoken name of the character (what they they go by).
-        ///Same as card name if omitted..
+        ///   Looks up a localized string similar to The name the character goes by in the chat..
         /// </summary>
         internal static string tooltip_spoken_name {
             get {
@@ -5429,8 +5435,8 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The desired gender of the user.
-        ///(This setting only affects recipe output.).
+        ///   Looks up a localized string similar to The gender of the user.
+        ///(This setting affects the pronouns used for the user&apos;s character in generated text.).
         /// </summary>
         internal static string tooltip_user_gender {
             get {
@@ -5439,7 +5445,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If enabled, place the user persona inside the character persona..
+        ///   Looks up a localized string similar to Place the user persona under the character persona..
         /// </summary>
         internal static string tooltip_user_in_persona {
             get {
@@ -5448,7 +5454,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If enabled, place the user persona inside the scenario..
+        ///   Looks up a localized string similar to Place the user persona under the scenario..
         /// </summary>
         internal static string tooltip_user_in_scenario {
             get {
@@ -5457,8 +5463,8 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Placeholder name for the user.
-        ///(This name is saved as a local setting and is never saved in character cards.).
+        ///   Looks up a localized string similar to Placeholder name for the user&apos;s character.
+        ///(This setting is only stored locally and not inside the card file.).
         /// </summary>
         internal static string tooltip_user_name {
             get {
@@ -5467,7 +5473,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Placeholder name for the user.
+        ///   Looks up a localized string similar to Placeholder name for the user&apos;s character.
         ///(This name was imported from Backyard AI and will not be saved.).
         /// </summary>
         internal static string tooltip_user_name_volatile {
