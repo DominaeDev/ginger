@@ -4349,16 +4349,19 @@ namespace Ginger.Integration
 						sbCommand.Append(",\n");
 					sbCommand.Append($"($messageId{iMessage:000}, $messageCreatedAt{iMessage:000}, $messageUpdatedAt{iMessage:000}, $chatId, $charId{iMessage:000})");
 
+					var creationTime = message.creationDate;
+					var updateTime = DateTimeExtensions.Max(message.updateDate, creationTime);
+
 					cmdMessages.Parameters.AddWithValue($"$messageId{iMessage:000}", messageIds[iMessage]);
-					cmdMessages.Parameters.AddWithValue($"$messageCreatedAt{iMessage:000}", message.creationDate.ToUnixTimeMilliseconds());
-					cmdMessages.Parameters.AddWithValue($"$messageUpdatedAt{iMessage:000}", message.updateDate.ToUnixTimeMilliseconds());
+					cmdMessages.Parameters.AddWithValue($"$messageCreatedAt{iMessage:000}", creationTime.ToUnixTimeMilliseconds());
+					cmdMessages.Parameters.AddWithValue($"$messageUpdatedAt{iMessage:000}", updateTime.ToUnixTimeMilliseconds());
 					cmdMessages.Parameters.AddWithValue($"$charId{iMessage:000}", speakerIds[message.speaker]);
 
 					lsMessages.Add(new ChatHistory.Message() {
 						instanceId = messageIds[iMessage],
 						activeSwipe = message.activeSwipe,
-						creationDate = message.creationDate,
-						updateDate = message.updateDate,
+						creationDate = creationTime,
+						updateDate = updateTime,
 						speaker = message.speaker,
 						swipes = message.swipes,
 					});
@@ -4381,10 +4384,12 @@ namespace Ginger.Integration
 							sbCommand.Append(",\n");
 						sbCommand.Append($"($swipeId{iSwipe:000}, $swipeCreatedAt{iSwipe:000}, $swipeCreatedAt{iSwipe:000}, $swipeActiveAt{iSwipe:000}, $text{iSwipe:000}, $messageId{iMessage:000})");
 
-						DateTime activeTime = message.creationDate;
+						DateTime creationTime = message.creationDate;
+						DateTime activeTime = creationTime;
 						if (i == message.activeSwipe)
 							activeTime += TimeSpan.FromMilliseconds(5000);
-						DateTime swipeTime = message.creationDate + TimeSpan.FromMilliseconds(i * 10);
+						DateTime swipeTime = creationTime + TimeSpan.FromMilliseconds(i * 10);
+
 						cmdMessages.Parameters.AddWithValue($"$swipeId{iSwipe:000}", Cuid.NewCuid());
 						cmdMessages.Parameters.AddWithValue($"$swipeCreatedAt{iSwipe:000}", swipeTime.ToUnixTimeMilliseconds());
 						cmdMessages.Parameters.AddWithValue($"$swipeActiveAt{iSwipe:000}", activeTime.ToUnixTimeMilliseconds());
