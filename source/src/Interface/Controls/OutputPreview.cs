@@ -67,7 +67,8 @@ namespace Ginger
 				// Combine user persona
 				if (string.IsNullOrEmpty(outputUserPersona) == false)
 				{
-					if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario)) // -> Scenario
+					if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario) 
+						&& Current.Card.extraFlags.Contains(CardData.Flag.OmitScenario) == false) // -> Scenario
 						outputScenario = string.Concat(outputScenario, "\r\n\r\n", outputUserPersona).Trim();
 					else // -> Persona
 						outputPersona = string.Concat(outputPersona, "\r\n\r\n", outputUserPersona).Trim();
@@ -335,7 +336,8 @@ namespace Ginger
 			{
 				if (string.IsNullOrEmpty(outputUserPersona) == false)
 				{
-					if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario)) // -> Scenario
+					if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario) 
+						&& Current.Card.extraFlags.Contains(CardData.Flag.OmitScenario) == false) // -> Scenario
 						outputScenario = string.Concat(outputScenario, "\r\n\r\n", outputUserPersona).Trim();
 					else // -> Persona
 						outputPersona = string.Concat(outputPersona, "\r\n\r\n", outputUserPersona).Trim();
@@ -410,7 +412,8 @@ namespace Ginger
 			{
 				if (string.IsNullOrEmpty(outputUserPersona) == false)
 				{
-					if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario)) // -> Scenario
+					if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario)
+						&& Current.Card.extraFlags.Contains(CardData.Flag.OmitScenario) == false) // -> Scenario
 						outputScenario = string.Concat(outputScenario, "\r\n\r\n", outputUserPersona).Trim();
 					else // -> Persona
 						outputPersona = string.Concat(outputPersona, "\r\n\r\n", outputUserPersona).Trim();

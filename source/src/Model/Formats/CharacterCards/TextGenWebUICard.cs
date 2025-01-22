@@ -27,7 +27,8 @@ namespace Ginger
 			string userPersona = output.userPersona.ToTavern();
 			if (string.IsNullOrEmpty(userPersona) == false)
 			{
-				if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario))
+				if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario)
+					&& Current.Card.extraFlags.Contains(CardData.Flag.OmitScenario) == false)
 					scenario = string.Concat(scenario, "\n\n", userPersona).Trim();
 				else
 					persona = string.Concat(persona, "\n\n", userPersona).Trim();

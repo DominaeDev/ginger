@@ -131,6 +131,9 @@ namespace Ginger
 				
 				_height = this.Size.Height;
 				this.Size = new Size(this.Size.Width, CollapsedHeight);
+
+				if (ContainsFocus)
+					MainForm.StealFocus();
 			}
 			else
 			{

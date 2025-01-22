@@ -176,10 +176,20 @@ namespace Ginger
 			cbIncludeLore.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitLore);
 			cbIncludeGrammar.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitGrammar);
 
-			rbUserInPersona.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario);
-			rbUserInScenario.Checked = Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario);
-			rbUserInPersona.Enabled = cbIncludeUser.Checked;
-			rbUserInScenario.Enabled = cbIncludeUser.Checked;
+			if (cbIncludeScenario.Checked)
+			{
+				rbUserInPersona.Enabled = cbIncludeUser.Checked;
+				rbUserInScenario.Enabled = cbIncludeUser.Checked;
+				rbUserInPersona.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario);
+				rbUserInScenario.Checked = Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario);
+			}
+			else
+			{
+				rbUserInPersona.Enabled = false;
+				rbUserInScenario.Enabled = false;
+				rbUserInPersona.Checked = true;
+				rbUserInScenario.Checked = false;
+			}
 			
 			cbPruneScenario.Checked = Current.Card.extraFlags.Contains(CardData.Flag.PruneScenario);
 
@@ -825,12 +835,12 @@ namespace Ginger
 			}
 		}
 
-		private void SetExtraFlag(CardData.Flag flag, bool enabled)
+		private void SetExtraFlag(CardData.Flag flag, bool bEnabled)
 		{
-			if (Current.Card.extraFlags.Contains(flag))
-				Current.Card.extraFlags &= ~flag;
-			else
+			if (bEnabled)
 				Current.Card.extraFlags |= flag;
+			else
+				Current.Card.extraFlags &= ~flag;
 
 			Current.IsDirty = true;
 		}
@@ -891,7 +901,7 @@ namespace Ginger
 			if (_bIgnoreEvents)
 				return;
 
-			SetExtraFlag(CardData.Flag.OmitSystemPrompt, cbIncludeModelInstructions.Checked);
+			SetExtraFlag(CardData.Flag.OmitSystemPrompt, !cbIncludeModelInstructions.Checked);
 		}
 
 		private void cbIncludeScenario_CheckedChanged(object sender, EventArgs e)
@@ -899,7 +909,24 @@ namespace Ginger
 			if (_bIgnoreEvents)
 				return;
 
-			SetExtraFlag(CardData.Flag.OmitScenario, cbIncludeScenario.Checked);
+			SetExtraFlag(CardData.Flag.OmitScenario, !cbIncludeScenario.Checked);
+			
+			_bIgnoreEvents = true;
+			if (cbIncludeScenario.Checked)
+			{
+				rbUserInPersona.Enabled = cbIncludeUser.Checked;
+				rbUserInScenario.Enabled = cbIncludeUser.Checked;
+				rbUserInPersona.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario);
+				rbUserInScenario.Checked = Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario);
+			}
+			else
+			{
+				rbUserInPersona.Enabled = false;
+				rbUserInScenario.Enabled = false;
+				rbUserInPersona.Checked = true;
+				rbUserInScenario.Checked = false;
+			}
+			_bIgnoreEvents = false;
 		}
 
 		private void cbIncludeAttributes_CheckedChanged(object sender, EventArgs e)
@@ -907,7 +934,7 @@ namespace Ginger
 			if (_bIgnoreEvents)
 				return;
 
-			SetExtraFlag(CardData.Flag.OmitAttributes, cbIncludeAttributes.Checked);
+			SetExtraFlag(CardData.Flag.OmitAttributes, !cbIncludeAttributes.Checked);
 		}
 
 		private void cbIncludeUser_CheckedChanged(object sender, EventArgs e)
@@ -915,7 +942,7 @@ namespace Ginger
 			if (_bIgnoreEvents)
 				return;
 
-			SetExtraFlag(CardData.Flag.OmitUserPersona, cbIncludeUser.Checked);
+			SetExtraFlag(CardData.Flag.OmitUserPersona, !cbIncludeUser.Checked);
 			rbUserInPersona.Enabled = cbIncludeUser.Checked;
 			rbUserInScenario.Enabled = cbIncludeUser.Checked;
 		}
@@ -925,7 +952,7 @@ namespace Ginger
 			if (_bIgnoreEvents)
 				return;
 
-			SetExtraFlag(CardData.Flag.OmitGreeting, cbIncludeGreetings.Checked);
+			SetExtraFlag(CardData.Flag.OmitGreeting, !cbIncludeGreetings.Checked);
 		}
 
 		private void cbIncludeExampleChat_CheckedChanged(object sender, EventArgs e)
@@ -933,7 +960,7 @@ namespace Ginger
 			if (_bIgnoreEvents)
 				return;
 
-			SetExtraFlag(CardData.Flag.OmitExample, cbIncludeExampleChat.Checked);
+			SetExtraFlag(CardData.Flag.OmitExample, !cbIncludeExampleChat.Checked);
 		}
 
 		private void cbIncludeLore_CheckedChanged(object sender, EventArgs e)
@@ -941,7 +968,7 @@ namespace Ginger
 			if (_bIgnoreEvents)
 				return;
 
-			SetExtraFlag(CardData.Flag.OmitLore, cbIncludeLore.Checked);
+			SetExtraFlag(CardData.Flag.OmitLore, !cbIncludeLore.Checked);
 		}
 
 		private void cbIncludeGrammar_CheckedChanged(object sender, EventArgs e)
@@ -949,7 +976,7 @@ namespace Ginger
 			if (_bIgnoreEvents)
 				return;
 
-			SetExtraFlag(CardData.Flag.OmitGrammar, cbIncludeGrammar.Checked);
+			SetExtraFlag(CardData.Flag.OmitGrammar, !cbIncludeGrammar.Checked);
 		}
 
 		private void cbPruneScenario_CheckedChanged(object sender, EventArgs e)
@@ -960,7 +987,7 @@ namespace Ginger
 			SetExtraFlag(CardData.Flag.PruneScenario, cbPruneScenario.Checked);
 		}
 
-		private void rbUserInPersona_Click(object sender, EventArgs e)
+		private void rbUserInPersona_CheckedChanged(object sender, EventArgs e)
 		{
 			if (_bIgnoreEvents)
 				return;
@@ -968,12 +995,12 @@ namespace Ginger
 			SetExtraFlag(CardData.Flag.UserPersonaInScenario, !rbUserInPersona.Checked);
 		}
 
-		private void rbUserInScenario_Click(object sender, EventArgs e)
+		private void rbUserInScenario_CheckedChanged(object sender, EventArgs e)
 		{
 			if (_bIgnoreEvents)
 				return;
 
-			SetExtraFlag(CardData.Flag.UserPersonaInScenario, rbUserInPersona.Checked);
+			SetExtraFlag(CardData.Flag.UserPersonaInScenario, rbUserInScenario.Checked);
 		}
 	}
 }

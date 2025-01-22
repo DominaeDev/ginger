@@ -406,10 +406,10 @@ namespace Ginger
 				systemOutput = GingerString.Empty;
 				postHistory = GingerString.Empty;
 			}
-			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitScenario))
-				scenarioOutput = GingerString.Empty;
 			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitUserPersona))
 				userPersonaOutput = GingerString.Empty;
+			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitScenario))
+				scenarioOutput = GingerString.Empty;
 			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitExample))
 				exampleOutput = GingerString.Empty;
 			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitGrammar))

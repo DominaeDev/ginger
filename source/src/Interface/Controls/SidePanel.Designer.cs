@@ -48,13 +48,13 @@
 			System.Windows.Forms.Panel infoPanel;
 			System.Windows.Forms.TableLayoutPanel genderTable;
 			System.Windows.Forms.Panel portraitPanel;
-			System.Windows.Forms.TableLayoutPanel table_MiscSettings;
-			System.Windows.Forms.Panel panel6;
 			System.Windows.Forms.Label label1;
-			System.Windows.Forms.Panel panel5;
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SidePanel));
 			System.Windows.Forms.Label label2;
 			System.Windows.Forms.Label label3;
+			System.Windows.Forms.TableLayoutPanel tableOptions;
+			System.Windows.Forms.Panel panel_AdvOptions;
+			System.Windows.Forms.Panel panel_UserPersona;
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SidePanel));
 			this.label_Context_Value = new System.Windows.Forms.Label();
 			this.label_TokenBudget_Value = new System.Windows.Forms.Label();
 			this.label_Tokens_Permanent_Value = new System.Windows.Forms.Label();
@@ -87,7 +87,7 @@
 			this.root = new System.Windows.Forms.Panel();
 			this.group_Stats = new Ginger.GroupBoxEx();
 			this.group_Components = new Ginger.GroupBoxEx();
-			this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+			this.tableFilters = new System.Windows.Forms.TableLayoutPanel();
 			this.cbIncludeModelInstructions = new System.Windows.Forms.CheckBox();
 			this.cbIncludeScenario = new System.Windows.Forms.CheckBox();
 			this.cbIncludeAttributes = new System.Windows.Forms.CheckBox();
@@ -124,12 +124,12 @@
 			infoPanel = new System.Windows.Forms.Panel();
 			genderTable = new System.Windows.Forms.TableLayoutPanel();
 			portraitPanel = new System.Windows.Forms.Panel();
-			table_MiscSettings = new System.Windows.Forms.TableLayoutPanel();
-			panel6 = new System.Windows.Forms.Panel();
 			label1 = new System.Windows.Forms.Label();
-			panel5 = new System.Windows.Forms.Panel();
 			label2 = new System.Windows.Forms.Label();
 			label3 = new System.Windows.Forms.Label();
+			tableOptions = new System.Windows.Forms.TableLayoutPanel();
+			panel_AdvOptions = new System.Windows.Forms.Panel();
+			panel_UserPersona = new System.Windows.Forms.Panel();
 			panel_right.SuspendLayout();
 			panel_left.SuspendLayout();
 			table_Format.SuspendLayout();
@@ -145,13 +145,13 @@
 			genderTable.SuspendLayout();
 			portraitPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).BeginInit();
-			table_MiscSettings.SuspendLayout();
-			panel6.SuspendLayout();
-			panel5.SuspendLayout();
+			tableOptions.SuspendLayout();
+			panel_AdvOptions.SuspendLayout();
+			panel_UserPersona.SuspendLayout();
 			this.root.SuspendLayout();
 			this.group_Stats.SuspendLayout();
 			this.group_Components.SuspendLayout();
-			this.tableLayoutPanel4.SuspendLayout();
+			this.tableFilters.SuspendLayout();
 			this.group_Generation.SuspendLayout();
 			this.group_User.SuspendLayout();
 			this.group_CardInfo.SuspendLayout();
@@ -600,7 +600,7 @@
 			this.textBox_creator.Name = "textBox_creator";
 			this.textBox_creator.Placeholder = "User";
 			this.textBox_creator.Size = new System.Drawing.Size(285, 23);
-			this.textBox_creator.TabIndex = 4;
+			this.textBox_creator.TabIndex = 1;
 			this.textBox_creator.TextChanged += new System.EventHandler(this.TextBox_creator_TextChanged);
 			// 
 			// label_creator
@@ -640,7 +640,7 @@
 			this.textBox_version.Name = "textBox_version";
 			this.textBox_version.Placeholder = "1.0";
 			this.textBox_version.Size = new System.Drawing.Size(120, 23);
-			this.textBox_version.TabIndex = 5;
+			this.textBox_version.TabIndex = 0;
 			this.textBox_version.TextChanged += new System.EventHandler(this.TextBox_version_TextChanged);
 			// 
 			// label_version
@@ -821,105 +821,132 @@
 			this.portraitImage.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseClick);
 			this.portraitImage.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseDoubleClick);
 			// 
-			// table_MiscSettings
-			// 
-			table_MiscSettings.ColumnCount = 2;
-			table_MiscSettings.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			table_MiscSettings.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			table_MiscSettings.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			table_MiscSettings.Controls.Add(panel6, 0, 0);
-			table_MiscSettings.Dock = System.Windows.Forms.DockStyle.Top;
-			table_MiscSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
-			table_MiscSettings.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
-			table_MiscSettings.Location = new System.Drawing.Point(6, 63);
-			table_MiscSettings.Margin = new System.Windows.Forms.Padding(0);
-			table_MiscSettings.Name = "table_MiscSettings";
-			table_MiscSettings.RowCount = 1;
-			table_MiscSettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			table_MiscSettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 53F));
-			table_MiscSettings.Size = new System.Drawing.Size(571, 53);
-			table_MiscSettings.TabIndex = 7;
-			// 
-			// panel6
-			// 
-			panel6.Controls.Add(this.cbPruneScenario);
-			panel6.Controls.Add(label1);
-			panel6.Dock = System.Windows.Forms.DockStyle.Top;
-			panel6.Location = new System.Drawing.Point(0, 3);
-			panel6.Margin = new System.Windows.Forms.Padding(0, 3, 0, 0);
-			panel6.Name = "panel6";
-			panel6.Padding = new System.Windows.Forms.Padding(0, 6, 0, 0);
-			panel6.Size = new System.Drawing.Size(285, 46);
-			panel6.TabIndex = 1;
-			// 
-			// cbPruneScenario
-			// 
-			this.cbPruneScenario.AutoSize = true;
-			this.cbPruneScenario.Dock = System.Windows.Forms.DockStyle.Top;
-			this.cbPruneScenario.Location = new System.Drawing.Point(0, 27);
-			this.cbPruneScenario.Name = "cbPruneScenario";
-			this.cbPruneScenario.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
-			this.cbPruneScenario.Size = new System.Drawing.Size(285, 19);
-			this.cbPruneScenario.TabIndex = 3;
-			this.cbPruneScenario.Text = "Prune scenario";
-			this.cbPruneScenario.UseVisualStyleBackColor = true;
-			this.cbPruneScenario.CheckedChanged += new System.EventHandler(this.cbPruneScenario_CheckedChanged);
-			// 
 			// label1
 			// 
 			label1.AutoEllipsis = true;
 			label1.Dock = System.Windows.Forms.DockStyle.Top;
 			label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			label1.Location = new System.Drawing.Point(0, 6);
+			label1.Location = new System.Drawing.Point(6, 0);
 			label1.MinimumSize = new System.Drawing.Size(100, 16);
 			label1.Name = "label1";
 			label1.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			label1.Size = new System.Drawing.Size(285, 21);
+			label1.Size = new System.Drawing.Size(280, 21);
 			label1.TabIndex = 4;
 			label1.Tag = "";
 			label1.Text = "Options";
 			// 
-			// panel5
+			// label2
 			// 
-			panel5.AutoSize = true;
-			panel5.Controls.Add(this.rbUserInScenario);
-			panel5.Controls.Add(this.rbUserInPersona);
-			panel5.Dock = System.Windows.Forms.DockStyle.Fill;
-			panel5.Font = new System.Drawing.Font("Segoe UI", 9F);
-			panel5.Location = new System.Drawing.Point(6, 137);
-			panel5.Margin = new System.Windows.Forms.Padding(0);
-			panel5.Name = "panel5";
-			panel5.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			panel5.Size = new System.Drawing.Size(571, 47);
-			panel5.TabIndex = 12;
+			label2.AutoEllipsis = true;
+			label2.Dock = System.Windows.Forms.DockStyle.Top;
+			label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			label2.Location = new System.Drawing.Point(6, 87);
+			label2.MinimumSize = new System.Drawing.Size(100, 16);
+			label2.Name = "label2";
+			label2.Padding = new System.Windows.Forms.Padding(0, 6, 0, 4);
+			label2.Size = new System.Drawing.Size(571, 25);
+			label2.TabIndex = 13;
+			label2.Tag = "";
+			label2.Text = "Included in output";
+			// 
+			// label3
+			// 
+			label3.AutoEllipsis = true;
+			label3.Dock = System.Windows.Forms.DockStyle.Top;
+			label3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			label3.Location = new System.Drawing.Point(0, 0);
+			label3.MinimumSize = new System.Drawing.Size(100, 16);
+			label3.Name = "label3";
+			label3.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
+			label3.Size = new System.Drawing.Size(285, 21);
+			label3.TabIndex = 14;
+			label3.Tag = "";
+			label3.Text = "User persona location";
+			// 
+			// tableOptions
+			// 
+			tableOptions.ColumnCount = 2;
+			tableOptions.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			tableOptions.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			tableOptions.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			tableOptions.Controls.Add(panel_AdvOptions, 1, 0);
+			tableOptions.Controls.Add(panel_UserPersona, 0, 0);
+			tableOptions.Dock = System.Windows.Forms.DockStyle.Top;
+			tableOptions.Font = new System.Drawing.Font("Segoe UI", 9F);
+			tableOptions.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
+			tableOptions.Location = new System.Drawing.Point(6, 19);
+			tableOptions.Margin = new System.Windows.Forms.Padding(0);
+			tableOptions.Name = "tableOptions";
+			tableOptions.RowCount = 1;
+			tableOptions.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			tableOptions.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 68F));
+			tableOptions.Size = new System.Drawing.Size(571, 68);
+			tableOptions.TabIndex = 0;
+			// 
+			// panel_AdvOptions
+			// 
+			panel_AdvOptions.Controls.Add(this.cbPruneScenario);
+			panel_AdvOptions.Controls.Add(label1);
+			panel_AdvOptions.Dock = System.Windows.Forms.DockStyle.Top;
+			panel_AdvOptions.Location = new System.Drawing.Point(285, 0);
+			panel_AdvOptions.Margin = new System.Windows.Forms.Padding(0);
+			panel_AdvOptions.Name = "panel_AdvOptions";
+			panel_AdvOptions.Padding = new System.Windows.Forms.Padding(6, 0, 0, 0);
+			panel_AdvOptions.Size = new System.Drawing.Size(286, 46);
+			panel_AdvOptions.TabIndex = 1;
+			// 
+			// cbPruneScenario
+			// 
+			this.cbPruneScenario.AutoSize = true;
+			this.cbPruneScenario.Dock = System.Windows.Forms.DockStyle.Top;
+			this.cbPruneScenario.Location = new System.Drawing.Point(6, 21);
+			this.cbPruneScenario.Name = "cbPruneScenario";
+			this.cbPruneScenario.Padding = new System.Windows.Forms.Padding(1, 0, 0, 0);
+			this.cbPruneScenario.Size = new System.Drawing.Size(280, 19);
+			this.cbPruneScenario.TabIndex = 3;
+			this.cbPruneScenario.Text = "Prune scenario";
+			this.cbPruneScenario.UseVisualStyleBackColor = true;
+			this.cbPruneScenario.CheckedChanged += new System.EventHandler(this.cbPruneScenario_CheckedChanged);
+			// 
+			// panel_UserPersona
+			// 
+			panel_UserPersona.Controls.Add(this.rbUserInScenario);
+			panel_UserPersona.Controls.Add(this.rbUserInPersona);
+			panel_UserPersona.Controls.Add(label3);
+			panel_UserPersona.Dock = System.Windows.Forms.DockStyle.Top;
+			panel_UserPersona.Location = new System.Drawing.Point(0, 0);
+			panel_UserPersona.Margin = new System.Windows.Forms.Padding(0);
+			panel_UserPersona.Name = "panel_UserPersona";
+			panel_UserPersona.Size = new System.Drawing.Size(285, 68);
+			panel_UserPersona.TabIndex = 0;
 			// 
 			// rbUserInScenario
 			// 
 			this.rbUserInScenario.AutoSize = true;
 			this.rbUserInScenario.Dock = System.Windows.Forms.DockStyle.Top;
-			this.rbUserInScenario.Location = new System.Drawing.Point(0, 25);
+			this.rbUserInScenario.Location = new System.Drawing.Point(0, 45);
 			this.rbUserInScenario.MaximumSize = new System.Drawing.Size(160, 0);
 			this.rbUserInScenario.Name = "rbUserInScenario";
 			this.rbUserInScenario.Padding = new System.Windows.Forms.Padding(3, 0, 0, 2);
 			this.rbUserInScenario.Size = new System.Drawing.Size(160, 21);
-			this.rbUserInScenario.TabIndex = 6;
+			this.rbUserInScenario.TabIndex = 1;
 			this.rbUserInScenario.TabStop = true;
 			this.rbUserInScenario.Text = "In Scenario";
-			this.rbUserInScenario.Click += new System.EventHandler(this.rbUserInScenario_Click);
+			this.rbUserInScenario.CheckedChanged += new System.EventHandler(this.rbUserInScenario_CheckedChanged);
 			// 
 			// rbUserInPersona
 			// 
 			this.rbUserInPersona.AutoSize = true;
 			this.rbUserInPersona.Dock = System.Windows.Forms.DockStyle.Top;
-			this.rbUserInPersona.Location = new System.Drawing.Point(0, 1);
+			this.rbUserInPersona.Location = new System.Drawing.Point(0, 21);
 			this.rbUserInPersona.MaximumSize = new System.Drawing.Size(160, 0);
 			this.rbUserInPersona.Name = "rbUserInPersona";
 			this.rbUserInPersona.Padding = new System.Windows.Forms.Padding(3, 0, 0, 5);
 			this.rbUserInPersona.Size = new System.Drawing.Size(160, 24);
-			this.rbUserInPersona.TabIndex = 5;
+			this.rbUserInPersona.TabIndex = 0;
 			this.rbUserInPersona.TabStop = true;
 			this.rbUserInPersona.Text = "In Persona";
-			this.rbUserInPersona.Click += new System.EventHandler(this.rbUserInPersona_Click);
+			this.rbUserInPersona.CheckedChanged += new System.EventHandler(this.rbUserInPersona_CheckedChanged);
 			// 
 			// root
 			// 
@@ -933,7 +960,7 @@
 			this.root.Location = new System.Drawing.Point(0, 246);
 			this.root.Name = "root";
 			this.root.Size = new System.Drawing.Size(600, 526);
-			this.root.TabIndex = 5;
+			this.root.TabIndex = 1;
 			// 
 			// group_Stats
 			// 
@@ -942,7 +969,7 @@
 			this.group_Stats.Controls.Add(panel_right);
 			this.group_Stats.Controls.Add(panel_left);
 			this.group_Stats.Dock = System.Windows.Forms.DockStyle.Top;
-			this.group_Stats.Location = new System.Drawing.Point(0, 614);
+			this.group_Stats.Location = new System.Drawing.Point(0, 576);
 			this.group_Stats.Name = "group_Stats";
 			this.group_Stats.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
 			this.group_Stats.Size = new System.Drawing.Size(583, 152);
@@ -954,53 +981,52 @@
 			// 
 			this.group_Components.BottomMargin = 4;
 			this.group_Components.Collapsible = true;
-			this.group_Components.Controls.Add(panel5);
-			this.group_Components.Controls.Add(label3);
-			this.group_Components.Controls.Add(this.tableLayoutPanel4);
+			this.group_Components.Controls.Add(this.tableFilters);
 			this.group_Components.Controls.Add(label2);
+			this.group_Components.Controls.Add(tableOptions);
 			this.group_Components.Dock = System.Windows.Forms.DockStyle.Top;
-			this.group_Components.Location = new System.Drawing.Point(0, 422);
+			this.group_Components.Location = new System.Drawing.Point(0, 376);
 			this.group_Components.Name = "group_Components";
 			this.group_Components.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
-			this.group_Components.Size = new System.Drawing.Size(583, 192);
-			this.group_Components.TabIndex = 9;
+			this.group_Components.Size = new System.Drawing.Size(583, 200);
+			this.group_Components.TabIndex = 3;
 			this.group_Components.TabStop = false;
 			this.group_Components.Text = "Advanced settings";
 			// 
-			// tableLayoutPanel4
+			// tableFilters
 			// 
-			this.tableLayoutPanel4.ColumnCount = 3;
-			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-			this.tableLayoutPanel4.Controls.Add(this.cbIncludeModelInstructions, 0, 0);
-			this.tableLayoutPanel4.Controls.Add(this.cbIncludeScenario, 1, 0);
-			this.tableLayoutPanel4.Controls.Add(this.cbIncludeAttributes, 2, 0);
-			this.tableLayoutPanel4.Controls.Add(this.cbIncludeGreetings, 0, 1);
-			this.tableLayoutPanel4.Controls.Add(this.cbIncludeExampleChat, 1, 1);
-			this.tableLayoutPanel4.Controls.Add(this.cbIncludeLore, 2, 1);
-			this.tableLayoutPanel4.Controls.Add(this.cbIncludeUser, 0, 2);
-			this.tableLayoutPanel4.Controls.Add(this.cbIncludeGrammar, 1, 2);
-			this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Top;
-			this.tableLayoutPanel4.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.tableLayoutPanel4.Location = new System.Drawing.Point(6, 40);
-			this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(0);
-			this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-			this.tableLayoutPanel4.RowCount = 3;
-			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-			this.tableLayoutPanel4.Size = new System.Drawing.Size(571, 76);
-			this.tableLayoutPanel4.TabIndex = 10;
+			this.tableFilters.ColumnCount = 3;
+			this.tableFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+			this.tableFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+			this.tableFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+			this.tableFilters.Controls.Add(this.cbIncludeModelInstructions, 0, 0);
+			this.tableFilters.Controls.Add(this.cbIncludeScenario, 1, 0);
+			this.tableFilters.Controls.Add(this.cbIncludeAttributes, 2, 0);
+			this.tableFilters.Controls.Add(this.cbIncludeGreetings, 0, 1);
+			this.tableFilters.Controls.Add(this.cbIncludeExampleChat, 1, 1);
+			this.tableFilters.Controls.Add(this.cbIncludeLore, 2, 1);
+			this.tableFilters.Controls.Add(this.cbIncludeUser, 0, 2);
+			this.tableFilters.Controls.Add(this.cbIncludeGrammar, 1, 2);
+			this.tableFilters.Dock = System.Windows.Forms.DockStyle.Top;
+			this.tableFilters.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.tableFilters.Location = new System.Drawing.Point(6, 112);
+			this.tableFilters.Margin = new System.Windows.Forms.Padding(0);
+			this.tableFilters.Name = "tableFilters";
+			this.tableFilters.RowCount = 3;
+			this.tableFilters.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+			this.tableFilters.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+			this.tableFilters.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+			this.tableFilters.Size = new System.Drawing.Size(571, 74);
+			this.tableFilters.TabIndex = 1;
 			// 
 			// cbIncludeModelInstructions
 			// 
-			this.cbIncludeModelInstructions.AutoSize = true;
+			this.cbIncludeModelInstructions.AutoEllipsis = true;
 			this.cbIncludeModelInstructions.Location = new System.Drawing.Point(3, 3);
 			this.cbIncludeModelInstructions.Name = "cbIncludeModelInstructions";
 			this.cbIncludeModelInstructions.Size = new System.Drawing.Size(125, 18);
 			this.cbIncludeModelInstructions.TabIndex = 0;
-			this.cbIncludeModelInstructions.Text = "Model instructions";
+			this.cbIncludeModelInstructions.Text = "Model instuctions";
 			this.cbIncludeModelInstructions.UseVisualStyleBackColor = true;
 			this.cbIncludeModelInstructions.CheckedChanged += new System.EventHandler(this.cbIncludeModelInstructions_CheckedChanged);
 			// 
@@ -1065,7 +1091,7 @@
 			this.cbIncludeUser.Location = new System.Drawing.Point(3, 51);
 			this.cbIncludeUser.Name = "cbIncludeUser";
 			this.cbIncludeUser.Size = new System.Drawing.Size(94, 19);
-			this.cbIncludeUser.TabIndex = 7;
+			this.cbIncludeUser.TabIndex = 6;
 			this.cbIncludeUser.Text = "User persona";
 			this.cbIncludeUser.UseVisualStyleBackColor = true;
 			this.cbIncludeUser.CheckedChanged += new System.EventHandler(this.cbIncludeUser_CheckedChanged);
@@ -1076,7 +1102,7 @@
 			this.cbIncludeGrammar.Location = new System.Drawing.Point(193, 51);
 			this.cbIncludeGrammar.Name = "cbIncludeGrammar";
 			this.cbIncludeGrammar.Size = new System.Drawing.Size(76, 19);
-			this.cbIncludeGrammar.TabIndex = 6;
+			this.cbIncludeGrammar.TabIndex = 7;
 			this.cbIncludeGrammar.Text = "Grammar";
 			this.cbIncludeGrammar.UseVisualStyleBackColor = true;
 			this.cbIncludeGrammar.CheckedChanged += new System.EventHandler(this.cbIncludeGrammar_CheckedChanged);
@@ -1085,14 +1111,13 @@
 			// 
 			this.group_Generation.BottomMargin = 4;
 			this.group_Generation.Collapsible = true;
-			this.group_Generation.Controls.Add(table_MiscSettings);
 			this.group_Generation.Controls.Add(table_Format);
 			this.group_Generation.Dock = System.Windows.Forms.DockStyle.Top;
 			this.group_Generation.Location = new System.Drawing.Point(0, 300);
 			this.group_Generation.Name = "group_Generation";
 			this.group_Generation.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
-			this.group_Generation.Size = new System.Drawing.Size(583, 122);
-			this.group_Generation.TabIndex = 3;
+			this.group_Generation.Size = new System.Drawing.Size(583, 76);
+			this.group_Generation.TabIndex = 2;
 			this.group_Generation.TabStop = false;
 			this.group_Generation.Text = "Output settings";
 			// 
@@ -1106,7 +1131,7 @@
 			this.group_User.Name = "group_User";
 			this.group_User.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
 			this.group_User.Size = new System.Drawing.Size(583, 76);
-			this.group_User.TabIndex = 2;
+			this.group_User.TabIndex = 1;
 			this.group_User.TabStop = false;
 			this.group_User.Text = "User / Point of view";
 			// 
@@ -1124,7 +1149,7 @@
 			this.group_CardInfo.Name = "group_CardInfo";
 			this.group_CardInfo.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
 			this.group_CardInfo.Size = new System.Drawing.Size(583, 224);
-			this.group_CardInfo.TabIndex = 1;
+			this.group_CardInfo.TabIndex = 0;
 			this.group_CardInfo.TabStop = false;
 			this.group_CardInfo.Text = "Card information";
 			// 
@@ -1137,7 +1162,7 @@
 			this.textBox_creatorNotes.Name = "textBox_creatorNotes";
 			this.textBox_creatorNotes.Placeholder = "Enter name...";
 			this.textBox_creatorNotes.Size = new System.Drawing.Size(571, 80);
-			this.textBox_creatorNotes.TabIndex = 6;
+			this.textBox_creatorNotes.TabIndex = 2;
 			this.textBox_creatorNotes.TextChanged += new System.EventHandler(this.TextBox_creatorNotes_TextChanged);
 			// 
 			// label_creatorNotes
@@ -1163,7 +1188,7 @@
 			this.textBox_tags.Name = "textBox_tags";
 			this.textBox_tags.Placeholder = "Enter tags separated by comma";
 			this.textBox_tags.Size = new System.Drawing.Size(571, 23);
-			this.textBox_tags.TabIndex = 7;
+			this.textBox_tags.TabIndex = 1;
 			this.textBox_tags.TextChanged += new System.EventHandler(this.TextBox_tags_TextChanged);
 			// 
 			// label_tags
@@ -1191,34 +1216,6 @@
 			this.group_Character.Size = new System.Drawing.Size(600, 246);
 			this.group_Character.TabIndex = 0;
 			this.group_Character.TabStop = false;
-			// 
-			// label2
-			// 
-			label2.AutoEllipsis = true;
-			label2.Dock = System.Windows.Forms.DockStyle.Top;
-			label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			label2.Location = new System.Drawing.Point(6, 19);
-			label2.MinimumSize = new System.Drawing.Size(100, 16);
-			label2.Name = "label2";
-			label2.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			label2.Size = new System.Drawing.Size(571, 21);
-			label2.TabIndex = 13;
-			label2.Tag = "";
-			label2.Text = "Filter output";
-			// 
-			// label3
-			// 
-			label3.AutoEllipsis = true;
-			label3.Dock = System.Windows.Forms.DockStyle.Top;
-			label3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			label3.Location = new System.Drawing.Point(6, 116);
-			label3.MinimumSize = new System.Drawing.Size(100, 16);
-			label3.Name = "label3";
-			label3.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			label3.Size = new System.Drawing.Size(571, 21);
-			label3.TabIndex = 14;
-			label3.Tag = "";
-			label3.Text = "User persona location";
 			// 
 			// SidePanel
 			// 
@@ -1249,17 +1246,16 @@
 			genderTable.PerformLayout();
 			portraitPanel.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.portraitImage)).EndInit();
-			table_MiscSettings.ResumeLayout(false);
-			panel6.ResumeLayout(false);
-			panel6.PerformLayout();
-			panel5.ResumeLayout(false);
-			panel5.PerformLayout();
+			tableOptions.ResumeLayout(false);
+			panel_AdvOptions.ResumeLayout(false);
+			panel_AdvOptions.PerformLayout();
+			panel_UserPersona.ResumeLayout(false);
+			panel_UserPersona.PerformLayout();
 			this.root.ResumeLayout(false);
 			this.group_Stats.ResumeLayout(false);
 			this.group_Components.ResumeLayout(false);
-			this.group_Components.PerformLayout();
-			this.tableLayoutPanel4.ResumeLayout(false);
-			this.tableLayoutPanel4.PerformLayout();
+			this.tableFilters.ResumeLayout(false);
+			this.tableFilters.PerformLayout();
 			this.group_Generation.ResumeLayout(false);
 			this.group_User.ResumeLayout(false);
 			this.group_CardInfo.ResumeLayout(false);
@@ -1301,7 +1297,7 @@
 		private GroupBoxEx group_User;
 		private GroupBoxEx group_CardInfo;
 		private GroupBoxEx group_Components;
-		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+		private System.Windows.Forms.TableLayoutPanel tableFilters;
 		private System.Windows.Forms.CheckBox cbIncludeModelInstructions;
 		private System.Windows.Forms.CheckBox cbIncludeScenario;
 		private System.Windows.Forms.CheckBox cbIncludeAttributes;
