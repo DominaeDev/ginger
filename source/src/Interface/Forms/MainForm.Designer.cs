@@ -330,7 +330,7 @@ namespace Ginger {
 			this.splitContainer.Panel2.Padding = new System.Windows.Forms.Padding(0, 0, 4, 0);
 			this.splitContainer.Panel2MinSize = 500;
 			this.splitContainer.Size = new System.Drawing.Size(1264, 775);
-			this.splitContainer.SplitterDistance = 450;
+			this.splitContainer.SplitterDistance = 420;
 			this.splitContainer.TabIndex = 0;
 			this.splitContainer.TabStop = false;
 			this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer_SplitterMoved);
@@ -342,7 +342,7 @@ namespace Ginger {
 			this.sidePanel.Margin = new System.Windows.Forms.Padding(0);
 			this.sidePanel.Name = "sidePanel";
 			this.sidePanel.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.sidePanel.Size = new System.Drawing.Size(450, 772);
+			this.sidePanel.Size = new System.Drawing.Size(420, 772);
 			this.sidePanel.TabIndex = 0;
 			// 
 			// tabControl
@@ -367,7 +367,7 @@ namespace Ginger {
 			this.tabControl.Multiline = true;
 			this.tabControl.Name = "tabControl";
 			this.tabControl.SelectedIndex = 0;
-			this.tabControl.Size = new System.Drawing.Size(806, 775);
+			this.tabControl.Size = new System.Drawing.Size(836, 775);
 			this.tabControl.TabIndex = 6;
 			this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
 			// 
@@ -377,7 +377,7 @@ namespace Ginger {
 			this.tabRecipe.Controls.Add(this.panelRecipe);
 			this.tabRecipe.Location = new System.Drawing.Point(4, 4);
 			this.tabRecipe.Name = "tabRecipe";
-			this.tabRecipe.Size = new System.Drawing.Size(773, 767);
+			this.tabRecipe.Size = new System.Drawing.Size(803, 767);
 			this.tabRecipe.TabIndex = 0;
 			this.tabRecipe.Text = "Recipe";
 			// 
@@ -389,7 +389,7 @@ namespace Ginger {
 			this.panelRecipe.Location = new System.Drawing.Point(0, 0);
 			this.panelRecipe.Name = "panelRecipe";
 			this.panelRecipe.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-			this.panelRecipe.Size = new System.Drawing.Size(773, 767);
+			this.panelRecipe.Size = new System.Drawing.Size(803, 767);
 			this.panelRecipe.TabIndex = 6;
 			// 
 			// recipeList
@@ -403,7 +403,7 @@ namespace Ginger {
 			this.recipeList.Location = new System.Drawing.Point(0, 68);
 			this.recipeList.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.recipeList.Name = "recipeList";
-			this.recipeList.Size = new System.Drawing.Size(770, 699);
+			this.recipeList.Size = new System.Drawing.Size(800, 699);
 			this.recipeList.TabIndex = 0;
 			// 
 			// buttonRow
@@ -433,7 +433,7 @@ namespace Ginger {
 			this.buttonRow.RowCount = 1;
 			this.buttonRow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.buttonRow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 64F));
-			this.buttonRow.Size = new System.Drawing.Size(770, 68);
+			this.buttonRow.Size = new System.Drawing.Size(800, 68);
 			this.buttonRow.TabIndex = 5;
 			// 
 			// btnAdd_Lore
@@ -445,10 +445,10 @@ namespace Ginger {
 			this.btnAdd_Lore.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_Lore.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnAdd_Lore.Image = global::Ginger.Properties.Resources.snippet;
-			this.btnAdd_Lore.Location = new System.Drawing.Point(673, 0);
+			this.btnAdd_Lore.Location = new System.Drawing.Point(701, 0);
 			this.btnAdd_Lore.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
 			this.btnAdd_Lore.Name = "btnAdd_Lore";
-			this.btnAdd_Lore.Size = new System.Drawing.Size(97, 64);
+			this.btnAdd_Lore.Size = new System.Drawing.Size(99, 64);
 			this.btnAdd_Lore.TabIndex = 7;
 			this.btnAdd_Lore.UseVisualStyleBackColor = false;
 			this.btnAdd_Lore.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Lore_MouseClick);
@@ -462,10 +462,10 @@ namespace Ginger {
 			this.btnAdd_Snippets.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_Snippets.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnAdd_Snippets.Image = global::Ginger.Properties.Resources.lore;
-			this.btnAdd_Snippets.Location = new System.Drawing.Point(577, 0);
+			this.btnAdd_Snippets.Location = new System.Drawing.Point(601, 0);
 			this.btnAdd_Snippets.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
 			this.btnAdd_Snippets.Name = "btnAdd_Snippets";
-			this.btnAdd_Snippets.Size = new System.Drawing.Size(94, 64);
+			this.btnAdd_Snippets.Size = new System.Drawing.Size(98, 64);
 			this.btnAdd_Snippets.TabIndex = 6;
 			this.btnAdd_Snippets.UseVisualStyleBackColor = false;
 			this.btnAdd_Snippets.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Snippets_MouseClick);
@@ -479,10 +479,10 @@ namespace Ginger {
 			this.btnAdd_Other.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_Other.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnAdd_Other.Image = global::Ginger.Properties.Resources.component;
-			this.btnAdd_Other.Location = new System.Drawing.Point(481, 0);
+			this.btnAdd_Other.Location = new System.Drawing.Point(501, 0);
 			this.btnAdd_Other.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
 			this.btnAdd_Other.Name = "btnAdd_Other";
-			this.btnAdd_Other.Size = new System.Drawing.Size(94, 64);
+			this.btnAdd_Other.Size = new System.Drawing.Size(98, 64);
 			this.btnAdd_Other.TabIndex = 5;
 			this.btnAdd_Other.UseVisualStyleBackColor = false;
 			this.btnAdd_Other.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Other_MouseClick);
@@ -496,10 +496,10 @@ namespace Ginger {
 			this.btnAdd_World.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_World.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnAdd_World.Image = global::Ginger.Properties.Resources.story;
-			this.btnAdd_World.Location = new System.Drawing.Point(385, 0);
+			this.btnAdd_World.Location = new System.Drawing.Point(401, 0);
 			this.btnAdd_World.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
 			this.btnAdd_World.Name = "btnAdd_World";
-			this.btnAdd_World.Size = new System.Drawing.Size(94, 64);
+			this.btnAdd_World.Size = new System.Drawing.Size(98, 64);
 			this.btnAdd_World.TabIndex = 4;
 			this.btnAdd_World.UseVisualStyleBackColor = false;
 			this.btnAdd_World.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Scenario_MouseClick);
@@ -513,10 +513,10 @@ namespace Ginger {
 			this.btnAdd_Traits.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_Traits.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnAdd_Traits.Image = global::Ginger.Properties.Resources.traits;
-			this.btnAdd_Traits.Location = new System.Drawing.Point(289, 0);
+			this.btnAdd_Traits.Location = new System.Drawing.Point(301, 0);
 			this.btnAdd_Traits.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
 			this.btnAdd_Traits.Name = "btnAdd_Traits";
-			this.btnAdd_Traits.Size = new System.Drawing.Size(94, 64);
+			this.btnAdd_Traits.Size = new System.Drawing.Size(98, 64);
 			this.btnAdd_Traits.TabIndex = 3;
 			this.btnAdd_Traits.UseVisualStyleBackColor = false;
 			this.btnAdd_Traits.MouseClick += new System.Windows.Forms.MouseEventHandler(this.btnAdd_Trait_Click);
@@ -530,10 +530,10 @@ namespace Ginger {
 			this.btnAdd_Mind.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_Mind.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnAdd_Mind.Image = global::Ginger.Properties.Resources.personality;
-			this.btnAdd_Mind.Location = new System.Drawing.Point(193, 0);
+			this.btnAdd_Mind.Location = new System.Drawing.Point(201, 0);
 			this.btnAdd_Mind.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
 			this.btnAdd_Mind.Name = "btnAdd_Mind";
-			this.btnAdd_Mind.Size = new System.Drawing.Size(94, 64);
+			this.btnAdd_Mind.Size = new System.Drawing.Size(98, 64);
 			this.btnAdd_Mind.TabIndex = 2;
 			this.btnAdd_Mind.UseVisualStyleBackColor = false;
 			this.btnAdd_Mind.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Mind_MouseClick);
@@ -547,10 +547,10 @@ namespace Ginger {
 			this.btnAdd_Character.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
 			this.btnAdd_Character.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnAdd_Character.Image = global::Ginger.Properties.Resources.persona;
-			this.btnAdd_Character.Location = new System.Drawing.Point(97, 0);
+			this.btnAdd_Character.Location = new System.Drawing.Point(101, 0);
 			this.btnAdd_Character.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
 			this.btnAdd_Character.Name = "btnAdd_Character";
-			this.btnAdd_Character.Size = new System.Drawing.Size(94, 64);
+			this.btnAdd_Character.Size = new System.Drawing.Size(98, 64);
 			this.btnAdd_Character.TabIndex = 1;
 			this.btnAdd_Character.UseVisualStyleBackColor = false;
 			this.btnAdd_Character.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAdd_Character_MouseClick);
@@ -567,7 +567,7 @@ namespace Ginger {
 			this.btnAdd_Model.Location = new System.Drawing.Point(0, 0);
 			this.btnAdd_Model.Margin = new System.Windows.Forms.Padding(0, 0, 1, 0);
 			this.btnAdd_Model.Name = "btnAdd_Model";
-			this.btnAdd_Model.Size = new System.Drawing.Size(95, 64);
+			this.btnAdd_Model.Size = new System.Drawing.Size(99, 64);
 			this.btnAdd_Model.TabIndex = 0;
 			this.btnAdd_Model.UseVisualStyleBackColor = true;
 			this.btnAdd_Model.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BtnAddModel_MouseClick);
