@@ -1135,7 +1135,7 @@ Do you want to start the chat over from here?</value>
     <value>Remove all messages prior to this one.</value>
   </data>
   <data name="tooltip_link_always_create" xml:space="preserve">
-    <value>When importing or saving a new character to Backyard AI, always link thecharacter.</value>
+    <value>When importing or saving a new character to Backyard AI, always link the character.</value>
   </data>
   <data name="error_link_failed_with_reason" xml:space="preserve">
     <value>Failed to connect to Backyard AI.
