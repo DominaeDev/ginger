@@ -43,6 +43,8 @@ namespace Ginger
 
 		private System.Timers.Timer _statusbarTimer = new System.Timers.Timer();
 
+		private bool _bIsResizing = false;
+
 		public MainForm()
 		{
 			instance = this;
@@ -220,6 +222,8 @@ namespace Ginger
 
 		private void MainForm_OnLoad(object sender, EventArgs e)
 		{
+			this.SizeChanged += MainForm_SizeChanged;
+
 			sidePanel.ChangePortraitImage += OnChangePortraitImage;
 			sidePanel.ResizePortraitImage += OnResizePortraitImage;
 			sidePanel.PastePortraitImage += OnPastePortraitImage;
@@ -1989,6 +1993,7 @@ namespace Ginger
 			// Turn off layout during resizing
 			splitContainer.SuspendLayout();
 			EnableFormLevelDoubleBuffering(false);
+			_bIsResizing = true;
 		}
 
 		private void MainForm_ResizeEnd(object sender, EventArgs e)
@@ -1996,6 +2001,9 @@ namespace Ginger
 			// Turn it back on again once the resizing is over
 			EnableFormLevelDoubleBuffering(true);
 			splitContainer.ResumeLayout();
+			_bIsResizing = false;
+
+			RefreshSidepanelLayout();
 		}
 
 		private void viewHelpToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2591,6 +2599,23 @@ namespace Ginger
 		private void includeUserPersonaMenuItem_Click(object sender, EventArgs e)
 		{
 			AppSettings.BackyardLink.WriteUserPersona = !AppSettings.BackyardLink.WriteUserPersona;
+		}
+
+		private void splitContainer_SplitterMoved(object sender, SplitterEventArgs e)
+		{
+			RefreshSidepanelLayout();
+		}
+		
+		private void MainForm_SizeChanged(object sender, EventArgs e)
+		{
+			if (!_bIsResizing)
+				RefreshSidepanelLayout();
+		}
+
+		private void RefreshSidepanelLayout()
+		{
+			sidePanel.Height = splitContainer.Panel1.ClientSize.Height;
+			sidePanel.RefreshLayout();
 		}
 	}
 

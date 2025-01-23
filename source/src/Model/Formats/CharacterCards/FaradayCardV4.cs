@@ -170,7 +170,8 @@ namespace Ginger
 			string userPersona = output.userPersona.ToFaraday();
 			if (string.IsNullOrEmpty(userPersona) == false)
 			{
-				if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario))
+				if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario)
+					&& Current.Card.extraFlags.Contains(CardData.Flag.OmitScenario) == false)
 					card.data.scenario = string.Concat(card.data.scenario, "\n\n", userPersona).Trim();
 				else
 					card.data.persona = string.Concat(card.data.persona, "\n\n", userPersona).Trim();
