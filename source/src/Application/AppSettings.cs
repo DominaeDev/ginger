@@ -114,7 +114,7 @@ namespace Ginger
 			public static CharacterSortOrder SortGroups = CharacterSortOrder.Default;
 
 			public static bool ShowCardInfo = true;
-			public static bool ShowUserInfo = false;
+			public static bool ShowUserInfo = true;
 			public static bool ShowOutputSettings = false;
 			public static bool ShowOutputComponents = false;
 			public static bool ShowStats = false;

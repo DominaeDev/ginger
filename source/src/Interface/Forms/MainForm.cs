@@ -36,6 +36,7 @@ namespace Ginger
 		private string _shouldLoadFilename = null;
 		private FindDialog _findDialog;
 		private LinkEditChatDialog _editChatDialog;
+		private AssetViewDialog _assetsDialog;
 
 		private Dictionary<string, ToolStripMenuItem> _spellCheckLangMenuItems = new Dictionary<string, ToolStripMenuItem>();
 		private Dictionary<string, ToolStripMenuItem> _changeLanguageMenuItems = new Dictionary<string, ToolStripMenuItem>();
@@ -121,6 +122,7 @@ namespace Ginger
 			sidePanel.Refresh();
 			recipeList.RemoveAllPanels();
 			this.Resume();
+
 			recipeList.Refresh();
 
 			this.Suspend();
@@ -137,6 +139,15 @@ namespace Ginger
 			Debug.WriteLine(string.Format("Total time: {0} ms", stopWatch.ElapsedMilliseconds));
 #endif
 			this.Resume();
+
+			// Close dialogs
+			if (_findDialog != null && _findDialog.IsDisposed == false)
+				_findDialog.Hide();
+			if (_editChatDialog != null && _editChatDialog.IsDisposed == false)
+				_editChatDialog.Close();
+			if (_assetsDialog != null && _assetsDialog.IsDisposed == false)
+				_assetsDialog.Close();
+
 			Undo.Clear();
 			GC.Collect();
 		}
@@ -2255,10 +2266,13 @@ namespace Ginger
 
 		private void embeddedAssetsMenuItem_Click(object sender, EventArgs e)
 		{
-			AssetViewDialog dlg = new AssetViewDialog();
-			if (dlg.ShowDialog() == DialogResult.OK && dlg.Changed)
+			if (_assetsDialog != null && _assetsDialog.IsDisposed == false)
+				_assetsDialog.Close(); // Close existing
+
+			_assetsDialog = new AssetViewDialog();
+			if (_assetsDialog.ShowDialog() == DialogResult.OK && _assetsDialog.Changed)
 			{
-				Current.Card.assets = (AssetCollection)dlg.Assets.Clone();
+				Current.Card.assets = (AssetCollection)_assetsDialog.Assets.Clone();
 				Undo.Push(Undo.Kind.Parameter, "Changed embedded assets");
 
 				Current.IsFileDirty = true;
@@ -2515,6 +2529,8 @@ namespace Ginger
 				_findDialog.ApplyTheme();
 			if (_editChatDialog != null && _editChatDialog.IsDisposed == false)
 				_editChatDialog.ApplyTheme();
+			if (_assetsDialog != null && _assetsDialog.IsDisposed == false)
+				_assetsDialog.ApplyTheme();
 
 			Theme.ApplyToTitleBar(this, true);
 			Theme.EndTheming();
