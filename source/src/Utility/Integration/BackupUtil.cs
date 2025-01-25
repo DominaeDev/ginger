@@ -102,9 +102,10 @@ namespace Ginger.Integration
 								bgName = string.Format("background_{0:00}.{1}", index + 1, Utility.GetFileExt(c.staging.background.imageUrl));
 						}
 
-						List<CharacterInstance> participants = new List<CharacterInstance>(4);
-						participants.Add(c.participants.Select(id => Backyard.GetCharacter(id)).FirstOrDefault(cc => cc.isUser)); // User first
-						participants.AddRange(c.participants.Select(id => Backyard.GetCharacter(id)).Where(cc => cc.isUser == false));
+						List<CharacterInstance> participants = c.participants
+							.Select(id => Backyard.GetCharacter(id))
+							.OrderBy(cc => cc.isCharacter)
+							.ToList();
 
 						return new BackupData.Chat() {
 							name = c.name,

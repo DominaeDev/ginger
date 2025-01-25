@@ -85,8 +85,8 @@
 			this.rbUserInScenario = new System.Windows.Forms.RadioButton();
 			this.rbUserInPersona = new System.Windows.Forms.RadioButton();
 			this.root = new System.Windows.Forms.Panel();
-			this.group_Stats = new Ginger.GroupBoxEx();
-			this.group_Components = new Ginger.GroupBoxEx();
+			this.group_Stats = new Ginger.CollapsibleGroupBox();
+			this.group_Components = new Ginger.CollapsibleGroupBox();
 			this.tableFilters = new System.Windows.Forms.TableLayoutPanel();
 			this.cbIncludeModelInstructions = new System.Windows.Forms.CheckBox();
 			this.cbIncludeScenario = new System.Windows.Forms.CheckBox();
@@ -96,9 +96,9 @@
 			this.cbIncludeLore = new System.Windows.Forms.CheckBox();
 			this.cbIncludeUser = new System.Windows.Forms.CheckBox();
 			this.cbIncludeGrammar = new System.Windows.Forms.CheckBox();
-			this.group_Generation = new Ginger.GroupBoxEx();
-			this.group_User = new Ginger.GroupBoxEx();
-			this.group_CardInfo = new Ginger.GroupBoxEx();
+			this.group_Generation = new Ginger.CollapsibleGroupBox();
+			this.group_User = new Ginger.CollapsibleGroupBox();
+			this.group_CardInfo = new Ginger.CollapsibleGroupBox();
 			this.textBox_creatorNotes = new Ginger.TextBoxEx();
 			this.label_creatorNotes = new System.Windows.Forms.Label();
 			this.textBox_tags = new Ginger.CollectionTextBox();
@@ -965,7 +965,6 @@
 			// group_Stats
 			// 
 			this.group_Stats.BottomMargin = 4;
-			this.group_Stats.Collapsible = true;
 			this.group_Stats.Controls.Add(panel_right);
 			this.group_Stats.Controls.Add(panel_left);
 			this.group_Stats.Dock = System.Windows.Forms.DockStyle.Top;
@@ -980,7 +979,6 @@
 			// group_Components
 			// 
 			this.group_Components.BottomMargin = 4;
-			this.group_Components.Collapsible = true;
 			this.group_Components.Controls.Add(this.tableFilters);
 			this.group_Components.Controls.Add(label2);
 			this.group_Components.Controls.Add(tableOptions);
@@ -1110,7 +1108,6 @@
 			// group_Generation
 			// 
 			this.group_Generation.BottomMargin = 4;
-			this.group_Generation.Collapsible = true;
 			this.group_Generation.Controls.Add(table_Format);
 			this.group_Generation.Dock = System.Windows.Forms.DockStyle.Top;
 			this.group_Generation.Location = new System.Drawing.Point(0, 300);
@@ -1124,7 +1121,6 @@
 			// group_User
 			// 
 			this.group_User.BottomMargin = 4;
-			this.group_User.Collapsible = true;
 			this.group_User.Controls.Add(tableLayoutPanel2);
 			this.group_User.Dock = System.Windows.Forms.DockStyle.Top;
 			this.group_User.Location = new System.Drawing.Point(0, 224);
@@ -1138,7 +1134,6 @@
 			// group_CardInfo
 			// 
 			this.group_CardInfo.BottomMargin = 4;
-			this.group_CardInfo.Collapsible = true;
 			this.group_CardInfo.Controls.Add(this.textBox_creatorNotes);
 			this.group_CardInfo.Controls.Add(this.label_creatorNotes);
 			this.group_CardInfo.Controls.Add(this.textBox_tags);
@@ -1206,7 +1201,6 @@
 			// group_Character
 			// 
 			this.group_Character.BottomMargin = 4;
-			this.group_Character.Collapsible = false;
 			this.group_Character.Controls.Add(infoPanel);
 			this.group_Character.Controls.Add(portraitPanel);
 			this.group_Character.Dock = System.Windows.Forms.DockStyle.Top;
@@ -1292,11 +1286,11 @@
 		private System.Windows.Forms.Label label_version;
 		private System.Windows.Forms.Panel root;
 		private GroupBoxEx group_Character;
-		private GroupBoxEx group_Stats;
-		private GroupBoxEx group_Generation;
-		private GroupBoxEx group_User;
-		private GroupBoxEx group_CardInfo;
-		private GroupBoxEx group_Components;
+		private CollapsibleGroupBox group_Stats;
+		private CollapsibleGroupBox group_Generation;
+		private CollapsibleGroupBox group_User;
+		private CollapsibleGroupBox group_CardInfo;
+		private CollapsibleGroupBox group_Components;
 		private System.Windows.Forms.TableLayoutPanel tableFilters;
 		private System.Windows.Forms.CheckBox cbIncludeModelInstructions;
 		private System.Windows.Forms.CheckBox cbIncludeScenario;

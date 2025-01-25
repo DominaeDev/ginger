@@ -165,6 +165,9 @@
     <Compile Include="src\Interface\Controls\ChatListView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="src\Interface\Controls\CollapsibleGroupBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="src\Interface\Controls\CollectionTextBox.cs">
       <SubType>Component</SubType>
     </Compile>

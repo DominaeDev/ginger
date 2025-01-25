@@ -69,7 +69,7 @@ namespace Ginger
 			// Fix for flickering cursor
 			SendMessage(chatInstanceList.Handle, LVM_SETHOTCURSOR, IntPtr.Zero, Cursors.Arrow.Handle);
 
-			_charactersById = Backyard.Characters.ToDictionary(c => c.instanceId, c => c);
+			_charactersById = Backyard.CharactersWithGroup.ToDictionary(c => c.instanceId, c => c);
 
 			RefreshTitle();
 		}
@@ -82,8 +82,16 @@ namespace Ginger
 
 		private void RefreshTitle()
 		{
-			if (_groupInstance.isEmpty == false)
-				Text = string.Format("{1}{0} - Chat history", GetGroupTitle(_groupInstance), _groupInstance.members.Length > 2 ? "(Group) " : "");
+			var groupType = _groupInstance.GetGroupType();
+
+			if (groupType != GroupInstance.GroupType.Unknown)
+			{
+				Text = string.Format("{0} - Chat history", GetGroupTitle(_groupInstance));
+				if (groupType == GroupInstance.GroupType.Group)
+					Text = "(Group) ";
+				else if (groupType == GroupInstance.GroupType.Party)
+					Text = "(Party) ";
+			}
 			else
 				Text = "Chat history";
 		}
@@ -344,10 +352,10 @@ namespace Ginger
 			chatView.ShowChat(true);
 
 			List<CharacterInstance> participants = new List<CharacterInstance>(4);
-			participants.Add(chatInstance.participants.Select(id => Backyard.GetCharacter(id)).FirstOrDefault(c => c.isUser)); // User first
+			participants.AddRange(chatInstance.participants.Select(id => Backyard.GetCharacter(id)).Where(c => c.isUser)); // User(s) first
 			participants.AddRange(chatInstance.participants.Select(id => Backyard.GetCharacter(id)).Where(c => c.isUser == false));
 
-			var namesById = participants
+			var speakerNames = participants
 				.Select(c => c.name ?? "Unknown")
 				.ToArray();
 
@@ -376,8 +384,8 @@ namespace Ginger
 
 				lines.Add(new ChatListBox.Entry() {
 					characterIndex = entry.speaker,
-					color =nameColors[entry.speaker % nameColors.Length],
-					name = namesById[entry.speaker],
+					color = nameColors[entry.speaker % nameColors.Length],
+					name = speakerNames[entry.speaker],
 					message = entry.text,
 					timestamp = timestamp,
 				});
@@ -478,7 +486,7 @@ namespace Ginger
 			}
 
 			int numSpeakers = chatHistory.numSpeakers;
-			if (numSpeakers > _groupInstance.members.Length)
+			if (numSpeakers > _groupInstance.Count)
 			{
 				if (MessageBox.Show(Resources.msg_link_chat_too_many_speakers, Resources.cap_import_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
 					return;
@@ -532,14 +540,17 @@ namespace Ginger
 			if (chatHistory.isEmpty)
 				return;
 
+			// User
 			var userName = _groupInstance.members
 				.Select(id => _charactersById.GetOrDefault(id))
 				.Where(c => c.isUser)
 				.FirstOrDefault()
 				.name ?? "{user}";
+
+			// Character (first)
 			var characterName = _groupInstance.members
 				.Select(id => _charactersById.GetOrDefault(id))
-				.Where(c => c.isUser == false)
+				.Where(c => c.isCharacter)
 				.FirstOrDefault()
 				.name ?? "{character}";
 
@@ -719,11 +730,11 @@ namespace Ginger
 				return;
 			}
 			
-			_charactersById = Backyard.Characters.ToDictionary(c => c.instanceId, c => c);
+			_charactersById = Backyard.CharactersWithGroup.ToDictionary(c => c.instanceId, c => c);
 
 			var groupDlg = new LinkSelectGroupDialog();
-			groupDlg.Characters = Backyard.Characters.ToArray();
-			groupDlg.Groups = Backyard.Groups.ToArray();
+			groupDlg.Characters = Backyard.CharactersWithGroup.ToArray();
+			groupDlg.Groups = Backyard.SupportedGroups.ToArray();
 			groupDlg.Folders = Backyard.Folders.ToArray();
 			if (groupDlg.ShowDialog() == DialogResult.OK)
 			{
@@ -1302,7 +1313,7 @@ namespace Ginger
 				return;
 			}
 
-			_charactersById = Backyard.Characters.ToDictionary(c => c.instanceId, c => c);
+			_charactersById = Backyard.CharactersWithGroup.ToDictionary(c => c.instanceId, c => c);
 
 			PopulateChatList(true);
 		}
@@ -1530,9 +1541,10 @@ namespace Ginger
 				return;
 			}
 
+			// First non-user
 			var character = _groupInstance.members
 				.Select(id => _charactersById.GetOrDefault(id))
-				.Where(c => c.isUser == false)
+				.Where(c => c.isCharacter)
 				.FirstOrDefault();
 
 			string[] imageUrls;
@@ -1742,7 +1754,7 @@ namespace Ginger
 
 			var character = _groupInstance.members
 				.Select(id => _charactersById.GetOrDefault(id))
-				.Where(c => c.isUser == false)
+				.Where(c => c.isCharacter)
 				.FirstOrDefault();
 
 			string[] imageUrls;
