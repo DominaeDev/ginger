@@ -142,9 +142,6 @@
   <data name="cross" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Light\cross.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="collapsed" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Light\collapsed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="lore_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Light\lore_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -315,16 +312,14 @@ Would you like to overwrite it?</value>
     <value>..\Resources\Icons\Light\story.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="tooltip_character_gender" xml:space="preserve">
-    <value>The gender of the character.
-This setting affects generated text only.</value>
+    <value>The character's gender.
+(This setting also affects the pronouns used in generated text.)</value>
   </data>
   <data name="tooltip_character_name" xml:space="preserve">
-    <value>The name of this character card.
-Commonly, this is the same as the character's name.</value>
+    <value>The name of the character, or the card</value>
   </data>
   <data name="tooltip_spoken_name" xml:space="preserve">
-    <value>The spoken name of the character (what they they go by).
-Same as card name if omitted.</value>
+    <value>The name the character goes by in the chat.</value>
   </data>
   <data name="tooltip_text_style" xml:space="preserve">
     <value>Adjusts the format of the character's responses.
@@ -334,12 +329,12 @@ Same as card name if omitted.</value>
     <value>The total context size that the character occupies (measured in Llama2 tokens).</value>
   </data>
   <data name="tooltip_user_gender" xml:space="preserve">
-    <value>The desired gender of the user.
-(This setting only affects recipe output.)</value>
+    <value>The gender of the user.
+(This setting affects the pronouns used for the user's character in generated text.)</value>
   </data>
   <data name="tooltip_user_name" xml:space="preserve">
-    <value>Placeholder name for the user.
-(This name is saved as a local setting and is never saved in character cards.)</value>
+    <value>Placeholder name for the user's character.
+(This setting is only stored locally and not inside the card file.)</value>
   </data>
   <data name="cap_reload_recipes" xml:space="preserve">
     <value>Renew recipes</value>
@@ -352,9 +347,6 @@ Same as card name if omitted.</value>
   </data>
   <data name="recipe_template_card" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Templates\recipe_template_card.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="expanded" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Light\expanded.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="cap_load_with_error" xml:space="preserve">
     <value>Loaded with errors</value>
@@ -657,8 +649,7 @@ Higher detail increases token count.</value>
     <value>..\Resources\Recipes\Other\prune_scenario_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="tooltip_prune_scenario" xml:space="preserve">
-    <value>If enabled, inserts the scenario as example chat, allowing 
-it to leave the context over time.</value>
+    <value>Place the scenario in the example chat. This allows it to leave the context as the story progresses.</value>
   </data>
   <data name="group_greeting_recipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Recipes\Other\group_greeting_recipe.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
@@ -667,10 +658,10 @@ it to leave the context over time.</value>
     <value>Enables NSFW content even if no recipe has set the NSFW flag.</value>
   </data>
   <data name="tooltip_user_in_persona" xml:space="preserve">
-    <value>If enabled, place the user persona inside the character persona.</value>
+    <value>Place the user persona under the character persona.</value>
   </data>
   <data name="tooltip_user_in_scenario" xml:space="preserve">
-    <value>If enabled, place the user persona inside the scenario.</value>
+    <value>Place the user persona under the scenario.</value>
   </data>
   <data name="menu_edit" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Light\menu_edit.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -1135,7 +1126,7 @@ Do you want to start the chat over from here?</value>
     <value>Remove all messages prior to this one.</value>
   </data>
   <data name="tooltip_link_always_create" xml:space="preserve">
-    <value>When importing or saving a new character to Backyard AI, always link thecharacter.</value>
+    <value>When importing or saving a new character to Backyard AI, always link the character.</value>
   </data>
   <data name="error_link_failed_with_reason" xml:space="preserve">
     <value>Failed to connect to Backyard AI.
@@ -1170,9 +1161,6 @@ Reason: {0}</value>
   <data name="dark_checker" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Dark\dark_checker.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="dark_collapsed" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Dark\dark_collapsed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="dark_component" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Dark\dark_component.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -1187,9 +1175,6 @@ Reason: {0}</value>
   </data>
   <data name="dark_delete_strike" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Dark\dark_delete_strike.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="dark_expanded" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Dark\dark_expanded.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="dark_folder" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Dark\dark_folder.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -1590,7 +1575,7 @@ Are you sure you want to proceed?</value>
     <value>Chat settings updated</value>
   </data>
   <data name="tooltip_user_name_volatile" xml:space="preserve">
-    <value>Placeholder name for the user.
+    <value>Placeholder name for the user's character.
 (This name was imported from Backyard AI and will not be saved.)</value>
   </data>
   <data name="cap_link_edit_model_settings" xml:space="preserve">
@@ -1604,5 +1589,42 @@ Are you sure you want to proceed?</value>
   </data>
   <data name="traits" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Light\traits.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="collapsed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Light\collapsed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_collapsed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_collapsed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_expanded" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_expanded.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="expanded" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Light\expanded.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tooltip_include_attributes" xml:space="preserve">
+    <value>Include character attributes in the output</value>
+  </data>
+  <data name="tooltip_include_example" xml:space="preserve">
+    <value>Include example chat in the output</value>
+  </data>
+  <data name="tooltip_include_grammar" xml:space="preserve">
+    <value>Include grammar in the output
+(Only supported by Backyard AI)</value>
+  </data>
+  <data name="tooltip_include_greeting" xml:space="preserve">
+    <value>Include greeting(s) in the output</value>
+  </data>
+  <data name="tooltip_include_lore" xml:space="preserve">
+    <value>Include lorebook in the output</value>
+  </data>
+  <data name="tooltip_include_model" xml:space="preserve">
+    <value>Include model instructions in the output</value>
+  </data>
+  <data name="tooltip_include_scenario" xml:space="preserve">
+    <value>Include scenario in the output</value>
+  </data>
+  <data name="tooltip_include_user_persona" xml:space="preserve">
+    <value>Include user persona in the output</value>
   </data>
 </root>

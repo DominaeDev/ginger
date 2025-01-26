@@ -6,7 +6,7 @@
 	<Author>Ginger</Author>
 	<Category>Archetype</Category>
 	<Flags>humanoid, biped, goblin, core</Flags>
-	<Requires>not core</Requires>
+	<Requires>not core, detail-optional</Requires>
 	<Order>-200</Order>
 	
 	<!-- Complementary recipes -->

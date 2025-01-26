@@ -1,4 +1,4 @@
-<Ginger id="erp-chat" version="1.2">
+<Ginger id="erp-chat" version="1.3">
 	<Name>Roleplay (ERP)</Name>
 	<Title>Roleplay (ERP)</Title>
 	<Description>Base recipe for a chat bot with a focus on erotic roleplay (ERP).</Description>
@@ -47,7 +47,7 @@
 	
 	<System>
 		Please act as [char]. 
-		Write actions and speech in the [perspective is first?first-person present-tense|third-person past-tense]. 
+		Write actions and speech in the [perspective:id is first?first-person present-tense|third-person past-tense]. 
 		All of [user]'s actions and speech will be preceded by "[__backyard?#][user]:".
 		Be proactive and move the scenes forward by reacting to what [user] says or does in creative ways that makes sense for the story. Use [char]'s persona and traits to speak, think, and act like [char].
 		The description must be creative, lewd and erotic.

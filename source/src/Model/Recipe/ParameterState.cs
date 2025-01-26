@@ -341,6 +341,12 @@ namespace Ginger
 			_erasedValues.Add(id);
 		}
 
+		public void Remove(StringHandle id)
+		{
+			_flags.Remove(id);
+			_values.Remove(id);
+		}
+
 		public Context context
 		{
 			get

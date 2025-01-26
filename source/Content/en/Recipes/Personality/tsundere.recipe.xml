@@ -4,7 +4,7 @@
 	<Author>Ginger</Author>
 	<Category>Personality</Category>
 	<Requires>not dere</Requires>
-	<Flags>tsundere, dere</Flags>
+	<Flags>tsundere, dere, detail-optional</Flags>
 
 	<Attribute>
 		<Name>Personality</Name>

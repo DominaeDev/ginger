@@ -119,7 +119,7 @@ namespace Ginger
 				return null;
 
 			textData = textData.ConvertLinebreaks(Linebreak.LF);
-			string[] lines = textData.Split(new string[] { "\n---\n" }, StringSplitOptions.RemoveEmptyEntries)
+			string[] lines = textData.Split(new string[] { "\n---" }, StringSplitOptions.RemoveEmptyEntries)
 				.Select(s => s.Trim())
 				.ToArray();
 

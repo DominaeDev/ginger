@@ -8,7 +8,7 @@
 	<Author>Ginger</Author>
 	<Category>Archetype</Category>
 	<Requires>not core</Requires>
-	<Flags>core, quadruped</Flags>
+	<Flags>core, quadruped, detail-optional</Flags>
 	<Order>-200</Order>
 			
 	<!-- Complementary recipes -->

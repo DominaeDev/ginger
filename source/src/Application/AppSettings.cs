@@ -40,7 +40,6 @@ namespace Ginger
 			private static int _loreEntriesPerPage = 10;
 			public static bool EnableRearrangeLoreMode = false;
 
-
 			public static string FontFace = null;
 			private static Font _font = new Font(Constants.DefaultFontFace, Constants.DefaultFontSize, FontStyle.Regular, GraphicsUnit.Point, 0);
 			public static Font Font
@@ -113,6 +112,12 @@ namespace Ginger
 
 			public static CharacterSortOrder SortCharacters = CharacterSortOrder.Default;
 			public static CharacterSortOrder SortGroups = CharacterSortOrder.Default;
+
+			public static bool ShowCardInfo = true;
+			public static bool ShowUserInfo = true;
+			public static bool ShowOutputSettings = false;
+			public static bool ShowOutputComponents = false;
+			public static bool ShowStats = false;
 		}
 		
 		public static class Paths
@@ -316,6 +321,11 @@ namespace Ginger
 				ReadBool(ref User.SnippetSwapPronouns, userSection, "SnippetSwapPronouns");
 				ReadEnum(ref User.SortCharacters, userSection, "SortCharacters");
 				ReadEnum(ref User.SortGroups, userSection, "SortGroups");
+				ReadBool(ref User.ShowCardInfo, userSection, "ShowCardInfo");
+				ReadBool(ref User.ShowUserInfo, userSection, "ShowUserSettings");
+				ReadBool(ref User.ShowOutputSettings, userSection, "ShowOutputSettings");
+				ReadBool(ref User.ShowOutputComponents, userSection, "ShowOutputComponents");
+				ReadBool(ref User.ShowStats, userSection, "ShowStatistics");
 			}
 
 			var writeSection = iniData.Sections["Write"];
@@ -507,6 +517,12 @@ namespace Ginger
 					Write(outputFile, "SnippetSwapPronouns", User.SnippetSwapPronouns);
 					Write(outputFile, "SortCharacters", User.SortCharacters);
 					Write(outputFile, "SortGroups", User.SortGroups);
+					Write(outputFile, "ShowCardInfo", User.ShowCardInfo);
+					Write(outputFile, "ShowUserSettings", User.ShowUserInfo);
+					Write(outputFile, "ShowOutputSettings", User.ShowOutputSettings);
+					Write(outputFile, "ShowOutputComponents", User.ShowOutputComponents);
+					Write(outputFile, "ShowStatistics", User.ShowStats);
+
 
 					// Write
 					WriteSection(outputFile, "Write");

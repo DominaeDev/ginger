@@ -4,7 +4,7 @@
 	<Title>Shortstack</Title>
 	<Author>Ginger</Author>
 	<Category>Trait</Category>
-	<Flags>shortstack</Flags>
+	<Flags>shortstack, detail-optional</Flags>
 	<Description>
 		The character is short, yet voluptuous.
 	</Description>

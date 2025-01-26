@@ -34,7 +34,7 @@ namespace Ginger
 			if (Backyard.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
 				_chatCounts = new Dictionary<string, Backyard.ChatCount>(); // Empty
 
-			if (Groups.ContainsAny(g => g.members.Length > 2))
+			if (Groups.ContainsAny(g => g.Count > 2))
 				this.Text = "Select a character or group";
 
 			PopulateTree(false);
@@ -157,7 +157,7 @@ namespace Ginger
 
 		private TreeNode CreateGroupNode(GroupInstance group, Dictionary<string, TreeNode> nodes)
 		{
-			if (group.members.Length < 2)
+			if (group.Count < 2)
 				return null;
 
 			TreeNode parentNode;
@@ -169,7 +169,7 @@ namespace Ginger
 			CharacterInstance[] characters = group.members
 				.Select(id => _charactersById.GetOrDefault(id))
 				.OrderBy(c => c.creationDate)
-				.Where(c => c.isUser == false)
+				.Where(c => c.isCharacter)
 				.ToArray();
 
 			string[] characterNames = characters

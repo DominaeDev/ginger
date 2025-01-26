@@ -4,7 +4,7 @@
 	<Description>Base recipe for a chat bot with a focus on roleplay.</Description>
 	<Author>Ginger</Author>
 	<Category>Base</Category>
-	<Flags>chat, description</Flags>
+	<Flags>chat, description, nsfw-optional</Flags>
 	<Order>-50</Order>
 	
 	<!-- Complementary recipes -->

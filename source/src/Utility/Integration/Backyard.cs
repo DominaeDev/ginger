@@ -23,27 +23,65 @@ namespace Ginger.Integration
 		public string folderId;         // GroupConfig.folderId (Primary group)
 		public string creator;          // GroupConfig.hubAuthorUsername
 		public string persona;          // CharacterConfigVersion.persona
-
-		public string inferredGender { get { return Utility.InferGender(GingerString.FromFaraday(persona).ToString()); } }
 		public int loreEntries;
+
+		public bool isCharacter { get { return !isUser; } }
+		public string inferredGender { get { return Utility.InferGender(GingerString.FromFaraday(persona).ToString()); } }
 	}
 
 	public struct GroupInstance
 	{
-		public string instanceId;           // GroupConfig.id
-		public string name;                 // GroupConfig.name
-		public string folderId;             // GroupConfig.folderId
-		public string hubCharId;            // GroupConfig.hubCharId
-		public string hubAuthorUsername;    // GroupConfig.hubAuthorUsername
-		public DateTime creationDate;       // CharacterConfig.createdAt
-		public DateTime updateDate;         // CharacterConfig.updatedAt
-		public string[] members;            // CharacterConfigVersion.id ...
+		public string instanceId;			// GroupConfig.id
+		public string name;					// GroupConfig.name
+		public string folderId;				// GroupConfig.folderId
+		public string hubCharId;			// GroupConfig.hubCharId
+		public string hubAuthorUsername;	// GroupConfig.hubAuthorUsername
+		public DateTime creationDate;		// CharacterConfig.createdAt
+		public DateTime updateDate;			// CharacterConfig.updatedAt
+		public string[] members;			// CharacterConfigVersion.id ...
 
-		public bool isEmpty
-		{
-			get { return string.IsNullOrEmpty(instanceId) || members == null || members.Length == 0; }
+		public int Count { get { return members != null ? members.Length : 0; } }
+		public bool isEmpty { get { return Count == 0; } }
+		public bool isSupported 
+		{ 
+			get
+			{
+				var groupType = GetGroupType();
+				return groupType == GroupType.Solo
+					|| groupType == GroupType.Group;
+			} 
 		}
-		public bool isGroupChat { get { return members != null && members.Length > 2; } }
+
+		public enum GroupType
+		{
+			Unknown,
+			Solo,	// 1-on-1
+			Group,	// 1-on-many
+			Party,	// Many-on-many (Not supported yet)
+		}
+
+		public GroupType GetGroupType()
+		{
+			if (members == null || members.Length < 2)
+				return GroupType.Unknown;
+
+			var memberInfo = members
+				.Select(id => Backyard.GetCharacter(id))
+				.Where(m => string.IsNullOrEmpty(m.instanceId) == false)
+				.ToArray();
+			int nUsers = memberInfo.Count(m => m.isUser);
+			int nCharacters = memberInfo.Count(m => m.isCharacter);
+			if (nUsers == 1)
+			{
+				if (nCharacters == 1)
+					return GroupType.Solo;
+				else if (nCharacters > 1)
+					return GroupType.Group;
+			}
+			if (nUsers > 1 && nCharacters > 0)
+				return GroupType.Party;
+			return GroupType.Unknown;
+		}
 
 		public string[] GetMemberNames(bool includingUser = false)
 		{
@@ -54,7 +92,7 @@ namespace Ginger.Integration
 			{
 				return this.members
 					.Select(id => Backyard.GetCharacter(id))
-					.OrderBy(c => !c.isUser)
+					.OrderBy(c => c.isCharacter)
 					.ThenBy(c => c.creationDate)
 					.Select(c => c.name)
 					.ToArray();
@@ -63,7 +101,7 @@ namespace Ginger.Integration
 			{
 				return this.members
 					.Select(id => Backyard.GetCharacter(id))
-					.Where(c => !c.isUser)
+					.Where(c => c.isCharacter)
 					.OrderBy(c => c.creationDate)
 					.Select(c => c.name)
 					.ToArray();
@@ -104,6 +142,8 @@ namespace Ginger.Integration
 		public int width;               // AppImage.aspectRatio
 		public int height;              // AppImage.aspectRatio
 		public string associatedInstanceId;
+
+		public static readonly int MaxImages = 10;
 
 		public string imageUrl
 		{
@@ -180,7 +220,7 @@ namespace Ginger.Integration
 	[Serializable]
 	public class ChatParameters : ICloneable
 	{
-		public string model		            // Chat.model
+		public string model							// Chat.model
 		{ 
 			get { return _modelId; }
 			set
@@ -350,8 +390,10 @@ namespace Ginger.Integration
 	{
 		public static IEnumerable<FolderInstance> Folders { get { return _Folders.Values; } }
 		public static IEnumerable<CharacterInstance> Characters { get { return _Characters.Values; } }
-		public static IEnumerable<CharacterInstance> CharactersNoUser { get { return Characters.Where(c => c.isUser == false); } }
+		public static IEnumerable<CharacterInstance> CharactersWithGroup { get { return _Characters.Values.Where(c => c.groupId != null); } }
+		public static IEnumerable<CharacterInstance> NonUserCharacters { get { return CharactersWithGroup.Where(c => c.isCharacter); } }
 		public static IEnumerable<GroupInstance> Groups { get { return _Groups.Values; } }
+		public static IEnumerable<GroupInstance> SupportedGroups { get { return _Groups.Values.Where(g => g.isSupported); } }
 
 		private static Dictionary<string, FolderInstance> _Folders = new Dictionary<string, FolderInstance>();
 		private static Dictionary<string, CharacterInstance> _Characters = new Dictionary<string, CharacterInstance>();
@@ -737,7 +779,9 @@ namespace Ginger.Integration
 
 		public static GroupInstance GetGroupForCharacter(string characterId)
 		{
-			return _Groups.Values.FirstOrDefault(g => g.members.Length == 2 && g.members.Contains(characterId));
+			return _Groups.Values
+				.FirstOrDefault(g => g.members != null && g.members.Length == 2
+				&& g.members.Contains(characterId));
 		}
 
 		public static Error RefreshCharacters()
@@ -3460,8 +3504,8 @@ namespace Ginger.Integration
 
 			var participants = indexById
 				.Select(kvp => new {
-					index = kvp.Value,
-					id = kvp.Key,
+						index = kvp.Value,
+						id = kvp.Key,
 				})
 				.OrderBy(x => x.index)
 				.Select(x => {
@@ -4349,16 +4393,19 @@ namespace Ginger.Integration
 						sbCommand.Append(",\n");
 					sbCommand.Append($"($messageId{iMessage:000}, $messageCreatedAt{iMessage:000}, $messageUpdatedAt{iMessage:000}, $chatId, $charId{iMessage:000})");
 
+					var creationTime = message.creationDate;
+					var updateTime = DateTimeExtensions.Max(message.updateDate, creationTime);
+
 					cmdMessages.Parameters.AddWithValue($"$messageId{iMessage:000}", messageIds[iMessage]);
-					cmdMessages.Parameters.AddWithValue($"$messageCreatedAt{iMessage:000}", message.creationDate.ToUnixTimeMilliseconds());
-					cmdMessages.Parameters.AddWithValue($"$messageUpdatedAt{iMessage:000}", message.updateDate.ToUnixTimeMilliseconds());
+					cmdMessages.Parameters.AddWithValue($"$messageCreatedAt{iMessage:000}", creationTime.ToUnixTimeMilliseconds());
+					cmdMessages.Parameters.AddWithValue($"$messageUpdatedAt{iMessage:000}", updateTime.ToUnixTimeMilliseconds());
 					cmdMessages.Parameters.AddWithValue($"$charId{iMessage:000}", speakerIds[message.speaker]);
 
 					lsMessages.Add(new ChatHistory.Message() {
 						instanceId = messageIds[iMessage],
 						activeSwipe = message.activeSwipe,
-						creationDate = message.creationDate,
-						updateDate = message.updateDate,
+						creationDate = creationTime,
+						updateDate = updateTime,
 						speaker = message.speaker,
 						swipes = message.swipes,
 					});
@@ -4381,10 +4428,12 @@ namespace Ginger.Integration
 							sbCommand.Append(",\n");
 						sbCommand.Append($"($swipeId{iSwipe:000}, $swipeCreatedAt{iSwipe:000}, $swipeCreatedAt{iSwipe:000}, $swipeActiveAt{iSwipe:000}, $text{iSwipe:000}, $messageId{iMessage:000})");
 
-						DateTime activeTime = message.creationDate;
+						DateTime creationTime = message.creationDate;
+						DateTime activeTime = creationTime;
 						if (i == message.activeSwipe)
 							activeTime += TimeSpan.FromMilliseconds(5000);
-						DateTime swipeTime = message.creationDate + TimeSpan.FromMilliseconds(i * 10);
+						DateTime swipeTime = creationTime + TimeSpan.FromMilliseconds(i * 10);
+
 						cmdMessages.Parameters.AddWithValue($"$swipeId{iSwipe:000}", Cuid.NewCuid());
 						cmdMessages.Parameters.AddWithValue($"$swipeCreatedAt{iSwipe:000}", swipeTime.ToUnixTimeMilliseconds());
 						cmdMessages.Parameters.AddWithValue($"$swipeActiveAt{iSwipe:000}", activeTime.ToUnixTimeMilliseconds());
@@ -5521,6 +5570,9 @@ namespace Ginger.Integration
 
 			imagesToSave = results.ToArray();
 			newImageLinks = lsImageLinks.Count > 0 ? lsImageLinks.ToArray() : null;
+
+			LimitPortraitCount(ref imagesToSave, ref newImageLinks);
+
 			return imagesToSave.ContainsAny(i => i.hasAsset);
 		}
 
@@ -5588,7 +5640,30 @@ namespace Ginger.Integration
 
 			imagesToSave = results.ToArray();
 			newImageLinks = lsImageLinks.Count > 0 ? lsImageLinks.ToArray() : null;
+			LimitPortraitCount(ref imagesToSave, ref newImageLinks);
 			return imagesToSave.ContainsAny(i => i.hasAsset);
+		}
+
+		private static void LimitPortraitCount(ref ImageOutput[] imagesToSave, ref Link.Image[] newImageLinks)
+		{
+			if (imagesToSave == null || imagesToSave.Length < ImageInstance.MaxImages)
+				return; // Do nothing
+
+			var keepPortraits = imagesToSave.Where(i => i.imageType == AssetFile.AssetType.Icon).Take(ImageInstance.MaxImages);
+			var nonPortraits = imagesToSave.Where(i => i.isDefined && i.imageType != AssetFile.AssetType.Icon);
+			var excludeLinks = new HashSet<string>(
+				imagesToSave
+					.Except(keepPortraits.Union(nonPortraits))
+					.Select(i => Path.GetFileName(i.imageUrl))
+				);
+
+			if (excludeLinks.Count == 0)
+				return; // Exclude nothing
+
+			imagesToSave = keepPortraits.Union(nonPortraits).ToArray();
+			if (newImageLinks != null)
+				newImageLinks = newImageLinks.Except(newImageLinks.Where(l => excludeLinks.Contains(l.filename))).ToArray();
+
 		}
 
 		private static Error FetchCharacters(SQLiteConnection connection, out List<_Character> characters)
@@ -5671,9 +5746,9 @@ namespace Ginger.Integration
 						}
 					}
 
-					if (members.Count(c => c.isUser) > 1)
+					if (members.Count(c => c.isUser) == 0 || members.Count(c => c.isUser == false) == 0)
 					{
-						// Groups can only contain one user
+						// Groups must contain at least one user and one non-user
 						return Error.Unknown;
 					}
 

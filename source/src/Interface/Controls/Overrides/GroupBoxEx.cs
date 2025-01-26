@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -8,6 +7,9 @@ namespace Ginger
 {
 	public class GroupBoxEx : GroupBox
 	{
+		[Browsable(true)]
+		public int BottomMargin { get; set; }
+
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			Brush textBrush = new SolidBrush(Theme.Current.ControlForeground);
@@ -25,7 +27,7 @@ namespace Ginger
 				Rectangle rect = new Rectangle(this.ClientRectangle.X,
 					this.ClientRectangle.Y + (int)(strSize.Height / 2),
 					this.ClientRectangle.Width - 1,
-					this.ClientRectangle.Height - (int)(strSize.Height / 2) - 1);
+					this.ClientRectangle.Height - (int)(strSize.Height / 2) - BottomMargin - 1);
 
 				// Draw text
 				g.DrawString(this.Text, this.Font, textBrush, this.Padding.Left, 0);
@@ -48,7 +50,7 @@ namespace Ginger
 				Rectangle rect = new Rectangle(this.ClientRectangle.X,
 					this.ClientRectangle.Y + (int)(strSize.Height / 2),
 					this.ClientRectangle.Width - 1,
-					this.ClientRectangle.Height - (int)(strSize.Height / 2) - 1);
+					this.ClientRectangle.Height - (int)(strSize.Height / 2) - BottomMargin - 1);
 				g.DrawRectangle(borderPen, rect);
 			}
 

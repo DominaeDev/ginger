@@ -36,12 +36,15 @@ namespace Ginger
 		private string _shouldLoadFilename = null;
 		private FindDialog _findDialog;
 		private LinkEditChatDialog _editChatDialog;
+		private AssetViewDialog _assetsDialog;
 
 		private Dictionary<string, ToolStripMenuItem> _spellCheckLangMenuItems = new Dictionary<string, ToolStripMenuItem>();
 		private Dictionary<string, ToolStripMenuItem> _changeLanguageMenuItems = new Dictionary<string, ToolStripMenuItem>();
 		private List<IIdleHandler> _idleHandlers = new List<IIdleHandler>();
 
 		private System.Timers.Timer _statusbarTimer = new System.Timers.Timer();
+
+		private bool _bIsResizing = false;
 
 		public MainForm()
 		{
@@ -119,6 +122,7 @@ namespace Ginger
 			sidePanel.Refresh();
 			recipeList.RemoveAllPanels();
 			this.Resume();
+
 			recipeList.Refresh();
 
 			this.Suspend();
@@ -135,6 +139,15 @@ namespace Ginger
 			Debug.WriteLine(string.Format("Total time: {0} ms", stopWatch.ElapsedMilliseconds));
 #endif
 			this.Resume();
+
+			// Close dialogs
+			if (_findDialog != null && _findDialog.IsDisposed == false)
+				_findDialog.Hide();
+			if (_editChatDialog != null && _editChatDialog.IsDisposed == false)
+				_editChatDialog.Close();
+			if (_assetsDialog != null && _assetsDialog.IsDisposed == false)
+				_assetsDialog.Close();
+
 			Undo.Clear();
 			GC.Collect();
 		}
@@ -220,6 +233,8 @@ namespace Ginger
 
 		private void MainForm_OnLoad(object sender, EventArgs e)
 		{
+			this.SizeChanged += MainForm_SizeChanged;
+
 			sidePanel.ChangePortraitImage += OnChangePortraitImage;
 			sidePanel.ResizePortraitImage += OnResizePortraitImage;
 			sidePanel.PastePortraitImage += OnPastePortraitImage;
@@ -1989,6 +2004,7 @@ namespace Ginger
 			// Turn off layout during resizing
 			splitContainer.SuspendLayout();
 			EnableFormLevelDoubleBuffering(false);
+			_bIsResizing = true;
 		}
 
 		private void MainForm_ResizeEnd(object sender, EventArgs e)
@@ -1996,6 +2012,9 @@ namespace Ginger
 			// Turn it back on again once the resizing is over
 			EnableFormLevelDoubleBuffering(true);
 			splitContainer.ResumeLayout();
+			_bIsResizing = false;
+
+			RefreshSidepanelLayout();
 		}
 
 		private void viewHelpToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2247,10 +2266,13 @@ namespace Ginger
 
 		private void embeddedAssetsMenuItem_Click(object sender, EventArgs e)
 		{
-			AssetViewDialog dlg = new AssetViewDialog();
-			if (dlg.ShowDialog() == DialogResult.OK && dlg.Changed)
+			if (_assetsDialog != null && _assetsDialog.IsDisposed == false)
+				_assetsDialog.Close(); // Close existing
+
+			_assetsDialog = new AssetViewDialog();
+			if (_assetsDialog.ShowDialog() == DialogResult.OK && _assetsDialog.Changed)
 			{
-				Current.Card.assets = (AssetCollection)dlg.Assets.Clone();
+				Current.Card.assets = (AssetCollection)_assetsDialog.Assets.Clone();
 				Undo.Push(Undo.Kind.Parameter, "Changed embedded assets");
 
 				Current.IsFileDirty = true;
@@ -2507,6 +2529,8 @@ namespace Ginger
 				_findDialog.ApplyTheme();
 			if (_editChatDialog != null && _editChatDialog.IsDisposed == false)
 				_editChatDialog.ApplyTheme();
+			if (_assetsDialog != null && _assetsDialog.IsDisposed == false)
+				_assetsDialog.ApplyTheme();
 
 			Theme.ApplyToTitleBar(this, true);
 			Theme.EndTheming();
@@ -2591,6 +2615,23 @@ namespace Ginger
 		private void includeUserPersonaMenuItem_Click(object sender, EventArgs e)
 		{
 			AppSettings.BackyardLink.WriteUserPersona = !AppSettings.BackyardLink.WriteUserPersona;
+		}
+
+		private void splitContainer_SplitterMoved(object sender, SplitterEventArgs e)
+		{
+			RefreshSidepanelLayout();
+		}
+		
+		private void MainForm_SizeChanged(object sender, EventArgs e)
+		{
+			if (!_bIsResizing)
+				RefreshSidepanelLayout();
+		}
+
+		private void RefreshSidepanelLayout()
+		{
+			sidePanel.Height = splitContainer.Panel1.ClientSize.Height;
+			sidePanel.RefreshLayout();
 		}
 	}
 

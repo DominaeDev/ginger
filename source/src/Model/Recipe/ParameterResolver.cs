@@ -27,7 +27,7 @@ namespace Ginger
 				for (int j = 0; j < recipes.Length; ++j)
 					if (i != j && recipes[j].isEnabled)
 						flags.UnionWith(recipes[j].flags);
-			}
+				}
 
 			// Create parameter states
 			for (int i = 0; i < recipes.Length; ++i)
@@ -51,6 +51,8 @@ namespace Ginger
 					valueSuppliers = new IValueSupplier[] { parameterStates },
 				};
 
+				ApplyRecipeSettings(recipes[i], state);
+
 				foreach (var parameter in recipe.parameters.OrderByDescending(p => p.isImmediate))
 				{
 					if (parameter.isGlobal && parameterStates.IsReserved(parameter.id))
@@ -66,6 +68,41 @@ namespace Ginger
 			}
 
 			return parameterStates;
+		}
+
+		private static void ApplyRecipeSettings(Recipe recipe, ParameterState state)
+		{
+			// (Override) Disable NSFW content
+			if (recipe.enableNSFWContent == false)
+			{
+				state.outerScope.Remove("nsfw");
+				state.outerScope.Remove("allow-nsfw");
+				state.Dirty();
+			}
+
+			// (Override) Detail level
+			if (recipe.levelOfDetail != Recipe.DetailLevel.Default)
+			{
+				state.outerScope.Remove("less-detail");
+				state.outerScope.Remove("more-detail");
+				state.outerScope.Remove("detail");
+
+				switch (recipe.levelOfDetail)
+				{
+				case Recipe.DetailLevel.Less:
+					state.outerScope.SetFlag("less-detail");
+					state.outerScope.SetValue("detail", -1);
+					break;
+				case Recipe.DetailLevel.Normal:
+					state.outerScope.SetValue("detail", 0);
+					break;
+				case Recipe.DetailLevel.More:
+					state.outerScope.SetFlag("more-detail");
+					state.outerScope.SetValue("detail", 1);
+					break;
+				}
+				state.Dirty();
+			}
 		}
 
 		private static void CopyGlobals(ParameterStates parameterStates, int idxSource, Context globalContext)
