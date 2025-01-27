@@ -162,5 +162,4 @@
 	<Noun priority="1" rule="normal-detail and shaman">{gender} goblin shaman</Noun>
 	<Noun priority="1" rule="normal-detail and chieftain">{gender} goblin [is-woman?Chieftess|Chieftain]</Noun>
 	
-	<Persona>{person}</Persona>
 </Ginger>

@@ -40,4 +40,7 @@
 	<Node path="persona/attributes/race" order="20" mode="exclude" style="space">[!attrib:Race][inner]</Node>
 	<Node path="persona/attributes/race/vampire" order="-0">Vampire</Node>
 	
+	<Adjective order="age" rule="immortal" priority="1">immortal</Adjective>
+	<Adjective order="qualifier" priority="1">vampire</Adjective>
+	
 </Ginger>

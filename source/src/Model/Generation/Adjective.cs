@@ -4,7 +4,7 @@ namespace Ginger
 {
 	public class CharacterAdjective
 	{
-		private enum Order
+		public enum Order
 		{
 			Undefined	= -1,
 			Opinion		= 0,		// Beautiful

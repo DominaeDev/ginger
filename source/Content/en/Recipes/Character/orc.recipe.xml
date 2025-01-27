@@ -110,4 +110,8 @@
 	</Node>
 			
 	<Node path="persona/description/orc" rule="more">{more}.</Node>
+	
+	<!-- Descriptors -->
+	<Adjective order="color" rule="normal-detail and skin-tone">{skin-tone.lower}-skinned</Adjective>
+	
 </Ginger>

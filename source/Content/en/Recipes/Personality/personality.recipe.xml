@@ -64,5 +64,5 @@
 	</Attribute>
 	
 	<!-- Descriptors -->
-	<Adjective order="quality">{personality-traits}</Adjective>
+	<Adjective order="opinion">{personality-traits}</Adjective>
 </Ginger>

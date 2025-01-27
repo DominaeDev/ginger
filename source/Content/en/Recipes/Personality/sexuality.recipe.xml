@@ -59,4 +59,6 @@
 		<Value>{fetishes}</Value>
 	</Attribute>
 
+	<Adjective order="quality">{sexuality.lower}</Adjective>
+
 </Ginger>

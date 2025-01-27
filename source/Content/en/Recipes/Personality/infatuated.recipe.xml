@@ -42,4 +42,6 @@
 	<Persona rule="soulmate">
 		[char] is madly in love with {target}. {target} is [char's] soulmate, and [they] want[s] them to be together forever and ever.
 	</Persona>
+	
+	<Adjective>adoring, infatuated</Adjective>
 </Ginger>

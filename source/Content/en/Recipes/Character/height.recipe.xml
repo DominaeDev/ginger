@@ -108,4 +108,8 @@
 		Everything beneath [their] feet is enveloped in [their] shadow, which can span for miles.
 		[more-detail?From [char's] perspective, [user] is no bigger or more threatening than an ant.]
 	</Persona>
+	
+	<Adjective order="size" rule="normal-detail and not size-difference and height:value le 1500">small</Adjective>
+	<Adjective order="size" rule="normal-detail and not size-difference and height:value ge 1900">tall</Adjective>
+	
 </Ginger>

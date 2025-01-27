@@ -908,8 +908,10 @@ namespace Ginger
 				.SelectMany(x => {
 					switch (x.order)
 					{
-					case 0: // Opinion
-					case 2: // Quality
+					case (int)CharacterAdjective.Order.Opinion:
+						return x.values.Take(3);
+					case (int)CharacterAdjective.Order.Quality:
+					case (int)CharacterAdjective.Order.Qualifier:
 						return x.values.Take(2);
 					default:
 						return x.values.Take(1);

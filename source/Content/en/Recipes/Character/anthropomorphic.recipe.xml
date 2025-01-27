@@ -335,5 +335,8 @@
 
 	<!-- More -->
 	<Node path="appearance/body" order="0" rule="more">{more}.</Node>
+	
+	<Noun rule="animal and not secondary-animal">anthropomorphic [@animal.lower]</Noun>
+	<Noun rule="secondary-animal">[@animal.lower] humanoid [secondary-animal?hybrid]</Noun>
 
 </Ginger>
