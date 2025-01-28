@@ -49,6 +49,8 @@ namespace Ginger
 
 		public static DateTime FromTavernDate(string tavernDate)
 		{
+			if (string.IsNullOrEmpty(tavernDate))
+				return DateTime.Now;
 			DateTime tryDate;
 			if (DateTime.TryParse(tavernDate, CultureInfo.InvariantCulture, DateTimeStyles.None, out tryDate))
 				return tryDate;
