@@ -21,6 +21,8 @@ namespace Ginger
 			Default	= Opinion
 		}
 
+		public static readonly int[] CountByOrder = { 3, 1, 2, 1, 1, 1, 1, 1, 1, 3 };
+
 		public string value;
 		public int order;
 		public ICondition condition;

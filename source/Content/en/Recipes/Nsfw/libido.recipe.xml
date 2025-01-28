@@ -53,4 +53,7 @@
 	<Node path="description/sex-exp" rule="experience is high">[char] has had sex many times with several partners in [their] past.</Node>
 	
 	<Node path="description/sex-likes" rule="sexual-likes">During sex, [char] especially enjoys [!list:{sexual-likes}].</Node>
+	
+	<Adjective order="quality" rule="libido:index is 3">horny</Adjective>
+	<Adjective order="quality" rule="libido:index is 4">insatiable</Adjective>
 </Ginger>

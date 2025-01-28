@@ -836,6 +836,9 @@ namespace Ginger
 
 				foreach (var adjective in recipe.adjectives)
 				{
+					if (adjective.order < 0)
+						continue;
+
 					if (adjective.condition != null
 						&& adjective.condition.Evaluate(localContext,
 							new EvaluationCookie() {
@@ -860,7 +863,7 @@ namespace Ginger
 					lsAdjectives.Add(new AdjectiveNoun() {
 						value = randomizer.Item(words),
 						order = adjective.order,
-						priority = adjective.order,
+						priority = adjective.priority,
 					});
 				}
 
@@ -894,29 +897,44 @@ namespace Ginger
 				}
 			}
 
-			// Compile adjectives
-			var adjectives = lsAdjectives
+			// Select 
+			var adjByOrder = lsAdjectives
 				.DistinctBy(a => a.value.ToLowerInvariant())
+				.GroupBy(a => a.order)
+				.ToDictionary(g => g.Key, g => {
+					int max = CharacterAdjective.CountByOrder[g.Key];
+					return new Queue<AdjectiveNoun>(
+						g.ToList()
+							.Shuffle(randomizer)
+							.OrderByDescending(gg => gg.priority)
+							.Take(max));
+				});
+
+			const int MaxAdjectives = 8;
+			var selectedAdjectives = new List<AdjectiveNoun>();
+			for (;;)
+			{
+				bool bAdded = false;
+				foreach (var key in adjByOrder.Keys)
+				{
+					if (adjByOrder[key].Count > 0)
+					{
+						selectedAdjectives.Add(adjByOrder[key].Dequeue());
+						bAdded = true;
+					}
+				}
+				if (!bAdded || selectedAdjectives.Count >= MaxAdjectives)
+					break;
+			}
+
+			var adjectives = selectedAdjectives
 				.GroupBy(a => a.order)
 				.Select(g => new {
 					order = g.First().order,
-					values = g.ToList().Shuffle(randomizer)
-						.OrderByDescending(gg => gg.priority)
-						.Select(gg => gg.value),
+					values = g.Select(gg => gg.value),
 				})
 				.OrderBy(x => x.order)
-				.SelectMany(x => {
-					switch (x.order)
-					{
-					case (int)CharacterAdjective.Order.Opinion:
-						return x.values.Take(3);
-					case (int)CharacterAdjective.Order.Quality:
-					case (int)CharacterAdjective.Order.Qualifier:
-						return x.values.Take(2);
-					default:
-						return x.values.Take(1);
-					}
-				});
+				.SelectMany(x => x.values);
 
 			string sAdjectives = string.Join(Text.Delimiter, adjectives);
 			if (sAdjectives.Length > 0)
