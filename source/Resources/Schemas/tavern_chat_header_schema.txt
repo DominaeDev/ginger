@@ -10,7 +10,7 @@
       "type": "string"
     },
     "create_date": {
-      "required": true,
+      "required": false,
       "type": [
         "string",
 		"integer",

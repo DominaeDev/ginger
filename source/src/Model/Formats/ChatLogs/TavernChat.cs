@@ -40,6 +40,10 @@ namespace Ginger
 			public string creationDate;
 			[JsonProperty("mes", Required = Required.Default)]
 			public string text;
+			[JsonProperty("swipes", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+			public string[] swipes;
+			[JsonProperty("swipe_id", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+			public int? swipeIndex;
 		}
 
 		public Header header = new Header();
@@ -60,8 +64,12 @@ namespace Ginger
 					return null;
 
 				DateTime createdAt;
-				var starter = JsonConvert.DeserializeObject<Header>(lines[0]);
-				createdAt = DateTimeExtensions.FromTavernDate(starter.creationDate);
+				var header = JsonConvert.DeserializeObject<Header>(lines[0]);
+				createdAt = DateTimeExtensions.FromTavernDate(header.creationDate);
+
+				// Replace default "You" user name (causes problems during anonymization)
+				if (string.Compare(header.userName, "You", StringComparison.OrdinalIgnoreCase) == 0)
+					header.userName = Constants.DefaultUserName;
 
 				List<Entry> lsEntries = new List<Entry>();
 				for (int i = 1; i < lines.Length; ++i)
@@ -75,7 +83,7 @@ namespace Ginger
 				}
 
 				return new TavernChat() {
-					header = starter,
+					header = header,
 					entries = lsEntries.ToArray(),
 				};
 			}
@@ -113,7 +121,7 @@ namespace Ginger
 
 		public static TavernChat FromChat(ChatHistory chatHistory, string[] names)
 		{
-			string userName			= names != null && names.Length > 0 ? names[0] : "You";
+			string userName			= names != null && names.Length > 0 ? names[0] : Constants.DefaultUserName;
 			string characterName	= names != null && names.Length > 1 ? names[1] : Constants.DefaultCharacterName;
 
 			if (chatHistory == null || chatHistory.isEmpty)
@@ -131,12 +139,18 @@ namespace Ginger
 			List<Entry> lsEntries = new List<Entry>();
 			foreach (var message in chatHistory.messages) // Include greeting
 			{
-				lsEntries.Add(new Entry() {
+				var entry = new Entry() {
 					isUser = message.speaker == 0,
 					name = message.speaker == 0 ? userName : characterName,
 					creationDate = message.creationDate.ToTavernDate(),
 					text = message.text,
-				});
+				};
+				if (message.swipes.Length > 1)
+				{
+					entry.swipes = message.swipes;
+					entry.swipeIndex = message.activeSwipe;
+				}
+				lsEntries.Add(entry);
 			}
 			return new TavernChat() {
 				header = new Header() {
@@ -167,13 +181,32 @@ namespace Ginger
 
 					Anonymize(ref text);
 
-					messages.Add(new ChatHistory.Message() {
-						speaker = entry.isUser ? 0 : 1,
-						creationDate = messageTime,
-						updateDate = messageTime,
-						activeSwipe = 0,
-						swipes = new string[1] { text },
-					});
+					ChatHistory.Message message;
+
+					if (entry.swipes != null 
+						&& entry.swipes.Length > 1 
+						&& entry.swipeIndex != null)
+					{
+						message = new ChatHistory.Message() {
+							speaker = entry.isUser ? 0 : 1,
+							creationDate = messageTime,
+							updateDate = messageTime,
+							activeSwipe = Math.Min(Math.Max(entry.swipeIndex.Value, 0), entry.swipes.Length),
+							swipes = entry.swipes,
+						};
+					}
+					else
+					{
+						message = new ChatHistory.Message() {
+							speaker = entry.isUser ? 0 : 1,
+							creationDate = messageTime,
+							updateDate = messageTime,
+							activeSwipe = 0,
+							swipes = new string[1] { text },
+						};
+					}
+
+					messages.Add(message);
 				}
 			}
 
