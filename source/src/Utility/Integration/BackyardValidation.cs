@@ -5,8 +5,14 @@ namespace Ginger.Integration
 	public enum BackyardDatabaseVersion
 	{
 		Unknown,
-		Version_0_28_0,		// Groups
+		Version_0_28_0,		// Groups (db)
 		Version_0_29_0,		// Chat backgrounds (Canary 0.28.27)
+		Version_0_36_0,		// Parties
+	}
+
+	public static class VersionConstants
+	{
+		public static readonly VersionNumber Version_0_36_0 = new VersionNumber(0, 36, 0);
 	}
 
 	public static class BackyardValidation

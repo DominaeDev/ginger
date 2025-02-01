@@ -435,10 +435,11 @@ namespace Ginger
 			{
 				args.parameters = latestChat.parameters;
 				args.staging = latestChat.staging;
+				if (args.staging != null && _selectedChatInstance.instanceId != null)
+					args.staging.ToPartyNames(_selectedChatInstance.instanceId);
 			}
 			else
 				args.parameters = AppSettings.BackyardSettings.UserSettings;
-
 
 			ChatInstance chatInstance = null;
 			var error = RunTask(() => Backyard.CreateNewChat(args, _groupInstance.instanceId, out chatInstance), "Creating chat...");
@@ -510,7 +511,12 @@ namespace Ginger
 			// Fetch latest chat settings
 			ChatInstance latestChat;
 			if (ConfirmChatExists(_groupInstance.instanceId, out latestChat))
+			{
 				args.parameters = latestChat.parameters;
+				args.staging = latestChat.staging;
+				if (args.staging != null && _selectedChatInstance.instanceId != null)
+					args.staging.ToPartyNames(_selectedChatInstance.instanceId);
+			}
 			else
 				args.parameters = AppSettings.BackyardSettings.UserSettings;
 
@@ -1363,7 +1369,11 @@ namespace Ginger
 			if (clip == null)
 				return;
 
-			var error = RunTask(() => Backyard.UpdateChatParameters(chatInstance.instanceId, null, clip.staging), "Updating chat...");
+			ChatStaging staging = clip.staging;
+			if (staging != null && _selectedChatInstance.instanceId != null)
+				staging.ToPartyNames(_selectedChatInstance.instanceId);
+
+			var error = RunTask(() => Backyard.UpdateChatParameters(chatInstance.instanceId, null, staging), "Updating chat...");
 			if (error == Backyard.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_paste_staging, MessageBoxButtons.OK, MessageBoxIcon.Error);

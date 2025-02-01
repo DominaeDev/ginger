@@ -210,11 +210,80 @@ namespace Ginger.Integration
 		public string greeting = "";				// Chat.greetingDialogue
 		public string example = "";					// Chat.customDialogue
 		public string grammar = "";					// Chat.grammar
-		public bool pruneExampleChat = true;		// Chat.canDeleteCustomDialogue
 		public string authorNote = "";				// Chat.authorNote
+		public bool pruneExampleChat = true;		// Chat.canDeleteCustomDialogue
 		public bool ttsAutoPlay = false;			// Chat.ttsAutoPlay
 		public string ttsInputFilter = "default";	// Chat.ttsInputFilter
 		public ChatBackground background = null;
+
+		public void ToPartyNames(string instanceId)
+		{
+			if (string.IsNullOrEmpty(system) == false)
+				ToPartyNames(ref system, instanceId);
+			if (string.IsNullOrEmpty(scenario) == false)
+				ToPartyNames(ref scenario, instanceId);
+			if (string.IsNullOrEmpty(greeting) == false)
+				ToPartyNames(ref greeting, instanceId);
+			if (string.IsNullOrEmpty(example) == false)
+				ToPartyNames(ref example, instanceId);
+			if (string.IsNullOrEmpty(authorNote) == false)
+				ToPartyNames(ref authorNote, instanceId);
+		}
+
+		private static void ToPartyNames(ref string text, string instanceId)
+		{
+			if (string.IsNullOrEmpty(text))
+				return;
+
+			var sb = new StringBuilder(text);
+
+			string characterPlaceholder;
+			if (string.IsNullOrEmpty(instanceId) == false)
+				characterPlaceholder = $"{{_cfg&:{instanceId}:cfg&_}}"; // since 0.36.0
+			else
+				characterPlaceholder = Current.MainCharacter.namePlaceholder;
+
+			sb.Replace("{character}", characterPlaceholder, false);
+
+			text = sb.ToString();
+		}
+
+		public void FromPartyNames()
+		{
+			if (string.IsNullOrEmpty(system) == false)
+				FromPartyNames(ref system);
+			if (string.IsNullOrEmpty(scenario) == false)
+				FromPartyNames(ref scenario);
+			if (string.IsNullOrEmpty(greeting) == false)
+				FromPartyNames(ref greeting);
+			if (string.IsNullOrEmpty(example) == false)
+				FromPartyNames(ref example);
+			if (string.IsNullOrEmpty(authorNote) == false)
+				FromPartyNames(ref authorNote);
+		}
+
+		private static void FromPartyNames(ref string text)
+		{
+			if (string.IsNullOrEmpty(text))
+				return;
+
+			int pos_begin = text.IndexOf("{_cfg&:");
+			if (pos_begin == -1)
+				return;
+
+			var sb = new StringBuilder(text);
+			while (pos_begin != -1)
+			{
+				int pos_end = sb.IndexOf(":cfg&_}", pos_begin + 7);
+				if (pos_end == -1)
+					break;
+				sb.Remove(pos_begin, pos_end - pos_begin + 7);
+				sb.Insert(pos_begin, "{character}");
+				pos_begin = sb.IndexOf("{_cfg&:", pos_begin);
+			}
+
+			text = sb.ToString();
+		}
 	}
 
 	[Serializable]
@@ -404,7 +473,8 @@ namespace Ginger.Integration
 		public enum Feature
 		{
 			Undefined = 0,
-			ChatBackgrounds = 1,
+			ChatBackgrounds,
+			PartyChat,
 		}
 
 		public static bool CheckFeature(Feature feature)
@@ -416,6 +486,9 @@ namespace Ginger.Integration
 			{
 			case Feature.ChatBackgrounds:
 				return DatabaseVersion >= BackyardDatabaseVersion.Version_0_29_0;
+			case Feature.PartyChat:
+				return DatabaseVersion >= BackyardDatabaseVersion.Version_0_36_0 
+					|| (AppSettings.BackyardLink.LastVersion.isDefined && AppSettings.BackyardLink.LastVersion >= VersionConstants.Version_0_36_0);
 			}
 			return false;
 		}
@@ -1005,12 +1078,7 @@ namespace Ginger.Integration
 					string displayName = null;
 					string name = null;
 					string persona = null;
-					string scenario = null;
-					string example = null;
-					string system = null;
-					string greeting = null;
-					string grammar = null;
-					string authorNote = null;
+					ChatStaging staging = new ChatStaging();
 					string hubCharId = null;
 					string hubAuthorUsername = null;
 
@@ -1093,31 +1161,34 @@ namespace Ginger.Integration
 							{
 								if (reader.Read())
 								{
-									scenario = reader.GetString(0);
-									example = reader.GetString(1);
-									system = reader.GetString(2);
-									greeting = reader.GetString(3);
-									grammar = reader[4] as string;
-									authorNote = reader.GetString(5);
+									staging.scenario = reader.GetString(0);
+									staging.example = reader.GetString(1);
+									staging.system = reader.GetString(2);
+									staging.greeting = reader.GetString(3);
+									staging.grammar = reader[4] as string;
+									staging.authorNote = reader.GetString(5);
 								}
 							}
 						}
 					}
 
+					if (CheckFeature(Feature.PartyChat))
+						staging.FromPartyNames();
+
 					card = new FaradayCardV4();
 					card.data.displayName = displayName;
 					card.data.name = name;
-					card.data.system = system;
 					card.data.persona = persona;
-					card.data.scenario = scenario;
-					card.data.greeting = greeting;
-					card.data.example = example;
-					card.data.grammar = grammar;
+					card.data.system = staging.system;
+					card.data.scenario = staging.scenario;
+					card.data.greeting = staging.greeting;
+					card.data.example = staging.example;
+					card.data.grammar = staging.grammar;
+					card.authorNote = staging.authorNote;
 					card.data.creationDate = createdAt.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
 					card.data.updateDate = updatedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
 					card.hubCharacterId = hubCharId;
 					card.hubAuthorUsername = hubAuthorUsername;
-					card.authorNote = authorNote;
 
 					// Gather lorebook items
 					using (var cmdLoreItems = connection.CreateCommand())
@@ -1592,12 +1663,25 @@ namespace Ginger.Integration
 												$repeatPenalty, $repeatLastN, $promptTemplate, $pruneExample, $authorNote);
 									");
 
+									var staging = new ChatStaging() {
+										system = card.data.system ?? "",
+										scenario = card.data.scenario ?? "",
+										greeting = card.data.greeting ?? "",
+										example = card.data.example ?? "",
+										grammar = card.data.grammar ?? "",
+										authorNote = card.authorNote ?? "",
+									};
+
+									if (CheckFeature(Feature.PartyChat))
+										staging.ToPartyNames(characterId);
+
 									cmdCreate.Parameters.AddWithValue("$chatId", chatId);
-									cmdCreate.Parameters.AddWithValue("$system", card.data.system ?? "");
-									cmdCreate.Parameters.AddWithValue("$scenario", card.data.scenario ?? "");
-									cmdCreate.Parameters.AddWithValue("$example", card.data.example ?? "");
-									cmdCreate.Parameters.AddWithValue("$greeting", card.data.greeting ?? "");
-									cmdCreate.Parameters.AddWithValue("$grammar", card.data.grammar ?? "");
+									cmdCreate.Parameters.AddWithValue("$system", staging.system ?? "");
+									cmdCreate.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
+									cmdCreate.Parameters.AddWithValue("$example", staging.example ?? "");
+									cmdCreate.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
+									cmdCreate.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
+									cmdCreate.Parameters.AddWithValue("$authorNote", staging.authorNote ?? "");
 									cmdCreate.Parameters.AddWithValue("$model", chatParameters.model ?? defaultModel ?? "");
 									cmdCreate.Parameters.AddWithValue("$temperature", chatParameters.temperature);
 									cmdCreate.Parameters.AddWithValue("$topP", chatParameters.topP);
@@ -1608,7 +1692,6 @@ namespace Ginger.Integration
 									cmdCreate.Parameters.AddWithValue("$repeatLastN", chatParameters.repeatLastN);
 									cmdCreate.Parameters.AddWithValue("$promptTemplate", chatParameters.promptTemplate);
 									cmdCreate.Parameters.AddWithValue("$pruneExample", AppSettings.BackyardLink.PruneExampleChat);
-									cmdCreate.Parameters.AddWithValue("$authorNote", card.authorNote ?? "");
 
 									expectedUpdates += 1;
 
@@ -1670,6 +1753,9 @@ namespace Ginger.Integration
 											grammar = card.data.grammar ?? "",
 											authorNote = card.authorNote ?? "",
 										};
+
+										if (CheckFeature(Feature.PartyChat))
+											staging.ToPartyNames(characterId);
 
 										var parameters = chats[i].parameters ?? new ChatParameters();
 										cmdCreate.Parameters.AddWithValue($"$system{i:000}", staging.system ?? "");
@@ -2205,12 +2291,24 @@ namespace Ginger.Integration
 										}
 									}
 
+									var staging = new ChatStaging() {
+										system = card.data.system ?? "",
+										scenario = card.data.scenario ?? "",
+										greeting = card.data.greeting ?? "",
+										example = card.data.example ?? "",
+										grammar = card.data.grammar ?? "",
+										authorNote = card.authorNote ?? "",
+									};
+
+									if (CheckFeature(Feature.PartyChat))
+										staging.ToPartyNames(characterId);
+
 									cmdChat.CommandText = sbCommand.ToString();
-									cmdChat.Parameters.AddWithValue("$system", card.data.system ?? "");
-									cmdChat.Parameters.AddWithValue("$scenario", card.data.scenario ?? "");
-									cmdChat.Parameters.AddWithValue("$example", card.data.example ?? "");
-									cmdChat.Parameters.AddWithValue("$greeting", card.data.greeting ?? "");
-									cmdChat.Parameters.AddWithValue("$grammar", card.data.grammar ?? "");
+									cmdChat.Parameters.AddWithValue("$system", staging.system ?? "");
+									cmdChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
+									cmdChat.Parameters.AddWithValue("$example", staging.example ?? "");
+									cmdChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
+									cmdChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 									cmdChat.Parameters.AddWithValue("$authorNote", card.authorNote ?? "");
 									cmdChat.Parameters.AddWithValue("$timestamp", updatedAt);
 
@@ -3153,23 +3251,27 @@ namespace Ginger.Integration
 									}
 								}
 
+								var staging = new ChatStaging() {
+									system = system,
+									scenario = scenario,
+									greeting = greeting,
+									example = example,
+									grammar = grammar,
+									authorNote = authorNote,
+									background = chatBackground,
+									pruneExampleChat = pruneExampleChat,
+									ttsAutoPlay = ttsAutoPlay,
+									ttsInputFilter = ttsInputFilter,
+								};
+								if (CheckFeature(Feature.PartyChat))
+									staging.FromPartyNames();
+
 								chats.Add(new _Chat() {
 									instanceId = chatId,
 									creationDate = createdAt,
 									updateDate = updatedAt,
 									name = name,
-									staging = new ChatStaging() {
-										system = system,
-										scenario = scenario,
-										greeting = greeting,
-										example = example,
-										grammar = grammar,
-										authorNote = authorNote,
-										background = chatBackground,
-										pruneExampleChat = pruneExampleChat,
-										ttsAutoPlay = ttsAutoPlay,
-										ttsInputFilter = ttsInputFilter,
-									},
+									staging = staging,
 									parameters = new ChatParameters() {
 										model = model,
 										temperature = temperature,
