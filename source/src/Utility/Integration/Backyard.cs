@@ -12,17 +12,18 @@ namespace Ginger.Integration
 {
 	public struct CharacterInstance
 	{
-		public string instanceId;       // CharacterConfig.id
-		public DateTime creationDate;   // CharacterConfig.createdAt
-		public DateTime updateDate;     // CharacterConfig.updatedAt
-		public bool isUser;             // CharacterConfig.isUserControlled
-		public string configId;         // CharacterConfigVersion.id
-		public string displayName;      // CharacterConfigVersion.displayName
-		public string name;             // CharacterConfigVersion.name
-		public string groupId;          // GroupConfig.id (Primary group)
-		public string folderId;         // GroupConfig.folderId (Primary group)
-		public string creator;          // GroupConfig.hubAuthorUsername
-		public string persona;          // CharacterConfigVersion.persona
+		public string instanceId;			// CharacterConfig.id
+		public DateTime creationDate;		// CharacterConfig.createdAt
+		public DateTime updateDate;			// CharacterConfig.updatedAt
+		public bool isUser;					// CharacterConfig.isUserControlled
+		public string configId;				// CharacterConfigVersion.id
+		public string displayName;			// CharacterConfigVersion.displayName
+		public string name;					// CharacterConfigVersion.name
+		public string groupId;				// GroupConfig.id (Primary group)
+		public string folderId;				// GroupConfig.folderId (Primary group)
+		public string folderSortPosition;	// GroupConfig.folderSortPosition (Primary group)
+		public string creator;				// GroupConfig.hubAuthorUsername
+		public string persona;				// CharacterConfigVersion.persona
 		public int loreEntries;
 
 		public bool isCharacter { get { return !isUser; } }
@@ -35,7 +36,8 @@ namespace Ginger.Integration
 		public string name;					// GroupConfig.name
 		public string folderId;				// GroupConfig.folderId
 		public string hubCharId;			// GroupConfig.hubCharId
-		public string hubAuthorUsername;	// GroupConfig.hubAuthorUsername
+		public string hubAuthorUsername;    // GroupConfig.hubAuthorUsername
+		public string folderSortPosition;	// GroupConfig.folderSortPosition
 		public DateTime creationDate;		// CharacterConfig.createdAt
 		public DateTime updateDate;			// CharacterConfig.updatedAt
 		public string[] members;			// CharacterConfigVersion.id ...
@@ -907,7 +909,7 @@ namespace Ginger.Integration
 						cmdGroupData.CommandText =
 						@"
 							SELECT 
-								id, createdAt, updatedAt, name, folderId, hubCharId, hubAuthorUsername
+								id, createdAt, updatedAt, name, folderId, folderSortPosition, hubCharId, hubAuthorUsername
 							FROM GroupConfig
 						";
 
@@ -920,8 +922,9 @@ namespace Ginger.Integration
 								DateTime updatedAt = reader.GetTimestamp(2);
 								string name = reader.GetString(3);
 								string folderId = reader.GetString(4);
-								string hubCharId = reader[5] as string;
-								string hubAuthorUsername = reader[6] as string;
+								string folderSortPosition = reader.GetString(5);
+								string hubCharId = reader[6] as string;
+								string hubAuthorUsername = reader[7] as string;
 
 								HashSet<string> members;
 								if (groupMembers.TryGetValue(instanceId, out members) == false)
@@ -934,6 +937,7 @@ namespace Ginger.Integration
 										creationDate = createdAt,
 										updateDate = updatedAt,
 										folderId = folderId,
+										folderSortPosition = folderSortPosition,
 										hubCharId = hubCharId,
 										hubAuthorUsername = hubAuthorUsername,
 										members = members.ToArray(),
@@ -1002,6 +1006,7 @@ namespace Ginger.Integration
 								// Get group info
 								GroupInstance groupInstance = GetGroupForCharacter(instanceId);
 								string folderId = groupInstance.folderId;
+								string folderSortPosition = groupInstance.folderSortPosition;
 								string hubCharId = groupInstance.hubCharId;
 								string hubAuthorUsername = groupInstance.hubAuthorUsername;
 
@@ -1019,6 +1024,7 @@ namespace Ginger.Integration
 										loreEntries = numLoreEntries,
 										creator = hubAuthorUsername ?? "",
 										folderId = folderId,
+										folderSortPosition = folderSortPosition,
 									});
 							}
 						}
@@ -1559,6 +1565,7 @@ namespace Ginger.Integration
 					string[] chatIds = null;
 					string defaultModel = null;
 					ChatParameters chatParameters = AppSettings.BackyardSettings.UserSettings;
+					string folderSortPosition = null;
 
 					// Fetch default user
 					if (FetchDefaultUser(connection, out userId) == false)
@@ -1583,6 +1590,7 @@ namespace Ginger.Integration
 						";
 						cmdFolderOrder.Parameters.AddWithValue("$folderId", parentFolder.instanceId);
 						folderOrder = cmdFolderOrder.ExecuteScalar() as string;
+						folderSortPosition = MakeFolderSortPosition(SortPosition.Before, folderOrder);
 					}
 
 					// Write to database
@@ -1847,7 +1855,7 @@ namespace Ginger.Integration
 								cmdCreate.Parameters.AddWithValue("$groupName", "");
 								cmdCreate.Parameters.AddWithValue("$persona", card.data.persona ?? "");
 								cmdCreate.Parameters.AddWithValue("$folderId", parentFolder.instanceId ?? "");
-								cmdCreate.Parameters.AddWithValue("$folderSortPosition", MakeFolderSortPosition(SortPosition.Before, folderOrder));
+								cmdCreate.Parameters.AddWithValue("$folderSortPosition", folderSortPosition);
 								cmdCreate.Parameters.AddWithValue("$isNSFW", card.data.isNSFW);
 								cmdCreate.Parameters.AddWithValue("$timestamp", createdAt);
 
@@ -1966,6 +1974,7 @@ namespace Ginger.Integration
 								creationDate = now,
 								updateDate = now,
 								folderId = parentFolder.instanceId,
+								folderSortPosition = folderSortPosition,
 							};
 
 							transaction.Commit();

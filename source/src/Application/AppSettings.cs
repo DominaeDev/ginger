@@ -81,8 +81,9 @@ namespace Ginger
 			ByName,
 			ByCreation,
 			ByLastMessage,
+			ByCustom,
 
-			Default = ByName,
+			Default = ByCustom,
 		}
 
 		public static class User

@@ -148,6 +148,11 @@ namespace Ginger
 				sortedNodes = sortedNodes
 					.OrderByDescending(n => GetLatestMessageTime(n.group));
 			}
+			else if (AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByCustom)
+			{
+				sortedNodes = sortedNodes
+					.OrderBy(n => n.group.folderSortPosition);
+			}
 
 			foreach (var node in sortedNodes)
 				CreateGroupNode(node, nodesById);
@@ -331,6 +336,17 @@ namespace Ginger
 			}) 
 			{
 				Checked = AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByLastMessage,
+			});
+
+			menu.Items.Add(new ToolStripMenuItem("Sort by custom order", null, (s, e) => {
+				if (AppSettings.User.SortGroups != AppSettings.CharacterSortOrder.ByCustom)
+				{
+					AppSettings.User.SortGroups = AppSettings.CharacterSortOrder.ByCustom;
+					PopulateTree(true);
+				}
+			}) 
+			{
+				Checked = AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByCustom,
 			});
 
 			Theme.Apply(menu);
