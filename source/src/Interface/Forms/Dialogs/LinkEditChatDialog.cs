@@ -435,8 +435,8 @@ namespace Ginger
 			{
 				args.parameters = latestChat.parameters;
 				args.staging = latestChat.staging;
-				if (args.staging != null)
-					args.staging.ToPartyNames(null, null); //! @party
+				if (args.staging != null && Backyard.CheckFeature(Backyard.Feature.PartyChat))
+					Backyard.ToPartyNames(args.staging, null, null); //! @party
 			}
 			else
 				args.parameters = AppSettings.BackyardSettings.UserSettings;
@@ -514,8 +514,8 @@ namespace Ginger
 			{
 				args.parameters = latestChat.parameters;
 				args.staging = latestChat.staging;
-				if (args.staging != null)
-					args.staging.ToPartyNames(null, null); //! @party
+				if (args.staging != null && Backyard.CheckFeature(Backyard.Feature.PartyChat))
+					Backyard.ToPartyNames(args.staging, null, null); //! @party
 			}
 			else
 				args.parameters = AppSettings.BackyardSettings.UserSettings;
@@ -1370,8 +1370,8 @@ namespace Ginger
 				return;
 
 			ChatStaging staging = clip.staging;
-			if (staging != null)
-				staging.ToPartyNames(null, null); //! @party
+			if (staging != null && Backyard.CheckFeature(Backyard.Feature.PartyChat))
+				Backyard.ToPartyNames(staging, null, null); //! @party
 
 			var error = RunTask(() => Backyard.UpdateChatParameters(chatInstance.instanceId, null, staging), "Updating chat...");
 			if (error == Backyard.Error.NotFound)

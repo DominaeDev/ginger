@@ -217,113 +217,6 @@ namespace Ginger.Integration
 		public bool ttsAutoPlay = false;			// Chat.ttsAutoPlay
 		public string ttsInputFilter = "default";	// Chat.ttsInputFilter
 		public ChatBackground background = null;
-
-		public void ToPartyNames(string characterId, string userId)
-		{
-			if (string.IsNullOrEmpty(system) == false)
-				ToPartyNames(ref system, characterId, userId);
-			if (string.IsNullOrEmpty(scenario) == false)
-				ToPartyNames(ref scenario, characterId, userId);
-			if (string.IsNullOrEmpty(greeting) == false)
-				ToPartyNames(ref greeting, characterId, userId);
-			if (string.IsNullOrEmpty(example) == false)
-				ToPartyNames(ref example, characterId, userId);
-			if (string.IsNullOrEmpty(authorNote) == false)
-				ToPartyNames(ref authorNote, characterId, userId);
-		}
-
-		private static void ToPartyNames(ref string text, string characterId, string userId)
-		{
-			if (string.IsNullOrEmpty(text))
-				return;
-
-			var sb = new StringBuilder(text);
-
-			// Character placeholder
-			string characterPlaceholder;
-			if (string.IsNullOrEmpty(characterId) == false)
-				characterPlaceholder = $"{{_cfg&:{characterId}:cfg&_}}";
-			else
-				characterPlaceholder = Current.MainCharacter.namePlaceholder;
-			sb.Replace("{character}", characterPlaceholder, false);
-
-			// User placeholder
-			if (string.IsNullOrEmpty(userId) == false)
-				sb.Replace("{user}", $"{{_cfg&:{userId}:cfg&_}}", false);
-
-			text = sb.ToString();
-		}
-
-		public void FromPartyNames(string groupId)
-		{
-			var knownIds = new Dictionary<string, string>();
-
-			if (string.IsNullOrEmpty(system) == false)
-				FromPartyNames(ref system, groupId, knownIds);
-			if (string.IsNullOrEmpty(scenario) == false)
-				FromPartyNames(ref scenario, groupId, knownIds);
-			if (string.IsNullOrEmpty(greeting) == false)
-				FromPartyNames(ref greeting, groupId, knownIds);
-			if (string.IsNullOrEmpty(example) == false)
-				FromPartyNames(ref example, groupId, knownIds);
-			if (string.IsNullOrEmpty(authorNote) == false)
-				FromPartyNames(ref authorNote, groupId, knownIds);
-		}
-
-		private static void FromPartyNames(ref string text, string groupId, Dictionary<string, string> knownIds)
-		{
-			if (string.IsNullOrEmpty(text))
-				return;
-
-			int pos_begin = text.IndexOf("{_cfg&:");
-			if (pos_begin == -1)
-				return;
-
-			var sb = new StringBuilder(text);
-			while (pos_begin != -1)
-			{
-				int pos_end = sb.IndexOf(":cfg&_}", pos_begin + 7);
-				if (pos_end == -1)
-					break;
-
-				string characterId = sb.Substring(pos_begin + 7, pos_end - pos_begin - 7);
-				sb.Remove(pos_begin, pos_end - pos_begin + 7);
-
-				string name;
-				if (knownIds.TryGetValue(characterId, out name))
-				{
-					sb.Insert(pos_begin, name);
-				}
-				else
-				{
-					CharacterInstance character;
-					if (Backyard.GetCharacter(characterId, out character))
-					{
-						if (character.isUser)
-							sb.Insert(pos_begin, "{user}");
-						else if (groupId != null)
-						{
-							GroupInstance group;
-							if (Backyard.GetGroup(groupId, out group) && group.members != null && group.members.Contains(characterId))
-								name = "{character}";
-							else
-								name = character.name;
-						}
-					}
-					else
-					{
-						name = "{character}"; // Error: Unknown character
-					}
-
-					sb.Insert(pos_begin, name);
-					knownIds.Add(characterId, name);
-				}
-				
-				pos_begin = sb.IndexOf("{_cfg&:", pos_begin);
-			}
-
-			text = sb.ToString();
-		}
 	}
 
 	[Serializable]
@@ -1251,7 +1144,7 @@ namespace Ginger.Integration
 					}
 
 					if (CheckFeature(Feature.PartyChat))
-						staging.FromPartyNames(character.groupId);
+						FromPartyNames(staging, character.groupId);
 
 					card = new FaradayCardV4();
 					card.data.displayName = displayName;
@@ -1364,6 +1257,9 @@ namespace Ginger.Integration
 					ImageInstance userImage;
 					if (FetchUserInfo(connection, character.groupId, out userId, out userName, out userPersona, out userImage))
 					{
+						if (CheckFeature(Feature.PartyChat))
+							FromPartyNames(ref userPersona, character.groupId);
+
 						userInfo = new UserData() {
 							name = userName?.Trim(),
 							persona = userPersona?.Trim(),
@@ -1676,7 +1572,11 @@ namespace Ginger.Integration
 
 							// Create custom user (default user as base)
 							if (bAllowUserPersona)
+							{
+								if (CheckFeature(Feature.PartyChat))
+									ToPartyNames(ref userInfo.persona, characterId, userId);
 								WriteUser(connection, null, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
+							}
 
 							using (var cmdCreate = new SQLiteCommand(connection))
 							{
@@ -1754,7 +1654,7 @@ namespace Ginger.Integration
 									};
 
 									if (CheckFeature(Feature.PartyChat))
-										staging.ToPartyNames(characterId, userId);
+										ToPartyNames(staging, characterId, userId);
 
 									cmdCreate.Parameters.AddWithValue("$chatId", chatId);
 									cmdCreate.Parameters.AddWithValue("$system", staging.system ?? "");
@@ -1836,7 +1736,7 @@ namespace Ginger.Integration
 										};
 
 										if (CheckFeature(Feature.PartyChat))
-											staging.ToPartyNames(characterId, userId);
+											ToPartyNames(staging, characterId, userId);
 
 										var parameters = chats[i].parameters ?? new ChatParameters();
 										cmdCreate.Parameters.AddWithValue($"$system{i:000}", staging.system ?? "");
@@ -2253,6 +2153,9 @@ namespace Ginger.Integration
 							// Create/update custom user
 							if (bAllowUserPersona)
 							{
+								if (CheckFeature(Feature.PartyChat))
+									ToPartyNames(ref userInfo.persona, characterId, userId);
+
 								string userConfigId = null;
 								WriteUser(connection, groupId, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
 							}
@@ -2383,7 +2286,7 @@ namespace Ginger.Integration
 									};
 
 									if (CheckFeature(Feature.PartyChat))
-										staging.ToPartyNames(characterId, userId);
+										ToPartyNames(staging, characterId, userId);
 
 									cmdChat.CommandText = sbCommand.ToString();
 									cmdChat.Parameters.AddWithValue("$system", staging.system ?? "");
@@ -3346,7 +3249,7 @@ namespace Ginger.Integration
 									ttsInputFilter = ttsInputFilter,
 								};
 								if (CheckFeature(Feature.PartyChat))
-									staging.FromPartyNames(groupId);
+									FromPartyNames(staging, groupId);
 
 								chats.Add(new _Chat() {
 									instanceId = chatId,
@@ -7435,6 +7338,108 @@ namespace Ginger.Integration
 			}
 
 			return true;
+		}
+
+		public static void ToPartyNames(ChatStaging staging, string characterId, string userId)
+		{
+			if (string.IsNullOrEmpty(staging.system) == false)
+				ToPartyNames(ref staging.system, characterId, userId);
+			if (string.IsNullOrEmpty(staging.scenario) == false)
+				ToPartyNames(ref staging.scenario, characterId, userId);
+			if (string.IsNullOrEmpty(staging.greeting) == false)
+				ToPartyNames(ref staging.greeting, characterId, userId);
+			if (string.IsNullOrEmpty(staging.example) == false)
+				ToPartyNames(ref staging.example, characterId, userId);
+			if (string.IsNullOrEmpty(staging.authorNote) == false)
+				ToPartyNames(ref staging.authorNote, characterId, userId);
+		}
+
+		private static void ToPartyNames(ref string text, string characterId, string userId)
+		{
+			if (string.IsNullOrEmpty(text))
+				return;
+
+			var sb = new StringBuilder(text);
+
+			// Character placeholder
+			string characterPlaceholder;
+			if (string.IsNullOrEmpty(characterId) == false)
+				characterPlaceholder = $"{{_cfg&:{characterId}:cfg&_}}";
+			else
+				characterPlaceholder = Current.MainCharacter.namePlaceholder;
+			sb.Replace("{character}", characterPlaceholder, false);
+
+			// User placeholder
+			if (string.IsNullOrEmpty(userId) == false)
+				sb.Replace("{user}", $"{{_cfg&:{userId}:cfg&_}}", false);
+
+			text = sb.ToString();
+		}
+
+		public static void FromPartyNames(ChatStaging staging, string groupId)
+		{
+			var knownIds = new Dictionary<string, string>();
+
+			if (string.IsNullOrEmpty(staging.system) == false)
+				FromPartyNames(ref staging.system, groupId, knownIds);
+			if (string.IsNullOrEmpty(staging.scenario) == false)
+				FromPartyNames(ref staging.scenario, groupId, knownIds);
+			if (string.IsNullOrEmpty(staging.greeting) == false)
+				FromPartyNames(ref staging.greeting, groupId, knownIds);
+			if (string.IsNullOrEmpty(staging.example) == false)
+				FromPartyNames(ref staging.example, groupId, knownIds);
+			if (string.IsNullOrEmpty(staging.authorNote) == false)
+				FromPartyNames(ref staging.authorNote, groupId, knownIds);
+		}
+
+		private static void FromPartyNames(ref string text, string groupId, Dictionary<string, string> knownIds = null)
+		{
+			if (string.IsNullOrEmpty(text))
+				return;
+
+			int pos_begin = text.IndexOf("{_cfg&:");
+			if (pos_begin == -1)
+				return;
+
+			var sb = new StringBuilder(text);
+			while (pos_begin != -1)
+			{
+				int pos_end = sb.IndexOf(":cfg&_}", pos_begin + 7);
+				if (pos_end == -1)
+					break;
+
+				string characterId = sb.Substring(pos_begin + 7, pos_end - pos_begin - 7);
+				sb.Remove(pos_begin, pos_end - pos_begin + 7);
+
+				string placeholder = "{character}";
+				if (knownIds != null && knownIds.TryGetValue(characterId, out placeholder))
+				{
+					sb.Insert(pos_begin, placeholder);
+				}
+				else
+				{
+					CharacterInstance character;
+					if (GetCharacter(characterId, out character))
+					{
+						if (character.isUser)
+							placeholder = "{user}";
+						else if (groupId != null)
+						{
+							GroupInstance group;
+							if (!(GetGroup(groupId, out group) && group.members != null && group.members.Contains(characterId)))
+								placeholder = character.name; // Not primary character
+						}
+					}
+					sb.Insert(pos_begin, placeholder);
+
+					if (knownIds != null)
+						knownIds.Add(characterId, placeholder);
+				}
+				
+				pos_begin = sb.IndexOf("{_cfg&:", pos_begin);
+			}
+
+			text = sb.ToString();
 		}
 
 #endregion // Utilities
