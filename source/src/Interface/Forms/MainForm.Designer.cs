@@ -29,7 +29,6 @@ namespace Ginger {
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem8;
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem5;
-			System.Windows.Forms.ToolStripSeparator toolStripMenuItem7;
 			System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
 			System.Windows.Forms.ToolStripMenuItem linkMenuItem;
@@ -103,7 +102,6 @@ namespace Ginger {
 			this.expandAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.showRecipeCategoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sortRecipesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.additionalCharactersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.tokenBudgetMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.tokenBudgetNone = new System.Windows.Forms.ToolStripMenuItem();
@@ -190,11 +188,11 @@ namespace Ginger {
 			this.statusBarActor = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
+			this.additionalCharactersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
-			toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
 			linkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -234,11 +232,6 @@ namespace Ginger {
 			// 
 			toolStripMenuItem5.Name = "toolStripMenuItem5";
 			toolStripMenuItem5.Size = new System.Drawing.Size(261, 6);
-			// 
-			// toolStripMenuItem7
-			// 
-			toolStripMenuItem7.Name = "toolStripMenuItem7";
-			toolStripMenuItem7.Size = new System.Drawing.Size(261, 6);
 			// 
 			// toolStripSeparator1
 			// 
@@ -578,7 +571,7 @@ namespace Ginger {
 			this.tabOutput.Controls.Add(this.panelOutput);
 			this.tabOutput.Location = new System.Drawing.Point(4, 4);
 			this.tabOutput.Name = "tabOutput";
-			this.tabOutput.Size = new System.Drawing.Size(773, 767);
+			this.tabOutput.Size = new System.Drawing.Size(803, 767);
 			this.tabOutput.TabIndex = 1;
 			this.tabOutput.Text = "Output";
 			// 
@@ -592,7 +585,7 @@ namespace Ginger {
 			this.panelOutput.Location = new System.Drawing.Point(0, 0);
 			this.panelOutput.Name = "panelOutput";
 			this.panelOutput.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-			this.panelOutput.Size = new System.Drawing.Size(773, 767);
+			this.panelOutput.Size = new System.Drawing.Size(803, 767);
 			this.panelOutput.TabIndex = 4;
 			// 
 			// outputBox
@@ -613,7 +606,7 @@ namespace Ginger {
 			this.outputBox.Placeholder = null;
 			this.outputBox.ReadOnly = true;
 			this.outputBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.outputBox.Size = new System.Drawing.Size(770, 303);
+			this.outputBox.Size = new System.Drawing.Size(800, 303);
 			this.outputBox.TabIndex = 3;
 			this.outputBox.TabStop = false;
 			// 
@@ -625,7 +618,7 @@ namespace Ginger {
 			this.group_Debug.Dock = System.Windows.Forms.DockStyle.Top;
 			this.group_Debug.Location = new System.Drawing.Point(0, 0);
 			this.group_Debug.Name = "group_Debug";
-			this.group_Debug.Size = new System.Drawing.Size(770, 464);
+			this.group_Debug.Size = new System.Drawing.Size(800, 464);
 			this.group_Debug.TabIndex = 8;
 			this.group_Debug.TabStop = false;
 			this.group_Debug.Text = "JSON";
@@ -645,7 +638,7 @@ namespace Ginger {
 			this.outputBox_Raw2.Placeholder = null;
 			this.outputBox_Raw2.ReadOnly = true;
 			this.outputBox_Raw2.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.outputBox_Raw2.Size = new System.Drawing.Size(764, 220);
+			this.outputBox_Raw2.Size = new System.Drawing.Size(794, 220);
 			this.outputBox_Raw2.TabIndex = 3;
 			this.outputBox_Raw2.TabStop = false;
 			// 
@@ -663,7 +656,7 @@ namespace Ginger {
 			this.outputBox_Raw.Placeholder = null;
 			this.outputBox_Raw.ReadOnly = true;
 			this.outputBox_Raw.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.outputBox_Raw.Size = new System.Drawing.Size(764, 220);
+			this.outputBox_Raw.Size = new System.Drawing.Size(794, 220);
 			this.outputBox_Raw.TabIndex = 2;
 			this.outputBox_Raw.TabStop = false;
 			// 
@@ -673,7 +666,7 @@ namespace Ginger {
 			this.tabNotes.Controls.Add(this.userNotes);
 			this.tabNotes.Location = new System.Drawing.Point(4, 4);
 			this.tabNotes.Name = "tabNotes";
-			this.tabNotes.Size = new System.Drawing.Size(773, 767);
+			this.tabNotes.Size = new System.Drawing.Size(803, 767);
 			this.tabNotes.TabIndex = 2;
 			this.tabNotes.Text = "Notes";
 			// 
@@ -684,7 +677,7 @@ namespace Ginger {
 			this.userNotes.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.userNotes.Name = "userNotes";
 			this.userNotes.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-			this.userNotes.Size = new System.Drawing.Size(773, 767);
+			this.userNotes.Size = new System.Drawing.Size(803, 767);
 			this.userNotes.TabIndex = 0;
 			// 
 			// menuStrip
@@ -693,6 +686,7 @@ namespace Ginger {
             this.fileToolStripMenuItem,
             this.editMenu,
             this.viewToolStripMenuItem,
+            this.additionalCharactersMenuItem,
             this.optionsToolStripMenuItem,
             this.toolsToolStripMenuItem,
             this.backyardMenuItem,
@@ -969,9 +963,7 @@ namespace Ginger {
             this.collapseAllMenuItem,
             this.expandAllMenuItem,
             this.showRecipeCategoryMenuItem,
-            this.sortRecipesMenuItem,
-            toolStripMenuItem7,
-            this.additionalCharactersMenuItem});
+            this.sortRecipesMenuItem});
 			this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
 			this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
 			this.viewToolStripMenuItem.Text = "V&iew";
@@ -1051,12 +1043,6 @@ namespace Ginger {
 			this.sortRecipesMenuItem.Size = new System.Drawing.Size(264, 22);
 			this.sortRecipesMenuItem.Text = "&Sort recipes by type";
 			this.sortRecipesMenuItem.Click += new System.EventHandler(this.sortRecipesMenuItem_Click);
-			// 
-			// additionalCharactersMenuItem
-			// 
-			this.additionalCharactersMenuItem.Name = "additionalCharactersMenuItem";
-			this.additionalCharactersMenuItem.Size = new System.Drawing.Size(264, 22);
-			this.additionalCharactersMenuItem.Text = "Actors";
 			// 
 			// optionsToolStripMenuItem
 			// 
@@ -1757,6 +1743,12 @@ namespace Ginger {
 			this.statusConnectionIcon.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusConnectionIcon.Size = new System.Drawing.Size(24, 17);
 			// 
+			// additionalCharactersMenuItem
+			// 
+			this.additionalCharactersMenuItem.Name = "additionalCharactersMenuItem";
+			this.additionalCharactersMenuItem.Size = new System.Drawing.Size(53, 20);
+			this.additionalCharactersMenuItem.Text = "&Actors";
+			// 
 			// MainForm
 			// 
 			this.AllowDrop = true;
@@ -1853,7 +1845,6 @@ namespace Ginger {
 		private System.Windows.Forms.TabPage tabOutput;
 		private System.Windows.Forms.ToolStripMenuItem newWindowMenuItem;
 		private System.Windows.Forms.StatusStrip statusBar;
-		private System.Windows.Forms.ToolStripMenuItem additionalCharactersMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem createSnippetMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem openRecentMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel statusBarActor;
@@ -1956,6 +1947,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem deleteCharactersMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem writeUserPersonaMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem17;
+		private System.Windows.Forms.ToolStripMenuItem additionalCharactersMenuItem;
 	}
 }
 
