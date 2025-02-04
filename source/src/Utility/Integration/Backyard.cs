@@ -403,29 +403,6 @@ namespace Ginger.Integration
 
 		public static string LastError;
 
-		public enum Feature
-		{
-			Undefined = 0,
-			ChatBackgrounds,
-			PartyChat,
-		}
-
-		public static bool CheckFeature(Feature feature)
-		{
-			if (DatabaseVersion == BackyardDatabaseVersion.Unknown)
-				return false;
-
-			switch (feature)
-			{
-			case Feature.ChatBackgrounds:
-				return DatabaseVersion >= BackyardDatabaseVersion.Version_0_29_0;
-			case Feature.PartyChat:
-				return DatabaseVersion >= BackyardDatabaseVersion.Version_0_36_0
-					|| (AppSettings.BackyardLink.LastVersion.isDefined && AppSettings.BackyardLink.LastVersion >= VersionConstants.Version_0_36_0);
-			}
-			return false;
-		}
-
 		public class Link : IXmlLoadable, IXmlSaveable
 		{
 			public string characterId;
@@ -569,8 +546,6 @@ namespace Ginger.Integration
 
 		public static bool ConnectionEstablished = false;
 
-		public static BackyardDatabaseVersion DatabaseVersion = BackyardDatabaseVersion.Unknown;
-
 		private static SQLiteConnection CreateSQLiteConnection()
 		{
 			string backyardPath = AppSettings.BackyardLink.Location;
@@ -624,9 +599,9 @@ namespace Ginger.Integration
 
 					// Detect database version
 					if (foundTables.Contains("BackgroundChatImage"))
-						DatabaseVersion = BackyardDatabaseVersion.Version_0_29_0;
+						BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Version_0_29_0;
 					else if (foundTables.Contains("GroupConfig"))
-						DatabaseVersion = BackyardDatabaseVersion.Version_0_28_0;
+						BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Version_0_28_0;
 					else // Outdated or unknown
 					{
 						LastError = "Validation failed";
@@ -634,7 +609,7 @@ namespace Ginger.Integration
 					}
 
 					// Compare database structure with known tables
-					var validationTable = BackyardValidation.TablesByVersion[DatabaseVersion];
+					var validationTable = BackyardValidation.TablesByVersion[BackyardValidation.DatabaseVersion];
 					if (AppSettings.BackyardLink.Strict && foundTables.Count != validationTable.Length)
 					{
 						LastError = "Validation failed";
@@ -741,7 +716,7 @@ namespace Ginger.Integration
 			_Characters.Clear();
 			_Groups.Clear();
 			ConnectionEstablished = false;
-			DatabaseVersion = BackyardDatabaseVersion.Unknown;
+			BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Unknown;
 			AppSettings.BackyardLink.Enabled = false;
 			SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
 		}
@@ -1109,7 +1084,7 @@ namespace Ginger.Integration
 						}
 					}
 
-					if (CheckFeature(Feature.PartyChat))
+					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 						FromPartyNames(staging, character.groupId);
 
 					card = new FaradayCardV4();
@@ -1208,7 +1183,7 @@ namespace Ginger.Integration
 					}
 
 					// Gather background image files
-					if (CheckFeature(Feature.ChatBackgrounds))
+					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
 					{
 						// Get existing chats
 						ImageInstance[] backgrounds;
@@ -1223,7 +1198,7 @@ namespace Ginger.Integration
 					ImageInstance userImage;
 					if (FetchUserInfo(connection, character.groupId, out userId, out userName, out userPersona, out userImage))
 					{
-						if (CheckFeature(Feature.PartyChat))
+						if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 							FromPartyNames(ref userPersona, character.groupId);
 
 						userInfo = new UserData() {
@@ -1458,7 +1433,7 @@ namespace Ginger.Integration
 			{
 				images = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Icon || i.imageType == AssetFile.AssetType.Expression).ToList();
 
-				if (CheckFeature(Feature.ChatBackgrounds))
+				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
 				{
 					backgrounds = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Background)
 						.ToList();
@@ -1539,7 +1514,7 @@ namespace Ginger.Integration
 							// Create custom user (default user as base)
 							if (bAllowUserPersona)
 							{
-								if (CheckFeature(Feature.PartyChat))
+								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 									ToPartyNames(ref userInfo.persona, characterId, userId);
 								WriteUser(connection, null, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
 							}
@@ -1619,7 +1594,7 @@ namespace Ginger.Integration
 										authorNote = card.authorNote ?? "",
 									};
 
-									if (CheckFeature(Feature.PartyChat))
+									if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 										ToPartyNames(staging, characterId, userId);
 
 									cmdCreate.Parameters.AddWithValue("$chatId", chatId);
@@ -1643,7 +1618,7 @@ namespace Ginger.Integration
 									expectedUpdates += 1;
 
 									// Add background image
-									if (CheckFeature(Feature.ChatBackgrounds) && backgrounds.Count > 0)
+									if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds) && backgrounds.Count > 0)
 									{
 										// BackgroundChatImage
 										sbCommand.AppendLine(
@@ -1701,7 +1676,7 @@ namespace Ginger.Integration
 											authorNote = card.authorNote ?? "",
 										};
 
-										if (CheckFeature(Feature.PartyChat))
+										if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 											ToPartyNames(staging, characterId, userId);
 
 										var parameters = chats[i].parameters ?? new ChatParameters();
@@ -1725,7 +1700,7 @@ namespace Ginger.Integration
 										cmdCreate.Parameters.AddWithValue($"$promptTemplate{i:000}", parameters.promptTemplate);
 
 										// Add background images
-										if (CheckFeature(Feature.ChatBackgrounds))
+										if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
 										{
 											if (string.IsNullOrEmpty(chats[i].backgroundName))
 												continue;
@@ -2119,7 +2094,7 @@ namespace Ginger.Integration
 							// Create/update custom user
 							if (bAllowUserPersona)
 							{
-								if (CheckFeature(Feature.PartyChat))
+								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 									ToPartyNames(ref userInfo.persona, characterId, userId);
 
 								string userConfigId = null;
@@ -2251,7 +2226,7 @@ namespace Ginger.Integration
 										authorNote = card.authorNote ?? "",
 									};
 
-									if (CheckFeature(Feature.PartyChat))
+									if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 										ToPartyNames(staging, characterId, userId);
 
 									cmdChat.CommandText = sbCommand.ToString();
@@ -2516,7 +2491,7 @@ namespace Ginger.Integration
 
 					List<string> backgroundUrls = new List<string>();
 
-					if (CheckFeature(Feature.ChatBackgrounds))
+					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
 					{
 						// Find backgrounds (chats)
 						var groupIds = groupMembers.Keys.ToArray();
@@ -3187,7 +3162,7 @@ namespace Ginger.Integration
 								}
 
 								ChatBackground chatBackground = null;
-								if (CheckFeature(Feature.ChatBackgrounds))
+								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
 								{
 									int idxBackground = Array.FindIndex(backgrounds, b => b.associatedInstanceId == chatId);
 									if (idxBackground != -1)
@@ -3214,7 +3189,7 @@ namespace Ginger.Integration
 									ttsAutoPlay = ttsAutoPlay,
 									ttsInputFilter = ttsInputFilter,
 								};
-								if (CheckFeature(Feature.PartyChat))
+								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 									FromPartyNames(staging, groupId);
 
 								chats.Add(new _Chat() {
@@ -3397,7 +3372,7 @@ namespace Ginger.Integration
 					}
 
 					// Get background image
-					if (CheckFeature(Feature.ChatBackgrounds))
+					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
 					{
 						using (var cmdBackground = connection.CreateCommand())
 						{
@@ -3635,7 +3610,7 @@ namespace Ginger.Integration
 					var defaultParameters = new ChatParameters();
 
 					// Background image
-					bool hasBackground = CheckFeature(Feature.ChatBackgrounds)
+					bool hasBackground = BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds)
 						&& args.staging != null
 						&& args.staging.background != null
 						&& string.IsNullOrEmpty(args.staging.background.imageUrl) == false
@@ -4075,7 +4050,7 @@ namespace Ginger.Integration
 						try
 						{
 							// Delete background (if any)
-							if (CheckFeature(Feature.ChatBackgrounds))
+							if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
 							{
 								using (var cmdDeleteBackground = connection.CreateCommand())
 								{
@@ -5009,7 +4984,7 @@ namespace Ginger.Integration
 			if (ConnectionEstablished == false)
 				return Error.NotConnected;
 
-			if (CheckFeature(Feature.ChatBackgrounds) == false)
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds) == false)
 				return Error.UnsupportedFeature;
 
 			if (chatIds == null)
@@ -5836,7 +5811,7 @@ namespace Ginger.Integration
 
 		private static Error FetchChatBackgrounds(SQLiteConnection connection, string groupId, out ImageInstance[] backgrounds)
 		{
-			if (CheckFeature(Feature.ChatBackgrounds) == false)
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds) == false)
 			{
 				backgrounds = new ImageInstance[0];
 				return Error.NoError;
@@ -6365,7 +6340,7 @@ namespace Ginger.Integration
 
 					// BackgroundChatImage
 					var backgroundImages = new List<_ImageInfo>();
-					if (CheckFeature(Feature.ChatBackgrounds))
+					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
 					{
 						using (var cmdGetBackgrounds = connection.CreateCommand())
 						{
@@ -6459,7 +6434,7 @@ namespace Ginger.Integration
 							}
 
 							// Background images
-							if (CheckFeature(Feature.ChatBackgrounds) && modifiedBackgroundImages.Count > 0)
+							if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds) && modifiedBackgroundImages.Count > 0)
 							{
 								using (var cmdUpdateBackgrounds = connection.CreateCommand())
 								{
@@ -6575,7 +6550,7 @@ namespace Ginger.Integration
 					}
 
 					// BackgroundChatImage
-					if (CheckFeature(Feature.ChatBackgrounds))
+					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
 					{
 						using (var cmdGetBackgrounds = connection.CreateCommand())
 						{

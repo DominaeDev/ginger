@@ -435,7 +435,7 @@ namespace Ginger
 			{
 				args.parameters = latestChat.parameters;
 				args.staging = latestChat.staging;
-				if (args.staging != null && Backyard.CheckFeature(Backyard.Feature.PartyChat))
+				if (args.staging != null && BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 					Backyard.ToPartyNames(args.staging, null, null); //! @party
 			}
 			else
@@ -514,7 +514,7 @@ namespace Ginger
 			{
 				args.parameters = latestChat.parameters;
 				args.staging = latestChat.staging;
-				if (args.staging != null && Backyard.CheckFeature(Backyard.Feature.PartyChat))
+				if (args.staging != null && BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 					Backyard.ToPartyNames(args.staging, null, null); //! @party
 			}
 			else
@@ -915,7 +915,7 @@ namespace Ginger
 			refreshMenuItem.Enabled = hasGroup;
 			editModelSettingsMenuItem.Enabled = hasGroup;
 
-			setBackgroundMenuItem.Visible = Backyard.CheckFeature(Backyard.Feature.ChatBackgrounds);
+			setBackgroundMenuItem.Visible = BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds);
 			setBackgroundMenuItem.Enabled = hasGroup;
 			
 			bool bCanFindNext = hasGroup && string.IsNullOrEmpty(AppSettings.User.FindMatch) == false;
@@ -1244,7 +1244,7 @@ namespace Ginger
 					ToolTipText = Resources.tooltip_link_model_settings_one,
 				});
 
-				if (Backyard.CheckFeature(Backyard.Feature.ChatBackgrounds))
+				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
 				{
 					var backgroundSubmenu = new ToolStripMenuItem("Set background");
 
@@ -1370,7 +1370,7 @@ namespace Ginger
 				return;
 
 			ChatStaging staging = clip.staging;
-			if (staging != null && Backyard.CheckFeature(Backyard.Feature.PartyChat))
+			if (staging != null && BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 				Backyard.ToPartyNames(staging, null, null); //! @party
 
 			var error = RunTask(() => Backyard.UpdateChatParameters(chatInstance.instanceId, null, staging), "Updating chat...");

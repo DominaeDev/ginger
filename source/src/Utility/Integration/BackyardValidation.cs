@@ -12,11 +12,38 @@ namespace Ginger.Integration
 
 	public static class VersionConstants
 	{
+		public static readonly VersionNumber Version_0_28_0 = new VersionNumber(0, 28, 0);
+		public static readonly VersionNumber Version_0_29_0 = new VersionNumber(0, 29, 0);
 		public static readonly VersionNumber Version_0_36_0 = new VersionNumber(0, 36, 0);
 	}
 
 	public static class BackyardValidation
 	{
+		public static BackyardDatabaseVersion DatabaseVersion = BackyardDatabaseVersion.Unknown;
+
+		public enum Feature
+		{
+			Undefined = 0,
+			ChatBackgrounds,
+			PartyChats,
+		}
+
+		public static bool CheckFeature(Feature feature)
+		{
+			if (DatabaseVersion == BackyardDatabaseVersion.Unknown)
+				return false;
+
+			switch (feature)
+			{
+			case Feature.ChatBackgrounds:
+				return DatabaseVersion >= BackyardDatabaseVersion.Version_0_29_0;
+			case Feature.PartyChats:
+				return DatabaseVersion >= BackyardDatabaseVersion.Version_0_36_0
+					|| (AppSettings.BackyardLink.LastVersion.isDefined && AppSettings.BackyardLink.LastVersion >= VersionConstants.Version_0_36_0);
+			}
+			return false;
+		}
+
 		public static Dictionary<BackyardDatabaseVersion, string[][]> TablesByVersion = new Dictionary<BackyardDatabaseVersion, string[][]> {
 			{ 
 				BackyardDatabaseVersion.Version_0_28_0,
