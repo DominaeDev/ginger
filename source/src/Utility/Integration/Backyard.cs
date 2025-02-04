@@ -256,7 +256,7 @@ namespace Ginger.Integration
 			get { return PromptTemplateFromInt(_iPromptTemplate); }
 			set { _iPromptTemplate = PromptTemplateFromString(value); }
 		}
-				
+
 		
 		public static string PromptTemplateFromInt(int promptTemplate)
 		{
@@ -684,38 +684,6 @@ namespace Ginger.Integration
 								LastError = "Validation failed";
 								return Error.ValidationFailed;
 							}
-						}
-					}
-
-					// Check for unsupported macro
-					using (var cmdMacro = connection.CreateCommand())
-					{
-						cmdMacro.CommandText =
-							@"SELECT instr(persona, '{_cfg&:') position
-								FROM CharacterConfigVersion
-								WHERE position > 0;";
-
-						if (cmdMacro.ExecuteScalar() != null)
-						{
-							LastError = "Validation failed";
-							DatabaseVersion = BackyardDatabaseVersion.Unknown;
-							return Error.ValidationFailed;
-						}
-					}
-
-					// Check for unsupported macro
-					using (var cmdMacroChat = connection.CreateCommand())
-					{
-						cmdMacroChat.CommandText =
-							@"SELECT instr(context || greetingDialogue || customDialogue || modelInstructions, '{_cfg&:') position
-								FROM Chat
-								WHERE position > 0;";
-
-						if (cmdMacroChat.ExecuteScalar() != null)
-						{
-							LastError = "Validation failed";
-							DatabaseVersion = BackyardDatabaseVersion.Unknown;
-							return Error.ValidationFailed;
 						}
 					}
 
@@ -6124,16 +6092,6 @@ namespace Ginger.Integration
 			}
 			appVersion = VersionNumber.Zero;
 			return false;
-		}
-
-		public static bool IsSupportedVersion(VersionNumber appVersion)
-		{
-			if (AppSettings.BackyardLink.Strict == false)
-				return true;
-
-			var minVersion = new VersionNumber(0, 28, 0);
-			var maxVersion = new VersionNumber(0, 36, 0);
-			return appVersion >= minVersion && appVersion < maxVersion;
 		}
 
 		public static ImageInput[] GatherImages()

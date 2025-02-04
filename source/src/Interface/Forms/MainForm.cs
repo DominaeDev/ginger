@@ -2282,13 +2282,6 @@ namespace Ginger
 
 		private void enableLinkMenuItem_Click(object sender, EventArgs e)
 		{
-			VersionNumber appVersion;
-			if (!(Backyard.GetAppVersion(out appVersion) && Backyard.IsSupportedVersion(appVersion)))
-			{
-				MessageBox.Show(Resources.error_link_unsupported, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				AppSettings.BackyardLink.Enabled = false;
-			}
-
 			if (Backyard.ConnectionEstablished == false)
 			{
 				var error = Backyard.EstablishConnection();
@@ -2324,7 +2317,10 @@ namespace Ginger
 						MessageBox.Show(Resources.msg_link_connected, Resources.cap_link_connect, MessageBoxButtons.OK, MessageBoxIcon.Information);
 						SetStatusBarMessage(Resources.status_link_connect, Constants.StatusBarMessageInterval);
 						AppSettings.BackyardLink.Enabled = true;
-						AppSettings.BackyardLink.LastVersion = appVersion;
+
+						VersionNumber appVersion;
+						if (Backyard.GetAppVersion(out appVersion))
+							AppSettings.BackyardLink.LastVersion = appVersion;
 					}
 				}
 			}
