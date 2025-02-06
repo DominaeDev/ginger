@@ -3193,6 +3193,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No actor portrait.
+        /// </summary>
+        internal static string msg_no_actor_portrait {
+            get {
+                return ResourceManager.GetString("msg_no_actor_portrait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No matches found..
         /// </summary>
         internal static string msg_no_match {
@@ -4490,7 +4499,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (Actor portrait) This asset will be used as the portrait for {0}, if applicable..
+        ///   Looks up a localized string similar to (Actor portrait) This asset will be used as the portrait for {0}, when applicable..
         /// </summary>
         internal static string tooltip_asset_actor_portrait {
             get {
@@ -4499,7 +4508,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (Portrait override) This asset will be used as the main portrait for the character, if applicable..
+        ///   Looks up a localized string similar to (Portrait override) This asset will be used as the main portrait for the character, when applicable..
         /// </summary>
         internal static string tooltip_asset_override {
             get {

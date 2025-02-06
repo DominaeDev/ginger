@@ -517,6 +517,12 @@ namespace Ginger
 
 		public bool IsActorPortrait(out int index)
 		{
+			if (isEmbeddedAsset == false || assetType != AssetType.Icon)
+			{
+				index = -1;
+				return false;
+			}
+
 			if (tags == null || tags.Length == 0)
 			{
 				index = -1;
@@ -791,14 +797,14 @@ namespace Ginger
 		public bool ReplaceMainPortraitOverride(string filename, out AssetFile asset)
 		{
 			var ext = Utility.GetFileExt(filename);
-			var bytes = Utility.LoadFile(filename);
-			if (bytes == null || bytes.Length == 0)
+			if (Utility.IsSupportedImageFileExt(ext) == false)
 			{
 				asset = default(AssetFile);
 				return false;
 			}
 
-			if (Utility.IsSupportedImageFileExt(ext) == false)
+			var bytes = Utility.LoadFile(filename);
+			if (bytes == null || bytes.Length == 0)
 			{
 				asset = default(AssetFile);
 				return false;
@@ -847,9 +853,118 @@ namespace Ginger
 			var asset = this.FirstOrDefault(a => a.assetType == AssetFile.AssetType.Icon 
 				&& a.isDefaultAsset == false
 				&& Utility.IsSupportedImageFileExt(a.ext)
+				&& a.data.isEmpty == false
 				&& a.HasTag(AssetFile.Tags.ActorPortrait + index.ToString()));
 
 			return asset;
+		}
+
+		public bool SetActorPortrait(int actorIndex, string filename, out AssetFile asset)
+		{
+			if (actorIndex < 0 || actorIndex >= Current.Characters.Count)
+			{
+				asset = default(AssetFile);
+				return false;
+			}
+
+			var ext = Utility.GetFileExt(filename);
+			if (Utility.IsSupportedImageFileExt(ext) == false)
+			{
+				asset = default(AssetFile);
+				return false;
+			}
+
+			var bytes = Utility.LoadFile(filename);
+			if (bytes == null || bytes.Length == 0)
+			{
+				asset = default(AssetFile);
+				return false;
+			}
+
+			int width, height;
+			Utility.GetImageDimensions(bytes, out width, out height);
+
+			bool bAnimated = false;
+			if (ext == "apng" || ext == "png")
+				bAnimated = Utility.IsAnimatedPNG(bytes);
+			else if (ext == "webp")
+				bAnimated = Utility.IsAnimatedWebP(bytes);
+			else if (ext == "gif")
+			{
+				Image image;
+				if (Utility.LoadImageFromMemory(bytes, out image))
+					bAnimated = Utility.IsAnimatedImage(image);
+			}
+
+			// Remove existing
+			this.RemoveAll(a => {
+				int index;
+				return a.IsActorPortrait(out index) && index == actorIndex;
+			});
+
+			// Add new asset
+			asset = new AssetFile() {
+				name = string.Format("Portrait ({0})", Current.Characters[actorIndex].spokenName),
+				uriType = AssetFile.UriType.Embedded,
+				assetType = AssetFile.AssetType.Icon,
+				data = AssetData.FromBytes(bytes),
+				knownWidth = width,
+				knownHeight = height,
+				ext = ext,
+			};
+
+			asset.AddTags(string.Concat(AssetFile.Tags.ActorPortrait, actorIndex));
+			if (bAnimated)
+				asset.AddTags(AssetFile.Tags.Animated);
+
+			this.Insert(0, asset);
+			return true;
+		}
+
+		public bool SetActorPortrait(int actorIndex, Image image, out AssetFile asset)
+		{
+			if (actorIndex < 0 || actorIndex >= Current.Characters.Count)
+			{
+				asset = default(AssetFile);
+				return false;
+			}
+
+			var bytes = Utility.ImageToMemory(image);
+			if (bytes == null || bytes.Length == 0)
+			{
+				asset = default(AssetFile);
+				return false;
+			}
+
+			// Remove existing
+			this.RemoveAll(a => {
+				int index;
+				return a.IsActorPortrait(out index) && index == actorIndex;
+			});
+						
+			// Add new asset
+			asset = new AssetFile() {
+				name = string.Format("Portrait ({0})", Current.Characters[actorIndex].spokenName),
+				uriType = AssetFile.UriType.Embedded,
+				assetType = AssetFile.AssetType.Icon,
+				data = AssetData.FromBytes(bytes),
+				knownWidth = image.Width,
+				knownHeight = image.Height,
+				ext = "png",
+			};
+
+			asset.AddTags(string.Concat(AssetFile.Tags.ActorPortrait, actorIndex));
+			this.Insert(0, asset);
+			return true;
+		}
+
+		public bool RemoveActorPortrait(int actorIndex)
+		{
+			// Remove existing
+			return this.RemoveAll(a => {
+				int index;
+				return a.IsActorPortrait(out index) && index == actorIndex;
+			}) > 0;
 		}
 
 	}

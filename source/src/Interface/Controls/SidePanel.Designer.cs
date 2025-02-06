@@ -819,7 +819,6 @@
 			this.portraitImage.TabIndex = 0;
 			this.portraitImage.TabStop = false;
 			this.portraitImage.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseClick);
-			this.portraitImage.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseDoubleClick);
 			// 
 			// label1
 			// 

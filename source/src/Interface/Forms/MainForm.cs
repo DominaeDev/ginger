@@ -464,39 +464,34 @@ namespace Ginger
 				filename = openFileDialog.FileName;
 			}
 
-			Image portraitImage;
-			if (Current.Card.LoadPortraitImageFromFile(filename, out portraitImage) == false)
+			if (Current.SelectedCharacter == 0) // Main character
 			{
-				MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-				return;
-			}
-
-			// Resize?
-			if (portraitImage.Width > Constants.MaxImageDimension || portraitImage.Height > Constants.MaxImageDimension)
-			{
-				int srcWidth = portraitImage.Width;
-				int srcHeight = portraitImage.Height;
-				float scale = Math.Min((float)Constants.MaxImageDimension / srcWidth, (float)Constants.MaxImageDimension / srcHeight);
-				int newWidth = Math.Max((int)Math.Round(srcWidth * scale), 1);
-				int newHeight = Math.Max((int)Math.Round(srcHeight * scale), 1);
-
-				if (MessageBox.Show(string.Format(Resources.msg_rescale_portrait, portraitImage.Width, portraitImage.Height, newWidth, newHeight), Resources.cap_change_portrait, MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+				Image portraitImage;
+				if (Current.Card.LoadPortraitImageFromFile(filename, out portraitImage) == false)
 				{
-					var bmpNewImage = new Bitmap(newWidth, newHeight);
-					using (Graphics gfxNewImage = Graphics.FromImage(bmpNewImage))
-					{
-						gfxNewImage.DrawImage(portraitImage,
-							new Rectangle(0, 0, newWidth, newHeight),
-								0, 0, srcWidth, srcHeight,
-								GraphicsUnit.Pixel);
-					}
-					Current.Card.portraitImage = ImageRef.FromImage(Image.FromHbitmap(bmpNewImage.GetHbitmap()));
+					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+					return;
 				}
+
+				ConfirmImageSize(ref portraitImage);
+				Current.Card.portraitImage = ImageRef.FromImage(portraitImage);
+				
+				Undo.Push(Undo.Kind.Parameter, "Change portrait image");
+			}
+			else // Actor
+			{
+				AssetFile asset;
+				if (Current.Card.assets.SetActorPortrait(Current.SelectedCharacter, filename, out asset) == false)
+				{
+					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+					return;
+				}
+
+				Undo.Push(Undo.Kind.Parameter, "Change portrait image (actor)");
 			}
 			Current.IsDirty = true;
 
 			sidePanel.RefreshValues();
-			Undo.Push(Undo.Kind.Parameter, "Change portrait image");
 		}
 
 		private void OnPastePortraitImage(object sender, EventArgs e)
@@ -511,26 +506,60 @@ namespace Ginger
 				return; // Error
 			}
 
-			Current.Card.portraitImage = ImageRef.FromImage(image);
-			Current.Card.assets.RemoveMainPortraitOverride();
+			if (Current.SelectedCharacter == 0) // Main character
+			{
+				Current.Card.portraitImage = ImageRef.FromImage(image);
+				Current.Card.assets.RemoveMainPortraitOverride();
+				Undo.Push(Undo.Kind.Parameter, "Change portrait image");
+			}
+			else // Actor
+			{
+				AssetFile tmp;
+				if (Current.Card.assets.SetActorPortrait(Current.SelectedCharacter, image, out tmp) == false)
+				{
+					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+					return;
+				}
+				Undo.Push(Undo.Kind.Parameter, "Change portrait image (actor)");
+			}
+
 			Current.IsDirty = true;
 			sidePanel.RefreshValues();
 
-			Undo.Push(Undo.Kind.Parameter, "Change portrait image");
 		}
 
 		private void OnRemovePortraitImage(object sender, EventArgs e)
 		{
-			Current.Card.portraitImage = null;
-			Current.Card.assets.RemoveMainPortraitOverride();
+			if (Current.SelectedCharacter == 0) // Main character
+			{
+				Current.Card.portraitImage = null;
+				Current.Card.assets.RemoveMainPortraitOverride();
+				Undo.Push(Undo.Kind.Parameter, "Clear portrait");
+			}
+			else // Actor
+			{
+				if (Current.Card.assets.RemoveActorPortrait(Current.SelectedCharacter) == false)
+					return; // Error
+				Undo.Push(Undo.Kind.Parameter, "Clear portrait (actor)");
+			}
 			Current.IsDirty = true;
 			sidePanel.RefreshValues();
-			Undo.Push(Undo.Kind.Parameter, "Clear portrait");
 		}
 
 		private void OnResizePortraitImage(object sender, EventArgs e)
 		{
-			Image image = Current.Card.portraitImage;
+			Image image;
+			if (Current.SelectedCharacter == 0)
+				image = Current.Card.portraitImage;
+			else
+			{
+				var asset = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+				if (asset == null)
+					return;
+
+				Utility.LoadImageFromMemory(asset.data.bytes, out image);
+			}
+
 			if (image == null || (image.Width <= Constants.MaxImageDimension && image.Height <= Constants.MaxImageDimension))
 				return; // No change
 
@@ -550,13 +579,49 @@ namespace Ginger
 						GraphicsUnit.Pixel);
 			}
 
-			Current.Card.portraitImage = ImageRef.FromImage(bmpNewImage);
+			if (Current.SelectedCharacter == 0) // Main character
+			{
+				Current.Card.portraitImage = ImageRef.FromImage(bmpNewImage);
+				Undo.Push(Undo.Kind.Parameter, "Resize portrait image");
+			}
+			else // Actor
+			{
+				AssetFile tmp;
+				Current.Card.assets.SetActorPortrait(Current.SelectedCharacter, bmpNewImage, out tmp);
+				Undo.Push(Undo.Kind.Parameter, "Resize portrait image (actor)");
+			}
+
 			Current.IsDirty = true;
 			sidePanel.RefreshValues();
-
-			Undo.Push(Undo.Kind.Parameter, "Resize portrait image");
 			SetStatusBarMessage("Resized portrait image", Constants.StatusBarMessageInterval);
 		}		
+		
+		private static bool ConfirmImageSize(ref Image image)
+		{
+			if (image.Width > Constants.MaxImageDimension || image.Height > Constants.MaxImageDimension)
+			{
+				int srcWidth = image.Width;
+				int srcHeight = image.Height;
+				float scale = Math.Min((float)Constants.MaxImageDimension / srcWidth, (float)Constants.MaxImageDimension / srcHeight);
+				int newWidth = Math.Max((int)Math.Round(srcWidth * scale), 1);
+				int newHeight = Math.Max((int)Math.Round(srcHeight * scale), 1);
+
+				if (MessageBox.Show(string.Format(Resources.msg_rescale_portrait, image.Width, image.Height, newWidth, newHeight), Resources.cap_change_portrait, MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+				{
+					var bmpNewImage = new Bitmap(newWidth, newHeight);
+					using (Graphics gfxNewImage = Graphics.FromImage(bmpNewImage))
+					{
+						gfxNewImage.DrawImage(image,
+							new Rectangle(0, 0, newWidth, newHeight),
+								0, 0, srcWidth, srcHeight,
+								GraphicsUnit.Pixel);
+					}
+					image = Image.FromHbitmap(bmpNewImage.GetHbitmap());
+					return true;
+				}
+			}
+			return false;
+		}
 
 		private void OnExitApplication(object sender, EventArgs e)
 		{
@@ -1627,6 +1692,12 @@ namespace Ginger
 			showRecipeCategoryMenuItem.Checked = AppSettings.Settings.ShowRecipeCategory;
 			showRecipeCategoryMenuItem.Enabled = bViewingRecipe && bHasRecipes;
 			sortRecipesMenuItem.Enabled = bViewingRecipe && bHasRecipes;
+
+			// Actors menu
+			if (Current.Characters.Count > 1)
+				additionalCharactersMenuItem.Text = string.Format("Actors ({0})", Current.Characters.Count);
+			else
+				additionalCharactersMenuItem.Text = "Actor";
 		}
 
 		private void ImportLorebookJsonMenuItem_Click(object sender, EventArgs e)

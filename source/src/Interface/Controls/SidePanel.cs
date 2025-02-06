@@ -195,7 +195,24 @@ namespace Ginger
 			{
 				SetToolTip(Resources.tooltip_no_portrait_image, portraitImage);
 				label_Image_Value.Text = "-";
+				label_Image_Value.ForeColor = this.ForeColor;
 			}
+			if (Current.SelectedCharacter > 0)
+			{
+				AssetFile actorPortrait = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+				if (actorPortrait != null)
+				{
+					SetToolTip(Resources.tooltip_portrait_image, portraitImage);
+					RefreshImageAspectRatio();
+				}
+				else
+				{
+					SetToolTip(Resources.tooltip_no_portrait_image, portraitImage);
+					label_Image_Value.Text = "-";
+					label_Image_Value.ForeColor = this.ForeColor;
+				}
+			}
+
 
 			// Output components
 			cbIncludeModelInstructions.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitSystemPrompt);
@@ -241,9 +258,25 @@ namespace Ginger
 				return a;
 			};
 
-			int width = Current.Card.portraitImage.Width;
-			int height = Current.Card.portraitImage.Height;
-			int gcd = GetGCD(Current.Card.portraitImage.Width, Current.Card.portraitImage.Height);
+			int width, height;
+			if (Current.SelectedCharacter == 0)
+			{
+				width = Current.Card.portraitImage.Width;
+				height = Current.Card.portraitImage.Height;
+			}
+			else
+			{
+				AssetFile actorPortrait = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+				if (actorPortrait != null)
+				{
+					width = actorPortrait.knownWidth;
+					height = actorPortrait.knownHeight;
+				}
+				else
+					return;
+			}
+
+			int gcd = GetGCD(width, height);
 
 			if ((width / gcd < 50) && (height / gcd < 50))
 			{
@@ -524,6 +557,20 @@ namespace Ginger
 		{
 			if (args.Button == MouseButtons.Right)
 			{
+				bool bHasPortrait;
+				bool bCanResize;
+				if (Current.SelectedCharacter == 0)
+				{
+					bHasPortrait = Current.Card.portraitImage != null;
+					bCanResize = bHasPortrait && (Current.Card.portraitImage.Width > Constants.MaxImageDimension || Current.Card.portraitImage.Height > Constants.MaxImageDimension);
+				}
+				else
+				{
+					AssetFile asset = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+					bHasPortrait = asset != null;
+					bCanResize = asset != null && (asset.knownWidth > Constants.MaxImageDimension || asset.knownHeight > Constants.MaxImageDimension);
+				}
+
 				var menu = new ContextMenuStrip();
 
 				menu.Items.Add(new ToolStripMenuItem("Change character portrait", null, (s, e) => {
@@ -542,11 +589,11 @@ namespace Ginger
 				{
 					menu.Items.Add(new ToolStripMenuItem("Paste image") { Enabled = false });
 				}
-				
+
 				menu.Items.Add(new ToolStripMenuItem("Reduce size", null, (s, e) => {
 					ResizePortraitImage?.Invoke(this, EventArgs.Empty);
 				}) {
-					Enabled = Current.Card.portraitImage != null && (Current.Card.portraitImage.Width > Constants.MaxImageDimension || Current.Card.portraitImage.Height > Constants.MaxImageDimension),
+					Enabled = bCanResize,
 					ToolTipText = Resources.tooltip_resize_portrait_image,
 				});
 
@@ -554,23 +601,11 @@ namespace Ginger
 				menu.Items.Add(new ToolStripMenuItem("Clear portrait", null, (s, e) => {
 					RemovePortraitImage?.Invoke(this, EventArgs.Empty);
 				}) {
-					Enabled = Current.Card.portraitImage != null,
+					Enabled = bHasPortrait,
 				});
 
 				Theme.Apply(menu);
 				menu.Show(sender as Control, new System.Drawing.Point(args.X, args.Y));
-			}
-		}
-
-		private void PortraitImage_MouseDoubleClick(object sender, MouseEventArgs e)
-		{
-			if (e.Button == MouseButtons.Right) // Double right click: Clear portrait
-			{
-				Current.Card.portraitImage = null;
-				Current.Card.assets.RemoveMainPortraitOverride();
-				portraitImage.SetImage(null);
-				label_Image_Value.Text = "-";
-				Undo.Push(Undo.Kind.Parameter, "Clear portrait image");
 			}
 		}
 

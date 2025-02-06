@@ -40,7 +40,7 @@ namespace Ginger
 
 			else if (IsGrayedOut)
 			{
-				using (var brush = new SolidBrush(Color.FromArgb(128, 0, 0, 0)))
+				using (var brush = new SolidBrush(Color.FromArgb(96, 40, 40, 40)))
 				{
 					e.Graphics.FillRectangle(brush, ClientRectangle);
 				}
@@ -49,7 +49,7 @@ namespace Ginger
 				stringFormat.Alignment = StringAlignment.Center;
 				stringFormat.LineAlignment = StringAlignment.Center;
 
-				e.Graphics.DrawString(Resources.msg_drop_image, Font, Brushes.White, ClientRectangle, stringFormat);
+				e.Graphics.DrawString(Resources.msg_no_actor_portrait, Font, Brushes.White, ClientRectangle, stringFormat);
 			}
 			else // Not grayed out
 			{
