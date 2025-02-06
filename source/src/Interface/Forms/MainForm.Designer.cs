@@ -185,7 +185,6 @@ namespace Ginger {
 			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
 			this.statusBar = new System.Windows.Forms.StatusStrip();
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
-			this.statusBarActor = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
 			this.additionalCharactersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1704,7 +1703,6 @@ namespace Ginger {
 			// 
 			this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.statusBarMessage,
-            this.statusBarActor,
             this.statusEmbeddedAssets,
             this.statusConnectionIcon});
 			this.statusBar.Location = new System.Drawing.Point(0, 799);
@@ -1716,15 +1714,9 @@ namespace Ginger {
 			// statusBarMessage
 			// 
 			this.statusBarMessage.Name = "statusBarMessage";
-			this.statusBarMessage.Size = new System.Drawing.Size(0, 17);
-			// 
-			// statusBarActor
-			// 
-			this.statusBarActor.Margin = new System.Windows.Forms.Padding(0, 3, 18, 2);
-			this.statusBarActor.Name = "statusBarActor";
-			this.statusBarActor.Size = new System.Drawing.Size(1183, 17);
-			this.statusBarActor.Spring = true;
-			this.statusBarActor.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.statusBarMessage.Size = new System.Drawing.Size(1170, 17);
+			this.statusBarMessage.Spring = true;
+			this.statusBarMessage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// statusEmbeddedAssets
 			// 
@@ -1847,7 +1839,6 @@ namespace Ginger {
 		private System.Windows.Forms.StatusStrip statusBar;
 		private System.Windows.Forms.ToolStripMenuItem createSnippetMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem openRecentMenuItem;
-		private System.Windows.Forms.ToolStripStatusLabel statusBarActor;
 		private System.Windows.Forms.ToolStripMenuItem tokenBudgetMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem tokenBudgetNone;
 		private System.Windows.Forms.ToolStripMenuItem tokenBudget1K;

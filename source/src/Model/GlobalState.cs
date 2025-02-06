@@ -350,7 +350,9 @@ namespace Ginger
 
 		public static void AddCharacter()
 		{
-			var character = new CharacterData();
+			var character = new CharacterData() {
+				_spokenName = Constants.DefaultCharacterName,
+			};
 			Characters.Add(character);
 			SelectedCharacter = Characters.Count - 1;
 

@@ -538,8 +538,7 @@ namespace Ginger
 			}
 			else // Actor
 			{
-				if (Current.Card.assets.RemoveActorPortrait(Current.SelectedCharacter) == false)
-					return; // Error
+				Current.Card.assets.RemoveActorPortrait(Current.SelectedCharacter, false);
 				Undo.Push(Undo.Kind.Parameter, "Clear portrait (actor)");
 			}
 			Current.IsDirty = true;
@@ -1216,7 +1215,15 @@ namespace Ginger
 		public void RefreshTitle()
 		{
 			// Character name
-			string title = Utility.FirstNonEmpty(Current.Card.name, Current.MainCharacter.spokenName) ?? "";
+			string title;
+			if (Current.Characters.Count == 1)
+				title = Utility.FirstNonEmpty(Current.Character.spokenName, Current.Card.name) ?? "";
+			else
+				title = string.Format("{0} ({1}/{2})",
+					Utility.FirstNonEmpty(Current.Character.spokenName, Current.Card.name, Constants.DefaultCharacterName),
+					Current.SelectedCharacter + 1,
+					Current.Characters.Count);			
+
 			if (title.Length > 0)
 				title = string.Concat(title, " ");
 
@@ -1237,16 +1244,6 @@ namespace Ginger
 			this.Text = title;
 
 			_bWasFileDirty = Current.IsFileDirty;
-
-			// Status bar
-			if (Current.Characters.Count > 1)
-				statusBarActor.Text = string.Format("Actor {0} / {1}", Current.SelectedCharacter + 1, Current.Characters.Count);
-			else
-				statusBarActor.Text = string.Empty;
-
-#if DEBUG && false // Show form level buffering
-			statusBarActor.Text = statusBarActor.Text + (_bEnableFormLevelDoubleBuffering && AppSettings.Settings.EnableFormLevelBuffering ? " ON" : " OFF");
-#endif
 
 			// Show Backyard menu
 			backyardMenuItem.Visible = Backyard.ConnectionEstablished;
@@ -1918,6 +1915,7 @@ namespace Ginger
 				return;
 
 			Current.Characters.RemoveAt(Current.SelectedCharacter);
+			Current.Card.assets.RemoveActorPortrait(Current.SelectedCharacter, true);
 			Current.SelectedCharacter = Math.Min(Math.Max(Current.SelectedCharacter, 0), Current.Characters.Count - 1);
 			Current.IsDirty = true;
 

@@ -3193,7 +3193,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No actor portrait.
+        ///   Looks up a localized string similar to Same as main portrait.
         /// </summary>
         internal static string msg_no_actor_portrait {
             get {

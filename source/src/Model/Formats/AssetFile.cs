@@ -958,13 +958,23 @@ namespace Ginger
 			return true;
 		}
 
-		public bool RemoveActorPortrait(int actorIndex)
+		public void RemoveActorPortrait(int actorIndex, bool bActorWasRemoved)
 		{
 			// Remove existing
-			return this.RemoveAll(a => {
+			this.RemoveAll(a => {
 				int index;
 				return a.IsActorPortrait(out index) && index == actorIndex;
-			}) > 0;
+			});
+
+			foreach (var asset in this)
+			{
+				int index;
+				if (asset.IsActorPortrait(out index) && index > actorIndex)
+				{
+					asset.RemoveTags(string.Concat(AssetFile.Tags.ActorPortrait, index));
+					asset.AddTags(string.Concat(AssetFile.Tags.ActorPortrait, index - 1));
+				}
+			}
 		}
 
 	}
