@@ -45,6 +45,7 @@ namespace Ginger
 		public string type;
 		public string ext;
 		public AssetData data;
+		public StringHandle[] tags = null; // Not CCV3 spec
 
 		// Meta
 		public string uid
@@ -89,7 +90,8 @@ namespace Ginger
 			{
 				return assetType == AssetType.Icon
 				  && isEmbeddedAsset
-				  && string.Compare(name, PortraitOverrideName, StringComparison.OrdinalIgnoreCase) == 0;
+				  && (string.Compare(name, PortraitOverrideName, StringComparison.OrdinalIgnoreCase) == 0
+					|| HasTag(Tags.PortraitOverride));
 			}
 		}
 
@@ -171,6 +173,7 @@ namespace Ginger
 			string uri = assetInfo.uri.Trim();
 			string ext = assetInfo.ext != null ? assetInfo.ext : null;
 			string type = assetInfo.type.Trim().ToLowerInvariant();
+			StringHandle[] tags = assetInfo.tags != null ? assetInfo.tags.Select(t => new StringHandle(t)).ToArray() : null;
 
 			// Default asset
 			if (uri.Length == 0 || string.Compare(uri, DefaultUri, StringComparison.OrdinalIgnoreCase) == 0)
@@ -205,6 +208,7 @@ namespace Ginger
 							uriPath = null,
 							uriName = null,
 							data = AssetData.FromBytes(bytes),
+							tags = tags,
 						};
 					}
 					catch
@@ -238,6 +242,7 @@ namespace Ginger
 					uriPath = path,
 					uriName = filename,
 					data = AssetData.FromBytes(data),
+					tags = tags,
 				};
 			}
 
@@ -257,17 +262,18 @@ namespace Ginger
 				fullUri = uri,
 				uriPath = uriPath,
 				uriName = null,
+				tags = tags,
 			};
 		}
 
 		public TavernCardV3.Data.Asset ToV3Asset(UriFormat format)
 		{
-			return new TavernCardV3.Data.Asset() 
-			{
+			return new TavernCardV3.Data.Asset() {
 				type = GetTypeName(),
 				uri = GetUri(format),
 				name = name,
 				ext = ext,
+				tags = this.tags != null && this.tags.Length > 0 ? this.tags.Select(t => t.ToString()).ToArray() : null,
 			};
 		}
 
@@ -447,6 +453,15 @@ namespace Ginger
 				knownHeight = metaNode.GetAttributeInt("height");
 			}
 
+			var tagsNode = xmlNode.GetFirstElement("Tags");
+			if (tagsNode != null)
+			{
+				tags = Utility.ListFromCommaSeparatedString(tagsNode.GetTextValue())
+					.Select(s => new StringHandle(s))
+					.Distinct()
+					.ToArray();
+			}
+
 			return name != null && type != null && fullUri.Length > 0 && uriType != UriType.Undefined;
 		}
 
@@ -469,6 +484,61 @@ namespace Ginger
 					metaNode.AddAttribute("height", knownHeight);
 				}
 			}
+
+			if (tags != null && tags.Length > 0)
+			{
+				var tagsNode = xmlNode.AddElement("Tags");
+				tagsNode.AddTextValue(Utility.ListToCommaSeparatedString(tags));
+			}
+		}
+
+		public bool HasTag(StringHandle tag)
+		{
+			return tags != null && tags.Length > 0 && tags.Contains(tag);
+		}
+		
+		public void AddTags(params StringHandle[] tags)
+		{
+			if (this.tags == null)
+				this.tags = tags;
+			else
+				this.tags = this.tags.Union(tags).Distinct().ToArray();
+		}
+
+		public void RemoveTags(params StringHandle[] tags)
+		{
+			if (this.tags == null || this.tags.Length == 0)
+				return;
+
+			this.tags = this.tags.Except(tags).ToArray();
+			if (this.tags.Length == 0)
+				this.tags = null; // Empty
+		}
+
+		public bool IsActorPortrait(out int index)
+		{
+			if (tags == null || tags.Length == 0)
+			{
+				index = -1;
+				return false;
+			}
+
+			var actorTag = tags.FirstOrDefault(t => t.BeginsWith(Tags.ActorPortrait.ToString()));
+			if (StringHandle.IsNullOrEmpty(actorTag))
+			{
+				index = -1;
+				return false;
+			}
+
+			return int.TryParse(actorTag.ToString().Substring(Tags.ActorPortrait.Length), out index);
+		}
+
+		public static class Tags
+		{
+			public static StringHandle PortraitOverride = "portrait-override";
+			public static StringHandle PortraitBackground = "portrait-background";
+			public static StringHandle Animated = "animated";
+			public static StringHandle ActorPortrait = "actor-";
 		}
 	}
 
@@ -708,6 +778,7 @@ namespace Ginger
 			var asset = this.FirstOrDefault(a => a.isMainPortraitOverride
 				&& a.isDefaultAsset == false
 				&& Utility.IsSupportedImageFileExt(a.ext));
+
 			if (asset == null)
 			{
 				asset = this.FirstOrDefault(a => a.assetType == AssetFile.AssetType.Icon && a.isMainAsset
@@ -742,12 +813,13 @@ namespace Ginger
 			
 			// Add new asset
 			asset = new AssetFile() {
-				name = AssetFile.PortraitOverrideName,
+				name = "Portrait",
 				uriType = AssetFile.UriType.Embedded,
 				assetType = AssetFile.AssetType.Icon,
 				data = AssetData.FromBytes(bytes),
 				knownWidth = width,
 				knownHeight = height,
+				tags = new StringHandle[] { AssetFile.Tags.PortraitOverride },
 				ext = ext,
 			};
 			this.Insert(0, asset);
@@ -766,5 +838,19 @@ namespace Ginger
 			}
 			return false;
 		}
+
+		public AssetFile GetActorPortrait(int index)
+		{
+			if (index == 0)
+				return GetMainPortraitOverride();
+
+			var asset = this.FirstOrDefault(a => a.assetType == AssetFile.AssetType.Icon 
+				&& a.isDefaultAsset == false
+				&& Utility.IsSupportedImageFileExt(a.ext)
+				&& a.HasTag(AssetFile.Tags.ActorPortrait + index.ToString()));
+
+			return asset;
+		}
+
 	}
 }

@@ -120,6 +120,9 @@ namespace Ginger
 
 				[JsonProperty("ext")]
 				public string ext = "";
+
+				[JsonProperty("tags", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+				public string[] tags = null;
 			}
 
 			[JsonProperty("assets")]

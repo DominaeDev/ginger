@@ -1086,7 +1086,6 @@ namespace Ginger
 
 			Current.OnLoadCharacter?.Invoke(null, EventArgs.Empty);
 
-
 			Current.IsLoading = false;
 			Cursor = Cursors.Default;
 			ClearStatusBarMessage();
@@ -2277,6 +2276,7 @@ namespace Ginger
 
 				Current.IsFileDirty = true;
 				RefreshTitle();
+				sidePanel.RefreshValues();
 			}
 		}
 

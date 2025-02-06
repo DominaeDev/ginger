@@ -240,6 +240,26 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap asset_actor_portrait {
+            get {
+                object obj = ResourceManager.GetObject("asset_actor_portrait", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap asset_override {
+            get {
+                object obj = ResourceManager.GetObject("asset_override", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__attribute&quot; version=&quot;1.0&quot;&gt;
         ///	&lt;Name&gt;Attribute/Custom attribute&lt;/Name&gt;
         ///	&lt;Title&gt;Custom attribute&lt;/Title&gt;
@@ -1026,6 +1046,26 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap dark_arrow_up {
             get {
                 object obj = ResourceManager.GetObject("dark_arrow_up", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_asset_actor_portrait {
+            get {
+                object obj = ResourceManager.GetObject("dark_asset_actor_portrait", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_asset_override {
+            get {
+                object obj = ResourceManager.GetObject("dark_asset_override", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -4311,7 +4351,7 @@ namespace Ginger.Properties {
         ///      &quot;type&quot;: &quot;string&quot;
         ///    },
         ///    &quot;create_date&quot;: {
-        ///      &quot;required&quot;: true,
+        ///      &quot;required&quot;: false,
         ///      &quot;type&quot;: [
         ///        &quot;string&quot;,
         ///		&quot;integer&quot;,
@@ -4446,6 +4486,24 @@ namespace Ginger.Properties {
         internal static string textgenwebui_chat_schema {
             get {
                 return ResourceManager.GetString("textgenwebui_chat_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (Actor portrait) This asset will be used as the portrait for {0}, if applicable..
+        /// </summary>
+        internal static string tooltip_asset_actor_portrait {
+            get {
+                return ResourceManager.GetString("tooltip_asset_actor_portrait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (Portrait override) This asset will be used as the main portrait for the character, if applicable..
+        /// </summary>
+        internal static string tooltip_asset_override {
+            get {
+                return ResourceManager.GetString("tooltip_asset_override", resourceCulture);
             }
         }
         
@@ -4697,7 +4755,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When importing or saving a new character to Backyard AI, always link thecharacter..
+        ///   Looks up a localized string similar to When importing or saving a new character to Backyard AI, always link the character..
         /// </summary>
         internal static string tooltip_link_always_create {
             get {

@@ -186,6 +186,9 @@ namespace Ginger
 
 			public Image Collapsed => Resources.collapsed;
 			public Image Expanded => Resources.expanded;
+
+			public Image PortraitOverrideAsset => Resources.asset_override;
+			public Image ActorPortraitAsset => Resources.asset_actor_portrait;
 		}
 
 	}

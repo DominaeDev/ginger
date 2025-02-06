@@ -15,7 +15,8 @@ namespace Ginger
 
 		private ImageRef _image = null;
 
-		public bool IsAnimation { get; set; }
+		public bool IsAnimation { get; private set; }
+		public bool IsGrayedOut { get; set; }
 
 		public PortraitPreview()
 		{
@@ -37,10 +38,25 @@ namespace Ginger
 				e.Graphics.DrawString(Resources.msg_drop_image, Font, Brushes.White, ClientRectangle, stringFormat);
 			}
 
-			if (IsAnimation)
+			else if (IsGrayedOut)
 			{
-				e.Graphics.DrawImageUnscaled(Resources.animation, Width - 30, Height - 30);
+				using (var brush = new SolidBrush(Color.FromArgb(128, 0, 0, 0)))
+				{
+					e.Graphics.FillRectangle(brush, ClientRectangle);
+				}
+
+				StringFormat stringFormat = new StringFormat();
+				stringFormat.Alignment = StringAlignment.Center;
+				stringFormat.LineAlignment = StringAlignment.Center;
+
+				e.Graphics.DrawString(Resources.msg_drop_image, Font, Brushes.White, ClientRectangle, stringFormat);
 			}
+			else // Not grayed out
+			{
+				if (IsAnimation)
+					e.Graphics.DrawImageUnscaled(Resources.animation, Width - 30, Height - 30);
+			}
+
 		}
 
 		private void PortraitPreview_DragEnter(object sender, DragEventArgs e)
@@ -81,10 +97,13 @@ namespace Ginger
 
 		public void SetImage(ImageRef image, bool bAnimation = false)
 		{
+			IsAnimation = image != null && bAnimation;
+			Invalidate();
+
 			if (image == _image)
 				return;
+
 			_image = image;
-			IsAnimation = _image != null && bAnimation;
 
 			// Clear existing image
 			if (this.Image != null)

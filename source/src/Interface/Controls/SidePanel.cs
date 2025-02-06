@@ -153,7 +153,38 @@ namespace Ginger
 			label_Lore_Value.Text = lastLoreCount.ToString();
 
 			// Portrait
-			portraitImage.SetImage(Current.Card.portraitImage, Current.Card.assets.HasMainPortraitOverride());
+			if (Current.SelectedCharacter == 0)
+			{
+				var portraitOverride = Current.Card.assets.GetMainPortraitOverride();
+				portraitImage.SetImage(Current.Card.portraitImage, portraitOverride != null && portraitOverride.HasTag(AssetFile.Tags.Animated));
+				portraitImage.IsGrayedOut = false;
+			}
+			else
+			{
+				var actorPortrait = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+				if (actorPortrait != null)
+				{
+					Image actorImage;
+					Utility.LoadImageFromMemory(actorPortrait.data.bytes, out actorImage);
+					if (actorImage != null)
+					{
+						portraitImage.SetImage(ImageRef.FromImage(actorImage), actorPortrait != null && actorPortrait.HasTag(AssetFile.Tags.Animated));
+						portraitImage.IsGrayedOut = false;
+					}
+					else
+					{
+						var portraitOverride = Current.Card.assets.GetMainPortraitOverride();
+						portraitImage.SetImage(Current.Card.portraitImage, portraitOverride != null && portraitOverride.HasTag(AssetFile.Tags.Animated));
+						portraitImage.IsGrayedOut = true;
+					}
+				}
+				else
+				{
+					var portraitOverride = Current.Card.assets.GetMainPortraitOverride();
+					portraitImage.SetImage(Current.Card.portraitImage, portraitOverride != null && portraitOverride.HasTag(AssetFile.Tags.Animated));
+					portraitImage.IsGrayedOut = true;
+				}
+			}
 
 			if (Current.Card.portraitImage != null)
 			{

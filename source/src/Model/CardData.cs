@@ -149,7 +149,11 @@ namespace Ginger
 			{
 				AssetFile asset;
 				if (assets.ReplaceMainPortraitOverride(filename, out asset))
+				{
 					portraitImage.uid = asset.uid; //?
+					asset.name = "Portrait (animation)";
+					asset.AddTags(AssetFile.Tags.Animated);
+				}
 			}
 			else
 				assets.RemoveMainPortraitOverride();
