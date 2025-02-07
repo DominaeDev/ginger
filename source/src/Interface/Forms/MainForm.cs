@@ -473,16 +473,13 @@ namespace Ginger
 					return;
 				}
 
-				var portraitRef = Current.Card.portraitImage;
-
-				ConfirmImageSize(ref portraitImage);
-				Current.Card.portraitImage = ImageRef.FromImage(portraitImage);
+				if (ConfirmImageSize(ref portraitImage))
+					Current.Card.portraitImage = ImageRef.FromImage(portraitImage);
 				Undo.Push(Undo.Kind.Parameter, "Change portrait image");
 			}
 			else // Actor
 			{
-				AssetFile asset;
-				if (Current.Card.assets.SetActorPortrait(Current.SelectedCharacter, filename, out asset) == false)
+				if (Current.Card.assets.LoadActorPortraitFromFile(Current.SelectedCharacter, filename) == null)
 				{
 					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 					return;
@@ -507,16 +504,19 @@ namespace Ginger
 				return; // Error
 			}
 
+			// Resize
+			ConfirmImageSize(ref image);
+
 			if (Current.SelectedCharacter == 0) // Main character
 			{
 				Current.Card.portraitImage = ImageRef.FromImage(image);
-				Current.Card.assets.RemoveMainPortraitOverride();
+				Current.Card.assets.RemoveMainPortraitOverride(); // No animation
 				Undo.Push(Undo.Kind.Parameter, "Change portrait image");
 			}
 			else // Actor
 			{
 				AssetFile tmp;
-				if (Current.Card.assets.SetActorPortrait(Current.SelectedCharacter, image, out tmp) == false)
+				if (Current.Card.assets.SetActorPortrait(Current.SelectedCharacter, image) == null)
 				{
 					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 					return;
@@ -526,7 +526,6 @@ namespace Ginger
 
 			Current.IsDirty = true;
 			sidePanel.RefreshValues();
-
 		}
 
 		private void OnRemovePortraitImage(object sender, EventArgs e)
@@ -569,9 +568,9 @@ namespace Ginger
 			int newWidth = Math.Max((int)Math.Round(srcWidth * scale), 1);
 			int newHeight = Math.Max((int)Math.Round(srcHeight * scale), 1);
 
-			Image bmpNewImage = new Bitmap(newWidth, newHeight);
+			Image resizedImage = new Bitmap(newWidth, newHeight);
 			
-			using (Graphics gfxNewImage = Graphics.FromImage(bmpNewImage))
+			using (Graphics gfxNewImage = Graphics.FromImage(resizedImage))
 			{
 				gfxNewImage.DrawImage(image,
 					new Rectangle(0, 0, newWidth, newHeight),
@@ -581,13 +580,12 @@ namespace Ginger
 
 			if (Current.SelectedCharacter == 0) // Main character
 			{
-				Current.Card.portraitImage = ImageRef.FromImage(bmpNewImage);
+				Current.Card.portraitImage = ImageRef.FromImage(resizedImage);
 				Undo.Push(Undo.Kind.Parameter, "Resize portrait image");
 			}
 			else // Actor
 			{
-				AssetFile tmp;
-				Current.Card.assets.SetActorPortrait(Current.SelectedCharacter, bmpNewImage, out tmp);
+				Current.Card.assets.SetActorPortrait(Current.SelectedCharacter, resizedImage);
 				Undo.Push(Undo.Kind.Parameter, "Resize portrait image (actor)");
 			}
 

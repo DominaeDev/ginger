@@ -6142,7 +6142,6 @@ namespace Ginger.Integration
 						assetType = AssetFile.AssetType.Background,
 						data = mainPortraitOverride.data,
 						uriType = AssetFile.UriType.Embedded,
-						tags = new StringHandle[] { AssetFile.Tags.PortraitBackground },
 					};
 				}
 				else
@@ -6153,10 +6152,9 @@ namespace Ginger.Integration
 						assetType = AssetFile.AssetType.Background,
 						data = AssetData.FromBytes(Utility.ImageToMemory(Current.Card.portraitImage, Utility.ImageFileFormat.Jpeg)),
 						uriType = AssetFile.UriType.Embedded,
-						tags = new StringHandle[] { AssetFile.Tags.PortraitBackground },
 					};
 				}
-
+				portraitBackground.AddTags(AssetFile.Tags.PortraitBackground);
 				assets.Add(portraitBackground);
 				Current.Card.assets.Add(portraitBackground);
 				Current.IsFileDirty = true;

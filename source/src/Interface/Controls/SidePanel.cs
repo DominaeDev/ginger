@@ -271,6 +271,13 @@ namespace Ginger
 				{
 					width = asset.knownWidth;
 					height = asset.knownHeight;
+
+					if (width == 0 || height == 0)
+					{
+						Utility.GetImageDimensions(asset.data.bytes, out width, out height);
+						asset.knownWidth = width;
+						asset.knownHeight = height;
+					}
 				}
 				else
 					return;
@@ -278,7 +285,7 @@ namespace Ginger
 
 			int gcd = GetGCD(width, height);
 
-			if ((width / gcd < 50) && (height / gcd < 50))
+			if (gcd > 0 && (width / gcd < 50) && (height / gcd < 50))
 			{
 				label_Image_Value.Text = string.Format("{0} x {1} ({2}:{3})",
 					width,

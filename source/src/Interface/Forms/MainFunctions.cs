@@ -1152,7 +1152,7 @@ namespace Ginger
 			if (portraitAsset != null)
 			{
 				// Promote to override
-				portraitAsset.tags = new StringHandle[] { AssetFile.Tags.PortraitOverride };
+				portraitAsset.AddTags(AssetFile.Tags.PortraitOverride);
 
 				Image image;
 				if (Utility.LoadImageFromMemory(portraitAsset.data.bytes, out image))

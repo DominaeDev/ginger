@@ -367,7 +367,7 @@ namespace Ginger
 			}
 
 			if (assetType != AssetFile.AssetType.Icon)
-				Assets[index].RemoveTags(AssetFile.Tags.PortraitOverride, AssetFile.Tags.Actor);
+				Assets[index].RemoveTags(AssetFile.Tags.PortraitOverride);
 
 			if (assetType != AssetFile.AssetType.Custom)
 			{
