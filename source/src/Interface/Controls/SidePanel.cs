@@ -161,14 +161,14 @@ namespace Ginger
 			}
 			else
 			{
-				var actorPortrait = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
-				if (actorPortrait != null)
+				var asset = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+				if (asset != null)
 				{
 					Image actorImage;
-					Utility.LoadImageFromMemory(actorPortrait.data.bytes, out actorImage);
+					Utility.LoadImageFromMemory(asset.data.bytes, out actorImage);
 					if (actorImage != null)
 					{
-						portraitImage.SetImage(ImageRef.FromImage(actorImage), actorPortrait != null && actorPortrait.HasTag(AssetFile.Tags.Animated));
+						portraitImage.SetImage(ImageRef.FromImage(actorImage, false), asset != null && asset.HasTag(AssetFile.Tags.Animated));
 						portraitImage.IsGrayedOut = false;
 					}
 					else
@@ -199,8 +199,8 @@ namespace Ginger
 			}
 			if (Current.SelectedCharacter > 0)
 			{
-				AssetFile actorPortrait = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
-				if (actorPortrait != null)
+				var asset = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+				if (asset != null)
 				{
 					SetToolTip(Resources.tooltip_portrait_image, portraitImage);
 					RefreshImageAspectRatio();
@@ -266,11 +266,11 @@ namespace Ginger
 			}
 			else
 			{
-				AssetFile actorPortrait = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
-				if (actorPortrait != null)
+				var asset = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+				if (asset != null)
 				{
-					width = actorPortrait.knownWidth;
-					height = actorPortrait.knownHeight;
+					width = asset.knownWidth;
+					height = asset.knownHeight;
 				}
 				else
 					return;
@@ -566,7 +566,7 @@ namespace Ginger
 				}
 				else
 				{
-					AssetFile asset = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+					var asset = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
 					bHasPortrait = asset != null;
 					bCanResize = asset != null && (asset.knownWidth > Constants.MaxImageDimension || asset.knownHeight > Constants.MaxImageDimension);
 				}

@@ -102,6 +102,7 @@ namespace Ginger {
 			this.expandAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.showRecipeCategoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sortRecipesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.additionalCharactersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.tokenBudgetMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.tokenBudgetNone = new System.Windows.Forms.ToolStripMenuItem();
@@ -187,7 +188,6 @@ namespace Ginger {
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
-			this.additionalCharactersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -1043,6 +1043,12 @@ namespace Ginger {
 			this.sortRecipesMenuItem.Text = "&Sort recipes by type";
 			this.sortRecipesMenuItem.Click += new System.EventHandler(this.sortRecipesMenuItem_Click);
 			// 
+			// additionalCharactersMenuItem
+			// 
+			this.additionalCharactersMenuItem.Name = "additionalCharactersMenuItem";
+			this.additionalCharactersMenuItem.Size = new System.Drawing.Size(53, 20);
+			this.additionalCharactersMenuItem.Text = "&Actors";
+			// 
 			// optionsToolStripMenuItem
 			// 
 			this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1083,105 +1089,105 @@ namespace Ginger {
 			// 
 			this.tokenBudgetNone.CheckOnClick = true;
 			this.tokenBudgetNone.Name = "tokenBudgetNone";
-			this.tokenBudgetNone.Size = new System.Drawing.Size(104, 22);
+			this.tokenBudgetNone.Size = new System.Drawing.Size(180, 22);
 			this.tokenBudgetNone.Text = "None";
-			this.tokenBudgetNone.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
+			this.tokenBudgetNone.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
 			// tokenBudget1K
 			// 
 			this.tokenBudget1K.CheckOnClick = true;
 			this.tokenBudget1K.Name = "tokenBudget1K";
-			this.tokenBudget1K.Size = new System.Drawing.Size(104, 22);
+			this.tokenBudget1K.Size = new System.Drawing.Size(180, 22);
 			this.tokenBudget1K.Text = "1024";
-			this.tokenBudget1K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
+			this.tokenBudget1K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
 			// tokenBudget2K
 			// 
 			this.tokenBudget2K.CheckOnClick = true;
 			this.tokenBudget2K.Name = "tokenBudget2K";
-			this.tokenBudget2K.Size = new System.Drawing.Size(104, 22);
+			this.tokenBudget2K.Size = new System.Drawing.Size(180, 22);
 			this.tokenBudget2K.Text = "2048";
-			this.tokenBudget2K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
+			this.tokenBudget2K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
 			// tokenBudget3K
 			// 
 			this.tokenBudget3K.CheckOnClick = true;
 			this.tokenBudget3K.Name = "tokenBudget3K";
-			this.tokenBudget3K.Size = new System.Drawing.Size(104, 22);
+			this.tokenBudget3K.Size = new System.Drawing.Size(180, 22);
 			this.tokenBudget3K.Text = "3072";
-			this.tokenBudget3K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
+			this.tokenBudget3K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
 			// tokenBudget4K
 			// 
 			this.tokenBudget4K.CheckOnClick = true;
 			this.tokenBudget4K.Name = "tokenBudget4K";
-			this.tokenBudget4K.Size = new System.Drawing.Size(104, 22);
+			this.tokenBudget4K.Size = new System.Drawing.Size(180, 22);
 			this.tokenBudget4K.Text = "4096";
-			this.tokenBudget4K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
+			this.tokenBudget4K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
 			// tokenBudget5K
 			// 
 			this.tokenBudget5K.CheckOnClick = true;
 			this.tokenBudget5K.Name = "tokenBudget5K";
-			this.tokenBudget5K.Size = new System.Drawing.Size(104, 22);
+			this.tokenBudget5K.Size = new System.Drawing.Size(180, 22);
 			this.tokenBudget5K.Text = "5120";
-			this.tokenBudget5K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
+			this.tokenBudget5K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
 			// tokenBudget6K
 			// 
 			this.tokenBudget6K.CheckOnClick = true;
 			this.tokenBudget6K.Name = "tokenBudget6K";
-			this.tokenBudget6K.Size = new System.Drawing.Size(104, 22);
+			this.tokenBudget6K.Size = new System.Drawing.Size(180, 22);
 			this.tokenBudget6K.Text = "6144";
-			this.tokenBudget6K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
+			this.tokenBudget6K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
 			// tokenBudget8K
 			// 
 			this.tokenBudget8K.CheckOnClick = true;
 			this.tokenBudget8K.Name = "tokenBudget8K";
-			this.tokenBudget8K.Size = new System.Drawing.Size(104, 22);
+			this.tokenBudget8K.Size = new System.Drawing.Size(180, 22);
 			this.tokenBudget8K.Text = "8192";
-			this.tokenBudget8K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
+			this.tokenBudget8K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
 			// tokenBudget10K
 			// 
 			this.tokenBudget10K.CheckOnClick = true;
 			this.tokenBudget10K.Name = "tokenBudget10K";
-			this.tokenBudget10K.Size = new System.Drawing.Size(104, 22);
+			this.tokenBudget10K.Size = new System.Drawing.Size(180, 22);
 			this.tokenBudget10K.Text = "10240";
-			this.tokenBudget10K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
+			this.tokenBudget10K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
 			// tokenBudget12K
 			// 
 			this.tokenBudget12K.CheckOnClick = true;
 			this.tokenBudget12K.Name = "tokenBudget12K";
-			this.tokenBudget12K.Size = new System.Drawing.Size(104, 22);
+			this.tokenBudget12K.Size = new System.Drawing.Size(180, 22);
 			this.tokenBudget12K.Text = "12288";
-			this.tokenBudget12K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
+			this.tokenBudget12K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
 			// tokenBudget16K
 			// 
 			this.tokenBudget16K.CheckOnClick = true;
 			this.tokenBudget16K.Name = "tokenBudget16K";
-			this.tokenBudget16K.Size = new System.Drawing.Size(104, 22);
+			this.tokenBudget16K.Size = new System.Drawing.Size(180, 22);
 			this.tokenBudget16K.Text = "16384";
-			this.tokenBudget16K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
+			this.tokenBudget16K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
 			// tokenBudget24K
 			// 
 			this.tokenBudget24K.CheckOnClick = true;
 			this.tokenBudget24K.Name = "tokenBudget24K";
-			this.tokenBudget24K.Size = new System.Drawing.Size(104, 22);
+			this.tokenBudget24K.Size = new System.Drawing.Size(180, 22);
 			this.tokenBudget24K.Text = "24576";
-			this.tokenBudget24K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
+			this.tokenBudget24K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
 			// tokenBudget32K
 			// 
 			this.tokenBudget32K.CheckOnClick = true;
 			this.tokenBudget32K.Name = "tokenBudget32K";
-			this.tokenBudget32K.Size = new System.Drawing.Size(104, 22);
+			this.tokenBudget32K.Size = new System.Drawing.Size(180, 22);
 			this.tokenBudget32K.Text = "32768";
-			this.tokenBudget32K.CheckedChanged += new System.EventHandler(this.TokenBudgetMenuItem_CheckedChanged);
+			this.tokenBudget32K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
 			// outputPreviewToolStripMenuItem
 			// 
@@ -1714,7 +1720,7 @@ namespace Ginger {
 			// statusBarMessage
 			// 
 			this.statusBarMessage.Name = "statusBarMessage";
-			this.statusBarMessage.Size = new System.Drawing.Size(1170, 17);
+			this.statusBarMessage.Size = new System.Drawing.Size(1201, 17);
 			this.statusBarMessage.Spring = true;
 			this.statusBarMessage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
@@ -1734,12 +1740,6 @@ namespace Ginger {
 			this.statusConnectionIcon.Name = "statusConnectionIcon";
 			this.statusConnectionIcon.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusConnectionIcon.Size = new System.Drawing.Size(24, 17);
-			// 
-			// additionalCharactersMenuItem
-			// 
-			this.additionalCharactersMenuItem.Name = "additionalCharactersMenuItem";
-			this.additionalCharactersMenuItem.Size = new System.Drawing.Size(53, 20);
-			this.additionalCharactersMenuItem.Text = "&Actors";
 			// 
 			// MainForm
 			// 

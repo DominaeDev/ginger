@@ -306,11 +306,11 @@ namespace Ginger
 			// 
 			this.columnTag.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
 			this.columnTag.HeaderText = "";
-			this.columnTag.MinimumWidth = 26;
+			this.columnTag.MinimumWidth = 25;
 			this.columnTag.Name = "columnTag";
 			this.columnTag.ReadOnly = true;
 			this.columnTag.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-			this.columnTag.Width = 26;
+			this.columnTag.Width = 25;
 			// 
 			// AssetViewDialog
 			// 

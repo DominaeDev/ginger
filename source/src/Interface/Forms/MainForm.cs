@@ -473,9 +473,10 @@ namespace Ginger
 					return;
 				}
 
+				var portraitRef = Current.Card.portraitImage;
+
 				ConfirmImageSize(ref portraitImage);
 				Current.Card.portraitImage = ImageRef.FromImage(portraitImage);
-				
 				Undo.Push(Undo.Kind.Parameter, "Change portrait image");
 			}
 			else // Actor
@@ -1966,8 +1967,8 @@ namespace Ginger
 			ExportLorebook(output, false); 
 			Lorebooks.LoadLorebooks();
 		}
-
-		private void TokenBudgetMenuItem_CheckedChanged(object sender, EventArgs e)
+		
+		private void TokenBudgetMenuItem_Click(object sender, EventArgs e)
 		{
 			ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
 			if (menuItem == null || menuItem.Checked == false)
@@ -2702,6 +2703,7 @@ namespace Ginger
 			sidePanel.Height = splitContainer.Panel1.ClientSize.Height;
 			sidePanel.RefreshLayout();
 		}
+
 	}
 
 	public interface IIdleHandler

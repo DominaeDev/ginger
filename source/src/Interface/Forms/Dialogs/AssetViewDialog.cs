@@ -181,19 +181,23 @@ namespace Ginger
 			if (iconCell != null)
 			{
 				Image statusIcon;
-				int actorIndex;
+				int actorIndex = -1;
 				if (asset.HasTag(AssetFile.Tags.PortraitOverride))
 					statusIcon = Theme.Current.PortraitOverrideAsset;
-				else if (asset.IsActorPortrait(out actorIndex))
-					statusIcon = Theme.Current.ActorPortraitAsset;
 				else
-					statusIcon = _BlankIcon;
+				{
+					actorIndex = asset.actorIndex;
+					if (actorIndex > 0)
+						statusIcon = Theme.Current.ActorPortraitAsset;
+					else
+						statusIcon = _BlankIcon;
+				}
 
 				iconCell.Value = statusIcon;
 
 				if (asset.HasTag(AssetFile.Tags.PortraitOverride))
 					iconCell.ToolTipText = Resources.tooltip_asset_override;
-				else if (asset.IsActorPortrait(out actorIndex) && actorIndex > 0 && actorIndex < Current.Characters.Count)
+				else if (actorIndex > 0 && actorIndex < Current.Characters.Count)
 					iconCell.ToolTipText = string.Format(Resources.tooltip_asset_actor_portrait, Current.Characters[actorIndex].spokenName);
 			}
 		}
@@ -363,7 +367,7 @@ namespace Ginger
 			}
 
 			if (assetType != AssetFile.AssetType.Icon)
-				Assets[index].RemoveTags(AssetFile.Tags.PortraitOverride, AssetFile.Tags.ActorPortrait);
+				Assets[index].RemoveTags(AssetFile.Tags.PortraitOverride, AssetFile.Tags.Actor);
 
 			if (assetType != AssetFile.AssetType.Custom)
 			{

@@ -515,28 +515,22 @@ namespace Ginger
 				this.tags = null; // Empty
 		}
 
-		public bool IsActorPortrait(out int index)
+		public int actorIndex
 		{
-			if (isEmbeddedAsset == false || assetType != AssetType.Icon)
+			get
 			{
-				index = -1;
-				return false;
-			}
+				if (tags == null || tags.Length == 0 || isEmbeddedAsset == false || assetType != AssetType.Icon)
+					return -1;
 
-			if (tags == null || tags.Length == 0)
-			{
-				index = -1;
-				return false;
-			}
+				var actorTag = tags.FirstOrDefault(t => t.BeginsWith(Tags.Actor.ToString()));
+				if (StringHandle.IsNullOrEmpty(actorTag))
+					return -1;
 
-			var actorTag = tags.FirstOrDefault(t => t.BeginsWith(Tags.ActorPortrait.ToString()));
-			if (StringHandle.IsNullOrEmpty(actorTag))
-			{
-				index = -1;
-				return false;
+				int index;
+				if (int.TryParse(actorTag.ToString().Substring(Tags.Actor.Length), out index))
+					return Math.Max(index, 0);
+				return -1;
 			}
-
-			return int.TryParse(actorTag.ToString().Substring(Tags.ActorPortrait.Length), out index);
 		}
 
 		public static class Tags
@@ -544,7 +538,7 @@ namespace Ginger
 			public static StringHandle PortraitOverride = "portrait-override";
 			public static StringHandle PortraitBackground = "portrait-background";
 			public static StringHandle Animated = "animated";
-			public static StringHandle ActorPortrait = "actor-";
+			public static StringHandle Actor = "actor-";
 		}
 	}
 
@@ -854,7 +848,7 @@ namespace Ginger
 				&& a.isDefaultAsset == false
 				&& Utility.IsSupportedImageFileExt(a.ext)
 				&& a.data.isEmpty == false
-				&& a.HasTag(AssetFile.Tags.ActorPortrait + index.ToString()));
+				&& a.HasTag(AssetFile.Tags.Actor + index.ToString()));
 
 			return asset;
 		}
@@ -897,10 +891,7 @@ namespace Ginger
 			}
 
 			// Remove existing
-			this.RemoveAll(a => {
-				int index;
-				return a.IsActorPortrait(out index) && index == actorIndex;
-			});
+			this.RemoveAll(a => a.actorIndex == actorIndex);
 
 			// Add new asset
 			asset = new AssetFile() {
@@ -913,7 +904,7 @@ namespace Ginger
 				ext = ext,
 			};
 
-			asset.AddTags(string.Concat(AssetFile.Tags.ActorPortrait, actorIndex));
+			asset.AddTags(string.Concat(AssetFile.Tags.Actor, actorIndex));
 			if (bAnimated)
 				asset.AddTags(AssetFile.Tags.Animated);
 
@@ -937,10 +928,7 @@ namespace Ginger
 			}
 
 			// Remove existing
-			this.RemoveAll(a => {
-				int index;
-				return a.IsActorPortrait(out index) && index == actorIndex;
-			});
+			this.RemoveAll(a => a.actorIndex == actorIndex);
 						
 			// Add new asset
 			asset = new AssetFile() {
@@ -953,7 +941,7 @@ namespace Ginger
 				ext = "png",
 			};
 
-			asset.AddTags(string.Concat(AssetFile.Tags.ActorPortrait, actorIndex));
+			asset.AddTags(string.Concat(AssetFile.Tags.Actor, actorIndex));
 			this.Insert(0, asset);
 			return true;
 		}
@@ -961,18 +949,15 @@ namespace Ginger
 		public void RemoveActorPortrait(int actorIndex, bool bActorWasRemoved)
 		{
 			// Remove existing
-			this.RemoveAll(a => {
-				int index;
-				return a.IsActorPortrait(out index) && index == actorIndex;
-			});
+			this.RemoveAll(a => a.actorIndex == actorIndex);
 
 			foreach (var asset in this)
 			{
-				int index;
-				if (asset.IsActorPortrait(out index) && index > actorIndex)
+				int index = asset.actorIndex;
+				if (index > actorIndex)
 				{
-					asset.RemoveTags(string.Concat(AssetFile.Tags.ActorPortrait, index));
-					asset.AddTags(string.Concat(AssetFile.Tags.ActorPortrait, index - 1));
+					asset.RemoveTags(string.Concat(AssetFile.Tags.Actor, index));
+					asset.AddTags(string.Concat(AssetFile.Tags.Actor, index - 1));
 				}
 			}
 		}
