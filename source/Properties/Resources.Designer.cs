@@ -4499,7 +4499,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (Actor portrait) This asset will be used as the portrait for {0}, when applicable..
+        ///   Looks up a localized string similar to (Actor portrait) This asset will be used for the portrait of {0}, when applicable..
         /// </summary>
         internal static string tooltip_asset_actor_portrait {
             get {
@@ -4508,7 +4508,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (Portrait override) This asset will be used as the main portrait for the character, when applicable..
+        ///   Looks up a localized string similar to (Portrait override) This asset will replace the main portrait, when applicable..
         /// </summary>
         internal static string tooltip_asset_override {
             get {

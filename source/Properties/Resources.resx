@@ -1643,9 +1643,9 @@ Are you sure you want to proceed?</value>
     <value>Same as main portrait</value>
   </data>
   <data name="tooltip_asset_actor_portrait" xml:space="preserve">
-    <value>(Actor portrait) This asset will be used as the portrait for {0}, when applicable.</value>
+    <value>(Actor portrait) This asset will be used for the portrait of {0}, when applicable.</value>
   </data>
   <data name="tooltip_asset_override" xml:space="preserve">
-    <value>(Portrait override) This asset will be used as the main portrait for the character, when applicable.</value>
+    <value>(Portrait override) This asset will replace the main portrait, when applicable.</value>
   </data>
 </root>
