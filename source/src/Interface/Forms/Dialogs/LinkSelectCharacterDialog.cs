@@ -32,7 +32,7 @@ namespace Ginger
 
 		private void OnLoad(object sender, EventArgs e)
 		{
-			if (Backyard.Current.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
+			if (Backyard.ConnectionEstablished && Backyard.Current.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
 				_chatCounts = new Dictionary<string, Backyard.ChatCount>(); // Empty
 
 			PopulateTree(false);

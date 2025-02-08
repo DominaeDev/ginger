@@ -383,7 +383,7 @@ namespace Ginger.Integration
 					}
 
 					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
-						FromPartyNames(staging, character.groupId);
+						BackyardUtil.FromPartyNames(staging, character.groupId);
 
 					card = new FaradayCardV4();
 					card.data.displayName = displayName;
@@ -497,7 +497,7 @@ namespace Ginger.Integration
 					if (FetchUserInfo(connection, character.groupId, out userId, out userName, out userPersona, out userImage))
 					{
 						if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
-							FromPartyNames(ref userPersona, character.groupId);
+							BackyardUtil.FromPartyNames(ref userPersona, character.groupId);
 
 						userInfo = new UserData() {
 							name = userName?.Trim(),
@@ -813,7 +813,7 @@ namespace Ginger.Integration
 							if (bAllowUserPersona)
 							{
 								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
-									ToPartyNames(ref userInfo.persona, characterId, userId);
+									BackyardUtil.ToPartyNames(ref userInfo.persona, characterId, userId);
 								WriteUser(connection, null, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
 							}
 
@@ -893,7 +893,7 @@ namespace Ginger.Integration
 									};
 
 									if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
-										ToPartyNames(staging, characterId, userId);
+										BackyardUtil.ToPartyNames(staging, characterId, userId);
 
 									cmdCreate.Parameters.AddWithValue("$chatId", chatId);
 									cmdCreate.Parameters.AddWithValue("$system", staging.system ?? "");
@@ -975,7 +975,7 @@ namespace Ginger.Integration
 										};
 
 										if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
-											ToPartyNames(staging, characterId, userId);
+											BackyardUtil.ToPartyNames(staging, characterId, userId);
 
 										var parameters = chats[i].parameters ?? new ChatParameters();
 										cmdCreate.Parameters.AddWithValue($"$system{i:000}", staging.system ?? "");
@@ -1393,7 +1393,7 @@ namespace Ginger.Integration
 							if (bAllowUserPersona)
 							{
 								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
-									ToPartyNames(ref userInfo.persona, characterId, userId);
+									BackyardUtil.ToPartyNames(ref userInfo.persona, characterId, userId);
 
 								string userConfigId = null;
 								WriteUser(connection, groupId, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
@@ -1525,7 +1525,7 @@ namespace Ginger.Integration
 									};
 
 									if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
-										ToPartyNames(staging, characterId, userId);
+										BackyardUtil.ToPartyNames(staging, characterId, userId);
 
 									cmdChat.CommandText = sbCommand.ToString();
 									cmdChat.Parameters.AddWithValue("$system", staging.system ?? "");
@@ -2473,7 +2473,7 @@ namespace Ginger.Integration
 									ttsInputFilter = ttsInputFilter,
 								};
 								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
-									FromPartyNames(staging, groupId);
+									BackyardUtil.FromPartyNames(staging, groupId);
 
 								chats.Add(new _Chat() {
 									instanceId = chatId,
@@ -4390,31 +4390,6 @@ namespace Ginger.Integration
 			public string sortType;
 		}
 
-		public string ToFolderUrl(string label)
-		{
-			if (string.IsNullOrWhiteSpace(label))
-				return null;
-
-			label = label.Trim().ToLowerInvariant();
-
-			StringBuilder sbFormat = new StringBuilder(label.Length);
-			for (int i = 0; i < label.Length; ++i)
-			{
-				char c = label[i];
-				if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-' || c == '_') // Valid chars
-					sbFormat.Append(c);
-				else if (c >= 'A' && c <= 'Z')
-					sbFormat.Append(char.ToLowerInvariant(c));
-				else if (char.IsWhiteSpace(c))
-					sbFormat.Append('-');
-				else if ((c & 0xFF) == c)
-					sbFormat.Append(string.Format("{0:x2}", c & 0xFF));
-				else
-					sbFormat.Append(string.Format("{0:x4}", c & 0xFFFF));
-			}
-			return sbFormat.ToString();
-		}
-
 		public Backyard.Error CreateNewFolder(string folderName, out FolderInstance folderInstance)
 		{
 			if (ConnectionEstablished == false)
@@ -4489,7 +4464,7 @@ namespace Ginger.Integration
 						.Where(f => !f.isRoot)
 						.Select(f => f.url));
 
-					string url = ToFolderUrl(folderName);
+					string url = BackyardUtil.ToFolderUrl(folderName);
 					if (existingUrls.Contains(url))
 					{
 						string testUrl = url;
@@ -6415,108 +6390,6 @@ namespace Ginger.Integration
 			}
 
 			return true;
-		}
-
-		public void ToPartyNames(ChatStaging staging, string characterId, string userId)
-		{
-			if (string.IsNullOrEmpty(staging.system) == false)
-				ToPartyNames(ref staging.system, characterId, userId);
-			if (string.IsNullOrEmpty(staging.scenario) == false)
-				ToPartyNames(ref staging.scenario, characterId, userId);
-			if (string.IsNullOrEmpty(staging.greeting) == false)
-				ToPartyNames(ref staging.greeting, characterId, userId);
-			if (string.IsNullOrEmpty(staging.example) == false)
-				ToPartyNames(ref staging.example, characterId, userId);
-			if (string.IsNullOrEmpty(staging.authorNote) == false)
-				ToPartyNames(ref staging.authorNote, characterId, userId);
-		}
-
-		private void ToPartyNames(ref string text, string characterId, string userId)
-		{
-			if (string.IsNullOrEmpty(text))
-				return;
-
-			var sb = new StringBuilder(text);
-
-			// Character placeholder
-			string characterPlaceholder;
-			if (string.IsNullOrEmpty(characterId) == false)
-				characterPlaceholder = $"{{_cfg&:{characterId}:cfg&_}}";
-			else
-				characterPlaceholder = Current.MainCharacter.namePlaceholder;
-			sb.Replace("{character}", characterPlaceholder, false);
-
-			// User placeholder
-			if (string.IsNullOrEmpty(userId) == false)
-				sb.Replace("{user}", $"{{_cfg&:{userId}:cfg&_}}", false);
-
-			text = sb.ToString();
-		}
-
-		public void FromPartyNames(ChatStaging staging, string groupId)
-		{
-			var knownIds = new Dictionary<string, string>();
-
-			if (string.IsNullOrEmpty(staging.system) == false)
-				FromPartyNames(ref staging.system, groupId, knownIds);
-			if (string.IsNullOrEmpty(staging.scenario) == false)
-				FromPartyNames(ref staging.scenario, groupId, knownIds);
-			if (string.IsNullOrEmpty(staging.greeting) == false)
-				FromPartyNames(ref staging.greeting, groupId, knownIds);
-			if (string.IsNullOrEmpty(staging.example) == false)
-				FromPartyNames(ref staging.example, groupId, knownIds);
-			if (string.IsNullOrEmpty(staging.authorNote) == false)
-				FromPartyNames(ref staging.authorNote, groupId, knownIds);
-		}
-
-		private void FromPartyNames(ref string text, string groupId, Dictionary<string, string> knownIds = null)
-		{
-			if (string.IsNullOrEmpty(text))
-				return;
-
-			int pos_begin = text.IndexOf("{_cfg&:");
-			if (pos_begin == -1)
-				return;
-
-			var sb = new StringBuilder(text);
-			while (pos_begin != -1)
-			{
-				int pos_end = sb.IndexOf(":cfg&_}", pos_begin + 7);
-				if (pos_end == -1)
-					break;
-
-				string characterId = sb.Substring(pos_begin + 7, pos_end - pos_begin - 7);
-				sb.Remove(pos_begin, pos_end - pos_begin + 7);
-
-				string placeholder = "{character}";
-				if (knownIds != null && knownIds.TryGetValue(characterId, out placeholder))
-				{
-					sb.Insert(pos_begin, placeholder);
-				}
-				else
-				{
-					CharacterInstance character;
-					if (GetCharacter(characterId, out character))
-					{
-						if (character.isUser)
-							placeholder = "{user}";
-						else if (groupId != null)
-						{
-							GroupInstance group;
-							if (!(GetGroup(groupId, out group) && group.members != null && group.members.Contains(characterId)))
-								placeholder = character.name; // Not primary character
-						}
-					}
-					sb.Insert(pos_begin, placeholder);
-
-					if (knownIds != null)
-						knownIds.Add(characterId, placeholder);
-				}
-				
-				pos_begin = sb.IndexOf("{_cfg&:", pos_begin);
-			}
-
-			text = sb.ToString();
 		}
 
 #endregion // Utilities

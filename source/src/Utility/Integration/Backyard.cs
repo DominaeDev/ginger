@@ -578,7 +578,6 @@ namespace Ginger.Integration
 		public static IEnumerable<CharacterInstance> NonUserCharacters { get { return CharactersWithGroup.Where(c => c.isCharacter); } }
 		public static IEnumerable<GroupInstance> SupportedGroups { get { return Groups.Where(g => g.isSupported); } }
 
-		#region Establish Link
 		public static Error EstablishConnection()
 		{
 			try
@@ -745,6 +744,13 @@ namespace Ginger.Integration
 			SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
 		}
 
+		public static Error RefreshCharacters()
+		{
+			if (Current == null)
+				return Error.NotConnected;
+			return Current.RefreshCharacters();
+		}
+
 		public static bool GetAppVersion(out VersionNumber appVersion)
 		{
 #if DEBUG
@@ -775,7 +781,6 @@ namespace Ginger.Integration
 			appVersion = VersionNumber.Zero;
 			return false;
 		}
-#endregion
 	}
 
 	public static class SqlExtensions
@@ -942,5 +947,137 @@ namespace Ginger.Integration
 
 			return lsImages.ToArray();
 		}
+
+		public static void ToPartyNames(Backyard.ChatStaging staging, string characterId, string userId)
+		{
+			if (string.IsNullOrEmpty(staging.system) == false)
+				ToPartyNames(ref staging.system, characterId, userId);
+			if (string.IsNullOrEmpty(staging.scenario) == false)
+				ToPartyNames(ref staging.scenario, characterId, userId);
+			if (string.IsNullOrEmpty(staging.greeting) == false)
+				ToPartyNames(ref staging.greeting, characterId, userId);
+			if (string.IsNullOrEmpty(staging.example) == false)
+				ToPartyNames(ref staging.example, characterId, userId);
+			if (string.IsNullOrEmpty(staging.authorNote) == false)
+				ToPartyNames(ref staging.authorNote, characterId, userId);
+		}
+
+		public static void ToPartyNames(ref string text, string characterId, string userId)
+		{
+			if (string.IsNullOrEmpty(text))
+				return;
+
+			var sb = new StringBuilder(text);
+
+			// Character placeholder
+			string characterPlaceholder;
+			if (string.IsNullOrEmpty(characterId) == false)
+				characterPlaceholder = $"{{_cfg&:{characterId}:cfg&_}}";
+			else
+				characterPlaceholder = Current.MainCharacter.namePlaceholder;
+			sb.Replace("{character}", characterPlaceholder, false);
+
+			// User placeholder
+			if (string.IsNullOrEmpty(userId) == false)
+				sb.Replace("{user}", $"{{_cfg&:{userId}:cfg&_}}", false);
+
+			text = sb.ToString();
+		}
+
+		public static void FromPartyNames(Backyard.ChatStaging staging, string groupId)
+		{
+			var knownIds = new Dictionary<string, string>();
+
+			if (string.IsNullOrEmpty(staging.system) == false)
+				FromPartyNames(ref staging.system, groupId, knownIds);
+			if (string.IsNullOrEmpty(staging.scenario) == false)
+				FromPartyNames(ref staging.scenario, groupId, knownIds);
+			if (string.IsNullOrEmpty(staging.greeting) == false)
+				FromPartyNames(ref staging.greeting, groupId, knownIds);
+			if (string.IsNullOrEmpty(staging.example) == false)
+				FromPartyNames(ref staging.example, groupId, knownIds);
+			if (string.IsNullOrEmpty(staging.authorNote) == false)
+				FromPartyNames(ref staging.authorNote, groupId, knownIds);
+		}
+
+		public static void FromPartyNames(ref string text, string groupId, Dictionary<string, string> knownIds = null)
+		{
+			if (string.IsNullOrEmpty(text))
+				return;
+
+			int pos_begin = text.IndexOf("{_cfg&:");
+			if (pos_begin == -1)
+				return;
+
+			var sb = new StringBuilder(text);
+			while (pos_begin != -1)
+			{
+				int pos_end = sb.IndexOf(":cfg&_}", pos_begin + 7);
+				if (pos_end == -1)
+					break;
+
+				string characterId = sb.Substring(pos_begin + 7, pos_end - pos_begin - 7);
+				sb.Remove(pos_begin, pos_end - pos_begin + 7);
+
+				string placeholder = "{character}";
+				if (knownIds != null && knownIds.TryGetValue(characterId, out placeholder))
+				{
+					sb.Insert(pos_begin, placeholder);
+				}
+				else if (Backyard.ConnectionEstablished)
+				{
+					Backyard.CharacterInstance character;
+					if (Backyard.Current.GetCharacter(characterId, out character))
+					{
+						if (character.isUser)
+							placeholder = "{user}";
+						else if (groupId != null)
+						{
+							Backyard.GroupInstance group;
+							if (!(Backyard.Current.GetGroup(groupId, out group) && group.members != null && group.members.Contains(characterId)))
+								placeholder = character.name; // Not primary character
+						}
+					}
+					sb.Insert(pos_begin, placeholder);
+
+					if (knownIds != null)
+						knownIds.Add(characterId, placeholder);
+				}
+				else
+				{
+					sb.Insert(pos_begin, placeholder);
+				}
+				
+				pos_begin = sb.IndexOf("{_cfg&:", pos_begin);
+			}
+
+			text = sb.ToString();
+		}
+
+		public static string ToFolderUrl(string label)
+		{
+			if (string.IsNullOrWhiteSpace(label))
+				return null;
+
+			label = label.Trim().ToLowerInvariant();
+
+			StringBuilder sbFormat = new StringBuilder(label.Length);
+			for (int i = 0; i < label.Length; ++i)
+			{
+				char c = label[i];
+				if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-' || c == '_') // Valid chars
+					sbFormat.Append(c);
+				else if (c >= 'A' && c <= 'Z')
+					sbFormat.Append(char.ToLowerInvariant(c));
+				else if (char.IsWhiteSpace(c))
+					sbFormat.Append('-');
+				else if ((c & 0xFF) == c)
+					sbFormat.Append(string.Format("{0:x2}", c & 0xFF));
+				else
+					sbFormat.Append(string.Format("{0:x4}", c & 0xFFFF));
+			}
+			return sbFormat.ToString();
+		}
+
 	}
 }

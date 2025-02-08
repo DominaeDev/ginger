@@ -2304,7 +2304,7 @@ namespace Ginger
 				else
 				{
 					// Fetch characters
-					if (Backyard.Current.RefreshCharacters() != Backyard.Error.NoError)
+					if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 					{
 						// Error
 						MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
