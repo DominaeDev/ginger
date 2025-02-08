@@ -1446,7 +1446,7 @@ namespace Ginger
 			}
 		}
 
-		public static bool ExportGingerChat(ChatInstance chatInstance, string filename)
+		public static bool ExportGingerChat(Backyard.ChatInstance chatInstance, string filename)
 		{
 			if (chatInstance == null)
 				return false;

@@ -7,6 +7,8 @@ using System.Globalization;
 
 namespace Ginger
 {
+	using ChatInstance = Backyard.ChatInstance;
+
 	public class TextFileChat
 	{
 		public class Message

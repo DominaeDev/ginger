@@ -49,7 +49,7 @@ namespace Ginger
 					&& AppSettings.BackyardLink.LastVersion.Minor == appVersion.Minor)
 				{
 					if (Backyard.EstablishConnection() == Backyard.Error.NoError)
-						Backyard.RefreshCharacters();
+						Backyard.Current.RefreshCharacters();
 					else
 						AppSettings.BackyardLink.Enabled = false;
 				}

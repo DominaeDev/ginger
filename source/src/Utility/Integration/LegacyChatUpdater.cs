@@ -3,7 +3,10 @@ using System.Linq;
 
 namespace Ginger.Integration
 {
-	using WorkerError = AsyncTaskQueue<GroupInstance, RepairLegacyChatsWorker.WorkerResult>.Error;
+	using GroupInstance = Backyard.GroupInstance;
+	using ChatParameters = Backyard.ChatParameters;
+
+	using WorkerError = AsyncTaskQueue<Backyard.GroupInstance, RepairLegacyChatsWorker.WorkerResult>.Error;
 
 	public class LegacyChatUpdater : AsyncTask<RepairLegacyChatsWorker, GroupInstance, RepairLegacyChatsWorker.WorkerResult>
 	{
@@ -103,7 +106,13 @@ namespace Ginger.Integration
 
 		private WorkerError RepairChat(GroupInstance group, out int modified)
 		{
-			var error = Backyard.RepairChats(group, out modified);
+			if (Backyard.ConnectionEstablished == false)
+			{
+				modified = 0;
+				return WorkerError.DatabaseError;
+			}
+
+			var error = Backyard.Current.RepairChats(group, out modified);
 			if (error == Backyard.Error.SQLCommandFailed || error == Backyard.Error.NotConnected)
 				return WorkerError.DatabaseError;
 			else if (error != Backyard.Error.NoError)

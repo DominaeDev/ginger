@@ -8,6 +8,9 @@ using System.Linq;
 
 namespace Ginger.Integration
 {
+	using CharacterInstance = Backyard.CharacterInstance;
+	using FolderInstance = Backyard.FolderInstance;
+
 	public class BulkImporter
 	{
 		public delegate void OnProgress(int percent);
@@ -293,14 +296,14 @@ namespace Ginger.Integration
 				var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
 				FaradayCardV4 card = FaradayCardV4.FromOutput(output);
 
-				Backyard.ImageInput[] imageInput = Backyard.GatherImages();
+				Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
 				BackupData.Chat[] chats = null;
 
 				if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1)
-					chats = Backyard.GatherChats(card, output, imageInput);
+					chats = Backyard.Current.GatherChats(card, output, imageInput);
 
 				Backyard.Link.Image[] imageLinks; // Ignored
-				var writeError = Backyard.CreateNewCharacter(card, imageInput, chats, out characterInstance, out imageLinks, null, parentFolder);
+				var writeError = Backyard.Current.CreateNewCharacter(card, imageInput, chats, out characterInstance, out imageLinks, null, parentFolder);
 				if (writeError != Backyard.Error.NoError)
 				{
 					characterInstance = default(CharacterInstance);
@@ -317,6 +320,12 @@ namespace Ginger.Integration
 
 		private WorkerError ImportBackup(string filename, FolderInstance parentFolder, out CharacterInstance characterInstance)
 		{
+			if (Backyard.ConnectionEstablished == false)
+			{
+				characterInstance = default(CharacterInstance);
+				return WorkerError.DatabaseError;
+			}
+
 			BackupData backup;
 			var readError = BackupUtil.ReadBackup(filename, out backup);
 			if (readError != FileUtil.Error.NoError)
@@ -367,7 +376,7 @@ namespace Ginger.Integration
 
 			// Write character to database
 			Backyard.Link.Image[] imageLinks; // Ignored
-			Backyard.Error error = Backyard.CreateNewCharacter(backup.characterCard, images.ToArray(), backup.chats.ToArray(), out characterInstance, out imageLinks, backup.userInfo, parentFolder);
+			Backyard.Error error = Backyard.Current.CreateNewCharacter(backup.characterCard, images.ToArray(), backup.chats.ToArray(), out characterInstance, out imageLinks, backup.userInfo, parentFolder);
 
 			if (error != Backyard.Error.NoError)
 				return WorkerError.DatabaseError;

@@ -10,6 +10,12 @@ using System.Text;
 
 namespace Ginger.Integration
 {
+	using CharacterInstance = Backyard.CharacterInstance;
+	using ChatInstance = Backyard.ChatInstance;
+	using ChatParameters = Backyard.ChatParameters;
+	using ChatStaging = Backyard.ChatStaging;
+	using ImageInstance = Backyard.ImageInstance;
+
 	public class BackupData
 	{
 		public FaradayCardV4 characterCard;
@@ -45,11 +51,17 @@ namespace Ginger.Integration
 	{
 		public static Backyard.Error CreateBackup(CharacterInstance characterInstance, out BackupData backupInfo)
 		{
+			if (Backyard.ConnectionEstablished == false)
+			{
+				backupInfo = null;
+				return Backyard.Error.NotConnected;
+			}
+
 			FaradayCardV4 card = null;
 			ImageInstance[] images;
 			ChatInstance[] chatInstances = null;
 			UserData userInfo;
-			var error = Backyard.ImportCharacter(characterInstance, out card, out images, out userInfo);
+			var error = Backyard.Current.ImportCharacter(characterInstance, out card, out images, out userInfo);
 			if (error != Backyard.Error.NoError)
 			{
 				backupInfo = null;
@@ -58,7 +70,7 @@ namespace Ginger.Integration
 
 			if (characterInstance.groupId != null)
 			{
-				error = Backyard.GetChats(characterInstance.groupId, out chatInstances);
+				error = Backyard.Current.GetChats(characterInstance.groupId, out chatInstances);
 				if (error != Backyard.Error.NoError)
 				{
 					backupInfo = null;
@@ -103,7 +115,7 @@ namespace Ginger.Integration
 						}
 
 						List<CharacterInstance> participants = c.participants
-							.Select(id => Backyard.GetCharacter(id))
+							.Select(id => Backyard.Current.GetCharacter(id))
 							.OrderBy(cc => cc.isCharacter)
 							.ToList();
 

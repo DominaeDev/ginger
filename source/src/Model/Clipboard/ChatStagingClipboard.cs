@@ -2,6 +2,8 @@
 
 namespace Ginger.Integration
 {
+	using ChatStaging = Backyard.ChatStaging;
+
 	[Serializable]
 	public class ChatStagingClipboard
 	{

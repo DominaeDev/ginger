@@ -8,6 +8,9 @@ using System.Linq;
 
 namespace Ginger.Integration
 {
+	using CharacterInstance = Backyard.CharacterInstance;
+	using ImageInstance = Backyard.ImageInstance;
+	
 	public class BulkExporter
 	{
 		public delegate void OnProgress(int percent);
@@ -298,7 +301,7 @@ namespace Ginger.Integration
 			// Read character from Backyard
 			FaradayCardV4 faradayCard;
 			ImageInstance[] images;
-			var importError = Backyard.ImportCharacter(characterInstance, out faradayCard, out images);
+			var importError = Backyard.Current.ImportCharacter(characterInstance, out faradayCard, out images);
 			if (importError != Backyard.Error.NoError)
 			{
 				filename = default(string);

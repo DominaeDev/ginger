@@ -11,7 +11,7 @@ namespace Ginger.Integration
 
 		public ChatHistory()
 		{
-			name = ChatInstance.DefaultName;
+			name = Backyard.ChatInstance.DefaultName;
 		}
 
 		public IEnumerable<Message> messagesWithoutGreeting

@@ -10,10 +10,14 @@ using System.Windows.Forms;
 using Ginger.Properties;
 using Ginger.Integration;
 
-using Backyard = Ginger.Integration.Backyard;
 
 namespace Ginger
 {
+	using CharacterInstance = Backyard.CharacterInstance;
+	using GroupInstance = Backyard.GroupInstance;
+	using ChatInstance = Backyard.ChatInstance;
+	using ChatStaging = Backyard.ChatStaging;
+
 	public partial class LinkEditChatDialog : FormEx
 	{
 		public GroupInstance Group { set { _groupInstance = value; } }

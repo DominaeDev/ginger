@@ -12,6 +12,8 @@ using System.Text;
 
 namespace Ginger
 {
+	using ChatParameters = Backyard.ChatParameters;
+
 	public static class AppSettings
 	{
 		public static class Settings

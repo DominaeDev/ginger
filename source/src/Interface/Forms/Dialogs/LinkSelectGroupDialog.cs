@@ -6,10 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using Backyard = Ginger.Integration.Backyard;
-
 namespace Ginger
 {
+	using CharacterInstance = Backyard.CharacterInstance;
+	using FolderInstance = Backyard.FolderInstance;
+	using GroupInstance = Backyard.GroupInstance;
+
 	public partial class LinkSelectGroupDialog : FormEx
 	{
 		public CharacterInstance[] Characters;
@@ -31,7 +33,7 @@ namespace Ginger
 		private void OnLoad(object sender, EventArgs e)
 		{
 			_charactersById = Characters.ToDictionary(c => c.instanceId, c => c);
-			if (Backyard.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
+			if (Backyard.Current.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
 				_chatCounts = new Dictionary<string, Backyard.ChatCount>(); // Empty
 
 			if (Groups.ContainsAny(g => g.Count > 2))

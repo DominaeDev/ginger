@@ -11,10 +11,13 @@ using Ginger.Integration;
 
 using WinAPICodePack = Microsoft.WindowsAPICodePack.Dialogs;
 
-using Backyard = Ginger.Integration.Backyard;
-
 namespace Ginger
 {
+	using CharacterInstance = Backyard.CharacterInstance;
+	using FolderInstance = Backyard.FolderInstance;
+	using ChatInstance = Backyard.ChatInstance;
+	using ImageInstance = Backyard.ImageInstance;
+
 	public partial class MainForm
 	{
 		private void Regenerate()

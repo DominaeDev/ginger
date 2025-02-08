@@ -357,7 +357,7 @@ namespace Ginger
 			IsDirty = true;
 		}
 
-		public static void LinkWith(CharacterInstance characterInstance, Backyard.Link.Image[] imageLinks)
+		public static void LinkWith(Backyard.CharacterInstance characterInstance, Backyard.Link.Image[] imageLinks)
 		{
 			Link = new Backyard.Link() {
 				characterId = characterInstance.instanceId,
@@ -444,7 +444,7 @@ namespace Ginger
 			imageLinks = lsImageLinks.ToArray();
 		}
 
-		public static void ImportImages(ImageInstance[] images, out Backyard.Link.Image[] imageLinks) // Backyard import
+		public static void ImportImages(Backyard.ImageInstance[] images, out Backyard.Link.Image[] imageLinks) // Backyard import
 		{
 			// Images
 			string[] imageUrls = images

@@ -5,6 +5,10 @@ using System.Linq;
 
 namespace Ginger.Integration
 {
+	using GroupInstance = Backyard.GroupInstance;
+	using ChatInstance = Backyard.ChatInstance;
+	using ChatParameters = Backyard.ChatParameters;
+	
 	public class BulkUpdateModelSettings
 	{
 		public delegate void OnProgress(int percent);
@@ -224,7 +228,7 @@ namespace Ginger.Integration
 			foreach (var group in groups)
 			{
 				ChatInstance[] chats;
-				var error = Backyard.GetChats(group.instanceId, out chats);
+				var error = Backyard.Current.GetChats(group.instanceId, out chats);
 				if (error == Backyard.Error.SQLCommandFailed || error == Backyard.Error.NotConnected)
 					return WorkerError.DatabaseError;
 				else if (chats == null || chats.Length == 0)
@@ -235,7 +239,7 @@ namespace Ginger.Integration
 			if (chatIds.Count == 0)
 				return WorkerError.UnknownError;
 
-			if (Backyard.UpdateChatParameters(chatIds.ToArray(), chatParameters, null) == Backyard.Error.NoError)
+			if (Backyard.Current.UpdateChatParameters(chatIds.ToArray(), chatParameters, null) == Backyard.Error.NoError)
 				return WorkerError.NoError;
 			
 			return WorkerError.UnknownError;

@@ -10,6 +10,10 @@ using System.Text;
 
 namespace Ginger
 {
+	using ChatInstance = Backyard.ChatInstance;
+	using ChatParameters = Backyard.ChatParameters;
+	using ChatStaging = Backyard.ChatStaging;
+	
 	public class GingerChatV2
 	{
 		private static JsonSchema _schema;

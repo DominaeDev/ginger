@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using Backyard = Ginger.Integration.Backyard;
-
 namespace Ginger
 {
+	using CharacterInstance = Backyard.CharacterInstance;
+	using FolderInstance = Backyard.FolderInstance;
+
 	public partial class LinkSelectMultipleCharactersDialog : FormEx
 	{
 		public CharacterInstance[] Characters;
@@ -35,7 +36,7 @@ namespace Ginger
 
 		private void OnLoad(object sender, EventArgs e)
 		{
-			if (Backyard.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
+			if (Backyard.ConnectionEstablished == false || Backyard.Current.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
 				_chatCounts = new Dictionary<string, Backyard.ChatCount>(); // Empty
 
 			Nodes = Characters.Select(c => new NodeState() {

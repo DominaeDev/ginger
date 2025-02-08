@@ -8,6 +8,10 @@ using Ginger.Integration;
 
 namespace Ginger
 {
+	using ChatInstance = Backyard.ChatInstance;
+	using ChatParameters = Backyard.ChatParameters;
+	using ChatStaging = Backyard.ChatStaging;
+
 	public class BackyardChatBackupV1
 	{
 		private static JsonSchema _schema;

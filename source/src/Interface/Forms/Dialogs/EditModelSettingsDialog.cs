@@ -6,6 +6,8 @@ using System.Windows.Forms;
 
 namespace Ginger
 {
+	using ChatParameters = Backyard.ChatParameters;
+
 	public partial class EditModelSettingsDialog : FormEx
 	{
 		public ChatParameters Editing { get; set; }

@@ -9,10 +9,10 @@ using System.Windows.Forms;
 using Ginger.Properties;
 using Ginger.Integration;
 
-using Backyard = Ginger.Integration.Backyard;
-
 namespace Ginger
 {
+	using CharacterInstance = Backyard.CharacterInstance;
+
 	public partial class MainForm : Form, IThemedControl
 	{
 		public static readonly string AppTitle = "Ginger";
@@ -1197,7 +1197,7 @@ namespace Ginger
 				}
 				else if (Current.HasLink)
 				{
-					if (Backyard.HasCharacter(Current.Link.characterId))
+					if (Backyard.Current.HasCharacter(Current.Link.characterId))
 					{
 						statusConnectionIcon.Image = Theme.Current.LinkInactive;
 						statusConnectionIcon.ToolTipText = "Connected; Link broken";
@@ -1383,7 +1383,8 @@ namespace Ginger
 			reestablishLinkMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasStaleLink;
 			reestablishLinkMenuItem.Visible = Backyard.ConnectionEstablished && Current.HasStaleLink;
 			editCurrentModelSettingsMenuItem.Enabled = Current.HasActiveLink
-				&& Backyard.GetGroupForCharacter(Current.Link.characterId).isEmpty == false;
+				&& Backyard.ConnectionEstablished
+				&& Backyard.Current.GetGroupForCharacter(Current.Link.characterId).isEmpty == false;
 						
 			// Link options
 			applyToFirstChatMenuItem.Checked = AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.First;
@@ -2303,7 +2304,7 @@ namespace Ginger
 				else
 				{
 					// Fetch characters
-					if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+					if (Backyard.Current.RefreshCharacters() != Backyard.Error.NoError)
 					{
 						// Error
 						MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);

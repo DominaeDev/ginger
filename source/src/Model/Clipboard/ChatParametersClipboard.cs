@@ -2,6 +2,8 @@
 
 namespace Ginger.Integration
 {
+	using ChatParameters = Backyard.ChatParameters;
+
 	[Serializable]
 	public class ChatParametersClipboard
 	{
