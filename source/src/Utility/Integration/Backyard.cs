@@ -746,9 +746,9 @@ namespace Ginger.Integration
 
 		public static Error RefreshCharacters()
 		{
-			if (Current == null)
+			if (_Instance == null)
 				return Error.NotConnected;
-			return Current.RefreshCharacters();
+			return _Instance.RefreshCharacters();
 		}
 
 		public static bool GetAppVersion(out VersionNumber appVersion)

@@ -35,7 +35,7 @@ namespace Ginger.Integration
 
 		public string LastError { get; private set; }
 
-		public bool ConnectionEstablished = false;
+		public bool ConnectionEstablished { get { return Backyard.ConnectionEstablished; } }
 
 		private SQLiteConnection CreateSQLiteConnection()
 		{
