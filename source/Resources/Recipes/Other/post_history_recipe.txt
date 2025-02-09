@@ -6,7 +6,6 @@
 	</Description>
 	<Color>#bfd0db</Color>
 	<Multiple>True</Multiple>
-	<Requires>not __actor</Requires>
 	<Flags>system-prompt, model, __post-history, __component, __formatting, __internal, __hidden</Flags>
 	
 	<!-- Parameters -->

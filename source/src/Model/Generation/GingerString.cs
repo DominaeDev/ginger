@@ -366,7 +366,7 @@ namespace Ginger
 
 			var sb = new StringBuilder(value);
 
-			string[] characterNames = Current.Characters.Select(c => c.spokenName ?? "").ToArray();
+			string[] characterNames = Current.Characters.Select(c => c.spokenName).ToArray();
 			bool bUseCharacterPlaceholder = (characterIndex == 0 && Current.Characters.Count == 1) || options.Contains(Generator.Option.Single);
 			bool bGroup = options.Contains(Generator.Option.Group);
 
@@ -450,7 +450,7 @@ namespace Ginger
 				break;
 			case AppSettings.Settings.OutputPreviewFormat.Faraday_Group:
 				sb = new StringBuilder(ToFaraday());
-				string[] characterNames = Current.Characters.Select(c => c.spokenName ?? "").ToArray();
+				string[] characterNames = Current.Characters.Select(c => c.spokenName).ToArray();
 				for (int i = 0; i < characterNames.Length; ++i)
 					sb.Replace(MakeInternalCharacterMarker(i), characterNames[i]);
 				break;
