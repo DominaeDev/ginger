@@ -1532,15 +1532,19 @@ namespace Ginger
 				items.Add(menuItem);
 			}
 
-			// Add new
+			// Add actor
 			items.Add(new ToolStripSeparator());
 			var addActor = new ToolStripMenuItem("Add actor");
 			addActor.Click += AddSupportingCharacterMenuItem_Click;
 			items.Add(addActor);
-			var removeActor = new ToolStripMenuItem(string.Format("Remove {0}", string.IsNullOrEmpty(Current.Character.spokenName) ? "actor" : Current.Character.spokenName));
-			removeActor.Enabled = Current.SelectedCharacter > 0;
-			removeActor.Click += RemoveSupportingCharacterMenuItem_Click;
-			items.Add(removeActor);
+
+			// Remove actor
+			if (Current.Characters.Count > 1)
+			{
+				var removeActor = new ToolStripMenuItem(string.Format("Remove {0}", string.IsNullOrEmpty(Current.Character.spokenName) ? "actor" : Current.Character.spokenName));
+				removeActor.Click += RemoveSupportingCharacterMenuItem_Click;
+				items.Add(removeActor);
+			}
 		}
 
 		private void ExpandAllMenuItem_Click(object sender, EventArgs e)
@@ -1665,6 +1669,8 @@ namespace Ginger
 			outputPreviewSillyTavernMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern;
 			outputPreviewFaradayMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday;
 			outputPreviewPlainTextMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.PlainText;
+			outputPreviewFaradayGroupMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group;
+			outputPreviewFaradayGroupMenuItem.Enabled = Current.Characters.Count > 1;
 
 			// Tools
 			bakeActorMenuItem.Visible = Current.Characters.Count > 1;
@@ -1910,13 +1916,16 @@ namespace Ginger
 
 		private void RemoveSupportingCharacterMenuItem_Click(object sender, EventArgs e)
 		{
-			if (Current.SelectedCharacter <= 0 || Current.SelectedCharacter >= Current.Characters.Count)
+			if (Current.SelectedCharacter < 0 || Current.SelectedCharacter >= Current.Characters.Count)
 				return;
 
 			Current.Characters.RemoveAt(Current.SelectedCharacter);
 			Current.Card.assets.RemoveActorPortrait(Current.SelectedCharacter, true);
 			Current.SelectedCharacter = Math.Min(Math.Max(Current.SelectedCharacter, 0), Current.Characters.Count - 1);
 			Current.IsDirty = true;
+
+			if (Current.Characters.Count < 2 && AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group)
+				AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday;
 
 			tabControl.SelectedIndex = 0;
 			recipeList.RecreatePanels();
@@ -2271,6 +2280,12 @@ namespace Ginger
 			Regenerate();
 		}
 
+		private void outputPreviewFaradayGroupMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday_Group;
+			Regenerate();
+			_bShouldRefreshTokenCount = true;
+		}
 
 		private void ViewRecipeMenuItem_CheckedChanged(object sender, EventArgs e)
 		{

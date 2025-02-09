@@ -3,7 +3,6 @@
 	<Order>100</Order>
 	<Color>#bfd0db</Color>
 	<Multiple>True</Multiple>
-	<Requires>not __actor</Requires>
 	<Flags>system-prompt, model, __system, __component, __formatting, __internal</Flags>
 	
 	<!-- Parameters -->

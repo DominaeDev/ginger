@@ -188,6 +188,7 @@ namespace Ginger {
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
+			this.outputPreviewFaradayGroupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -1089,7 +1090,7 @@ namespace Ginger {
 			// 
 			this.tokenBudgetNone.CheckOnClick = true;
 			this.tokenBudgetNone.Name = "tokenBudgetNone";
-			this.tokenBudgetNone.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudgetNone.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudgetNone.Text = "None";
 			this.tokenBudgetNone.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
@@ -1097,7 +1098,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget1K.CheckOnClick = true;
 			this.tokenBudget1K.Name = "tokenBudget1K";
-			this.tokenBudget1K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget1K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget1K.Text = "1024";
 			this.tokenBudget1K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
@@ -1105,7 +1106,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget2K.CheckOnClick = true;
 			this.tokenBudget2K.Name = "tokenBudget2K";
-			this.tokenBudget2K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget2K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget2K.Text = "2048";
 			this.tokenBudget2K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
@@ -1113,7 +1114,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget3K.CheckOnClick = true;
 			this.tokenBudget3K.Name = "tokenBudget3K";
-			this.tokenBudget3K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget3K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget3K.Text = "3072";
 			this.tokenBudget3K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
@@ -1121,7 +1122,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget4K.CheckOnClick = true;
 			this.tokenBudget4K.Name = "tokenBudget4K";
-			this.tokenBudget4K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget4K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget4K.Text = "4096";
 			this.tokenBudget4K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
@@ -1129,7 +1130,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget5K.CheckOnClick = true;
 			this.tokenBudget5K.Name = "tokenBudget5K";
-			this.tokenBudget5K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget5K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget5K.Text = "5120";
 			this.tokenBudget5K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
@@ -1137,7 +1138,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget6K.CheckOnClick = true;
 			this.tokenBudget6K.Name = "tokenBudget6K";
-			this.tokenBudget6K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget6K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget6K.Text = "6144";
 			this.tokenBudget6K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
@@ -1145,7 +1146,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget8K.CheckOnClick = true;
 			this.tokenBudget8K.Name = "tokenBudget8K";
-			this.tokenBudget8K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget8K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget8K.Text = "8192";
 			this.tokenBudget8K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
@@ -1153,7 +1154,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget10K.CheckOnClick = true;
 			this.tokenBudget10K.Name = "tokenBudget10K";
-			this.tokenBudget10K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget10K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget10K.Text = "10240";
 			this.tokenBudget10K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
@@ -1161,7 +1162,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget12K.CheckOnClick = true;
 			this.tokenBudget12K.Name = "tokenBudget12K";
-			this.tokenBudget12K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget12K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget12K.Text = "12288";
 			this.tokenBudget12K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
@@ -1169,7 +1170,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget16K.CheckOnClick = true;
 			this.tokenBudget16K.Name = "tokenBudget16K";
-			this.tokenBudget16K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget16K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget16K.Text = "16384";
 			this.tokenBudget16K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
@@ -1177,7 +1178,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget24K.CheckOnClick = true;
 			this.tokenBudget24K.Name = "tokenBudget24K";
-			this.tokenBudget24K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget24K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget24K.Text = "24576";
 			this.tokenBudget24K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
@@ -1185,7 +1186,7 @@ namespace Ginger {
 			// 
 			this.tokenBudget32K.CheckOnClick = true;
 			this.tokenBudget32K.Name = "tokenBudget32K";
-			this.tokenBudget32K.Size = new System.Drawing.Size(180, 22);
+			this.tokenBudget32K.Size = new System.Drawing.Size(104, 22);
 			this.tokenBudget32K.Text = "32768";
 			this.tokenBudget32K.Click += new System.EventHandler(this.TokenBudgetMenuItem_Click);
 			// 
@@ -1195,6 +1196,7 @@ namespace Ginger {
             this.outputPreviewDefaultMenuItem,
             this.outputPreviewSillyTavernMenuItem,
             this.outputPreviewFaradayMenuItem,
+            this.outputPreviewFaradayGroupMenuItem,
             this.outputPreviewPlainTextMenuItem});
 			this.outputPreviewToolStripMenuItem.Name = "outputPreviewToolStripMenuItem";
 			this.outputPreviewToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
@@ -1205,28 +1207,28 @@ namespace Ginger {
 			this.outputPreviewDefaultMenuItem.Checked = true;
 			this.outputPreviewDefaultMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.outputPreviewDefaultMenuItem.Name = "outputPreviewDefaultMenuItem";
-			this.outputPreviewDefaultMenuItem.Size = new System.Drawing.Size(157, 22);
+			this.outputPreviewDefaultMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.outputPreviewDefaultMenuItem.Text = "Ginger (default)";
 			this.outputPreviewDefaultMenuItem.Click += new System.EventHandler(this.outputPreviewDefaultMenuItem_Click);
 			// 
 			// outputPreviewSillyTavernMenuItem
 			// 
 			this.outputPreviewSillyTavernMenuItem.Name = "outputPreviewSillyTavernMenuItem";
-			this.outputPreviewSillyTavernMenuItem.Size = new System.Drawing.Size(157, 22);
+			this.outputPreviewSillyTavernMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.outputPreviewSillyTavernMenuItem.Text = "SillyTavern";
 			this.outputPreviewSillyTavernMenuItem.Click += new System.EventHandler(this.outputPreviewSillyTavernMenuItem_Click);
 			// 
 			// outputPreviewFaradayMenuItem
 			// 
 			this.outputPreviewFaradayMenuItem.Name = "outputPreviewFaradayMenuItem";
-			this.outputPreviewFaradayMenuItem.Size = new System.Drawing.Size(157, 22);
+			this.outputPreviewFaradayMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.outputPreviewFaradayMenuItem.Text = "Backyard AI";
 			this.outputPreviewFaradayMenuItem.Click += new System.EventHandler(this.outputPreviewFaradayMenuItem_Click);
 			// 
 			// outputPreviewPlainTextMenuItem
 			// 
 			this.outputPreviewPlainTextMenuItem.Name = "outputPreviewPlainTextMenuItem";
-			this.outputPreviewPlainTextMenuItem.Size = new System.Drawing.Size(157, 22);
+			this.outputPreviewPlainTextMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.outputPreviewPlainTextMenuItem.Text = "Plain text";
 			this.outputPreviewPlainTextMenuItem.Click += new System.EventHandler(this.outputPreviewPlainTextMenuItem_Click);
 			// 
@@ -1741,6 +1743,13 @@ namespace Ginger {
 			this.statusConnectionIcon.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusConnectionIcon.Size = new System.Drawing.Size(24, 17);
 			// 
+			// outputPreviewFaradayGroupMenuItem
+			// 
+			this.outputPreviewFaradayGroupMenuItem.Name = "outputPreviewFaradayGroupMenuItem";
+			this.outputPreviewFaradayGroupMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.outputPreviewFaradayGroupMenuItem.Text = "Backyard AI (Party)";
+			this.outputPreviewFaradayGroupMenuItem.Click += new System.EventHandler(this.outputPreviewFaradayGroupMenuItem_Click);
+			// 
 			// MainForm
 			// 
 			this.AllowDrop = true;
@@ -1939,6 +1948,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem writeUserPersonaMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem17;
 		private System.Windows.Forms.ToolStripMenuItem additionalCharactersMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem outputPreviewFaradayGroupMenuItem;
 	}
 }
 

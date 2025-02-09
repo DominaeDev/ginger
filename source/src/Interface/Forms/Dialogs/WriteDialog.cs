@@ -572,7 +572,7 @@ namespace Ginger
 			string text = GingerString.FromParameter(textBox.Text).ToString();
 			text = Ginger.Text.Process(text, Ginger.Text.EvalOption.LimitedOutputFormatting);
 
-			output.persona = GingerString.FromOutput(text, Current.SelectedCharacter, Current.SelectedCharacter == 0);
+			output.persona = GingerString.FromOutput(text, Current.SelectedCharacter, Generator.Option.None);
 
 			_inputHash = output.GetHashCode();
 			tokenQueue.Schedule(output, _inputHash, this);

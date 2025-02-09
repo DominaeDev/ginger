@@ -175,7 +175,7 @@ namespace Ginger
 							else
 								parameter = recipe.parameters.Find(p => p.id == parameterID);
 							if (parameter != null)
-								parameter.LoadValueFromXml(parameterNode, Utility.FirstNonEmpty(characters[0].spokenName, name, Constants.DefaultCharacterName), Current.Card.userPlaceholder);
+								parameter.LoadValueFromXml(parameterNode, Utility.FirstNonEmpty(characterNamePlaceholder, name, Constants.DefaultCharacterName), Current.Card.userPlaceholder);
 
 							++parameterIndex;
 							parameterNode = parameterNode.GetNextSibling();

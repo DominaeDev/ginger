@@ -3,7 +3,6 @@
 	<Color>#ddf5ef</Color>
 	<Order>8</Order>
 	<Multiple>True</Multiple>
-	<Requires>not __actor</Requires>
 	<Flags>user-persona, __user, __component, __formatting, __internal</Flags>
 	
 	<Text id="user-persona" style="component">

@@ -28,11 +28,29 @@ namespace Ginger
 			}
 			else if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern)
 				options |= Generator.Option.SillyTavernV2;
-			
 
-			Generator.Output output = Generator.Generate(options);
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group)
+			{
+				var outputs = Generator.GenerateMany(options);
+				outputBox.SetOutput(outputs);
 
-			outputBox.SetOutput(output);
+				sidePanel.SetLoreCount(outputs.Sum(o => o.hasLore ? o.lorebook.entries.Count : 0), true);
+				sidePanel.OnRegenerate();
+
+				// Recalculate token count
+				CalculateTokens(outputs[0]); //! Inaccurate
+			}
+			else
+			{
+				Generator.Output output = Generator.Generate(options);
+				outputBox.SetOutput(output);
+
+				sidePanel.SetLoreCount(output.hasLore ? output.lorebook.entries.Count : 0, true);
+				sidePanel.OnRegenerate();
+
+				// Recalculate token count
+				CalculateTokens(output);
+			}
 
 #if DEBUG && false
 			string faradayJson;
@@ -47,12 +65,6 @@ namespace Ginger
 			tavernJson = tavernCard.ToJson();
 			outputBox_Raw2.Text = tavernJson;
 #endif
-
-			sidePanel.SetLoreCount(output.hasLore ? output.lorebook.entries.Count : 0, true);
-			sidePanel.OnRegenerate();
-
-			// Recalculate token count
-			CalculateTokens(output);
 		}
 
 		private void CalculateTokens(Generator.Output output)
