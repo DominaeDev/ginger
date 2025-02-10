@@ -355,7 +355,6 @@ namespace Ginger
 			};
 			Characters.Add(character);
 			SelectedCharacter = Characters.Count - 1;
-
 			IsDirty = true;
 		}
 
@@ -481,12 +480,14 @@ namespace Ginger
 			public Backyard.Link link;
 			public bool isDirty;
 			public bool isFileDirty;
+			public string filename;
 		}
 
 		public static StashInfo Stash()
 		{
 			var stash = new StashInfo() {
 				instance = Instance,
+				filename = Filename,
 				link = Link,
 				isDirty = _bDirty,
 				isFileDirty = _bFileDirty,
@@ -499,6 +500,7 @@ namespace Ginger
 		{
 			Instance = stash.instance;
 			Link = stash.link;
+			Filename = stash.filename;
 			_bDirty = stash.isDirty;
 			_bFileDirty = stash.isFileDirty;
 		}

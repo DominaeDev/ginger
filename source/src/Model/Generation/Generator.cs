@@ -517,8 +517,8 @@ namespace Ginger
 			for (int i = 1; i < outputPerCharacter.Count; ++i)
 			{
 				outputs[i] = new Output() {
-					persona = outputPerCharacter[1].persona,
-					lorebook = outputPerCharacter[1].lorebook,
+					persona = outputPerCharacter[i].persona,
+					lorebook = outputPerCharacter[i].lorebook,
 				};
 			}
 

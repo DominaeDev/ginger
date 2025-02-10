@@ -1501,6 +1501,25 @@ namespace Ginger
 
 		private void PopulateSupportingCharactersMenu(ToolStripItemCollection items)
 		{
+			// New actor
+			var newActorMenuItem = new ToolStripMenuItem("New actor");
+			newActorMenuItem.Click += AddSupportingCharacterMenuItem_Click;
+			items.Add(newActorMenuItem);
+
+			// Import actor
+			var importActorMenuItem = new ToolStripMenuItem("Add from file...");
+			importActorMenuItem.Click += ImportSupportingCharacterMenuItem_Click;
+			items.Add(importActorMenuItem);
+
+			// Export actor
+			var exportActorMenuItem = new ToolStripMenuItem("Save actor as...") {
+				Enabled = Current.SelectedCharacter > 0,
+			};
+			exportActorMenuItem.Click += ExportSupportingCharacterMenuItem_Click;
+			items.Add(exportActorMenuItem);
+
+			items.Add(new ToolStripSeparator());
+
 			// Primary character
 			var primary = new ToolStripMenuItem() {
 				Text = Current.MainCharacter.namePlaceholder,
@@ -1532,19 +1551,15 @@ namespace Ginger
 				items.Add(menuItem);
 			}
 
-			// Add actor
-			items.Add(new ToolStripSeparator());
-			var addActor = new ToolStripMenuItem("Add actor");
-			addActor.Click += AddSupportingCharacterMenuItem_Click;
-			items.Add(addActor);
-
 			// Remove actor
 			if (Current.Characters.Count > 1)
 			{
+				items.Add(new ToolStripSeparator());
 				var removeActor = new ToolStripMenuItem(string.Format("Remove {0}", string.IsNullOrEmpty(Current.Character.spokenName) ? "actor" : Current.Character.spokenName));
 				removeActor.Click += RemoveSupportingCharacterMenuItem_Click;
 				items.Add(removeActor);
 			}
+
 		}
 
 		private void ExpandAllMenuItem_Click(object sender, EventArgs e)
@@ -1697,9 +1712,9 @@ namespace Ginger
 
 			// Actors menu
 			if (Current.Characters.Count > 1)
-				additionalCharactersMenuItem.Text = string.Format("Actors ({0})", Current.Characters.Count);
+				additionalCharactersMenuItem.Text = string.Format("&Actors ({0})", Current.Characters.Count);
 			else
-				additionalCharactersMenuItem.Text = "Actor";
+				additionalCharactersMenuItem.Text = "&Actors";
 		}
 
 		private void ImportLorebookJsonMenuItem_Click(object sender, EventArgs e)
@@ -1911,7 +1926,48 @@ namespace Ginger
 			RefreshTitle();
 			sidePanel.SetSpokenName(Constants.DefaultCharacterName);
 
-			Undo.Push(Undo.Kind.RecipeList, "Add actor");
+			Undo.Push(Undo.Kind.RecipeList, "New actor");
+		}
+
+		private void ImportSupportingCharacterMenuItem_Click(object sender, EventArgs e)
+		{
+			if (Current.Characters.Count >= 32) // This number is arbitrary. I just wanted an upper bound.
+			{
+				MessageBox.Show(Resources.error_max_characters, Resources.cap_save_snippet, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				return;
+			}
+
+			int filter = AppSettings.User.LastImportCharacterFilter;
+			if (filter < 0 || filter > 5)
+				filter = 0;
+
+			// Open file...
+			importFileDialog.Title = Resources.cap_import_character;
+			importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml";
+			importFileDialog.FilterIndex = filter;
+			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			importFileDialog.FileName = "";
+			var result = importFileDialog.ShowDialog();
+			if (result != DialogResult.OK)
+				return;
+
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
+			AppSettings.User.LastImportCharacterFilter = importFileDialog.FilterIndex;
+
+			ImportActorFromFile(importFileDialog.FileName);
+
+			tabControl.SelectedIndex = 0;
+			recipeList.RecreatePanels();
+			sidePanel.RefreshValues();
+			sidePanel.OnActorChanged();
+			RefreshTitle();
+
+			Undo.Push(Undo.Kind.RecipeList, "New actor");
+		}
+
+
+		private void ExportSupportingCharacterMenuItem_Click(object sender, EventArgs e)
+		{
 		}
 
 		private void RemoveSupportingCharacterMenuItem_Click(object sender, EventArgs e)

@@ -2441,7 +2441,6 @@ namespace Ginger.Properties {
         ///	&lt;Order&gt;3&lt;/Order&gt;
         ///	&lt;Color&gt;FloralWhite&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;greeting, __greeting,  __component, __internal&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
@@ -2468,7 +2467,6 @@ namespace Ginger.Properties {
         ///	&lt;Color&gt;FloralWhite&lt;/Color&gt;
         ///	&lt;Order&gt;102&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;__group-greeting, __component, __internal, __ccv3&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
@@ -2476,7 +2474,8 @@ namespace Ginger.Properties {
         ///		&lt;Label&gt;First message&lt;/Label&gt;
         ///	&lt;/Text&gt;
         ///	
-        ///	&lt;Greeting group=&quot;true&quot;&gt;{greeting:local}&lt;/Greetin [rest of string was truncated]&quot;;.
+        ///	&lt;Greeting group=&quot;true&quot;&gt;{greeting:local}&lt;/Greeting&gt;
+        ///&lt;/Ginger&gt;.
         /// </summary>
         internal static string group_greeting_recipe {
             get {
@@ -3193,7 +3192,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Same as main portrait.
+        ///   Looks up a localized string similar to No actor portrait.
         /// </summary>
         internal static string msg_no_actor_portrait {
             get {
@@ -3381,13 +3380,12 @@ namespace Ginger.Properties {
         ///	&lt;/Description&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;system-prompt, model, __post-history, __component, __formatting, __internal, __hidden&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
         ///	&lt;Text id=&quot;system&quot; style=&quot;component&quot;&gt;
         ///		&lt;Label&gt;Instructions&lt;/Label&gt;
-        ///		&lt;Description&gt;In [rest of string was truncated]&quot;;.
+        ///		&lt;Description&gt;Instructions to the model. Not meant  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string post_history_recipe {
             get {
@@ -3979,7 +3977,6 @@ namespace Ginger.Properties {
         ///	&lt;Order&gt;100&lt;/Order&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;system-prompt, model, __system, __component, __formatting, __internal&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
@@ -3990,7 +3987,8 @@ namespace Ginger.Properties {
         ///	
         ///	&lt;Toggle id=&quot;important&quot;&gt;
         ///		&lt;Label&gt;Important&lt;/Label&gt;
-        ///	 [rest of string was truncated]&quot;;.
+        ///		&lt;Default&gt;no&lt;/Default&gt;
+        ///		&lt;Descript [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string system_recipe {
             get {
@@ -5574,7 +5572,6 @@ namespace Ginger.Properties {
         ///	&lt;Color&gt;#ddf5ef&lt;/Color&gt;
         ///	&lt;Order&gt;8&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;user-persona, __user, __component, __formatting, __internal&lt;/Flags&gt;
         ///	
         ///	&lt;Text id=&quot;user-persona&quot; style=&quot;component&quot;&gt;

@@ -554,6 +554,20 @@ namespace Ginger
 			public static StringHandle Animated = "animated";
 			public static StringHandle ActorAsset = "actor-";
 		}
+
+		public static AssetFile FromImage(Image image, AssetType assetType = AssetType.Icon)
+		{
+			if (image == null)
+				return null;
+
+			return new AssetFile() {
+				name = "Image",
+				ext = "png",
+				assetType = assetType,
+				data = AssetData.FromBytes(Utility.ImageToMemory(image, Utility.ImageFileFormat.Jpeg)),
+				uriType = UriType.Embedded,
+			};
+		}
 	}
 
 	public struct AssetData
@@ -790,9 +804,7 @@ namespace Ginger
 
 		public AssetFile GetMainPortraitOverride()
 		{
-			var asset = this.FirstOrDefault(a => a.isMainPortraitOverride
-				&& a.isDefaultAsset == false
-				&& Utility.IsSupportedImageFileExt(a.ext));
+			var asset = this.FirstOrDefault(a => a.isMainPortraitOverride && Utility.IsSupportedImageFileExt(a.ext));
 
 			if (asset == null)
 			{

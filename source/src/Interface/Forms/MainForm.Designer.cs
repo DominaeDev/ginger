@@ -122,6 +122,7 @@ namespace Ginger {
 			this.outputPreviewDefaultMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.outputPreviewSillyTavernMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.outputPreviewFaradayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.outputPreviewFaradayGroupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.outputPreviewPlainTextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.checkSpellingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.enableSpellCheckingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -188,7 +189,6 @@ namespace Ginger {
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
-			this.outputPreviewFaradayGroupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -1207,28 +1207,35 @@ namespace Ginger {
 			this.outputPreviewDefaultMenuItem.Checked = true;
 			this.outputPreviewDefaultMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.outputPreviewDefaultMenuItem.Name = "outputPreviewDefaultMenuItem";
-			this.outputPreviewDefaultMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.outputPreviewDefaultMenuItem.Size = new System.Drawing.Size(174, 22);
 			this.outputPreviewDefaultMenuItem.Text = "Ginger (default)";
 			this.outputPreviewDefaultMenuItem.Click += new System.EventHandler(this.outputPreviewDefaultMenuItem_Click);
 			// 
 			// outputPreviewSillyTavernMenuItem
 			// 
 			this.outputPreviewSillyTavernMenuItem.Name = "outputPreviewSillyTavernMenuItem";
-			this.outputPreviewSillyTavernMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.outputPreviewSillyTavernMenuItem.Size = new System.Drawing.Size(174, 22);
 			this.outputPreviewSillyTavernMenuItem.Text = "SillyTavern";
 			this.outputPreviewSillyTavernMenuItem.Click += new System.EventHandler(this.outputPreviewSillyTavernMenuItem_Click);
 			// 
 			// outputPreviewFaradayMenuItem
 			// 
 			this.outputPreviewFaradayMenuItem.Name = "outputPreviewFaradayMenuItem";
-			this.outputPreviewFaradayMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.outputPreviewFaradayMenuItem.Size = new System.Drawing.Size(174, 22);
 			this.outputPreviewFaradayMenuItem.Text = "Backyard AI";
 			this.outputPreviewFaradayMenuItem.Click += new System.EventHandler(this.outputPreviewFaradayMenuItem_Click);
+			// 
+			// outputPreviewFaradayGroupMenuItem
+			// 
+			this.outputPreviewFaradayGroupMenuItem.Name = "outputPreviewFaradayGroupMenuItem";
+			this.outputPreviewFaradayGroupMenuItem.Size = new System.Drawing.Size(174, 22);
+			this.outputPreviewFaradayGroupMenuItem.Text = "Backyard AI (Party)";
+			this.outputPreviewFaradayGroupMenuItem.Click += new System.EventHandler(this.outputPreviewFaradayGroupMenuItem_Click);
 			// 
 			// outputPreviewPlainTextMenuItem
 			// 
 			this.outputPreviewPlainTextMenuItem.Name = "outputPreviewPlainTextMenuItem";
-			this.outputPreviewPlainTextMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.outputPreviewPlainTextMenuItem.Size = new System.Drawing.Size(174, 22);
 			this.outputPreviewPlainTextMenuItem.Text = "Plain text";
 			this.outputPreviewPlainTextMenuItem.Click += new System.EventHandler(this.outputPreviewPlainTextMenuItem_Click);
 			// 
@@ -1368,7 +1375,7 @@ namespace Ginger {
             this.optionsToolStripMenuItem1});
 			this.backyardMenuItem.Name = "backyardMenuItem";
 			this.backyardMenuItem.Size = new System.Drawing.Size(81, 20);
-			this.backyardMenuItem.Text = "Backyard AI";
+			this.backyardMenuItem.Text = "&Backyard AI";
 			// 
 			// importLinkedMenuItem
 			// 
@@ -1742,13 +1749,6 @@ namespace Ginger {
 			this.statusConnectionIcon.Name = "statusConnectionIcon";
 			this.statusConnectionIcon.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusConnectionIcon.Size = new System.Drawing.Size(24, 17);
-			// 
-			// outputPreviewFaradayGroupMenuItem
-			// 
-			this.outputPreviewFaradayGroupMenuItem.Name = "outputPreviewFaradayGroupMenuItem";
-			this.outputPreviewFaradayGroupMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.outputPreviewFaradayGroupMenuItem.Text = "Backyard AI (Party)";
-			this.outputPreviewFaradayGroupMenuItem.Click += new System.EventHandler(this.outputPreviewFaradayGroupMenuItem_Click);
 			// 
 			// MainForm
 			// 

@@ -355,7 +355,7 @@ namespace Ginger
 			int jsonErrors = 0;
 			FileUtil.Error error;
 			if (ext == ".png")
-				error = FileUtil.ImportCharacterFromPNG(filename, out jsonErrors, FileUtil.Format.SillyTavernV2 | FileUtil.Format.SillyTavernV3 | FileUtil.Format.Faraday);
+				error = FileUtil.ImportCharacterFromPNG(filename, out jsonErrors, FileUtil.Format.All);
 			else if (ext == ".json")
 				error = FileUtil.ImportCharacterJson(filename, out jsonErrors);
 			else if (ext == ".charx")
@@ -2858,6 +2858,49 @@ namespace Ginger
 
 			MessageBox.Show(this, string.Format(Resources.msg_link_deleted_characters, NumCharacters(characters.Length)), Resources.cap_link_delete_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			
+			return true;
+		}
+
+		private bool ImportActorFromFile(string filename)
+		{
+			var stash = Current.Stash();
+			Current.Instance = new GingerCharacter();
+			Current.Reset();
+
+			if (ImportCharacter(filename) == false)
+			{
+				// Error
+				Current.Restore(stash);
+				return false;
+			}
+
+			// Get portrait
+			AssetFile portraitAsset = Current.Card.assets.GetMainPortraitOverride();
+			if (portraitAsset == null && Current.Card.portraitImage != null)
+				portraitAsset = AssetFile.FromImage(Current.Card.portraitImage);
+			if (portraitAsset == null)
+				portraitAsset = Current.Card.assets.GetPortraitAsset();
+
+			// Add actor
+			CharacterData importedCharacter = Current.Character;
+			importedCharacter.spokenName = Current.Name;
+			Current.Restore(stash);
+			Current.Characters.Add(importedCharacter);
+			Current.SelectedCharacter = Current.Characters.Count - 1;
+			Current.IsDirty = true;
+
+			// Add portrait
+			if (portraitAsset != null)
+			{
+				portraitAsset.name = string.Format("Portrait ({0})", Current.Character.spokenName);
+				portraitAsset.actorIndex = Current.Characters.Count - 1;
+				Current.Card.assets.Add(portraitAsset);
+			}
+
+			// Validate recipes
+			Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, true);
+			var evalCookie = new EvaluationCookie() { ruleSuppliers = Current.RuleSuppliers };
+			Current.Character.recipes.RemoveAll(r => r.isBase || (r.requires != null && r.requires.Evaluate(context, evalCookie)));
 			return true;
 		}
 	}
