@@ -641,7 +641,8 @@ namespace Ginger
 			if (this.ContainsAny(a => a.isMainPortraitOverride))
 			{
 				int idxOverride = this.FindIndex(a => a.isMainPortraitOverride);
-				this[idxOverride].name = AssetFile.MainAssetName;
+				if (idxOverride > 0)
+					this.Swap(0, idxOverride); // Move to first
 				this.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
 				return; // A portrait image already exists
 			}
