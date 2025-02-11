@@ -152,7 +152,7 @@ namespace Ginger
 				{
 					portraitImage.uid = asset.uid; //?
 					asset.name = "Portrait (animation)";
-					asset.AddTags(AssetFile.Tags.Animated);
+					asset.AddTags(AssetFile.Tag.Animated);
 				}
 			}
 			else

@@ -478,6 +478,7 @@ namespace Ginger
 		{
 			public GingerCharacter instance;
 			public Backyard.Link link;
+			public int selectedCharacter;
 			public bool isDirty;
 			public bool isFileDirty;
 			public string filename;
@@ -491,8 +492,14 @@ namespace Ginger
 				link = Link,
 				isDirty = _bDirty,
 				isFileDirty = _bFileDirty,
+				selectedCharacter = SelectedCharacter,
 			};
+			Instance = null;
+			Filename = null;
+			SelectedCharacter = 0;
 			Link = null;
+			_bDirty = false;
+			_bFileDirty = false;
 			return stash;
 		}
 
@@ -503,6 +510,7 @@ namespace Ginger
 			Filename = stash.filename;
 			_bDirty = stash.isDirty;
 			_bFileDirty = stash.isFileDirty;
+			SelectedCharacter = stash.selectedCharacter;
 		}
 	}
 

@@ -1513,7 +1513,7 @@ namespace Ginger
 
 			// Export actor
 			var exportActorMenuItem = new ToolStripMenuItem("Save actor as...") {
-				Enabled = Current.SelectedCharacter > 0,
+				Enabled = Current.Characters.Count > 1,
 			};
 			exportActorMenuItem.Click += ExportSupportingCharacterMenuItem_Click;
 			items.Add(exportActorMenuItem);
@@ -1954,25 +1954,34 @@ namespace Ginger
 			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
 			AppSettings.User.LastImportCharacterFilter = importFileDialog.FilterIndex;
 
-			ImportActorFromFile(importFileDialog.FileName);
-
-			tabControl.SelectedIndex = 0;
-			recipeList.RecreatePanels();
-			sidePanel.RefreshValues();
-			sidePanel.OnActorChanged();
-			RefreshTitle();
-
-			Undo.Push(Undo.Kind.RecipeList, "New actor");
+			if (ImportActorFromFile(importFileDialog.FileName))
+			{
+				tabControl.SelectedIndex = 0;
+				recipeList.RecreatePanels();
+				sidePanel.RefreshValues();
+				sidePanel.OnActorChanged();
+				RefreshTitle();
+				Undo.Push(Undo.Kind.RecipeList, "Import actor");
+			}
 		}
-
 
 		private void ExportSupportingCharacterMenuItem_Click(object sender, EventArgs e)
 		{
+			ExportCurrentActor();
 		}
 
 		private void RemoveSupportingCharacterMenuItem_Click(object sender, EventArgs e)
 		{
-			RemoveCurrentActor();
+			if (RemoveCurrentActor())
+			{
+				tabControl.SelectedIndex = 0;
+				recipeList.RecreatePanels();
+				sidePanel.RefreshValues();
+				sidePanel.OnActorChanged();
+				RefreshTitle();
+				StealFocus();
+				Undo.Push(Undo.Kind.RecipeList, "Remove actor");
+			}
 		}
 
 		private void SelectCharacter(int characterIndex)

@@ -6154,7 +6154,7 @@ namespace Ginger.Integration
 						uriType = AssetFile.UriType.Embedded,
 					};
 				}
-				portraitBackground.AddTags(AssetFile.Tags.PortraitBackground);
+				portraitBackground.AddTags(AssetFile.Tag.PortraitBackground);
 				assets.Add(portraitBackground);
 				Current.Card.assets.Add(portraitBackground);
 				Current.IsFileDirty = true;

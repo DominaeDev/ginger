@@ -182,7 +182,7 @@ namespace Ginger
 			{
 				Image statusIcon;
 				int actorIndex = -1;
-				if (asset.HasTag(AssetFile.Tags.PortraitOverride))
+				if (asset.HasTag(AssetFile.Tag.PortraitOverride))
 					statusIcon = Theme.Current.PortraitOverrideAsset;
 				else
 				{
@@ -195,7 +195,7 @@ namespace Ginger
 
 				iconCell.Value = statusIcon;
 
-				if (asset.HasTag(AssetFile.Tags.PortraitOverride))
+				if (asset.HasTag(AssetFile.Tag.PortraitOverride))
 					iconCell.ToolTipText = Resources.tooltip_asset_override;
 				else if (actorIndex > 0 && actorIndex < Current.Characters.Count)
 					iconCell.ToolTipText = string.Format(Resources.tooltip_asset_actor_portrait, Current.Characters[actorIndex].spokenName);
@@ -367,7 +367,7 @@ namespace Ginger
 			}
 
 			if (assetType != AssetFile.AssetType.Icon)
-				Assets[index].RemoveTags(AssetFile.Tags.PortraitOverride);
+				Assets[index].RemoveTags(AssetFile.Tag.PortraitOverride);
 
 			if (assetType != AssetFile.AssetType.Custom)
 			{

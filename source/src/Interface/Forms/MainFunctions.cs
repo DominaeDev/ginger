@@ -1164,7 +1164,7 @@ namespace Ginger
 			if (portraitAsset != null)
 			{
 				// Promote to override
-				portraitAsset.AddTags(AssetFile.Tags.PortraitOverride);
+				portraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
 
 				Image image;
 				if (Utility.LoadImageFromMemory(portraitAsset.data.bytes, out image))
@@ -2864,45 +2864,99 @@ namespace Ginger
 		private bool ImportActorFromFile(string filename)
 		{
 			var stash = Current.Stash();
-			Current.Instance = new GingerCharacter();
-			Current.Reset();
-
-			if (ImportCharacter(filename) == false)
+			try
 			{
-				// Error
+				Undo.Suspend();
+				Current.Instance = new GingerCharacter();
+				Current.Reset();
+
+				if (ImportCharacter(filename) == false)
+				{
+					Current.Restore(stash);
+					return false;
+				}
+
+				// Get portrait
+				AssetFile portraitAsset = Current.Card.assets.GetMainPortraitOverride();
+				if (portraitAsset == null && Current.Card.portraitImage != null)
+					portraitAsset = AssetFile.FromImage(Current.Card.portraitImage);
+				if (portraitAsset == null)
+					portraitAsset = Current.Card.assets.GetPortraitAsset();
+
+				// Add actor
+				CharacterData importedCharacter = Current.Character;
+				importedCharacter.spokenName = Current.Name;
 				Current.Restore(stash);
-				return false;
+
+				Current.Characters.Add(importedCharacter);
+				Current.SelectedCharacter = Current.Characters.Count - 1;
+				Current.IsDirty = true;
+
+				// Add portrait
+				if (portraitAsset != null)
+				{
+					portraitAsset.name = string.Format("Portrait ({0})", Current.Character.spokenName);
+					portraitAsset.actorIndex = Current.Characters.Count - 1;
+					Current.Card.assets.Add(portraitAsset);
+				}
+				Current.Card.assets.Validate();
+
+				// Validate recipes
+				Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, true);
+				var evalCookie = new EvaluationCookie() { ruleSuppliers = Current.RuleSuppliers };
+				Current.Character.recipes.RemoveAll(r => r.isBase || (r.requires != null && r.requires.Evaluate(context, evalCookie)));
 			}
-
-			// Get portrait
-			AssetFile portraitAsset = Current.Card.assets.GetMainPortraitOverride();
-			if (portraitAsset == null && Current.Card.portraitImage != null)
-				portraitAsset = AssetFile.FromImage(Current.Card.portraitImage);
-			if (portraitAsset == null)
-				portraitAsset = Current.Card.assets.GetPortraitAsset();
-
-			// Add actor
-			CharacterData importedCharacter = Current.Character;
-			importedCharacter.spokenName = Current.Name;
-			Current.Restore(stash);
-			Current.Characters.Add(importedCharacter);
-			Current.SelectedCharacter = Current.Characters.Count - 1;
-			Current.IsDirty = true;
-
-			// Add portrait
-			if (portraitAsset != null)
+			finally
 			{
-				portraitAsset.name = string.Format("Portrait ({0})", Current.Character.spokenName);
-				portraitAsset.actorIndex = Current.Characters.Count - 1;
-				Current.Card.assets.Add(portraitAsset);
+				Undo.Resume();
 			}
-			Current.Card.assets.Validate();
-
-			// Validate recipes
-			Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, true);
-			var evalCookie = new EvaluationCookie() { ruleSuppliers = Current.RuleSuppliers };
-			Current.Character.recipes.RemoveAll(r => r.isBase || (r.requires != null && r.requires.Evaluate(context, evalCookie)));
 			return true;
+		}
+
+		private bool ExportCurrentActor()
+		{
+			var character = Current.Character.Clone();
+
+			Image portraitImage = Current.Card.portraitImage;
+			AssetFile portraitAsset = null;
+			if (Current.SelectedCharacter > 0)
+			{
+				portraitAsset = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+				if (portraitAsset != null)
+				{
+					Image actorImage;
+					Utility.LoadImageFromMemory(portraitAsset.data.bytes, out actorImage);
+					portraitImage = actorImage;
+				}
+			}
+
+			var stash = Current.Stash();
+			try
+			{
+				Undo.Suspend();
+				Current.Instance = new GingerCharacter();
+				Current.Reset();
+				Current.Characters.Clear();
+				Current.Characters.Add(character);
+
+				if (portraitAsset != null && portraitAsset.HasTag(AssetFile.Tag.Animated))
+				{
+					// Set portrait override
+					portraitAsset = (AssetFile)portraitAsset.Clone();
+					portraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
+					Current.Card.assets.Add(portraitAsset);
+				}
+
+				if (portraitImage != null)
+					Current.Card.portraitImage = ImageRef.FromImage(portraitImage, false);
+
+				return SaveAs();
+			}
+			finally
+			{
+				Current.Restore(stash);
+				Undo.Resume();
+			}
 		}
 
 		private bool RemoveCurrentActor()
@@ -2912,46 +2966,40 @@ namespace Ginger
 				|| Current.Characters.Count < 2)
 				return false;
 
+			var assets = (AssetCollection)Current.Card.assets.Clone(); // jic
+
 			// Remove portrait(s)
 			if (Current.SelectedCharacter == 0)
 			{
-				Current.Card.assets.RemoveAll(a => a.isMainPortraitOverride
+				assets.RemoveAll(a => a.isMainPortraitOverride
 					|| (a.isEmbeddedAsset
 						&& a.assetType == AssetFile.AssetType.Icon
 						&& a.actorIndex < 1));
 
-				var portraitAsset = Current.Card.assets.GetActorPortrait(1);
+				var portraitAsset = assets.GetActorPortrait(1);
 				if (portraitAsset != null)
 				{
 					Image actorImage;
 					Utility.LoadImageFromMemory(portraitAsset.data.bytes, out actorImage);
 					Current.Card.portraitImage = ImageRef.FromImage(actorImage);
 
-					if (portraitAsset.HasTag(AssetFile.Tags.Animated))
-						portraitAsset.AddTags(AssetFile.Tags.PortraitOverride);
+					if (portraitAsset.HasTag(AssetFile.Tag.Animated))
+						portraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
 					else
-						Current.Card.assets.Remove(portraitAsset);
+						assets.Remove(portraitAsset);
 				}
 			}
 
-			Current.Card.assets.RemoveActorPortrait(Current.SelectedCharacter, true);
-			Current.Card.assets.Validate();
+			assets.RemoveActorPortrait(Current.SelectedCharacter, true);
+			assets.Validate();
 
+			Current.Card.assets = (AssetCollection)assets.Clone();
 			Current.Characters.RemoveAt(Current.SelectedCharacter);
 			Current.SelectedCharacter = Math.Min(Math.Max(Current.SelectedCharacter, 0), Current.Characters.Count - 1);
 			Current.IsDirty = true;
 
 			if (Current.Characters.Count < 2 && AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group)
 				AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday;
-
-			tabControl.SelectedIndex = 0;
-			recipeList.RecreatePanels();
-			sidePanel.RefreshValues();
-			sidePanel.OnActorChanged();
-			RefreshTitle();
-			StealFocus();
-
-			Undo.Push(Undo.Kind.RecipeList, "Remove actor");
 			return true;
 		}
 	}

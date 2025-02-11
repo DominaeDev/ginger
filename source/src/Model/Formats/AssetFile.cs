@@ -91,7 +91,7 @@ namespace Ginger
 				return assetType == AssetType.Icon
 				  && isEmbeddedAsset
 				  && (string.Compare(name, PortraitOverrideName, StringComparison.OrdinalIgnoreCase) == 0
-					|| HasTag(Tags.PortraitOverride));
+					|| HasTag(Tag.PortraitOverride));
 			}
 		}
 
@@ -430,7 +430,10 @@ namespace Ginger
 
 		public object Clone()
 		{
-			return this.MemberwiseClone();
+			var clone = (AssetFile)this.MemberwiseClone();
+			if (this.tags != null)
+				clone.tags = new HashSet<StringHandle>(this.tags);
+			return clone;
 		}
 
 		public bool LoadFromXml(XmlNode xmlNode)
@@ -519,12 +522,12 @@ namespace Ginger
 				if (tags == null || tags.Count == 0 || isEmbeddedAsset == false || assetType != AssetType.Icon)
 					return -1;
 
-				var actorTag = tags.FirstOrDefault(t => t.BeginsWith(Tags.ActorAsset.ToString()));
+				var actorTag = tags.FirstOrDefault(t => t.BeginsWith(Tag.ActorAsset.ToString()));
 				if (StringHandle.IsNullOrEmpty(actorTag))
 					return -1;
 
 				int index;
-				if (int.TryParse(actorTag.ToString().Substring(Tags.ActorAsset.Length), out index))
+				if (int.TryParse(actorTag.ToString().Substring(Tag.ActorAsset.Length), out index))
 					return Math.Max(index, 0);
 				return -1;
 			}
@@ -533,7 +536,7 @@ namespace Ginger
 			{
 				if (this.tags != null)
 				{
-					var existing = this.tags.Where(t => t.BeginsWith(Tags.ActorAsset.ToString())).ToArray();
+					var existing = this.tags.Where(t => t.BeginsWith(Tag.ActorAsset.ToString())).ToArray();
 					this.tags.ExceptWith(existing);
 				}
 
@@ -543,11 +546,11 @@ namespace Ginger
 				if (this.tags == null)
 					this.tags = new HashSet<StringHandle>();
 
-				this.tags.Add(string.Concat(Tags.ActorAsset, value));
+				this.tags.Add(string.Concat(Tag.ActorAsset, value));
 			}
 		}
 
-		public static class Tags
+		public static class Tag
 		{
 			public static StringHandle PortraitOverride = "portrait-override";
 			public static StringHandle PortraitBackground = "portrait-background";
@@ -846,7 +849,7 @@ namespace Ginger
 				data = AssetData.FromBytes(bytes),
 				knownWidth = width,
 				knownHeight = height,
-				tags = new HashSet<StringHandle>() { AssetFile.Tags.PortraitOverride },
+				tags = new HashSet<StringHandle>() { AssetFile.Tag.PortraitOverride },
 				ext = ext,
 			};
 			this.Insert(0, asset);
@@ -924,7 +927,7 @@ namespace Ginger
 			};
 
 			if (bAnimated)
-				asset.AddTags(AssetFile.Tags.Animated);
+				asset.AddTags(AssetFile.Tag.Animated);
 
 			this.Add(asset);
 			return asset;
