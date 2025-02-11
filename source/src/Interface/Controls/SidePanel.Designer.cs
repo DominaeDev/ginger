@@ -773,7 +773,7 @@
 			this.label_characterSpokenName.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
 			this.label_characterSpokenName.Size = new System.Drawing.Size(417, 23);
 			this.label_characterSpokenName.TabIndex = 0;
-			this.label_characterSpokenName.Text = "Goes by";
+			this.label_characterSpokenName.Text = "Character name (goes by)";
 			// 
 			// textBox_characterName
 			// 
@@ -801,7 +801,7 @@
 			this.label_characterName.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			this.label_characterName.Size = new System.Drawing.Size(417, 21);
 			this.label_characterName.TabIndex = 0;
-			this.label_characterName.Text = "Character name";
+			this.label_characterName.Text = "Card name";
 			// 
 			// portraitPanel
 			// 
@@ -818,7 +818,7 @@
 			this.portraitImage.BackColor = System.Drawing.Color.DimGray;
 			this.portraitImage.BackgroundImage = global::Ginger.Properties.Resources.checker;
 			this.portraitImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.portraitImage.IsAnimation = false;
+			this.portraitImage.IsGrayedOut = false;
 			this.portraitImage.Location = new System.Drawing.Point(0, 0);
 			this.portraitImage.Name = "portraitImage";
 			this.portraitImage.Size = new System.Drawing.Size(165, 220);
@@ -826,7 +826,6 @@
 			this.portraitImage.TabIndex = 0;
 			this.portraitImage.TabStop = false;
 			this.portraitImage.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseClick);
-			this.portraitImage.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseDoubleClick);
 			// 
 			// label1
 			// 

@@ -350,10 +350,11 @@ namespace Ginger
 
 		public static void AddCharacter()
 		{
-			var character = new CharacterData();
+			var character = new CharacterData() {
+				_spokenName = Constants.DefaultCharacterName,
+			};
 			Characters.Add(character);
 			SelectedCharacter = Characters.Count - 1;
-
 			IsDirty = true;
 		}
 
@@ -477,19 +478,28 @@ namespace Ginger
 		{
 			public GingerCharacter instance;
 			public Backyard.Link link;
+			public int selectedCharacter;
 			public bool isDirty;
 			public bool isFileDirty;
+			public string filename;
 		}
 
 		public static StashInfo Stash()
 		{
 			var stash = new StashInfo() {
 				instance = Instance,
+				filename = Filename,
 				link = Link,
 				isDirty = _bDirty,
 				isFileDirty = _bFileDirty,
+				selectedCharacter = SelectedCharacter,
 			};
+			Instance = null;
+			Filename = null;
+			SelectedCharacter = 0;
 			Link = null;
+			_bDirty = false;
+			_bFileDirty = false;
 			return stash;
 		}
 
@@ -497,8 +507,10 @@ namespace Ginger
 		{
 			Instance = stash.instance;
 			Link = stash.link;
+			Filename = stash.filename;
 			_bDirty = stash.isDirty;
 			_bFileDirty = stash.isFileDirty;
+			SelectedCharacter = stash.selectedCharacter;
 		}
 	}
 

@@ -463,6 +463,7 @@
     <Compile Include="src\Model\CustomVariable.cs" />
     <Compile Include="src\Model\Recipe\ParameterResolver.cs" />
     <Compile Include="src\Model\Recipe\ParameterState.cs" />
+    <Compile Include="src\Utility\ImageRef.cs" />
     <Compile Include="src\Utility\Extensions\ListExtensions.cs" />
     <Compile Include="src\Utility\Integration\AsyncFileTypeChecker.cs" />
     <Compile Include="src\Utility\Integration\AsyncTaskQueue.cs" />
@@ -1109,10 +1110,17 @@
     <None Include="Resources\Icons\Dark\dark_repair.png" />
     <None Include="Resources\Icons\Dark\dark_restore_backup.png" />
     <None Include="Resources\Icons\Dark\dark_traits.png" />
+    <None Include="Resources\Icons\Dark\asset_portrait.png" />
+    <None Include="Resources\Icons\Dark\asset_override.png" />
+    <None Include="Resources\Icons\Dark\asset_actor.png" />
+    <None Include="Resources\Icons\Dark\dark_asset_actor_portrait.png" />
+    <None Include="Resources\Icons\Dark\dark_asset_override.png" />
     <Content Include="Resources\Icons\Light\arrow_down.png" />
     <Content Include="Resources\Icons\Light\arrow_left.png" />
     <Content Include="Resources\Icons\Light\arrow_right.png" />
     <Content Include="Resources\Icons\Light\arrow_up.png" />
+    <None Include="Resources\Icons\Light\asset_actor_portrait.png" />
+    <None Include="Resources\Icons\Light\asset_override.png" />
     <Content Include="Resources\Icons\Light\characteristic.png" />
     <Content Include="Resources\Icons\Light\checker.png" />
     <None Include="Resources\Icons\Light\clean.png" />

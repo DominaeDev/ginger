@@ -1627,4 +1627,25 @@ Are you sure you want to proceed?</value>
   <data name="tooltip_include_user_persona" xml:space="preserve">
     <value>Include user persona in the output</value>
   </data>
+  <data name="asset_actor_portrait" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Light\asset_actor_portrait.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="asset_override" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Light\asset_override.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_asset_actor_portrait" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_asset_actor_portrait.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_asset_override" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_asset_override.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="msg_no_actor_portrait" xml:space="preserve">
+    <value>No actor portrait</value>
+  </data>
+  <data name="tooltip_asset_actor_portrait" xml:space="preserve">
+    <value>(Actor portrait) This asset will be used for the portrait of {0}, when applicable.</value>
+  </data>
+  <data name="tooltip_asset_override" xml:space="preserve">
+    <value>(Portrait override) This asset will replace the main portrait, when applicable.</value>
+  </data>
 </root>

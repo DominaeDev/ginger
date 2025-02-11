@@ -1,6 +1,7 @@
 ﻿using Ginger.Properties;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -20,6 +21,8 @@ namespace Ginger
 		private ComboBox _currentComboBox;
 
 		private bool _bEditing;
+
+		private static Bitmap _BlankIcon = new Bitmap(10, 10);
 
 		public AssetViewDialog()
 		{
@@ -164,7 +167,39 @@ namespace Ginger
 				break;
 			}
 
-			assetsDataView.Rows.Add(assetName, assetExt, assetType, assetSize);
+			assetsDataView.Rows.Add(assetName, assetExt, assetType, assetSize, null);
+
+			SetAssetIcon(assetsDataView.Rows.Count - 1, asset);
+		}
+
+		private void SetAssetIcon(int row, AssetFile asset)
+		{
+			if (row < 0 || row >= assetsDataView.Rows.Count)
+				return;
+
+			var iconCell = assetsDataView.Rows[row].Cells[4] as DataGridViewImageCell;
+			if (iconCell != null)
+			{
+				Image statusIcon;
+				int actorIndex = -1;
+				if (asset.HasTag(AssetFile.Tag.PortraitOverride))
+					statusIcon = Theme.Current.PortraitOverrideAsset;
+				else
+				{
+					actorIndex = asset.actorIndex;
+					if (actorIndex > 0)
+						statusIcon = Theme.Current.ActorPortraitAsset;
+					else
+						statusIcon = _BlankIcon;
+				}
+
+				iconCell.Value = statusIcon;
+
+				if (asset.HasTag(AssetFile.Tag.PortraitOverride))
+					iconCell.ToolTipText = Resources.tooltip_asset_override;
+				else if (actorIndex > 0 && actorIndex < Current.Characters.Count)
+					iconCell.ToolTipText = string.Format(Resources.tooltip_asset_actor_portrait, Current.Characters[actorIndex].spokenName);
+			}
 		}
 
 		/// <summary>
@@ -278,6 +313,8 @@ namespace Ginger
 					else
 						value = assetsDataView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value as string;
 					SetAssetType(i, value);
+
+					SetAssetIcon(e.RowIndex, Assets[i]);
 				}
 			}
 			_currentComboBox = null;
@@ -328,6 +365,9 @@ namespace Ginger
 				assetType = AssetFile.AssetType.Other;
 				value = null;
 			}
+
+			if (assetType != AssetFile.AssetType.Icon)
+				Assets[index].RemoveTags(AssetFile.Tag.PortraitOverride);
 
 			if (assetType != AssetFile.AssetType.Custom)
 			{

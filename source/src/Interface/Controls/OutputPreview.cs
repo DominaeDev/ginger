@@ -207,6 +207,193 @@ namespace Ginger
 			});
 		}
 
+		public void SetOutput(Generator.Output[] outputs)
+		{
+			if (outputs == null || outputs.Length == 0)
+				return;
+
+			this.output = outputs[0];
+
+			var sbOutput = new StringBuilder();
+			string outputSystem = outputs[0].system.ToOutputPreview();
+			string outputSystemPostHistory = outputs[0].system_post_history.ToOutputPreview();
+			string outputPersonality = outputs[0].personality.ToOutputPreview();
+			string outputScenario = outputs[0].scenario.ToOutputPreview();
+			string outputGreeting = outputs[0].greeting.ToOutputPreview(Recipe.Component.Greeting);
+			string outputExample = outputs[0].example.ToOutputPreview(Recipe.Component.Example);
+			string outputGrammar = outputs[0].grammar.ToOutputPreview();
+			string outputUserPersona = outputs[0].userPersona.ToOutputPreview();
+			
+			if ((Integration.Backyard.ConnectionEstablished && AppSettings.BackyardLink.WriteAuthorNote) == false)
+			{
+				// Combine system prompts
+				if (string.IsNullOrEmpty(outputSystemPostHistory) == false)
+					outputSystem = string.Join("\r\n", outputSystem, outputSystemPostHistory).TrimStart();
+				outputSystemPostHistory = null;
+			}
+
+			// Replace {original}
+			string original = FaradayCardV4.OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)];
+			if (string.IsNullOrWhiteSpace(outputSystem) == false)
+			{
+				int pos_original = outputSystem.IndexOf("{original}", 0);
+				if (pos_original != -1)
+				{
+					var sbSystem = new StringBuilder(outputSystem);
+					sbSystem.Remove(pos_original, 10);
+					sbSystem.Insert(pos_original, original);
+					sbSystem.Replace("{original}", ""); // Only once
+					outputSystem = sbSystem.ToString();
+				}
+			}
+
+			if (outputs[0].userPersona.IsNullOrEmpty() == false)
+			{
+				// Append user persona to the persona for a more accurate token count
+				string scenario = outputs[0].scenario.ToString() ?? "";
+				string userPersona = outputs[0].userPersona.ToString();
+
+				scenario = string.Concat(scenario, "\n\n", userPersona).Trim();
+				outputs[0].scenario = GingerString.FromString(scenario);
+				outputs[0].userPersona = new GingerString(); // Empty
+			}
+
+			if (string.IsNullOrEmpty(outputSystem) == false)
+			{
+				sbOutput.AppendLine(Header("MODEL INSTRUCTIONS"));
+				sbOutput.AppendLine();
+				sbOutput.AppendLine(outputSystem);
+				sbOutput.AppendLine();
+			}
+			if (string.IsNullOrEmpty(outputSystemPostHistory) == false)
+			{
+				sbOutput.AppendLine(Header("MODEL INSTRUCTIONS (IMPORTANT)"));
+				sbOutput.AppendLine();
+				sbOutput.AppendLine(outputSystemPostHistory);
+				sbOutput.AppendLine();
+			}
+
+			for (int i = 0; i < Current.Characters.Count && i < outputs.Length; ++i)
+			{
+				string outputPersona = outputs[i].persona.ToOutputPreview();
+				if (string.IsNullOrEmpty(outputPersona) == false)
+				{
+					sbOutput.AppendLine(Header(string.Format("CHARACTER PERSONA ({0})", Current.Characters[i].spokenName.ToUpperInvariant())));
+					sbOutput.AppendLine();
+					sbOutput.AppendLine(outputPersona);
+					sbOutput.AppendLine();
+				}
+				if (string.IsNullOrEmpty(outputPersonality) == false)
+				{
+					sbOutput.AppendLine(Header(string.Format("PERSONALITY SUMMARY ({0})", Current.Characters[i].spokenName.ToUpperInvariant())));
+					sbOutput.AppendLine();
+					sbOutput.AppendLine(outputPersonality);
+					sbOutput.AppendLine();
+				}
+			}
+
+			if (string.IsNullOrEmpty(outputUserPersona) == false)
+			{
+				sbOutput.AppendLine(Header("USER PERSONA"));
+				sbOutput.AppendLine();
+				sbOutput.AppendLine(outputUserPersona);
+				sbOutput.AppendLine();
+			}
+			if (string.IsNullOrEmpty(outputScenario) == false)
+			{
+				sbOutput.AppendLine(Header("SCENARIO"));
+				sbOutput.AppendLine();
+				sbOutput.AppendLine(outputScenario);
+				sbOutput.AppendLine();
+			}
+			if (string.IsNullOrEmpty(outputExample) == false)
+			{
+				sbOutput.AppendLine(Header("EXAMPLE CHAT"));
+				sbOutput.AppendLine();
+				sbOutput.AppendLine(outputExample);
+				sbOutput.AppendLine();
+			}
+			if (string.IsNullOrEmpty(outputGreeting) == false)
+			{
+				if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
+					sbOutput.AppendLine(Header("FIRST MESSAGE"));
+				else
+					sbOutput.AppendLine(Header("GREETING"));
+
+				sbOutput.AppendLine();
+				sbOutput.AppendLine(outputGreeting);
+				sbOutput.AppendLine();
+			}
+
+			if (outputs[0].greetings != null && outputs[0].greetings.Length > 1)
+			{
+				for (int i = 1; i < outputs[0].greetings.Length; ++i)
+				{
+					var greeting = outputs[0].greetings[i].ToOutputPreview(Recipe.Component.Greeting);
+					if (outputs[0].greetings.Length > 2)
+						sbOutput.AppendLine(Header(string.Format("ALTERNATE GREETING #{0}", i)));
+					else
+						sbOutput.AppendLine(Header("ALTERNATE GREETING"));
+					sbOutput.AppendLine();
+					sbOutput.AppendLine(greeting);
+					sbOutput.AppendLine();
+				}
+			}
+
+			if (outputs[0].group_greetings != null && outputs[0].group_greetings.Length > 0)
+			{
+				for (int i = 0; i < outputs[0].group_greetings.Length; ++i)
+				{
+					var greeting = outputs[0].group_greetings[i].ToOutputPreview(Recipe.Component.Greeting);
+					if (outputs[0].group_greetings.Length > 1)
+						sbOutput.AppendLine(Header(string.Format("GROUP-ONLY GREETING #{0}", i + 1)));
+					else
+						sbOutput.AppendLine(Header("GROUP-ONLY GREETING"));
+					sbOutput.AppendLine();
+					sbOutput.AppendLine(greeting);
+					sbOutput.AppendLine();
+				}
+			}
+			if (string.IsNullOrEmpty(outputGrammar) == false)
+			{
+				sbOutput.AppendLine(Header("GRAMMAR"));
+				sbOutput.AppendLine();
+				sbOutput.AppendLine(outputGrammar);
+				sbOutput.AppendLine();
+			}
+
+			for (int i = 0; i < Current.Characters.Count && i < outputs.Length; ++i)
+			{
+				if (outputs[i].hasLore)
+				{
+					var lorebook = outputs[i].lorebook;
+					sbOutput.AppendLine(Header(string.Format("{2}'s LOREBOOK ({0} {1})",
+						lorebook.entries.Count,
+						lorebook.entries.Count == 1 ? "ENTRY" : "ENTRIES",
+						Current.Characters[i].spokenName.ToUpperInvariant())));
+
+					for (int j = 0; j < lorebook.entries.Count; ++j)
+					{
+						var entry = lorebook.entries[j];
+						sbOutput.AppendLine();
+						sbOutput.AppendLine(string.Format("#{0} [{1}]", j + 1, GingerString.FromString(entry.key).ToOutputPreview(Recipe.Component.Invalid)));
+						sbOutput.AppendLine(GingerString.FromString(entry.value).ToOutputPreview(Recipe.Component.Invalid));
+					}
+					sbOutput.AppendLine();
+				}
+			}
+
+			if (sbOutput.Length == 0)
+			{
+				sbOutput.AppendLine("( NO OUTPUT )");
+			}
+
+			this.DisableThenDoThenEnable(() => {
+				this.Text = sbOutput.TrimEnd().ToString();
+				this.InitUndo();
+			});
+		}
+
 		private static string Header(string text)
 		{
 			string line = "--------------------------------------------------"; // 50
@@ -254,16 +441,14 @@ namespace Ginger
 				(s, e) => { Copy(Recipe.Component.Persona); }) {
 				Enabled = output.persona.IsNullOrEmpty() == false,
 			});
-			if (output.userPersona.IsNullOrEmpty() == false 
-				&& (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Default 
-				|| AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.PlainText))
+			
+			if (output.userPersona.IsNullOrEmpty() == false)
 			{
 				menu.Items.Add(new ToolStripMenuItem("Copy user persona", null,
 					(s, e) => { Copy(Recipe.Component.UserPersona); }) {
 					Enabled = output.persona.IsNullOrEmpty() == false,
 				});
 			}
-
 
 			menu.Items.Add(new ToolStripMenuItem("Copy scenario", null, 
 				(s, e) => { Copy(Recipe.Component.Scenario); }) {
@@ -303,6 +488,13 @@ namespace Ginger
 				Regenerate();
 			}) {
 				Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday,
+			});
+			formatMenu.DropDownItems.Add(new ToolStripMenuItem("Backyard AI (Party)", null, (s, e) => {
+				AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday_Group;
+				Regenerate();
+			}) {
+				Enabled = Current.Characters.Count > 1,
+				Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group,
 			});
 			formatMenu.DropDownItems.Add(new ToolStripMenuItem("Plain text", null, (s, e) => {
 				AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.PlainText;
