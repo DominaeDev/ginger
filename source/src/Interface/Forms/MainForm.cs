@@ -1288,10 +1288,18 @@ namespace Ginger
 				}
 			}
 
+			// Embedded assets status icon
 			int embeddedCount = Current.Card.assets.Count(a => a.isEmbeddedAsset);
 			statusEmbeddedAssets.Image = Theme.Current.EmbeddedAssets;
 			statusEmbeddedAssets.ToolTipText = string.Format("This character card contains {0} embedded asset{1}.", embeddedCount, embeddedCount != 1 ? "s": "");
 			statusEmbeddedAssets.Visible = embeddedCount > 0;
+
+			// Actors status icon
+			int actorCount = Current.Characters.Count;
+			statusActors.Image = Theme.Current.ActorPortraitAsset;
+			statusActors.ToolTipText = string.Format("This character card contains {0} actor{1}.", actorCount, actorCount != 1 ? "s": "");
+			statusActors.Visible = actorCount > 1;
+
 
 			// Menu items
 			RefreshMenuItems();

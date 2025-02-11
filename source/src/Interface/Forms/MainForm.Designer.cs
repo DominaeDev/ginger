@@ -189,6 +189,7 @@ namespace Ginger {
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
+			this.statusActors = new System.Windows.Forms.ToolStripStatusLabel();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -1718,6 +1719,7 @@ namespace Ginger {
 			// 
 			this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.statusBarMessage,
+            this.statusActors,
             this.statusEmbeddedAssets,
             this.statusConnectionIcon});
 			this.statusBar.Location = new System.Drawing.Point(0, 799);
@@ -1729,7 +1731,7 @@ namespace Ginger {
 			// statusBarMessage
 			// 
 			this.statusBarMessage.Name = "statusBarMessage";
-			this.statusBarMessage.Size = new System.Drawing.Size(1201, 17);
+			this.statusBarMessage.Size = new System.Drawing.Size(1145, 17);
 			this.statusBarMessage.Spring = true;
 			this.statusBarMessage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
@@ -1749,6 +1751,15 @@ namespace Ginger {
 			this.statusConnectionIcon.Name = "statusConnectionIcon";
 			this.statusConnectionIcon.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusConnectionIcon.Size = new System.Drawing.Size(24, 17);
+			// 
+			// statusActors
+			// 
+			this.statusActors.Image = global::Ginger.Properties.Resources.asset_actor_portrait;
+			this.statusActors.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+			this.statusActors.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.statusActors.Name = "statusActors";
+			this.statusActors.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
+			this.statusActors.Size = new System.Drawing.Size(25, 17);
 			// 
 			// MainForm
 			// 
@@ -1949,6 +1960,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem17;
 		private System.Windows.Forms.ToolStripMenuItem additionalCharactersMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem outputPreviewFaradayGroupMenuItem;
+		private System.Windows.Forms.ToolStripStatusLabel statusActors;
 	}
 }
 
