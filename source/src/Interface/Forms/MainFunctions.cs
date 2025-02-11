@@ -2896,11 +2896,62 @@ namespace Ginger
 				portraitAsset.actorIndex = Current.Characters.Count - 1;
 				Current.Card.assets.Add(portraitAsset);
 			}
+			Current.Card.assets.Validate();
 
 			// Validate recipes
 			Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, true);
 			var evalCookie = new EvaluationCookie() { ruleSuppliers = Current.RuleSuppliers };
 			Current.Character.recipes.RemoveAll(r => r.isBase || (r.requires != null && r.requires.Evaluate(context, evalCookie)));
+			return true;
+		}
+
+		private bool RemoveCurrentActor()
+		{
+			if (Current.SelectedCharacter < 0 
+				|| Current.SelectedCharacter >= Current.Characters.Count 
+				|| Current.Characters.Count < 2)
+				return false;
+
+			// Remove portrait(s)
+			if (Current.SelectedCharacter == 0)
+			{
+				Current.Card.assets.RemoveAll(a => a.isMainPortraitOverride
+					|| (a.isEmbeddedAsset
+						&& a.assetType == AssetFile.AssetType.Icon
+						&& a.actorIndex < 1));
+
+				var portraitAsset = Current.Card.assets.GetActorPortrait(1);
+				if (portraitAsset != null)
+				{
+					Image actorImage;
+					Utility.LoadImageFromMemory(portraitAsset.data.bytes, out actorImage);
+					Current.Card.portraitImage = ImageRef.FromImage(actorImage);
+
+					if (portraitAsset.HasTag(AssetFile.Tags.Animated))
+						portraitAsset.AddTags(AssetFile.Tags.PortraitOverride);
+					else
+						Current.Card.assets.Remove(portraitAsset);
+				}
+			}
+
+			Current.Card.assets.RemoveActorPortrait(Current.SelectedCharacter, true);
+			Current.Card.assets.Validate();
+
+			Current.Characters.RemoveAt(Current.SelectedCharacter);
+			Current.SelectedCharacter = Math.Min(Math.Max(Current.SelectedCharacter, 0), Current.Characters.Count - 1);
+			Current.IsDirty = true;
+
+			if (Current.Characters.Count < 2 && AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group)
+				AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday;
+
+			tabControl.SelectedIndex = 0;
+			recipeList.RecreatePanels();
+			sidePanel.RefreshValues();
+			sidePanel.OnActorChanged();
+			RefreshTitle();
+			StealFocus();
+
+			Undo.Push(Undo.Kind.RecipeList, "Remove actor");
 			return true;
 		}
 	}

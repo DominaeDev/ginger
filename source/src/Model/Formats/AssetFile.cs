@@ -969,7 +969,12 @@ namespace Ginger
 				{
 					int index = asset.actorIndex;
 					if (index > actorIndex)
-						asset.actorIndex -= 1;
+					{
+						if (asset.actorIndex > 1)
+							asset.actorIndex -= 1;
+						else
+							asset.actorIndex = -1;
+					}
 				}
 			}
 		}

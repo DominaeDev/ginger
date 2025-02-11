@@ -1972,25 +1972,7 @@ namespace Ginger
 
 		private void RemoveSupportingCharacterMenuItem_Click(object sender, EventArgs e)
 		{
-			if (Current.SelectedCharacter < 0 || Current.SelectedCharacter >= Current.Characters.Count)
-				return;
-
-			Current.Characters.RemoveAt(Current.SelectedCharacter);
-			Current.Card.assets.RemoveActorPortrait(Current.SelectedCharacter, true);
-			Current.SelectedCharacter = Math.Min(Math.Max(Current.SelectedCharacter, 0), Current.Characters.Count - 1);
-			Current.IsDirty = true;
-
-			if (Current.Characters.Count < 2 && AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group)
-				AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday;
-
-			tabControl.SelectedIndex = 0;
-			recipeList.RecreatePanels();
-			sidePanel.RefreshValues();
-			sidePanel.OnActorChanged();
-			RefreshTitle();
-			StealFocus();
-
-			Undo.Push(Undo.Kind.RecipeList, "Remove actor");
+			RemoveCurrentActor();
 		}
 
 		private void SelectCharacter(int characterIndex)
