@@ -46,6 +46,7 @@ namespace Ginger
 			group_User.OnCollapse += Group_User_OnCollapse;
 			group_Generation.OnCollapse += Group_Generation_OnCollapse;
 			group_Components.OnCollapse += Group_Components_OnCollapse;
+			group_Background.OnCollapse += Group_Background_OnCollapse;
 			group_Stats.OnCollapse += Group_Stats_OnCollapse;
 
 			_bIgnoreEvents = true;
@@ -58,6 +59,7 @@ namespace Ginger
 			group_User.Collapsed = !AppSettings.User.ShowUserInfo;
 			group_Generation.Collapsed = !AppSettings.User.ShowOutputSettings;
 			group_Components.Collapsed = !AppSettings.User.ShowOutputComponents;
+			group_Background.Collapsed = !AppSettings.User.ShowBackground;
 			group_Stats.Collapsed = !AppSettings.User.ShowStats;
 			_bIgnoreEvents = false;
 
@@ -889,6 +891,13 @@ namespace Ginger
 			AppSettings.User.ShowOutputComponents = !bCollapsed;
 		}
 		
+		private void Group_Background_OnCollapse(object sender, bool bCollapsed)
+		{
+			if (_bIgnoreEvents)
+				return;
+			AppSettings.User.ShowBackground = !bCollapsed;
+		}
+
 		private void Group_Stats_OnCollapse(object sender, bool bCollapsed)
 		{
 			if (_bIgnoreEvents)

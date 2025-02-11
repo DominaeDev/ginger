@@ -54,6 +54,7 @@
 			System.Windows.Forms.TableLayoutPanel tableOptions;
 			System.Windows.Forms.Panel panel_AdvOptions;
 			System.Windows.Forms.Panel panel_UserPersona;
+			System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SidePanel));
 			this.label_Context_Value = new System.Windows.Forms.Label();
 			this.label_TokenBudget_Value = new System.Windows.Forms.Label();
@@ -84,8 +85,10 @@
 			this.cbPruneScenario = new System.Windows.Forms.CheckBox();
 			this.rbUserInScenario = new System.Windows.Forms.RadioButton();
 			this.rbUserInPersona = new System.Windows.Forms.RadioButton();
+			this.backgroundPreview = new Ginger.BackgroundPreview();
 			this.root = new System.Windows.Forms.Panel();
 			this.group_Stats = new Ginger.CollapsibleGroupBox();
+			this.group_Background = new Ginger.CollapsibleGroupBox();
 			this.group_Components = new Ginger.CollapsibleGroupBox();
 			this.tableFilters = new System.Windows.Forms.TableLayoutPanel();
 			this.cbIncludeModelInstructions = new System.Windows.Forms.CheckBox();
@@ -130,6 +133,7 @@
 			tableOptions = new System.Windows.Forms.TableLayoutPanel();
 			panel_AdvOptions = new System.Windows.Forms.Panel();
 			panel_UserPersona = new System.Windows.Forms.Panel();
+			tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			panel_right.SuspendLayout();
 			panel_left.SuspendLayout();
 			table_Format.SuspendLayout();
@@ -148,8 +152,11 @@
 			tableOptions.SuspendLayout();
 			panel_AdvOptions.SuspendLayout();
 			panel_UserPersona.SuspendLayout();
+			tableLayoutPanel3.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.backgroundPreview)).BeginInit();
 			this.root.SuspendLayout();
 			this.group_Stats.SuspendLayout();
+			this.group_Background.SuspendLayout();
 			this.group_Components.SuspendLayout();
 			this.tableFilters.SuspendLayout();
 			this.group_Generation.SuspendLayout();
@@ -948,10 +955,42 @@
 			this.rbUserInPersona.Text = "In Persona";
 			this.rbUserInPersona.CheckedChanged += new System.EventHandler(this.rbUserInPersona_CheckedChanged);
 			// 
+			// tableLayoutPanel3
+			// 
+			tableLayoutPanel3.ColumnCount = 3;
+			tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 231F));
+			tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			tableLayoutPanel3.Controls.Add(this.backgroundPreview, 1, 0);
+			tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+			tableLayoutPanel3.Location = new System.Drawing.Point(6, 19);
+			tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0);
+			tableLayoutPanel3.Name = "tableLayoutPanel3";
+			tableLayoutPanel3.RowCount = 1;
+			tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			tableLayoutPanel3.Size = new System.Drawing.Size(571, 130);
+			tableLayoutPanel3.TabIndex = 2;
+			// 
+			// backgroundPreview
+			// 
+			this.backgroundPreview.AllowDrop = true;
+			this.backgroundPreview.BackColor = System.Drawing.Color.DimGray;
+			this.backgroundPreview.BackgroundImage = global::Ginger.Properties.Resources.checker;
+			this.backgroundPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.backgroundPreview.IsAnimation = false;
+			this.backgroundPreview.Location = new System.Drawing.Point(170, 0);
+			this.backgroundPreview.Margin = new System.Windows.Forms.Padding(0);
+			this.backgroundPreview.Name = "backgroundPreview";
+			this.backgroundPreview.Size = new System.Drawing.Size(231, 130);
+			this.backgroundPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+			this.backgroundPreview.TabIndex = 1;
+			this.backgroundPreview.TabStop = false;
+			// 
 			// root
 			// 
 			this.root.AutoScroll = true;
 			this.root.Controls.Add(this.group_Stats);
+			this.root.Controls.Add(this.group_Background);
 			this.root.Controls.Add(this.group_Components);
 			this.root.Controls.Add(this.group_Generation);
 			this.root.Controls.Add(this.group_User);
@@ -968,13 +1007,26 @@
 			this.group_Stats.Controls.Add(panel_right);
 			this.group_Stats.Controls.Add(panel_left);
 			this.group_Stats.Dock = System.Windows.Forms.DockStyle.Top;
-			this.group_Stats.Location = new System.Drawing.Point(0, 576);
+			this.group_Stats.Location = new System.Drawing.Point(0, 733);
 			this.group_Stats.Name = "group_Stats";
 			this.group_Stats.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
 			this.group_Stats.Size = new System.Drawing.Size(583, 152);
 			this.group_Stats.TabIndex = 4;
 			this.group_Stats.TabStop = false;
 			this.group_Stats.Text = "Statistics";
+			// 
+			// group_Background
+			// 
+			this.group_Background.BottomMargin = 4;
+			this.group_Background.Controls.Add(tableLayoutPanel3);
+			this.group_Background.Dock = System.Windows.Forms.DockStyle.Top;
+			this.group_Background.Location = new System.Drawing.Point(0, 576);
+			this.group_Background.Name = "group_Background";
+			this.group_Background.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
+			this.group_Background.Size = new System.Drawing.Size(583, 157);
+			this.group_Background.TabIndex = 5;
+			this.group_Background.TabStop = false;
+			this.group_Background.Text = "Background";
 			// 
 			// group_Components
 			// 
@@ -1245,8 +1297,11 @@
 			panel_AdvOptions.PerformLayout();
 			panel_UserPersona.ResumeLayout(false);
 			panel_UserPersona.PerformLayout();
+			tableLayoutPanel3.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.backgroundPreview)).EndInit();
 			this.root.ResumeLayout(false);
 			this.group_Stats.ResumeLayout(false);
+			this.group_Background.ResumeLayout(false);
 			this.group_Components.ResumeLayout(false);
 			this.tableFilters.ResumeLayout(false);
 			this.tableFilters.PerformLayout();
@@ -1309,5 +1364,7 @@
 		private System.Windows.Forms.Label label_Detail;
 		private System.Windows.Forms.Label label_userPlaceholder;
 		private System.Windows.Forms.Label label_userGender;
+		private CollapsibleGroupBox group_Background;
+		private BackgroundPreview backgroundPreview;
 	}
 }

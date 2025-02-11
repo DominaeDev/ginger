@@ -211,6 +211,12 @@
     <Compile Include="src\Interface\Controls\PageChanger.Designer.cs">
       <DependentUpon>PageChanger.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Interface\Controls\BackgroundPreview.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\BackgroundPreview.Designer.cs">
+      <DependentUpon>BackgroundPreview.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\Interface\Controls\RecipeList.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -730,6 +736,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Controls\PageChanger.resx">
       <DependentUpon>PageChanger.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Controls\BackgroundPreview.resx">
+      <DependentUpon>BackgroundPreview.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Controls\RecipeList.resx">
       <DependentUpon>RecipeList.cs</DependentUpon>

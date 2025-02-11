@@ -118,6 +118,7 @@ namespace Ginger
 			public static bool ShowUserInfo = true;
 			public static bool ShowOutputSettings = false;
 			public static bool ShowOutputComponents = false;
+			public static bool ShowBackground = false;
 			public static bool ShowStats = false;
 		}
 		
@@ -326,6 +327,7 @@ namespace Ginger
 				ReadBool(ref User.ShowUserInfo, userSection, "ShowUserSettings");
 				ReadBool(ref User.ShowOutputSettings, userSection, "ShowOutputSettings");
 				ReadBool(ref User.ShowOutputComponents, userSection, "ShowOutputComponents");
+				ReadBool(ref User.ShowBackground, userSection, "ShowBackground");
 				ReadBool(ref User.ShowStats, userSection, "ShowStatistics");
 			}
 
@@ -522,6 +524,7 @@ namespace Ginger
 					Write(outputFile, "ShowUserSettings", User.ShowUserInfo);
 					Write(outputFile, "ShowOutputSettings", User.ShowOutputSettings);
 					Write(outputFile, "ShowOutputComponents", User.ShowOutputComponents);
+					Write(outputFile, "ShowBackground", User.ShowBackground);
 					Write(outputFile, "ShowStatistics", User.ShowStats);
 
 
