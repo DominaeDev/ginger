@@ -114,7 +114,7 @@ namespace Ginger
 				int fitHeight = this.Height;
 				using (Graphics gfxNewImage = Graphics.FromImage(bmpNewImage))
 				{
-					float scale = Math.Max((float)fitWidth / srcWidth, (float)fitHeight / srcHeight);
+					float scale = Math.Min((float)fitWidth / srcWidth, (float)fitHeight / srcHeight);
 					int newWidth = Math.Max((int)Math.Round(srcWidth * scale), 1);
 					int newHeight = Math.Max((int)Math.Round(srcHeight * scale), 1);
 					gfxNewImage.DrawImage(_image,

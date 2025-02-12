@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Ginger
@@ -214,6 +215,22 @@ namespace Ginger
 					label_Image_Value.ForeColor = this.ForeColor;
 				}
 			}
+
+			// Background
+			var backgroundAsset = Current.Card.assets.FirstOrDefault(a => a.assetType == AssetFile.AssetType.Background);
+			if (backgroundAsset != null)
+			{
+				Image backgroundImage;
+				Utility.LoadImageFromMemory(backgroundAsset.data.bytes, out backgroundImage);
+				if (backgroundImage != null)
+				{
+					backgroundPreview.SetImage(ImageRef.FromImage(backgroundImage, false), backgroundAsset != null && backgroundAsset.HasTag(AssetFile.Tag.Animated));
+				}
+				else
+					backgroundPreview.SetImage(null);
+			}
+			else
+				backgroundPreview.SetImage(null);
 
 
 			// Output components
