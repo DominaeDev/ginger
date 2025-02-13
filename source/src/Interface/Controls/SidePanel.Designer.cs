@@ -967,7 +967,7 @@
 			tableLayoutPanel3.Name = "tableLayoutPanel3";
 			tableLayoutPanel3.RowCount = 1;
 			tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			tableLayoutPanel3.Size = new System.Drawing.Size(571, 130);
+			tableLayoutPanel3.Size = new System.Drawing.Size(571, 144);
 			tableLayoutPanel3.TabIndex = 2;
 			// 
 			// backgroundPreview
@@ -980,10 +980,11 @@
 			this.backgroundPreview.Location = new System.Drawing.Point(170, 0);
 			this.backgroundPreview.Margin = new System.Windows.Forms.Padding(0);
 			this.backgroundPreview.Name = "backgroundPreview";
-			this.backgroundPreview.Size = new System.Drawing.Size(231, 130);
+			this.backgroundPreview.Size = new System.Drawing.Size(231, 144);
 			this.backgroundPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.backgroundPreview.TabIndex = 1;
 			this.backgroundPreview.TabStop = false;
+			this.backgroundPreview.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BackgroundPreview_MouseClick);
 			// 
 			// root
 			// 
@@ -1006,7 +1007,7 @@
 			this.group_Stats.Controls.Add(panel_right);
 			this.group_Stats.Controls.Add(panel_left);
 			this.group_Stats.Dock = System.Windows.Forms.DockStyle.Top;
-			this.group_Stats.Location = new System.Drawing.Point(0, 733);
+			this.group_Stats.Location = new System.Drawing.Point(0, 747);
 			this.group_Stats.Name = "group_Stats";
 			this.group_Stats.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
 			this.group_Stats.Size = new System.Drawing.Size(583, 152);
@@ -1022,7 +1023,7 @@
 			this.group_Background.Location = new System.Drawing.Point(0, 576);
 			this.group_Background.Name = "group_Background";
 			this.group_Background.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
-			this.group_Background.Size = new System.Drawing.Size(583, 157);
+			this.group_Background.Size = new System.Drawing.Size(583, 171);
 			this.group_Background.TabIndex = 5;
 			this.group_Background.TabStop = false;
 			this.group_Background.Text = "Background";

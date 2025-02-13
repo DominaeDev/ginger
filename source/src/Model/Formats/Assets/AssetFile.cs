@@ -560,9 +560,10 @@ namespace Ginger
 		public static class Tag
 		{
 			public static StringHandle PortraitOverride = "portrait-override";
-			public static StringHandle PortraitBackground = "portrait-background";
+			public static StringHandle MainBackground = "main-background";
 			public static StringHandle Animated = "animated";
 			public static StringHandle ActorAsset = "actor-";
+			public static StringHandle Linked = "linked";
 		}
 
 		public static AssetFile FromImage(Image image, AssetType assetType = AssetType.Icon)

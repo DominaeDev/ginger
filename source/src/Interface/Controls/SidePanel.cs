@@ -13,6 +13,10 @@ namespace Ginger
 		public event EventHandler ResizePortraitImage;
 		public event EventHandler PastePortraitImage;
 		public event EventHandler RemovePortraitImage;
+		public event EventHandler<BackgroundPreview.ChangeBackgroundImageEventArgs> ChangeBackgroundImage;
+		public event EventHandler BackgroundFromPortrait;
+		public event EventHandler PasteBackgroundImage;
+		public event EventHandler RemoveBackgroundImage;
 
 		public class EditNameEventArgs : EventArgs
 		{
@@ -40,7 +44,8 @@ namespace Ginger
 
 		private void SidePanel_Load(object sender, EventArgs e)
 		{
-			this.portraitImage.ChangePortraitImage += OnChangePortraitImage;
+			portraitImage.ChangePortraitImage += OnChangePortraitImage;
+			backgroundPreview.ChangeBackgroundImage += OnChangeBackgroundImage;
 			root.VerticalScroll.Visible = false;
 
 			group_CardInfo.OnCollapse += Group_CardInfo_OnCollapse;
@@ -96,6 +101,11 @@ namespace Ginger
 		private void OnChangePortraitImage(object sender, PortraitPreview.ChangePortraitImageEventArgs e)
 		{
 			ChangePortraitImage.Invoke(sender, e);
+		}
+
+		private void OnChangeBackgroundImage(object sender, BackgroundPreview.ChangeBackgroundImageEventArgs e)
+		{
+			ChangeBackgroundImage.Invoke(sender, e);
 		}
 
 		public void RefreshValues()
@@ -1097,6 +1107,46 @@ namespace Ginger
 				return;
 
 			SetExtraFlag(CardData.Flag.UserPersonaInScenario, rbUserInScenario.Checked);
+		}
+
+		private void BackgroundPreview_MouseClick(object sender, MouseEventArgs args)
+		{
+			if (args.Button == MouseButtons.Right)
+			{
+				bool bHasPortrait = Current.Card.portraitImage != null;
+				bool bHasBackground = Current.Card.assets.ContainsAny(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
+				
+				var menu = new ContextMenuStrip();
+
+				menu.Items.Add(new ToolStripMenuItem("Change background", null, (s, e) => {
+					ChangeBackgroundImage?.Invoke(this, new BackgroundPreview.ChangeBackgroundImageEventArgs() {
+						Filename = null,
+					});
+				}));
+
+				menu.Items.Add(new ToolStripMenuItem("Use portrait as background", null, BackgroundFromPortrait) {
+					Enabled = bHasPortrait,
+				});
+
+				if (Clipboard.ContainsImage())
+					menu.Items.Add(new ToolStripMenuItem("Paste image", null, PasteBackgroundImage));
+				else
+				{
+					menu.Items.Add(new ToolStripMenuItem("Paste image") { 
+						Enabled = false 
+					});
+				}
+
+				menu.Items.Add(new ToolStripSeparator()); // ----
+				menu.Items.Add(new ToolStripMenuItem("Clear background", null, (s, e) => {
+					RemoveBackgroundImage?.Invoke(this, EventArgs.Empty);
+				}) {
+					Enabled = bHasBackground,
+				});
+
+				Theme.Apply(menu);
+				menu.Show(sender as Control, new System.Drawing.Point(args.X, args.Y));
+			}
 		}
 	}
 }

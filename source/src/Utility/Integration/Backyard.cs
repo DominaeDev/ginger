@@ -6126,34 +6126,12 @@ namespace Ginger.Integration
 				&& (Current.Card.portraitImage != null || mainPortraitOverride != null)
 				&& assets.ContainsNoneOf(a => a.assetType == AssetFile.AssetType.Background))
 			{
-				if (assets == null)
-					assets = new AssetCollection();
-
 				AssetFile portraitBackground;
-				if (mainPortraitOverride != null)
+				if (Current.Card.assets.AddBackgroundFromPortrait(out portraitBackground))
 				{
-					portraitBackground = new AssetFile() {
-						name = "Background (portrait)",
-						ext = mainPortraitOverride.ext,
-						assetType = AssetFile.AssetType.Background,
-						data = mainPortraitOverride.data,
-						uriType = AssetFile.UriType.Embedded,
-					};
+					assets.Add(portraitBackground);
+					Current.IsFileDirty = true;
 				}
-				else
-				{
-					portraitBackground = new AssetFile() {
-						name = "Background (portrait)",
-						ext = "jpeg",
-						assetType = AssetFile.AssetType.Background,
-						data = AssetData.FromBytes(Utility.ImageToMemory(Current.Card.portraitImage, Utility.ImageFileFormat.Jpeg)),
-						uriType = AssetFile.UriType.Embedded,
-					};
-				}
-				portraitBackground.AddTags(AssetFile.Tag.PortraitBackground);
-				assets.Add(portraitBackground);
-				Current.Card.assets.Add(portraitBackground);
-				Current.IsFileDirty = true;
 			}
 
 			if (assets != null)

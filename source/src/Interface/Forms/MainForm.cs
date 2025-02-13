@@ -240,6 +240,10 @@ namespace Ginger
 			sidePanel.ResizePortraitImage += OnResizePortraitImage;
 			sidePanel.PastePortraitImage += OnPastePortraitImage;
 			sidePanel.RemovePortraitImage += OnRemovePortraitImage;
+			sidePanel.ChangeBackgroundImage += OnChangeBackgroundImage;
+			sidePanel.PasteBackgroundImage += OnPasteBackgroundImage;
+			sidePanel.RemoveBackgroundImage += OnRemoveBackgroundImage;
+			sidePanel.BackgroundFromPortrait += OnBackgroundFromPortrait;
 
 			SetToolTip(btnAdd_Model, "Bot instructions");
 			SetToolTip(btnAdd_Character, "Character");
@@ -548,6 +552,78 @@ namespace Ginger
 				Current.Card.assets.Remove(Current.Card.assets.GetPortrait(Current.SelectedCharacter));
 				Undo.Push(Undo.Kind.Parameter, "Clear portrait (actor)");
 			}
+			Current.IsDirty = true;
+			sidePanel.RefreshValues();
+		}
+		
+		private void OnChangeBackgroundImage(object sender, BackgroundPreview.ChangeBackgroundImageEventArgs e)
+		{
+			string filename = e.Filename;
+			if (filename == null)
+			{
+				// Open file...
+				openFileDialog.Title = Resources.cap_open_image;
+				openFileDialog.Filter = "Supported image formats|*.png;*.jpeg;*.jpg;*.gif;*.apng;*.webp|PNG images|*.png;*.apng|JPEG images|*.jpg;*.jpeg|GIF images|*.gif|WEBP images|*.webp";
+				openFileDialog.InitialDirectory = AppSettings.Paths.LastImagePath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+				var result = openFileDialog.ShowDialog();
+				if (result != DialogResult.OK)
+					return;
+
+				AppSettings.Paths.LastImagePath = Path.GetDirectoryName(openFileDialog.FileName);
+
+				filename = openFileDialog.FileName;
+			}
+
+			AssetFile tmp;
+			if (Current.Card.assets.AddBackground(filename, out tmp))
+			{
+				Undo.Push(Undo.Kind.Parameter, "Set background image");
+				sidePanel.RefreshValues();
+				Current.IsDirty = true;
+			}
+		}
+
+		private void OnPasteBackgroundImage(object sender, EventArgs e)
+		{
+			Image image;
+			try
+			{
+				image = Clipboard.GetImage();
+			}
+			catch
+			{
+				return; // Error
+			}
+
+			AssetFile tmp;
+			if (Current.Card.assets.AddBackground(image, out tmp))
+			{
+				Undo.Push(Undo.Kind.Parameter, "Set background image");
+				sidePanel.RefreshValues();
+				Current.IsDirty = true;
+			}
+		}
+
+		private void OnBackgroundFromPortrait(object sender, EventArgs e)
+		{
+			Image image = Current.Card.portraitImage;
+			if (image == null)
+				return;
+
+			AssetFile asset;
+			if (Current.Card.assets.AddBackground(image, out asset))
+			{
+				asset.name = "Background (portrait)";
+				Undo.Push(Undo.Kind.Parameter, "Set background image");
+				sidePanel.RefreshValues();
+				Current.IsDirty = true;
+			}
+		}
+
+		private void OnRemoveBackgroundImage(object sender, EventArgs e)
+		{
+			Current.Card.assets.RemoveAll(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
+			Undo.Push(Undo.Kind.Parameter, "Clear background image");
 			Current.IsDirty = true;
 			sidePanel.RefreshValues();
 		}

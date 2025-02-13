@@ -339,5 +339,133 @@ namespace Ginger
 				}
 			}
 		}
+
+		public static bool AddBackground(this AssetCollection assets, string filename, out AssetFile asset)
+		{
+			try
+			{
+				byte[] bytes = File.ReadAllBytes(filename);
+
+				string name = Path.GetFileNameWithoutExtension(filename);
+				string ext = Utility.GetFileExt(filename);
+				if (ext == "jpg")
+					ext = "jpeg";
+
+				var data = AssetData.FromBytes(bytes);
+				if (assets.ContainsAny(a => a.data.hash == data.hash
+					&& string.Compare(a.ext, ext, StringComparison.InvariantCultureIgnoreCase) == 0))
+				{
+					asset = default(AssetFile);
+					return false; // Already added
+				}
+
+				if (bytes != null && bytes.Length > 0)
+				{
+					assets.RemoveAll(a => a.assetType == AssetFile.AssetType.Background && (a.isDefaultAsset || a.HasTag(AssetFile.Tag.MainBackground)));
+
+					asset = new AssetFile() {
+						name = "Background",
+						ext = ext,
+						assetType = AssetFile.AssetType.Background,
+						data = data,
+						uriType = AssetFile.UriType.Embedded,
+						tags = new HashSet<StringHandle>() { AssetFile.Tag.MainBackground }
+					};
+
+					int idxExisting = assets.IndexOfAny(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
+					if (idxExisting != -1)
+						assets.Insert(idxExisting, asset);
+					else
+						assets.Add(asset);
+					return true;
+				}
+			}
+			catch
+			{
+			}
+
+			asset = default(AssetFile);
+			return false;
+		}
+
+		public static bool AddBackground(this AssetCollection assets, Image image, out AssetFile asset)
+		{
+			try
+			{
+				byte[] bytes = Utility.ImageToMemory(image, Utility.ImageFileFormat.Png);
+
+				var data = AssetData.FromBytes(bytes);
+				if (assets.ContainsAny(a => a.data.hash == data.hash
+					&& string.Compare(a.ext, "png", StringComparison.InvariantCultureIgnoreCase) == 0))
+				{
+					asset = default(AssetFile);
+					return false; // Already added
+				}
+
+				if (bytes != null && bytes.Length > 0)
+				{
+					assets.RemoveAll(a => a.assetType == AssetFile.AssetType.Background && (a.isDefaultAsset || a.HasTag(AssetFile.Tag.MainBackground)));
+
+					asset = new AssetFile() {
+						name = "Background",
+						ext = "png",
+						assetType = AssetFile.AssetType.Background,
+						data = data,
+						uriType = AssetFile.UriType.Embedded,
+						tags = new HashSet<StringHandle>() { AssetFile.Tag.MainBackground }
+					};
+
+					int idxExisting = assets.IndexOfAny(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
+					if (idxExisting != -1)
+						assets.Insert(idxExisting, asset);
+					else
+						assets.Add(asset);
+					return true;
+				}
+			}
+			catch
+			{
+			}
+
+			asset = default(AssetFile);
+			return false;
+		}
+
+		public static bool AddBackgroundFromPortrait(this AssetCollection assets, out AssetFile backgroundAsset)
+		{
+			var mainPortraitOverride = assets.GetPortrait();
+			if (mainPortraitOverride != null)
+			{
+				backgroundAsset = new AssetFile() {
+					name = "Background (portrait)",
+					ext = mainPortraitOverride.ext,
+					assetType = AssetFile.AssetType.Background,
+					data = mainPortraitOverride.data,
+					uriType = AssetFile.UriType.Embedded,
+					tags = new HashSet<StringHandle>() { AssetFile.Tag.MainBackground},
+
+				};
+			}
+			else if (Current.Card.portraitImage != null)
+			{
+				backgroundAsset = new AssetFile() {
+					name = "Background (portrait)",
+					ext = "jpeg",
+					assetType = AssetFile.AssetType.Background,
+					data = AssetData.FromBytes(Utility.ImageToMemory(Current.Card.portraitImage, Utility.ImageFileFormat.Jpeg)),
+					uriType = AssetFile.UriType.Embedded,
+					tags = new HashSet<StringHandle>() { AssetFile.Tag.MainBackground},
+				};
+			}
+			else
+			{
+				backgroundAsset = default(AssetFile);
+				return false;
+			}
+			
+			assets.RemoveAll(a => a.assetType == AssetFile.AssetType.Background && (a.isDefaultAsset || a.HasTag(AssetFile.Tag.MainBackground)));
+			assets.Add(backgroundAsset);
+			return true;
+		}
 	}
 }
