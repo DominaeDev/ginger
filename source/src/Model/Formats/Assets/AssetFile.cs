@@ -82,7 +82,8 @@ namespace Ginger
 			get
 			{
 				return isEmbeddedAsset
-				  && string.Compare(name, MainAssetName, StringComparison.OrdinalIgnoreCase) == 0;
+				  && string.Compare(name, MainAssetName, StringComparison.OrdinalIgnoreCase) == 0
+				  && actorIndex <= 0;
 			}
 		}
 		
@@ -94,6 +95,11 @@ namespace Ginger
 				  && (string.Compare(name, PortraitOverrideName, StringComparison.OrdinalIgnoreCase) == 0
 					|| HasTag(Tag.PortraitOverride));
 			}
+		}
+
+		public bool isPortrait
+		{
+			get { return assetType == AssetType.Icon || assetType == AssetType.UserIcon || assetType == AssetType.Expression; }
 		}
 
 		public static readonly string DefaultUri = "ccdefault:";
@@ -520,7 +526,7 @@ namespace Ginger
 		{
 			get
 			{
-				if (tags == null || tags.Count == 0 || isEmbeddedAsset == false || assetType != AssetType.Icon)
+				if (tags == null || tags.Count == 0 || assetType != AssetType.Icon)
 					return -1;
 
 				var actorTag = tags.FirstOrDefault(t => t.BeginsWith(Tag.ActorAsset.ToString()));

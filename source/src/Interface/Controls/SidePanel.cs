@@ -167,8 +167,8 @@ namespace Ginger
 				var asset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
 				if (asset != null)
 				{
-					Image actorImage;
-					Utility.LoadImageFromMemory(asset.data.bytes, out actorImage);
+					Image actorImage = AssetImageCache.GetImageForAsset(asset, portraitImage.Width, portraitImage.Height, AssetImageCache.ResizeFlag.FitOutside);
+
 					if (actorImage != null)
 					{
 						portraitImage.SetImage(ImageRef.FromImage(actorImage, false), asset != null && asset.HasTag(AssetFile.Tag.Animated));
@@ -219,8 +219,7 @@ namespace Ginger
 			var backgroundAsset = Current.Card.assets.FirstOrDefault(a => a.assetType == AssetFile.AssetType.Background);
 			if (backgroundAsset != null)
 			{
-				Image backgroundImage;
-				Utility.LoadImageFromMemory(backgroundAsset.data.bytes, out backgroundImage);
+				Image backgroundImage = AssetImageCache.GetImageForAsset(backgroundAsset, backgroundPreview.Width, backgroundPreview.Height, AssetImageCache.ResizeFlag.FitInside);
 				if (backgroundImage != null)
 				{
 					backgroundPreview.SetImage(ImageRef.FromImage(backgroundImage, false), backgroundAsset != null && backgroundAsset.HasTag(AssetFile.Tag.Animated));
@@ -230,7 +229,6 @@ namespace Ginger
 			}
 			else
 				backgroundPreview.SetImage(null);
-
 
 			// Output components
 			cbIncludeModelInstructions.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitSystemPrompt);

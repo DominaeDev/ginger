@@ -90,7 +90,6 @@ namespace Ginger
 				list.Add((AssetFile)this[i].Clone());
 			return list;
 		}
-
 	}
 
 	public static class AssetCollectionExtensions 
@@ -185,7 +184,7 @@ namespace Ginger
 			}
 		}
 
-		public static bool ReplaceMainPortraitOverride(this AssetCollection assets, string filename, out AssetFile asset)
+		public static bool CreateMainPortraitOverride(this AssetCollection assets, string filename, out AssetFile asset)
 		{
 			var ext = Utility.GetFileExt(filename);
 			if (Utility.IsSupportedImageFileExt(ext) == false)
@@ -208,9 +207,9 @@ namespace Ginger
 			assets.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
 			assets.RemoveMainPortraitOverride();
 
-			// Add new asset
+			// Add new override asset
 			asset = new AssetFile() {
-				name = "Portrait",
+				name = string.Format("Portrait ({0})", Current.MainCharacter.spokenName),
 				uriType = AssetFile.UriType.Embedded,
 				assetType = AssetFile.AssetType.Icon,
 				data = AssetData.FromBytes(bytes),
@@ -227,7 +226,7 @@ namespace Ginger
 		{
 			int idxExisting = assets.FindIndex(a => a.isMainPortraitOverride);
 			if (idxExisting == -1)
-				idxExisting = assets.FindIndex(a => a.assetType == AssetFile.AssetType.Icon && a.isMainAsset);
+				idxExisting = assets.FindIndex(a => a.isMainAsset && a.assetType == AssetFile.AssetType.Icon);
 			if (idxExisting != -1)
 			{
 				assets.RemoveAt(idxExisting);
@@ -236,18 +235,27 @@ namespace Ginger
 			return false;
 		}
 
-		public static AssetFile LoadActorPortraitFromFile(this AssetCollection assets, int actorIndex, string filename)
+		public static bool LoadActorPortraitFromFile(this AssetCollection assets, int actorIndex, string filename, out AssetFile asset)
 		{
-			if (actorIndex < 0 || actorIndex >= Current.Characters.Count)
-				return null;
+			if (actorIndex <= 0 || actorIndex >= Current.Characters.Count)
+			{
+				asset = null;
+				return false;
+			}
 
 			var ext = Utility.GetFileExt(filename);
 			if (Utility.IsSupportedImageFileExt(ext) == false)
-				return null;
+			{
+				asset = null;
+				return false;
+			}
 
 			var bytes = Utility.LoadFile(filename);
 			if (bytes == null || bytes.Length == 0)
-				return null;
+			{
+				asset = null;
+				return false;
+			}
 
 			int width, height;
 			Utility.GetImageDimensions(bytes, out width, out height);
@@ -257,7 +265,7 @@ namespace Ginger
 				bAnimated = Utility.IsAnimatedPNG(bytes);
 			else if (ext == "webp")
 				bAnimated = Utility.IsAnimatedWebP(bytes);
-			else if (ext == "gif")
+			else
 			{
 				Image image;
 				if (Utility.LoadImageFromMemory(bytes, out image))
@@ -268,7 +276,7 @@ namespace Ginger
 			assets.RemoveAll(a => a.assetType == AssetFile.AssetType.Icon && a.actorIndex == actorIndex);
 
 			// Add new asset
-			var asset = new AssetFile() {
+			asset = new AssetFile() {
 				name = string.Format("Portrait ({0})", Current.Characters[actorIndex].spokenName),
 				uriType = AssetFile.UriType.Embedded,
 				assetType = AssetFile.AssetType.Icon,
@@ -283,7 +291,7 @@ namespace Ginger
 				asset.AddTags(AssetFile.Tag.Animated);
 
 			assets.Add(asset);
-			return asset;
+			return true;
 		}
 
 		public static AssetFile SetActorPortrait(this AssetCollection assets, int actorIndex, Image image)

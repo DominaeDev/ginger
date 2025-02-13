@@ -366,7 +366,11 @@ namespace Ginger
 					var pngFilename = Path.Combine(Path.GetDirectoryName(filename), string.Concat(Path.GetFileNameWithoutExtension(filename), ".png"));
 
 					Image portraitImage;
-					Current.Card.LoadPortraitImageFromFile(pngFilename, out portraitImage);
+					if (Current.Card.LoadPortraitFromFile(pngFilename, out portraitImage))
+					{
+						Current.Card.portraitImage = ImageRef.FromImage(portraitImage);
+						Current.IsFileDirty = true;
+					}
 				}
 			}
 			else

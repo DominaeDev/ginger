@@ -108,6 +108,7 @@ namespace Ginger
 			EnableFormLevelDoubleBuffering(true);
 
 			tabControl.SelectedIndex = 0;
+			AssetImageCache.Clear();
 
 #if DEBUG
 			Stopwatch stopWatch = new Stopwatch();
@@ -467,7 +468,12 @@ namespace Ginger
 			if (Current.SelectedCharacter == 0) // Main character
 			{
 				Image portraitImage;
-				if (Current.Card.LoadPortraitImageFromFile(filename, out portraitImage) == false)
+				if (Current.Card.LoadPortraitFromFile(filename, out portraitImage))
+				{
+					Current.Card.portraitImage = ImageRef.FromImage(portraitImage);
+					Current.IsFileDirty = true;
+				}
+				else
 				{
 					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 					return;
@@ -479,7 +485,8 @@ namespace Ginger
 			}
 			else // Actor
 			{
-				if (Current.Card.assets.LoadActorPortraitFromFile(Current.SelectedCharacter, filename) == null)
+				AssetFile tmp;
+				if (Current.Card.assets.LoadActorPortraitFromFile(Current.SelectedCharacter, filename, out tmp) == false)
 				{
 					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 					return;

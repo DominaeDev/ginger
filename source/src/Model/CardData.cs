@@ -125,7 +125,7 @@ namespace Ginger
 			return false;
 		}
 		
-		public bool LoadPortraitImageFromFile(string filename, out Image image)
+		public bool LoadPortraitFromFile(string filename, out Image image)
 		{
 			if (Utility.LoadImageFromFile(filename, out image) == false)
 				return false;
@@ -137,26 +137,19 @@ namespace Ginger
 				bAnimated = Utility.IsAnimatedPNG(filename);
 			else if (ext == "webp")
 				bAnimated = Utility.IsAnimatedWebP(filename);
-			else if (ext == "gif")
-				bAnimated = Utility.IsAnimatedImage(image);
 			else
-				bAnimated = false;
+				bAnimated = Utility.IsAnimatedImage(image);
 
-			portraitImage = ImageRef.FromImage(image);
-			Current.IsFileDirty = true;
-
-			if (bAnimated)
+			if (bAnimated) // Create override
 			{
 				AssetFile asset;
-				if (assets.ReplaceMainPortraitOverride(filename, out asset))
-				{
-					portraitImage.uid = asset.uid; //?
-					asset.name = "Portrait (animation)";
+				if (assets.CreateMainPortraitOverride(filename, out asset))
 					asset.AddTags(AssetFile.Tag.Animated);
-				}
 			}
 			else
-				assets.RemoveMainPortraitOverride();
+			{
+				assets.RemoveMainPortraitOverride(); // No override
+			}
 			return true;
 		}
 	}

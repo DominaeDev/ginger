@@ -407,12 +407,14 @@ namespace Ginger
 			if (imageType == AssetFile.AssetType.Icon)
 			{
 				Image portraitImage;
-				if (Card.LoadPortraitImageFromFile(images[0], out portraitImage))
+				if (Card.LoadPortraitFromFile(images[0], out portraitImage))
 				{
+					Card.portraitImage = ImageRef.FromImage(portraitImage);
 					lsImageLinks.Add(new Backyard.Link.Image() {
 						filename = Path.GetFileName(images[0]),
 						uid = Card.portraitImage.uid,
 					});
+					IsFileDirty = true;
 				}
 				++i;
 			}
@@ -439,6 +441,7 @@ namespace Ginger
 						filename = Path.GetFileName(images[i]),
 						uid = asset.uid,
 					});
+					IsFileDirty = true;
 				}
 			}
 

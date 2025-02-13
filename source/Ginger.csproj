@@ -445,7 +445,8 @@
       <DependentUpon>RecipePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Model\CardData.cs" />
-    <Compile Include="src\Model\Formats\AssetCollection.cs" />
+    <Compile Include="src\Model\Formats\Assets\AssetCollection.cs" />
+    <Compile Include="src\Model\Formats\Assets\AssetImageCache.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\BackyardChatBackupV1.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\GingerChatV2.cs" />
     <Compile Include="src\Model\Formats\UserData.cs" />
@@ -453,7 +454,7 @@
     <Compile Include="src\Model\Clipboard\ChatClipboard.cs" />
     <Compile Include="src\Model\Clipboard\ChatParametersClipboard.cs" />
     <Compile Include="src\Model\Clipboard\ChatStagingClipboard.cs" />
-    <Compile Include="src\Model\Formats\AssetFile.cs" />
+    <Compile Include="src\Model\Formats\Assets\AssetFile.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\AgnaiChat.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\BackyardChatBackupV2.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\BackyardChat.cs" />
