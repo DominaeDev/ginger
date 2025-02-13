@@ -2001,11 +2001,14 @@ namespace Ginger
 				return;
 
 			Current.SelectedCharacter = characterIndex;
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group)
+				Regenerate(); // Regenerate actor output
 			tabControl.SelectedIndex = 0;
 			recipeList.RecreatePanels();
 			sidePanel.RefreshValues();
 			sidePanel.OnActorChanged();
 			RefreshTitle();
+
 
 			Undo.Push(Undo.Kind.RecipeList, "Select actor", "select-actor");
 		}
