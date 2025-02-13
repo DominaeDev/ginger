@@ -606,12 +606,8 @@ namespace Ginger
 
 		private void OnBackgroundFromPortrait(object sender, EventArgs e)
 		{
-			Image image = Current.Card.portraitImage;
-			if (image == null)
-				return;
-
 			AssetFile asset;
-			if (Current.Card.assets.AddBackground(image, out asset))
+			if (Current.Card.assets.AddBackgroundFromPortrait(out asset))
 			{
 				asset.name = "Background (portrait)";
 				Undo.Push(Undo.Kind.Parameter, "Set background image");

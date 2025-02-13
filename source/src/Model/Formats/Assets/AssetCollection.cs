@@ -442,9 +442,10 @@ namespace Ginger
 					assetType = AssetFile.AssetType.Background,
 					data = mainPortraitOverride.data,
 					uriType = AssetFile.UriType.Embedded,
-					tags = new HashSet<StringHandle>() { AssetFile.Tag.MainBackground},
-
+					tags = new HashSet<StringHandle>() { AssetFile.Tag.MainBackground },
 				};
+				if (mainPortraitOverride.tags != null)
+					backgroundAsset.tags.UnionWith(mainPortraitOverride.tags);
 			}
 			else if (Current.Card.portraitImage != null)
 			{
