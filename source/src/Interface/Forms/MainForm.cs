@@ -538,7 +538,7 @@ namespace Ginger
 			}
 			else // Actor
 			{
-				Current.Card.assets.RemoveActorPortrait(Current.SelectedCharacter, false);
+				Current.Card.assets.Remove(Current.Card.assets.GetPortrait(Current.SelectedCharacter));
 				Undo.Push(Undo.Kind.Parameter, "Clear portrait (actor)");
 			}
 			Current.IsDirty = true;
@@ -552,7 +552,7 @@ namespace Ginger
 				image = Current.Card.portraitImage;
 			else
 			{
-				var asset = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+				var asset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
 				if (asset == null)
 					return;
 

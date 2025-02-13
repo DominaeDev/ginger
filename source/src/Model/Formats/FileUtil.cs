@@ -1052,7 +1052,9 @@ namespace Ginger
 					Current.Card.assets = assets;
 
 					// Load portrait image
-					Current.Card.portraitImage = ImageRef.FromImage(Current.Card.assets.GetPortraitImage());
+					var portraitAsset = Current.Card.assets.GetPortrait();
+					if (portraitAsset != null)
+						Current.Card.portraitImage = ImageRef.FromImage(portraitAsset.ToImage());
 
 					// Remove portrait image (it will be re-added on save/export)
 //					Current.Card.assets.RemovePortraitImage();
@@ -1181,7 +1183,9 @@ namespace Ginger
 					ExtractAssetsFromArchive(filename, importResult.tavernDataV3, out Current.Card.assets);
 
 					// Load portrait image
-					Current.Card.portraitImage = ImageRef.FromImage(Current.Card.assets.GetPortraitImage());
+					var portraitAsset = Current.Card.assets.GetPortrait();
+					if (portraitAsset != null)
+						Current.Card.portraitImage = ImageRef.FromImage(portraitAsset.ToImage());
 
 					// Remove portrait image (it will be re-added on save/export)
 //					Current.Card.assets.RemovePortraitImage();

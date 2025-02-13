@@ -445,6 +445,7 @@
       <DependentUpon>RecipePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Model\CardData.cs" />
+    <Compile Include="src\Model\Formats\AssetCollection.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\BackyardChatBackupV1.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\GingerChatV2.cs" />
     <Compile Include="src\Model\Formats\UserData.cs" />

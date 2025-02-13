@@ -1149,18 +1149,7 @@ namespace Ginger
 			if (Current.Card.assets == null)
 				return null;
 
-			var mainPortraitOverride = Current.Card.assets.GetMainPortraitOverride();
-			if (mainPortraitOverride != null)
-			{
-				if (mainPortraitOverride.data.isEmpty)
-					return null; // Error
-
-				Image image;
-				if (Utility.LoadImageFromMemory(mainPortraitOverride.data.bytes, out image))
-					return image;
-			}
-
-			var portraitAsset = Current.Card.assets.GetPortraitAsset();
+			var portraitAsset = Current.Card.assets.GetPortrait();
 			if (portraitAsset != null)
 			{
 				// Promote to override
@@ -2877,11 +2866,9 @@ namespace Ginger
 				}
 
 				// Get portrait
-				AssetFile portraitAsset = Current.Card.assets.GetMainPortraitOverride();
+				AssetFile portraitAsset = Current.Card.assets.GetPortrait();
 				if (portraitAsset == null && Current.Card.portraitImage != null)
 					portraitAsset = AssetFile.FromImage(Current.Card.portraitImage);
-				if (portraitAsset == null)
-					portraitAsset = Current.Card.assets.GetPortraitAsset();
 
 				// Add actor
 				CharacterData importedCharacter = Current.Character;
@@ -2921,7 +2908,7 @@ namespace Ginger
 			AssetFile portraitAsset = null;
 			if (Current.SelectedCharacter > 0)
 			{
-				portraitAsset = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+				portraitAsset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
 				if (portraitAsset != null)
 				{
 					Image actorImage;
@@ -2976,7 +2963,7 @@ namespace Ginger
 						&& a.assetType == AssetFile.AssetType.Icon
 						&& a.actorIndex < 1));
 
-				var portraitAsset = assets.GetActorPortrait(1);
+				var portraitAsset = assets.GetPortrait(1);
 				if (portraitAsset != null)
 				{
 					Image actorImage;
@@ -2990,7 +2977,7 @@ namespace Ginger
 				}
 			}
 
-			assets.RemoveActorPortrait(Current.SelectedCharacter, true);
+			assets.RemoveActorAssets(Current.SelectedCharacter);
 			assets.Validate();
 
 			Current.Card.assets = (AssetCollection)assets.Clone();

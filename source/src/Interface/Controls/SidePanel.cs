@@ -158,13 +158,13 @@ namespace Ginger
 			// Portrait
 			if (Current.SelectedCharacter == 0)
 			{
-				var portraitOverride = Current.Card.assets.GetMainPortraitOverride();
+				var portraitOverride = Current.Card.assets.EmbeddedPortraits.FirstOrDefault(a => a.isMainPortraitOverride);
 				portraitImage.SetImage(Current.Card.portraitImage, portraitOverride != null && portraitOverride.HasTag(AssetFile.Tag.Animated));
 				portraitImage.IsGrayedOut = false;
 			}
 			else
 			{
-				var asset = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+				var asset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
 				if (asset != null)
 				{
 					Image actorImage;
@@ -176,15 +176,13 @@ namespace Ginger
 					}
 					else
 					{
-						var portraitOverride = Current.Card.assets.GetMainPortraitOverride();
-						portraitImage.SetImage(Current.Card.portraitImage, portraitOverride != null && portraitOverride.HasTag(AssetFile.Tag.Animated));
+						portraitImage.SetImage(Current.Card.portraitImage);
 						portraitImage.IsGrayedOut = true;
 					}
 				}
 				else
 				{
-					var portraitOverride = Current.Card.assets.GetMainPortraitOverride();
-					portraitImage.SetImage(Current.Card.portraitImage, portraitOverride != null && portraitOverride.HasTag(AssetFile.Tag.Animated));
+					portraitImage.SetImage(Current.Card.portraitImage);
 					portraitImage.IsGrayedOut = true;
 				}
 			}
@@ -200,9 +198,10 @@ namespace Ginger
 				label_Image_Value.Text = "-";
 				label_Image_Value.ForeColor = this.ForeColor;
 			}
+
 			if (Current.SelectedCharacter > 0)
 			{
-				var asset = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+				var asset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
 				if (asset != null)
 				{
 					SetToolTip(Resources.tooltip_portrait_image, portraitImage);
@@ -285,7 +284,7 @@ namespace Ginger
 			}
 			else
 			{
-				var asset = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+				var asset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
 				if (asset != null)
 				{
 					width = asset.knownWidth;
@@ -592,7 +591,7 @@ namespace Ginger
 				}
 				else
 				{
-					var asset = Current.Card.assets.GetActorPortrait(Current.SelectedCharacter);
+					var asset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
 					bHasPortrait = asset != null;
 					bCanResize = asset != null && (asset.knownWidth > Constants.MaxImageDimension || asset.knownHeight > Constants.MaxImageDimension);
 				}

@@ -39,5 +39,17 @@ namespace Ginger
 			source[b] = tmp;
 			return true;
 		}
+
+		public static int Remove<TSource>(this IList<TSource> source, IEnumerable<TSource> list)
+		{
+			int count = 0;
+			TSource[] items = list.ToArray();
+			for (int i = 0; i < items.Length; ++i)
+			{
+				if (source.Remove(items[i]))
+					++count;
+			}
+			return count;
+		}
 	}
 }
