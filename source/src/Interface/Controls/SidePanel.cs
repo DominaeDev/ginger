@@ -1114,6 +1114,7 @@ namespace Ginger
 			if (args.Button == MouseButtons.Right)
 			{
 				bool bHasPortrait = Current.Card.portraitImage != null;
+				bool bHasPortraitBackground = Current.Card.assets.ContainsAny(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background && a.HasTag(AssetFile.Tag.PortraitBackground));
 				bool bHasBackground = Current.Card.assets.ContainsAny(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
 				
 				var menu = new ContextMenuStrip();
@@ -1125,7 +1126,7 @@ namespace Ginger
 				}));
 
 				menu.Items.Add(new ToolStripMenuItem("Use portrait as background", null, BackgroundFromPortrait) {
-					Enabled = bHasPortrait,
+					Enabled = bHasPortrait && !bHasPortraitBackground,
 				});
 
 				if (Clipboard.ContainsImage())
