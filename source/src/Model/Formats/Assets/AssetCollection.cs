@@ -433,7 +433,7 @@ namespace Ginger
 
 		public static bool AddBackgroundFromPortrait(this AssetCollection assets, out AssetFile backgroundAsset)
 		{
-			var mainPortraitOverride = assets.GetPortrait();
+			var mainPortraitOverride = assets.GetPortrait(Current.SelectedCharacter);
 			if (mainPortraitOverride != null)
 			{
 				backgroundAsset = new AssetFile() {
@@ -444,8 +444,8 @@ namespace Ginger
 					uriType = AssetFile.UriType.Embedded,
 					tags = new HashSet<StringHandle>() { AssetFile.Tag.MainBackground, AssetFile.Tag.PortraitBackground },
 				};
-				if (mainPortraitOverride.tags != null)
-					backgroundAsset.tags.UnionWith(mainPortraitOverride.tags);
+				if (mainPortraitOverride.HasTag(AssetFile.Tag.Animated))
+					backgroundAsset.AddTags(AssetFile.Tag.Animated);
 			}
 			else if (Current.Card.portraitImage != null)
 			{
