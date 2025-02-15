@@ -1590,36 +1590,38 @@ namespace Ginger
 			return sbFilename.ToString().Trim();
 		}
 
-		public static string MakeUniqueFilename(string filename)
+		public static string MakeUniqueFilename(string path, string filename, ISet<string> used = null)
 		{
-			return NextAvailableFilename(ValidFilename(filename));
+			if (used == null)
+				used = new HashSet<string>();
+
+			var nextFilename = NextAvailableFilename(path, ValidFilename(filename), used);
+			used.Add(nextFilename.ToLowerInvariant());
+			return nextFilename;
 		}
 
 		private static string NumberPattern = " ({0})";
 
-		public static string NextAvailableFilename(string filePath)
+		private static string NextAvailableFilename(string path, string filename, ISet<string> used)
 		{
-			// Short-cut if already available
-			if (!File.Exists(filePath))
+			var filePath = Path.Combine(path, filename);
+			if (!File.Exists(filePath) && !used.Contains(filePath.ToLowerInvariant()))
 				return filePath;
 
-			// If path has extension then insert the number pattern just before the extension and return next filename
-			if (Path.HasExtension(filePath))
-				return GetNextFilename(filePath.Insert(filePath.LastIndexOf(Path.GetExtension(filePath)), NumberPattern));
+			string ext = GetFileExt(filename, false);
 
-			// Otherwise just append the pattern to the path and return next filename
-			return GetNextFilename(filePath + NumberPattern);
+			return GetNextFilename(path, string.Concat(Path.GetFileNameWithoutExtension(filename), NumberPattern, ".", ext), used);
 		}
 
-		private static string GetNextFilename(string pattern)
+		private static string GetNextFilename(string path, string pattern, ISet<string> used)
 		{
 			string tmp = string.Format(pattern, 1);
-			if (!File.Exists(tmp))
-				return tmp; // short-circuit if no matches
+			if (!Unavailable(tmp))
+				return Path.Combine(path, tmp);
 
 			int min = 1, max = 2; // min is inclusive, max is exclusive/untested
 
-			while (File.Exists(string.Format(pattern, max)))
+			while (Unavailable(string.Format(pattern, max)))
 			{
 				min = max;
 				max *= 2;
@@ -1628,13 +1630,19 @@ namespace Ginger
 			while (max != min + 1)
 			{
 				int pivot = (max + min) / 2;
-				if (File.Exists(string.Format(pattern, pivot)))
+				if (Unavailable(string.Format(pattern, pivot)))
 					min = pivot;
 				else
 					max = pivot;
 			}
 
-			return string.Format(pattern, max);
+			return Path.Combine(path, string.Format(pattern, max));
+
+			bool Unavailable(string filename)
+			{
+				string filePath = Path.Combine(path, filename).ToLowerInvariant();
+				return used.Contains(filePath) || File.Exists(filePath);
+			}
 		}
 
 		public static void OpenUrl(string url)

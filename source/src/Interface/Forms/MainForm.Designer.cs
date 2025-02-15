@@ -72,6 +72,7 @@ namespace Ginger {
 			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveIncrementalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveMultipleMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importLorebookMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -187,9 +188,9 @@ namespace Ginger {
 			this.importFileDialog = new System.Windows.Forms.OpenFileDialog();
 			this.statusBar = new System.Windows.Forms.StatusStrip();
 			this.statusBarMessage = new System.Windows.Forms.ToolStripStatusLabel();
+			this.statusActors = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
-			this.statusActors = new System.Windows.Forms.ToolStripStatusLabel();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -710,6 +711,7 @@ namespace Ginger {
             this.saveToolStripMenuItem,
             this.saveasToolStripMenuItem,
             this.saveIncrementalMenuItem,
+            this.saveMultipleMenuItem,
             toolStripMenuItem3,
             this.importToolStripMenuItem,
             this.exportToolStripMenuItem,
@@ -788,6 +790,13 @@ namespace Ginger {
 			this.saveIncrementalMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.saveIncrementalMenuItem.Text = "Save &incremental";
 			this.saveIncrementalMenuItem.Click += new System.EventHandler(this.SaveIncrementalMenuItem_Click);
+			// 
+			// saveMultipleMenuItem
+			// 
+			this.saveMultipleMenuItem.Name = "saveMultipleMenuItem";
+			this.saveMultipleMenuItem.Size = new System.Drawing.Size(227, 22);
+			this.saveMultipleMenuItem.Text = "Save multiple...";
+			this.saveMultipleMenuItem.Click += new System.EventHandler(this.saveMultipleMenuItem_Click);
 			// 
 			// importToolStripMenuItem
 			// 
@@ -1731,9 +1740,18 @@ namespace Ginger {
 			// statusBarMessage
 			// 
 			this.statusBarMessage.Name = "statusBarMessage";
-			this.statusBarMessage.Size = new System.Drawing.Size(1145, 17);
+			this.statusBarMessage.Size = new System.Drawing.Size(1176, 17);
 			this.statusBarMessage.Spring = true;
 			this.statusBarMessage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// statusActors
+			// 
+			this.statusActors.Image = global::Ginger.Properties.Resources.asset_actor_portrait;
+			this.statusActors.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+			this.statusActors.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.statusActors.Name = "statusActors";
+			this.statusActors.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
+			this.statusActors.Size = new System.Drawing.Size(25, 17);
 			// 
 			// statusEmbeddedAssets
 			// 
@@ -1751,15 +1769,6 @@ namespace Ginger {
 			this.statusConnectionIcon.Name = "statusConnectionIcon";
 			this.statusConnectionIcon.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusConnectionIcon.Size = new System.Drawing.Size(24, 17);
-			// 
-			// statusActors
-			// 
-			this.statusActors.Image = global::Ginger.Properties.Resources.asset_actor_portrait;
-			this.statusActors.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
-			this.statusActors.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-			this.statusActors.Name = "statusActors";
-			this.statusActors.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
-			this.statusActors.Size = new System.Drawing.Size(25, 17);
 			// 
 			// MainForm
 			// 
@@ -1961,6 +1970,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem additionalCharactersMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem outputPreviewFaradayGroupMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel statusActors;
+		private System.Windows.Forms.ToolStripMenuItem saveMultipleMenuItem;
 	}
 }
 
