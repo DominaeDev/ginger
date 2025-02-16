@@ -921,6 +921,8 @@ namespace Ginger
 				return s;
 			};
 
+			var evalConfig = internalContext.evalConfig;
+
 			for (int i = 0; i < functions.Length; ++i)
 			{
 				var fn = functions[i];
@@ -953,21 +955,22 @@ namespace Ginger
 					text = text.Replace('\n', ' ');
 					break;
 				case "list":
+				case "andlist":
 				{
 					var words = ListFromDelimitedString(text);
-					text = Text.Eval(Utility.CommaSeparatedList(words, "and"), null, Text.EvalOption.None);
+					text = Text.Eval(Utility.CommaSeparatedList(words, Text.Eval("[@conjugates/and]", internalContext.context, evalConfig, Text.EvalOption.None)), null, Text.EvalOption.None);
 					break;
 				}
 				case "orlist":
 				{
 					var words = ListFromDelimitedString(text);
-					text = Text.Eval(Utility.CommaSeparatedList(words, "or"), null, Text.EvalOption.None);
+					text = Text.Eval(Utility.CommaSeparatedList(words, Text.Eval("[@conjugates/or]", internalContext.context, evalConfig, Text.EvalOption.None)), null, Text.EvalOption.None);
 					break;
 				}
 				case "norlist":
 				{
 					var words = ListFromDelimitedString(text);
-					text = Text.Eval(Utility.CommaSeparatedList(words, "nor"), null, Text.EvalOption.None);
+					text = Text.Eval(Utility.CommaSeparatedList(words, Text.Eval("[@conjugates/nor]", internalContext.context, evalConfig, Text.EvalOption.None)), null, Text.EvalOption.None);
 					break;
 				}
 				case "pluslist":
