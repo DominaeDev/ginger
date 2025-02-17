@@ -3,10 +3,8 @@ using System.Data.SQLite;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml;
 using System.Text;
 using Ginger.Properties;
-using System.Globalization;
 
 namespace Ginger.Integration
 {
@@ -25,13 +23,13 @@ namespace Ginger.Integration
 
 	public class BackyardImpl_v1 : IBackyardImplementation
 	{
-		public IEnumerable<FolderInstance> Folders { get { return _Folders.Values; } }
 		public IEnumerable<CharacterInstance> Characters { get { return _Characters.Values; } }
 		public IEnumerable<GroupInstance> Groups { get { return _Groups.Values; } }
+		public IEnumerable<FolderInstance> Folders { get { return _Folders.Values; } }
 
-		private Dictionary<string, FolderInstance> _Folders = new Dictionary<string, FolderInstance>();
 		private Dictionary<string, CharacterInstance> _Characters = new Dictionary<string, CharacterInstance>();
 		private Dictionary<string, GroupInstance> _Groups = new Dictionary<string, GroupInstance>();
+		private Dictionary<string, FolderInstance> _Folders = new Dictionary<string, FolderInstance>();
 
 		public string LastError { get; private set; }
 
@@ -81,106 +79,19 @@ namespace Ginger.Integration
 				{
 					connection.Open();
 
-					// Fetch character-group memberships
-					var groupMembers = new Dictionary<string, HashSet<string>>();
-					using (var cmdGroup = connection.CreateCommand())
-					{
-						cmdGroup.CommandText =
-						@"
-							SELECT 
-								A, B
-							FROM _CharacterConfigToGroupConfig
-						";
-
-						using (var reader = cmdGroup.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string characterId = reader.GetString(0);
-								string groupId = reader.GetString(1);
-
-								if (groupMembers.ContainsKey(groupId) == false)
-									groupMembers.Add(groupId, new HashSet<string>());
-
-								groupMembers[groupId].Add(characterId);
-							}
-						}
-					}
-
-					// Fetch group configs
-					using (var cmdGroupData = connection.CreateCommand())
-					{
-						cmdGroupData.CommandText =
-						@"
-							SELECT 
-								id, createdAt, updatedAt, name, folderId, folderSortPosition, hubCharId, hubAuthorUsername
-							FROM GroupConfig
-						";
-
-						using (var reader = cmdGroupData.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string instanceId = reader.GetString(0);
-								DateTime createdAt = reader.GetTimestamp(1);
-								DateTime updatedAt = reader.GetTimestamp(2);
-								string name = reader.GetString(3);
-								string folderId = reader.GetString(4);
-								string folderSortPosition = reader.GetString(5);
-								string hubCharId = reader[6] as string;
-								string hubAuthorUsername = reader[7] as string;
-
-								HashSet<string> members;
-								if (groupMembers.TryGetValue(instanceId, out members) == false)
-									continue; // No members?
-
-								_Groups.TryAdd(instanceId,
-									new GroupInstance() {
-										instanceId = instanceId,
-										name = name,
-										creationDate = createdAt,
-										updateDate = updatedAt,
-										folderId = folderId,
-										folderSortPosition = folderSortPosition,
-										hubCharId = hubCharId,
-										hubAuthorUsername = hubAuthorUsername,
-										members = members.ToArray(),
-									});
-							}
-						}
-					}
+					// Fetch groups
+					GroupInstance[] groups;
+					Backyard.Error error = FetchGroups(connection, out groups);
+					if (error != Backyard.Error.NoError)
+						return error;
+					_Groups = groups.ToDictionary(g => g.instanceId);
 
 					// Fetch app folders
-					using (var cmdFolderData = connection.CreateCommand())
-					{
-						cmdFolderData.CommandText =
-						@"
-							SELECT 
-								id, parentFolderId, name, url, isRoot
-							FROM AppFolder
-						";
-
-						using (var reader = cmdFolderData.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string instanceId = reader.GetString(0);
-								string parentId = reader[1] as string;
-								string name = reader.GetString(2);
-								string url = reader.GetString(3);
-								bool isRoot = reader.GetBoolean(4);
-
-								_Folders.TryAdd(instanceId,
-									new FolderInstance() {
-										instanceId = instanceId,
-										parentId = parentId,
-										name = name,
-										url = url,
-										isRoot = isRoot,
-									});
-							}
-						}
-					}
+					FolderInstance[] folders;
+					error = FetchFolders(connection, out folders);
+					if (error != Backyard.Error.NoError)
+						return error;
+					_Folders = folders.ToDictionary(f => f.instanceId);
 
 					// Fetch character configs
 					using (var cmdCharacter = connection.CreateCommand())
@@ -258,9 +169,10 @@ namespace Ginger.Integration
 				return Backyard.Error.Unknown;
 			}
 		}
-#endregion
 
-#region Characters
+		#endregion
+
+		#region Characters
 		public Backyard.Error ImportCharacter(CharacterInstance character, out FaradayCardV4 card, out ImageInstance[] images)
 		{
 			UserData unused;
@@ -1724,32 +1636,16 @@ namespace Ginger.Integration
 				{
 					connection.Open();
 
-					// Fetch character-group memberships
-					var groupMembers = new Dictionary<string, HashSet<string>>(); // group, characterIds...
-					using (var cmdGroup = connection.CreateCommand())
+					// Fetch (all) character-group memberships
+					Dictionary<string, HashSet<string>> groupMembers;
+					var error = FetchGroupMemberships(connection, out groupMembers);
+					if (error != Backyard.Error.NoError)
 					{
-						cmdGroup.CommandText =
-						@"
-							SELECT 
-								A, B
-							FROM _CharacterConfigToGroupConfig
-						";
-
-						using (var reader = cmdGroup.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string characterId = reader.GetString(0);
-								string groupId = reader.GetString(1);
-
-								if (groupMembers.ContainsKey(groupId) == false)
-									groupMembers.Add(groupId, new HashSet<string>());
-
-								groupMembers[groupId].Add(characterId);
-							}
-						}
+						result = default(ConfirmDeleteResult);
+						return error;
 					}
 
+					// Filter affected groups
 					groupMembers = groupMembers
 						.Where(kvp => kvp.Value.ContainsAnyIn(characterIds))
 						.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
@@ -2376,7 +2272,7 @@ namespace Ginger.Integration
 					}
 
 					List<_Character> groupMembers;
-					error = FetchGroupMembers(connection, groupId, null, out groupMembers);
+					error = FetchMembersOfGroup(connection, groupId, null, out groupMembers);
 					if (error != Backyard.Error.NoError)
 					{
 						chatInstances = null;
@@ -2556,7 +2452,7 @@ namespace Ginger.Integration
 						return error;
 					}
 					List<_Character> groupMembers;
-					error = FetchGroupMembers(connection, groupId, null, out groupMembers);
+					error = FetchMembersOfGroup(connection, groupId, null, out groupMembers);
 					if (error != Backyard.Error.NoError)
 					{
 						chatInstance = null;
@@ -2940,7 +2836,7 @@ namespace Ginger.Integration
 
 					// Fetch group members
 					List<_Character> groupMembers;
-					var error = FetchGroupMembers(connection, groupId, args.history, out groupMembers);
+					var error = FetchMembersOfGroup(connection, groupId, args.history, out groupMembers);
 					if (error != Backyard.Error.NoError)
 					{
 						chatInstance = null;
@@ -3567,7 +3463,7 @@ namespace Ginger.Integration
 
 					// Fetch group members
 					List<_Character> groupMembers;
-					error = FetchGroupMembers(connection, groupId, chatInstance.history, out groupMembers);
+					error = FetchMembersOfGroup(connection, groupId, chatInstance.history, out groupMembers);
 					if (error != Backyard.Error.NoError)
 					{
 						chatInstance = null;
@@ -4983,7 +4879,106 @@ namespace Ginger.Integration
 			}
 		}
 
-		private Backyard.Error FetchGroupMembers(SQLiteConnection connection, string groupId, ChatHistory chatHistory, out List<_Character> members)
+		private Backyard.Error FetchGroups(SQLiteConnection connection, out GroupInstance[] groups)
+		{
+			try
+			{
+				// Fetch character-group memberships
+				Dictionary<string, HashSet<string>> groupMembers;
+				var error = FetchGroupMemberships(connection, out groupMembers);
+				if (error != Backyard.Error.NoError)
+				{
+					groups = null;
+					return error;
+				}
+
+				// Fetch group configs
+				var lsGroups = new List<GroupInstance>();
+				using (var cmdGroupData = connection.CreateCommand())
+				{
+					cmdGroupData.CommandText =
+					@"
+						SELECT 
+							id, createdAt, updatedAt, name, folderId, folderSortPosition, hubCharId, hubAuthorUsername
+						FROM GroupConfig
+					";
+
+					using (var reader = cmdGroupData.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							string instanceId = reader.GetString(0);
+							DateTime createdAt = reader.GetTimestamp(1);
+							DateTime updatedAt = reader.GetTimestamp(2);
+							string name = reader.GetString(3);
+							string folderId = reader.GetString(4);
+							string folderSortPosition = reader.GetString(5);
+							string hubCharId = reader[6] as string;
+							string hubAuthorUsername = reader[7] as string;
+
+							HashSet<string> members;
+							if (groupMembers.TryGetValue(instanceId, out members) == false)
+								continue; // No members?
+
+							lsGroups.Add(new GroupInstance() {
+								instanceId = instanceId,
+								name = name,
+								creationDate = createdAt,
+								updateDate = updatedAt,
+								folderId = folderId,
+								folderSortPosition = folderSortPosition,
+								hubCharId = hubCharId,
+								hubAuthorUsername = hubAuthorUsername,
+								members = members.ToArray(),
+							});
+						}
+					}
+					groups = lsGroups.ToArray();
+					return Backyard.Error.NoError;
+				}
+			}
+			catch (SQLiteException e)
+			{
+				groups = null;
+				return Backyard.Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				groups = null;
+				return Backyard.Error.Unknown;
+			}
+		}
+
+		private static Backyard.Error FetchGroupMemberships(SQLiteConnection connection, out Dictionary<string, HashSet<string>> groupMembers)
+		{
+			using (var cmdGroup = connection.CreateCommand())
+			{
+				groupMembers = new Dictionary<string, HashSet<string>>();
+				cmdGroup.CommandText =
+				@"
+					SELECT 
+						A, B
+					FROM _CharacterConfigToGroupConfig
+				";
+
+				using (var reader = cmdGroup.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						string characterId = reader.GetString(0);
+						string groupId = reader.GetString(1);
+
+						if (groupMembers.ContainsKey(groupId) == false)
+							groupMembers.Add(groupId, new HashSet<string>());
+
+						groupMembers[groupId].Add(characterId);
+					}
+				}
+				return Backyard.Error.NoError;
+			}
+		}
+
+		private Backyard.Error FetchMembersOfGroup(SQLiteConnection connection, string groupId, ChatHistory chatHistory, out List<_Character> members)
 		{
 			try
 			{
@@ -5115,6 +5110,56 @@ namespace Ginger.Integration
 			catch (Exception e)
 			{
 				backgrounds = new ImageInstance[0];
+				return Backyard.Error.Unknown;
+			}
+		}
+		
+		private Backyard.Error FetchFolders(SQLiteConnection connection, out FolderInstance[] folders)
+		{
+			try
+			{
+				using (var cmdFolderData = connection.CreateCommand())
+				{
+					cmdFolderData.CommandText =
+					@"
+						SELECT 
+							id, parentFolderId, name, url, isRoot
+						FROM AppFolder
+					";
+
+					var lsFolders = new List<FolderInstance>();
+
+					using (var reader = cmdFolderData.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							string instanceId = reader.GetString(0);
+							string parentId = reader[1] as string;
+							string name = reader.GetString(2);
+							string url = reader.GetString(3);
+							bool isRoot = reader.GetBoolean(4);
+
+							lsFolders.Add(new FolderInstance() {
+								instanceId = instanceId,
+								parentId = parentId,
+								name = name,
+								url = url,
+								isRoot = isRoot,
+							});
+						}
+					}
+					folders = lsFolders.ToArray();
+					return Backyard.Error.NoError;
+				}
+			}
+			catch (SQLiteException e)
+			{
+				folders = null;
+				return Backyard.Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				folders = null;
 				return Backyard.Error.Unknown;
 			}
 		}
