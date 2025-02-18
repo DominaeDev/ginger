@@ -1571,7 +1571,7 @@ namespace Ginger
 
 			var dlg = new LinkSelectCharacterDialog();
 			dlg.Text = "Open Backyard AI character";
-			dlg.Characters = Backyard.NonUserCharacters.ToArray();
+			dlg.Characters = Backyard.Characters.ToArray();
 			dlg.Folders = Backyard.Folders.ToArray();
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return false;
@@ -1975,7 +1975,7 @@ namespace Ginger
 			// Choose character(s)
 			var dlg = new LinkSelectMultipleCharactersDialog();
 			dlg.Text = "Select characters to export";
-			dlg.Characters = Backyard.NonUserCharacters.ToArray();
+			dlg.Characters = Backyard.CharactersWithGroup.ToArray();
 			dlg.Folders = Backyard.Folders.ToArray();
 			if (dlg.ShowDialog() != DialogResult.OK || dlg.Characters.Length == 0)
 				return false;
@@ -2302,7 +2302,7 @@ namespace Ginger
 			var dlg = new LinkSelectMultipleGroupsDialog();
 			dlg.Text = "Select chats to modify";
 			dlg.Characters = Backyard.CharactersWithGroup.ToArray();
-			dlg.Groups = Backyard.SupportedGroups.ToArray();
+			dlg.Groups = Backyard.Groups.ToArray();
 			dlg.Folders = Backyard.Folders.ToArray();
 			if (dlg.ShowDialog() != DialogResult.OK || dlg.Groups.Length == 0)
 				return false;
@@ -2377,7 +2377,7 @@ namespace Ginger
 
 			var dlg = new LinkSelectCharacterDialog();
 			dlg.Text = Resources.cap_link_create_backup;
-			dlg.Characters = Backyard.NonUserCharacters.ToArray();
+			dlg.Characters = Backyard.CharactersWithGroup.ToArray();
 			dlg.Folders = Backyard.Folders.ToArray();
 
 			CharacterInstance characterInstance;
@@ -2736,7 +2736,7 @@ namespace Ginger
 				return false;
 			}
 
-			var groups = Backyard.SupportedGroups.ToArray();
+			var groups = Backyard.Groups.ToArray();
 
 			// Confirm
 			if (MessageBox.Show(Resources.msg_link_bulk_repair_chats_confirm, Resources.cap_link_bulk_repair_chats, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
@@ -2810,7 +2810,7 @@ namespace Ginger
 			// Choose character(s)
 			var dlg = new LinkSelectMultipleCharactersDialog();
 			dlg.Text = "Select characters to delete";
-			dlg.Characters = Backyard.NonUserCharacters.ToArray();
+			dlg.Characters = Backyard.CharactersWithGroup.ToArray();
 			dlg.Folders = Backyard.Folders.ToArray();
 			if (dlg.ShowDialog() != DialogResult.OK || dlg.Characters.Length == 0)
 				return false;

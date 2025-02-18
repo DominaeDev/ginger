@@ -163,7 +163,7 @@ namespace Ginger
 
 			string label = character.displayName;
 			if (string.Compare(character.name, label, StringComparison.OrdinalIgnoreCase) != 0)
-				label = string.Concat(label, " (", character.name, ")");
+				label = string.Concat(label, " \"", character.name, "\"");
 
 			string inferredGender = character.inferredGender;
 			var sbTooltip = new StringBuilder();

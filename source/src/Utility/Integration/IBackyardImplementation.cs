@@ -19,15 +19,17 @@ namespace Ginger.Integration
 	public interface IBackyardImplementation
 	{
 		// Getters
-		IEnumerable<FolderInstance> Folders { get; }
+		IEnumerable<CharacterInstance> AllCharacters { get; }
 		IEnumerable<CharacterInstance> Characters { get; }
+		IEnumerable<CharacterInstance> Users { get; }
 		IEnumerable<GroupInstance> Groups { get; }
+		IEnumerable<FolderInstance> Folders { get; }
 
 		// State
+		Backyard.Error RefreshCharacters();
 		bool GetCharacter(string characterId, out CharacterInstance character);
 		bool GetGroup(string groupId, out GroupInstance group);
 		GroupInstance GetGroupForCharacter(string characterId);
-		Backyard.Error RefreshCharacters();
 		string LastError { get; }
 
 		// Characters

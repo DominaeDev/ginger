@@ -75,15 +75,6 @@ namespace Ginger.Integration
 
 			public int Count { get { return members != null ? members.Length : 0; } }
 			public bool isEmpty { get { return Count == 0; } }
-			public bool isSupported 
-			{ 
-				get
-				{
-					var groupType = GetGroupType();
-					return groupType == GroupType.Solo
-						|| groupType == GroupType.Group;
-				} 
-			}
 
 			public enum GroupType
 			{
@@ -567,13 +558,13 @@ namespace Ginger.Integration
 
 		public static bool ConnectionEstablished { get { return Current != null; } }
 
-		public static IEnumerable<FolderInstance> Folders { get { return Current != null ? Current.Folders : new FolderInstance[0]; } }
+		public static IEnumerable<CharacterInstance> AllCharacters { get { return Current != null ? Current.AllCharacters : new CharacterInstance[0]; } }
 		public static IEnumerable<CharacterInstance> Characters { get { return Current != null ? Current.Characters : new CharacterInstance[0]; } }
-		public static IEnumerable<GroupInstance> Groups { get { return Current != null ? Current.Groups : new GroupInstance[0];; } }
-
+		public static IEnumerable<CharacterInstance> Users { get { return Current != null ? Current.Users : new CharacterInstance[0]; } }
 		public static IEnumerable<CharacterInstance> CharactersWithGroup { get { return Characters.Where(c => c.groupId != null); } }
-		public static IEnumerable<CharacterInstance> NonUserCharacters { get { return CharactersWithGroup.Where(c => c.isCharacter); } }
-		public static IEnumerable<GroupInstance> SupportedGroups { get { return Groups.Where(g => g.isSupported); } }
+
+		public static IEnumerable<GroupInstance> Groups { get { return Current != null ? Current.Groups : new GroupInstance[0]; } }
+		public static IEnumerable<FolderInstance> Folders { get { return Current != null ? Current.Folders : new FolderInstance[0]; } }
 
 		public static Error EstablishConnection()
 		{
