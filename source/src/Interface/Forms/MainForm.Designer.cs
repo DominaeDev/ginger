@@ -389,6 +389,7 @@ namespace Ginger {
 			// 
 			// recipeList
 			// 
+			this.recipeList.AutoScroll = true;
 			this.recipeList.AutoScrollMargin = new System.Drawing.Size(0, 22);
 			this.recipeList.BackColor = System.Drawing.Color.Gray;
 			this.recipeList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
