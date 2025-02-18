@@ -1648,4 +1648,10 @@ Are you sure you want to proceed?</value>
   <data name="tooltip_asset_override" xml:space="preserve">
     <value>(Portrait override) This asset will replace the main portrait, when applicable.</value>
   </data>
+  <data name="cap_save_multiple" xml:space="preserve">
+    <value>Save multiple</value>
+  </data>
+  <data name="msg_save_multiple" xml:space="preserve">
+    <value>Successfully saved {0}.</value>
+  </data>
 </root>

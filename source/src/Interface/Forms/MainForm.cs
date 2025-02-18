@@ -1125,6 +1125,11 @@ namespace Ginger
 			SaveIncremental();
 		}
 
+		private void saveMultipleMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveMultipleAs();
+		}
+
 		private void OpenFileMenuItem_Click(object sender, EventArgs e)
 		{
 			// Open file...
@@ -1436,6 +1441,9 @@ namespace Ginger
 
 			// Save incremental
 			saveIncrementalMenuItem.Enabled = string.IsNullOrEmpty(Current.Filename) == false;
+
+			// Save multiple
+			saveMultipleMenuItem.Visible = Current.Characters.Count > 1;
 
 			// MRU
 			PopulateMRUMenu(openRecentMenuItem.DropDownItems);
@@ -2853,7 +2861,6 @@ namespace Ginger
 			sidePanel.Height = splitContainer.Panel1.ClientSize.Height;
 			sidePanel.RefreshLayout();
 		}
-
 	}
 
 	public interface IIdleHandler

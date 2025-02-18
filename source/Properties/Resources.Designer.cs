@@ -914,6 +914,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Save multiple.
+        /// </summary>
+        internal static string cap_save_multiple {
+            get {
+                return ResourceManager.GetString("cap_save_multiple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save snippet.
         /// </summary>
         internal static string cap_save_snippet {
@@ -3302,6 +3311,15 @@ namespace Ginger.Properties {
         internal static string msg_save_changes {
             get {
                 return ResourceManager.GetString("msg_save_changes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully saved {0}..
+        /// </summary>
+        internal static string msg_save_multiple {
+            get {
+                return ResourceManager.GetString("msg_save_multiple", resourceCulture);
             }
         }
         

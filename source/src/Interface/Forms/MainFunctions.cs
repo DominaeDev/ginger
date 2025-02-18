@@ -1266,6 +1266,114 @@ namespace Ginger
 				return false;
 			}
 		}
+		
+		private bool SaveMultipleAs()
+		{
+			var folderDialog = new WinAPICodePack.CommonOpenFileDialog();
+			folderDialog.Title = Resources.cap_export_folder;
+			folderDialog.IsFolderPicker = true;
+			folderDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			folderDialog.EnsurePathExists = true;
+			folderDialog.AllowNonFileSystemItems = false;
+			folderDialog.EnsureFileExists = true;
+			folderDialog.EnsureReadOnly = false;
+			folderDialog.EnsureValidNames = true;
+			folderDialog.Multiselect = false;
+			folderDialog.AddToMostRecentlyUsedList = false;
+			folderDialog.ShowPlacesList = true;
+
+			if (folderDialog.ShowDialog() != WinAPICodePack.CommonFileDialogResult.Ok)
+				return false;
+
+			var outputDirectory = folderDialog.FileName;
+			if (Directory.Exists(outputDirectory) == false)
+				return false;
+
+			AppSettings.Paths.LastImportExportPath = outputDirectory;
+
+			// Generate filenames
+			var filenames = new List<string>(Current.Characters.Count);
+			HashSet<string> used_filenames = new HashSet<string>();
+			for (int i = 0; i < Current.Characters.Count; ++i)
+			{
+				filenames.Add(Utility.MakeUniqueFilename(outputDirectory, 
+						string.Format("{0} - {1}.png", Current.Card.name, Current.Characters[i].spokenName), 
+						used_filenames)
+				);
+			}
+
+			Undo.Suspend();
+			int successful = 0;
+			try
+			{
+				for (int i = 0; i < Current.Characters.Count; ++i)
+				{
+					var character = Current.Characters[i].Clone();
+
+					Image portraitImage = null;
+					AssetFile portraitAsset = null;
+					if (i == 0)
+					{
+						portraitImage = Current.Card.portraitImage;
+						portraitAsset = Current.Card.assets.GetMainPortraitOverride();
+					}
+					else
+					{
+						portraitAsset = Current.Card.assets.GetActorPortrait(i);
+						if (portraitAsset != null)
+						{
+							Image actorImage;
+							Utility.LoadImageFromMemory(portraitAsset.data.bytes, out actorImage);
+							portraitImage = actorImage;
+						}
+					}
+
+					var stash = Current.Stash();
+					try
+					{
+						Current.Instance = new GingerCharacter();
+						Current.Reset();
+						Current.Characters.Clear();
+						Current.Characters.Add(character);
+
+						if (portraitAsset != null && portraitAsset.HasTag(AssetFile.Tag.Animated))
+						{
+							// Set portrait override
+							portraitAsset = (AssetFile)portraitAsset.Clone();
+							portraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
+							Current.Card.assets.Add(portraitAsset);
+						}
+
+						var formats = FileUtil.Format.Ginger | FileUtil.Format.Faraday | FileUtil.Format.SillyTavernV2;
+						if (Current.ContainsV3Data)
+							formats |= FileUtil.Format.SillyTavernV3;
+
+						if (FileUtil.Export(filenames[i], portraitImage ?? DefaultPortrait.Image, formats))
+							successful++;
+					}
+					finally
+					{
+						Current.Restore(stash);
+					}
+				}
+			}
+			finally
+			{
+				Undo.Resume();
+			}
+
+			if (successful > 0)
+			{
+				MessageBox.Show(string.Format(Resources.msg_save_multiple, NumCharacters(successful)), Resources.cap_save_multiple, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else
+			{
+				MessageBox.Show(Resources.error_save_character_card, Resources.cap_save_multiple, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			RefreshTitle();
+			return true;
+		}
 
 		private bool ConfirmSave(string caption)
 		{
@@ -2020,31 +2128,32 @@ namespace Ginger
 			AppSettings.Paths.LastImportExportPath = outputDirectory;
 		
 			var filenames = new List<string>(dlg.Characters.Length);
+			HashSet<string> used_filenames = new HashSet<string>();
 			if (formatDialog.FileFormat.Contains(FileUtil.FileType.Backup))
 			{
 				string now = DateTime.Now.ToString("yyyy-MM-dd");
 				foreach (var character in dlg.Characters)
 				{
-					filenames.Add(Path.Combine(outputDirectory,
-						Utility.MakeUniqueFilename(
+					filenames.Add(Utility.MakeUniqueFilename(outputDirectory,
 							string.Format("{0}_{1}_{2}.backup.zip",
 								character.displayName.Replace(" ", "_"),
 								character.creationDate.ToFileTimeUtc() / 1000L,
-								now)
-						)
-					));
+								now),
+						used_filenames)
+					);
 				}
 			}
 			else
 			{
 				foreach (var character in dlg.Characters)
 				{
-					filenames.Add(Path.Combine(outputDirectory,
-						Utility.MakeUniqueFilename(string.Format("{0}_{1}.{2}",
+					filenames.Add(Utility.MakeUniqueFilename(outputDirectory,
+						string.Format("{0}_{1}.{2}",
 							character.displayName,
 							character.creationDate.ToFileTimeUtc() / 1000L,
-							ext))
-					));
+							ext),
+						used_filenames)
+					);
 				}
 			}
 
@@ -2884,6 +2993,7 @@ namespace Ginger
 				{
 					portraitAsset.name = string.Format("Portrait ({0})", Current.Character.spokenName);
 					portraitAsset.actorIndex = Current.Characters.Count - 1;
+					portraitAsset.RemoveTags(AssetFile.Tag.PortraitOverride);
 					Current.Card.assets.Add(portraitAsset);
 				}
 				Current.Card.assets.Validate();
@@ -2905,7 +3015,7 @@ namespace Ginger
 			var character = Current.Character.Clone();
 
 			Image portraitImage = Current.Card.portraitImage;
-			AssetFile portraitAsset = null;
+			AssetFile portraitAsset = Current.Card.assets.GetMainPortraitOverride();
 			if (Current.SelectedCharacter > 0)
 			{
 				portraitAsset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
