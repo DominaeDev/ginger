@@ -1315,11 +1315,11 @@ namespace Ginger
 					if (i == 0)
 					{
 						portraitImage = Current.Card.portraitImage;
-						portraitAsset = Current.Card.assets.GetMainPortraitOverride();
+						portraitAsset = Current.Card.assets.GetPortrait(0);
 					}
 					else
 					{
-						portraitAsset = Current.Card.assets.GetActorPortrait(i);
+						portraitAsset = Current.Card.assets.GetPortrait(i);
 						if (portraitAsset != null)
 						{
 							Image actorImage;
@@ -3015,7 +3015,7 @@ namespace Ginger
 			var character = Current.Character.Clone();
 
 			Image portraitImage = Current.Card.portraitImage;
-			AssetFile portraitAsset = Current.Card.assets.GetMainPortraitOverride();
+			AssetFile portraitAsset = Current.Card.assets.GetPortrait();
 			if (Current.SelectedCharacter > 0)
 			{
 				portraitAsset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
