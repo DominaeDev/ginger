@@ -1197,7 +1197,7 @@ namespace Ginger
 				}
 				else if (Current.HasLink)
 				{
-					if (Backyard.Current.HasCharacter(Current.Link.characterId))
+					if (Backyard.Database.HasCharacter(Current.Link.characterId))
 					{
 						statusConnectionIcon.Image = Theme.Current.LinkInactive;
 						statusConnectionIcon.ToolTipText = "Connected; Link broken";
@@ -1384,7 +1384,7 @@ namespace Ginger
 			reestablishLinkMenuItem.Visible = Backyard.ConnectionEstablished && Current.HasStaleLink;
 			editCurrentModelSettingsMenuItem.Enabled = Current.HasActiveLink
 				&& Backyard.ConnectionEstablished
-				&& Backyard.Current.GetGroupForCharacter(Current.Link.characterId).isEmpty == false;
+				&& Backyard.Database.GetGroupForCharacter(Current.Link.characterId).isEmpty == false;
 						
 			// Link options
 			applyToFirstChatMenuItem.Checked = AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.First;

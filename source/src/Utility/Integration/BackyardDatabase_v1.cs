@@ -21,7 +21,7 @@ namespace Ginger.Integration
 	using ImageInstance = Backyard.ImageInstance;
 	using ConfirmDeleteResult = Backyard.ConfirmDeleteResult;
 
-	public class BackyardImpl_v1 : IBackyardImplementation
+	public class BackyardDatabase_v1 : IBackyardDatabase
 	{
 		public IEnumerable<CharacterInstance> AllCharacters { get { return _Characters.Values; } }
 		public IEnumerable<CharacterInstance> Characters { get { return _Characters.Values.Where(c => c.isCharacter); } }

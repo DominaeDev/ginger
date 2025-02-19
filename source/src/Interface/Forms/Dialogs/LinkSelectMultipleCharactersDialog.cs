@@ -36,7 +36,7 @@ namespace Ginger
 
 		private void OnLoad(object sender, EventArgs e)
 		{
-			if (Backyard.ConnectionEstablished == false || Backyard.Current.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
+			if (Backyard.ConnectionEstablished == false || Backyard.Database.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
 				_chatCounts = new Dictionary<string, Backyard.ChatCount>(); // Empty
 
 			Nodes = Characters.Select(c => new NodeState() {

@@ -33,7 +33,7 @@ namespace Ginger
 		private void OnLoad(object sender, EventArgs e)
 		{
 			_charactersById = Characters.ToDictionary(c => c.instanceId, c => c);
-			if (Backyard.Current.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
+			if (Backyard.Database.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
 				_chatCounts = new Dictionary<string, Backyard.ChatCount>(); // Empty
 
 			if (Groups.ContainsAny(g => g.Count > 2))

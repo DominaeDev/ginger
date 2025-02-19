@@ -16,7 +16,7 @@ namespace Ginger.Integration
 	using ImageInstance = Backyard.ImageInstance;
 	using ConfirmDeleteResult = Backyard.ConfirmDeleteResult;
 
-	public interface IBackyardImplementation
+	public interface IBackyardDatabase
 	{
 		// Getters
 		IEnumerable<CharacterInstance> AllCharacters { get; }
@@ -71,7 +71,7 @@ namespace Ginger.Integration
 
 	public static class BackyardImplExtensions
 	{
-		public static CharacterInstance GetCharacter(this IBackyardImplementation impl, string characterId)
+		public static CharacterInstance GetCharacter(this IBackyardDatabase impl, string characterId)
 		{
 			CharacterInstance character;
 			if (impl.GetCharacter(characterId, out character))
@@ -79,13 +79,13 @@ namespace Ginger.Integration
 			return default(CharacterInstance);
 		}
 
-		public static bool HasCharacter(this IBackyardImplementation impl, string characterId)
+		public static bool HasCharacter(this IBackyardDatabase impl, string characterId)
 		{
 			CharacterInstance tmp;
 			return impl.GetCharacter(characterId, out tmp);
 		}
 
-		public static GroupInstance GetGroup(this IBackyardImplementation impl, string groupId)
+		public static GroupInstance GetGroup(this IBackyardDatabase impl, string groupId)
 		{
 			GroupInstance group;
 			if (impl.GetGroup(groupId, out group))

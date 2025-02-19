@@ -228,7 +228,7 @@ namespace Ginger.Integration
 			foreach (var group in groups)
 			{
 				ChatInstance[] chats;
-				var error = Backyard.Current.GetChats(group.instanceId, out chats);
+				var error = Backyard.Database.GetChats(group.instanceId, out chats);
 				if (error == Backyard.Error.SQLCommandFailed || error == Backyard.Error.NotConnected)
 					return WorkerError.DatabaseError;
 				else if (chats == null || chats.Length == 0)
@@ -239,7 +239,7 @@ namespace Ginger.Integration
 			if (chatIds.Count == 0)
 				return WorkerError.UnknownError;
 
-			if (Backyard.Current.UpdateChatParameters(chatIds.ToArray(), chatParameters, null) == Backyard.Error.NoError)
+			if (Backyard.Database.UpdateChatParameters(chatIds.ToArray(), chatParameters, null) == Backyard.Error.NoError)
 				return WorkerError.NoError;
 			
 			return WorkerError.UnknownError;

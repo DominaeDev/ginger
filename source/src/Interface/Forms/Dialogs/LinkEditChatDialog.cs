@@ -209,7 +209,7 @@ namespace Ginger
 			// List chats for group
 			ChatInstance[] chats = null;
 			if (Backyard.ConnectionEstablished == false
-				|| (_groupInstance.isEmpty == false && RunTask(() => Backyard.Current.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError))
+				|| (_groupInstance.isEmpty == false && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError))
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
@@ -362,8 +362,8 @@ namespace Ginger
 			chatView.ShowChat(true);
 
 			List<CharacterInstance> participants = new List<CharacterInstance>(4);
-			participants.AddRange(chatInstance.participants.Select(id => Backyard.Current.GetCharacter(id)).Where(c => c.isUser)); // User(s) first
-			participants.AddRange(chatInstance.participants.Select(id => Backyard.Current.GetCharacter(id)).Where(c => c.isUser == false));
+			participants.AddRange(chatInstance.participants.Select(id => Backyard.Database.GetCharacter(id)).Where(c => c.isUser)); // User(s) first
+			participants.AddRange(chatInstance.participants.Select(id => Backyard.Database.GetCharacter(id)).Where(c => c.isUser == false));
 
 			var speakerNames = participants
 				.Select(c => c.name ?? "Unknown")
@@ -459,7 +459,7 @@ namespace Ginger
 				args.parameters = AppSettings.BackyardSettings.UserSettings;
 
 			ChatInstance chatInstance = null;
-			var error = RunTask(() => Backyard.Current.CreateNewChat(args, _groupInstance.instanceId, out chatInstance), "Creating chat...");
+			var error = RunTask(() => Backyard.Database.CreateNewChat(args, _groupInstance.instanceId, out chatInstance), "Creating chat...");
 			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_create_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -544,7 +544,7 @@ namespace Ginger
 			else
 				args.parameters = AppSettings.BackyardSettings.UserSettings;
 
-			var error = RunTask(() => Backyard.Current.CreateNewChat(args, _groupInstance.instanceId, out chatInstance), "Importing chat...");
+			var error = RunTask(() => Backyard.Database.CreateNewChat(args, _groupInstance.instanceId, out chatInstance), "Importing chat...");
 			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_import_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -676,7 +676,7 @@ namespace Ginger
 			AppSettings.User.LastExportChatFilter = exportFileDialog.FilterIndex;
 
 			string[] names = chatInstance.participants
-				.Select(id => Backyard.Current.GetCharacter(id).name)
+				.Select(id => Backyard.Database.GetCharacter(id).name)
 				.ToArray();
 
 			if (exportFileDialog.FilterIndex == SoloBackyard) // Backyard
@@ -835,7 +835,7 @@ namespace Ginger
 			}
 
 			// Rename
-			var error = RunTask(() => Backyard.Current.RenameChat(_selectedChatInstance, newName), "Renaming chat...");
+			var error = RunTask(() => Backyard.Database.RenameChat(_selectedChatInstance, newName), "Renaming chat...");
 			if (error == Backyard.Error.NoError)
 			{
 				SetStatusBarMessage(Resources.status_link_renamed_chat, Constants.StatusBarMessageInterval);
@@ -871,7 +871,7 @@ namespace Ginger
 
 			// Fetch chat counts
 			int chatCounts;
-			if (Backyard.Current.ConfirmDeleteChat(chatInstance, _groupInstance, out chatCounts) != Backyard.Error.NoError)
+			if (Backyard.Database.ConfirmDeleteChat(chatInstance, _groupInstance, out chatCounts) != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
@@ -897,12 +897,12 @@ namespace Ginger
 						}
 					};
 				}
-				error = RunTask(() => Backyard.Current.UpdateChat(chatInstance, _groupInstance.instanceId), "Deleting chat...");
+				error = RunTask(() => Backyard.Database.UpdateChat(chatInstance, _groupInstance.instanceId), "Deleting chat...");
 			}
 			else
 			{
 				// Delete chat
-				error = RunTask(() => Backyard.Current.DeleteChat(chatInstance), "Deleting chat...");
+				error = RunTask(() => Backyard.Database.DeleteChat(chatInstance), "Deleting chat...");
 			}
 
 			if (error == Backyard.Error.NotConnected)
@@ -999,7 +999,7 @@ namespace Ginger
 				staging = latestChat.staging,
 				parameters = latestChat.parameters,
 			};
-			var error = RunTask(() => Backyard.Current.CreateNewChat(args, _groupInstance.instanceId, out duplicate), "Duplicating chat...");
+			var error = RunTask(() => Backyard.Database.CreateNewChat(args, _groupInstance.instanceId, out duplicate), "Duplicating chat...");
 
 			if (error == Backyard.Error.NotConnected)
 			{
@@ -1038,7 +1038,7 @@ namespace Ginger
 			if (mr != DialogResult.Yes)
 				return;
 
-			var error = RunTask(() => Backyard.Current.PurgeChats(_groupInstance), "Deleting chat history...");
+			var error = RunTask(() => Backyard.Database.PurgeChats(_groupInstance), "Deleting chat history...");
 			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_purge_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1151,7 +1151,7 @@ namespace Ginger
 				parameters = latestChat.parameters,
 			};
 
-			var error = RunTask(() => Backyard.Current.CreateNewChat(args, _groupInstance.instanceId, out branchedChat), "Branching chat...");
+			var error = RunTask(() => Backyard.Database.CreateNewChat(args, _groupInstance.instanceId, out branchedChat), "Branching chat...");
 
 			if (error == Backyard.Error.NotConnected)
 			{
@@ -1201,7 +1201,7 @@ namespace Ginger
 			Array.Copy(latestChat.history.messages, messageIndex, messages, 0, latestChat.history.messages.Length - messageIndex);
 			latestChat.history.messages = messages;
 
-			var error = RunTask(() => Backyard.Current.UpdateChat(latestChat, _groupInstance.instanceId), "Updating chat...");
+			var error = RunTask(() => Backyard.Database.UpdateChat(latestChat, _groupInstance.instanceId), "Updating chat...");
 			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_restart_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1248,7 +1248,7 @@ namespace Ginger
 			}
 			Array.Resize(ref latestChat.history.messages, messageIndex);
 		
-			var error = RunTask(() => Backyard.Current.UpdateChat(latestChat, _groupInstance.instanceId), "Scrubbing chat...");
+			var error = RunTask(() => Backyard.Database.UpdateChat(latestChat, _groupInstance.instanceId), "Scrubbing chat...");
 			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1452,7 +1452,7 @@ namespace Ginger
 			if (staging != null && BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 				BackyardUtil.ToPartyNames(staging, null, null); //! @party
 
-			var error = RunTask(() => Backyard.Current.UpdateChatParameters(chatInstance.instanceId, null, staging), "Updating chat...");
+			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chatInstance.instanceId, null, staging), "Updating chat...");
 			if (error == Backyard.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_paste_staging, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1483,7 +1483,7 @@ namespace Ginger
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return;
 
-			var error = RunTask(() => Backyard.Current.UpdateChatParameters(chatInstance.instanceId, dlg.Parameters, null), "Updating model settings...");
+			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chatInstance.instanceId, dlg.Parameters, null), "Updating model settings...");
 			if (error == Backyard.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1509,7 +1509,7 @@ namespace Ginger
 			}
 
 			ChatInstance[] chats = null;
-			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.Current.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
+			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
@@ -1531,7 +1531,7 @@ namespace Ginger
 
 			string[] chatIds = chats.Select(c => c.instanceId).ToArray();
 
-			var error = RunTask(() => Backyard.Current.UpdateChatParameters(chatIds, dlg.Parameters, null), "Updating model settings...");
+			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chatIds, dlg.Parameters, null), "Updating model settings...");
 			if (error == Backyard.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1563,7 +1563,7 @@ namespace Ginger
 			}
 
 			ChatInstance returnedChat = default(ChatInstance);
-			var error = RunTask(() => Backyard.Current.GetChat(chatId, _groupInstance.instanceId, out returnedChat));
+			var error = RunTask(() => Backyard.Database.GetChat(chatId, _groupInstance.instanceId, out returnedChat));
 			chatInstance = returnedChat;
 			
 			if (error == Backyard.Error.NoError)
@@ -1645,7 +1645,7 @@ namespace Ginger
 			if (Backyard.ConnectionEstablished)
 			{
 				string[] imageUrls;
-				var error = Backyard.Current.GetImageUrls(character, out imageUrls);
+				var error = Backyard.Database.GetImageUrls(character, out imageUrls);
 				if (error == Backyard.Error.NoError && imageUrls.Length > 0)
 				{
 					Image image;
@@ -1720,7 +1720,7 @@ namespace Ginger
 			}
 
 			ChatInstance[] chats = null;
-			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.Current.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
+			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
@@ -1750,7 +1750,7 @@ namespace Ginger
 			}
 
 			ChatInstance[] chats = null;
-			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.Current.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
+			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
@@ -1780,7 +1780,7 @@ namespace Ginger
 			}
 
 			ChatInstance[] chats = null;
-			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.Current.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
+			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
@@ -1842,7 +1842,7 @@ namespace Ginger
 			}
 
 			// Update chats
-			var error = RunTask(() => Backyard.Current.UpdateChatBackground(chatIds, destFilename, width, height), "Updating chats...");
+			var error = RunTask(() => Backyard.Database.UpdateChatBackground(chatIds, destFilename, width, height), "Updating chats...");
 			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1871,7 +1871,7 @@ namespace Ginger
 				.FirstOrDefault();
 
 			string[] imageUrls;
-			var error = Backyard.Current.GetImageUrls(character, out imageUrls);
+			var error = Backyard.Database.GetImageUrls(character, out imageUrls);
 			if (error != Backyard.Error.NoError || imageUrls.Length == 0)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1903,7 +1903,7 @@ namespace Ginger
 			}
 
 			// Update chats
-			error = RunTask(() => Backyard.Current.UpdateChatBackground(chatIds, destFilename, width, height), "Updating chats...");
+			error = RunTask(() => Backyard.Database.UpdateChatBackground(chatIds, destFilename, width, height), "Updating chats...");
 			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1924,7 +1924,7 @@ namespace Ginger
 			}
 
 			// Update chats
-			var error = RunTask(() => Backyard.Current.UpdateChatBackground(chatIds, null, 0, 0), "Updating chats...");
+			var error = RunTask(() => Backyard.Database.UpdateChatBackground(chatIds, null, 0, 0), "Updating chats...");
 			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1983,7 +1983,7 @@ namespace Ginger
 			{
 				ChatInstance[] chats = null;
 				if (Backyard.ConnectionEstablished == false
-					|| (_groupInstance.isEmpty == false && RunTask(() => Backyard.Current.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError))
+					|| (_groupInstance.isEmpty == false && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError))
 				{
 					MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					Close();

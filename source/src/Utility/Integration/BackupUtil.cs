@@ -61,7 +61,7 @@ namespace Ginger.Integration
 			ImageInstance[] images;
 			ChatInstance[] chatInstances = null;
 			UserData userInfo;
-			var error = Backyard.Current.ImportCharacter(characterInstance, out card, out images, out userInfo);
+			var error = Backyard.Database.ImportCharacter(characterInstance, out card, out images, out userInfo);
 			if (error != Backyard.Error.NoError)
 			{
 				backupInfo = null;
@@ -70,7 +70,7 @@ namespace Ginger.Integration
 
 			if (characterInstance.groupId != null)
 			{
-				error = Backyard.Current.GetChats(characterInstance.groupId, out chatInstances);
+				error = Backyard.Database.GetChats(characterInstance.groupId, out chatInstances);
 				if (error != Backyard.Error.NoError)
 				{
 					backupInfo = null;
@@ -115,7 +115,7 @@ namespace Ginger.Integration
 						}
 
 						List<CharacterInstance> participants = c.participants
-							.Select(id => Backyard.Current.GetCharacter(id))
+							.Select(id => Backyard.Database.GetCharacter(id))
 							.OrderBy(cc => cc.isCharacter)
 							.ToList();
 

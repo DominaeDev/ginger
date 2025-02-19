@@ -89,7 +89,7 @@ namespace Ginger.Integration
 					return GroupType.Unknown;
 
 				var memberInfo = members
-					.Select(id => Backyard.Current.GetCharacter(id))
+					.Select(id => Backyard.Database.GetCharacter(id))
 					.Where(m => string.IsNullOrEmpty(m.instanceId) == false)
 					.ToArray();
 				int nUsers = memberInfo.Count(m => m.isUser);
@@ -112,7 +112,7 @@ namespace Ginger.Integration
 				if (includingUser)
 				{
 					return this.members
-						.Select(id => Backyard.Current.GetCharacter(id))
+						.Select(id => Backyard.Database.GetCharacter(id))
 						.OrderBy(c => c.isCharacter)
 						.ThenBy(c => c.creationDate)
 						.Select(c => c.name)
@@ -121,7 +121,7 @@ namespace Ginger.Integration
 				else
 				{
 					return this.members
-						.Select(id => Backyard.Current.GetCharacter(id))
+						.Select(id => Backyard.Database.GetCharacter(id))
 						.Where(c => c.isCharacter)
 						.OrderBy(c => c.creationDate)
 						.Select(c => c.name)
@@ -503,7 +503,7 @@ namespace Ginger.Integration
 				if (ConnectionEstablished)
 				{
 					CharacterInstance character;
-					if (Current.GetCharacter(characterId, out character))
+					if (Database.GetCharacter(characterId, out character))
 					{
 						if (character.updateDate > updateDate)
 							isDirty = true; // Outdated
@@ -548,23 +548,23 @@ namespace Ginger.Integration
 			Unknown,
 		}
 
-		public static IBackyardImplementation Current
+		public static IBackyardDatabase Database
 		{
-			get { return _Instance; }
-			private set { _Instance = value; }
+			get { return _db; }
+			private set { _db = value; }
 		}
-		private static IBackyardImplementation _Instance = null;
-		public static string LastError;
+		private static IBackyardDatabase _db = null;
+		public static string LastError = null;
 
-		public static bool ConnectionEstablished { get { return Current != null; } }
+		public static bool ConnectionEstablished { get { return Database != null; } }
 
-		public static IEnumerable<CharacterInstance> AllCharacters { get { return Current != null ? Current.AllCharacters : new CharacterInstance[0]; } }
-		public static IEnumerable<CharacterInstance> Characters { get { return Current != null ? Current.Characters : new CharacterInstance[0]; } }
-		public static IEnumerable<CharacterInstance> Users { get { return Current != null ? Current.Users : new CharacterInstance[0]; } }
+		public static IEnumerable<CharacterInstance> AllCharacters { get { return Database != null ? Database.AllCharacters : new CharacterInstance[0]; } }
+		public static IEnumerable<CharacterInstance> Characters { get { return Database != null ? Database.Characters : new CharacterInstance[0]; } }
+		public static IEnumerable<CharacterInstance> Users { get { return Database != null ? Database.Users : new CharacterInstance[0]; } }
 		public static IEnumerable<CharacterInstance> CharactersWithGroup { get { return Characters.Where(c => c.groupId != null); } }
 
-		public static IEnumerable<GroupInstance> Groups { get { return Current != null ? Current.Groups : new GroupInstance[0]; } }
-		public static IEnumerable<FolderInstance> Folders { get { return Current != null ? Current.Folders : new FolderInstance[0]; } }
+		public static IEnumerable<GroupInstance> Groups { get { return Database != null ? Database.Groups : new GroupInstance[0]; } }
+		public static IEnumerable<FolderInstance> Folders { get { return Database != null ? Database.Folders : new FolderInstance[0]; } }
 
 		public static Error EstablishConnection()
 		{
@@ -671,10 +671,10 @@ namespace Ginger.Integration
 					case BackyardDatabaseVersion.Version_0_28_0:
 					case BackyardDatabaseVersion.Version_0_29_0:
 					case BackyardDatabaseVersion.Version_0_36_0:
-						_Instance = new BackyardImpl_v1();
+						_db = new BackyardDatabase_v1();
 						break;
 					default:
-						_Instance = null;
+						_db = null;
 						LastError = "Validation failed";
 						return Error.ValidationFailed;
 					}
@@ -712,7 +712,7 @@ namespace Ginger.Integration
 			{
 				Disconnect();
 				LastError = e.Message;
-				return Error.ValidationFailed;
+				return Error.Unknown;
 			}
 			catch (Exception e)
 			{
@@ -724,9 +724,9 @@ namespace Ginger.Integration
 
 		public static void Disconnect()
 		{
-			if (_Instance != null)
-				LastError = _Instance.LastError;
-			_Instance = null;
+			if (_db != null)
+				LastError = _db.LastError;
+			_db = null;
 			BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Unknown;
 			AppSettings.BackyardLink.Enabled = false;
 			SQLiteConnection.ClearAllPools(); // Releases the lock on the db file
@@ -734,16 +734,16 @@ namespace Ginger.Integration
 
 		public static Error RefreshCharacters()
 		{
-			if (_Instance == null)
+			if (_db == null)
 				return Error.NotConnected;
-			return _Instance.RefreshCharacters();
+			return _db.RefreshCharacters();
 		}
 
 		public static bool GetAppVersion(out VersionNumber appVersion)
 		{
 #if DEBUG
 				// Use canary database during development and testing
-				string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "faraday-canary", "Backyard AI - Canary.exe");
+				string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "faraday-canary", "Backyard AI.exe");
 #else
 				// Use production database 
 				string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "faraday", "Backyard AI.exe");
@@ -1015,14 +1015,14 @@ namespace Ginger.Integration
 				else if (Backyard.ConnectionEstablished)
 				{
 					Backyard.CharacterInstance character;
-					if (Backyard.Current.GetCharacter(characterId, out character))
+					if (Backyard.Database.GetCharacter(characterId, out character))
 					{
 						if (character.isUser)
 							placeholder = "{user}";
 						else if (groupId != null)
 						{
 							Backyard.GroupInstance group;
-							if (!(Backyard.Current.GetGroup(groupId, out group) && group.members != null && group.members.Contains(characterId)))
+							if (!(Backyard.Database.GetGroup(groupId, out group) && group.members != null && group.members.Contains(characterId)))
 								placeholder = character.name; // Not primary character
 						}
 					}
