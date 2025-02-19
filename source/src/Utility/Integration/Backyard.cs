@@ -683,7 +683,7 @@ namespace Ginger.Integration
 			{
 				Disconnect();
 				LastError = e.Message;
-				return Error.ValidationFailed;
+				return Error.Unknown;
 			}
 			catch (Exception e)
 			{
