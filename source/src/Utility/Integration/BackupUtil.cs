@@ -44,7 +44,7 @@ namespace Ginger.Integration
 			public string backgroundName;
 		}
 
-		public bool hasParameters { get { return chats != null && chats.ContainsAny(c => c.parameters != null); } }
+		public bool hasModelSettings { get { return chats != null && chats.ContainsAny(c => c.parameters != null); } }
 	}
 
 	public static class BackupUtil
