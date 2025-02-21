@@ -631,6 +631,15 @@ namespace Ginger.Integration
 
 					// Compare database structure with known tables
 					var validationTable = BackyardValidation.TablesByVersion[DatabaseVersion];
+
+					// Ignore tables we know of but don't care about
+					var ignoredTables = validationTable
+						.Where(t => t.Length == 1)
+						.Select(t => t[0])
+						.ToArray();
+					foundTables.ExceptWith(ignoredTables);
+					validationTable = validationTable.Where(t => t.Length > 1).ToArray();
+
 					if (AppSettings.BackyardLink.Strict && foundTables.Count != validationTable.Length)
 					{
 						LastError = "Validation failed";
@@ -665,9 +674,6 @@ namespace Ginger.Integration
 								}
 							}
 						}
-
-						if (expectedNames.Length == 0 && foundColumns.Count > 0)
-							continue; // A table we want to exist, but don't care about its columns/contents
 
 						if ((AppSettings.BackyardLink.Strict && foundColumns.Count != expectedNames.Length)
 							|| foundColumns.Count < expectedNames.Length)
@@ -721,7 +727,7 @@ namespace Ginger.Integration
 			{
 				Disconnect();
 				LastError = e.Message;
-				return Error.ValidationFailed;
+				return Error.Unknown;
 			}
 			catch (Exception e)
 			{
