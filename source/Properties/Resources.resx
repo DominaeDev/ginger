@@ -1414,7 +1414,7 @@ Do you want to continue?</value>
   </data>
   <data name="msg_link_repaired_images_skipped" xml:space="preserve">
     <value>Found and repaired {0} broken images.
-Skipped {1} images that couldn't be repaired.</value>
+Skipped {1} broken images that could not be repaired.</value>
   </data>
   <data name="msg_link_repair_images" xml:space="preserve">
     <value>This will attempt to repair any broken images in Backyard AI.

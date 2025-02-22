@@ -6262,7 +6262,7 @@ namespace Ginger.Integration
 			return lsChats.ToArray();
 		}
 
-		private struct _ImageInfo
+		private struct _RepairImageInfo
 		{
 			public string instanceId;
 			public string imageUrl;
@@ -6299,7 +6299,7 @@ namespace Ginger.Integration
 					connection.Open();
 
 					// AppImage
-					var characterImages = new List<_ImageInfo>();
+					var characterImages = new List<_RepairImageInfo>();
 					using (var cmdGetImages = connection.CreateCommand())
 					{
 						cmdGetImages.CommandText =
@@ -6316,7 +6316,7 @@ namespace Ginger.Integration
 								string id = reader.GetString(0);
 								string imageUrl = reader.GetString(1);
 
-								characterImages.Add(new _ImageInfo() {
+								characterImages.Add(new _RepairImageInfo() {
 									instanceId = id,
 									filename = Path.GetFileName(imageUrl),
 									imageUrl = imageUrl,
@@ -6326,7 +6326,7 @@ namespace Ginger.Integration
 					}
 
 					// BackgroundChatImage
-					var backgroundImages = new List<_ImageInfo>();
+					var backgroundImages = new List<_RepairImageInfo>();
 					if (CheckFeature(Feature.ChatBackgrounds))
 					{
 						using (var cmdGetBackgrounds = connection.CreateCommand())
@@ -6345,7 +6345,7 @@ namespace Ginger.Integration
 									string id = reader.GetString(0);
 									string imageUrl = reader.GetString(1);
 
-									backgroundImages.Add(new _ImageInfo() {
+									backgroundImages.Add(new _RepairImageInfo() {
 										instanceId = id,
 										filename = Path.GetFileName(imageUrl),
 										imageUrl = imageUrl,
@@ -6354,6 +6354,10 @@ namespace Ginger.Integration
 							}
 						}
 					}
+
+					// Ignore remote links (hub characters)
+					characterImages.RemoveAll(i => i.imageUrl.BeginsWith("http://") || i.imageUrl.BeginsWith("https://"));
+					backgroundImages.RemoveAll(i => i.imageUrl.BeginsWith("http://") || i.imageUrl.BeginsWith("https://"));
 
 					var modifiedCharacterImages = characterImages
 						.Where(i => foundImages.Contains(i.filename, StringComparer.OrdinalIgnoreCase)
@@ -6377,7 +6381,7 @@ namespace Ginger.Integration
 					skipped = unknownImages.Count;
 					if (modified == 0)
 						return Error.NoError; // No changes
-
+					
 					// Write to database
 					int updates = 0;
 					int expectedUpdates = 0;
