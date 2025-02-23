@@ -1140,7 +1140,7 @@ namespace Ginger.Integration
 								using (var cmdChat = new SQLiteCommand(connection))
 								{
 									var sbCommand = new StringBuilder();
-									if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.All)
+									if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.All) // All chats
 									{
 										sbCommand.AppendLine(
 										@"
@@ -1167,7 +1167,7 @@ namespace Ginger.Integration
 											");
 										}
 									}
-									else
+									else if (chats.Count > 0) // One chat
 									{
 										sbCommand.AppendLine(
 										@"
@@ -1246,13 +1246,121 @@ namespace Ginger.Integration
 									DELETE FROM _AppImageToCharacterConfigVersion
 									WHERE B = $configId;
 								");
-
+								
 								cmdImage.CommandText = sbCommand.ToString();
 								cmdImage.Parameters.AddWithValue("$configId", configId);
 
 								int nDeletes = cmdImage.ExecuteNonQuery();
 								expectedUpdates += nDeletes;
 								updates += nDeletes;
+							}
+
+							// Update background
+							if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
+							{
+								Dictionary<string, ImageOutput> chatBackgrounds = new Dictionary<string, ImageOutput>();
+								var backgroundsByChatId = existingBackgrounds
+									.Where(b => string.IsNullOrEmpty(b.imageUrl) == false)
+									.ToDictionary(b => b.associatedInstanceId, b => b.imageUrl);
+
+								foreach (var chat in chats)
+								{
+									string existingBG;
+									if (backgroundsByChatId.TryGetValue(chat.instanceId, out existingBG))
+									{
+										var bg = backgrounds.FirstOrDefault(b => b.imageUrl == existingBG);
+										if (bg.isDefined)
+											chatBackgrounds.Add(chat.instanceId, bg);
+									}
+								}
+
+								bool bModifiedBackground = false;								
+								ImageOutput background = backgrounds.FirstOrDefault();
+								if (background.imageUrl != null)
+								{
+									if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.All)
+									{
+										foreach (var chat in chats)
+										{
+											string existingBG;
+											if (backgroundsByChatId.TryGetValue(chat.instanceId, out existingBG) == false
+												|| string.Compare(existingBG, background.imageUrl, StringComparison.OrdinalIgnoreCase) != 0)
+											{
+												chatBackgrounds.Set(chat.instanceId, background);
+												bModifiedBackground = true;
+											}
+										}
+									}
+									else if (chats.Count > 0)
+									{
+										_Chat chat;
+										if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.Last)
+											chat = chats.OrderByDescending(c => c.updateDate).First();
+										else // First
+											chat = chats.OrderBy(c => c.creationDate).First();
+
+										string existingBG;
+										if (backgroundsByChatId.TryGetValue(chat.instanceId, out existingBG) == false
+											|| string.Compare(existingBG, background.imageUrl, StringComparison.OrdinalIgnoreCase) != 0)
+										{
+											chatBackgrounds.Set(chat.instanceId, background);
+											bModifiedBackground = true;
+										}
+									}
+
+								}
+								backgrounds = backgrounds.Intersect(chatBackgrounds.Values).ToList();
+
+								if (bModifiedBackground)
+								{
+									// Delete backgrounds
+									using (var cmdDeleteBG = new SQLiteCommand(connection))
+									{
+										var sbCommand = new StringBuilder();
+
+										sbCommand.AppendLine(
+										$@"
+											WITH chats as (SELECT id FROM Chat WHERE groupConfigId = $groupId)
+											DELETE FROM BackgroundChatImage
+											WHERE chatId IN chats;
+										");
+
+										cmdDeleteBG.CommandText = sbCommand.ToString();
+										cmdDeleteBG.Parameters.AddWithValue("$groupId", groupId);
+
+										int nDeletes = cmdDeleteBG.ExecuteNonQuery();
+										expectedUpdates += nDeletes;
+										updates += nDeletes;
+									}
+
+									// Add backgrounds
+									using (var cmdUpdateBG = new SQLiteCommand(connection))
+									{
+										var sbCommand = new StringBuilder();
+										sbCommand.AppendLine(
+										$@"
+											INSERT INTO BackgroundChatImage
+												(id, imageUrl, aspectRatio, chatId)
+											VALUES ");
+
+										int i = 0;
+										foreach (var kvp in chatBackgrounds)
+										{
+											if (i++ > 0)
+												sbCommand.Append(",");
+											sbCommand.AppendLine($@"($backgroundId{i:000}, $imageUrl{i:000}, $aspectRatio{i:000}, $chatId{i:000})");
+
+											cmdUpdateBG.Parameters.AddWithValue($"$backgroundId{i:000}", Cuid.NewCuid());
+											cmdUpdateBG.Parameters.AddWithValue($"$chatId{i:000}", kvp.Key);
+											cmdUpdateBG.Parameters.AddWithValue($"$imageUrl{i:000}", kvp.Value.imageUrl);
+											cmdUpdateBG.Parameters.AddWithValue($"$aspectRatio{i:000}", kvp.Value.aspectRatio);
+											expectedUpdates += 1;
+										}
+										cmdUpdateBG.CommandText = sbCommand.ToString();
+										updates += cmdUpdateBG.ExecuteNonQuery();
+									}
+								}
+
 							}
 
 							// Add images
@@ -1263,7 +1371,7 @@ namespace Ginger.Integration
 								var sortedImageIds = new List<string>(images.Count);
 								for (int i = 0; i < images.Count; ++i)
 									sortedImageIds.Add(Cuid.NewCuid());
-								sortedImageIds.Sort(); // Backyard bug ?
+//								sortedImageIds.Sort();
 
 								// AppImage
 								sbCommand.AppendLine(

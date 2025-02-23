@@ -670,7 +670,7 @@ namespace Ginger.Integration
 					{
 					case BackyardDatabaseVersion.Version_0_28_0:
 					case BackyardDatabaseVersion.Version_0_29_0:
-					case BackyardDatabaseVersion.Version_0_36_0:
+					case BackyardDatabaseVersion.Version_0_37_0:
 						_db = new BackyardDatabase_v1();
 						break;
 					default:
