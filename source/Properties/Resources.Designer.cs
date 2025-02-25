@@ -2523,8 +2523,8 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger&gt;
         ///	&lt;!-- Macros --&gt;
-        ///	&lt;Macro id=&quot;characters, bots&quot;&gt;[names.list]&lt;/Macro&gt;
-        ///	&lt;Macro id=&quot;everyone&quot;&gt;[!list:[user];[char];[actors]]&lt;/Macro&gt;
+        ///	&lt;Macro id=&quot;characters&quot;&gt;[!semilist:[char];[actors]]&lt;/Macro&gt;
+        ///	&lt;Macro id=&quot;everyone&quot;&gt;[!semilist:[char];[actors];[user]]&lt;/Macro&gt;
         ///	&lt;Wrapper id=&quot;abbr&quot;&gt;[noparse]_[parse][nocap]&lt;/Wrapper&gt;
         ///	&lt;Wrapper id=&quot;raw, ignore&quot;&gt;[noparse]_[parse]&lt;/Wrapper&gt;
         ///	&lt;Macro id=&quot;the&quot;&gt;[..the?|the]&lt;/Macro&gt;
@@ -2532,7 +2532,7 @@ namespace Ginger.Properties {
         ///
         ///	&lt;!-- Chat style --&gt;
         ///	&lt;Rule id=&quot;is-faraday, is-backyard&quot;&gt;__faraday or __backyard&lt;/Rule&gt;
-        ///	&lt;Wrapper id=&quot;dialogue, dialog&quot;&gt;[@dialogue-symbol-open]_[@dialogue-symbol-clo [rest of string was truncated]&quot;;.
+        ///	&lt;Wrapper id=&quot;dialogue, dialog&quot;&gt;[@dialogue-symbol-open]_[@dialog [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string internal_macros {
             get {
@@ -3074,7 +3074,7 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Found and repaired {0} broken images.
-        ///Skipped {1} images that couldn&apos;t be repaired..
+        ///Skipped {1} broken images that could not be repaired..
         /// </summary>
         internal static string msg_link_repaired_images_skipped {
             get {
