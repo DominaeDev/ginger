@@ -240,6 +240,26 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap asset_actor_portrait {
+            get {
+                object obj = ResourceManager.GetObject("asset_actor_portrait", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap asset_override {
+            get {
+                object obj = ResourceManager.GetObject("asset_override", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__attribute&quot; version=&quot;1.0&quot;&gt;
         ///	&lt;Name&gt;Attribute/Custom attribute&lt;/Name&gt;
         ///	&lt;Title&gt;Custom attribute&lt;/Title&gt;
@@ -894,6 +914,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Save multiple.
+        /// </summary>
+        internal static string cap_save_multiple {
+            get {
+                return ResourceManager.GetString("cap_save_multiple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save snippet.
         /// </summary>
         internal static string cap_save_snippet {
@@ -1026,6 +1055,26 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap dark_arrow_up {
             get {
                 object obj = ResourceManager.GetObject("dark_arrow_up", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_asset_actor_portrait {
+            get {
+                object obj = ResourceManager.GetObject("dark_asset_actor_portrait", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_asset_override {
+            get {
+                object obj = ResourceManager.GetObject("dark_asset_override", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -2401,7 +2450,6 @@ namespace Ginger.Properties {
         ///	&lt;Order&gt;3&lt;/Order&gt;
         ///	&lt;Color&gt;FloralWhite&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;greeting, __greeting,  __component, __internal&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
@@ -2428,7 +2476,6 @@ namespace Ginger.Properties {
         ///	&lt;Color&gt;FloralWhite&lt;/Color&gt;
         ///	&lt;Order&gt;102&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;__group-greeting, __component, __internal, __ccv3&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
@@ -2436,7 +2483,8 @@ namespace Ginger.Properties {
         ///		&lt;Label&gt;First message&lt;/Label&gt;
         ///	&lt;/Text&gt;
         ///	
-        ///	&lt;Greeting group=&quot;true&quot;&gt;{greeting:local}&lt;/Greetin [rest of string was truncated]&quot;;.
+        ///	&lt;Greeting group=&quot;true&quot;&gt;{greeting:local}&lt;/Greeting&gt;
+        ///&lt;/Ginger&gt;.
         /// </summary>
         internal static string group_greeting_recipe {
             get {
@@ -2475,8 +2523,8 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger&gt;
         ///	&lt;!-- Macros --&gt;
-        ///	&lt;Macro id=&quot;characters, bots&quot;&gt;[names.list]&lt;/Macro&gt;
-        ///	&lt;Macro id=&quot;everyone&quot;&gt;[!list:[user];[char];[actors]]&lt;/Macro&gt;
+        ///	&lt;Macro id=&quot;characters&quot;&gt;[!semilist:[char];[actors]]&lt;/Macro&gt;
+        ///	&lt;Macro id=&quot;everyone&quot;&gt;[!semilist:[char];[actors];[user]]&lt;/Macro&gt;
         ///	&lt;Wrapper id=&quot;abbr&quot;&gt;[noparse]_[parse][nocap]&lt;/Wrapper&gt;
         ///	&lt;Wrapper id=&quot;raw, ignore&quot;&gt;[noparse]_[parse]&lt;/Wrapper&gt;
         ///	&lt;Macro id=&quot;the&quot;&gt;[..the?|the]&lt;/Macro&gt;
@@ -2484,7 +2532,7 @@ namespace Ginger.Properties {
         ///
         ///	&lt;!-- Chat style --&gt;
         ///	&lt;Rule id=&quot;is-faraday, is-backyard&quot;&gt;__faraday or __backyard&lt;/Rule&gt;
-        ///	&lt;Wrapper id=&quot;dialogue, dialog&quot;&gt;[@dialogue-symbol-open]_[@dialogue-symbol-clo [rest of string was truncated]&quot;;.
+        ///	&lt;Wrapper id=&quot;dialogue, dialog&quot;&gt;[@dialogue-symbol-open]_[@dialog [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string internal_macros {
             get {
@@ -3026,7 +3074,7 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Found and repaired {0} broken images.
-        ///Skipped {1} images that couldn&apos;t be repaired..
+        ///Skipped {1} broken images that could not be repaired..
         /// </summary>
         internal static string msg_link_repaired_images_skipped {
             get {
@@ -3153,6 +3201,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No actor portrait.
+        /// </summary>
+        internal static string msg_no_actor_portrait {
+            get {
+                return ResourceManager.GetString("msg_no_actor_portrait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No matches found..
         /// </summary>
         internal static string msg_no_match {
@@ -3258,6 +3315,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Successfully saved {0}..
+        /// </summary>
+        internal static string msg_save_multiple {
+            get {
+                return ResourceManager.GetString("msg_save_multiple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap persona {
@@ -3332,13 +3398,12 @@ namespace Ginger.Properties {
         ///	&lt;/Description&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;system-prompt, model, __post-history, __component, __formatting, __internal, __hidden&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
         ///	&lt;Text id=&quot;system&quot; style=&quot;component&quot;&gt;
         ///		&lt;Label&gt;Instructions&lt;/Label&gt;
-        ///		&lt;Description&gt;In [rest of string was truncated]&quot;;.
+        ///		&lt;Description&gt;Instructions to the model. Not meant  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string post_history_recipe {
             get {
@@ -3930,7 +3995,6 @@ namespace Ginger.Properties {
         ///	&lt;Order&gt;100&lt;/Order&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;system-prompt, model, __system, __component, __formatting, __internal&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
@@ -3941,7 +4005,8 @@ namespace Ginger.Properties {
         ///	
         ///	&lt;Toggle id=&quot;important&quot;&gt;
         ///		&lt;Label&gt;Important&lt;/Label&gt;
-        ///	 [rest of string was truncated]&quot;;.
+        ///		&lt;Default&gt;no&lt;/Default&gt;
+        ///		&lt;Descript [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string system_recipe {
             get {
@@ -4311,7 +4376,7 @@ namespace Ginger.Properties {
         ///      &quot;type&quot;: &quot;string&quot;
         ///    },
         ///    &quot;create_date&quot;: {
-        ///      &quot;required&quot;: true,
+        ///      &quot;required&quot;: false,
         ///      &quot;type&quot;: [
         ///        &quot;string&quot;,
         ///		&quot;integer&quot;,
@@ -4446,6 +4511,24 @@ namespace Ginger.Properties {
         internal static string textgenwebui_chat_schema {
             get {
                 return ResourceManager.GetString("textgenwebui_chat_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (Actor portrait) This asset will be used for the portrait of {0}, when applicable..
+        /// </summary>
+        internal static string tooltip_asset_actor_portrait {
+            get {
+                return ResourceManager.GetString("tooltip_asset_actor_portrait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (Portrait override) This asset will replace the main portrait, when applicable..
+        /// </summary>
+        internal static string tooltip_asset_override {
+            get {
+                return ResourceManager.GetString("tooltip_asset_override", resourceCulture);
             }
         }
         
@@ -4697,7 +4780,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When importing or saving a new character to Backyard AI, always link thecharacter..
+        ///   Looks up a localized string similar to When importing or saving a new character to Backyard AI, always link the character..
         /// </summary>
         internal static string tooltip_link_always_create {
             get {
@@ -5507,7 +5590,6 @@ namespace Ginger.Properties {
         ///	&lt;Color&gt;#ddf5ef&lt;/Color&gt;
         ///	&lt;Order&gt;8&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;user-persona, __user, __component, __formatting, __internal&lt;/Flags&gt;
         ///	
         ///	&lt;Text id=&quot;user-persona&quot; style=&quot;component&quot;&gt;

@@ -31,14 +31,14 @@ namespace Ginger
 
 		public static byte[] LoadFile(string filename)
 		{
-			byte[] bytes;
+			byte[] buffer;
 			
 			try
 			{
 				using (FileStream fs = File.OpenRead(filename))
 				{
-					bytes = new byte[fs.Length];
-					fs.Read(bytes, 0, (int)fs.Length);
+					buffer = new byte[fs.Length];
+					fs.Read(buffer, 0, (int)fs.Length);
 				}
 			}
 			catch
@@ -46,18 +46,18 @@ namespace Ginger
 				return null;
 			}
 
-			return bytes;
+			return buffer;
 		}
 
 
 		public static string LoadTextFile(string filename)
 		{
-			byte[] bytes = LoadFile(filename);
-			if (bytes != null)
+			byte[] buffer = LoadFile(filename);
+			if (buffer != null)
 			{
 				try
 				{
-					return Encoding.UTF8.GetString(bytes);
+					return Encoding.UTF8.GetString(buffer);
 				}
 				catch
 				{
@@ -85,14 +85,14 @@ namespace Ginger
 
 			try
 			{
-				byte[] bytes = File.ReadAllBytes(filename);
+				byte[] buffer = File.ReadAllBytes(filename);
 
 				// WebP
-				if (IsWebP(bytes))
-					return LoadWebPFromMemory(bytes, out image);
+				if (IsWebP(buffer))
+					return LoadWebPFromMemory(buffer, out image);
 
-				// Png, Jpeg, ...
-				using (var stream = new MemoryStream(bytes))
+				// Png, Jpeg, Gif, ...
+				using (var stream = new MemoryStream(buffer))
 				{
 					image = Image.FromStream(stream);
 					return true;
@@ -105,22 +105,22 @@ namespace Ginger
 			}
 		}
 
-		public static bool LoadImageFromMemory(byte[] bytes, out Image image)
+		public static bool LoadImageFromMemory(byte[] buffer, out Image image)
 		{
-			if (bytes == null || bytes.Length == 0)
+			if (buffer == null || buffer.Length == 0)
 			{
 				image = default(Image);
 				return false;
 			}
 
 			// WebP
-			if (IsWebP(bytes))
-				return LoadWebPFromMemory(bytes, out image);
+			if (IsWebP(buffer))
+				return LoadWebPFromMemory(buffer, out image);
 
 			// Load image first
 			try
 			{
-				using (var stream = new MemoryStream(bytes))
+				using (var stream = new MemoryStream(buffer))
 				{
 					image = Image.FromStream(stream);
 					return true;
@@ -128,26 +128,12 @@ namespace Ginger
 			}
 			catch
 			{
+				image = default(Image);
 			}
-			image = default(Image);
 			return false;
 		}
 
-		private static bool LoadWebPFromFile(string filename, out Image image)
-		{
-			try
-			{
-				byte[] bytes = File.ReadAllBytes(filename);
-				return LoadWebPFromMemory(bytes, out image);
-			}
-			catch
-			{
-				image = default(Image);
-				return false;
-			}
-		}
-
-		private static bool LoadWebPFromMemory(byte[] bytes, out Image image)
+		private static bool LoadWebPFromMemory(byte[] buffer, out Image image)
 		{
 			try
 			{
@@ -156,11 +142,11 @@ namespace Ginger
 					int w, h;
 					bool alpha, animation;
 					string format;
-					webp.GetInfo(bytes, out w, out h, out alpha, out animation, out format);
+					webp.GetInfo(buffer, out w, out h, out alpha, out animation, out format);
 
 					if (animation)
 					{
-						var frames = webp.AnimDecode(bytes);
+						var frames = webp.AnimDecode(buffer);
 						if (frames.Count > 0)
 						{
 							image = (Image)frames[0].Bitmap;
@@ -171,7 +157,7 @@ namespace Ginger
 					}
 					else 
 					{ 
-						image = (Image)webp.Decode(bytes);
+						image = (Image)webp.Decode(buffer);
 						return true;
 					}
 				}
@@ -179,48 +165,6 @@ namespace Ginger
 			catch (Exception e)
 			{
 				image = default(Image);
-				return false;
-			}
-		}
-		
-		public static bool IsAnimatedImage(Image image)
-		{
-			var dimension = new FrameDimension(image.FrameDimensionsList[0]);
-			int frameCount = image.GetFrameCount(dimension);
-			return frameCount > 1;
-		}
-
-		public static bool IsAnimatedWebP(string filename)
-		{
-			try
-			{
-				byte[] bytes = File.ReadAllBytes(filename);
-				return IsAnimatedWebP(bytes);
-			}
-			catch
-			{
-				return false;
-			}
-		}
-
-		public static bool IsAnimatedWebP(byte[] bytes)
-		{
-			if (IsWebP(bytes) == false)
-				return false;
-
-			try
-			{
-				using (var webp = new WebP())
-				{
-					int w, h;
-					bool alpha, animation;
-					string format;
-					webp.GetInfo(bytes, out w, out h, out alpha, out animation, out format);
-					return animation;
-				}
-			}
-			catch
-			{
 				return false;
 			}
 		}
@@ -234,7 +178,7 @@ namespace Ginger
 				&& buffer[ 8] == 'W' && buffer[ 9] == 'E' && buffer[10] == 'B' && buffer[11] == 'P';
 		}
 
-		public static bool IsWebPFile(string filename)
+		public static bool IsWebP(string filename)
 		{
 			byte[] buffer = new byte[12];
 			try
@@ -251,13 +195,53 @@ namespace Ginger
 				return false;
 			}
 		}
+				
+		public static bool IsGif(byte[] buffer)
+		{
+			if (buffer == null || buffer.Length < 6)
+				return false;
 
-		public static bool IsAnimatedPNG(string filename)
+			return (buffer[0] == 'G' && buffer[1] == 'I' && buffer[2] == 'F' && buffer[3] == '8' && buffer[4] == '7' && buffer[5] == 'a')
+				|| (buffer[0] == 'G' && buffer[1] == 'I' && buffer[2] == 'F' && buffer[3] == '8' && buffer[4] == '9' && buffer[5] == 'a');
+		}
+
+		public static bool IsAnimation(string filename)
 		{
 			try
 			{
-				byte[] bytes = File.ReadAllBytes(filename);
-				return IsAnimatedPNG(bytes);
+				byte[] buffer = File.ReadAllBytes(filename);
+				return IsAnimation(buffer);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+		
+		public static bool IsAnimation(byte[] buffer)
+		{
+			if (buffer == null || buffer.Length == 0)
+				return false;
+
+			if (WebP.IsWebP(buffer))
+				return IsAnimatedWebP(buffer);
+			if (IsGif(buffer))
+				return IsAnimatedGif(buffer);
+			return IsAnimatedPng(buffer);
+		}
+
+		private static bool IsAnimatedWebP(byte[] buffer)
+		{
+			try
+			{
+				using (var webp = new WebP())
+				{
+					int w, h;
+					bool alpha, animation;
+					string format;
+					webp.GetInfo(buffer, out w, out h, out alpha, out animation, out format);
+					return animation;
+				}
 			}
 			catch
 			{
@@ -265,38 +249,38 @@ namespace Ginger
 			}
 		}
 
-		public static bool IsAnimatedPNG(byte[] bytes)
+		private static bool IsAnimatedGif(byte[] buffer)
 		{
-			using (var stream = new MemoryStream(bytes))
+			Image image;
+			if (LoadImageFromMemory(buffer, out image))
 			{
-				PNGImage image = new PNGImage(stream);
-
-				foreach (var chunk in image.Chunks)
-				{
-					if (chunk is acTLChunk)
-					{
-						var acTL = chunk as acTLChunk;
-						return acTL.NumFrames > 1;
-					}
-				}
+				var dimension = new FrameDimension(image.FrameDimensionsList[0]);
+				int frameCount = image.GetFrameCount(dimension);
+				return frameCount > 1;
 			}
 			return false;
 		}
 
-		private static bool IsAnimatedPng(byte[] bytes)
+		private static bool IsAnimatedPng(byte[] buffer)
 		{
-			using (var stream = new MemoryStream(bytes))
+			try
 			{
-				PNGImage image = new PNGImage(stream);
-
-				foreach (var chunk in image.Chunks)
+				using (var stream = new MemoryStream(buffer))
 				{
-					if (chunk is acTLChunk)
+					PNGImage image = new PNGImage(stream);
+
+					foreach (var chunk in image.Chunks)
 					{
-						var acTL = chunk as acTLChunk;
-						return acTL.NumFrames > 1;
+						if (chunk is acTLChunk)
+						{
+							var acTL = chunk as acTLChunk;
+							return acTL.NumFrames > 1;
+						}
 					}
 				}
+			}
+			catch
+			{
 			}
 			return false;
 		}
@@ -315,9 +299,9 @@ namespace Ginger
 				|| ext == "apng" || ext == "bmp" || ext == "webp";
 		}
 
-		public static bool GetImageDimensions(byte[] bytes, out int width, out int height)
+		public static bool GetImageDimensions(byte[] buffer, out int width, out int height)
 		{
-			if (bytes == null || bytes.Length == 0)
+			if (buffer == null || buffer.Length == 0)
 			{
 				width = default(int);
 				height = default(int);
@@ -327,7 +311,7 @@ namespace Ginger
 			// Load image first
 			try
 			{
-				using (var stream = new MemoryStream(bytes))
+				using (var stream = new MemoryStream(buffer))
 				{
 					var image = Image.FromStream(stream, false, false);
 					width = image.Width;
@@ -340,7 +324,7 @@ namespace Ginger
 			}
 
 			// WebP
-			if (WebP.IsWebP(bytes, out width, out height))
+			if (WebP.IsWebP(buffer, out width, out height))
 				return true;
 			
 			width = default(int);
@@ -1590,36 +1574,38 @@ namespace Ginger
 			return sbFilename.ToString().Trim();
 		}
 
-		public static string MakeUniqueFilename(string filename)
+		public static string MakeUniqueFilename(string path, string filename, ISet<string> used = null)
 		{
-			return NextAvailableFilename(ValidFilename(filename));
+			if (used == null)
+				used = new HashSet<string>();
+
+			var nextFilename = NextAvailableFilename(path, ValidFilename(filename), used);
+			used.Add(nextFilename.ToLowerInvariant());
+			return nextFilename;
 		}
 
 		private static string NumberPattern = " ({0})";
 
-		public static string NextAvailableFilename(string filePath)
+		private static string NextAvailableFilename(string path, string filename, ISet<string> used)
 		{
-			// Short-cut if already available
-			if (!File.Exists(filePath))
+			var filePath = Path.Combine(path, filename);
+			if (!File.Exists(filePath) && !used.Contains(filePath.ToLowerInvariant()))
 				return filePath;
 
-			// If path has extension then insert the number pattern just before the extension and return next filename
-			if (Path.HasExtension(filePath))
-				return GetNextFilename(filePath.Insert(filePath.LastIndexOf(Path.GetExtension(filePath)), NumberPattern));
+			string ext = GetFileExt(filename, false);
 
-			// Otherwise just append the pattern to the path and return next filename
-			return GetNextFilename(filePath + NumberPattern);
+			return GetNextFilename(path, string.Concat(Path.GetFileNameWithoutExtension(filename), NumberPattern, ".", ext), used);
 		}
 
-		private static string GetNextFilename(string pattern)
+		private static string GetNextFilename(string path, string pattern, ISet<string> used)
 		{
 			string tmp = string.Format(pattern, 1);
-			if (!File.Exists(tmp))
-				return tmp; // short-circuit if no matches
+			if (!Unavailable(tmp))
+				return Path.Combine(path, tmp);
 
 			int min = 1, max = 2; // min is inclusive, max is exclusive/untested
 
-			while (File.Exists(string.Format(pattern, max)))
+			while (Unavailable(string.Format(pattern, max)))
 			{
 				min = max;
 				max *= 2;
@@ -1628,13 +1614,19 @@ namespace Ginger
 			while (max != min + 1)
 			{
 				int pivot = (max + min) / 2;
-				if (File.Exists(string.Format(pattern, pivot)))
+				if (Unavailable(string.Format(pattern, pivot)))
 					min = pivot;
 				else
 					max = pivot;
 			}
 
-			return string.Format(pattern, max);
+			return Path.Combine(path, string.Format(pattern, max));
+
+			bool Unavailable(string filename)
+			{
+				string filePath = Path.Combine(path, filename).ToLowerInvariant();
+				return used.Contains(filePath) || File.Exists(filePath);
+			}
 		}
 
 		public static void OpenUrl(string url)
@@ -1788,8 +1780,8 @@ namespace Ginger
 				Image image;
 				try
 				{
-					byte[] bytes = Convert.FromBase64String(base64);
-					using (var stream = new MemoryStream(bytes))
+					byte[] buffer = Convert.FromBase64String(base64);
+					using (var stream = new MemoryStream(buffer))
 					{
 						image = Image.FromStream(stream);
 						return image;

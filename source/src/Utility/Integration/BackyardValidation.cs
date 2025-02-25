@@ -51,10 +51,6 @@ namespace Ginger.Integration
 				{
 					new string[]
 					{
-						"_prisma_migrations",
-					},
-					new string[]
-					{
 						"_AppCharacterLorebookItemToCharacterConfigVersion",
 						"A",						"TEXT",
 						"B",						"TEXT",
@@ -105,10 +101,6 @@ namespace Ginger.Integration
 						"label",					"TEXT",
 						"order",					"INTEGER",
 						"aspectRatio",				"TEXT",
-					},
-					new string[]
-					{
-						"AppSettings",
 					},
 					new string[]
 					{
@@ -188,10 +180,6 @@ namespace Ginger.Integration
 					},
 					new string[]
 					{
-						"ModelLayerSample",
-					},
-					new string[]
-					{
 						"RegenSwipe",
 						"id",						"TEXT",
 						"createdAt",				"DATETIME",
@@ -199,6 +187,25 @@ namespace Ginger.Integration
 						"activeTimestamp",			"DATETIME",
 						"text",						"TEXT",
 						"messageId",				"TEXT",
+					},
+
+					// Ignored tables
+
+					new string[]
+					{
+						"_prisma_migrations",
+					},
+					new string[]
+					{
+						"AppSettings",
+					},
+					new string[]
+					{
+						"GpuLayersCache",
+					},
+					new string[]
+					{
+						"ModelLayerSamples",
 					},
 					new string[]
 					{
@@ -210,10 +217,6 @@ namespace Ginger.Integration
 				BackyardDatabaseVersion.Version_0_29_0,
 				new string[][]
 				{
-					new string[]
-					{
-						"_prisma_migrations",
-					},
 					new string[]
 					{
 						"_AppCharacterLorebookItemToCharacterConfigVersion",
@@ -266,10 +269,6 @@ namespace Ginger.Integration
 						"label",					"TEXT",
 						"order",					"INTEGER",
 						"aspectRatio",				"TEXT",
-					},
-					new string[]
-					{
-						"AppSettings",
 					},
 					new string[]
 					{
@@ -357,10 +356,6 @@ namespace Ginger.Integration
 					},
 					new string[]
 					{
-						"ModelLayerSample",
-					},
-					new string[]
-					{
 						"RegenSwipe",
 						"id",						"TEXT",
 						"createdAt",				"DATETIME",
@@ -368,6 +363,25 @@ namespace Ginger.Integration
 						"activeTimestamp",			"DATETIME",
 						"text",						"TEXT",
 						"messageId",				"TEXT",
+					},
+
+					// Ignored tables
+
+					new string[]
+					{
+						"_prisma_migrations",
+					},
+					new string[]
+					{
+						"AppSettings",
+					},
+					new string[]
+					{
+						"GpuLayersCache",
+					},
+					new string[]
+					{
+						"ModelLayerSamples",
 					},
 					new string[]
 					{

@@ -108,6 +108,7 @@ namespace Ginger
 			EnableFormLevelDoubleBuffering(true);
 
 			tabControl.SelectedIndex = 0;
+			AssetImageCache.Clear();
 
 #if DEBUG
 			Stopwatch stopWatch = new Stopwatch();
@@ -239,6 +240,10 @@ namespace Ginger
 			sidePanel.ResizePortraitImage += OnResizePortraitImage;
 			sidePanel.PastePortraitImage += OnPastePortraitImage;
 			sidePanel.RemovePortraitImage += OnRemovePortraitImage;
+			sidePanel.ChangeBackgroundImage += OnChangeBackgroundImage;
+			sidePanel.PasteBackgroundImage += OnPasteBackgroundImage;
+			sidePanel.RemoveBackgroundImage += OnRemoveBackgroundImage;
+			sidePanel.BackgroundFromPortrait += OnBackgroundFromPortrait;
 
 			SetToolTip(btnAdd_Model, "Bot instructions");
 			SetToolTip(btnAdd_Character, "Character");
@@ -464,39 +469,38 @@ namespace Ginger
 				filename = openFileDialog.FileName;
 			}
 
-			Image portraitImage;
-			if (Current.Card.LoadPortraitImageFromFile(filename, out portraitImage) == false)
+			if (Current.SelectedCharacter == 0) // Main character
 			{
-				MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-				return;
-			}
-
-			// Resize?
-			if (portraitImage.Width > Constants.MaxImageDimension || portraitImage.Height > Constants.MaxImageDimension)
-			{
-				int srcWidth = portraitImage.Width;
-				int srcHeight = portraitImage.Height;
-				float scale = Math.Min((float)Constants.MaxImageDimension / srcWidth, (float)Constants.MaxImageDimension / srcHeight);
-				int newWidth = Math.Max((int)Math.Round(srcWidth * scale), 1);
-				int newHeight = Math.Max((int)Math.Round(srcHeight * scale), 1);
-
-				if (MessageBox.Show(string.Format(Resources.msg_rescale_portrait, portraitImage.Width, portraitImage.Height, newWidth, newHeight), Resources.cap_change_portrait, MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+				Image portraitImage;
+				if (Current.Card.LoadPortraitFromFile(filename, out portraitImage))
 				{
-					var bmpNewImage = new Bitmap(newWidth, newHeight);
-					using (Graphics gfxNewImage = Graphics.FromImage(bmpNewImage))
-					{
-						gfxNewImage.DrawImage(portraitImage,
-							new Rectangle(0, 0, newWidth, newHeight),
-								0, 0, srcWidth, srcHeight,
-								GraphicsUnit.Pixel);
-					}
-					Current.Card.portraitImage = ImageRef.FromImage(Image.FromHbitmap(bmpNewImage.GetHbitmap()));
+					Current.Card.portraitImage = ImageRef.FromImage(portraitImage);
+					Current.IsFileDirty = true;
 				}
+				else
+				{
+					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+					return;
+				}
+
+				if (ConfirmImageSize(ref portraitImage))
+					Current.Card.portraitImage = ImageRef.FromImage(portraitImage);
+				Undo.Push(Undo.Kind.Parameter, "Change portrait image");
+			}
+			else // Actor
+			{
+				AssetFile tmp;
+				if (Current.Card.assets.LoadActorPortraitFromFile(Current.SelectedCharacter, filename, out tmp) == false)
+				{
+					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+					return;
+				}
+
+				Undo.Push(Undo.Kind.Parameter, "Change portrait image (actor)");
 			}
 			Current.IsDirty = true;
 
 			sidePanel.RefreshValues();
-			Undo.Push(Undo.Kind.Parameter, "Change portrait image");
 		}
 
 		private void OnPastePortraitImage(object sender, EventArgs e)
@@ -511,26 +515,129 @@ namespace Ginger
 				return; // Error
 			}
 
-			Current.Card.portraitImage = ImageRef.FromImage(image);
-			Current.Card.assets.RemoveMainPortraitOverride();
+			// Resize
+			ConfirmImageSize(ref image);
+
+			if (Current.SelectedCharacter == 0) // Main character
+			{
+				Current.Card.portraitImage = ImageRef.FromImage(image);
+				Current.Card.assets.RemoveMainPortraitOverride(); // No animation
+				Undo.Push(Undo.Kind.Parameter, "Change portrait image");
+			}
+			else // Actor
+			{
+				AssetFile tmp;
+				if (Current.Card.assets.SetActorPortrait(Current.SelectedCharacter, image) == null)
+				{
+					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+					return;
+				}
+				Undo.Push(Undo.Kind.Parameter, "Change portrait image (actor)");
+			}
+
 			Current.IsDirty = true;
 			sidePanel.RefreshValues();
-
-			Undo.Push(Undo.Kind.Parameter, "Change portrait image");
 		}
 
 		private void OnRemovePortraitImage(object sender, EventArgs e)
 		{
-			Current.Card.portraitImage = null;
-			Current.Card.assets.RemoveMainPortraitOverride();
+			if (Current.SelectedCharacter == 0) // Main character
+			{
+				Current.Card.portraitImage = null;
+				Current.Card.assets.RemoveMainPortraitOverride();
+				Undo.Push(Undo.Kind.Parameter, "Clear portrait");
+			}
+			else // Actor
+			{
+				Current.Card.assets.Remove(Current.Card.assets.GetPortrait(Current.SelectedCharacter));
+				Undo.Push(Undo.Kind.Parameter, "Clear portrait (actor)");
+			}
 			Current.IsDirty = true;
 			sidePanel.RefreshValues();
-			Undo.Push(Undo.Kind.Parameter, "Clear portrait");
+		}
+		
+		private void OnChangeBackgroundImage(object sender, BackgroundPreview.ChangeBackgroundImageEventArgs e)
+		{
+			string filename = e.Filename;
+			if (filename == null)
+			{
+				// Open file...
+				openFileDialog.Title = Resources.cap_open_image;
+				openFileDialog.Filter = "Supported image formats|*.png;*.jpeg;*.jpg;*.gif;*.apng;*.webp|PNG images|*.png;*.apng|JPEG images|*.jpg;*.jpeg|GIF images|*.gif|WEBP images|*.webp";
+				openFileDialog.InitialDirectory = AppSettings.Paths.LastImagePath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+				var result = openFileDialog.ShowDialog();
+				if (result != DialogResult.OK)
+					return;
+
+				AppSettings.Paths.LastImagePath = Path.GetDirectoryName(openFileDialog.FileName);
+
+				filename = openFileDialog.FileName;
+			}
+
+			AssetFile tmp;
+			if (Current.Card.assets.AddBackground(filename, out tmp))
+			{
+				Undo.Push(Undo.Kind.Parameter, "Set background image");
+				sidePanel.RefreshValues();
+				Current.IsDirty = true;
+			}
+		}
+
+		private void OnPasteBackgroundImage(object sender, EventArgs e)
+		{
+			Image image;
+			try
+			{
+				image = Clipboard.GetImage();
+			}
+			catch
+			{
+				return; // Error
+			}
+
+			AssetFile tmp;
+			if (Current.Card.assets.AddBackground(image, out tmp))
+			{
+				Undo.Push(Undo.Kind.Parameter, "Set background image");
+				sidePanel.RefreshValues();
+				Current.IsDirty = true;
+			}
+		}
+
+		private void OnBackgroundFromPortrait(object sender, EventArgs e)
+		{
+			AssetFile asset;
+			if (Current.Card.assets.AddBackgroundFromPortrait(out asset))
+			{
+				asset.name = "Background (portrait)";
+				Undo.Push(Undo.Kind.Parameter, "Set background image");
+				sidePanel.RefreshValues();
+				Current.IsDirty = true;
+			}
+		}
+
+		private void OnRemoveBackgroundImage(object sender, EventArgs e)
+		{
+			Current.Card.assets.RemoveAll(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
+			Undo.Push(Undo.Kind.Parameter, "Clear background image");
+			Current.IsDirty = true;
+			sidePanel.RefreshValues();
 		}
 
 		private void OnResizePortraitImage(object sender, EventArgs e)
 		{
-			Image image = Current.Card.portraitImage;
+			Image image;
+			if (Current.SelectedCharacter == 0)
+				image = Current.Card.portraitImage;
+			else
+			{
+				var asset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
+				if (asset == null)
+					return;
+
+				Utility.LoadImageFromMemory(asset.data.bytes, out image);
+			}
+
 			if (image == null || (image.Width <= Constants.MaxImageDimension && image.Height <= Constants.MaxImageDimension))
 				return; // No change
 
@@ -540,9 +647,9 @@ namespace Ginger
 			int newWidth = Math.Max((int)Math.Round(srcWidth * scale), 1);
 			int newHeight = Math.Max((int)Math.Round(srcHeight * scale), 1);
 
-			Image bmpNewImage = new Bitmap(newWidth, newHeight);
+			Image resizedImage = new Bitmap(newWidth, newHeight);
 			
-			using (Graphics gfxNewImage = Graphics.FromImage(bmpNewImage))
+			using (Graphics gfxNewImage = Graphics.FromImage(resizedImage))
 			{
 				gfxNewImage.DrawImage(image,
 					new Rectangle(0, 0, newWidth, newHeight),
@@ -550,13 +657,48 @@ namespace Ginger
 						GraphicsUnit.Pixel);
 			}
 
-			Current.Card.portraitImage = ImageRef.FromImage(bmpNewImage);
+			if (Current.SelectedCharacter == 0) // Main character
+			{
+				Current.Card.portraitImage = ImageRef.FromImage(resizedImage);
+				Undo.Push(Undo.Kind.Parameter, "Resize portrait image");
+			}
+			else // Actor
+			{
+				Current.Card.assets.SetActorPortrait(Current.SelectedCharacter, resizedImage);
+				Undo.Push(Undo.Kind.Parameter, "Resize portrait image (actor)");
+			}
+
 			Current.IsDirty = true;
 			sidePanel.RefreshValues();
-
-			Undo.Push(Undo.Kind.Parameter, "Resize portrait image");
 			SetStatusBarMessage("Resized portrait image", Constants.StatusBarMessageInterval);
 		}		
+		
+		private static bool ConfirmImageSize(ref Image image)
+		{
+			if (image.Width > Constants.MaxImageDimension || image.Height > Constants.MaxImageDimension)
+			{
+				int srcWidth = image.Width;
+				int srcHeight = image.Height;
+				float scale = Math.Min((float)Constants.MaxImageDimension / srcWidth, (float)Constants.MaxImageDimension / srcHeight);
+				int newWidth = Math.Max((int)Math.Round(srcWidth * scale), 1);
+				int newHeight = Math.Max((int)Math.Round(srcHeight * scale), 1);
+
+				if (MessageBox.Show(string.Format(Resources.msg_rescale_portrait, image.Width, image.Height, newWidth, newHeight), Resources.cap_change_portrait, MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+				{
+					var bmpNewImage = new Bitmap(newWidth, newHeight);
+					using (Graphics gfxNewImage = Graphics.FromImage(bmpNewImage))
+					{
+						gfxNewImage.DrawImage(image,
+							new Rectangle(0, 0, newWidth, newHeight),
+								0, 0, srcWidth, srcHeight,
+								GraphicsUnit.Pixel);
+					}
+					image = Image.FromHbitmap(bmpNewImage.GetHbitmap());
+					return true;
+				}
+			}
+			return false;
+		}
 
 		private void OnExitApplication(object sender, EventArgs e)
 		{
@@ -983,6 +1125,11 @@ namespace Ginger
 			SaveIncremental();
 		}
 
+		private void saveMultipleMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveMultipleAs();
+		}
+
 		private void OpenFileMenuItem_Click(object sender, EventArgs e)
 		{
 			// Open file...
@@ -1086,7 +1233,6 @@ namespace Ginger
 
 			Current.OnLoadCharacter?.Invoke(null, EventArgs.Empty);
 
-
 			Current.IsLoading = false;
 			Cursor = Cursors.Default;
 			ClearStatusBarMessage();
@@ -1152,7 +1298,15 @@ namespace Ginger
 		public void RefreshTitle()
 		{
 			// Character name
-			string title = Utility.FirstNonEmpty(Current.Card.name, Current.MainCharacter.spokenName) ?? "";
+			string title;
+			if (Current.Characters.Count == 1)
+				title = Utility.FirstNonEmpty(Current.Character.spokenName, Current.Card.name) ?? "";
+			else
+				title = string.Format("{0} ({1}/{2})",
+					Utility.FirstNonEmpty(Current.Character.spokenName, Current.Card.name, Constants.DefaultCharacterName),
+					Current.SelectedCharacter + 1,
+					Current.Characters.Count);			
+
 			if (title.Length > 0)
 				title = string.Concat(title, " ");
 
@@ -1173,16 +1327,6 @@ namespace Ginger
 			this.Text = title;
 
 			_bWasFileDirty = Current.IsFileDirty;
-
-			// Status bar
-			if (Current.Characters.Count > 1)
-				statusBarActor.Text = string.Format("Actor {0} / {1}", Current.SelectedCharacter + 1, Current.Characters.Count);
-			else
-				statusBarActor.Text = string.Empty;
-
-#if DEBUG && false // Show form level buffering
-			statusBarActor.Text = statusBarActor.Text + (_bEnableFormLevelDoubleBuffering && AppSettings.Settings.EnableFormLevelBuffering ? " ON" : " OFF");
-#endif
 
 			// Show Backyard menu
 			backyardMenuItem.Visible = Backyard.ConnectionEstablished;
@@ -1228,10 +1372,18 @@ namespace Ginger
 				}
 			}
 
+			// Embedded assets status icon
 			int embeddedCount = Current.Card.assets.Count(a => a.isEmbeddedAsset);
 			statusEmbeddedAssets.Image = Theme.Current.EmbeddedAssets;
 			statusEmbeddedAssets.ToolTipText = string.Format("This character card contains {0} embedded asset{1}.", embeddedCount, embeddedCount != 1 ? "s": "");
 			statusEmbeddedAssets.Visible = embeddedCount > 0;
+
+			// Actors status icon
+			int actorCount = Current.Characters.Count;
+			statusActors.Image = Theme.Current.ActorPortraitAsset;
+			statusActors.ToolTipText = string.Format("This character card contains {0} actor{1}.", actorCount, actorCount != 1 ? "s": "");
+			statusActors.Visible = actorCount > 1;
+
 
 			// Menu items
 			RefreshMenuItems();
@@ -1289,6 +1441,9 @@ namespace Ginger
 
 			// Save incremental
 			saveIncrementalMenuItem.Enabled = string.IsNullOrEmpty(Current.Filename) == false;
+
+			// Save multiple
+			saveMultipleMenuItem.Visible = Current.Characters.Count > 1;
 
 			// MRU
 			PopulateMRUMenu(openRecentMenuItem.DropDownItems);
@@ -1442,6 +1597,25 @@ namespace Ginger
 
 		private void PopulateSupportingCharactersMenu(ToolStripItemCollection items)
 		{
+			// New actor
+			var newActorMenuItem = new ToolStripMenuItem("New actor");
+			newActorMenuItem.Click += AddSupportingCharacterMenuItem_Click;
+			items.Add(newActorMenuItem);
+
+			// Import actor
+			var importActorMenuItem = new ToolStripMenuItem("Add from file...");
+			importActorMenuItem.Click += ImportSupportingCharacterMenuItem_Click;
+			items.Add(importActorMenuItem);
+
+			// Export actor
+			var exportActorMenuItem = new ToolStripMenuItem("Save actor as...") {
+				Enabled = Current.Characters.Count > 1,
+			};
+			exportActorMenuItem.Click += ExportSupportingCharacterMenuItem_Click;
+			items.Add(exportActorMenuItem);
+
+			items.Add(new ToolStripSeparator());
+
 			// Primary character
 			var primary = new ToolStripMenuItem() {
 				Text = Current.MainCharacter.namePlaceholder,
@@ -1473,15 +1647,15 @@ namespace Ginger
 				items.Add(menuItem);
 			}
 
-			// Add new
-			items.Add(new ToolStripSeparator());
-			var addActor = new ToolStripMenuItem("Add actor");
-			addActor.Click += AddSupportingCharacterMenuItem_Click;
-			items.Add(addActor);
-			var removeActor = new ToolStripMenuItem(string.Format("Remove {0}", string.IsNullOrEmpty(Current.Character.spokenName) ? "actor" : Current.Character.spokenName));
-			removeActor.Enabled = Current.SelectedCharacter > 0;
-			removeActor.Click += RemoveSupportingCharacterMenuItem_Click;
-			items.Add(removeActor);
+			// Remove actor
+			if (Current.Characters.Count > 1)
+			{
+				items.Add(new ToolStripSeparator());
+				var removeActor = new ToolStripMenuItem(string.Format("Remove {0}", string.IsNullOrEmpty(Current.Character.spokenName) ? "actor" : Current.Character.spokenName));
+				removeActor.Click += RemoveSupportingCharacterMenuItem_Click;
+				items.Add(removeActor);
+			}
+
 		}
 
 		private void ExpandAllMenuItem_Click(object sender, EventArgs e)
@@ -1606,6 +1780,8 @@ namespace Ginger
 			outputPreviewSillyTavernMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern;
 			outputPreviewFaradayMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday;
 			outputPreviewPlainTextMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.PlainText;
+			outputPreviewFaradayGroupMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group;
+			outputPreviewFaradayGroupMenuItem.Enabled = Current.Characters.Count > 1;
 
 			// Tools
 			bakeActorMenuItem.Visible = Current.Characters.Count > 1;
@@ -1629,6 +1805,12 @@ namespace Ginger
 			showRecipeCategoryMenuItem.Checked = AppSettings.Settings.ShowRecipeCategory;
 			showRecipeCategoryMenuItem.Enabled = bViewingRecipe && bHasRecipes;
 			sortRecipesMenuItem.Enabled = bViewingRecipe && bHasRecipes;
+
+			// Actors menu
+			if (Current.Characters.Count > 1)
+				additionalCharactersMenuItem.Text = string.Format("&Actors ({0})", Current.Characters.Count);
+			else
+				additionalCharactersMenuItem.Text = "&Actors";
 		}
 
 		private void ImportLorebookJsonMenuItem_Click(object sender, EventArgs e)
@@ -1840,26 +2022,62 @@ namespace Ginger
 			RefreshTitle();
 			sidePanel.SetSpokenName(Constants.DefaultCharacterName);
 
-			Undo.Push(Undo.Kind.RecipeList, "Add actor");
+			Undo.Push(Undo.Kind.RecipeList, "New actor");
+		}
+
+		private void ImportSupportingCharacterMenuItem_Click(object sender, EventArgs e)
+		{
+			if (Current.Characters.Count >= 32) // This number is arbitrary. I just wanted an upper bound.
+			{
+				MessageBox.Show(Resources.error_max_characters, Resources.cap_save_snippet, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				return;
+			}
+
+			int filter = AppSettings.User.LastImportCharacterFilter;
+			if (filter < 0 || filter > 5)
+				filter = 0;
+
+			// Open file...
+			importFileDialog.Title = Resources.cap_import_character;
+			importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml";
+			importFileDialog.FilterIndex = filter;
+			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			importFileDialog.FileName = "";
+			var result = importFileDialog.ShowDialog();
+			if (result != DialogResult.OK)
+				return;
+
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
+			AppSettings.User.LastImportCharacterFilter = importFileDialog.FilterIndex;
+
+			if (ImportActorFromFile(importFileDialog.FileName))
+			{
+				tabControl.SelectedIndex = 0;
+				recipeList.RecreatePanels();
+				sidePanel.RefreshValues();
+				sidePanel.OnActorChanged();
+				RefreshTitle();
+				Undo.Push(Undo.Kind.RecipeList, "Import actor");
+			}
+		}
+
+		private void ExportSupportingCharacterMenuItem_Click(object sender, EventArgs e)
+		{
+			ExportCurrentActor();
 		}
 
 		private void RemoveSupportingCharacterMenuItem_Click(object sender, EventArgs e)
 		{
-			if (Current.SelectedCharacter <= 0 || Current.SelectedCharacter >= Current.Characters.Count)
-				return;
-
-			Current.Characters.RemoveAt(Current.SelectedCharacter);
-			Current.SelectedCharacter = Math.Min(Math.Max(Current.SelectedCharacter, 0), Current.Characters.Count - 1);
-			Current.IsDirty = true;
-
-			tabControl.SelectedIndex = 0;
-			recipeList.RecreatePanels();
-			sidePanel.RefreshValues();
-			sidePanel.OnActorChanged();
-			RefreshTitle();
-			StealFocus();
-
-			Undo.Push(Undo.Kind.RecipeList, "Remove actor");
+			if (RemoveCurrentActor())
+			{
+				tabControl.SelectedIndex = 0;
+				recipeList.RecreatePanels();
+				sidePanel.RefreshValues();
+				sidePanel.OnActorChanged();
+				RefreshTitle();
+				StealFocus();
+				Undo.Push(Undo.Kind.RecipeList, "Remove actor");
+			}
 		}
 
 		private void SelectCharacter(int characterIndex)
@@ -1871,11 +2089,14 @@ namespace Ginger
 				return;
 
 			Current.SelectedCharacter = characterIndex;
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group)
+				Regenerate(); // Regenerate actor output
 			tabControl.SelectedIndex = 0;
 			recipeList.RecreatePanels();
 			sidePanel.RefreshValues();
 			sidePanel.OnActorChanged();
 			RefreshTitle();
+
 
 			Undo.Push(Undo.Kind.RecipeList, "Select actor", "select-actor");
 		}
@@ -1899,8 +2120,8 @@ namespace Ginger
 			ExportLorebook(output, false); 
 			Lorebooks.LoadLorebooks();
 		}
-
-		private void TokenBudgetMenuItem_CheckedChanged(object sender, EventArgs e)
+		
+		private void TokenBudgetMenuItem_Click(object sender, EventArgs e)
 		{
 			ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
 			if (menuItem == null || menuItem.Checked == false)
@@ -2205,6 +2426,12 @@ namespace Ginger
 			Regenerate();
 		}
 
+		private void outputPreviewFaradayGroupMenuItem_Click(object sender, EventArgs e)
+		{
+			AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday_Group;
+			Regenerate();
+			_bShouldRefreshTokenCount = true;
+		}
 
 		private void ViewRecipeMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
@@ -2278,6 +2505,7 @@ namespace Ginger
 
 				Current.IsFileDirty = true;
 				RefreshTitle();
+				sidePanel.RefreshValues();
 			}
 		}
 

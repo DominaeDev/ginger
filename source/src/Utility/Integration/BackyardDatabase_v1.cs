@@ -4398,9 +4398,7 @@ namespace Ginger.Integration
 			int idxPortraitLink = -1;
 			string portraitUID = null;
 
-			var mainPortraitAsset = assets.GetMainPortraitOverride();
-			if (portraitImage == null && mainPortraitAsset == null)
-				mainPortraitAsset = assets.GetPortraitAsset(); // Use first portrait asset
+			var mainPortraitAsset = assets.GetPortraitOverride();
 
 			if (mainPortraitAsset != null) // Has embedded asset
 			{

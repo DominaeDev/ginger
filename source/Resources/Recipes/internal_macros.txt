@@ -1,7 +1,7 @@
 <Ginger>
 	<!-- Macros -->
-	<Macro id="characters, bots">[names.list]</Macro>
-	<Macro id="everyone">[!list:[user];[char];[actors]]</Macro>
+	<Macro id="characters">[!semilist:[char];[actors]]</Macro>
+	<Macro id="everyone">[!semilist:[char];[actors];[user]]</Macro>
 	<Wrapper id="abbr">[noparse]_[parse][nocap]</Wrapper>
 	<Wrapper id="raw, ignore">[noparse]_[parse]</Wrapper>
 	<Macro id="the">[..the?|the]</Macro>
@@ -196,5 +196,13 @@
 				<String id="themselves">themselves</String>
 			</String>
 		</String>
-	</String>	
+	</String>
+	
+	<!-- Conjugates -->
+	<String id="conjugates">
+		<String id="and">and</String>
+		<String id="or">or</String>
+		<String id="nor">nor</String>
+	</String>
+	
 </Ginger>

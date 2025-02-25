@@ -693,6 +693,10 @@ namespace Ginger
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"\u201C[^\x22]*\u201D"), new SyntaxStyle(colorDialogue), 0);
 			}
 
+			// Narration *...*
+			if (_syntaxFlags.Contains(SyntaxFlags.Actions))
+				syntaxHighlighter.AddPattern(new PatternDefinition("\\*+[^\\*]*\\*+"), new SyntaxStyle(colorNarration, false, false), 0);
+
 			if (_syntaxFlags.Contains(SyntaxFlags.Numbers))
 			{
 				// Feet/Inches
@@ -703,10 +707,6 @@ namespace Ginger
 				// Digits
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"[-+#]?\b\d+(?:[.,]\d)?\b"), new SyntaxStyle(colorNumber), -1);
 			}
-
-			// Narration *...*
-			if (_syntaxFlags.Contains(SyntaxFlags.Actions))
-				syntaxHighlighter.AddPattern(new PatternDefinition("\\*+[^\\*]*\\*+"), new SyntaxStyle(colorNarration, false, false), 0);
 			
 			// Lorebook: Wildcards ...*
 			if (_syntaxFlags.Contains(SyntaxFlags.Wildcards))

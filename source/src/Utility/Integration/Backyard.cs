@@ -609,6 +609,15 @@ namespace Ginger.Integration
 
 					// Compare database structure with known tables
 					var validationTable = BackyardValidation.TablesByVersion[BackyardValidation.DatabaseVersion];
+
+					// Ignore tables we know of but don't care about
+					var ignoredTables = validationTable
+						.Where(t => t.Length == 1)
+						.Select(t => t[0])
+						.ToArray();
+					foundTables.ExceptWith(ignoredTables);
+					validationTable = validationTable.Where(t => t.Length > 1).ToArray();
+
 					if (AppSettings.BackyardLink.Strict && foundTables.Count != validationTable.Length)
 					{
 						LastError = "Validation failed";
@@ -643,9 +652,6 @@ namespace Ginger.Integration
 								}
 							}
 						}
-
-						if (expectedNames.Length == 0 && foundColumns.Count > 0)
-							continue; // A table we want to exist, but don't care about its columns/contents
 
 						if ((AppSettings.BackyardLink.Strict && foundColumns.Count != expectedNames.Length)
 							|| foundColumns.Count < expectedNames.Length)
@@ -839,9 +845,7 @@ namespace Ginger.Integration
 		{
 			var lsImages = new List<Backyard.ImageInput>();
 			var assets = (AssetCollection)Current.Card.assets.Clone();
-			AssetFile mainPortraitOverride = assets.GetMainPortraitOverride();
-			if (Current.Card.portraitImage == null && mainPortraitOverride == null)
-				mainPortraitOverride = assets.GetPortraitAsset();
+			AssetFile mainPortraitOverride = assets.GetPortraitOverride();
 
 			if (mainPortraitOverride != null) // Embedded portrait (animated)
 			{
@@ -871,34 +875,12 @@ namespace Ginger.Integration
 				&& (Current.Card.portraitImage != null || mainPortraitOverride != null)
 				&& assets.ContainsNoneOf(a => a.assetType == AssetFile.AssetType.Background))
 			{
-				if (assets == null)
-					assets = new AssetCollection();
-
 				AssetFile portraitBackground;
-				if (mainPortraitOverride != null)
+				if (Current.Card.assets.AddBackgroundFromPortrait(out portraitBackground))
 				{
-					portraitBackground = new AssetFile() {
-						name = "Portrait background",
-						ext = mainPortraitOverride.ext,
-						assetType = AssetFile.AssetType.Background,
-						data = mainPortraitOverride.data,
-						uriType = AssetFile.UriType.Embedded,
-					};
+					assets.Add(portraitBackground);
+					Current.IsFileDirty = true;
 				}
-				else
-				{
-					portraitBackground = new AssetFile() {
-						name = "Portrait background",
-						ext = "jpeg",
-						assetType = AssetFile.AssetType.Background,
-						data = AssetData.FromBytes(Utility.ImageToMemory(Current.Card.portraitImage, Utility.ImageFileFormat.Jpeg)),
-						uriType = AssetFile.UriType.Embedded,
-					};
-				}
-
-				assets.Add(portraitBackground);
-				Current.Card.assets.Add(portraitBackground);
-				Current.IsFileDirty = true;
 			}
 
 			if (assets != null)

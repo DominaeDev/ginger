@@ -188,6 +188,9 @@ namespace Ginger
 
 			public Image Collapsed => Resources.dark_collapsed;
 			public Image Expanded => Resources.dark_expanded;
+
+			public Image PortraitOverrideAsset => Resources.dark_asset_override;
+			public Image ActorPortraitAsset => Resources.dark_asset_actor_portrait;
 		}
 
 		public class ToolStripColorTable : ProfessionalColorTable

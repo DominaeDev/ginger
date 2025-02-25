@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Ginger
@@ -12,6 +13,10 @@ namespace Ginger
 		public event EventHandler ResizePortraitImage;
 		public event EventHandler PastePortraitImage;
 		public event EventHandler RemovePortraitImage;
+		public event EventHandler<BackgroundPreview.ChangeBackgroundImageEventArgs> ChangeBackgroundImage;
+		public event EventHandler BackgroundFromPortrait;
+		public event EventHandler PasteBackgroundImage;
+		public event EventHandler RemoveBackgroundImage;
 
 		public class EditNameEventArgs : EventArgs
 		{
@@ -39,13 +44,15 @@ namespace Ginger
 
 		private void SidePanel_Load(object sender, EventArgs e)
 		{
-			this.portraitImage.ChangePortraitImage += OnChangePortraitImage;
+			portraitImage.ChangePortraitImage += OnChangePortraitImage;
+			backgroundPreview.ChangeBackgroundImage += OnChangeBackgroundImage;
 			root.VerticalScroll.Visible = false;
 
 			group_CardInfo.OnCollapse += Group_CardInfo_OnCollapse;
 			group_User.OnCollapse += Group_User_OnCollapse;
 			group_Generation.OnCollapse += Group_Generation_OnCollapse;
 			group_Components.OnCollapse += Group_Components_OnCollapse;
+			group_Background.OnCollapse += Group_Background_OnCollapse;
 			group_Stats.OnCollapse += Group_Stats_OnCollapse;
 
 			_bIgnoreEvents = true;
@@ -58,6 +65,7 @@ namespace Ginger
 			group_User.Collapsed = !AppSettings.User.ShowUserInfo;
 			group_Generation.Collapsed = !AppSettings.User.ShowOutputSettings;
 			group_Components.Collapsed = !AppSettings.User.ShowOutputComponents;
+			group_Background.Collapsed = !AppSettings.User.ShowBackground;
 			group_Stats.Collapsed = !AppSettings.User.ShowStats;
 			_bIgnoreEvents = false;
 
@@ -93,6 +101,11 @@ namespace Ginger
 		private void OnChangePortraitImage(object sender, PortraitPreview.ChangePortraitImageEventArgs e)
 		{
 			ChangePortraitImage.Invoke(sender, e);
+		}
+
+		private void OnChangeBackgroundImage(object sender, BackgroundPreview.ChangeBackgroundImageEventArgs e)
+		{
+			ChangeBackgroundImage.Invoke(sender, e);
 		}
 
 		public void RefreshValues()
@@ -153,7 +166,36 @@ namespace Ginger
 			label_Lore_Value.Text = lastLoreCount.ToString();
 
 			// Portrait
-			portraitImage.SetImage(Current.Card.portraitImage, Current.Card.assets.HasMainPortraitOverride());
+			if (Current.SelectedCharacter == 0)
+			{
+				var portraitOverride = Current.Card.assets.GetPortraitOverride();
+				portraitImage.SetImage(Current.Card.portraitImage, portraitOverride != null && portraitOverride.HasTag(AssetFile.Tag.Animation));
+				portraitImage.IsGrayedOut = false;
+			}
+			else
+			{
+				var asset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
+				if (asset != null)
+				{
+					Image actorImage = AssetImageCache.GetImageForAsset(asset, portraitImage.Width, portraitImage.Height, AssetImageCache.ResizeFlag.FitOutside);
+
+					if (actorImage != null)
+					{
+						portraitImage.SetImage(ImageRef.FromImage(actorImage, false), asset != null && asset.HasTag(AssetFile.Tag.Animation));
+						portraitImage.IsGrayedOut = false;
+					}
+					else
+					{
+						portraitImage.SetImage(Current.Card.portraitImage);
+						portraitImage.IsGrayedOut = true;
+					}
+				}
+				else
+				{
+					portraitImage.SetImage(Current.Card.portraitImage);
+					portraitImage.IsGrayedOut = true;
+				}
+			}
 
 			if (Current.Card.portraitImage != null)
 			{
@@ -164,7 +206,39 @@ namespace Ginger
 			{
 				SetToolTip(Resources.tooltip_no_portrait_image, portraitImage);
 				label_Image_Value.Text = "-";
+				label_Image_Value.ForeColor = this.ForeColor;
 			}
+
+			if (Current.SelectedCharacter > 0)
+			{
+				var asset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
+				if (asset != null)
+				{
+					SetToolTip(Resources.tooltip_portrait_image, portraitImage);
+					RefreshImageAspectRatio();
+				}
+				else
+				{
+					SetToolTip(Resources.tooltip_no_portrait_image, portraitImage);
+					label_Image_Value.Text = "-";
+					label_Image_Value.ForeColor = this.ForeColor;
+				}
+			}
+
+			// Background
+			var backgroundAsset = Current.Card.assets.FirstOrDefault(a => a.assetType == AssetFile.AssetType.Background);
+			if (backgroundAsset != null)
+			{
+				Image backgroundImage = AssetImageCache.GetImageForAsset(backgroundAsset, backgroundPreview.Width, backgroundPreview.Height, AssetImageCache.ResizeFlag.FitInside);
+				if (backgroundImage != null)
+				{
+					backgroundPreview.SetImage(ImageRef.FromImage(backgroundImage, false), backgroundAsset != null && backgroundAsset.HasTag(AssetFile.Tag.Animation));
+				}
+				else
+					backgroundPreview.SetImage(null);
+			}
+			else
+				backgroundPreview.SetImage(null);
 
 			// Output components
 			cbIncludeModelInstructions.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitSystemPrompt);
@@ -210,11 +284,34 @@ namespace Ginger
 				return a;
 			};
 
-			int width = Current.Card.portraitImage.Width;
-			int height = Current.Card.portraitImage.Height;
-			int gcd = GetGCD(Current.Card.portraitImage.Width, Current.Card.portraitImage.Height);
+			int width, height;
+			if (Current.SelectedCharacter == 0)
+			{
+				width = Current.Card.portraitImage.Width;
+				height = Current.Card.portraitImage.Height;
+			}
+			else
+			{
+				var asset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
+				if (asset != null)
+				{
+					width = asset.knownWidth;
+					height = asset.knownHeight;
 
-			if ((width / gcd < 50) && (height / gcd < 50))
+					if (width == 0 || height == 0)
+					{
+						Utility.GetImageDimensions(asset.data.bytes, out width, out height);
+						asset.knownWidth = width;
+						asset.knownHeight = height;
+					}
+				}
+				else
+					return;
+			}
+
+			int gcd = GetGCD(width, height);
+
+			if (gcd > 0 && (width / gcd < 50) && (height / gcd < 50))
 			{
 				label_Image_Value.Text = string.Format("{0} x {1} ({2}:{3})",
 					width,
@@ -493,6 +590,20 @@ namespace Ginger
 		{
 			if (args.Button == MouseButtons.Right)
 			{
+				bool bHasPortrait;
+				bool bCanResize;
+				if (Current.SelectedCharacter == 0)
+				{
+					bHasPortrait = Current.Card.portraitImage != null;
+					bCanResize = bHasPortrait && (Current.Card.portraitImage.Width > Constants.MaxImageDimension || Current.Card.portraitImage.Height > Constants.MaxImageDimension);
+				}
+				else
+				{
+					var asset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
+					bHasPortrait = asset != null;
+					bCanResize = asset != null && (asset.knownWidth > Constants.MaxImageDimension || asset.knownHeight > Constants.MaxImageDimension);
+				}
+
 				var menu = new ContextMenuStrip();
 
 				menu.Items.Add(new ToolStripMenuItem("Change character portrait", null, (s, e) => {
@@ -511,11 +622,11 @@ namespace Ginger
 				{
 					menu.Items.Add(new ToolStripMenuItem("Paste image") { Enabled = false });
 				}
-				
+
 				menu.Items.Add(new ToolStripMenuItem("Reduce size", null, (s, e) => {
 					ResizePortraitImage?.Invoke(this, EventArgs.Empty);
 				}) {
-					Enabled = Current.Card.portraitImage != null && (Current.Card.portraitImage.Width > Constants.MaxImageDimension || Current.Card.portraitImage.Height > Constants.MaxImageDimension),
+					Enabled = bCanResize,
 					ToolTipText = Resources.tooltip_resize_portrait_image,
 				});
 
@@ -523,23 +634,11 @@ namespace Ginger
 				menu.Items.Add(new ToolStripMenuItem("Clear portrait", null, (s, e) => {
 					RemovePortraitImage?.Invoke(this, EventArgs.Empty);
 				}) {
-					Enabled = Current.Card.portraitImage != null,
+					Enabled = bHasPortrait,
 				});
 
 				Theme.Apply(menu);
 				menu.Show(sender as Control, new System.Drawing.Point(args.X, args.Y));
-			}
-		}
-
-		private void PortraitImage_MouseDoubleClick(object sender, MouseEventArgs e)
-		{
-			if (e.Button == MouseButtons.Right) // Double right click: Clear portrait
-			{
-				Current.Card.portraitImage = null;
-				Current.Card.assets.RemoveMainPortraitOverride();
-				portraitImage.SetImage(null);
-				label_Image_Value.Text = "-";
-				Undo.Push(Undo.Kind.Parameter, "Clear portrait image");
 			}
 		}
 
@@ -889,6 +988,13 @@ namespace Ginger
 			AppSettings.User.ShowOutputComponents = !bCollapsed;
 		}
 		
+		private void Group_Background_OnCollapse(object sender, bool bCollapsed)
+		{
+			if (_bIgnoreEvents)
+				return;
+			AppSettings.User.ShowBackground = !bCollapsed;
+		}
+
 		private void Group_Stats_OnCollapse(object sender, bool bCollapsed)
 		{
 			if (_bIgnoreEvents)
@@ -1001,6 +1107,47 @@ namespace Ginger
 				return;
 
 			SetExtraFlag(CardData.Flag.UserPersonaInScenario, rbUserInScenario.Checked);
+		}
+
+		private void BackgroundPreview_MouseClick(object sender, MouseEventArgs args)
+		{
+			if (args.Button == MouseButtons.Right)
+			{
+				bool bHasPortrait = Current.Card.portraitImage != null;
+				bool bHasPortraitBackground = Current.Card.assets.ContainsAny(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background && a.HasTag(AssetFile.Tag.PortraitBackground));
+				bool bHasBackground = Current.Card.assets.ContainsAny(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
+				
+				var menu = new ContextMenuStrip();
+
+				menu.Items.Add(new ToolStripMenuItem("Change background", null, (s, e) => {
+					ChangeBackgroundImage?.Invoke(this, new BackgroundPreview.ChangeBackgroundImageEventArgs() {
+						Filename = null,
+					});
+				}));
+
+				menu.Items.Add(new ToolStripMenuItem("Use portrait as background", null, BackgroundFromPortrait) {
+					Enabled = bHasPortrait && !bHasPortraitBackground,
+				});
+
+				if (Clipboard.ContainsImage())
+					menu.Items.Add(new ToolStripMenuItem("Paste image", null, PasteBackgroundImage));
+				else
+				{
+					menu.Items.Add(new ToolStripMenuItem("Paste image") { 
+						Enabled = false 
+					});
+				}
+
+				menu.Items.Add(new ToolStripSeparator()); // ----
+				menu.Items.Add(new ToolStripMenuItem("Clear background", null, (s, e) => {
+					RemoveBackgroundImage?.Invoke(this, EventArgs.Empty);
+				}) {
+					Enabled = bHasBackground,
+				});
+
+				Theme.Apply(menu);
+				menu.Show(sender as Control, new System.Drawing.Point(args.X, args.Y));
+			}
 		}
 	}
 }
