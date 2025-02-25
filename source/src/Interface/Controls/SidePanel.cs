@@ -169,7 +169,7 @@ namespace Ginger
 			if (Current.SelectedCharacter == 0)
 			{
 				var portraitOverride = Current.Card.assets.GetPortraitOverride();
-				portraitImage.SetImage(Current.Card.portraitImage, portraitOverride != null && portraitOverride.HasTag(AssetFile.Tag.Animated));
+				portraitImage.SetImage(Current.Card.portraitImage, portraitOverride != null && portraitOverride.HasTag(AssetFile.Tag.Animation));
 				portraitImage.IsGrayedOut = false;
 			}
 			else
@@ -181,7 +181,7 @@ namespace Ginger
 
 					if (actorImage != null)
 					{
-						portraitImage.SetImage(ImageRef.FromImage(actorImage, false), asset != null && asset.HasTag(AssetFile.Tag.Animated));
+						portraitImage.SetImage(ImageRef.FromImage(actorImage, false), asset != null && asset.HasTag(AssetFile.Tag.Animation));
 						portraitImage.IsGrayedOut = false;
 					}
 					else
@@ -232,7 +232,7 @@ namespace Ginger
 				Image backgroundImage = AssetImageCache.GetImageForAsset(backgroundAsset, backgroundPreview.Width, backgroundPreview.Height, AssetImageCache.ResizeFlag.FitInside);
 				if (backgroundImage != null)
 				{
-					backgroundPreview.SetImage(ImageRef.FromImage(backgroundImage, false), backgroundAsset != null && backgroundAsset.HasTag(AssetFile.Tag.Animated));
+					backgroundPreview.SetImage(ImageRef.FromImage(backgroundImage, false), backgroundAsset != null && backgroundAsset.HasTag(AssetFile.Tag.Animation));
 				}
 				else
 					backgroundPreview.SetImage(null);

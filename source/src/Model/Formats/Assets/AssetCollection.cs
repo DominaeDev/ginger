@@ -265,18 +265,6 @@ namespace Ginger
 			int width, height;
 			Utility.GetImageDimensions(bytes, out width, out height);
 
-			bool bAnimated = false;
-			if (ext == "apng" || ext == "png")
-				bAnimated = Utility.IsAnimatedPNG(bytes);
-			else if (ext == "webp")
-				bAnimated = Utility.IsAnimatedWebP(bytes);
-			else
-			{
-				Image image;
-				if (Utility.LoadImageFromMemory(bytes, out image))
-					bAnimated = Utility.IsAnimatedImage(image);
-			}
-
 			// Remove existing
 			assets.RemoveAll(a => a.assetType == AssetFile.AssetType.Icon && a.actorIndex == actorIndex);
 
@@ -292,8 +280,8 @@ namespace Ginger
 				actorIndex = actorIndex,
 			};
 
-			if (bAnimated)
-				asset.AddTags(AssetFile.Tag.Animated);
+			if (Utility.IsAnimation(bytes))
+				asset.AddTags(AssetFile.Tag.Animation);
 
 			assets.Add(asset);
 			return true;
@@ -449,8 +437,8 @@ namespace Ginger
 					uriType = AssetFile.UriType.Embedded,
 					tags = new HashSet<StringHandle>() { AssetFile.Tag.MainBackground, AssetFile.Tag.PortraitBackground },
 				};
-				if (mainPortraitOverride.HasTag(AssetFile.Tag.Animated))
-					backgroundAsset.AddTags(AssetFile.Tag.Animated);
+				if (mainPortraitOverride.HasTag(AssetFile.Tag.Animation))
+					backgroundAsset.AddTags(AssetFile.Tag.Animation);
 			}
 			else if (Current.Card.portraitImage != null)
 			{

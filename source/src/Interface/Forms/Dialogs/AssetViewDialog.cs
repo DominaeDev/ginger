@@ -626,6 +626,10 @@ namespace Ginger
 						data = data,
 						uriType = AssetFile.UriType.Embedded,
 					};
+
+					if (Utility.IsAnimation(bytes))
+						asset.AddTags(AssetFile.Tag.Animation);
+
 					Assets.Add(asset);
 					AddRowForAsset(asset);
 					Changed = true;

@@ -130,21 +130,11 @@ namespace Ginger
 			if (Utility.LoadImageFromFile(filename, out image) == false)
 				return false;
 
-			// Is animated image?
-			var ext = Utility.GetFileExt(filename);
-			bool bAnimated;
-			if (ext == "apng" || ext == "png")
-				bAnimated = Utility.IsAnimatedPNG(filename);
-			else if (ext == "webp")
-				bAnimated = Utility.IsAnimatedWebP(filename);
-			else
-				bAnimated = Utility.IsAnimatedImage(image);
-
-			if (bAnimated) // Create override
+			if (Utility.IsAnimation(filename)) // Create override for animations
 			{
 				AssetFile asset;
 				if (assets.CreateMainPortraitOverride(filename, out asset))
-					asset.AddTags(AssetFile.Tag.Animated);
+					asset.AddTags(AssetFile.Tag.Animation);
 			}
 			else
 			{

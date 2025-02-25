@@ -11,7 +11,7 @@ namespace Ginger
 	public class AssetFile : ICloneable, IXmlLoadable, IXmlSaveable
 	{
 		public static readonly string MainAssetName = "main";
-		public static readonly string PortraitOverrideName = "Portrait (main)";
+		public static readonly string PortraitOverrideName = "Portrait (main)"; // Legacy
 
 		public string name;
 		public AssetType assetType
@@ -562,7 +562,7 @@ namespace Ginger
 			public static StringHandle PortraitOverride = "portrait-override";
 			public static StringHandle PortraitBackground = "portrait-background";
 			public static StringHandle MainBackground = "main-background";
-			public static StringHandle Animated = "animated";
+			public static StringHandle Animation = "animation";
 			public static StringHandle ActorAsset = "actor-";
 			public static StringHandle Linked = "linked";
 		}

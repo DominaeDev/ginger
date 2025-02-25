@@ -1052,12 +1052,20 @@ namespace Ginger
 					Current.Card.assets = assets;
 
 					// Load portrait image
-					var portraitAsset = Current.Card.assets.GetPortrait(); //!
+					var portraitAsset = Current.Card.assets.GetPortrait();
 					if (portraitAsset != null)
-						Current.Card.portraitImage = ImageRef.FromImage(portraitAsset.ToImage());
+					{
+						var portraitImage = portraitAsset.ToImage();
+						if (portraitImage != null)
+						{
+							Current.Card.portraitImage = ImageRef.FromImage(portraitImage);
 
-					// Remove portrait image (it will be re-added on save/export)
-//					Current.Card.assets.RemovePortraitImage();
+							if (Utility.IsAnimation(portraitAsset.data.bytes))
+								portraitAsset.AddTags(AssetFile.Tag.PortraitOverride); // Promote to override
+							else
+								Current.Card.assets.Remove(portraitAsset);
+						}
+					}
 
 					return Error.NoError;
 				}
@@ -1183,12 +1191,20 @@ namespace Ginger
 					ExtractAssetsFromArchive(filename, importResult.tavernDataV3, out Current.Card.assets);
 
 					// Load portrait image
-					var portraitAsset = Current.Card.assets.GetPortrait(); //!
+					var portraitAsset = Current.Card.assets.GetPortrait();
 					if (portraitAsset != null)
-						Current.Card.portraitImage = ImageRef.FromImage(portraitAsset.ToImage());
+					{
+						var portraitImage = portraitAsset.ToImage();
+						if (portraitImage != null)
+						{
+							Current.Card.portraitImage = ImageRef.FromImage(portraitImage);
 
-					// Remove portrait image (it will be re-added on save/export)
-//					Current.Card.assets.RemovePortraitImage();
+							if (Utility.IsAnimation(portraitAsset.data.bytes))
+								portraitAsset.AddTags(AssetFile.Tag.PortraitOverride); // Promote to override
+							else
+								Current.Card.assets.Remove(portraitAsset);
+						}
+					}
 				}
 				else if (ext == ".png")
 				{

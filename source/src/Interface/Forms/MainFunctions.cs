@@ -1336,7 +1336,7 @@ namespace Ginger
 						Current.Characters.Clear();
 						Current.Characters.Add(character);
 
-						if (portraitAsset != null && portraitAsset.HasTag(AssetFile.Tag.Animated))
+						if (portraitAsset != null && portraitAsset.HasTag(AssetFile.Tag.Animation))
 						{
 							// Set portrait override
 							portraitAsset = (AssetFile)portraitAsset.Clone();
@@ -3032,7 +3032,7 @@ namespace Ginger
 				Current.Characters.Clear();
 				Current.Characters.Add(character);
 
-				if (portraitAsset != null && portraitAsset.HasTag(AssetFile.Tag.Animated))
+				if (portraitAsset != null && portraitAsset.HasTag(AssetFile.Tag.Animation))
 				{
 					// Set portrait override
 					portraitAsset = (AssetFile)portraitAsset.Clone();
@@ -3076,7 +3076,7 @@ namespace Ginger
 					Utility.LoadImageFromMemory(portraitAsset.data.bytes, out actorImage);
 					Current.Card.portraitImage = ImageRef.FromImage(actorImage);
 
-					if (portraitAsset.HasTag(AssetFile.Tag.Animated))
+					if (portraitAsset.HasTag(AssetFile.Tag.Animation))
 						portraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
 					else
 						assets.Remove(portraitAsset);
