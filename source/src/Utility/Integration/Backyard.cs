@@ -5401,7 +5401,7 @@ namespace Ginger.Integration
 			int idxPortraitLink = -1;
 			string portraitUID = null;
 
-			var mainPortraitAsset = assets.GetPortrait();
+			var mainPortraitAsset = assets.GetPortraitOverride();
 
 			if (mainPortraitAsset != null) // Has embedded asset
 			{
@@ -6102,7 +6102,7 @@ namespace Ginger.Integration
 		{
 			var lsImages = new List<ImageInput>();
 			var assets = (AssetCollection)Current.Card.assets.Clone();
-			AssetFile mainPortraitOverride = assets.GetPortrait();
+			AssetFile mainPortraitOverride = assets.GetPortraitOverride();
 
 			if (mainPortraitOverride != null) // Embedded portrait (animated)
 			{

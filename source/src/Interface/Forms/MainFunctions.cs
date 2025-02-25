@@ -1146,23 +1146,23 @@ namespace Ginger
 			if (Current.Card.portraitImage != null)
 				return Current.Card.portraitImage;
 
-			if (Current.Card.assets == null)
-				return null;
-
-			var portraitAsset = Current.Card.assets.GetPortrait();
+			// Main portrait override
+			AssetFile portraitAsset = Current.Card.assets.GetPortrait(0);
 			if (portraitAsset != null)
 			{
-				// Promote to override
-				portraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
+				// Promote to override if not already
+				if (portraitAsset.HasTag(AssetFile.Tag.PortraitBackground))
+					portraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
 
-				Image image;
-				if (Utility.LoadImageFromMemory(portraitAsset.data.bytes, out image))
+				var image = portraitAsset.ToImage();
+				if (image == null)
 				{
 					Current.Card.portraitImage = ImageRef.FromImage(image);
 					_bShouldRefreshSidePanel = true;
 					return image;
 				}
 			}
+
 			return null;
 		}
 
@@ -1315,7 +1315,7 @@ namespace Ginger
 					if (i == 0)
 					{
 						portraitImage = Current.Card.portraitImage;
-						portraitAsset = Current.Card.assets.GetPortrait(0);
+						portraitAsset = Current.Card.assets.GetPortraitOverride();
 					}
 					else
 					{
@@ -2975,7 +2975,7 @@ namespace Ginger
 				}
 
 				// Get portrait
-				AssetFile portraitAsset = Current.Card.assets.GetPortrait();
+				AssetFile portraitAsset = Current.Card.assets.GetPortraitOverride();
 				if (portraitAsset == null && Current.Card.portraitImage != null)
 					portraitAsset = AssetFile.FromImage(Current.Card.portraitImage);
 
@@ -3015,16 +3015,12 @@ namespace Ginger
 			var character = Current.Character.Clone();
 
 			Image portraitImage = Current.Card.portraitImage;
-			AssetFile portraitAsset = Current.Card.assets.GetPortrait();
+			AssetFile portraitAsset = Current.Card.assets.GetPortraitOverride();
 			if (Current.SelectedCharacter > 0)
 			{
 				portraitAsset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
 				if (portraitAsset != null)
-				{
-					Image actorImage;
-					Utility.LoadImageFromMemory(portraitAsset.data.bytes, out actorImage);
-					portraitImage = actorImage;
-				}
+					portraitImage = portraitAsset.ToImage();
 			}
 
 			var stash = Current.Stash();

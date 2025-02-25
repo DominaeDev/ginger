@@ -103,7 +103,7 @@ namespace Ginger
 
 			if (actorIndex <= 0)
 			{
-				asset = icons.FirstOrDefault(a => a.isMainPortraitOverride && a.actorIndex < 1);
+				asset = GetPortraitOverride(assets);
 
 				// 'main' portrait
 				if (asset == null)
@@ -182,6 +182,11 @@ namespace Ginger
 			catch
 			{
 			}
+		}
+		
+		public static AssetFile GetPortraitOverride(this AssetCollection assets)
+		{
+			return assets.EmbeddedPortraits.FirstOrDefault(a => a.isMainPortraitOverride && a.actorIndex < 1);
 		}
 
 		public static bool CreateMainPortraitOverride(this AssetCollection assets, string filename, out AssetFile asset)

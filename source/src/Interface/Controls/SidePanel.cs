@@ -168,7 +168,7 @@ namespace Ginger
 			// Portrait
 			if (Current.SelectedCharacter == 0)
 			{
-				var portraitOverride = Current.Card.assets.EmbeddedPortraits.FirstOrDefault(a => a.isMainPortraitOverride);
+				var portraitOverride = Current.Card.assets.GetPortraitOverride();
 				portraitImage.SetImage(Current.Card.portraitImage, portraitOverride != null && portraitOverride.HasTag(AssetFile.Tag.Animated));
 				portraitImage.IsGrayedOut = false;
 			}
