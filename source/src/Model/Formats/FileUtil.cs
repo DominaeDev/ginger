@@ -1137,8 +1137,8 @@ namespace Ginger
 
 			// Load image
 			Image image = null;
-			string ext = Path.GetExtension(filename).ToLowerInvariant();
-			if (ext == ".png")
+			string ext = Utility.GetFileExt(filename);
+			if (ext == "png")
 			{
 				try
 				{
@@ -1185,7 +1185,7 @@ namespace Ginger
 			{
 				Current.ReadTavernCard(importResult.tavernDataV3, image);
 
-				if (ext == ".charx")
+				if (ext == "charx")
 				{
 					// Extract assets from charx archive
 					ExtractAssetsFromArchive(filename, importResult.tavernDataV3, out Current.Card.assets);
@@ -1206,7 +1206,7 @@ namespace Ginger
 						}
 					}
 				}
-				else if (ext == ".png")
+				else if (ext == "png")
 				{
 					ExtractAssetsFromPNG(filename, importResult.tavernDataV3, out Current.Card.assets);
 				}
