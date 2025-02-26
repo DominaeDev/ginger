@@ -1769,7 +1769,7 @@ namespace Ginger
 
 		private void clearBackgroundMenuItem_Click(object sender, EventArgs e)
 		{
-			if (_groupInstance.isEmpty)
+			if (_groupInstance.isDefined == false)
 				return;
 
 			if (Backyard.ConnectionEstablished == false)
@@ -1780,7 +1780,7 @@ namespace Ginger
 			}
 
 			ChatInstance[] chats = null;
-			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
+			if (RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
@@ -1862,7 +1862,7 @@ namespace Ginger
 				return;
 			}
 
-			if (_groupInstance.isEmpty)
+			if (_groupInstance.isDefined == false)
 				return;
 
 			var character = _groupInstance.members
@@ -1940,7 +1940,7 @@ namespace Ginger
 			if (_findDialog != null && !_findDialog.IsDisposed)
 				_findDialog.Close(); // Close existing
 
-			if (_groupInstance.isEmpty)
+			if (_groupInstance.isDefined == false)
 				return;
 
 			_findDialog = new FindDialog();
@@ -1950,7 +1950,7 @@ namespace Ginger
 
 		private void findNextMenuItem_Click(object sender, EventArgs e)
 		{
-			if (_groupInstance.isEmpty)
+			if (_groupInstance.isDefined == false)
 				return;
 
 			OnFind(this, new FindDialog.FindEventArgs() {
@@ -1963,7 +1963,7 @@ namespace Ginger
 
 		private void findPreviousMenuItem_Click(object sender, EventArgs e)
 		{
-			if (_groupInstance.isEmpty)
+			if (_groupInstance.isDefined == false)
 				return;
 
 			OnFind(this, new FindDialog.FindEventArgs() {
@@ -1976,14 +1976,14 @@ namespace Ginger
 
 		private void OnFind(object sender, FindDialog.FindEventArgs e)
 		{
-			if (string.IsNullOrEmpty(e.match) || _groupInstance.isEmpty)
+			if (string.IsNullOrEmpty(e.match) || _groupInstance.isDefined == false)
 				return;
 
 			if (_chatSearchables == null)
 			{
 				ChatInstance[] chats = null;
 				if (Backyard.ConnectionEstablished == false
-					|| (_groupInstance.isEmpty == false && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError))
+					|| RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 				{
 					MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					Close();

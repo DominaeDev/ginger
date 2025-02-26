@@ -81,8 +81,19 @@ namespace Ginger.Integration
 
 		public static bool HasCharacter(this IBackyardDatabase impl, string characterId)
 		{
+			if (string.IsNullOrEmpty(characterId))
+				return false;
+
 			CharacterInstance tmp;
 			return impl.GetCharacter(characterId, out tmp);
+		}
+		
+		public static bool HasGroup(this IBackyardDatabase impl, string groupId)
+		{
+			if (string.IsNullOrEmpty(groupId))
+				return false;
+			GroupInstance tmp;
+			return impl.GetGroup(groupId, out tmp);
 		}
 
 		public static GroupInstance GetGroup(this IBackyardDatabase impl, string groupId)

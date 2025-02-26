@@ -73,6 +73,7 @@ namespace Ginger.Integration
 			public DateTime updateDate;			// CharacterConfig.updatedAt
 			public string[] members;			// CharacterConfigVersion.id ...
 
+			public bool isDefined { get { return instanceId != null; } }
 			public int Count { get { return members != null ? members.Length : 0; } }
 			public bool isEmpty { get { return Count == 0; } }
 
@@ -409,7 +410,13 @@ namespace Ginger.Integration
 
 		public class Link : IXmlLoadable, IXmlSaveable
 		{
-			public string characterId;
+			public struct Actor {
+				public string remoteId;
+				public string actorId;
+			};
+			public Actor[] actors;
+			public string groupId;
+
 			public DateTime updateDate;
 			public bool isActive;
 			public bool isDirty;
@@ -436,6 +443,16 @@ namespace Ginger.Integration
 			}
 			private string _filenameHash = null;
 
+			public string mainActorId
+			{
+				get
+				{
+					if (actors != null && actors.Length > 0)
+						return actors[0].remoteId;
+					return null;
+				}
+			}
+
 			public struct Image
 			{
 				public string uid;
@@ -446,7 +463,38 @@ namespace Ginger.Integration
 
 			public bool LoadFromXml(XmlNode xmlNode)
 			{
-				characterId = xmlNode.GetAttribute("id", null);
+				List<Actor> lsActors = new List<Actor>();
+				string characterId = xmlNode.GetAttribute("id", null); // Legacy
+				if (characterId == null)
+					return false;
+
+				var actorNode = xmlNode.GetFirstElement("Actor");
+				if (actorNode != null)
+				{
+					while (actorNode != null)
+					{
+						string remoteId = actorNode.GetAttribute("id", null);
+						string actorId = actorNode.GetAttribute("actor", null);
+						if (remoteId != null && actorId != null)
+						{
+							lsActors.Add(new Actor() {
+								remoteId = remoteId,
+								actorId = actorId,
+							});
+						}
+						actorNode = actorNode.GetNextSibling();
+					}
+				}
+				else
+				{
+					lsActors.Add(new Actor() {
+						remoteId = characterId,
+						actorId = null, // Unknown at this point
+					});
+				}
+				actors = lsActors.ToArray();
+
+				groupId = xmlNode.GetAttribute("group", null);
 				isActive = xmlNode.GetAttributeBool("active") && string.IsNullOrEmpty(characterId) == false;
 				updateDate = DateTimeExtensions.FromUnixTime(xmlNode.GetAttributeLong("updated"));
 				isDirty = xmlNode.GetAttributeBool("dirty");
@@ -478,7 +526,15 @@ namespace Ginger.Integration
 
 			public void SaveToXml(XmlNode xmlNode)
 			{
-				xmlNode.AddAttribute("id", characterId);
+				foreach (var actor in actors)
+				{
+					var actorNode = xmlNode.AddElement("Actor");
+					actorNode.AddAttribute("id", actor.remoteId);
+					actorNode.AddAttribute("actor", actor.actorId);
+				}
+				if (groupId != null)
+					xmlNode.AddAttribute("group", groupId);
+				
 				xmlNode.AddAttribute("active", isActive);
 				xmlNode.AddAttribute("updated", updateDate.ToUnixTimeMilliseconds());
 				if (isActive)
@@ -495,27 +551,57 @@ namespace Ginger.Integration
 						imageNode.AddTextValue(image.filename);
 					}
 				}
-
 			}
 
 			public void RefreshState()
 			{
+				if (isActive == false)
+					return;
+
 				if (ConnectionEstablished)
 				{
-					CharacterInstance character;
-					if (Database.GetCharacter(characterId, out character))
+					if (groupId == null)
 					{
-						if (character.updateDate > updateDate)
-							isDirty = true; // Outdated
+						var group = Database.GetGroupForCharacter(mainActorId);
+						if (group.isDefined)
+							groupId = group.instanceId;
 					}
-					else // Unrecognized character
+
+					if (groupId != null)
 					{
+						GroupInstance group;
+						if (Database.GetGroup(groupId, out group))
+						{
+							if (group.updateDate > updateDate)
+								isDirty = true; // Outdated
+						}
+						else // Unrecognized group
+						{
+							isActive = false;
+						}
+
+					}
+					int foundCharacters = 0;
+					if (actors != null)
+					{
+						for (int i = 0; i < actors.Length; ++i)
+						{
+							CharacterInstance character;
+							if (Database.GetCharacter(actors[i].remoteId, out character))
+							{
+								if (character.updateDate > updateDate)
+									isDirty = true; // Outdated
+								foundCharacters++;
+							}
+						}
+					}
+
+					if (foundCharacters == 0) // Unrecognized character
 						isActive = false;
-					}
 				}
 
-				if (CompareFilename(Ginger.Current.Filename) == false)
-					isActive = false; // Different file
+				if (CompareFilename(Current.Filename) == false)
+					isActive = false; // Different filename
 			}
 
 			public bool CompareFilename(string otherFilename)

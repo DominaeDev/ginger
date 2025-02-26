@@ -602,7 +602,7 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			if (card == null || linkInfo == null || string.IsNullOrEmpty(linkInfo.characterId))
+			if (card == null || linkInfo == null || string.IsNullOrEmpty(linkInfo.mainActorId))
 			{
 				newerChangesFound = default(bool);
 				return Backyard.Error.NotFound;
@@ -624,7 +624,7 @@ namespace Ginger.Integration
 							FROM CharacterConfigVersion
 							WHERE characterConfigId = $charId
 						";
-						cmdCharacterData.Parameters.AddWithValue("$charId", linkInfo.characterId);
+						cmdCharacterData.Parameters.AddWithValue("$charId", linkInfo.mainActorId);
 
 						using (var reader = cmdCharacterData.ExecuteReader())
 						{
@@ -908,7 +908,7 @@ namespace Ginger.Integration
 
 		public Backyard.Error UpdateCharacter(FaradayCardV4 card, Backyard.Link linkInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks, UserData userInfo = null)
 		{
-			if (card == null || linkInfo == null || string.IsNullOrEmpty(linkInfo.characterId))
+			if (card == null || linkInfo == null || string.IsNullOrEmpty(linkInfo.mainActorId))
 			{
 				updateDate = default(DateTime);
 				updatedImageLinks = null;
@@ -922,7 +922,7 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			string characterId = linkInfo.characterId;
+			string characterId = linkInfo.mainActorId;
 			bool bAllowUserPersona = userInfo != null;
 
 			try

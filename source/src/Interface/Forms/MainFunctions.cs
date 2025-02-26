@@ -1876,8 +1876,22 @@ namespace Ginger
 
 			if (Current.Link != null)
 			{
-				CharacterInstance characterInstance;
-				if (Backyard.Database.GetCharacter(Current.Link.characterId, out characterInstance))
+				bool bOk = false;
+				Backyard.GroupInstance group;
+				if (Current.Link.groupId != null && Backyard.Database.GetGroup(Current.Link.groupId, out group))
+				{
+					bOk = true;
+				}
+				else 
+				{
+					CharacterInstance characterInstance;
+					if (Backyard.Database.GetCharacter(Current.Link.mainActorId, out characterInstance))
+					{
+						Current.Link.groupId = characterInstance.groupId;
+						bOk = true;
+					}
+				}
+				if (bOk)
 				{
 					Current.Link.filename = Current.Filename;
 					Current.Link.isActive = true;
@@ -1928,7 +1942,7 @@ namespace Ginger
 
 			// Get character instance
 			CharacterInstance characterInstance;
-			if (Backyard.Database.GetCharacter(Current.Link.characterId, out characterInstance) == false)
+			if (Backyard.Database.GetCharacter(Current.Link.mainActorId, out characterInstance) == false) //! @multi-link
 			{
 				Current.BreakLink();
 				return Backyard.Error.NotFound;
@@ -1996,8 +2010,14 @@ namespace Ginger
 			_editChatDialog = new LinkEditChatDialog();
 			if (Current.HasActiveLink)
 			{
-				var group = Backyard.Database.GetGroup(Backyard.Database.GetCharacter(Current.Link.characterId).groupId);
-				if (string.IsNullOrEmpty(group.instanceId) == false)
+				Backyard.GroupInstance group;
+
+				if (Current.Link.groupId != null)
+					group = Backyard.Database.GetGroup(Current.Link.groupId);
+				else
+					group = Backyard.Database.GetGroup(Backyard.Database.GetCharacter(Current.Link.mainActorId).groupId);
+
+				if (group.isDefined)
 					_editChatDialog.Group = group;
 			}
 
@@ -2791,8 +2811,13 @@ namespace Ginger
 				return false;
 			}
 
-			var groupInstance = Backyard.Database.GetGroupForCharacter(Current.Link.characterId);
-			if (groupInstance.isEmpty)
+			Backyard.GroupInstance groupInstance;
+			if (Current.Link.groupId != null)
+				groupInstance = Backyard.Database.GetGroup(Current.Link.groupId);
+			else
+				groupInstance = Backyard.Database.GetGroupForCharacter(Current.Link.mainActorId);
+
+			if (groupInstance.isDefined == false)
 			{
 				MessageBox.Show(string.Format(Resources.error_link_character_not_found, Backyard.LastError ?? ""), Resources.cap_link_edit_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Current.BreakLink();
@@ -2800,7 +2825,7 @@ namespace Ginger
 			}
 
 			ChatInstance[] chats = null;
-			if (groupInstance.isEmpty == false && RunTask(() => Backyard.Database.GetChats(groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
+			if (RunTask(() => Backyard.Database.GetChats(groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;

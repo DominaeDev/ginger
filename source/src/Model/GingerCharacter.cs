@@ -56,6 +56,7 @@ namespace Ginger
 					var characterData = new CharacterData() {
 						spokenName = character.spokenName,
 						gender = character.gender,
+						uid = character.uid,
 					};
 					if (character.recipes != null)
 					{

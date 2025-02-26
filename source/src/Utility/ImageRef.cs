@@ -45,7 +45,7 @@ namespace Ginger
 			get
 			{
 				if (string.IsNullOrEmpty(_uid))
-					_uid = Guid.NewGuid().ToString();
+					_uid = Utility.CreateGUID();
 				return _uid;
 			}
 			set { _uid = value; }

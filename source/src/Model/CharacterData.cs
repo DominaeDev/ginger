@@ -27,9 +27,21 @@ namespace Ginger
 
 		public string _spokenName = null;
 		public string gender = "";
+		
+		public string uid
+		{
+			get { return _uid; }
+			set { _uid = value; }
+		}
+		private string _uid;
 
 		public List<Recipe> recipes = new List<Recipe>();
 		public bool isMainCharacter { get { return this == Current.MainCharacter; } }
+
+		public CharacterData()
+		{
+			_uid = Utility.CreateGUID();
+		}
 
 		public CharacterData Clone()
 		{

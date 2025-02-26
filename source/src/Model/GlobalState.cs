@@ -361,7 +361,13 @@ namespace Ginger
 		public static void LinkWith(Backyard.CharacterInstance characterInstance, Backyard.Link.Image[] imageLinks)
 		{
 			Link = new Backyard.Link() {
-				characterId = characterInstance.instanceId,
+				groupId = null,
+				actors = new Backyard.Link.Actor[1] {
+					new Backyard.Link.Actor() {
+						remoteId = characterInstance.instanceId,
+						actorId = Current.MainCharacter.uid,
+					}
+				},
 				updateDate = characterInstance.updateDate,
 				imageLinks = imageLinks,
 				filename = Current.Filename,

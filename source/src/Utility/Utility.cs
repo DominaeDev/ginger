@@ -1893,7 +1893,8 @@ namespace Ginger
 			else if (ext.Length > 0 && ext[0] == '.')
 				ext = ext.Substring(1);
 
-			return string.Concat(Guid.NewGuid().ToString().Replace("-", "").ToLowerInvariant(), ".", ext);
+			string guid = CreateGUID().Replace("-", "").ToLowerInvariant();
+			return string.Concat(guid, ".", ext);
 		}
 
 		public static string GetFileExt(string filename, bool lowercase = true)
@@ -1926,6 +1927,11 @@ namespace Ginger
 			return path.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries)
 				.Select(s => s.Trim())
 				.ToArray();
+		}
+
+		public static string CreateGUID()
+		{
+			return Guid.NewGuid().ToString();
 		}
 	}
 

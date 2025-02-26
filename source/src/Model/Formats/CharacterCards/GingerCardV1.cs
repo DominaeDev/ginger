@@ -32,6 +32,7 @@ namespace Ginger
 		{
 			public string spokenName;
 			public string gender = "";
+			public string uid = null; // Character/Actor id
 			public List<Recipe> recipes = new List<Recipe>();
 		}
 		public List<Character> characters = new List<Character>();
@@ -97,6 +98,7 @@ namespace Ginger
 			while (characterNode != null)
 			{
 				var character = new Character();
+				character.uid = characterNode.GetValueElement("ID", null);
 				character.spokenName = characterNode.GetValueElement("SpokenName", null);
 				character.gender = characterNode.GetValueElement("Gender");
 				characters.Add(character);
@@ -274,10 +276,13 @@ namespace Ginger
 			{
 				var characterNode = xmlNode.AddElement("Character");
 
+				// ID
+				if (string.IsNullOrWhiteSpace(character.uid) == false)
+					characterNode.AddValueElement("ID", character.uid);
 				// Name
 				if (string.IsNullOrWhiteSpace(character.spokenName) == false)
 					characterNode.AddValueElement("SpokenName", character.spokenName);
-
+				// Gender
 				if (string.IsNullOrWhiteSpace(character.gender) == false)
 					characterNode.AddValueElement("Gender", character.gender);
 
@@ -418,6 +423,7 @@ namespace Ginger
 				spokenName = c._spokenName,
 				gender = c.gender,
 				recipes = new List<Recipe>(c.recipes),
+				uid = c.uid ?? Utility.CreateGUID(),
 			}).ToList();
 
 			if (Current.Card.portraitImage != null)

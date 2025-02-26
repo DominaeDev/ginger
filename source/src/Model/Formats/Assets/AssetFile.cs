@@ -152,7 +152,7 @@ namespace Ginger
 
 		public AssetFile()
 		{
-			_uid = Guid.NewGuid().ToString();
+			_uid = Utility.CreateGUID();
 		}
 
 		public string GetTypeName()
