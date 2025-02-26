@@ -772,7 +772,7 @@ namespace Ginger.Integration
 							int expectedUpdates = 0;
 
 							// Write character
-							WriteCharacter(connection, card, out characterId, out configId, ref updates, ref expectedUpdates);
+							WriteCharacter(connection, card, createdAt, out characterId, out configId, ref updates, ref expectedUpdates);
 
 							// Create custom user (default user as base)
 							if (bAllowUserPersona)
@@ -783,7 +783,7 @@ namespace Ginger.Integration
 							}
 
 							// Write group
-							WriteGroup(connection, "", new string[] { characterId, userId }, parentFolder.instanceId, folderSortPosition, card.data.isNSFW, out groupId, ref updates, ref expectedUpdates);
+							WriteGroup(connection, "", new string[] { characterId, userId }, parentFolder.instanceId, folderSortPosition, card.data.isNSFW, createdAt, out groupId, ref updates, ref expectedUpdates);
 
 
 							var staging = new ChatStaging() {
@@ -1065,11 +1065,15 @@ namespace Ginger.Integration
 							int updates = 0;
 							int expectedUpdates = 0;
 
+							var now = DateTime.Now;
+							long updatedAt = now.ToUnixTimeMilliseconds();
+
+
 							// Create group (if one doesn't exist)
 							if (groupId == null)
 							{
 								_Chat chat;
-								if (CreateGroup(connection, characterId, out groupId, out chat, ref updates, ref expectedUpdates))
+								if (CreateGroup(connection, characterId, updatedAt, out groupId, out chat, ref updates, ref expectedUpdates))
 									chats.Add(chat);
 							}
 
@@ -1082,9 +1086,6 @@ namespace Ginger.Integration
 								string userConfigId = null;
 								WriteUser(connection, groupId, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
 							}
-
-							var now = DateTime.Now;
-							long updatedAt = now.ToUnixTimeMilliseconds();
 
 							// Update character persona
 							using (var cmdUpdate = new SQLiteCommand(connection))
@@ -5559,13 +5560,11 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void WriteCharacter(SQLiteConnection connection, FaradayCardV4 card, out string characterId, out string configId, ref int updates, ref int expectedUpdates)
+		private static void WriteCharacter(SQLiteConnection connection, FaradayCardV4 card, long createdAt, out string characterId, out string configId, ref int updates, ref int expectedUpdates)
 		{
 			characterId = Cuid.NewCuid();
 			configId = Cuid.NewCuid();
 
-			DateTime now = DateTime.Now;
-			long createdAt = now.ToUnixTimeMilliseconds();
 			using (var cmdCreate = new SQLiteCommand(connection))
 			{
 				var sbCommand = new StringBuilder();
@@ -5601,12 +5600,10 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void WriteGroup(SQLiteConnection connection, string name, string[] characterIds, string parentFolderId, string folderSortPosition, bool isNSFW, out string groupId, ref int updates, ref int expectedUpdates)
+		private static void WriteGroup(SQLiteConnection connection, string name, string[] characterIds, string parentFolderId, string folderSortPosition, bool isNSFW, long createdAt, out string groupId, ref int updates, ref int expectedUpdates)
 		{
 			groupId = Cuid.NewCuid();
-
-			DateTime now = DateTime.Now;
-			long createdAt = now.ToUnixTimeMilliseconds();
+		
 			using (var cmdUser= new SQLiteCommand(connection))
 			{
 				var sbCommand = new StringBuilder();
@@ -6525,7 +6522,7 @@ namespace Ginger.Integration
 			return true;
 		}
 
-		private bool CreateGroup(SQLiteConnection connection, string characterId, out string groupId, out _Chat chat, ref int updates, ref int expectedUpdates)
+		private bool CreateGroup(SQLiteConnection connection, string characterId, long createdAt, out string groupId, out _Chat chat, ref int updates, ref int expectedUpdates)
 		{
 			string parentFolderId = null;
 
@@ -6542,7 +6539,7 @@ namespace Ginger.Integration
 			}
 
 			// Create group
-			WriteGroup(connection, "", new string[] { characterId, userId }, parentFolderId, folderSortPosition, false, out groupId, ref updates, ref expectedUpdates);
+			WriteGroup(connection, "", new string[] { characterId, userId }, parentFolderId, folderSortPosition, false, createdAt, out groupId, ref updates, ref expectedUpdates);
 
 			// Create chat
 			WriteNewChat(connection, groupId, null, null, null, out chat, ref updates, ref expectedUpdates);
