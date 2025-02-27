@@ -191,6 +191,7 @@ namespace Ginger {
 			this.statusActors = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
+			this.saveAsNewPartyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -1375,6 +1376,7 @@ namespace Ginger {
             this.importLinkedMenuItem,
             this.saveLinkedMenuItem,
             this.saveNewLinkedMenuItem,
+            this.saveAsNewPartyMenuItem,
             this.revertLinkedMenuItem,
             this.toolStripMenuItem9,
             this.chatHistoryMenuItem,
@@ -1771,6 +1773,13 @@ namespace Ginger {
 			this.statusConnectionIcon.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusConnectionIcon.Size = new System.Drawing.Size(24, 17);
 			// 
+			// saveAsNewPartyMenuItem
+			// 
+			this.saveAsNewPartyMenuItem.Name = "saveAsNewPartyMenuItem";
+			this.saveAsNewPartyMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.saveAsNewPartyMenuItem.Text = "Save as new party";
+			this.saveAsNewPartyMenuItem.Click += new System.EventHandler(this.saveAsNewPartyMenuItem_Click);
+			// 
 			// MainForm
 			// 
 			this.AllowDrop = true;
@@ -1972,6 +1981,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem outputPreviewFaradayGroupMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel statusActors;
 		private System.Windows.Forms.ToolStripMenuItem saveMultipleMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem saveAsNewPartyMenuItem;
 	}
 }
 

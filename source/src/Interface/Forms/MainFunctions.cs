@@ -14,6 +14,7 @@ using WinAPICodePack = Microsoft.WindowsAPICodePack.Dialogs;
 namespace Ginger
 {
 	using CharacterInstance = Backyard.CharacterInstance;
+	using GroupInstance = Backyard.GroupInstance;
 	using FolderInstance = Backyard.FolderInstance;
 	using ChatInstance = Backyard.ChatInstance;
 	using ImageInstance = Backyard.ImageInstance;
@@ -3130,6 +3131,53 @@ namespace Ginger
 			if (Current.Characters.Count < 2 && AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group)
 				AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday;
 			return true;
+		}
+		
+		private Backyard.Error CreateNewPartyInBackyard(out GroupInstance createdGroup, out CharacterInstance[] createdCharacters, out Backyard.Link.Image[] images)
+		{
+			if (Backyard.ConnectionEstablished == false)
+			{
+				createdGroup = default(GroupInstance);
+				createdCharacters = null;
+				images = null;
+				return Backyard.Error.NotConnected;
+			}
+
+			var outputs = Generator.GenerateMany(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
+			
+			// User persona
+			UserData userInfo = null;
+			if (AppSettings.BackyardLink.WriteUserPersona)
+			{
+				string userPersona = outputs[0].userPersona.ToFaraday();
+				if (string.IsNullOrEmpty(userPersona) == false)
+				{
+					userInfo = new UserData() {
+						name = Current.Card.userPlaceholder,
+						persona = userPersona,
+					};
+					outputs[0].userPersona = GingerString.Empty;
+				}
+			}
+
+			FaradayCardV4[] cards = outputs.Select(o => FaradayCardV4.FromOutput(o)).ToArray();
+
+			Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
+			BackupData.Chat[] chats = null;
+//			if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1)
+//				chats = Backyard.Database.GatherChats(card, output, imageInput);
+
+			var error = Backyard.Database.CreateNewGroup(cards, imageInput, chats, out createdGroup, out createdCharacters, out images, userInfo);
+			if (error != Backyard.Error.NoError)
+				return error;
+
+			Current.IsFileDirty = true;
+			Current.IsLinkDirty = false;
+			RefreshTitle();
+
+			// Refresh character information
+			Backyard.RefreshCharacters();
+			return Backyard.Error.NoError;
 		}
 	}
 }

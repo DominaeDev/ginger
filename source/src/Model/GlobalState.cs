@@ -376,6 +376,25 @@ namespace Ginger
 			IsFileDirty = true;
 		}
 
+		
+		public static void LinkWith(Backyard.GroupInstance characterInstance, Backyard.Link.Image[] imageLinks)
+		{
+			Link = new Backyard.Link() {
+				groupId = null,
+				actors = new Backyard.Link.Actor[1] {
+					new Backyard.Link.Actor() {
+						remoteId = characterInstance.instanceId,
+						actorId = Current.MainCharacter.uid,
+					}
+				},
+				updateDate = characterInstance.updateDate,
+				imageLinks = imageLinks,
+				filename = Current.Filename,
+				isActive = true,
+			};
+			IsFileDirty = true;
+		}
+
 		public static bool BreakLink()
 		{
 			if (HasActiveLink)

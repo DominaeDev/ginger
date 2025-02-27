@@ -19,7 +19,7 @@ namespace Ginger
 		public CharacterInstance SelectedCharacter { get; private set; }
 
 		public Dictionary<string, int> _folderCounts = new Dictionary<string, int>();
-		private Dictionary<string, Backyard.ChatCount> _chatCounts;
+		private Dictionary<string, Backyard.ChatCount> _chatCounts = new Dictionary<string, Backyard.ChatCount>();
 
 		public bool ShouldLink { get { return cbCreateLink.Checked; } }
 

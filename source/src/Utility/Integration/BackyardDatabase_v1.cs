@@ -44,22 +44,6 @@ namespace Ginger.Integration
 
 		private struct IDBundle
 		{
-			public IDBundle(string characterId, string configId, string userId, string groupId = null)
-			{
-				this.characterIds = new string[] { characterId };
-				this.configIds = new string[] { configId };
-				this.userId = userId;
-				this.groupId = groupId;
-			}
-
-			public IDBundle(string[] characterIds, string[] configIds, string userId, string groupId = null)
-			{
-				this.characterIds = characterIds;
-				this.configIds = configIds;
-				this.userId = userId;
-				this.groupId = groupId;
-			}
-
 			public string characterId
 			{
 				get
@@ -108,6 +92,42 @@ namespace Ginger.Integration
 			public string[] configIds;
 			public string userId;
 			public string groupId;
+			
+			public static IDBundle FromCharacter(string characterId, string configId)
+			{
+				return new IDBundle() {
+					characterId = characterId,
+					configId = configId,
+				};
+			}
+
+			public static IDBundle FromCharacterAndUser(string characterId, string userId)
+			{
+				return new IDBundle() {
+					characterId = characterId,
+					userId = userId,
+				};
+			}
+
+			public static IDBundle FromCharacterAndUser(string characterId, string configId, string userId, string groupId = null)
+			{
+				return new IDBundle() {
+					characterId = characterId,
+					configId = configId,
+					userId = userId,
+					groupId = groupId,
+				};
+			}
+
+			public static IDBundle FromCharacters(string[] characterIds, string[] configIds, string userId, string groupId = null)
+			{
+				return new IDBundle() {
+					characterIds = characterIds,
+					configIds = configIds,
+					userId = userId,
+					groupId = groupId,
+				};
+			}
 		}
 
 #region Enumerate characters and groups
@@ -761,7 +781,7 @@ namespace Ginger.Integration
 					}
 
 					// Fetch folder sort position
-					folderSortPosition = GetFolderSortPosition(connection, parentFolder.instanceId);
+					folderSortPosition = GetFolderSortPosition(connection, ref parentFolder.instanceId);
 
 					// Write to database
 					using (var transaction = connection.BeginTransaction())
@@ -783,8 +803,9 @@ namespace Ginger.Integration
 							}
 
 							// Write group
-							WriteGroup(connection, "", new string[] { characterId, userId }, parentFolder.instanceId, folderSortPosition, card.data.isNSFW, createdAt, out groupId, ref updates, ref expectedUpdates);
-
+							GroupInstance groupInstance;
+							WriteGroup(connection, "", IDBundle.FromCharacterAndUser(characterId, userId), parentFolder.instanceId, folderSortPosition, card.data.isNSFW, createdAt, out groupInstance, ref updates, ref expectedUpdates);
+							groupId = groupInstance.instanceId;
 
 							var staging = new ChatStaging() {
 								system = card.data.system ?? "",
@@ -795,12 +816,7 @@ namespace Ginger.Integration
 								authorNote = card.authorNote ?? "",
 							};
 
-							IDBundle ids = new IDBundle() {
-								characterId = characterId,
-								configId = configId,
-								userId = userId,
-								groupId = groupId,
-							};
+							IDBundle ids = IDBundle.FromCharacterAndUser(characterId, configId, userId, groupId);
 
 							if (chats == null || chats.Length == 0)
 							{
@@ -822,10 +838,10 @@ namespace Ginger.Integration
 							}
 
 							// Add images
-							WriteImages(connection, images, ids, ref updates, ref expectedUpdates);
+							WriteImages(connection, images.ToArray(), configId, ref updates, ref expectedUpdates);
 
 							// Write lorebook items
-							WriteLorebook(connection, card.data.loreItems, ids, ref updates, ref expectedUpdates);
+							WriteLorebook(connection, configId, card.data.loreItems, ref updates, ref expectedUpdates);
 
 							if (updates != expectedUpdates)
 							{
@@ -1068,12 +1084,11 @@ namespace Ginger.Integration
 							var now = DateTime.Now;
 							long updatedAt = now.ToUnixTimeMilliseconds();
 
-
 							// Create group (if one doesn't exist)
 							if (groupId == null)
 							{
 								_Chat chat;
-								if (CreateGroup(connection, characterId, updatedAt, out groupId, out chat, ref updates, ref expectedUpdates))
+								if (CreateSoloGroup(connection, characterId, updatedAt, out groupId, out chat, ref updates, ref expectedUpdates))
 									chats.Add(chat);
 							}
 
@@ -1490,6 +1505,276 @@ namespace Ginger.Integration
 			{
 				updateDate = default(DateTime);
 				updatedImageLinks = null;
+				Backyard.Disconnect();
+				return Backyard.Error.Unknown;
+			}
+		}
+
+		public Backyard.Error CreateNewGroup(FaradayCardV4[] cards, ImageInput[] imageInput, BackupData.Chat[] chats, out GroupInstance groupInstance, out CharacterInstance[] characterInstances, out Backyard.Link.Image[] imageLinks, UserData userInfo = null, FolderInstance folder = default(FolderInstance))
+		{
+			if (ConnectionEstablished == false)
+			{
+				groupInstance = default(GroupInstance);
+				characterInstances = null;
+				imageLinks = null;
+				return Backyard.Error.NotConnected;
+			}
+
+			if (cards == null || cards.Length == 0)
+			{
+				groupInstance = default(GroupInstance);
+				characterInstances = null;
+				imageLinks = null;
+				return Backyard.Error.InvalidArgument;
+			}
+
+			if (chats != null && chats.ContainsAny(c => c.history != null && c.history.numSpeakers > 2))
+			{
+				groupInstance = default(GroupInstance);
+				characterInstances = null;
+				imageLinks = null;
+				return Backyard.Error.InvalidArgument;
+			}
+
+			FolderInstance parentFolder = folder;
+			if (parentFolder.isEmpty)
+			{
+				// Get root folder
+				parentFolder = _Folders.Values.FirstOrDefault(f => f.isRoot);
+				if (parentFolder.isEmpty)
+				{
+					groupInstance = default(GroupInstance);
+					characterInstances = null;
+					imageLinks = null;
+					return Backyard.Error.Unknown;
+				}
+			}
+
+			bool bAllowUserPersona = userInfo != null;
+			FaradayCardV4 primaryCard = cards[0];
+
+			// Prepare image information
+			List<ImageOutput> images = new List<ImageOutput>();
+			List<ImageOutput> backgrounds = new List<ImageOutput>();
+			ImageOutput userPortrait = default(ImageOutput);
+			Dictionary<string, ImageOutput> backgroundUrlByName = new Dictionary<string, ImageOutput>();
+
+			ImageOutput[] imageOutput;
+			if (PrepareImages(imageInput, out imageOutput, out imageLinks))
+			{
+				images = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Icon || i.imageType == AssetFile.AssetType.Expression).ToList();
+
+				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
+				{
+					backgrounds = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Background)
+						.ToList();
+					for (int i = 0; i < imageInput.Length && i < imageOutput.Length; ++i)
+					{
+						if (imageOutput[i].imageType == AssetFile.AssetType.Background)
+							backgroundUrlByName.TryAdd(imageInput[i].asset.name, imageOutput[i]);
+					}
+
+					if (chats == null || chats.Length == 0)
+						backgrounds = backgrounds.Take(1).ToList();
+				}
+				else
+					backgrounds.Clear();
+
+				// User portrait
+				if (bAllowUserPersona)
+				{
+					int idxUserPortrait = Array.FindIndex(imageInput, i => i.asset != null && i.asset.assetType == AssetFile.AssetType.UserIcon);
+					if (idxUserPortrait != -1)
+						userPortrait = imageOutput[idxUserPortrait];
+				}
+			}
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					var staging = new ChatStaging() {
+						system = primaryCard.data.system ?? "",
+						scenario = primaryCard.data.scenario ?? "",
+						greeting = primaryCard.data.greeting ?? "",
+						example = primaryCard.data.example ?? "",
+						grammar = primaryCard.data.grammar ?? "",
+						authorNote = primaryCard.authorNote ?? "",
+					};
+
+					string userId = null;
+					string userConfigId = null;
+					DateTime now = DateTime.Now;
+					long createdAt = now.ToUnixTimeMilliseconds();
+					string[] chatIds = null;
+
+					ChatParameters chatParameters = AppSettings.BackyardSettings.UserSettings;
+					string folderSortPosition = null;
+
+					// Fetch default user
+					if (FetchDefaultUser(connection, out userId) == false)
+					{
+						groupInstance = default(GroupInstance);
+						characterInstances = null;
+						imageLinks = null;
+						return Backyard.Error.SQLCommandFailed; // Requires default user
+					}
+
+					// Fetch folder sort position
+					folderSortPosition = GetFolderSortPosition(connection, ref parentFolder.instanceId);
+
+					// Write to database
+					using (var transaction = connection.BeginTransaction())
+					{
+						try
+						{
+							int updates = 0;
+							int expectedUpdates = 0;
+
+							List<IDBundle> characterIds= new List<IDBundle>();
+							
+							// Write characters
+							for (int i = 0; i < cards.Length; ++i)
+							{
+								string characterId;
+								string configId;
+
+								WriteCharacter(connection, cards[i], createdAt, out characterId, out configId, ref updates, ref expectedUpdates);
+								characterIds.Add(IDBundle.FromCharacter(characterId, configId));
+
+								// Write lorebook
+								if (cards[i].data.loreItems != null && cards[i].data.loreItems.Length > 0)
+									WriteLorebook(connection, configId, cards[i].data.loreItems, ref updates, ref expectedUpdates);
+
+								// Images
+								ImageOutput[] characterImages = images.Where(img => img.actorIndex == i || (img.actorIndex < 0 && i == 0)).ToArray();
+								WriteImages(connection, characterImages, configId, ref updates, ref expectedUpdates);
+							}
+							
+							// Create custom user (default user as base)
+							if (bAllowUserPersona)
+							{
+//								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats)) //! @cfg id
+//									BackyardUtil.ToPartyNames(ref userInfo.persona, characterId, userId);
+								WriteUser(connection, null, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
+							}
+
+							// Write group
+							WriteGroup(connection, "", IDBundle.FromCharacters(characterIds.Select(i => i.characterId).ToArray(), null, userId), parentFolder.instanceId, folderSortPosition, primaryCard.data.isNSFW, createdAt, out groupInstance, ref updates, ref expectedUpdates);
+							string groupId = groupInstance.instanceId;
+
+							IDBundle ids = new IDBundle() {
+								characterId = null,
+								configId = null,
+								userId = userId,
+								groupId = groupId,
+							};
+
+							if (chats == null || chats.Length == 0)
+							{
+								string chatId;
+								WriteNewChat(connection, staging, chatParameters, ids, out chatId, ref updates, ref expectedUpdates);
+
+								// Add background images
+								if (backgrounds.Count > 0)
+									WriteChatBackground(connection, chatId, backgrounds[0], ref updates, ref expectedUpdates);
+							}
+							else // One or more chats
+							{
+								// Write chats
+								WriteChats(connection, chats, staging, ids, out chatIds, ref updates, ref expectedUpdates);
+
+								// Add background images
+								if (backgroundUrlByName.Count > 0)
+									WriteChatBackgrounds(connection, chats, chatIds, backgroundUrlByName, ref updates, ref expectedUpdates);
+							}
+
+							if (updates != expectedUpdates)
+							{
+								transaction.Rollback();
+								groupInstance = default(GroupInstance);
+								characterInstances = null;
+								imageLinks = null;
+								return Backyard.Error.SQLCommandFailed;
+							}
+
+							// Write images to disk
+							foreach (var image in images
+								.Union(backgrounds)
+								.Union(new ImageOutput[] { userPortrait })
+								.Where(i => i.isDefined
+									&& i.hasAsset
+									&& File.Exists(i.imageUrl) == false))
+							{
+								try
+								{
+									// Ensure images folder exists
+									string imagedir = Path.GetDirectoryName(image.imageUrl);
+									if (Directory.Exists(imagedir) == false)
+										Directory.CreateDirectory(imagedir);
+
+									using (FileStream fs = File.Open(image.imageUrl, FileMode.CreateNew, FileAccess.Write))
+									{
+										fs.Write(image.data.bytes, 0, image.data.bytes.Length);
+									}
+								}
+								catch
+								{
+									// Do nothing
+								}
+							}
+
+							List<CharacterInstance> lsInstances = new List<CharacterInstance>();
+							for (int i = 0; i < characterIds.Count; ++i)
+							{
+								lsInstances.Add(new CharacterInstance() {
+									instanceId = characterIds[i].characterId,
+									configId = characterIds[i].configId,
+									groupId = groupId,
+									displayName = primaryCard.data.displayName,
+									name = primaryCard.data.name,
+									creationDate = now,
+									updateDate = now,
+									folderId = parentFolder.instanceId,
+									folderSortPosition = folderSortPosition,
+								});
+							}
+							characterInstances = lsInstances.ToArray();
+
+							transaction.Commit();
+							return Backyard.Error.NoError;
+						}
+						catch (Exception e)
+						{
+							transaction.Rollback();
+
+							groupInstance = default(GroupInstance);
+							characterInstances = null;
+							return Backyard.Error.SQLCommandFailed;
+						}
+					}
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				groupInstance = default(GroupInstance);
+				characterInstances = null;
+				Backyard.Disconnect();
+				return Backyard.Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				groupInstance = default(GroupInstance);
+				characterInstances = null;
+				Backyard.Disconnect();
+				return Backyard.Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				groupInstance = default(GroupInstance);
+				characterInstances = null;
 				Backyard.Disconnect();
 				return Backyard.Error.Unknown;
 			}
@@ -4368,6 +4653,7 @@ namespace Ginger.Integration
 			public int height;
 			public AssetData data;
 			public AssetFile.AssetType imageType;
+			public int actorIndex;
 
 			public string aspectRatio 
 			{ 
@@ -4528,6 +4814,7 @@ namespace Ginger.Integration
 								width = existingInstance.width,
 								height = existingInstance.height,
 								imageType = existingInstance.imageType,
+								actorIndex = asset.actorIndex,
 							});
 
 							lsImageLinks.Add(imageLinks[idxLink]);
@@ -4551,6 +4838,7 @@ namespace Ginger.Integration
 						width = imageWidth,
 						height = imageHeight,
 						imageType = asset.assetType,
+						actorIndex = asset.actorIndex,
 					};
 						
 					results.Add(output);
@@ -4623,6 +4911,7 @@ namespace Ginger.Integration
 						width = imageWidth,
 						height = imageHeight,
 						imageType = input.asset.assetType,
+						actorIndex = input.asset.actorIndex,
 					});
 
 					lsImageLinks.Add(new Backyard.Link.Image() {
@@ -4640,6 +4929,7 @@ namespace Ginger.Integration
 						width = input.image.Width,
 						height = input.image.Height,
 						imageType = AssetFile.AssetType.Icon,
+						actorIndex = 0,
 					});
 
 					lsImageLinks.Add(new Backyard.Link.Image() {
@@ -5525,7 +5815,7 @@ namespace Ginger.Integration
 			}
 		}
 				
-		private string GetFolderSortPosition(SQLiteConnection connection, string folderId = null)
+		private string GetFolderSortPosition(SQLiteConnection connection, ref string folderId)
 		{
 			if (folderId == null) // Root folder
 			{
@@ -5537,9 +5827,9 @@ namespace Ginger.Integration
 						FROM AppFolder
 						WHERE isRoot = 1
 					";
-					string parentFolderId = cmdFolder.ExecuteScalar() as string;
-					if (parentFolderId != null)
-						return GetFolderSortPosition(connection, parentFolderId);
+					folderId = cmdFolder.ExecuteScalar() as string;
+					if (folderId != null)
+						return GetFolderSortPosition(connection, ref folderId);
 					return ""; // Error
 				}
 			}
@@ -5600,9 +5890,9 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void WriteGroup(SQLiteConnection connection, string name, string[] characterIds, string parentFolderId, string folderSortPosition, bool isNSFW, long createdAt, out string groupId, ref int updates, ref int expectedUpdates)
+		private static void WriteGroup(SQLiteConnection connection, string name, IDBundle ids, string parentFolderId, string folderSortPosition, bool isNSFW, long createdAt, out GroupInstance groupInstance, ref int updates, ref int expectedUpdates)
 		{
-			groupId = Cuid.NewCuid();
+			string groupId = Cuid.NewCuid();
 		
 			using (var cmdUser= new SQLiteCommand(connection))
 			{
@@ -5625,6 +5915,8 @@ namespace Ginger.Integration
 						(A, B)
 					VALUES ");
 
+				var characterIds = ids.charactersAndUser;
+
 				for (int i = 0; i < characterIds.Length; ++i)
 				{
 					if (i > 0)
@@ -5645,7 +5937,18 @@ namespace Ginger.Integration
 				cmdUser.Parameters.AddWithValue("$timestamp", createdAt);
 
 				updates += cmdUser.ExecuteNonQuery();
+
+				groupInstance = new GroupInstance() {
+					instanceId = groupId,
+					creationDate = DateTime.Now,
+					updateDate = DateTime.Now,
+					name = name ?? "",
+					folderId = parentFolderId ?? "",
+					folderSortPosition = folderSortPosition ?? "",
+					members = characterIds,
+				};
 			}
+
 		}
 
 		private static bool WriteUser(SQLiteConnection connection, string groupId, UserData userInfo, ImageOutput userPortrait, out string newUserId, out string newUserConfigId, out ImageOutput newUserPortrait, ref int updates, ref int expectedUpdates)
@@ -5789,85 +6092,19 @@ namespace Ginger.Integration
 			}
 			return true;
 		}
-				
-		private void WriteLorebook(SQLiteConnection connection, FaradayCardV1.LoreBookEntry[] loreItems, IDBundle ids, ref int updates, ref int expectedUpdates)
+		
+		private static void WriteImages(SQLiteConnection connection, ImageOutput[] images, string configId, ref int updates, ref int expectedUpdates)
 		{
 			long createdAt = DateTime.Now.ToUnixTimeMilliseconds();
-			string characterId = ids.characterId;
-			string configId = ids.configId;
 
-			if (loreItems.Length > 0)
-			{
-				// Generate unique IDs
-				var uids = new string[loreItems.Length];
-				for (int i = 0; i < uids.Length; ++i)
-					uids[i] = Cuid.NewCuid();
-
-				int hash = characterId.GetHashCode();
-				using (var cmdInsertLore = new SQLiteCommand(connection))
-				{
-					var sbCommand = new StringBuilder();
-					sbCommand.AppendLine(
-					@"
-						INSERT into AppCharacterLorebookItem (id, createdAt, updatedAt, ""order"", key, value)
-						VALUES ");
-
-					for (int i = 0; i < loreItems.Length; ++i)
-					{
-						if (i > 0)
-							sbCommand.Append(",\n");
-						sbCommand.Append($"($id{i:000}, $timestamp, $timestamp, $order{i:000}, $key{i:000}, $value{i:000})");
-
-						cmdInsertLore.Parameters.AddWithValue($"$id{i:000}", uids[i]);
-						cmdInsertLore.Parameters.AddWithValue($"$key{i:000}", loreItems[i].key);
-						cmdInsertLore.Parameters.AddWithValue($"$value{i:000}", loreItems[i].value);
-						cmdInsertLore.Parameters.AddWithValue($"$order{i:000}", MakeLoreSortPosition(i, loreItems.Length - 1, hash));
-					}
-					sbCommand.Append(";");
-					cmdInsertLore.CommandText = sbCommand.ToString();
-					cmdInsertLore.Parameters.AddWithValue("$timestamp", createdAt);
-
-					expectedUpdates += loreItems.Length;
-					updates += cmdInsertLore.ExecuteNonQuery();
-				}
-
-				using (var cmdLoreRef = new SQLiteCommand(connection))
-				{
-					var sbCommand = new StringBuilder();
-					sbCommand.AppendLine(
-					@"
-						INSERT into _AppCharacterLorebookItemToCharacterConfigVersion (A, B)
-						VALUES ");
-
-					for (int i = 0; i < uids.Length; ++i)
-					{
-						if (i > 0)
-							sbCommand.Append(",\n");
-						sbCommand.Append($"($id{i:000}, $configId)");
-
-						cmdLoreRef.Parameters.AddWithValue($"$id{i:000}", uids[i]);
-					}
-					sbCommand.Append(";");
-					cmdLoreRef.CommandText = sbCommand.ToString();
-					cmdLoreRef.Parameters.AddWithValue("$configId", configId);
-					cmdLoreRef.Parameters.AddWithValue("$timestamp", createdAt);
-
-					expectedUpdates += uids.Length;
-					updates += cmdLoreRef.ExecuteNonQuery();
-				}
-			}
-		}
-
-		private static void WriteImages(SQLiteConnection connection, List<ImageOutput> images, IDBundle ids, ref int updates, ref int expectedUpdates)
-		{
-			long createdAt = DateTime.Now.ToUnixTimeMilliseconds();
-			string configId = ids.configId;
+			if (images == null || images.Length == 0)
+				return; // No images
 
 			using (var cmdImages = new SQLiteCommand(connection))
 			{
 				var sbCommand = new StringBuilder();
 
-				for (int i = 0; i < images.Count; ++i)
+				for (int i = 0; i < images.Length; ++i)
 				{
 					// AppImage
 					sbCommand.AppendLine(
@@ -6522,12 +6759,11 @@ namespace Ginger.Integration
 			return true;
 		}
 
-		private bool CreateGroup(SQLiteConnection connection, string characterId, long createdAt, out string groupId, out _Chat chat, ref int updates, ref int expectedUpdates)
+		private bool CreateSoloGroup(SQLiteConnection connection, string characterId, long createdAt, out string groupId, out _Chat chat, ref int updates, ref int expectedUpdates)
 		{
+			// Fetch folder sort position (and root folder)
 			string parentFolderId = null;
-
-			// Fetch folder sort position
-			string folderSortPosition = GetFolderSortPosition(connection);
+			string folderSortPosition = GetFolderSortPosition(connection, ref parentFolderId);
 
 			// Fetch default user
 			string userId;
@@ -6539,14 +6775,16 @@ namespace Ginger.Integration
 			}
 
 			// Create group
-			WriteGroup(connection, "", new string[] { characterId, userId }, parentFolderId, folderSortPosition, false, createdAt, out groupId, ref updates, ref expectedUpdates);
+			GroupInstance groupInstance;
+			WriteGroup(connection, "", IDBundle.FromCharacterAndUser(characterId, userId), parentFolderId, folderSortPosition, false, createdAt, out groupInstance, ref updates, ref expectedUpdates);
+			groupId = groupInstance.instanceId;
 
 			// Create chat
 			WriteNewChat(connection, groupId, null, null, null, out chat, ref updates, ref expectedUpdates);
 			return true;
 		}
 
-		private static void WriteNewChat(SQLiteConnection connection, string title, string groupId, ChatParameters parameters, ChatStaging staging, out _Chat chat, ref int updates, ref int expectedUpdates)
+		private static void WriteNewChat(SQLiteConnection connection, string groupId, ChatParameters parameters, ChatStaging staging, string title, out _Chat chat, ref int updates, ref int expectedUpdates)
 		{
 			DateTime now = DateTime.Now;
 			long createdAt = now.ToUnixTimeMilliseconds();

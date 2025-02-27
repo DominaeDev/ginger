@@ -11,6 +11,7 @@ using Ginger.Integration;
 
 namespace Ginger
 {
+	using GroupInstance = Backyard.GroupInstance;
 	using CharacterInstance = Backyard.CharacterInstance;
 
 	public partial class MainForm : Form, IThemedControl
@@ -1536,6 +1537,8 @@ namespace Ginger
 			saveLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
 			saveNewLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink == false;
 			revertLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
+			saveAsNewPartyMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink == false;
+			saveAsNewPartyMenuItem.Visible = Current.Characters.Count > 1;
 
 			breakRestoreLinkSeparator.Visible = Backyard.ConnectionEstablished;
 			breakLinkMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
@@ -2614,7 +2617,33 @@ namespace Ginger
 			{
 				if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
 				{
-					Current.LinkWith(createdCharacter, images);
+					Current.LinkWith(createdCharacter, images); //! @multi-link
+					Current.IsLinkDirty = false;
+					SetStatusBarMessage(Resources.status_link_save_and_link_new, Constants.StatusBarMessageInterval);
+					RefreshTitle();
+					MessageBox.Show(Resources.msg_link_save_and_link_new, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				else
+					MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+		}
+
+		private void saveAsNewPartyMenuItem_Click(object sender, EventArgs e)
+		{
+			GroupInstance createdGroup;
+			CharacterInstance[] createdCharacters;
+			Backyard.Link.Image[] images;
+
+			var error = CreateNewPartyInBackyard(out createdGroup, out createdCharacters, out images);
+			if (error == Backyard.Error.NotConnected)
+				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			else if (error != Backyard.Error.NoError)
+				MessageBox.Show(Resources.error_link_save_character_as_new, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			else
+			{
+				if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+				{
+					Current.LinkWith(createdGroup, images);
 					Current.IsLinkDirty = false;
 					SetStatusBarMessage(Resources.status_link_save_and_link_new, Constants.StatusBarMessageInterval);
 					RefreshTitle();
