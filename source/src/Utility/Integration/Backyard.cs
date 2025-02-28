@@ -412,7 +412,7 @@ namespace Ginger.Integration
 		{
 			public struct Actor {
 				public string remoteId;
-				public string actorId;
+				public string localId;
 			};
 			public Actor[] actors;
 			public string groupId;
@@ -453,49 +453,54 @@ namespace Ginger.Integration
 				}
 			}
 
+			public bool isGroup { get { return groupId != null && actors != null && actors.Length > 1; } }
+
 			public struct Image
 			{
 				public string uid;
 				public string filename;
 			}
-
 			public Image[] imageLinks;
 
 			public bool LoadFromXml(XmlNode xmlNode)
 			{
-				List<Actor> lsActors = new List<Actor>();
-				string characterId = xmlNode.GetAttribute("id", null); // Legacy
-				if (characterId == null)
-					return false;
-
-				var actorNode = xmlNode.GetFirstElement("Actor");
-				if (actorNode != null)
+				string characterId = xmlNode.GetAttribute("id", null);
+				if (characterId != null) // Legacy
 				{
-					while (actorNode != null)
-					{
-						string remoteId = actorNode.GetAttribute("id", null);
-						string actorId = actorNode.GetAttribute("actor", null);
-						if (remoteId != null && actorId != null)
-						{
-							lsActors.Add(new Actor() {
-								remoteId = remoteId,
-								actorId = actorId,
-							});
-						}
-						actorNode = actorNode.GetNextSibling();
-					}
+					actors = new Actor[] { 
+						new Actor() {
+							remoteId = characterId,
+							localId = null, // Unknown at this point
+						},
+					};
 				}
 				else
 				{
-					lsActors.Add(new Actor() {
-						remoteId = characterId,
-						actorId = null, // Unknown at this point
-					});
+					List<Actor> lsActors = new List<Actor>();
+					var actorNode = xmlNode.GetFirstElement("Actor");
+					if (actorNode != null)
+					{
+						while (actorNode != null)
+						{
+							string remoteId = actorNode.GetAttribute("remote", null);
+							string localId = actorNode.GetAttribute("local", null);
+							if (remoteId != null && localId != null)
+							{
+								lsActors.Add(new Actor() {
+									remoteId = remoteId,
+									localId = localId,
+								});
+							}
+							actorNode = actorNode.GetNextSibling();
+						}
+						actors = lsActors.ToArray();
+					}
+					else
+						return false;
 				}
-				actors = lsActors.ToArray();
 
 				groupId = xmlNode.GetAttribute("group", null);
-				isActive = xmlNode.GetAttributeBool("active") && string.IsNullOrEmpty(characterId) == false;
+				isActive = xmlNode.GetAttributeBool("active");
 				updateDate = DateTimeExtensions.FromUnixTime(xmlNode.GetAttributeLong("updated"));
 				isDirty = xmlNode.GetAttributeBool("dirty");
 
@@ -521,7 +526,7 @@ namespace Ginger.Integration
 					}
 					imageLinks = lsImages.ToArray();
 				}
-				return characterId != null;
+				return string.IsNullOrEmpty(groupId) == false && actors.Length > 0;
 			}
 
 			public void SaveToXml(XmlNode xmlNode)
@@ -529,8 +534,8 @@ namespace Ginger.Integration
 				foreach (var actor in actors)
 				{
 					var actorNode = xmlNode.AddElement("Actor");
-					actorNode.AddAttribute("id", actor.remoteId);
-					actorNode.AddAttribute("actor", actor.actorId);
+					actorNode.AddAttribute("remote", actor.remoteId);
+					actorNode.AddAttribute("local", actor.localId);
 				}
 				if (groupId != null)
 					xmlNode.AddAttribute("group", groupId);

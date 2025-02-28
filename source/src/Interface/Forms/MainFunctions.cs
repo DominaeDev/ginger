@@ -1755,6 +1755,17 @@ namespace Ginger
 				AppSettings.BackyardLink.Enabled = false;
 			}
 
+			// Check if character exists, has newer changes
+			bool hasChanges;
+			var error = Backyard.Database.ConfirmSaveCharacter(Current.Link, out hasChanges);
+			if (error == Backyard.Error.NotFound)
+			{
+				Current.BreakLink();
+				return error;
+			}
+			if (error != Backyard.Error.NoError)
+				return error;
+
 			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
 
 			// User persona
@@ -1773,17 +1784,6 @@ namespace Ginger
 			}
 
 			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
-
-			// Check if character exists, has newer changes
-			bool hasChanges;
-			var error = Backyard.Database.ConfirmSaveCharacter(card, Current.Link, out hasChanges);
-			if (error == Backyard.Error.NotFound)
-			{
-				Current.BreakLink();
-				return error;
-			}
-			if (error != Backyard.Error.NoError)
-				return error;
 
 			if (hasChanges)
 			{
@@ -3161,6 +3161,17 @@ namespace Ginger
 			}
 
 			FaradayCardV4[] cards = outputs.Select(o => FaradayCardV4.FromOutput(o)).ToArray();
+			if (cards == null || cards.Length == 0)
+			{
+				createdGroup = default(GroupInstance);
+				createdCharacters = null;
+				images = null;
+				return Backyard.Error.InvalidArgument; // Error
+			}
+
+			for (int i = 0; i < cards.Length && i < Current.Characters.Count; ++i)
+				cards[i].data.name = Utility.FirstNonEmpty(Current.Characters[i].spokenName, Current.Card.name, Constants.DefaultCharacterName);
+			cards[0].data.isNSFW = cards.ContainsAny(c => c.data.isNSFW);
 
 			Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
 			BackupData.Chat[] chats = null;
@@ -3178,6 +3189,87 @@ namespace Ginger
 			// Refresh character information
 			Backyard.RefreshCharacters();
 			return Backyard.Error.NoError;
+		}
+
+		private Backyard.Error UpdateGroupInBackyard()
+		{
+			if (Backyard.ConnectionEstablished == false)
+				return Backyard.Error.NotConnected;
+			else if (Current.HasLink == false)
+				return Backyard.Error.NotFound;
+
+			// Refresh character list
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+			{
+				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				AppSettings.BackyardLink.Enabled = false;
+			}
+
+			// Check if character exists, has newer changes
+			bool hasChanges;
+			var error = Backyard.Database.ConfirmSaveCharacter(Current.Link, out hasChanges);
+			if (error == Backyard.Error.NotFound)
+			{
+				Current.BreakLink();
+				return error;
+			}
+			if (error != Backyard.Error.NoError)
+				return error;
+
+			var outputs = Generator.GenerateMany(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
+			
+			// User persona
+			UserData userInfo = null;
+			if (AppSettings.BackyardLink.WriteUserPersona)
+			{
+				string userPersona = outputs[0].userPersona.ToFaraday();
+				if (string.IsNullOrEmpty(userPersona) == false)
+				{
+					userInfo = new UserData() {
+						name = Current.Card.userPlaceholder,
+						persona = userPersona,
+					};
+					outputs[0].userPersona = GingerString.Empty;
+				}
+			}
+
+			FaradayCardV4[] cards = outputs.Select(o => FaradayCardV4.FromOutput(o)).ToArray();
+			if (cards == null || cards.Length == 0)
+				return Backyard.Error.InvalidArgument; // Error
+
+			for (int i = 0; i < cards.Length && i < Current.Characters.Count; ++i)
+				cards[i].data.name = Utility.FirstNonEmpty(Current.Characters[i].spokenName, Current.Card.name, Constants.DefaultCharacterName);
+			cards[0].data.isNSFW = cards.ContainsAny(c => c.data.isNSFW);
+
+			if (hasChanges)
+			{
+				// Overwrite prompt
+				var mr = MessageBox.Show(Resources.msg_link_confirm_overwrite, Resources.cap_link_overwrite, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+				if (mr == DialogResult.Cancel)
+					return Backyard.Error.CancelledByUser;
+				else if (mr == DialogResult.No)
+					return Backyard.Error.DismissedByUser;
+			}
+
+			DateTime updateDate;
+			Backyard.Link.Image[] imageLinks;
+			error = Backyard.Database.UpdateGroup(cards, Current.Link, out updateDate, out imageLinks, userInfo);
+			if (error != Backyard.Error.NoError)
+			{
+				return error;
+			}
+			else
+			{
+				Current.Link.updateDate = updateDate;
+				Current.Link.imageLinks = imageLinks;
+				Current.IsFileDirty = true;
+				Current.IsLinkDirty = false;
+				RefreshTitle();
+
+				// Refresh character information
+				Backyard.RefreshCharacters();
+				return Backyard.Error.NoError;
+			}
 		}
 	}
 }

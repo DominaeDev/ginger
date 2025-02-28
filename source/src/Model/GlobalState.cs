@@ -365,7 +365,7 @@ namespace Ginger
 				actors = new Backyard.Link.Actor[1] {
 					new Backyard.Link.Actor() {
 						remoteId = characterInstance.instanceId,
-						actorId = Current.MainCharacter.uid,
+						localId = Current.MainCharacter.uid,
 					}
 				},
 				updateDate = characterInstance.updateDate,
@@ -377,17 +377,22 @@ namespace Ginger
 		}
 
 		
-		public static void LinkWith(Backyard.GroupInstance characterInstance, Backyard.Link.Image[] imageLinks)
+		public static void LinkWith(Backyard.GroupInstance groupInstance, Backyard.CharacterInstance[] characterInstances, Backyard.Link.Image[] imageLinks)
 		{
+			if (groupInstance.isDefined == false || characterInstances == null || characterInstances.Length != Current.Characters.Count)
+				return;
+
+			var lsActors = new List<Backyard.Link.Actor>();
+			for (int i = 0; i < characterInstances.Length; ++i)
+				lsActors.Add(new Backyard.Link.Actor() {
+					remoteId = characterInstances[i].instanceId,
+					localId = Current.Characters[i].uid,
+				});
+
 			Link = new Backyard.Link() {
-				groupId = null,
-				actors = new Backyard.Link.Actor[1] {
-					new Backyard.Link.Actor() {
-						remoteId = characterInstance.instanceId,
-						actorId = Current.MainCharacter.uid,
-					}
-				},
-				updateDate = characterInstance.updateDate,
+				groupId = groupInstance.instanceId,
+				actors = lsActors.ToArray(),
+				updateDate = groupInstance.updateDate,
 				imageLinks = imageLinks,
 				filename = Current.Filename,
 				isActive = true,

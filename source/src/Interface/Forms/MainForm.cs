@@ -1538,7 +1538,7 @@ namespace Ginger
 			saveNewLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink == false;
 			revertLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
 			saveAsNewPartyMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink == false;
-			saveAsNewPartyMenuItem.Visible = Current.Characters.Count > 1;
+			saveAsNewPartyMenuItem.Visible = Backyard.ConnectionEstablished && BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChats) && Current.Characters.Count > 1;
 
 			breakRestoreLinkSeparator.Visible = Backyard.ConnectionEstablished;
 			breakLinkMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
@@ -2577,7 +2577,15 @@ namespace Ginger
 
 		private void saveLinkedMenuItem_Click(object sender, EventArgs e)
 		{
-			var error = UpdateCharacterInBackyard();
+			Backyard.Error error;
+			if (Current.HasLink == false)
+				return;
+			
+			if (Current.Link.isGroup)
+				error = UpdateGroupInBackyard();
+			else
+				error = UpdateCharacterInBackyard();
+
 			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -2643,7 +2651,7 @@ namespace Ginger
 			{
 				if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
 				{
-					Current.LinkWith(createdGroup, images);
+					Current.LinkWith(createdGroup, createdCharacters, images);
 					Current.IsLinkDirty = false;
 					SetStatusBarMessage(Resources.status_link_save_and_link_new, Constants.StatusBarMessageInterval);
 					RefreshTitle();
