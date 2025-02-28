@@ -380,7 +380,7 @@ namespace Ginger.Integration
 						}
 					}
 
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChats))
+					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 						BackyardUtil.FromPartyNames(staging, character.groupId);
 
 					card = new FaradayCardV4();
@@ -494,7 +494,7 @@ namespace Ginger.Integration
 					ImageInstance userImage;
 					if (FetchUserInfo(connection, character.groupId, out userId, out userName, out userPersona, out userImage))
 					{
-						if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChats))
+						if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 							BackyardUtil.FromPartyNames(ref userPersona, character.groupId);
 
 						userInfo = new UserData() {
@@ -811,7 +811,7 @@ namespace Ginger.Integration
 							// Create custom user (default user as base)
 							if (bAllowUserPersona)
 							{
-								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChats))
+								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 									BackyardUtil.ToPartyNames(ref userInfo.persona, characterId, userId);
 								WriteUser(connection, null, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
 							}
@@ -1065,7 +1065,7 @@ namespace Ginger.Integration
 							// Create/update custom user
 							if (bAllowUserPersona)
 							{
-								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChats))
+								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 									BackyardUtil.ToPartyNames(ref userInfo.persona, characterId, userId);
 
 								string userConfigId = null;
@@ -1505,7 +1505,7 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChats) == false)
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties) == false)
 			{
 				groupInstance = default(GroupInstance);
 				characterInstances = null;
@@ -1793,6 +1793,15 @@ namespace Ginger.Integration
 			bool bAllowUserPersona = userInfo != null;
 			FaradayCardV4 primaryCard = cards[0];
 
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
+			{
+				var actors = Current.Characters.Select(c => linkInfo.actors.FirstOrDefault(a => a.localId == c.uid)).ToArray();
+				string[] characterIds = new string[actors.Length];
+				for (int i = 0; i < actors.Length; ++i)
+					characterIds[i] = actors[i].remoteId;
+				BackyardUtil.ConvertToIDPlaceholders(ref cards, characterIds);
+			}
+
 			try
 			{
 				using (var connection = CreateSQLiteConnection())
@@ -1897,7 +1906,7 @@ namespace Ginger.Integration
 							// Create/update custom user
 							if (bAllowUserPersona)
 							{
-								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChats))
+								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 									BackyardUtil.ToPartyNames(ref userInfo.persona, characterId, userId);
 
 								string userConfigId = null;
@@ -2740,7 +2749,7 @@ namespace Ginger.Integration
 									ttsAutoPlay = ttsAutoPlay,
 									ttsInputFilter = ttsInputFilter,
 								};
-								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChats))
+								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 									BackyardUtil.FromPartyNames(staging, groupId);
 
 								chats.Add(new _Chat() {
@@ -6459,7 +6468,7 @@ namespace Ginger.Integration
 							$repeatPenalty, $repeatLastN, $promptTemplate, $pruneExample, $authorNote);
 				");
 
-				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChats))
+				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 					BackyardUtil.ToPartyNames(staging, characterId, userId);
 
 				cmdChat.Parameters.AddWithValue("$chatId", chatId);
@@ -6530,7 +6539,7 @@ namespace Ginger.Integration
 
 					var staging = chats[i].staging ?? defaultStaging ?? new ChatStaging();
 
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChats))
+					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 						BackyardUtil.ToPartyNames(staging, ids.characterId, ids.userId);
 
 					var parameters = chats[i].parameters ?? new ChatParameters();

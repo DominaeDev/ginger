@@ -1538,7 +1538,7 @@ namespace Ginger
 			saveNewLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink == false;
 			revertLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
 			saveAsNewPartyMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink == false;
-			saveAsNewPartyMenuItem.Visible = Backyard.ConnectionEstablished && BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChats) && Current.Characters.Count > 1;
+			saveAsNewPartyMenuItem.Visible = Backyard.ConnectionEstablished && BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties) && Current.Characters.Count > 1;
 
 			breakRestoreLinkSeparator.Visible = Backyard.ConnectionEstablished;
 			breakLinkMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;

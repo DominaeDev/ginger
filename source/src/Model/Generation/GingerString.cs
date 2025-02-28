@@ -27,6 +27,16 @@ namespace Ginger
 		public static readonly string InternalContinueMarker = "<##CONTINUE##>";
 		private static string MakeInternalCharacterMarker(int index) => string.Format("<##CHAR{0:D2}##>", index);
 
+		// Backyard markers
+		public static readonly string BackyardCharacterMarker = "{character}";
+		public static readonly string BackyardUserMarker = "{user}";
+		public static readonly string BackyardOriginalMarker = "{original}";
+		
+		// SillyTavern markers
+		public static readonly string TavernCharacterMarker = "{{char}}";
+		public static readonly string TavernUserMarker = "{{user}}";
+		public static readonly string TavernOriginalMarker = "{{original}}";
+
 		private GingerString(string value)
 		{
 			this.value = value;
@@ -37,13 +47,12 @@ namespace Ginger
 			StringBuilder sb = new StringBuilder(value);
 			sb.Replace("<bot>", CharacterMarker, true);
 			sb.Replace("<user>", UserMarker, true);
-			sb.Replace("{{character}}", CharacterMarker, true);
-			sb.Replace("{{char}}", CharacterMarker, true);
-			sb.Replace("{{user}}", UserMarker, true);
-			sb.Replace("{{original}}", OriginalMarker, true);
-			sb.Replace("{character}", CharacterMarker, true);
-			sb.Replace("{char}", CharacterMarker, true);
-			sb.Replace("{user}", UserMarker, true);
+			sb.Replace(TavernCharacterMarker, CharacterMarker, true);
+			sb.Replace(TavernUserMarker, UserMarker, true);
+			sb.Replace(TavernOriginalMarker, OriginalMarker, true);
+			sb.Replace(BackyardCharacterMarker, CharacterMarker, true);
+			sb.Replace(CharacterMarker, CharacterMarker, true);
+			sb.Replace(UserMarker, UserMarker, true);
 			sb.ConvertLinebreaks(Linebreak.Default);
 			sb.Trim();
 			return new GingerString(sb.ToString());
@@ -52,9 +61,9 @@ namespace Ginger
 		public string ToTavern()
 		{
 			StringBuilder sb = new StringBuilder(value);
-			sb.Replace(CharacterMarker, "{{char}}", true);
-			sb.Replace(UserMarker, "{{user}}", true);
-			sb.Replace(OriginalMarker, "{{original}}", true);
+			sb.Replace(CharacterMarker, TavernCharacterMarker, true);
+			sb.Replace(UserMarker, TavernUserMarker, true);
+			sb.Replace(OriginalMarker, TavernOriginalMarker, true);
 			sb.Replace(NameMarker, Current.Name, true);
 			sb.Replace(ContinueMarker, "", true);
 			sb.ConvertLinebreaks(Linebreak.LF);
@@ -131,12 +140,11 @@ namespace Ginger
 			sb.Replace("<user>", UserMarker, true);
 			sb.Replace("#{character}", CharacterMarker, true);
 			sb.Replace("#{user}", UserMarker, true);
-			sb.Replace("{{character}}", CharacterMarker, true);
-			sb.Replace("{{char}}", CharacterMarker, true);
-			sb.Replace("{{user}}", UserMarker, true);
-			sb.Replace("{{original}}", OriginalMarker, true);
-			sb.Replace("{character}", CharacterMarker, true);
-			sb.Replace("{user}", UserMarker, true);
+			sb.Replace(TavernCharacterMarker, CharacterMarker, true);
+			sb.Replace(TavernUserMarker, UserMarker, true);
+			sb.Replace(TavernOriginalMarker, OriginalMarker, true);
+			sb.Replace(BackyardCharacterMarker, CharacterMarker, true);
+			sb.Replace(BackyardUserMarker, UserMarker, true);
 			sb.ConvertLinebreaks(Linebreak.Default);
 			sb.Trim();
 			return new GingerString(sb.ToString());
@@ -150,9 +158,9 @@ namespace Ginger
 				Current.Characters.Select(c => c.spokenName.ToLowerInvariant())
 				.Where(s => string.IsNullOrWhiteSpace(s) == false));
 			
-			sb.Replace(CharacterMarker, "{character}", true);
-			sb.Replace(UserMarker, "{user}", true);
-			sb.Replace(OriginalMarker, "{original}", true);
+			sb.Replace(CharacterMarker, BackyardCharacterMarker, true);
+			sb.Replace(UserMarker, BackyardUserMarker, true);
+			sb.Replace(OriginalMarker, BackyardOriginalMarker, true);
 			sb.Replace(NameMarker, Current.Name, true);
 			sb.Replace(ContinueMarker, "", true);
 

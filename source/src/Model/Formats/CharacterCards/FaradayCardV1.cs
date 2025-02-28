@@ -179,10 +179,10 @@ namespace Ginger
 			public string id = "";
 
 			[JsonProperty("key")]
-			public string key { get; set; }
+			public string key;
 
 			[JsonProperty("value")]
-			public string value { get; set; }
+			public string value;
 		}
 
 		[JsonProperty("version", Required = Required.Always)]

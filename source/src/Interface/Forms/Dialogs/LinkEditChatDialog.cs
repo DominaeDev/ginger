@@ -452,7 +452,7 @@ namespace Ginger
 			{
 				args.parameters = latestChat.parameters;
 				args.staging = latestChat.staging;
-				if (args.staging != null && BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChats))
+				if (args.staging != null && BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 					BackyardUtil.ToPartyNames(args.staging, null, null); //! @party
 			}
 			else
@@ -538,7 +538,7 @@ namespace Ginger
 			{
 				args.parameters = latestChat.parameters;
 				args.staging = latestChat.staging;
-				if (args.staging != null && BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChats))
+				if (args.staging != null && BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 					BackyardUtil.ToPartyNames(args.staging, null, null); //! @party
 			}
 			else
@@ -575,25 +575,25 @@ namespace Ginger
 				.Select(id => _charactersById.GetOrDefault(id))
 				.Where(c => c.isUser)
 				.FirstOrDefault()
-				.name ?? "{user}";
+				.name ?? GingerString.BackyardUserMarker;
 
 			// Character (first)
 			var characterName = _groupInstance.members
 				.Select(id => _charactersById.GetOrDefault(id))
 				.Where(c => c.isCharacter)
 				.FirstOrDefault()
-				.name ?? "{character}";
+				.name ?? GingerString.BackyardCharacterMarker;
 
 			for (int i = 0; i < chatHistory.messages.Length; ++i)
 			{
 				for (int j = 0; j < chatHistory.messages[i].swipes.Length; ++j)
 				{
 					StringBuilder sb = new StringBuilder(chatHistory.messages[i].swipes[j]);
-					Utility.ReplaceWholeWord(sb, "{{user}}", "__UUUU__", StringComparison.OrdinalIgnoreCase);
+					Utility.ReplaceWholeWord(sb, GingerString.TavernUserMarker, "__UUUU__", StringComparison.OrdinalIgnoreCase);
 					Utility.ReplaceWholeWord(sb, GingerString.UserMarker, "__UUUU__", StringComparison.OrdinalIgnoreCase);
-					Utility.ReplaceWholeWord(sb, "{{char}}", "__CCCC__", StringComparison.OrdinalIgnoreCase);
-					Utility.ReplaceWholeWord(sb, "{character}", "__CCCC__", StringComparison.OrdinalIgnoreCase);
 					Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, "__CCCC__", StringComparison.OrdinalIgnoreCase);
+					Utility.ReplaceWholeWord(sb, GingerString.TavernCharacterMarker, "__CCCC__", StringComparison.OrdinalIgnoreCase);
+					Utility.ReplaceWholeWord(sb, GingerString.BackyardCharacterMarker, "__CCCC__", StringComparison.OrdinalIgnoreCase);
 					Utility.ReplaceWholeWord(sb, "__UUUU__", userName, StringComparison.Ordinal);
 					Utility.ReplaceWholeWord(sb, "__CCCC__", characterName, StringComparison.Ordinal);
 					chatHistory.messages[i].swipes[j] = sb.ToString();
@@ -1449,7 +1449,7 @@ namespace Ginger
 				return;
 
 			ChatStaging staging = clip.staging;
-			if (staging != null && BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChats))
+			if (staging != null && BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 				BackyardUtil.ToPartyNames(staging, null, null); //! @party
 
 			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chatInstance.instanceId, null, staging), "Updating chat...");

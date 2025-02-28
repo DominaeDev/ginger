@@ -1036,7 +1036,7 @@ namespace Ginger.Integration
 				characterPlaceholder = $"{{_cfg&:{characterId}:cfg&_}}";
 			else
 				characterPlaceholder = Current.MainCharacter.namePlaceholder;
-			sb.Replace("{character}", characterPlaceholder, false);
+			sb.Replace(GingerString.BackyardCharacterMarker, characterPlaceholder, false);
 
 			// User placeholder
 			if (string.IsNullOrEmpty(userId) == false)
@@ -1080,7 +1080,7 @@ namespace Ginger.Integration
 				string characterId = sb.Substring(pos_begin + 7, pos_end - pos_begin - 7);
 				sb.Remove(pos_begin, pos_end - pos_begin + 7);
 
-				string placeholder = "{character}";
+				string placeholder = GingerString.BackyardCharacterMarker;
 				if (knownIds != null && knownIds.TryGetValue(characterId, out placeholder))
 				{
 					sb.Insert(pos_begin, placeholder);
@@ -1140,5 +1140,49 @@ namespace Ginger.Integration
 			return sbFormat.ToString();
 		}
 
+		public static void ConvertToIDPlaceholders(ref FaradayCardV4[] cards, string[] characterIds)
+		{
+			var replacements = new List<KeyValuePair<string, string>>();
+			for (int i = 0; i < cards.Length && i < characterIds.Length; ++i)
+			{
+				string src = string.Format("<##CHAR{0:D2}##>", i);
+				string dest;
+				if (string.IsNullOrEmpty(characterIds[i]))
+					dest = cards[i].data.name;
+				else
+					dest = $"{{_cfg&:{characterIds[i]}:cfg&_}}";
+				replacements.Add(new KeyValuePair<string, string>(src, dest));
+			}
+
+			for (int i = 0; i < cards.Length; ++i)
+			{
+				foreach (var kvp in replacements)
+					Convert(cards[i], kvp.Key, kvp.Value);
+				Convert(cards[i], GingerString.BackyardCharacterMarker, replacements[i].Value); // jic
+			}
+
+			void Convert(FaradayCardV4 card, string src, string dest)
+			{
+				__Convert(ref card.data.system, src, dest);
+				__Convert(ref card.data.scenario, src, dest);
+				__Convert(ref card.data.persona, src, dest);
+				__Convert(ref card.data.greeting, src, dest);
+				__Convert(ref card.data.example, src, dest);
+				
+				if (card.data.loreItems != null)
+				{
+					for (int idxLore = 0; idxLore < card.data.loreItems.Length; ++idxLore)
+						__Convert(ref card.data.loreItems[idxLore].value, src, dest);
+				}
+			}
+
+			void __Convert(ref string text, string src, string dest)
+			{
+				if (string.IsNullOrEmpty(text))
+					return;
+
+				text = text.Replace(src, dest);
+			}
+		}
 	}
 }

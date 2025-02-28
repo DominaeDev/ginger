@@ -1084,10 +1084,10 @@ namespace Ginger
 
 				Utility.ReplaceWholeWord(sb, "<bot>", character, StringComparison.OrdinalIgnoreCase);         // Tavern
 				Utility.ReplaceWholeWord(sb, "<user>", user, StringComparison.OrdinalIgnoreCase);             // Tavern
-				Utility.ReplaceWholeWord(sb, "{{char}}", character, StringComparison.OrdinalIgnoreCase);      // Tavern
-				Utility.ReplaceWholeWord(sb, "{{user}}", user, StringComparison.OrdinalIgnoreCase);           // Tavern
+				Utility.ReplaceWholeWord(sb, GingerString.TavernCharacterMarker, character, StringComparison.OrdinalIgnoreCase);      // Tavern
+				Utility.ReplaceWholeWord(sb, GingerString.TavernUserMarker, user, StringComparison.OrdinalIgnoreCase);           // Tavern
 				Utility.ReplaceWholeWord(sb, "#{character}", character, StringComparison.OrdinalIgnoreCase);  // Faraday
-				Utility.ReplaceWholeWord(sb, "{character}", character, StringComparison.OrdinalIgnoreCase);   // Faraday
+				Utility.ReplaceWholeWord(sb, GingerString.BackyardCharacterMarker, character, StringComparison.OrdinalIgnoreCase);   // Faraday
 
 				string beforeText = Text;
 				int beforePos = SelectionStart;

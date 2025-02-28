@@ -3143,7 +3143,11 @@ namespace Ginger
 				return Backyard.Error.NotConnected;
 			}
 
-			var outputs = Generator.GenerateMany(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
+			Generator.Option options = Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked;
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
+				options |= Generator.Option.Group;
+
+			var outputs = Generator.GenerateMany(options);
 			
 			// User persona
 			UserData userInfo = null;
@@ -3216,7 +3220,11 @@ namespace Ginger
 			if (error != Backyard.Error.NoError)
 				return error;
 
-			var outputs = Generator.GenerateMany(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
+			Generator.Option options = Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked;
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
+				options |= Generator.Option.Group;
+
+			var outputs = Generator.GenerateMany(options);
 			
 			// User persona
 			UserData userInfo = null;

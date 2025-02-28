@@ -457,7 +457,6 @@ namespace Ginger
 
 		public static Output[] GenerateMany(Option option = Option.Export)
 		{
-			option |= Option.Group;
 			List<Output> outputPerCharacter = GenerateAllCharacters(option);
 
 			// Combine character outputs

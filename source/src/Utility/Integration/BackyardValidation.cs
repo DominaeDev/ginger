@@ -25,7 +25,8 @@ namespace Ginger.Integration
 		{
 			Undefined = 0,
 			ChatBackgrounds,
-			GroupChats,
+			Parties,
+			PartyNames,
 		}
 
 		public static bool CheckFeature(Feature feature)
@@ -37,7 +38,8 @@ namespace Ginger.Integration
 			{
 			case Feature.ChatBackgrounds:
 				return DatabaseVersion >= BackyardDatabaseVersion.Version_0_29_0;
-			case Feature.GroupChats:
+			case Feature.Parties:
+			case Feature.PartyNames:
 				return DatabaseVersion >= BackyardDatabaseVersion.Version_0_37_0
 					|| (AppSettings.BackyardLink.LastVersion.isDefined && AppSettings.BackyardLink.LastVersion >= VersionConstants.Version_0_37_0);
 			}

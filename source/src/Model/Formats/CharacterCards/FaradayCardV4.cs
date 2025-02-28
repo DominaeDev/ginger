@@ -67,19 +67,19 @@ namespace Ginger
 			public string name { get; set; }
 
 			[JsonProperty("aiPersona")]
-			public string persona { get; set; }
+			public string persona;
 
 			[JsonProperty("scenario")]
-			public string scenario { get; set; }
+			public string scenario;
 
 			[JsonProperty("basePrompt")]
-			public string system { get; set; }
+			public string system;
 
 			[JsonProperty("customDialogue")]
-			public string example { get; set; }
+			public string example;
 
 			[JsonProperty("firstMessage")]
-			public string greeting { get; set; }
+			public string greeting;
 
 			[JsonProperty("createdAt")]
 			public string creationDate { get; set; }
