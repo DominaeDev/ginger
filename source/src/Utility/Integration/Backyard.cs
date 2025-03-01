@@ -1140,7 +1140,7 @@ namespace Ginger.Integration
 			return sbFormat.ToString();
 		}
 
-		public static void ConvertToIDPlaceholders(ref FaradayCardV4[] cards, string[] characterIds)
+		public static void ConvertToIDPlaceholders(FaradayCardV4[] cards, string[] characterIds)
 		{
 			var replacements = new List<KeyValuePair<string, string>>();
 			for (int i = 0; i < cards.Length && i < characterIds.Length; ++i)

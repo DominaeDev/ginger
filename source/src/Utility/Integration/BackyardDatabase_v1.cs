@@ -774,8 +774,6 @@ namespace Ginger.Integration
 				{
 					connection.Open();
 
-					string characterId;
-					string configId;
 					string groupId;
 					string userId = null;
 					string userConfigId = null;
@@ -806,13 +804,16 @@ namespace Ginger.Integration
 							int expectedUpdates = 0;
 
 							// Write character
-							WriteCharacter(connection, card, null, createdAt, out characterId, out configId, ref updates, ref expectedUpdates);
+							WriteCharacter(connection, card, null, null, createdAt, out characterInstance, ref updates, ref expectedUpdates);
+
+							string characterId = characterInstance.instanceId;
+							string configId = characterInstance.configId;
 
 							// Create custom user (default user as base)
 							if (bAllowUserPersona)
 							{
 								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-									BackyardUtil.ToPartyNames(ref userInfo.persona, characterId, userId);
+									BackyardUtil.ToPartyNames(ref userInfo.persona, characterInstance.instanceId, userId);
 								WriteUser(connection, null, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
 							}
 
@@ -820,6 +821,11 @@ namespace Ginger.Integration
 							GroupInstance groupInstance;
 							WriteGroup(connection, "", IDBundle.FromCharacterAndUser(characterId, userId), parentFolder.instanceId, folderSortPosition, card.data.isNSFW, createdAt, out groupInstance, ref updates, ref expectedUpdates);
 							groupId = groupInstance.instanceId;
+
+							characterInstance.groupId = groupId;
+							characterInstance.folderId = parentFolder.instanceId;
+							characterInstance.folderSortPosition = folderSortPosition;
+
 
 							var staging = new ChatStaging() {
 								system = card.data.system ?? "",
@@ -890,18 +896,6 @@ namespace Ginger.Integration
 									// Do nothing
 								}
 							}
-
-							characterInstance = new CharacterInstance() {
-								instanceId = characterId,
-								configId = configId,
-								groupId = groupId,
-								displayName = card.data.displayName,
-								name = card.data.name,
-								creationDate = now,
-								updateDate = now,
-								folderId = parentFolder.instanceId,
-								folderSortPosition = folderSortPosition,
-							};
 
 							transaction.Commit();
 							return Backyard.Error.NoError;
@@ -1546,6 +1540,13 @@ namespace Ginger.Integration
 			bool bAllowUserPersona = userInfo != null;
 			FaradayCardV4 primaryCard = cards[0];
 
+			IDBundle[] characterIds = new IDBundle[cards.Length];
+			for (int i = 0; i < cards.Length; ++i)
+				characterIds[i].characterId = Cuid.NewCuid();
+
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
+				BackyardUtil.ConvertToIDPlaceholders(cards, characterIds.Select(id => id.characterId).ToArray());
+
 			// Prepare image information
 			List<ImageOutput> images = new List<ImageOutput>();
 			List<ImageOutput> backgrounds = new List<ImageOutput>();
@@ -1597,6 +1598,7 @@ namespace Ginger.Integration
 						authorNote = primaryCard.authorNote ?? "",
 					};
 
+					var lsInstances = new List<CharacterInstance>();
 					string userId = null;
 					string userConfigId = null;
 					DateTime now = DateTime.Now;
@@ -1626,16 +1628,15 @@ namespace Ginger.Integration
 							int updates = 0;
 							int expectedUpdates = 0;
 
-							List<IDBundle> characterIds= new List<IDBundle>();
-							
+
 							// Write characters
 							for (int i = 0; i < cards.Length; ++i)
 							{
-								string characterId;
-								string configId;
+								CharacterInstance characterInstance;
+								WriteCharacter(connection, cards[i], cards[i].data.name, characterIds[i].characterId, createdAt, out characterInstance, ref updates, ref expectedUpdates);
+								lsInstances.Add(characterInstance);
 
-								WriteCharacter(connection, cards[i], cards[i].data.name, createdAt, out characterId, out configId, ref updates, ref expectedUpdates);
-								characterIds.Add(IDBundle.FromCharacter(characterId, configId));
+								string configId = characterInstance.configId;
 
 								// Write lorebook
 								if (cards[i].data.loreItems != null && cards[i].data.loreItems.Length > 0)
@@ -1719,20 +1720,12 @@ namespace Ginger.Integration
 								}
 							}
 
-							List<CharacterInstance> lsInstances = new List<CharacterInstance>();
-							for (int i = 0; i < characterIds.Count; ++i)
+							for (int i = 0; i < lsInstances.Count; ++i)
 							{
-								lsInstances.Add(new CharacterInstance() {
-									instanceId = characterIds[i].characterId,
-									configId = characterIds[i].configId,
-									groupId = groupId,
-									displayName = primaryCard.data.displayName,
-									name = primaryCard.data.name,
-									creationDate = now,
-									updateDate = now,
-									folderId = parentFolder.instanceId,
-									folderSortPosition = folderSortPosition,
-								});
+								var instance = lsInstances[i];
+								instance.groupId = groupId;
+								instance.folderId = parentFolder.instanceId;
+								instance.folderSortPosition = folderSortPosition;
 							}
 							characterInstances = lsInstances.ToArray();
 
@@ -1799,7 +1792,7 @@ namespace Ginger.Integration
 				string[] characterIds = new string[actors.Length];
 				for (int i = 0; i < actors.Length; ++i)
 					characterIds[i] = actors[i].remoteId;
-				BackyardUtil.ConvertToIDPlaceholders(ref cards, characterIds);
+				BackyardUtil.ConvertToIDPlaceholders(cards, characterIds);
 			}
 
 			try
@@ -6065,10 +6058,10 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void WriteCharacter(SQLiteConnection connection, FaradayCardV4 card, string displayName, long createdAt, out string characterId, out string configId, ref int updates, ref int expectedUpdates)
+		private static void WriteCharacter(SQLiteConnection connection, FaradayCardV4 card, string displayName, string characterId, long createdAt, out CharacterInstance characterInstance, ref int updates, ref int expectedUpdates)
 		{
-			characterId = Cuid.NewCuid();
-			configId = Cuid.NewCuid();
+			string instanceId = characterId ?? Cuid.NewCuid();
+			string configId = Cuid.NewCuid();
 
 			using (var cmdCreate = new SQLiteCommand(connection))
 			{
@@ -6093,7 +6086,7 @@ namespace Ginger.Integration
 				");
 
 				cmdCreate.CommandText = sbCommand.ToString();
-				cmdCreate.Parameters.AddWithValue("$charId", characterId);
+				cmdCreate.Parameters.AddWithValue("$charId", instanceId);
 				cmdCreate.Parameters.AddWithValue("$configId", configId);
 				cmdCreate.Parameters.AddWithValue("$name", card.data.name ?? "");
 				cmdCreate.Parameters.AddWithValue("$displayName", displayName ?? card.data.displayName ?? "");
@@ -6103,6 +6096,17 @@ namespace Ginger.Integration
 				expectedUpdates += 2;
 				updates += cmdCreate.ExecuteNonQuery();
 			}
+
+			characterInstance = new CharacterInstance() {
+				instanceId = instanceId,
+				configId = configId,
+				groupId = null,
+				name = card.data.name ?? "",
+				displayName = displayName ?? card.data.displayName ?? "",
+				creationDate = DateTimeExtensions.FromUnixTime(createdAt),
+				updateDate = DateTimeExtensions.FromUnixTime(createdAt),
+			};
+
 		}
 
 		private static void WriteGroup(SQLiteConnection connection, string name, IDBundle ids, string parentFolderId, string folderSortPosition, bool isNSFW, long createdAt, out GroupInstance groupInstance, ref int updates, ref int expectedUpdates)
