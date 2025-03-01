@@ -1078,7 +1078,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public static void ConvertToIDPlaceholders(ref string text, params string[] characterIds)
+		public static void ConvertToIDPlaceholders(ref string text, string[] characterIds)
 		{
 			var replacements = new List<KeyValuePair<string, string>>();
 			for (int i = 0; i < characterIds.Length; ++i)
@@ -1128,7 +1128,7 @@ namespace Ginger.Integration
 				characterPlaceholder = $"{{_cfg&:{characterId}:cfg&_}}";
 			else
 				characterPlaceholder = Current.MainCharacter.namePlaceholder;
-			sb.Replace(GingerString.BackyardCharacterMarker, characterPlaceholder, false);
+			sb.Replace(GingerString.BackyardCharacterMarker, characterPlaceholder, false); // jic
 
 			text = sb.ToString();
 		}
