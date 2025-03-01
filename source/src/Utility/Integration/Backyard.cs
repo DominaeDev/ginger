@@ -1009,112 +1009,6 @@ namespace Ginger.Integration
 			return lsImages.ToArray();
 		}
 
-		public static void ToPartyNames(Backyard.ChatStaging staging, string characterId, string userId)
-		{
-			if (string.IsNullOrEmpty(staging.system) == false)
-				ToPartyNames(ref staging.system, characterId, userId);
-			if (string.IsNullOrEmpty(staging.scenario) == false)
-				ToPartyNames(ref staging.scenario, characterId, userId);
-			if (string.IsNullOrEmpty(staging.greeting) == false)
-				ToPartyNames(ref staging.greeting, characterId, userId);
-			if (string.IsNullOrEmpty(staging.example) == false)
-				ToPartyNames(ref staging.example, characterId, userId);
-			if (string.IsNullOrEmpty(staging.authorNote) == false)
-				ToPartyNames(ref staging.authorNote, characterId, userId);
-		}
-
-		public static void ToPartyNames(ref string text, string characterId, string userId)
-		{
-			if (string.IsNullOrEmpty(text))
-				return;
-
-			var sb = new StringBuilder(text);
-
-			// Character placeholder
-			string characterPlaceholder;
-			if (string.IsNullOrEmpty(characterId) == false)
-				characterPlaceholder = $"{{_cfg&:{characterId}:cfg&_}}";
-			else
-				characterPlaceholder = Current.MainCharacter.namePlaceholder;
-			sb.Replace(GingerString.BackyardCharacterMarker, characterPlaceholder, false);
-
-			// User placeholder
-			if (string.IsNullOrEmpty(userId) == false)
-				sb.Replace("{user}", $"{{_cfg&:{userId}:cfg&_}}", false);
-
-			text = sb.ToString();
-		}
-
-		public static void FromPartyNames(Backyard.ChatStaging staging, string groupId)
-		{
-			var knownIds = new Dictionary<string, string>();
-
-			if (string.IsNullOrEmpty(staging.system) == false)
-				FromPartyNames(ref staging.system, groupId, knownIds);
-			if (string.IsNullOrEmpty(staging.scenario) == false)
-				FromPartyNames(ref staging.scenario, groupId, knownIds);
-			if (string.IsNullOrEmpty(staging.greeting) == false)
-				FromPartyNames(ref staging.greeting, groupId, knownIds);
-			if (string.IsNullOrEmpty(staging.example) == false)
-				FromPartyNames(ref staging.example, groupId, knownIds);
-			if (string.IsNullOrEmpty(staging.authorNote) == false)
-				FromPartyNames(ref staging.authorNote, groupId, knownIds);
-		}
-
-		public static void FromPartyNames(ref string text, string groupId, Dictionary<string, string> knownIds = null)
-		{
-			if (string.IsNullOrEmpty(text))
-				return;
-
-			int pos_begin = text.IndexOf("{_cfg&:");
-			if (pos_begin == -1)
-				return;
-
-			var sb = new StringBuilder(text);
-			while (pos_begin != -1)
-			{
-				int pos_end = sb.IndexOf(":cfg&_}", pos_begin + 7);
-				if (pos_end == -1)
-					break;
-
-				string characterId = sb.Substring(pos_begin + 7, pos_end - pos_begin - 7);
-				sb.Remove(pos_begin, pos_end - pos_begin + 7);
-
-				string placeholder = GingerString.BackyardCharacterMarker;
-				if (knownIds != null && knownIds.TryGetValue(characterId, out placeholder))
-				{
-					sb.Insert(pos_begin, placeholder);
-				}
-				else if (Backyard.ConnectionEstablished)
-				{
-					Backyard.CharacterInstance character;
-					if (Backyard.Database.GetCharacter(characterId, out character))
-					{
-						if (character.isUser)
-							placeholder = "{user}";
-						else if (groupId != null)
-						{
-							Backyard.GroupInstance group;
-							if (!(Backyard.Database.GetGroup(groupId, out group) && group.members != null && group.members.Contains(characterId)))
-								placeholder = character.name; // Not primary character
-						}
-					}
-					sb.Insert(pos_begin, placeholder);
-
-					if (knownIds != null)
-						knownIds.Add(characterId, placeholder);
-				}
-				else
-				{
-					sb.Insert(pos_begin, placeholder);
-				}
-				
-				pos_begin = sb.IndexOf("{_cfg&:", pos_begin);
-			}
-
-			text = sb.ToString();
-		}
-
 		public static string ToFolderUrl(string label)
 		{
 			if (string.IsNullOrWhiteSpace(label))
@@ -1140,12 +1034,17 @@ namespace Ginger.Integration
 			return sbFormat.ToString();
 		}
 
+		public static void ConvertToIDPlaceholders(FaradayCardV4 card, string characterId)
+		{
+			ConvertToIDPlaceholders(new FaradayCardV4[] { card }, new string[] { characterId });
+		}
+
 		public static void ConvertToIDPlaceholders(FaradayCardV4[] cards, string[] characterIds)
 		{
 			var replacements = new List<KeyValuePair<string, string>>();
 			for (int i = 0; i < cards.Length && i < characterIds.Length; ++i)
 			{
-				string src = string.Format("<##CHAR{0:D2}##>", i);
+				string src = GingerString.MakeInternalCharacterMarker(i);
 				string dest;
 				if (string.IsNullOrEmpty(characterIds[i]))
 					dest = cards[i].data.name;
@@ -1158,31 +1057,171 @@ namespace Ginger.Integration
 			{
 				foreach (var kvp in replacements)
 					Convert(cards[i], kvp.Key, kvp.Value);
-				Convert(cards[i], GingerString.BackyardCharacterMarker, replacements[i].Value); // jic
+				Convert(cards[i], GingerString.BackyardCharacterMarker, replacements[0].Value); // jic
 			}
 
 			void Convert(FaradayCardV4 card, string src, string dest)
 			{
-				__Convert(ref card.data.system, src, dest);
-				__Convert(ref card.data.scenario, src, dest);
-				__Convert(ref card.data.persona, src, dest);
-				__Convert(ref card.data.greeting, src, dest);
-				__Convert(ref card.data.example, src, dest);
+				__ToID(ref card.data.system, src, dest);
+				__ToID(ref card.data.scenario, src, dest);
+				__ToID(ref card.data.persona, src, dest);
+				__ToID(ref card.data.greeting, src, dest);
+				__ToID(ref card.data.example, src, dest);
+				__ToID(ref card.userPersona, src, dest);
+				__ToID(ref card.authorNote, src, dest);
 				
 				if (card.data.loreItems != null)
 				{
 					for (int idxLore = 0; idxLore < card.data.loreItems.Length; ++idxLore)
-						__Convert(ref card.data.loreItems[idxLore].value, src, dest);
+						__ToID(ref card.data.loreItems[idxLore].value, src, dest);
 				}
 			}
+		}
 
-			void __Convert(ref string text, string src, string dest)
+		public static void ConvertToIDPlaceholders(ref string text, params string[] characterIds)
+		{
+			var replacements = new List<KeyValuePair<string, string>>();
+			for (int i = 0; i < characterIds.Length; ++i)
 			{
-				if (string.IsNullOrEmpty(text))
-					return;
+				string src = GingerString.MakeInternalCharacterMarker(i);
+				string dest = $"{{_cfg&:{characterIds[i]}:cfg&_}}";
+				replacements.Add(new KeyValuePair<string, string>(src, dest));
+			}
 
-				text = text.Replace(src, dest);
+			foreach (var kvp in replacements)
+				__ToID(ref text, kvp.Key, kvp.Value);
+			__ToID(ref text, GingerString.BackyardCharacterMarker, replacements[0].Value); // jic			
+		}
+
+		private static void __ToID(ref string text, string src, string dest)
+		{
+			if (string.IsNullOrEmpty(text))
+				return;
+
+			text = text.Replace(src, dest);
+		}
+
+		public static void ConvertToIDPlaceholders(Backyard.ChatStaging staging, string characterId)
+		{
+			if (string.IsNullOrEmpty(staging.system) == false)
+				ConvertToIDPlaceholders(ref staging.system, characterId);
+			if (string.IsNullOrEmpty(staging.scenario) == false)
+				ConvertToIDPlaceholders(ref staging.scenario, characterId);
+			if (string.IsNullOrEmpty(staging.greeting) == false)
+				ConvertToIDPlaceholders(ref staging.greeting, characterId);
+			if (string.IsNullOrEmpty(staging.example) == false)
+				ConvertToIDPlaceholders(ref staging.example, characterId);
+			if (string.IsNullOrEmpty(staging.authorNote) == false)
+				ConvertToIDPlaceholders(ref staging.authorNote, characterId);
+		}
+
+		public static void ConvertToIDPlaceholders(ref string text, string characterId)
+		{
+			if (string.IsNullOrEmpty(text))
+				return;
+
+			var sb = new StringBuilder(text);
+
+			// Character placeholder
+			string characterPlaceholder;
+			if (string.IsNullOrEmpty(characterId) == false)
+				characterPlaceholder = $"{{_cfg&:{characterId}:cfg&_}}";
+			else
+				characterPlaceholder = Current.MainCharacter.namePlaceholder;
+			sb.Replace(GingerString.BackyardCharacterMarker, characterPlaceholder, false);
+
+			text = sb.ToString();
+		}
+
+		public static void ConvertFromIDPlaceholders(params FaradayCardV4[] cards)
+		{
+			var knownIds = new Dictionary<string, string>();
+			for (int i = 0; i < cards.Length; ++i)
+				__FromID(cards[i], knownIds);
+		}
+
+		public static void ConvertFromIDPlaceholders(Backyard.ChatStaging staging)
+		{
+			var knownIds = new Dictionary<string, string>();
+			__FromID(ref staging.system, knownIds);
+			__FromID(ref staging.scenario, knownIds);
+			__FromID(ref staging.greeting, knownIds);
+			__FromID(ref staging.example, knownIds);
+			__FromID(ref staging.authorNote, knownIds);
+		}
+
+		public static void ConvertFromIDPlaceholders(ref string text)
+		{
+			var knownIds = new Dictionary<string, string>();
+			__FromID(ref text, knownIds);
+		}
+
+		private static void __FromID(FaradayCardV4 card, Dictionary<string, string> dict)
+		{
+			__FromID(ref card.data.system, dict);
+			__FromID(ref card.data.scenario, dict);
+			__FromID(ref card.data.persona, dict);
+			__FromID(ref card.data.greeting, dict);
+			__FromID(ref card.data.example, dict);
+			__FromID(ref card.userPersona, dict);
+			__FromID(ref card.authorNote, dict);
+				
+			if (card.data.loreItems != null)
+			{
+				for (int idxLore = 0; idxLore < card.data.loreItems.Length; ++idxLore)
+					__FromID(ref card.data.loreItems[idxLore].value, dict);
 			}
 		}
+
+		private static void __FromID(ref string text, Dictionary<string, string> dict)
+		{
+			if (string.IsNullOrEmpty(text))
+				return;
+
+			int pos_begin = text.IndexOf("{_cfg&:");
+			if (pos_begin == -1)
+				return;
+
+			var sb = new StringBuilder(text);
+			while (pos_begin != -1)
+			{
+				int pos_end = sb.IndexOf(":cfg&_}", pos_begin + 7);
+				if (pos_end == -1)
+					break;
+
+				string characterId = sb.Substring(pos_begin + 7, pos_end - pos_begin - 7);
+				sb.Remove(pos_begin, pos_end - pos_begin + 7);
+
+				string placeholder = Constants.DefaultCharacterName;
+				if (dict != null && dict.TryGetValue(characterId, out placeholder))
+				{
+					sb.Insert(pos_begin, placeholder);
+				}
+				else if (Backyard.ConnectionEstablished)
+				{
+					Backyard.CharacterInstance character;
+					if (Backyard.Database.GetCharacter(characterId, out character))
+					{
+						if (character.isUser)
+							placeholder = "{user}";
+						else
+							placeholder = character.name;
+					}
+					sb.Insert(pos_begin, placeholder);
+
+					if (dict != null)
+						dict.Add(characterId, placeholder);
+				}
+				else
+				{
+					sb.Insert(pos_begin, placeholder);
+				}
+				
+				pos_begin = sb.IndexOf("{_cfg&:", pos_begin);
+			}
+
+			text = sb.ToString();
+		}
+				
 	}
 }

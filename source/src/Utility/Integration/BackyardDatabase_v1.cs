@@ -296,7 +296,7 @@ namespace Ginger.Integration
 						sbCommand.AppendLine(
 						@"
 							SELECT 
-								createdAt, updatedAt, displayName, name, persona
+								createdAt, updatedAt, displayName, name, persona 
 							FROM CharacterConfigVersion
 							WHERE id = $configId
 						");
@@ -379,9 +379,6 @@ namespace Ginger.Integration
 							}
 						}
 					}
-
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-						BackyardUtil.FromPartyNames(staging, character.groupId);
 
 					card = new FaradayCardV4();
 					card.data.displayName = displayName;
@@ -487,6 +484,10 @@ namespace Ginger.Integration
 							lsImages.AddRange(backgrounds);
 					}
 
+					// Convert character references
+					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
+						BackyardUtil.ConvertFromIDPlaceholders(card);
+
 					// Get user info
 					string userId;
 					string userName;
@@ -495,7 +496,7 @@ namespace Ginger.Integration
 					if (FetchUserInfo(connection, character.groupId, out userId, out userName, out userPersona, out userImage))
 					{
 						if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-							BackyardUtil.FromPartyNames(ref userPersona, character.groupId);
+							BackyardUtil.ConvertFromIDPlaceholders(ref userPersona);
 
 						userInfo = new UserData() {
 							name = userName?.Trim(),
@@ -731,6 +732,9 @@ namespace Ginger.Integration
 			}
 
 			bool bAllowUserPersona = userInfo != null;
+			string characterId = Cuid.NewCuid();
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
+				BackyardUtil.ConvertToIDPlaceholders(card, characterId);
 
 			// Prepare image information
 			List<ImageOutput> images = new List<ImageOutput>();
@@ -804,16 +808,14 @@ namespace Ginger.Integration
 							int expectedUpdates = 0;
 
 							// Write character
-							WriteCharacter(connection, card, null, null, createdAt, out characterInstance, ref updates, ref expectedUpdates);
-
-							string characterId = characterInstance.instanceId;
+							WriteCharacter(connection, card, null, characterId, createdAt, out characterInstance, ref updates, ref expectedUpdates);
 							string configId = characterInstance.configId;
 
 							// Create custom user (default user as base)
 							if (bAllowUserPersona)
 							{
 								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-									BackyardUtil.ToPartyNames(ref userInfo.persona, characterInstance.instanceId, userId);
+									BackyardUtil.ConvertToIDPlaceholders(ref userInfo.persona);
 								WriteUser(connection, null, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
 							}
 
@@ -1060,7 +1062,7 @@ namespace Ginger.Integration
 							if (bAllowUserPersona)
 							{
 								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-									BackyardUtil.ToPartyNames(ref userInfo.persona, characterId, userId);
+									BackyardUtil.ConvertToIDPlaceholders(ref userInfo.persona, characterId);
 
 								string userConfigId = null;
 								WriteUser(connection, groupId, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
@@ -1650,7 +1652,7 @@ namespace Ginger.Integration
 							// Create custom user (default user as base)
 							if (bAllowUserPersona)
 							{
-//								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats)) //! @names
+//								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats)) //! @party
 //									BackyardUtil.ToPartyNames(ref userInfo.persona, characterId, userId);
 								WriteUser(connection, null, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
 							}
@@ -1900,7 +1902,7 @@ namespace Ginger.Integration
 							if (bAllowUserPersona)
 							{
 								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-									BackyardUtil.ToPartyNames(ref userInfo.persona, characterId, userId);
+									BackyardUtil.ConvertToIDPlaceholders(ref userInfo.persona, characterId);
 
 								string userConfigId = null;
 								WriteUser(connection, groupId, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
@@ -2743,7 +2745,7 @@ namespace Ginger.Integration
 									ttsInputFilter = ttsInputFilter,
 								};
 								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-									BackyardUtil.FromPartyNames(staging, groupId);
+									BackyardUtil.ConvertFromIDPlaceholders(staging);
 
 								chats.Add(new _Chat() {
 									instanceId = chatId,
@@ -6472,8 +6474,8 @@ namespace Ginger.Integration
 							$repeatPenalty, $repeatLastN, $promptTemplate, $pruneExample, $authorNote);
 				");
 
-				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-					BackyardUtil.ToPartyNames(staging, characterId, userId);
+//				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames)) //! @party
+//					BackyardUtil.ToPartyNames(staging, characterId, userId);
 
 				cmdChat.Parameters.AddWithValue("$chatId", chatId);
 				cmdChat.Parameters.AddWithValue("$groupId", groupId);
@@ -6543,8 +6545,8 @@ namespace Ginger.Integration
 
 					var staging = chats[i].staging ?? defaultStaging ?? new ChatStaging();
 
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-						BackyardUtil.ToPartyNames(staging, ids.characterId, ids.userId);
+//					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames)) //! @party
+//						BackyardUtil.ToPartyNames(staging, ids.characterId, ids.userId);
 
 					var parameters = chats[i].parameters ?? new ChatParameters();
 					cmdChat.Parameters.AddWithValue($"$system{i:000}", staging.system ?? "");
