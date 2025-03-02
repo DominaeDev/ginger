@@ -731,7 +731,7 @@ namespace Ginger
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\bcharacter\b\}"), SyntaxStyle.Underlined(colorError), 4);
 
 				// character
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{(?i)\b(char|user|card|name|original|gender|they'll|they're|they've|they'd|they|them|theirs|their|themselves|he'll|he's|he's|he'd|he|him|his|his|himself|she'll|she's|she's|she'd|she|her|hers|her|herself|is|are|isn't|aren't|has|have|hasn't|haven't|was|were|wasn't|weren't|does|do|doesn't|don't|s|y|ies|es)\b\}"),
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{(?i)\b(char|user|card|name|original|gender|unknown|they'll|they're|they've|they'd|they|them|theirs|their|themselves|he'll|he's|he's|he'd|he|him|his|his|himself|she'll|she's|she's|she'd|she|her|hers|her|herself|is|are|isn't|aren't|has|have|hasn't|haven't|was|were|wasn't|weren't|does|do|doesn't|don't|s|y|ies|es)\b\}"),
 					new SyntaxStyle(colorCommand), 3);
 
 				// user

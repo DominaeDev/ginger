@@ -132,7 +132,7 @@ namespace Ginger
 			else if (AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByCustom)
 			{
 				sortedGroups = sortedGroups
-					.OrderByDescending(g => g.folderSortPosition);
+					.OrderBy(g => g.folderSortPosition);
 			}
 
 			foreach (var group in sortedGroups)

@@ -259,13 +259,7 @@ namespace Ginger.Integration
 		#endregion // Enumerate characters and groups
 
 		#region Characters
-		public Backyard.Error ImportCharacter(CharacterInstance character, out FaradayCardV4 card, out ImageInstance[] images)
-		{
-			UserData unused;
-			return ImportCharacter(character, out card, out images, out unused);
-		}
-
-		public Backyard.Error ImportCharacter(CharacterInstance character, out FaradayCardV4 card, out ImageInstance[] images, out UserData userInfo)
+		public Backyard.Error ImportCharacter(CharacterInstance characterInstance, out FaradayCardV4 card, out ImageInstance[] images, out UserData userInfo)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -275,225 +269,66 @@ namespace Ginger.Integration
 				LastError = "Not connected";
 				return Backyard.Error.NotConnected;
 			}
+
 			try
 			{
 				using (var connection = CreateSQLiteConnection())
 				{
 					connection.Open();
 
-					DateTime createdAt;
-					DateTime updatedAt;
-					string displayName = null;
-					string name = null;
-					string persona = null;
 					ChatStaging staging = new ChatStaging();
 					string hubCharId = null;
 					string hubAuthorUsername = null;
 
-					using (var cmdCharacter = connection.CreateCommand())
-					{
-						var sbCommand = new StringBuilder();
-						sbCommand.AppendLine(
-						@"
-							SELECT 
-								createdAt, updatedAt, displayName, name, persona 
-							FROM CharacterConfigVersion
-							WHERE id = $configId
-						");
+					_Character character;
+					FetchCharacter(connection, characterInstance.instanceId, out character);
 
-						cmdCharacter.CommandText = sbCommand.ToString();
-						cmdCharacter.Parameters.AddWithValue("$configId", character.configId);
-
-						using (var reader = cmdCharacter.ExecuteReader())
-						{
-							if (!reader.Read())
-							{
-								images = null;
-								userInfo = null;
-								card = null;
-								return Backyard.Error.NotFound; // No character
-							}
-
-							createdAt = reader.GetTimestamp(0);
-							updatedAt = reader.GetTimestamp(1);
-							displayName = reader.GetString(2);
-							name = reader.GetString(3);
-							persona = reader.GetString(4);
-						}
-					}
-
-					if (character.groupId != null)
-					{
-						using (var cmdGroupData = connection.CreateCommand())
-						{
-							var sbCommand = new StringBuilder();
-							sbCommand.AppendLine(
-							@"
-								SELECT 
-									hubCharId, hubAuthorUsername
-								FROM GroupConfig
-								WHERE id = $groupId;
-							");
-							cmdGroupData.CommandText = sbCommand.ToString();
-							cmdGroupData.Parameters.AddWithValue("$groupId", character.groupId);
-
-							using (var reader = cmdGroupData.ExecuteReader())
-							{
-								if (reader.Read())
-								{
-									hubCharId = reader[0] as string;
-									hubAuthorUsername = reader[1] as string;
-								}
-							}
-						}
-
-						using (var cmdChatData = connection.CreateCommand())
-						{
-							var sbCommand = new StringBuilder();
-							sbCommand.AppendLine(
-							@"
-								SELECT 
-									context, customDialogue, modelInstructions, greetingDialogue, grammar, authorNote
-								FROM Chat
-								WHERE groupConfigId = $groupId
-							");
-
-							if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.First)
-								sbCommand.AppendLine("ORDER BY createdAt ASC");
-							else
-								sbCommand.AppendLine("ORDER BY createdAt DESC");
-							cmdChatData.CommandText = sbCommand.ToString();
-							cmdChatData.Parameters.AddWithValue("$groupId", character.groupId);
-
-							using (var reader = cmdChatData.ExecuteReader())
-							{
-								if (reader.Read())
-								{
-									staging.scenario = reader.GetString(0);
-									staging.example = reader.GetString(1);
-									staging.system = reader.GetString(2);
-									staging.greeting = reader.GetString(3);
-									staging.grammar = reader[4] as string;
-									staging.authorNote = reader.GetString(5);
-								}
-							}
-						}
-					}
-
-					card = new FaradayCardV4();
-					card.data.displayName = displayName;
-					card.data.name = name;
-					card.data.persona = persona;
-					card.data.system = staging.system;
-					card.data.scenario = staging.scenario;
-					card.data.greeting = staging.greeting;
-					card.data.example = staging.example;
-					card.data.grammar = staging.grammar;
-					card.authorNote = staging.authorNote;
-					card.data.creationDate = createdAt.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
-					card.data.updateDate = updatedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
-					card.hubCharacterId = hubCharId;
-					card.hubAuthorUsername = hubAuthorUsername;
+					if (characterInstance.groupId != null)
+						FetchGroupInfo(connection, characterInstance.groupId, out staging, out hubCharId, out hubAuthorUsername);
 
 					// Gather lorebook items
-					using (var cmdLoreItems = connection.CreateCommand())
-					{
-						cmdLoreItems.CommandText =
-						@"
-							SELECT 
-								key, value, ""order""
-							FROM AppCharacterLorebookItem
-							WHERE id IN (
-								SELECT A
-								FROM _AppCharacterLorebookItemToCharacterConfigVersion
-								WHERE B = $configId
-							)
-							ORDER BY ""order"" ASC
-						";
-						cmdLoreItems.Parameters.AddWithValue("$configId", character.configId);
-
-						var entries = new List<KeyValuePair<string, FaradayCardV1.LoreBookEntry>>();
-						using (var reader = cmdLoreItems.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string key = reader.GetString(0);
-								string value = reader.GetString(1);
-								string order = reader.GetString(2);
-
-								entries.Add(new KeyValuePair<string, FaradayCardV1.LoreBookEntry>(order, new FaradayCardV1.LoreBookEntry() {
-									key = key,
-									value = value,
-								}));
-							}
-						}
-
-						if (entries.Count > 0)
-						{
-							card.data.loreItems = entries
-								.OrderBy(kvp => kvp.Key)
-								.Select(kvp => kvp.Value)
-								.ToArray();
-						}
-					}
+					FaradayCardV1.LoreBookEntry[] entries;
+					FetchLorebook(connection, characterInstance.configId, out entries);
 
 					// Gather portrait image files
 					var lsImages = new List<ImageInstance>();
-					using (var cmdImageLookup = connection.CreateCommand())
-					{
-						cmdImageLookup.CommandText =
-						@"
-							SELECT 
-								id, imageUrl, label, aspectRatio
-							FROM AppImage
-							WHERE id IN (
-								SELECT A
-								FROM _AppImageToCharacterConfigVersion
-								WHERE B = $configId
-							)
-							ORDER BY ""order"" ASC
-						";
-						cmdImageLookup.Parameters.AddWithValue("$configId", character.configId);
-
-						using (var reader = cmdImageLookup.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string instanceId = reader.GetString(0);
-								string imageUrl = reader.GetString(1);
-								string label = reader[2] as string;
-								string aspectRatio = reader[3] as string ?? "";
-
-								lsImages.Add(new ImageInstance() {
-									instanceId = instanceId,
-									imageUrl = imageUrl,
-									label = label,
-									aspectRatio = aspectRatio,
-									imageType = AssetFile.AssetType.Icon,
-								});
-							}
-						}
-					}
+					FetchPortraitImages(connection, characterInstance.configId, lsImages);
 
 					// Gather background image files
 					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
 					{
 						// Get existing chats
 						ImageInstance[] backgrounds;
-						if (FetchChatBackgrounds(connection, character.groupId, out backgrounds))
+						if (FetchChatBackgrounds(connection, characterInstance.groupId, out backgrounds))
 							lsImages.AddRange(backgrounds);
 					}
+
+					card = new FaradayCardV4();
+					card.data.displayName = character.displayName;
+					card.data.name = character.name;
+					card.data.persona = character.persona;
+					card.data.system = staging.system;
+					card.data.scenario = staging.scenario;
+					card.data.greeting = staging.greeting;
+					card.data.example = staging.example;
+					card.data.grammar = staging.grammar;
+					card.data.loreItems = entries;
+					card.data.creationDate = character.creationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+					card.data.updateDate = character.updateDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+					card.authorNote = staging.authorNote;
+					card.hubCharacterId = hubCharId;
+					card.hubAuthorUsername = hubAuthorUsername;
 
 					// Convert character references
 					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 						BackyardUtil.ConvertFromIDPlaceholders(card);
 
-					// Get user info
+					// Get user persona and portrait
 					string userId;
 					string userName;
 					string userPersona;
 					ImageInstance userImage;
-					if (FetchUserInfo(connection, character.groupId, out userId, out userName, out userPersona, out userImage))
+					if (FetchUserInfo(connection, characterInstance.groupId, out userId, out userName, out userPersona, out userImage))
 					{
 						if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 							BackyardUtil.ConvertFromIDPlaceholders(ref userPersona);
@@ -539,6 +374,199 @@ namespace Ginger.Integration
 				LastError = e.Message;
 				Backyard.Disconnect();
 				return Backyard.Error.Unknown;
+			}
+		}
+
+		private static void FetchPortraitImages(SQLiteConnection connection, string configId, List<ImageInstance> lsImages)
+		{
+			using (var cmdImageLookup = connection.CreateCommand())
+			{
+				cmdImageLookup.CommandText =
+				@"
+					SELECT 
+						id, imageUrl, label, aspectRatio
+					FROM AppImage
+					WHERE id IN (
+						SELECT A
+						FROM _AppImageToCharacterConfigVersion
+						WHERE B = $configId
+					)
+					ORDER BY ""order"" ASC
+				";
+				cmdImageLookup.Parameters.AddWithValue("$configId", configId);
+
+				using (var reader = cmdImageLookup.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						string instanceId = reader.GetString(0);
+						string imageUrl = reader.GetString(1);
+						string label = reader[2] as string;
+						string aspectRatio = reader[3] as string ?? "";
+
+						lsImages.Add(new ImageInstance() {
+							instanceId = instanceId,
+							imageUrl = imageUrl,
+							label = label,
+							aspectRatio = aspectRatio,
+							imageType = AssetFile.AssetType.Icon,
+						});
+					}
+				}
+			}
+		}
+
+		private static void FetchLorebook(SQLiteConnection connection, string configId, out FaradayCardV1.LoreBookEntry[] entries )
+		{
+			using (var cmdLoreItems = connection.CreateCommand())
+			{
+				cmdLoreItems.CommandText =
+				@"
+					SELECT 
+						key, value, ""order""
+					FROM AppCharacterLorebookItem
+					WHERE id IN (
+						SELECT A
+						FROM _AppCharacterLorebookItemToCharacterConfigVersion
+						WHERE B = $configId
+					)
+					ORDER BY ""order"" ASC
+				";
+				cmdLoreItems.Parameters.AddWithValue("$configId", configId);
+
+				var lsEntries = new List<KeyValuePair<string, FaradayCardV1.LoreBookEntry>>();
+				using (var reader = cmdLoreItems.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						string key = reader.GetString(0);
+						string value = reader.GetString(1);
+						string order = reader.GetString(2);
+
+						lsEntries.Add(new KeyValuePair<string, FaradayCardV1.LoreBookEntry>(order, new FaradayCardV1.LoreBookEntry() {
+							key = key,
+							value = value,
+						}));
+					}
+				}
+
+				entries = lsEntries
+					.OrderBy(kvp => kvp.Key)
+					.Select(kvp => kvp.Value)
+					.ToArray();
+			}
+		}
+
+		private static void FetchGroupInfo(SQLiteConnection connection, string groupId, out ChatStaging staging, out string hubCharId, out string hubAuthorUsername)
+		{
+			using (var cmdGroupData = connection.CreateCommand())
+			{
+				var sbCommand = new StringBuilder();
+				sbCommand.AppendLine(
+				@"
+					SELECT 
+						hubCharId, hubAuthorUsername
+					FROM GroupConfig
+					WHERE id = $groupId;
+							");
+				cmdGroupData.CommandText = sbCommand.ToString();
+				cmdGroupData.Parameters.AddWithValue("$groupId", groupId);
+
+				using (var reader = cmdGroupData.ExecuteReader())
+				{
+					if (reader.Read())
+					{
+						hubCharId = reader[0] as string;
+						hubAuthorUsername = reader[1] as string;
+					}
+					else
+					{
+						hubCharId = null;
+						hubAuthorUsername = null;
+					}
+				}
+			}
+
+			using (var cmdChatData = connection.CreateCommand())
+			{
+				var sbCommand = new StringBuilder();
+				sbCommand.AppendLine(
+				@"
+					SELECT 
+						context, customDialogue, modelInstructions, greetingDialogue, grammar, authorNote
+					FROM Chat
+					WHERE groupConfigId = $groupId
+				");
+
+				if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.First)
+					sbCommand.AppendLine("ORDER BY createdAt ASC");
+				else
+					sbCommand.AppendLine("ORDER BY createdAt DESC");
+				cmdChatData.CommandText = sbCommand.ToString();
+				cmdChatData.Parameters.AddWithValue("$groupId", groupId);
+
+				using (var reader = cmdChatData.ExecuteReader())
+				{
+					staging = new ChatStaging();
+					if (reader.Read())
+					{
+						staging.scenario = reader.GetString(0);
+						staging.example = reader.GetString(1);
+						staging.system = reader.GetString(2);
+						staging.greeting = reader.GetString(3);
+						staging.grammar = reader[4] as string;
+						staging.authorNote = reader.GetString(5);
+					}
+				}
+			}
+		}
+
+		private static bool FetchCharacter(SQLiteConnection connection, string characterId, out _Character character)
+		{
+			using (var cmdCharacter = connection.CreateCommand())
+			{
+				var sbCommand = new StringBuilder();
+				sbCommand.AppendLine(
+				@"
+					SELECT 
+						A.id, A.isUserControlled, B.id, B.createdAt, B.updatedAt, B.displayName, B.name, B.persona 
+					FROM CharacterConfig AS A
+					INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id
+					WHERE A.id = $charId;
+				");
+
+				cmdCharacter.CommandText = sbCommand.ToString();
+				cmdCharacter.Parameters.AddWithValue("$charId", characterId);
+
+				using (var reader = cmdCharacter.ExecuteReader())
+				{
+					if (!reader.Read())
+					{
+						character = default(_Character);
+						return false;
+					}
+
+					string instanceId = reader.GetString(0);
+					bool isUser = reader.GetBoolean(1);
+					string configID = reader.GetString(2);
+					DateTime createdAt = reader.GetTimestamp(3);
+					DateTime updatedAt = reader.GetTimestamp(4);
+					string displayName = reader.GetString(5);
+					string name = reader.GetString(6);
+					string persona = reader.GetString(7);
+
+					character = new _Character() {
+						instanceId = instanceId,
+						configId = configID,
+						name = name,
+						displayName = displayName,
+						creationDate = createdAt,
+						updateDate = updatedAt,
+						persona = persona,
+						isUser = isUser,
+					};
+					return true;
+				}
 			}
 		}
 
@@ -1226,6 +1254,172 @@ namespace Ginger.Integration
 			return bModifiedBackground;
 		}
 		
+		public Backyard.Error ImportGroup(GroupInstance group, out FaradayCardV4[] cards, out CharacterInstance[] characterInstances, out ImageInstance[] images, out UserData userInfo)
+		{
+			if (ConnectionEstablished == false)
+			{
+				cards = null;
+				characterInstances = null;
+				images = null;
+				userInfo = null;
+				LastError = "Not connected";
+				return Backyard.Error.NotConnected;
+			}
+			
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					ChatStaging staging = new ChatStaging();
+					string hubCharId = null;
+					string hubAuthorUsername = null;
+
+					List<_Character> characters = new List<_Character>();
+					var lsImages = new List<ImageInstance>();
+					Dictionary<string, FaradayCardV1.LoreBookEntry[]> characterLore = new Dictionary<string, FaradayCardV1.LoreBookEntry[]>();
+
+					for (int i = 0; i < group.members.Length; ++i)
+					{
+						_Character character;
+						if (FetchCharacter(connection, group.members[i], out character) && character.isUser == false)
+						{
+							characters.Add(character);
+
+							// Gather lorebook items
+							FaradayCardV1.LoreBookEntry[] entries;
+							FetchLorebook(connection, character.configId, out entries);
+							characterLore.Add(character.instanceId, entries);
+
+							// Gather portrait image files
+							FetchPortraitImages(connection, character.configId, lsImages);
+						}
+					}
+								
+					// Get group info
+					FetchGroupInfo(connection, group.instanceId, out staging, out hubCharId, out hubAuthorUsername);
+
+					if (characters.Count == 0 || group.isDefined == false)
+					{
+						cards = null;
+						characterInstances = null;
+						images = null;
+						userInfo = null;
+						return Backyard.Error.NotFound;
+					}
+
+					// Gather background image files
+					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
+					{
+						// Get existing chats
+						ImageInstance[] backgrounds;
+						if (FetchChatBackgrounds(connection, group.instanceId, out backgrounds))
+							lsImages.AddRange(backgrounds);
+					}
+
+					cards = new FaradayCardV4[characters.Count];
+					characterInstances = new CharacterInstance[characters.Count];
+					for (int i = 0; i < characters.Count; ++i)
+					{
+						var character = characters[i];
+						var card = new FaradayCardV4();
+						cards[i] = card;
+
+						card.data.displayName = character.displayName;
+						card.data.name = character.name;
+						card.data.persona = character.persona;
+						card.data.system = staging.system;
+						card.data.scenario = staging.scenario;
+						card.data.greeting = staging.greeting;
+						card.data.example = staging.example;
+						card.data.grammar = staging.grammar;
+						card.data.creationDate = character.creationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+						card.data.updateDate = character.updateDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+						card.authorNote = staging.authorNote;
+						card.hubCharacterId = hubCharId;
+						card.hubAuthorUsername = hubAuthorUsername;
+						if (characterLore.TryGetValue(character.instanceId, out card.data.loreItems) == false)
+							card.data.loreItems = new FaradayCardV1.LoreBookEntry[0];
+
+						characterInstances[i] = new CharacterInstance() {
+							instanceId = character.instanceId,
+							configId = character.configId,
+							groupId = group.instanceId,
+							displayName = character.displayName,
+							name = character.name,
+							creationDate = character.creationDate,
+							updateDate = character.updateDate,
+							isUser = false,
+							persona = character.persona,
+							loreEntries = card.data.loreItems.Length,
+							creator = hubAuthorUsername ?? "",
+							folderId = group.folderId,
+							folderSortPosition = group.folderSortPosition,
+						};
+					}
+
+					// Convert character references
+					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
+						BackyardUtil.ConvertFromIDPlaceholders(cards);
+
+					// Get user persona and portrait
+					string userId;
+					string userName;
+					string userPersona;
+					ImageInstance userImage;
+					if (FetchUserInfo(connection, group.instanceId, out userId, out userName, out userPersona, out userImage))
+					{
+						if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
+							BackyardUtil.ConvertFromIDPlaceholders(ref userPersona);
+
+						userInfo = new UserData() {
+							name = userName?.Trim(),
+							persona = userPersona?.Trim(),
+						};
+						if (userImage != null)
+							lsImages.Add(userImage);
+					}
+					else
+						userInfo = null;
+
+					images = lsImages.ToArray();
+					connection.Close();
+					LastError = null;
+					return Backyard.Error.NoError;
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				cards = null;
+				characterInstances = null;
+				images = null;
+				userInfo = null;
+				LastError = "File not found";
+				Backyard.Disconnect();
+				return Backyard.Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				cards = null;
+				characterInstances = null;
+				images = null;
+				userInfo = null;
+				LastError = e.Message;
+				return Backyard.Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				cards = null;
+				characterInstances = null;
+				images = null;
+				userInfo = null;
+				LastError = e.Message;
+				Backyard.Disconnect();
+				return Backyard.Error.Unknown;
+			}
+		}
+
 		public Backyard.Error CreateNewGroup(FaradayCardV4[] cards, ImageInput[] imageInput, BackupData.Chat[] chats, out GroupInstance groupInstance, out CharacterInstance[] characterInstances, out Backyard.Link.Image[] imageLinks, UserData userInfo = null, FolderInstance folder = default(FolderInstance))
 		{
 			if (ConnectionEstablished == false)
@@ -2338,8 +2532,13 @@ namespace Ginger.Integration
 		private struct _Character
 		{
 			public string instanceId;
+			public string configId;
 			public string name;
+			public string displayName;
 			public bool isUser;
+			public string persona;
+			public DateTime creationDate;
+			public DateTime updateDate;
 		}
 
 		private struct _Chat
@@ -4932,7 +5131,7 @@ namespace Ginger.Integration
 				cmdCharacters.CommandText =
 				@"
 					SELECT 
-						A.id, B.name, A.isUserControlled
+						A.id, A.isUserControlled, B.id, B.createdAt, B.updatedAt, B.displayName, B.name, B.persona 
 					FROM CharacterConfig AS A
 					INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id;
 				";
@@ -4943,11 +5142,22 @@ namespace Ginger.Integration
 					while (reader.Read())
 					{
 						string instanceId = reader.GetString(0);
-						string name = reader.GetString(1);
-						bool isUser = reader.GetBoolean(2);
+						bool isUser = reader.GetBoolean(1);
+						string configID = reader.GetString(2);
+						DateTime createdAt = reader.GetTimestamp(3);
+						DateTime updatedAt = reader.GetTimestamp(4);
+						string displayName = reader.GetString(5);
+						string name = reader.GetString(6);
+						string persona = reader.GetString(7);
+
 						characters.Add(new _Character() {
 							instanceId = instanceId,
+							configId = configID,
 							name = name,
+							displayName = displayName,
+							creationDate = createdAt,
+							updateDate = updatedAt,
+							persona = persona,
 							isUser = isUser,
 						});
 					}

@@ -179,7 +179,7 @@ namespace Ginger
 
 		private static readonly string[] s_InternalTerms = {
 			// Ginger commands
-			"char", "user", "card", "name", "original", "gender", "they'll", "they're", "they've", "they'd", "they", "them", "theirs",
+			"char", "user", "card", "name", "original", "unknown", "gender", "they'll", "they're", "they've", "they'd", "they", "them", "theirs",
 			"their", "themselves", "he'll", "he's", "he's", "he'd", "he", "him", "his", "his", "himself", "she'll", "she's", "she's",
 			"she'd", "she", "her", "hers", "her", "herself", "is", "are", "isn't", "aren't", "has", "have", "hasn't", "haven't",
 			"was", "were", "wasn't", "weren't", "does", "do", "doesn't", "don't", "s", "y", "ies", "es", 

@@ -770,7 +770,7 @@ namespace Ginger
 			_charactersById = Backyard.CharactersWithGroup.ToDictionary(c => c.instanceId, c => c);
 
 			var groupDlg = new LinkSelectGroupDialog();
-			groupDlg.Characters = Backyard.CharactersWithGroup.ToArray();
+			groupDlg.Characters = Backyard.AllCharactersWithGroup.ToArray();
 			groupDlg.Groups = Backyard.Groups.ToArray();
 			groupDlg.Folders = Backyard.Folders.ToArray();
 			if (groupDlg.ShowDialog() == DialogResult.OK)

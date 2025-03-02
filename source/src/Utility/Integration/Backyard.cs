@@ -653,6 +653,7 @@ namespace Ginger.Integration
 		public static IEnumerable<CharacterInstance> Characters { get { return Database != null ? Database.Characters : new CharacterInstance[0]; } }
 		public static IEnumerable<CharacterInstance> Users { get { return Database != null ? Database.Users : new CharacterInstance[0]; } }
 		public static IEnumerable<CharacterInstance> CharactersWithGroup { get { return Characters.Where(c => c.groupId != null); } }
+		public static IEnumerable<CharacterInstance> AllCharactersWithGroup { get { return AllCharacters.Where(c => c.groupId != null); } }
 
 		public static IEnumerable<GroupInstance> Groups { get { return Database != null ? Database.Groups : new GroupInstance[0]; } }
 		public static IEnumerable<FolderInstance> Folders { get { return Database != null ? Database.Folders : new FolderInstance[0]; } }
@@ -1192,7 +1193,7 @@ namespace Ginger.Integration
 				string characterId = sb.Substring(pos_begin + 7, pos_end - pos_begin - 7);
 				sb.Remove(pos_begin, pos_end - pos_begin + 7);
 
-				string placeholder = Constants.DefaultCharacterName;
+				string placeholder = null;
 				if (dict != null && dict.TryGetValue(characterId, out placeholder))
 				{
 					sb.Insert(pos_begin, placeholder);
@@ -1207,7 +1208,7 @@ namespace Ginger.Integration
 						else
 							placeholder = character.name;
 					}
-					sb.Insert(pos_begin, placeholder);
+					sb.Insert(pos_begin, placeholder ?? Constants.UnknownCharacter);
 
 					if (dict != null)
 						dict.Add(characterId, placeholder);

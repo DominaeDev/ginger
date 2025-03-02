@@ -128,6 +128,7 @@ namespace Ginger
 		}
 
 		public static readonly string DefaultCharacterName = "Unnamed";
+		public static readonly string UnknownCharacter = "{unknown}";
 		public static readonly string DefaultUserName = "User";
 		public static readonly float AutoWrapWidth = 54;
 		public static readonly int DefaultPortraitWidth = 256;
