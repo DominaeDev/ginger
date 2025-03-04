@@ -2509,17 +2509,9 @@ namespace Ginger
 			if (_assetsDialog.ShowDialog() == DialogResult.OK && _assetsDialog.Changed)
 			{
 				Current.Card.assets = (AssetCollection)_assetsDialog.Assets.Clone();
-				
-				// Update image links
-				if (Current.HasLink && Current.Link.imageLinks != null)
-				{
-					var uids = new HashSet<string>();
-					if (Current.Card.portraitImage != null)
-						uids.Add(Current.Card.portraitImage.uid);
-					uids.UnionWith(Current.Card.assets.Select(a => a.uid));
 
-					Current.Link.imageLinks = Current.Link.imageLinks.Where(l => uids.Contains(l.uid)).ToArray();
-				}
+				if (Current.HasLink)
+					Current.Link.ValidateImages(Current.Card.portraitImage, Current.Card.assets);
 
 				Undo.Push(Undo.Kind.Parameter, "Changed embedded assets");
 

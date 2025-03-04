@@ -642,6 +642,22 @@ namespace Ginger.Integration
 				return clone;
 			}
 
+			public void ValidateImages(ImageRef mainPortrait, AssetCollection assets)
+			{
+				// Update image links
+				if (imageLinks == null)
+					return;
+
+				var uids = new HashSet<string>();
+				if (mainPortrait != null)
+					uids.Add(mainPortrait.uid);
+				if (assets != null)
+					uids.UnionWith(assets.Select(a => a.uid));
+
+				imageLinks = imageLinks
+					.Where(l => uids.Contains(l.uid))
+					.ToArray();
+			}
 		}
 
 		public enum Error
