@@ -527,7 +527,7 @@ namespace Ginger.Integration
 					}
 					imageLinks = lsImages.ToArray();
 				}
-				return string.IsNullOrEmpty(groupId) == false && actors.Length > 0;
+				return actors.Length > 0;
 			}
 
 			public void SaveToXml(XmlNode xmlNode)
