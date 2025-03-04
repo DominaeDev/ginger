@@ -19,7 +19,7 @@ namespace Ginger.Integration
 	public interface IBackyardDatabase
 	{
 		// Getters
-		IEnumerable<CharacterInstance> AllCharacters { get; }
+		IEnumerable<CharacterInstance> Everyone { get; }
 		IEnumerable<CharacterInstance> Characters { get; }
 		IEnumerable<CharacterInstance> Users { get; }
 		IEnumerable<GroupInstance> Groups { get; }

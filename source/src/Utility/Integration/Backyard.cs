@@ -15,7 +15,7 @@ namespace Ginger.Integration
 		{
 			public int count;
 			public DateTime lastMessage;
-			public bool hasMessages { get { return lastMessage > DateTime.MinValue; } }
+			public bool hasMessages { get { return lastMessage != default(DateTime); } }
 		}
 
 		public struct ConfirmDeleteResult
@@ -57,7 +57,8 @@ namespace Ginger.Integration
 			public string persona;				// CharacterConfigVersion.persona
 			public int loreEntries;
 
-			public bool isCharacter { get { return !isUser; } }
+			public bool isDefined { get { return instanceId != null; } }
+			public bool isCharacter { get { return isDefined && !isUser; } }
 			public string inferredGender { get { return Utility.InferGender(GingerString.FromFaraday(persona).ToString()); } }
 		}
 
@@ -649,11 +650,11 @@ namespace Ginger.Integration
 
 		public static bool ConnectionEstablished { get { return Database != null; } }
 
-		public static IEnumerable<CharacterInstance> AllCharacters { get { return Database != null ? Database.AllCharacters : new CharacterInstance[0]; } }
+		public static IEnumerable<CharacterInstance> Everyone { get { return Database != null ? Database.Everyone : new CharacterInstance[0]; } }
 		public static IEnumerable<CharacterInstance> Characters { get { return Database != null ? Database.Characters : new CharacterInstance[0]; } }
 		public static IEnumerable<CharacterInstance> Users { get { return Database != null ? Database.Users : new CharacterInstance[0]; } }
 		public static IEnumerable<CharacterInstance> CharactersWithGroup { get { return Characters.Where(c => c.groupId != null); } }
-		public static IEnumerable<CharacterInstance> AllCharactersWithGroup { get { return AllCharacters.Where(c => c.groupId != null); } }
+		public static IEnumerable<CharacterInstance> EveryoneWithGroup { get { return Everyone.Where(c => c.groupId != null); } }
 
 		public static IEnumerable<GroupInstance> Groups { get { return Database != null ? Database.Groups : new GroupInstance[0]; } }
 		public static IEnumerable<FolderInstance> Folders { get { return Database != null ? Database.Folders : new FolderInstance[0]; } }

@@ -952,6 +952,46 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap character_female_empty_lore {
+            get {
+                object obj = ResourceManager.GetObject("character_female_empty_lore", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap character_male_empty_lore {
+            get {
+                object obj = ResourceManager.GetObject("character_male_empty_lore", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap character_neutral_empty_lore {
+            get {
+                object obj = ResourceManager.GetObject("character_neutral_empty_lore", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap character_other_empty_lore {
+            get {
+                object obj = ResourceManager.GetObject("character_other_empty_lore", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap characteristic {
             get {
                 object obj = ResourceManager.GetObject("characteristic", resourceCulture);
@@ -1075,6 +1115,46 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap dark_asset_override {
             get {
                 object obj = ResourceManager.GetObject("dark_asset_override", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_character_female_empty_lore {
+            get {
+                object obj = ResourceManager.GetObject("dark_character_female_empty_lore", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_character_male_empty_lore {
+            get {
+                object obj = ResourceManager.GetObject("dark_character_male_empty_lore", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_character_neutral_empty_lore {
+            get {
+                object obj = ResourceManager.GetObject("dark_character_neutral_empty_lore", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_character_other_empty_lore {
+            get {
+                object obj = ResourceManager.GetObject("dark_character_other_empty_lore", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -114,6 +114,35 @@ namespace Ginger
 			}
 		}
 
+		public void ReadFaradayCardAsNewActor(FaradayCardV4 card)
+		{
+			if (card == null)
+				return;
+
+			var character = new CharacterData() {
+				spokenName = card.data.name,
+			};
+			Characters.Add(character);
+
+			character.gender = Utility.InferGender(GingerString.FromFaraday(card.data.persona).ToString());
+
+			AddChannel(character, GingerString.FromFaraday(card.data.system).ToParameter(), Resources.system_recipe);
+			AddChannel(character, GingerString.FromFaraday(card.authorNote).ToParameter(), Resources.post_history_recipe);
+			AddChannel(character, GingerString.FromFaraday(card.data.persona).ToParameter(), Resources.persona_recipe);
+			AddChannel(character, GingerString.FromFaraday(card.data.scenario).ToParameter(), Resources.scenario_recipe);
+			AddChannel(character, GingerString.FromFaraday(card.data.greeting).ToParameter(), Resources.greeting_recipe);
+			AddChannel(character, GingerString.FromFaraday(card.data.example).ToParameter(), Resources.example_recipe);
+			AddChannel(character, card.data.grammar, Resources.grammar_recipe);
+
+			if (card.data.loreItems != null && card.data.loreItems.Length > 0)
+			{
+				var loreBook = Lorebook.FromFaradayBook(card.data.loreItems);
+				var loreBookRecipe = RecipeBook.CreateRecipeFromResource(Resources.lorebook_recipe);
+				(loreBookRecipe.parameters[0] as LorebookParameter).value = loreBook;
+				character.AddRecipe(loreBookRecipe);
+			}
+		}
+
 		public bool ReadTavernCard(TavernCardV2 card, Image portrait)
 		{
 			if (card == null)

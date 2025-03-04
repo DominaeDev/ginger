@@ -250,6 +250,12 @@
     <Compile Include="src\Interface\Forms\Dialogs\EnterNameDialog.Designer.cs">
       <DependentUpon>EnterNameDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectCharacterOrGroupDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectCharacterOrGroupDialog.Designer.cs">
+      <DependentUpon>LinkSelectCharacterOrGroupDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\LinkSelectMultipleGroupsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -763,6 +769,9 @@
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\EnterNameDialog.resx">
       <DependentUpon>EnterNameDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectCharacterOrGroupDialog.resx">
+      <DependentUpon>LinkSelectCharacterOrGroupDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectMultipleGroupsDialog.resx">
       <DependentUpon>LinkSelectMultipleGroupsDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -1119,6 +1128,10 @@
     <None Include="Resources\Icons\Dark\asset_actor.png" />
     <None Include="Resources\Icons\Dark\dark_asset_actor_portrait.png" />
     <None Include="Resources\Icons\Dark\dark_asset_override.png" />
+    <None Include="Resources\Icons\Dark\character_female_empty_lore.png" />
+    <None Include="Resources\Icons\Dark\character_male_empty_lore.png" />
+    <None Include="Resources\Icons\Dark\character_neutral_empty_lore.png" />
+    <None Include="Resources\Icons\Dark\character_other_empty_lore.png" />
     <Content Include="Resources\Icons\Light\arrow_down.png" />
     <Content Include="Resources\Icons\Light\arrow_left.png" />
     <Content Include="Resources\Icons\Light\arrow_right.png" />
@@ -1126,6 +1139,10 @@
     <None Include="Resources\Icons\Light\asset_actor_portrait.png" />
     <None Include="Resources\Icons\Light\asset_override.png" />
     <Content Include="Resources\Icons\Light\characteristic.png" />
+    <None Include="Resources\Icons\Light\character_female_empty_lore.png" />
+    <None Include="Resources\Icons\Light\character_male_empty_lore.png" />
+    <None Include="Resources\Icons\Light\character_neutral_empty_lore.png" />
+    <None Include="Resources\Icons\Light\character_other_empty_lore.png" />
     <Content Include="Resources\Icons\Light\checker.png" />
     <None Include="Resources\Icons\Light\clean.png" />
     <Content Include="Resources\Icons\Light\collapsed.png" />

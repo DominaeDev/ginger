@@ -1679,12 +1679,13 @@ namespace Ginger
 				AppSettings.BackyardLink.Enabled = false;
 			}
 
-			var dlg = new LinkSelectCharacterDialog();
+			var dlg = new LinkSelectCharacterOrGroupDialog();
 			dlg.Text = "Open Backyard AI character";
-			dlg.Characters = Backyard.Characters.ToArray();
-			dlg.Folders = Backyard.Folders.ToArray();
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return false;
+
+			if (dlg.SelectedGroup.isDefined)
+				return ImportGroupFromBackyard(dlg.SelectedGroup);
 
 			if (ConfirmSave(Resources.cap_import_character) == false)
 				return false;
@@ -1733,6 +1734,63 @@ namespace Ginger
 			if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
 			{
 				Current.LinkWith(dlg.SelectedCharacter, imageLinks);
+				SetStatusBarMessage(Resources.status_link_create, Constants.StatusBarMessageInterval);
+				Current.IsFileDirty = false;
+				Current.IsLinkDirty = false;
+				RefreshTitle();
+			}
+			return true;
+		}
+
+		private bool ImportGroupFromBackyard(GroupInstance groupInstance)
+		{
+			if (ConfirmSave(Resources.cap_import_character) == false)
+				return false;
+
+			SetStatusBarMessage(Resources.status_open_character);
+
+			FaradayCardV4[] faradayData;
+			CharacterInstance[] characterInstances;
+			ImageInstance[] images;
+			UserData userInfo;
+			var importError = Backyard.Database.ImportGroup(groupInstance, out faradayData, out characterInstances, out images, out userInfo);
+			if (importError == Backyard.Error.NotFound)
+			{
+				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				ClearStatusBarMessage();
+				return false;
+			}
+			else if (importError != Backyard.Error.NoError || faradayData == null || faradayData.Length == 0)
+			{
+				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				ClearStatusBarMessage();
+				return false;
+			}
+
+			if (AppSettings.BackyardLink.WriteUserPersona == false)
+			{
+				images = images.Except(i => i.imageType == AssetFile.AssetType.UserIcon);
+				userInfo = null;
+			}
+
+			// Success
+			Current.ReadFaradayCards(faradayData, null, userInfo);
+
+			Backyard.Link.Image[] imageLinks;
+			Current.ImportImages(images, out imageLinks);
+
+			ClearStatusBarMessage();
+
+			FileMutex.Release();
+
+			Current.Filename = null;
+			Current.IsDirty = false;
+			Current.IsFileDirty = false;
+			Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
+
+			if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+			{
+				Current.LinkWith(groupInstance, characterInstances, imageLinks);
 				SetStatusBarMessage(Resources.status_link_create, Constants.StatusBarMessageInterval);
 				Current.IsFileDirty = false;
 				Current.IsLinkDirty = false;

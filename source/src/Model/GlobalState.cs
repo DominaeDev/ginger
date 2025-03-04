@@ -292,6 +292,20 @@ namespace Ginger
 			Instance.ConvertCharacterMarkers(Name, Card.userPlaceholder);
 			return true;
 		}
+				
+		public static bool ReadFaradayCards(FaradayCardV4[] cards, Image portrait, UserData userInfo)
+		{
+			if (cards == null || cards.Length == 0)
+				return false;
+
+			Reset();
+			Instance.ReadFaradayCard(cards[0], portrait);
+			Instance.ReadUserData(userInfo);
+			for (int i = 1; i < cards.Length; ++i)
+				Instance.ReadFaradayCardAsNewActor(cards[i]);
+			Instance.ConvertCharacterMarkers(Name, Card.userPlaceholder);
+			return true;
+		}
 
 		public static bool ReadTavernCard(TavernCardV2 card, Image portrait)
 		{

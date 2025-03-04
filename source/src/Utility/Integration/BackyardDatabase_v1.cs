@@ -23,7 +23,7 @@ namespace Ginger.Integration
 
 	public class BackyardDatabase_v1 : IBackyardDatabase
 	{
-		public IEnumerable<CharacterInstance> AllCharacters { get { return _Characters.Values; } }
+		public IEnumerable<CharacterInstance> Everyone { get { return _Characters.Values; } }
 		public IEnumerable<CharacterInstance> Characters { get { return _Characters.Values.Where(c => c.isCharacter); } }
 		public IEnumerable<CharacterInstance> Users { get { return _Characters.Values.Where(c => c.isUser); } }
 		public IEnumerable<GroupInstance> Groups { get { return _Groups.Values; } }
