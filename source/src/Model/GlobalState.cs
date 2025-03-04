@@ -436,7 +436,66 @@ namespace Ginger
 			return false;
 		}
 
-		public static void ImportImages(string[] images, out Backyard.Link.Image[] imageLinks, AssetFile.AssetType imageType = AssetFile.AssetType.Icon) // Backyard import
+
+		private struct __ImageWithIndex
+		{
+			public Backyard.ImageInstance imageInstance;
+			public int actor;
+		}
+
+		public static void ImportImages(Backyard.ImageInstance[] imageInstances, int[] actorIndices, out Backyard.Link.Image[] imageLinks) // Backyard import
+		{
+			if (imageInstances == null || imageInstances.Length == 0)
+			{
+				imageLinks = new Backyard.Link.Image[0];
+				return;
+			}
+
+			__ImageWithIndex[] images;
+			if (actorIndices != null && imageInstances.Length == actorIndices.Length)
+			{
+				images = new __ImageWithIndex[imageInstances.Length];
+				for (int i = 0; i < imageInstances.Length; ++i)
+					images[i] = new __ImageWithIndex() {
+						imageInstance = imageInstances[i],
+						actor = actorIndices[i],
+					};
+			}
+			else
+			{
+				images = imageInstances
+					.Select(i => new __ImageWithIndex() {
+						imageInstance = i,
+						actor = -1,
+					})
+					.ToArray();
+			}
+
+			// Images
+			__ImageWithIndex[] imageUrls = images
+				.Where(i => i.imageInstance.imageType == AssetFile.AssetType.Icon)
+				.ToArray();
+			Backyard.Link.Image[] portraitLinks;
+			ImportImages(imageUrls, out portraitLinks, AssetFile.AssetType.Icon);
+			
+			// Backgrounds
+			__ImageWithIndex[] backgroundUrls = images
+				.Where(i => i.imageInstance.imageType == AssetFile.AssetType.Background)
+				.ToArray();
+			Backyard.Link.Image[] backgroundLinks;
+			ImportImages(backgroundUrls, out backgroundLinks, AssetFile.AssetType.Background);
+
+			// User images
+			__ImageWithIndex[] userImageUrls = images
+				.Where(i => i.imageInstance.imageType == AssetFile.AssetType.UserIcon)
+				.ToArray();
+			Backyard.Link.Image[] userPortraitLinks;
+			ImportImages(userImageUrls, out userPortraitLinks, AssetFile.AssetType.UserIcon);
+
+			imageLinks = Utility.ConcatenateArrays(portraitLinks, backgroundLinks, userPortraitLinks);
+		}
+
+		private static void ImportImages(__ImageWithIndex[] images, out Backyard.Link.Image[] imageLinks, AssetFile.AssetType imageType = AssetFile.AssetType.Icon) // Backyard import
 		{
 			if (images == null || images.Length == 0)
 			{
@@ -445,32 +504,37 @@ namespace Ginger
 			}
 
 			var lsImageLinks = new List<Backyard.Link.Image>();
+			bool bFoundMainPortrait = false;
 
-			int i = 0;
-
-			if (imageType == AssetFile.AssetType.Icon)
+			for (int i = 0; i < images.Length; ++i)
 			{
-				Image portraitImage;
-				if (Card.LoadPortraitFromFile(images[0], out portraitImage))
-				{
-					Card.portraitImage = ImageRef.FromImage(portraitImage);
-					lsImageLinks.Add(new Backyard.Link.Image() {
-						filename = Path.GetFileName(images[0]),
-						uid = Card.portraitImage.uid,
-					});
-					IsFileDirty = true;
-				}
-				++i;
-			}
+				string imageUrl = images[i].imageInstance.imageUrl;
+				int actor = images[i].actor;
 
-			for (; i < images.Length; ++i)
-			{
-				string name = Path.GetFileNameWithoutExtension(images[i]);
-				string ext = Path.GetExtension(images[i]);
+				string name = Path.GetFileNameWithoutExtension(imageUrl);
+				string ext = Path.GetExtension(imageUrl);
 				if (ext.BeginsWith("."))
 					ext = ext.Substring(1);
 
-				var bytes = Utility.LoadFile(images[i]);
+				if (bFoundMainPortrait == false 
+					&& imageType == AssetFile.AssetType.Icon 
+					&& actor <= 0)
+				{
+					Image portraitImage;
+					if (Card.LoadPortraitFromFile(imageUrl, out portraitImage))
+					{
+						Card.portraitImage = ImageRef.FromImage(portraitImage);
+						lsImageLinks.Add(new Backyard.Link.Image() {
+							filename = Path.GetFileName(imageUrl),
+							uid = Card.portraitImage.uid,
+						});
+						IsFileDirty = true;
+						bFoundMainPortrait = true;
+					}
+					continue;
+				}
+
+				var bytes = Utility.LoadFile(imageUrl);
 				if (bytes != null)
 				{
 					var asset = new AssetFile() {
@@ -479,10 +543,11 @@ namespace Ginger
 						data = AssetData.FromBytes(bytes),
 						ext = ext,
 						uriType = AssetFile.UriType.Embedded,
+						actorIndex = actor,
 					};
 					Card.assets.Add(asset);
 					lsImageLinks.Add(new Backyard.Link.Image() {
-						filename = Path.GetFileName(images[i]),
+						filename = Path.GetFileName(imageUrl),
 						uid = asset.uid,
 					});
 					IsFileDirty = true;
@@ -490,35 +555,6 @@ namespace Ginger
 			}
 
 			imageLinks = lsImageLinks.ToArray();
-		}
-
-		public static void ImportImages(Backyard.ImageInstance[] images, out Backyard.Link.Image[] imageLinks) // Backyard import
-		{
-			// Images
-			string[] imageUrls = images
-				.Where(i => i.imageType == AssetFile.AssetType.Icon)
-				.Select(i => i.imageUrl)
-				.ToArray();
-			Backyard.Link.Image[] portraitLinks;
-			ImportImages(imageUrls, out portraitLinks, AssetFile.AssetType.Icon);
-			
-			// Backgrounds
-			string[] backgroundUrls = images
-				.Where(i => i.imageType == AssetFile.AssetType.Background)
-				.Select(i => i.imageUrl)
-				.ToArray();
-			Backyard.Link.Image[] backgroundLinks;
-			ImportImages(backgroundUrls, out backgroundLinks, AssetFile.AssetType.Background);
-
-			// User images
-			string[] userImageUrls = images
-				.Where(i => i.imageType == AssetFile.AssetType.UserIcon)
-				.Select(i => i.imageUrl)
-				.ToArray();
-			Backyard.Link.Image[] userPortraitLinks;
-			ImportImages(userImageUrls, out userPortraitLinks, AssetFile.AssetType.UserIcon);
-
-			imageLinks = Utility.ConcatenateArrays(portraitLinks, backgroundLinks, userPortraitLinks);
 		}
 
 		public struct StashInfo

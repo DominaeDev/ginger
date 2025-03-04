@@ -316,7 +316,7 @@ namespace Ginger.Integration
 
 			// Load images/backgrounds
 			Backyard.Link.Image[] unused;
-			Current.ImportImages(images, out unused);
+			Current.ImportImages(images, null, out unused);
 
 			try
 			{

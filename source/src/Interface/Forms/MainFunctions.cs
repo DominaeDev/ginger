@@ -1720,7 +1720,7 @@ namespace Ginger
 			Current.ReadFaradayCard(faradayData, null, userInfo);
 
 			Backyard.Link.Image[] imageLinks;
-			Current.ImportImages(images, out imageLinks);
+			Current.ImportImages(images, null, out imageLinks);
 
 			ClearStatusBarMessage();
 
@@ -1777,7 +1777,29 @@ namespace Ginger
 			Current.ReadFaradayCards(faradayData, null, userInfo);
 
 			Backyard.Link.Image[] imageLinks;
-			Current.ImportImages(images, out imageLinks);
+			int[] actorIndices = new int[images.Length];
+
+			for (int i = 0; i < images.Length; ++i)
+			{
+				string instanceId = images[i].associatedInstanceId;
+				actorIndices[i] = Array.FindIndex(characterInstances, c => c.instanceId == instanceId);
+			}
+
+			Current.ImportImages(images, actorIndices, out imageLinks);
+
+			// Resolve actor indices for imported assets
+			foreach (var asset in Current.Card.assets.Where(a => a.assetType == AssetFile.AssetType.Icon))
+			{
+				var assetUID = asset.uid;
+				int idxLink = Array.FindIndex(imageLinks, l => l.uid == assetUID);
+				if (idxLink >= 0 && idxLink < images.Length)
+				{
+					string instanceId = images[idxLink].associatedInstanceId;
+					int idxActor = Array.FindIndex(characterInstances, c => c.instanceId == instanceId);
+					if (idxActor != -1)
+						asset.actorIndex = idxActor;
+				}
+			}
 
 			ClearStatusBarMessage();
 
@@ -2025,7 +2047,7 @@ namespace Ginger
 			Current.ReadFaradayCard(faradayData, null, userInfo);
 
 			Backyard.Link.Image[] imageLinks;
-			Current.ImportImages(images, out imageLinks);
+			Current.ImportImages(images, null, out imageLinks);
 
 			Current.LinkWith(characterInstance, imageLinks);
 			Current.IsDirty = true;

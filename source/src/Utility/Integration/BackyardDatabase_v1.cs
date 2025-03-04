@@ -1292,7 +1292,11 @@ namespace Ginger.Integration
 							characterLore.Add(character.instanceId, entries);
 
 							// Gather portrait image files
-							FetchPortraitImages(connection, character.configId, lsImages);
+							var lsCharacterImages = new List<ImageInstance>();
+							FetchPortraitImages(connection, character.configId, lsCharacterImages);
+							foreach (var image in lsCharacterImages)
+								image.associatedInstanceId = character.instanceId;
+							lsImages.AddRange(lsCharacterImages);
 						}
 					}
 								
