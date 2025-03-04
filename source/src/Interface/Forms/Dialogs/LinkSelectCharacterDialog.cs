@@ -205,7 +205,7 @@ namespace Ginger
 				icon = 1;
 			else 
 				icon = 4;
-			if (character.loreEntries > 0)
+			if (character.hasLorebook)
 				icon += 4;
 
 			var node = new TreeNode(label, icon, icon);

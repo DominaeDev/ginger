@@ -256,7 +256,7 @@ namespace Ginger
 					sbTooltip.AppendFormat("Gender: {0} (Inferred)", character.inferredGender);
 				}
 				sbTooltip.NewLine();
-				sbTooltip.AppendFormat("Lorebook: {0}", character.loreEntries > 0 ? "Yes" : "No");
+				sbTooltip.AppendFormat("Lorebook: {0}", character.hasLorebook ? "Yes" : "No");
 			}
 
 			sbTooltip.NewLine();
@@ -296,7 +296,7 @@ namespace Ginger
 				else // Other, futa
 					icon = 4;
 
-				if (characters[0].loreEntries > 0)
+				if (characters[0].hasLorebook)
 					icon += 4; // Lore
 			}
 
@@ -365,7 +365,7 @@ namespace Ginger
 				icon = 1;
 			else 
 				icon = 4;
-			if (character.loreEntries > 0)
+			if (character.hasLorebook)
 				icon += 4;
 			if (bGrayed)
 				icon += 9; // Grayed out

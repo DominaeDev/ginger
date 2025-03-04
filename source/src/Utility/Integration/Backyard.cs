@@ -55,7 +55,7 @@ namespace Ginger.Integration
 			public string folderSortPosition;	// GroupConfig.folderSortPosition (Primary group)
 			public string creator;				// GroupConfig.hubAuthorUsername
 			public string persona;				// CharacterConfigVersion.persona
-			public int loreEntries;
+			public bool hasLorebook;
 
 			public bool isDefined { get { return instanceId != null; } }
 			public bool isCharacter { get { return isDefined && !isUser; } }

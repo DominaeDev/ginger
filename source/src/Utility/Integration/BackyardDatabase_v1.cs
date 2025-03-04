@@ -222,7 +222,7 @@ namespace Ginger.Integration
 										updateDate = updatedAt,
 										isUser = isUser,
 										persona = persona,
-										loreEntries = numLoreEntries,
+										hasLorebook = numLoreEntries > 0,
 										creator = hubAuthorUsername ?? "",
 										folderId = folderId,
 										folderSortPosition = folderSortPosition,
@@ -856,7 +856,6 @@ namespace Ginger.Integration
 							characterInstance.folderId = parentFolder.instanceId;
 							characterInstance.folderSortPosition = folderSortPosition;
 
-
 							var staging = new ChatStaging() {
 								system = card.data.system ?? "",
 								scenario = card.data.scenario ?? "",
@@ -1320,6 +1319,7 @@ namespace Ginger.Integration
 
 					cards = new FaradayCardV4[characters.Count];
 					characterInstances = new CharacterInstance[characters.Count];
+
 					for (int i = 0; i < characters.Count; ++i)
 					{
 						var character = characters[i];
@@ -1329,30 +1329,35 @@ namespace Ginger.Integration
 						card.data.displayName = character.displayName;
 						card.data.name = character.name;
 						card.data.persona = character.persona;
-						card.data.system = staging.system;
-						card.data.scenario = staging.scenario;
-						card.data.greeting = staging.greeting;
-						card.data.example = staging.example;
-						card.data.grammar = staging.grammar;
 						card.data.creationDate = character.creationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
 						card.data.updateDate = character.updateDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
-						card.authorNote = staging.authorNote;
-						card.hubCharacterId = hubCharId;
-						card.hubAuthorUsername = hubAuthorUsername;
+
 						if (characterLore.TryGetValue(character.instanceId, out card.data.loreItems) == false)
 							card.data.loreItems = new FaradayCardV1.LoreBookEntry[0];
+
+						if (i == 0) // Primary card only
+						{
+							card.data.system = staging.system;
+							card.data.scenario = staging.scenario;
+							card.data.greeting = staging.greeting;
+							card.data.example = staging.example;
+							card.data.grammar = staging.grammar;
+							card.authorNote = staging.authorNote;
+						}
 
 						characterInstances[i] = new CharacterInstance() {
 							instanceId = character.instanceId,
 							configId = character.configId,
 							groupId = group.instanceId,
-							displayName = character.displayName,
-							name = character.name,
 							creationDate = character.creationDate,
 							updateDate = character.updateDate,
 							isUser = false,
-							persona = character.persona,
-							loreEntries = card.data.loreItems.Length,
+
+							displayName = card.data.displayName,
+							name = card.data.name,
+							persona = card.data.persona,
+							
+							hasLorebook = card.data.loreItems.Length > 0,
 							creator = hubAuthorUsername ?? "",
 							folderId = group.folderId,
 							folderSortPosition = group.folderSortPosition,
