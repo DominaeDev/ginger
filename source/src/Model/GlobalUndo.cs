@@ -24,6 +24,7 @@ namespace Ginger
 			public CardData card;
 			public CharacterData[] characters;
 			public int selectedCharacter;
+			public Integration.Backyard.Link link;
 
 			// Generation settings
 			public bool autoConvertNames;
@@ -86,6 +87,7 @@ namespace Ginger
 			Current.Card = state.card.Clone();
 			Current.Characters = state.characters.Select(c => c.Clone()).ToList();
 			Current.SelectedCharacter = state.selectedCharacter;
+			Current.Link = state.link?.Clone();
 
 			AppSettings.Settings.AutoConvertNames = state.autoConvertNames;
 			AppSettings.Settings.UserPlaceholder = state.userPlaceholder;
@@ -103,6 +105,7 @@ namespace Ginger
 			Current.Card = state.card.Clone();
 			Current.Characters = state.characters.Select(c => c.Clone()).ToList();
 			Current.SelectedCharacter = state.selectedCharacter;
+			Current.Link = state.link?.Clone();
 
 			AppSettings.Settings.AutoConvertNames = state.autoConvertNames;
 			AppSettings.Settings.UserPlaceholder = state.userPlaceholder;
@@ -137,6 +140,7 @@ namespace Ginger
 				card = Current.Card.Clone(),
 				autoConvertNames = AppSettings.Settings.AutoConvertNames,
 				userPlaceholder = AppSettings.Settings.UserPlaceholder,
+				link = Current.Link?.Clone(),
 			};
 			return state;
 		}

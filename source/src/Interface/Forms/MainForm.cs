@@ -2500,6 +2500,10 @@ namespace Ginger
 			if (_assetsDialog.ShowDialog() == DialogResult.OK && _assetsDialog.Changed)
 			{
 				Current.Card.assets = (AssetCollection)_assetsDialog.Assets.Clone();
+
+				if (Current.HasLink)
+					Current.Link.ValidateImages(Current.Card.portraitImage, Current.Card.assets);
+
 				Undo.Push(Undo.Kind.Parameter, "Changed embedded assets");
 
 				Current.IsFileDirty = true;

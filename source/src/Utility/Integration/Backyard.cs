@@ -547,6 +547,36 @@ namespace Ginger.Integration
 					return hash.Equals(_filenameHash);
 				}
 			}
+
+			public Link Clone()
+			{
+				var clone = (Link)MemberwiseClone();
+				if (this.imageLinks != null)
+				{
+					clone.imageLinks = new Image[this.imageLinks.Length];
+					Array.Copy(this.imageLinks, clone.imageLinks, this.imageLinks.Length);
+				}
+
+				return clone;
+			}
+
+			public void ValidateImages(ImageRef mainPortrait, AssetCollection assets)
+			{
+				// Update image links
+				if (imageLinks == null)
+					return;
+
+				var uids = new HashSet<string>();
+				if (mainPortrait != null)
+					uids.Add(mainPortrait.uid);
+				if (assets != null)
+					uids.UnionWith(assets.Select(a => a.uid));
+
+				imageLinks = imageLinks
+					.Where(l => uids.Contains(l.uid))
+					.ToArray();
+			}
+
 		}
 
 		public enum Error
