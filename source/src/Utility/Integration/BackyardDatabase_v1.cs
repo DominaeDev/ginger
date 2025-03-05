@@ -1066,6 +1066,15 @@ namespace Ginger.Integration
 					if (bAllowUserPersona)
 						userPortrait = imageOutput.FirstOrDefault(i => i.imageType == AssetFile.AssetType.UserIcon);
 
+					bool bWriteGroup = groupId != null
+						|| !(string.IsNullOrEmpty(card.data.system)
+							&& string.IsNullOrEmpty(card.data.scenario)
+							&& string.IsNullOrEmpty(card.data.greeting)
+							&& string.IsNullOrEmpty(card.data.example)
+							&& string.IsNullOrEmpty(card.data.grammar)
+							&& string.IsNullOrEmpty(card.authorNote)
+							&& string.IsNullOrEmpty(card.userPersona));
+
 					// Write to database
 					using (var transaction = connection.BeginTransaction())
 					{
@@ -1078,7 +1087,7 @@ namespace Ginger.Integration
 							long updatedAt = now.ToUnixTimeMilliseconds();
 
 							// Create group (if one doesn't exist)
-							if (groupId == null)
+							if (groupId == null && bWriteGroup)
 							{
 								_Chat chat;
 								if (CreateSoloGroup(connection, characterId, updatedAt, out groupId, out chat, ref updates, ref expectedUpdates))
@@ -1086,7 +1095,7 @@ namespace Ginger.Integration
 							}
 
 							// Create/update custom user
-							if (bAllowUserPersona)
+							if (bAllowUserPersona && bWriteGroup)
 							{
 								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 									BackyardUtil.ConvertToIDPlaceholders(ref userInfo.persona, characterId);
@@ -1098,8 +1107,11 @@ namespace Ginger.Integration
 							// Update character persona
 							WriteUpdateCharacter(connection, card, configId, null, updatedAt, ref updates, ref expectedUpdates);
 
+							// Lorebook
+							WriteLorebook(connection, configId, card.data.loreItems, ref updates, ref expectedUpdates);
+
 							// Update group
-							if (groupId != null)
+							if (groupId != null && bWriteGroup)
 								WriteUpdateGroup(connection, card, groupId, chats, "", updatedAt, ref updates, ref expectedUpdates);
 
 							// Update background
@@ -1113,9 +1125,6 @@ namespace Ginger.Integration
 							// Update images
 							DeleteImages(connection, configId, ref updates, ref expectedUpdates);
 							WriteImages(connection, configId, images, ref updates, ref expectedUpdates);
-
-							// Lorebook
-							WriteLorebook(connection, configId, card.data.loreItems, ref updates, ref expectedUpdates);
 
 							if (updates != expectedUpdates)
 							{

@@ -3256,6 +3256,7 @@ namespace Ginger
 
 			for (int i = 0; i < cards.Length && i < Current.Characters.Count; ++i)
 				cards[i].data.name = Utility.FirstNonEmpty(Current.Characters[i].spokenName, Current.Card.name, Constants.DefaultCharacterName);
+			cards[0].EnsureSystemPrompt();
 			cards[0].data.isNSFW = cards.ContainsAny(c => c.data.isNSFW);
 
 			Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
