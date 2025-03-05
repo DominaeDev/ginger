@@ -166,6 +166,17 @@ namespace Ginger
 			card.data.grammar = output.grammar.ToString();
 			card.data.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToString("yyyy-MM-ddTHH:mm:ss.fffK");
 
+			// Resolve {original} 
+			int pos_original = card.data.system.IndexOf("{original}", 0, StringComparison.OrdinalIgnoreCase);
+			if (pos_original != -1)
+			{
+				var sbSystem = new StringBuilder(card.data.system);
+				sbSystem.Remove(pos_original, 10);
+				sbSystem.Insert(pos_original, OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)]);
+				sbSystem.Replace("{original}", ""); // Remove any remaining
+				card.data.system = sbSystem.ToString();
+			}
+
 			// Append user persona
 			string userPersona = output.userPersona.ToFaraday();
 			if (string.IsNullOrEmpty(userPersona) == false)
@@ -179,24 +190,7 @@ namespace Ginger
 
 			// system_post_history is equivalent to the author note.
 			card.authorNote = output.system_post_history.ToFaraday();
-
-			// Insert default system prompt if empty
-			if (string.IsNullOrWhiteSpace(card.data.system))
-				card.data.system = OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)];
-			else
-			{
-				// Replace 
-				int pos_original = card.data.system.IndexOf("{original}", 0, StringComparison.OrdinalIgnoreCase);
-				if (pos_original != -1)
-				{
-					var sbSystem = new StringBuilder(card.data.system);
-					sbSystem.Remove(pos_original, 10);
-					sbSystem.Insert(pos_original, OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)]);
-					sbSystem.Replace("{original}", ""); // Remove any remaining
-					card.data.system = sbSystem.ToString();
-				}
-			}
-
+			
 			if (output.hasLore)
 			{
 				card.data.loreItems = output.lorebook.entries
@@ -211,6 +205,13 @@ namespace Ginger
 			card.data.isNSFW = Current.IsNSFW && AppSettings.BackyardLink.MarkNSFW;
 
 			return card;
+		}
+
+		public void EnsureSystemPrompt()
+		{
+			// Insert default system prompt if empty
+			if (string.IsNullOrWhiteSpace(data.system))
+				data.system = OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)];
 		}
 
 		public static FaradayCardV4 FromJson(string json)

@@ -1839,6 +1839,7 @@ namespace Ginger
 			}
 
 			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+			card.EnsureSystemPrompt();
 
 			Backyard.ImageInput[] imageInput = Backyard.GatherImages();
 			BackupData.Chat[] chats = null;
