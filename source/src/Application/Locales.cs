@@ -18,7 +18,7 @@ namespace Ginger
 		{
 			try
 			{
-				var directories = Directory.EnumerateDirectories(Utility.AppPath("Content\\Recipes"));
+				var directories = Directory.EnumerateDirectories(Utility.AppPath("Content"));
 				foreach (var directory in directories)
 				{
 					string localeDir = Path.GetFileName(directory);
