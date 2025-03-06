@@ -1582,7 +1582,7 @@ namespace Ginger.Integration
 							for (int i = 0; i < cards.Length; ++i)
 							{
 								CharacterInstance characterInstance;
-								WriteCharacter(connection, cards[i], cards[i].data.name, idBundle[i].characterId, createdAt, out characterInstance, ref updates, ref expectedUpdates);
+								WriteCharacter(connection, cards[i], null, idBundle[i].characterId, createdAt, out characterInstance, ref updates, ref expectedUpdates);
 								lsInstances.Add(characterInstance);
 
 								string configId = characterInstance.configId;
