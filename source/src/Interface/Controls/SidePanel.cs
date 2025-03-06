@@ -1113,7 +1113,7 @@ namespace Ginger
 		{
 			if (args.Button == MouseButtons.Right)
 			{
-				bool bHasPortrait = Current.Card.portraitImage != null;
+				bool bHasPortrait = Current.Card.portraitImage != null || Current.Card.assets.ContainsAny(a => a.isEmbeddedAsset && a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Icon);
 				bool bHasPortraitBackground = Current.Card.assets.ContainsAny(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background && a.HasTag(AssetFile.Tag.PortraitBackground));
 				bool bHasBackground = Current.Card.assets.ContainsAny(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
 				

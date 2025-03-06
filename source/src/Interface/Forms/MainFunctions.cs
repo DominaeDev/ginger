@@ -1095,9 +1095,7 @@ namespace Ginger
 					Current.IsLinkDirty = false;
 			}
 
-			Image portraitImage = Current.Card.portraitImage;
-			if (portraitImage == null)
-				portraitImage = GetPortraitToSave();
+			Image portraitImage = GetPortraitToSave();
 
 			if (FileUtil.Export(filename, portraitImage ?? DefaultPortrait.Image, formats))
 			{
@@ -1139,31 +1137,6 @@ namespace Ginger
 				MessageBox.Show(Resources.error_save_character_card, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
-		}
-
-		private Image GetPortraitToSave()
-		{
-			if (Current.Card.portraitImage != null)
-				return Current.Card.portraitImage;
-
-			// Main portrait override
-			AssetFile portraitAsset = Current.Card.assets.GetPortrait(0);
-			if (portraitAsset != null)
-			{
-				// Promote to override if not already
-				if (portraitAsset.HasTag(AssetFile.Tag.PortraitBackground))
-					portraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
-
-				var image = portraitAsset.ToImage();
-				if (image == null)
-				{
-					Current.Card.portraitImage = ImageRef.FromImage(image);
-					_bShouldRefreshSidePanel = true;
-					return image;
-				}
-			}
-
-			return null;
 		}
 
 		private bool SaveAs()
@@ -1402,6 +1375,31 @@ namespace Ginger
 
 			IsClosing = true;
 			return Save(Current.Filename);
+		}
+		
+		private Image GetPortraitToSave()
+		{
+			if (Current.Card.portraitImage != null)
+				return Current.Card.portraitImage;
+
+			// Main portrait override
+			AssetFile portraitAsset = Current.Card.assets.GetPortrait(0);
+			if (portraitAsset != null)
+			{
+				// Promote to override if not already
+				if (portraitAsset.HasTag(AssetFile.Tag.PortraitOverride) == false)
+					portraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
+
+				var image = portraitAsset.ToImage();
+				if (image != null)
+				{
+					Current.Card.portraitImage = ImageRef.FromImage(image);
+					_bShouldRefreshSidePanel = true;
+					return image;
+				}
+			}
+
+			return null;
 		}
 
 		private void ConfirmName()

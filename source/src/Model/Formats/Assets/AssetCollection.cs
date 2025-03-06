@@ -426,40 +426,65 @@ namespace Ginger
 
 		public static bool AddBackgroundFromPortrait(this AssetCollection assets, out AssetFile backgroundAsset)
 		{
-			var mainPortraitOverride = assets.GetPortrait(Current.SelectedCharacter);
-			if (mainPortraitOverride != null)
+			// Select portrait asset
+			AssetFile asset = null;
+			if (Current.SelectedCharacter == 0) // Main character
 			{
-				backgroundAsset = new AssetFile() {
-					name = "Background (portrait)",
-					ext = mainPortraitOverride.ext,
-					assetType = AssetFile.AssetType.Background,
-					data = mainPortraitOverride.data,
-					uriType = AssetFile.UriType.Embedded,
-					tags = new HashSet<StringHandle>() { AssetFile.Tag.MainBackground, AssetFile.Tag.PortraitBackground },
-				};
-				if (mainPortraitOverride.HasTag(AssetFile.Tag.Animation))
-					backgroundAsset.AddTags(AssetFile.Tag.Animation);
+				var portraitAsset = assets.GetPortraitOverride(); // 1. Override
+				if (portraitAsset != null)
+				{
+					asset = _BackgroundFromAsset(portraitAsset);
+				}
+				else if (Current.Card.portraitImage != null) // 2. Main portrait
+				{
+					asset = new AssetFile() {
+						name = "Background (portrait)",
+						ext = "jpeg",
+						assetType = AssetFile.AssetType.Background,
+						data = AssetData.FromBytes(Utility.ImageToMemory(Current.Card.portraitImage, Utility.ImageFileFormat.Jpeg)),
+						uriType = AssetFile.UriType.Embedded,
+						tags = new HashSet<StringHandle>() { AssetFile.Tag.MainBackground, AssetFile.Tag.PortraitBackground },
+					};
+				}
+				else // 3. Portrait asset
+				{
+					portraitAsset = assets.GetPortrait();
+					if (portraitAsset != null)
+						asset = _BackgroundFromAsset(portraitAsset);
+				}
 			}
-			else if (Current.Card.portraitImage != null)
+			else // Actor
 			{
-				backgroundAsset = new AssetFile() {
-					name = "Background (portrait)",
-					ext = "jpeg",
-					assetType = AssetFile.AssetType.Background,
-					data = AssetData.FromBytes(Utility.ImageToMemory(Current.Card.portraitImage, Utility.ImageFileFormat.Jpeg)),
-					uriType = AssetFile.UriType.Embedded,
-					tags = new HashSet<StringHandle>() { AssetFile.Tag.MainBackground, AssetFile.Tag.PortraitBackground },
-				};
+				var portraitAsset = assets.GetPortrait(Current.SelectedCharacter);
+				if (portraitAsset != null)
+					asset = _BackgroundFromAsset(portraitAsset);
 			}
-			else
+
+			if (asset == null)
 			{
 				backgroundAsset = default(AssetFile);
 				return false;
 			}
-			
+
+			backgroundAsset = asset;
 			assets.RemoveAll(a => a.assetType == AssetFile.AssetType.Background && (a.isDefaultAsset || a.HasTag(AssetFile.Tag.MainBackground)));
-			assets.Add(backgroundAsset);
+			assets.Add(asset);
 			return true;
+
+			AssetFile _BackgroundFromAsset(AssetFile portraitAsset)
+			{
+				AssetFile _asset = new AssetFile() {
+					name = "Background (portrait)",
+					ext = portraitAsset.ext,
+					assetType = AssetFile.AssetType.Background,
+					data = portraitAsset.data,
+					uriType = AssetFile.UriType.Embedded,
+					tags = new HashSet<StringHandle>() { AssetFile.Tag.MainBackground, AssetFile.Tag.PortraitBackground },
+				};
+				if (portraitAsset.HasTag(AssetFile.Tag.Animation))
+					_asset.AddTags(AssetFile.Tag.Animation);
+				return _asset;
+			}
 		}
 	}
 }

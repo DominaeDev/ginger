@@ -6132,15 +6132,15 @@ namespace Ginger.Integration
 		{
 			var lsImages = new List<ImageInput>();
 			var assets = (AssetCollection)Current.Card.assets.Clone();
-			AssetFile mainPortraitOverride = assets.GetPortraitOverride();
+			AssetFile mainPortrait = assets.GetPortrait();
 
-			if (mainPortraitOverride != null) // Embedded portrait (animated)
+			if (mainPortrait != null) // Embedded portrait (animated)
 			{
 				lsImages.Add(new ImageInput() {
-					asset = mainPortraitOverride,
-					fileExt = mainPortraitOverride.ext,
+					asset = mainPortrait,
+					fileExt = mainPortrait.ext,
 				});
-				assets.Remove(mainPortraitOverride);
+				assets.Remove(mainPortrait);
 			}
 			else if (Current.Card.portraitImage != null) // Main portrait (not animated)
 			{
@@ -6159,7 +6159,7 @@ namespace Ginger.Integration
 
 			// Portrait as background?
 			if (AppSettings.BackyardLink.UsePortraitAsBackground
-				&& (Current.Card.portraitImage != null || mainPortraitOverride != null)
+				&& (Current.Card.portraitImage != null || mainPortrait != null)
 				&& assets.ContainsNoneOf(a => a.assetType == AssetFile.AssetType.Background))
 			{
 				AssetFile portraitBackground;
