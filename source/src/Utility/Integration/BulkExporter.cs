@@ -306,11 +306,9 @@ namespace Ginger.Integration
 			}
 
 			// Convert
-			GingerCharacter character = new GingerCharacter();
-			character.ReadFaradayCard(faradayCard, null);
-
 			var stash = Current.Stash();
-			Current.Instance = character;
+			Current.Instance = new GingerCharacter();
+			Current.Instance.ReadFaradayCard(faradayCard, null);
 
 			// Load images/backgrounds
 			Backyard.Link.Image[] unused;
