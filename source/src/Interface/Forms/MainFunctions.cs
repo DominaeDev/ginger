@@ -66,7 +66,7 @@ namespace Ginger
 		private void CalculateTokens(Generator.Output output)
 		{
 			// Recalculate token count
-			_inputHash = output.GetHashCode();
+			_inputHash = output.GetHashCode() ^ (int)AppSettings.Settings.PreviewFormat;
 			tokenQueue.Schedule(output, _inputHash, this);
 		}
 

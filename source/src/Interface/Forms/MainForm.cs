@@ -1321,7 +1321,7 @@ namespace Ginger
 				title = AppTitle;
 
 			// Is dirty?
-			if (Current.IsFileDirty || (Current.IsLinkDirty && Backyard.ConnectionEstablished))
+			if (Current.IsFileDirty)
 				title = string.Concat("*", title);
 
 			this.Text = title;
@@ -2793,7 +2793,6 @@ namespace Ginger
 		private void editExportModelSettingsMenuItem_Click(object sender, EventArgs e)
 		{
 			var dlg = new EditModelSettingsDialog();
-			dlg.EditingDefaults = true;
 			if (dlg.ShowDialog() == DialogResult.OK)
 				AppSettings.BackyardSettings.UserSettings = dlg.Parameters.Copy();
 		}
