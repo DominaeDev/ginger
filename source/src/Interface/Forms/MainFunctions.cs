@@ -1399,6 +1399,7 @@ namespace Ginger
 				{
 					Current.Card.portraitImage = ImageRef.FromImage(image);
 					_bShouldRefreshSidePanel = true;
+					Undo.Push(Undo.Kind.Parameter, "Change portrait image");
 					return image;
 				}
 			}
