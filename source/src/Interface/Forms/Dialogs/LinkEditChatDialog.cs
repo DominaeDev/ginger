@@ -91,7 +91,7 @@ namespace Ginger
 			if (groupType != GroupInstance.GroupType.Unknown)
 			{
 				Text = string.Format("{0} - Chat history", GetGroupTitle(_groupInstance));
-				if (groupType == GroupInstance.GroupType.Group)
+				if (groupType == GroupInstance.GroupType.Party)
 					Text = "(Party) ";
 			}
 			else
@@ -769,10 +769,8 @@ namespace Ginger
 			
 			_charactersById = Backyard.CharactersWithGroup.ToDictionary(c => c.instanceId, c => c);
 
-			var groupDlg = new LinkSelectGroupDialog();
-			groupDlg.Characters = Backyard.EveryoneWithGroup.ToArray();
-			groupDlg.Groups = Backyard.Groups.ToArray();
-			groupDlg.Folders = Backyard.Folders.ToArray();
+			var groupDlg = new LinkSelectCharacterOrGroupDialog();
+			groupDlg.Options = LinkSelectCharacterOrGroupDialog.Option.Solo | LinkSelectCharacterOrGroupDialog.Option.Parties;
 			if (groupDlg.ShowDialog() == DialogResult.OK)
 			{
 				_groupInstance = groupDlg.SelectedGroup;

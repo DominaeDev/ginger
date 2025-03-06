@@ -82,7 +82,7 @@ namespace Ginger.Integration
 			{
 				Unknown,
 				Solo,	// 1-on-1
-				Group,	// 1-on-many
+				Party,	// 1-on-many
 			}
 
 			public GroupType GetGroupType()
@@ -101,7 +101,7 @@ namespace Ginger.Integration
 					if (nCharacters == 1)
 						return GroupType.Solo;
 					else if (nCharacters > 1)
-						return GroupType.Group;
+						return GroupType.Party;
 				}
 				return GroupType.Unknown;
 			}

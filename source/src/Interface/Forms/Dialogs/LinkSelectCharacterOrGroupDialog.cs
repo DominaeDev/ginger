@@ -14,12 +14,22 @@ namespace Ginger
 
 	public partial class LinkSelectCharacterOrGroupDialog : FormEx
 	{
+		[Flags]
+		public enum Option
+		{
+			None = 0,
+			Unassigned = 1 << 0,
+			Solo = 1 << 1,
+			Parties = 1 << 2,
+		}
+
+		public CharacterInstance SelectedCharacter { get; private set; }
+		public GroupInstance SelectedGroup { get; private set; }
+		public Option Options { get; set; }
+
 		private CharacterInstance[] Characters;
 		private GroupInstance[] Groups;
 		private FolderInstance[] Folders;
-		public CharacterInstance SelectedCharacter { get; private set; }
-		public GroupInstance SelectedGroup { get; private set; }
-
 		private Dictionary<string, CharacterInstance> _charactersById;
 		private Dictionary<string, int> _folderCounts = new Dictionary<string, int>();
 		private Dictionary<string, Backyard.ChatCount> _chatCounts;
@@ -34,8 +44,17 @@ namespace Ginger
 		private void OnLoad(object sender, EventArgs e)
 		{
 			this.Characters = Backyard.Database.Characters.ToArray();
-			this.Groups = Backyard.Database.Groups.ToArray();
 			this.Folders = Backyard.Database.Folders.ToArray();
+			if (Options.Contains(Option.Parties) && BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties))
+			{
+				this.Groups = Backyard.Database.Groups.ToArray();
+			}
+			else
+			{
+				this.Groups = Backyard.Database.Groups
+					.Where(g => g.GetGroupType() == GroupInstance.GroupType.Solo)
+					.ToArray();
+			}
 
 			_charactersById = Characters.ToDictionary(c => c.instanceId, c => c);
 			if (Backyard.Database.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
@@ -165,9 +184,9 @@ namespace Ginger
 			}
 
 			int nOrphans = sortedOrphans.Count();
-			if (nOrphans > 0)
+			if (nOrphans > 0 && Options.ContainsAny(Option.Unassigned) )
 			{
-				var folderNode = new TreeNode(string.Format("Characters ({0})", nOrphans), 0, 0);
+				var folderNode = new TreeNode(string.Format("Single characters ({0})", nOrphans), 1, 1);
 				folderNode.Tag = "Orphans";
 				treeView.Nodes.Insert(0, folderNode);
 
@@ -300,9 +319,6 @@ namespace Ginger
 					icon += 4; // Lore
 			}
 
-			if (chatCount.hasMessages == false)
-				icon += 9; // Grayed out
-
 			var node = new TreeNode(groupLabel, icon, icon);
 			node.Tag = group;
 			node.ToolTipText = sbTooltip.ToString();
@@ -311,7 +327,7 @@ namespace Ginger
 			else
 				treeView.Nodes.Add(node);
 
-			if (characters.Length > 1)
+			if (characters.Length > 1 && Options.Contains(Option.Unassigned))
 			{
 				foreach (var character in characters)
 					CreateCharacterNode(character, node, chatCount.hasMessages == false);
@@ -352,19 +368,20 @@ namespace Ginger
 			sbTooltip.AppendLine($"Created: {character.creationDate.ToShortDateString()}");
 			sbTooltip.AppendLine($"Last modified: {character.updateDate.ToShortDateString()}");
 
+			// Set icon
 			int icon;
 			if (string.IsNullOrEmpty(inferredGender))
-				icon = 1;
-			else if (string.Compare(inferredGender, "male", StringComparison.OrdinalIgnoreCase) == 0)
 				icon = 2;
-			else if (string.Compare(inferredGender, "female", StringComparison.OrdinalIgnoreCase) == 0)
+			else if (string.Compare(inferredGender, "male", StringComparison.OrdinalIgnoreCase) == 0)
 				icon = 3;
-			else if (string.Compare(inferredGender, "transgender", StringComparison.OrdinalIgnoreCase) == 0)
-				icon = 1;
-			else if (string.Compare(inferredGender, "non-binary", StringComparison.OrdinalIgnoreCase) == 0)
-				icon = 1;
-			else 
+			else if (string.Compare(inferredGender, "female", StringComparison.OrdinalIgnoreCase) == 0)
 				icon = 4;
+			else if (string.Compare(inferredGender, "transgender", StringComparison.OrdinalIgnoreCase) == 0)
+				icon = 2;
+			else if (string.Compare(inferredGender, "non-binary", StringComparison.OrdinalIgnoreCase) == 0)
+				icon = 2;
+			else 
+				icon = 5;
 			if (character.hasLorebook)
 				icon += 4;
 			if (bGrayed)
@@ -416,7 +433,7 @@ namespace Ginger
 				else if (characters.Length == 1)
 				{
 					SelectedCharacter = characters[0];
-					SelectedGroup = default(GroupInstance);
+					SelectedGroup = (GroupInstance)node.Tag;
 				}
 				else
 				{

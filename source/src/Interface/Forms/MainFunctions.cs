@@ -1679,11 +1679,12 @@ namespace Ginger
 			}
 
 			var dlg = new LinkSelectCharacterOrGroupDialog();
+			dlg.Options = LinkSelectCharacterOrGroupDialog.Option.Parties | LinkSelectCharacterOrGroupDialog.Option.Unassigned;
 			dlg.Text = "Open Backyard AI character";
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return false;
 
-			if (dlg.SelectedGroup.isDefined)
+			if (dlg.SelectedGroup.isDefined && dlg.SelectedGroup.members.Length > 2) // Party?
 				return ImportGroupFromBackyard(dlg.SelectedGroup);
 
 			if (ConfirmSave(Resources.cap_import_character) == false)
@@ -1695,7 +1696,8 @@ namespace Ginger
 			FaradayCardV4 faradayData;
 			ImageInstance[] images;
 			UserData userInfo;
-			var importError = Backyard.Database.ImportCharacter(dlg.SelectedCharacter, out faradayData, out images, out userInfo);
+			CharacterInstance characterInstance = dlg.SelectedCharacter;
+			var importError = Backyard.Database.ImportCharacter(characterInstance, out faradayData, out images, out userInfo);
 			if (importError == Backyard.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1732,7 +1734,7 @@ namespace Ginger
 
 			if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
 			{
-				Current.LinkWith(dlg.SelectedCharacter, imageLinks);
+				Current.LinkWith(characterInstance, imageLinks);
 				SetStatusBarMessage(Resources.status_link_create, Constants.StatusBarMessageInterval);
 				Current.IsFileDirty = false;
 				Current.IsLinkDirty = false;
@@ -2647,10 +2649,9 @@ namespace Ginger
 				return false;
 			}
 
-			var dlg = new LinkSelectCharacterDialog();
+			var dlg = new LinkSelectCharacterOrGroupDialog();
+			dlg.Options = LinkSelectCharacterOrGroupDialog.Option.Solo;
 			dlg.Text = Resources.cap_link_create_backup;
-			dlg.Characters = Backyard.CharactersWithGroup.ToArray();
-			dlg.Folders = Backyard.Folders.ToArray();
 
 			CharacterInstance characterInstance;
 			if (dlg.ShowDialog() == DialogResult.OK)
