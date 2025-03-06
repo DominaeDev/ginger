@@ -296,24 +296,24 @@ namespace Ginger
 			sbTooltip.AppendLine($"Last modified: {group.updateDate.ToShortDateString()}");
 
 			// Icon
-			int icon = 1;
+			int icon = 2;
 			if (characters.Length >= 2)
-				icon = 9; // Group
+				icon = 10; // Group
 			else if (characters.Length == 1)
 			{
 				string inferredGender = characters[0].inferredGender;
 				if (string.IsNullOrEmpty(inferredGender))
-					icon = 1;
-				else if (string.Compare(inferredGender, "male", StringComparison.OrdinalIgnoreCase) == 0)
 					icon = 2;
-				else if (string.Compare(inferredGender, "female", StringComparison.OrdinalIgnoreCase) == 0)
+				else if (string.Compare(inferredGender, "male", StringComparison.OrdinalIgnoreCase) == 0)
 					icon = 3;
-				else if (string.Compare(inferredGender, "transgender", StringComparison.OrdinalIgnoreCase) == 0)
-					icon = 1;
-				else if (string.Compare(inferredGender, "non-binary", StringComparison.OrdinalIgnoreCase) == 0)
-					icon = 1;
-				else // Other, futa
+				else if (string.Compare(inferredGender, "female", StringComparison.OrdinalIgnoreCase) == 0)
 					icon = 4;
+				else if (string.Compare(inferredGender, "transgender", StringComparison.OrdinalIgnoreCase) == 0)
+					icon = 2;
+				else if (string.Compare(inferredGender, "non-binary", StringComparison.OrdinalIgnoreCase) == 0)
+					icon = 2;
+				else // Other, futa
+					icon = 5;
 
 				if (characters[0].hasLorebook)
 					icon += 4; // Lore
