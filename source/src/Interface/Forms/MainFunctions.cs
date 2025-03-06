@@ -1736,81 +1736,6 @@ namespace Ginger
 			return true;
 		}
 
-		private Backyard.Error UpdateCharacterInBackyard()
-		{
-			if (Backyard.ConnectionEstablished == false)
-				return Backyard.Error.NotConnected;
-			else if (Current.HasLink == false)
-				return Backyard.Error.NotFound;
-
-			// Refresh character list
-			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
-			{
-				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				AppSettings.BackyardLink.Enabled = false;
-			}
-
-			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
-
-			// User persona
-			UserData userInfo = null;
-			if (AppSettings.BackyardLink.WriteUserPersona)
-			{
-				string userPersona = output.userPersona.ToFaraday();
-				if (string.IsNullOrEmpty(userPersona) == false)
-				{
-					userInfo = new UserData() {
-						name = Current.Card.userPlaceholder,
-						persona = userPersona,
-					};
-					output.userPersona = GingerString.Empty;
-				}
-			}
-
-			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
-
-			// Check if character exists, has newer changes
-			bool hasChanges;
-			var error = Backyard.ConfirmSaveCharacter(card, Current.Link, out hasChanges);
-			if (error == Backyard.Error.NotFound)
-			{
-				Current.BreakLink();
-				return error;
-			}
-			if (error != Backyard.Error.NoError)
-				return error;
-
-			if (hasChanges)
-			{
-				// Overwrite prompt
-				var mr = MessageBox.Show(Resources.msg_link_confirm_overwrite, Resources.cap_link_overwrite, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-				if (mr == DialogResult.Cancel)
-					return Backyard.Error.CancelledByUser;
-				else if (mr == DialogResult.No)
-					return Backyard.Error.DismissedByUser;
-			}
-
-			DateTime updateDate;
-			Backyard.Link.Image[] imageLinks;
-			error = Backyard.UpdateCharacter(card, Current.Link, out updateDate, out imageLinks, userInfo);
-			if (error != Backyard.Error.NoError)
-			{
-				return error;
-			}
-			else
-			{
-				Current.Link.updateDate = updateDate;
-				Current.Link.imageLinks = imageLinks;
-				Current.IsFileDirty = true;
-				Current.IsLinkDirty = false;
-				RefreshTitle();
-
-				// Refresh character information
-				Backyard.RefreshCharacters();
-				return Backyard.Error.NoError;
-			}
-		}
-
 		private Backyard.Error CreateNewCharacterInBackyard(out CharacterInstance createdCharacter, out Backyard.Link.Image[] images)
 		{
 			if (Backyard.ConnectionEstablished == false)
@@ -1852,6 +1777,82 @@ namespace Ginger
 			}
 			else
 			{
+				Current.IsFileDirty = true;
+				Current.IsLinkDirty = false;
+				RefreshTitle();
+
+				// Refresh character information
+				Backyard.RefreshCharacters();
+				return Backyard.Error.NoError;
+			}
+		}
+		
+		private Backyard.Error UpdateCharacterInBackyard()
+		{
+			if (Backyard.ConnectionEstablished == false)
+				return Backyard.Error.NotConnected;
+			else if (Current.HasLink == false)
+				return Backyard.Error.NotFound;
+
+			// Refresh character list
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+			{
+				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				AppSettings.BackyardLink.Enabled = false;
+			}
+
+			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
+
+			// User persona
+			UserData userInfo = null;
+			if (AppSettings.BackyardLink.WriteUserPersona)
+			{
+				string userPersona = output.userPersona.ToFaraday();
+				if (string.IsNullOrEmpty(userPersona) == false)
+				{
+					userInfo = new UserData() {
+						name = Current.Card.userPlaceholder,
+						persona = userPersona,
+					};
+					output.userPersona = GingerString.Empty;
+				}
+			}
+
+			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+			card.EnsureSystemPrompt();
+
+			// Check if character exists, has newer changes
+			bool hasChanges;
+			var error = Backyard.ConfirmSaveCharacter(card, Current.Link, out hasChanges);
+			if (error == Backyard.Error.NotFound)
+			{
+				Current.BreakLink();
+				return error;
+			}
+			if (error != Backyard.Error.NoError)
+				return error;
+
+			if (hasChanges)
+			{
+				// Overwrite prompt
+				var mr = MessageBox.Show(Resources.msg_link_confirm_overwrite, Resources.cap_link_overwrite, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+				if (mr == DialogResult.Cancel)
+					return Backyard.Error.CancelledByUser;
+				else if (mr == DialogResult.No)
+					return Backyard.Error.DismissedByUser;
+			}
+
+			DateTime updateDate;
+			Backyard.Link.Image[] imageLinks;
+			error = Backyard.UpdateCharacter(card, Current.Link, out updateDate, out imageLinks, userInfo);
+			if (error != Backyard.Error.NoError)
+			{
+				return error;
+			}
+			else
+			{
+				Current.Link.updateDate = updateDate;
+				Current.Link.imageLinks = imageLinks;
 				Current.IsFileDirty = true;
 				Current.IsLinkDirty = false;
 				RefreshTitle();
