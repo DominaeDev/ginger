@@ -115,6 +115,28 @@ namespace Ginger
 			Stopwatch stopWatch = new Stopwatch();
 			stopWatch.Start();
 #endif
+			RefreshAll();
+			Current.IsFileDirty = false;
+
+#if DEBUG
+			stopWatch.Stop();
+			Debug.WriteLine(string.Format("Total time: {0} ms", stopWatch.ElapsedMilliseconds));
+#endif
+
+			// Close dialogs
+			if (_findDialog != null && _findDialog.IsDisposed == false)
+				_findDialog.Hide();
+			if (_editChatDialog != null && _editChatDialog.IsDisposed == false)
+				_editChatDialog.Close();
+			if (_assetsDialog != null && _assetsDialog.IsDisposed == false)
+				_assetsDialog.Close();
+
+			Undo.Clear();
+			GC.Collect();
+		}
+
+		private void RefreshAll()
+		{
 			RefreshTitle();
 
 			this.Suspend();
@@ -130,28 +152,10 @@ namespace Ginger
 			this.Suspend();
 			recipeList.RecreatePanels(true);
 			recipeList.RefreshScrollbar();
-
 			RefreshSpellChecking();
-
-			Regenerate();
-			Current.IsFileDirty = false;
-
-#if DEBUG
-			stopWatch.Stop();
-			Debug.WriteLine(string.Format("Total time: {0} ms", stopWatch.ElapsedMilliseconds));
-#endif
 			this.Resume();
 
-			// Close dialogs
-			if (_findDialog != null && _findDialog.IsDisposed == false)
-				_findDialog.Hide();
-			if (_editChatDialog != null && _editChatDialog.IsDisposed == false)
-				_editChatDialog.Close();
-			if (_assetsDialog != null && _assetsDialog.IsDisposed == false)
-				_assetsDialog.Close();
-
-			Undo.Clear();
-			GC.Collect();
+			Regenerate();
 		}
 
 		private void OnClosing(object sender, FormClosingEventArgs e)
@@ -1262,11 +1266,9 @@ namespace Ginger
 
 			if (ModifierKeys == Keys.Shift || (hasOutdatedRecipes && MessageBox.Show(Resources.msg_reload_recipes, Resources.cap_reload_recipes, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes))
 			{
-				this.Suspend();
 				Current.ReloadRecipes(true);
-				RefreshRecipeList();
+				RefreshAll();
 				Undo.Push(Undo.Kind.RecipeList, "Reload recipes");
-				this.Resume();
 			}
 #if DEBUG
 			else

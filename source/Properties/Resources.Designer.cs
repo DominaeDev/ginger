@@ -4060,6 +4060,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reverting character.
+        /// </summary>
+        internal static string status_revert_character {
+            get {
+                return ResourceManager.GetString("status_revert_character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap story {

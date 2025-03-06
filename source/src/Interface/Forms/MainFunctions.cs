@@ -2029,6 +2029,16 @@ namespace Ginger
 				return Backyard.Error.NotFound;
 			}
 
+			// Revert party?
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties) && Current.Link.groupId != null)
+			{
+				var group = Backyard.Database.GetGroup(Current.Link.groupId);
+				if (group.isDefined)
+					return RevertGroupFromBackyard(group);
+			}
+
+			SetStatusBarMessage(Resources.status_revert_character);
+
 			// Import data
 			FaradayCardV4 faradayData;
 			ImageInstance[] images;
@@ -2053,26 +2063,77 @@ namespace Ginger
 			Current.IsDirty = true;
 			Current.IsLinkDirty = false;
 			
-			// Refresh sidepanel and recipe list
-			this.Suspend();
-			sidePanel.Reset();
-			sidePanel.SetLoreCount(0, false);
-			sidePanel.RefreshValues();
-			sidePanel.Refresh();
-			recipeList.RemoveAllPanels();
-			this.Resume();
-			recipeList.Refresh();
+			RefreshAll();
 
-			this.Suspend();
-			recipeList.RecreatePanels(true);
-			recipeList.RefreshScrollbar();
-			RefreshSpellChecking();
+			Undo.Push(Undo.Kind.RecipeList, "Revert character");
+			
+			return Backyard.Error.NoError;
+		}
 
-			Regenerate();
-			RefreshTitle();
-			this.Resume();
+		private Backyard.Error RevertGroupFromBackyard(GroupInstance groupInstance)
+		{
+			SetStatusBarMessage(Resources.status_revert_character);
 
-			Undo.Push(Undo.Kind.RecipeList, "Reimport character");
+			FaradayCardV4[] faradayData;
+			CharacterInstance[] characterInstances;
+			ImageInstance[] images;
+			UserData userInfo;
+			var importError = Backyard.Database.ImportGroup(groupInstance, out faradayData, out characterInstances, out images, out userInfo);
+			if (faradayData == null || faradayData.Length == 0)
+			{
+				ClearStatusBarMessage();
+				return Backyard.Error.NotFound;
+			}
+			else if (importError != Backyard.Error.NoError)
+			{
+				ClearStatusBarMessage();
+				return importError;
+			}
+
+			if (AppSettings.BackyardLink.WriteUserPersona == false)
+			{
+				images = images.Except(i => i.imageType == AssetFile.AssetType.UserIcon);
+				userInfo = null;
+			}
+
+			// Success
+			Current.ReadFaradayCards(faradayData, null, userInfo);
+
+			Backyard.Link.Image[] imageLinks;
+			int[] actorIndices = new int[images.Length];
+
+			for (int i = 0; i < images.Length; ++i)
+			{
+				string instanceId = images[i].associatedInstanceId;
+				actorIndices[i] = Array.FindIndex(characterInstances, c => c.instanceId == instanceId);
+			}
+
+			Current.ImportImages(images, actorIndices, out imageLinks);
+
+			// Resolve actor indices for imported assets
+			foreach (var asset in Current.Card.assets.Where(a => a.assetType == AssetFile.AssetType.Icon))
+			{
+				var assetUID = asset.uid;
+				int idxLink = Array.FindIndex(imageLinks, l => l.uid == assetUID);
+				if (idxLink >= 0 && idxLink < images.Length)
+				{
+					string instanceId = images[idxLink].associatedInstanceId;
+					int idxActor = Array.FindIndex(characterInstances, c => c.instanceId == instanceId);
+					if (idxActor != -1)
+						asset.actorIndex = idxActor;
+				}
+			}
+
+			ClearStatusBarMessage();
+
+			Current.LinkWith(groupInstance, characterInstances, imageLinks);
+			SetStatusBarMessage(Resources.status_link_create, Constants.StatusBarMessageInterval);
+			Current.IsFileDirty = false;
+			Current.IsLinkDirty = false;
+			
+			RefreshAll();
+
+			Undo.Push(Undo.Kind.RecipeList, "Revert character");
 			
 			return Backyard.Error.NoError;
 		}
