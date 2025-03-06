@@ -1822,6 +1822,57 @@ namespace Ginger
 			return true;
 		}
 
+		private Backyard.Error CreateNewCharacterInBackyard(out CharacterInstance createdCharacter, out Backyard.Link.Image[] images)
+		{
+			if (Backyard.ConnectionEstablished == false)
+			{
+				createdCharacter = default(CharacterInstance);
+				images = null;
+				return Backyard.Error.NotConnected;
+			}
+
+			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
+			
+			// User persona
+			UserData userInfo = null;
+			if (AppSettings.BackyardLink.WriteUserPersona)
+			{
+				string userPersona = output.userPersona.ToFaraday();
+				if (string.IsNullOrEmpty(userPersona) == false)
+				{
+					userInfo = new UserData() {
+						name = Current.Card.userPlaceholder,
+						persona = userPersona,
+					};
+					output.userPersona = GingerString.Empty;
+				}
+			}
+
+			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+			card.EnsureSystemPrompt();
+
+			Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
+			BackupData.Chat[] chats = null;
+			if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1)
+				chats = Backyard.Database.GatherChats(card, output, imageInput);
+
+			var error = Backyard.Database.CreateNewCharacter(card, imageInput, chats, out createdCharacter, out images, userInfo);
+			if (error != Backyard.Error.NoError)
+			{
+				return error;
+			}
+			else
+			{
+				Current.IsFileDirty = true;
+				Current.IsLinkDirty = false;
+				RefreshTitle();
+
+				// Refresh character information
+				Backyard.RefreshCharacters();
+				return Backyard.Error.NoError;
+			}
+		}
+		
 		private Backyard.Error UpdateCharacterInBackyard()
 		{
 			if (Backyard.ConnectionEstablished == false)
@@ -1865,6 +1916,7 @@ namespace Ginger
 			}
 
 			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+			card.EnsureSystemPrompt();
 
 			if (hasChanges)
 			{
@@ -1887,57 +1939,6 @@ namespace Ginger
 			{
 				Current.Link.updateDate = updateDate;
 				Current.Link.imageLinks = imageLinks;
-				Current.IsFileDirty = true;
-				Current.IsLinkDirty = false;
-				RefreshTitle();
-
-				// Refresh character information
-				Backyard.RefreshCharacters();
-				return Backyard.Error.NoError;
-			}
-		}
-
-		private Backyard.Error CreateNewCharacterInBackyard(out CharacterInstance createdCharacter, out Backyard.Link.Image[] images)
-		{
-			if (Backyard.ConnectionEstablished == false)
-			{
-				createdCharacter = default(CharacterInstance);
-				images = null;
-				return Backyard.Error.NotConnected;
-			}
-
-			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
-			
-			// User persona
-			UserData userInfo = null;
-			if (AppSettings.BackyardLink.WriteUserPersona)
-			{
-				string userPersona = output.userPersona.ToFaraday();
-				if (string.IsNullOrEmpty(userPersona) == false)
-				{
-					userInfo = new UserData() {
-						name = Current.Card.userPlaceholder,
-						persona = userPersona,
-					};
-					output.userPersona = GingerString.Empty;
-				}
-			}
-
-			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
-			card.EnsureSystemPrompt();
-
-			Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
-			BackupData.Chat[] chats = null;
-			if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1)
-				chats = Backyard.Database.GatherChats(card, output, imageInput);
-
-			var error = Backyard.Database.CreateNewCharacter(card, imageInput, chats, out createdCharacter, out images, userInfo);
-			if (error != Backyard.Error.NoError)
-			{
-				return error;
-			}
-			else
-			{
 				Current.IsFileDirty = true;
 				Current.IsLinkDirty = false;
 				RefreshTitle();
