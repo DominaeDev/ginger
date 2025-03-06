@@ -151,7 +151,11 @@ namespace Ginger
 			if (card.data.alternate_greetings != null)
 			{
 				for (int i = 0; i < card.data.alternate_greetings.Length; ++i)
-					AddChannel(character, GingerString.FromTavern(card.data.alternate_greetings[i]).ToParameter(), Resources.greeting_recipe);
+				{
+					var altGreeting = AddChannel(character, GingerString.FromTavern(card.data.alternate_greetings[i]).ToParameter(), Resources.greeting_recipe);
+					if (altGreeting != null)
+						altGreeting.isCollapsed = true; // Collapse alt greetings
+				}
 			}
 
 
@@ -209,7 +213,11 @@ namespace Ginger
 			if (card.data.alternate_greetings != null)
 			{
 				for (int i = 0; i < card.data.alternate_greetings.Length; ++i)
-					AddChannel(character, GingerString.FromTavern(card.data.alternate_greetings[i]).ToParameter(), Resources.greeting_recipe);
+				{
+					var altGreeting = AddChannel(character, GingerString.FromTavern(card.data.alternate_greetings[i]).ToParameter(), Resources.greeting_recipe);
+					if (altGreeting != null)
+						altGreeting.isCollapsed = true; // Collapse alt greetings
+				}
 			}
 			if (card.data.group_greetings != null)
 			{
@@ -295,9 +303,13 @@ namespace Ginger
 			AddChannel(character, GingerString.FromTavern(card.scenario).ToParameter(), Resources.scenario_recipe);
 			AddChannel(character, GingerString.FromTavern(card.greeting).ToParameter(), Resources.greeting_recipe);
 			if (card.alternateGreetings != null)
-			{ 
+			{
 				for (int i = 0; i < card.alternateGreetings.Length; ++i)
-					AddChannel(character, GingerString.FromTavern(card.alternateGreetings[i]).ToParameter(), Resources.greeting_recipe);
+				{
+					var altGreeting = AddChannel(character, GingerString.FromTavern(card.alternateGreetings[i]).ToParameter(), Resources.greeting_recipe);
+					if (altGreeting != null)
+						altGreeting.isCollapsed = true; // Collapse alt greetings
+				}
 			}
 
 			if (string.IsNullOrEmpty(card.example) == false)
