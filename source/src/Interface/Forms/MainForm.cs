@@ -1167,7 +1167,7 @@ namespace Ginger
 				title = AppTitle;
 
 			// Is dirty?
-			if (Current.IsFileDirty || (Current.IsLinkDirty && Backyard.ConnectionEstablished))
+			if (Current.IsFileDirty)
 				title = string.Concat("*", title);
 
 			this.Text = title;

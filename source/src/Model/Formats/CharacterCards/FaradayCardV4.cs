@@ -177,8 +177,22 @@ namespace Ginger
 					card.data.persona = string.Concat(card.data.persona, "\n\n", userPersona).Trim();
 			}
 
-			// system_post_history is equivalent to the author note.
-			card.authorNote = output.system_post_history.ToFaraday();
+			string postHistoryInstructions = output.system_post_history.ToFaraday();
+			if (string.IsNullOrEmpty(postHistoryInstructions) == false)
+			{
+				if (AppSettings.BackyardLink.WriteAuthorNote)
+				{
+					// system_post_history is equivalent to the author note.
+					card.authorNote = output.system_post_history.ToFaraday();
+				}
+				else
+				{
+					var sbSystem = new StringBuilder(card.data.system);
+					sbSystem.NewParagraph();
+					sbSystem.AppendLine(postHistoryInstructions);
+					card.data.system = sbSystem.ToString();
+				}
+			}
 
 			// Insert default system prompt if empty
 			if (string.IsNullOrWhiteSpace(card.data.system))
@@ -186,13 +200,13 @@ namespace Ginger
 			else
 			{
 				// Replace 
-				int pos_original = card.data.system.IndexOf("{original}", 0, StringComparison.OrdinalIgnoreCase);
+				int pos_original = card.data.system.IndexOf(GingerString.OriginalMarker, 0, StringComparison.OrdinalIgnoreCase);
 				if (pos_original != -1)
 				{
 					var sbSystem = new StringBuilder(card.data.system);
 					sbSystem.Remove(pos_original, 10);
 					sbSystem.Insert(pos_original, OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)]);
-					sbSystem.Replace("{original}", ""); // Remove any remaining
+					sbSystem.Replace(GingerString.OriginalMarker, ""); // Remove any remaining
 					card.data.system = sbSystem.ToString();
 				}
 			}
