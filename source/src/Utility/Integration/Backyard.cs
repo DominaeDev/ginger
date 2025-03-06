@@ -989,12 +989,24 @@ namespace Ginger.Integration
 					fileExt = "png",
 				});
 			}
-			else // Default portrait
+			else
 			{
-				lsImages.Add(new Backyard.ImageInput() {
-					image = DefaultPortrait.Image,
-					fileExt = "png",
-				});
+				AssetFile portraitAsset = assets.GetPortrait();
+				if (portraitAsset != null) // Portrait asset
+				{
+					lsImages.Add(new Backyard.ImageInput() {
+						asset = portraitAsset,
+						fileExt = portraitAsset.ext,
+					});
+					assets.Remove(portraitAsset);
+				}
+				else // Default portrait
+				{
+					lsImages.Add(new Backyard.ImageInput() {
+						image = DefaultPortrait.Image,
+						fileExt = "png",
+					});
+				}
 			}
 
 			// Portrait as background?
