@@ -2249,12 +2249,13 @@ namespace Ginger
 			}
 
 			// Choose character(s)
-			var dlg = new LinkSelectMultipleCharactersDialog();
+			var dlg = new LinkSelectMultipleCharactersOrGroupsDialog();
+			dlg.Options = LinkSelectMultipleCharactersOrGroupsDialog.Option.Solo;
 			dlg.Text = "Select characters to export";
-			dlg.Characters = Backyard.CharactersWithGroup.ToArray();
-			dlg.Folders = Backyard.Folders.ToArray();
-			if (dlg.ShowDialog() != DialogResult.OK || dlg.Characters.Length == 0)
+			if (dlg.ShowDialog() != DialogResult.OK || dlg.SelectedCharacters.Length == 0)
 				return false;
+
+			CharacterInstance[] characterInstances = dlg.SelectedCharacters;
 
 			// Export format
 			var formatDialog = new FileFormatDialog();
@@ -2297,12 +2298,12 @@ namespace Ginger
 
 			AppSettings.Paths.LastImportExportPath = outputDirectory;
 		
-			var filenames = new List<string>(dlg.Characters.Length);
+			var filenames = new List<string>(characterInstances.Length);
 			HashSet<string> used_filenames = new HashSet<string>();
 			if (formatDialog.FileFormat.Contains(FileUtil.FileType.Backup))
 			{
 				string now = DateTime.Now.ToString("yyyy-MM-dd");
-				foreach (var character in dlg.Characters)
+				foreach (var character in characterInstances)
 				{
 					filenames.Add(Utility.MakeUniqueFilename(outputDirectory,
 							string.Format("{0}_{1}_{2}.backup.zip",
@@ -2315,7 +2316,7 @@ namespace Ginger
 			}
 			else
 			{
-				foreach (var character in dlg.Characters)
+				foreach (var character in characterInstances)
 				{
 					filenames.Add(Utility.MakeUniqueFilename(outputDirectory,
 						string.Format("{0}_{1}.{2}",
@@ -2357,7 +2358,7 @@ namespace Ginger
 			};
 
 			for (int i = 0; i < filenames.Count; ++i)
-				exporter.Enqueue(dlg.Characters[i], filenames[i]);
+				exporter.Enqueue(characterInstances[i], filenames[i]);
 
 			_bCanRegenerate = false;
 			_bCanIdle = false;
@@ -2576,13 +2577,16 @@ namespace Ginger
 			}
 
 			// Choose character(s)
-			var dlg = new LinkSelectMultipleGroupsDialog();
+			var dlg = new LinkSelectMultipleCharactersOrGroupsDialog();
+			dlg.Options = LinkSelectMultipleCharactersOrGroupsDialog.Option.Solo;
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties))
+				dlg.Options |= LinkSelectMultipleCharactersOrGroupsDialog.Option.Parties;
 			dlg.Text = "Select chats to modify";
-			dlg.Characters = Backyard.CharactersWithGroup.ToArray();
-			dlg.Groups = Backyard.Groups.ToArray();
-			dlg.Folders = Backyard.Folders.ToArray();
-			if (dlg.ShowDialog() != DialogResult.OK || dlg.Groups.Length == 0)
+			
+			if (dlg.ShowDialog() != DialogResult.OK || dlg.SelectedGroups.Length == 0)
 				return false;
+
+			var groupInstances = dlg.SelectedGroups;
 
 			// Model settings
 			var dlgSettings = new EditModelSettingsDialog();
@@ -2590,7 +2594,7 @@ namespace Ginger
 				return false;
 
 			// Confirm
-			if (MessageBox.Show(string.Format(Resources.msg_link_confirm_update_many, NumCharacters(dlg.Groups.Length)), Resources.cap_link_update_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+			if (MessageBox.Show(string.Format(Resources.msg_link_confirm_update_many, NumGroups(groupInstances.Length)), Resources.cap_link_update_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
 				return false;
 
 			var updater = new BulkUpdateModelSettings();
@@ -2615,8 +2619,8 @@ namespace Ginger
 				_bCanIdle = true;
 			};
 
-			for (int i = 0; i < dlg.Groups.Length; ++i)
-				updater.Enqueue(dlg.Groups[i]);
+			for (int i = 0; i < groupInstances.Length; ++i)
+				updater.Enqueue(groupInstances[i]);
 
 			_bCanRegenerate = false;
 			_bCanIdle = false;
