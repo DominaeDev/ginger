@@ -1140,7 +1140,7 @@ namespace Ginger
 				}
 
 				menu.Items.Add(new ToolStripSeparator()); // ----
-				menu.Items.Add(new ToolStripMenuItem("Blur background", null, (s, e) => {
+				menu.Items.Add(new ToolStripMenuItem("Blur", null, (s, e) => {
 					BlurBackgroundImage?.Invoke(this, EventArgs.Empty);
 				}) {
 					Enabled = bHasBackground,
