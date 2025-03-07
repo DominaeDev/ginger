@@ -17,6 +17,7 @@ namespace Ginger
 		public event EventHandler BackgroundFromPortrait;
 		public event EventHandler PasteBackgroundImage;
 		public event EventHandler RemoveBackgroundImage;
+		public event EventHandler BlurBackgroundImage;
 
 		public class EditNameEventArgs : EventArgs
 		{
@@ -1139,6 +1140,11 @@ namespace Ginger
 				}
 
 				menu.Items.Add(new ToolStripSeparator()); // ----
+				menu.Items.Add(new ToolStripMenuItem("Blur background", null, (s, e) => {
+					BlurBackgroundImage?.Invoke(this, EventArgs.Empty);
+				}) {
+					Enabled = bHasBackground,
+				});
 				menu.Items.Add(new ToolStripMenuItem("Clear background", null, (s, e) => {
 					RemoveBackgroundImage?.Invoke(this, EventArgs.Empty);
 				}) {

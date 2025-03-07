@@ -244,6 +244,7 @@ namespace Ginger
 			sidePanel.PasteBackgroundImage += OnPasteBackgroundImage;
 			sidePanel.RemoveBackgroundImage += OnRemoveBackgroundImage;
 			sidePanel.BackgroundFromPortrait += OnBackgroundFromPortrait;
+			sidePanel.BlurBackgroundImage += OnBlurBackgroundImage;
 
 			SetToolTip(btnAdd_Model, "Bot instructions");
 			SetToolTip(btnAdd_Character, "Character");
@@ -622,6 +623,37 @@ namespace Ginger
 			Undo.Push(Undo.Kind.Parameter, "Clear background image");
 			Current.IsDirty = true;
 			sidePanel.RefreshValues();
+		}
+
+		private void OnBlurBackgroundImage(object sender, EventArgs e)
+		{
+			var asset = Current.Card.assets.FirstOrDefault(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
+			if (asset == null)
+				return;
+
+			Image image;
+			if (Utility.LoadImageFromMemory(asset.data.bytes, out image) == false)
+				return;
+
+			int width = image.Width;
+			int height = image.Height;
+
+			// Resample image
+			Bitmap blurredImage = Utility.ResampleImage(image, width / 8, height / 8);
+			FastBlur.ImageTools.Blur(ref blurredImage, 4);
+			blurredImage = Utility.ResampleImage(blurredImage, width, height);
+
+			AssetFile tmp;
+			if (Current.Card.assets.AddBackground(blurredImage, out tmp))
+			{
+				Current.Card.assets.Remove(asset);
+
+				Undo.Push(Undo.Kind.Parameter, "Blur background image");
+				Current.IsDirty = true;
+				sidePanel.RefreshValues();
+
+				blurredImage.Save("bg.png", System.Drawing.Imaging.ImageFormat.Png);
+			}
 		}
 
 		private void OnResizePortraitImage(object sender, EventArgs e)
