@@ -144,13 +144,6 @@ namespace Ginger.Integration
 			return false;
 		}
 
-		public GroupInstance GetGroupForCharacter(string characterId)
-		{
-			return _Groups.Values
-				.FirstOrDefault(g => g.members != null && g.members.Length == 2
-				&& g.members.Contains(characterId));
-		}
-
 		public Backyard.Error RefreshCharacters()
 		{
 			if (ConnectionEstablished == false)
@@ -205,7 +198,8 @@ namespace Ginger.Integration
 								int numLoreEntries = reader.GetInt32(8);
 
 								// Get group info
-								GroupInstance groupInstance = GetGroupForCharacter(instanceId);
+								GroupInstance groupInstance = this.GetGroupForCharacter(instanceId);
+								string groupId = groupInstance.instanceId;
 								string folderId = groupInstance.folderId;
 								string folderSortPosition = groupInstance.folderSortPosition;
 								string hubCharId = groupInstance.hubCharId;
@@ -215,7 +209,7 @@ namespace Ginger.Integration
 									new CharacterInstance() {
 										instanceId = instanceId,
 										configId = configId,
-										groupId = groupInstance.instanceId,
+										groupId = groupId,
 										displayName = displayName,
 										name = name,
 										creationDate = createdAt,
@@ -224,8 +218,8 @@ namespace Ginger.Integration
 										persona = persona,
 										hasLorebook = numLoreEntries > 0,
 										creator = hubAuthorUsername ?? "",
-										folderId = folderId,
-										folderSortPosition = folderSortPosition,
+										folderId = folderId ?? "",
+										folderSortPosition = folderSortPosition ?? "",
 									});
 							}
 						}
@@ -277,14 +271,21 @@ namespace Ginger.Integration
 					connection.Open();
 
 					ChatStaging staging = new ChatStaging();
+					string groupId = null;
 					string hubCharId = null;
 					string hubAuthorUsername = null;
 
 					_Character character;
 					FetchCharacter(connection, characterInstance.instanceId, out character);
 
-					if (characterInstance.groupId != null)
-						FetchGroupInfo(connection, characterInstance.groupId, out staging, out hubCharId, out hubAuthorUsername);
+					// Get primary group (solo)
+					string[] groupIds;
+					FetchGroupMembershipsForCharacter(connection, characterInstance.instanceId, false, out groupIds);
+					if (groupIds.Length > 0)
+						groupId = groupIds[0];
+
+					if (groupId != null)
+						FetchGroupInfo(connection, groupId, out staging, out hubCharId, out hubAuthorUsername);
 
 					// Gather lorebook items
 					FaradayCardV1.LoreBookEntry[] entries;
@@ -299,7 +300,7 @@ namespace Ginger.Integration
 					{
 						// Get existing chats
 						ImageInstance[] backgrounds;
-						if (FetchChatBackgrounds(connection, characterInstance.groupId, out backgrounds))
+						if (FetchChatBackgrounds(connection, groupId, out backgrounds))
 							lsImages.AddRange(backgrounds);
 					}
 
@@ -328,7 +329,7 @@ namespace Ginger.Integration
 					string userName;
 					string userPersona;
 					ImageInstance userImage;
-					if (FetchUserInfo(connection, characterInstance.groupId, out userId, out userName, out userPersona, out userImage))
+					if (FetchUserInfo(connection, groupId, out userId, out userName, out userPersona, out userImage))
 					{
 						if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 							BackyardUtil.ConvertFromIDPlaceholders(ref userPersona);
@@ -1973,11 +1974,11 @@ namespace Ginger.Integration
 					connection.Open();
 
 					// Fetch (all) character-group memberships
-					Dictionary<string, HashSet<string>> groupMembers;
-					FetchGroupMemberships(connection, out groupMembers);
+					Dictionary<string, HashSet<string>> groupMemberships;
+					FetchGroupMemberships(connection, out groupMemberships);
 
 					// Filter affected groups
-					groupMembers = groupMembers
+					groupMemberships = groupMemberships
 						.Where(kvp => kvp.Value.ContainsAnyIn(characterIds))
 						.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
@@ -2011,12 +2012,14 @@ namespace Ginger.Integration
 					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
 					{
 						// Find backgrounds (chats)
-						var groupIds = groupMembers.Keys.ToArray();
-						using (var cmdBackgrounds = connection.CreateCommand())
+						var groupIds = groupMemberships.Keys.ToArray();
+						if (groupIds.Length > 0)
 						{
-							var sbCommand = new StringBuilder();
-							sbCommand.Append(
-							@"
+							using (var cmdBackgrounds = connection.CreateCommand())
+							{
+								var sbCommand = new StringBuilder();
+								sbCommand.Append(
+								@"
 								SELECT imageUrl
 								FROM BackgroundChatImage
 								WHERE chatId IN (
@@ -2025,33 +2028,46 @@ namespace Ginger.Integration
 									WHERE groupConfigId IN (
 								");
 
-							for (int i = 0; i < groupIds.Length; ++i)
-							{
-								if (i > 0)
-									sbCommand.Append(", ");
-								sbCommand.AppendFormat("'{0}'", groupIds[i]);
-							}
-							sbCommand.AppendLine("));");
-							cmdBackgrounds.CommandText = sbCommand.ToString();
+								for (int i = 0; i < groupIds.Length; ++i)
+								{
+									if (i > 0)
+										sbCommand.Append(", ");
+									sbCommand.AppendFormat("'{0}'", groupIds[i]);
+								}
+								sbCommand.AppendLine("));");
+								cmdBackgrounds.CommandText = sbCommand.ToString();
 
-							using (var reader = cmdBackgrounds.ExecuteReader())
-							{
-								while (reader.Read())
-									backgroundUrls.Add(reader.GetString(0));
+								using (var reader = cmdBackgrounds.ExecuteReader())
+								{
+									while (reader.Read())
+										backgroundUrls.Add(reader.GetString(0));
+								}
 							}
 						}
 					}
 
-					result = new ConfirmDeleteResult() {
-						characterIds = groupMembers
-							.SelectMany(kvp => kvp.Value)
-							.Distinct()
-							.Intersect(characterIds)
-							.ToArray(),
-						groupIds = groupMembers.Select(kvp => kvp.Key).ToArray(),
-						imageIds = images.Keys.ToArray(),
-						imageUrls = images.Values.Union(backgroundUrls).Distinct().ToArray(),
-					};
+					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties)) //! @party
+					{
+						result = new ConfirmDeleteResult() {
+							characterIds = characterIds.ToArray(),
+							groupIds = groupMemberships.Select(kvp => kvp.Key).ToArray(),
+							imageIds = images.Keys.ToArray(),
+							imageUrls = images.Values.Union(backgroundUrls).Distinct().ToArray(),
+						};
+					}
+					else
+					{
+						result = new ConfirmDeleteResult() {
+							characterIds = groupMemberships
+								.SelectMany(kvp => kvp.Value)
+								.Distinct()
+								.Intersect(characterIds)
+								.ToArray(),
+							groupIds = groupMemberships.Select(kvp => kvp.Key).ToArray(),
+							imageIds = images.Keys.ToArray(),
+							imageUrls = images.Values.Union(backgroundUrls).Distinct().ToArray(),
+						};
+					}
 
 					return Backyard.Error.NoError;
 				}
@@ -2078,7 +2094,7 @@ namespace Ginger.Integration
 			if (ConnectionEstablished == false)
 				return Backyard.Error.NotConnected;
 
-			if (characterIds == null || characterIds.Length == 0 || groupIds == null || groupIds.Length == 0)
+			if (characterIds == null || characterIds.Length == 0)
 				return Backyard.Error.InvalidArgument;
 
 			try
@@ -2191,7 +2207,7 @@ namespace Ginger.Integration
 								}
 
 								// Delete groups
-								if (groupIds.Length > 0)
+								if (groupIds != null && groupIds.Length > 0)
 								{
 									sbCommand.AppendLine(
 									@"
@@ -5316,6 +5332,19 @@ namespace Ginger.Integration
 				members.Insert(0, user);
 				return true;
 			}
+		}
+
+		private static void FetchGroupMembershipsForCharacter(SQLiteConnection connection, string characterId, bool bAllowParties, out string[] groupIds)
+		{
+			// Fetch (all) character-group memberships
+			Dictionary<string, HashSet<string>> memberships;
+			FetchGroupMemberships(connection, out memberships);
+			var groups = memberships
+				.Where(kvp => (bAllowParties ? kvp.Value.Count >= 2 : kvp.Value.Count == 2) && kvp.Value.Contains(characterId))
+				.OrderBy(kvp => kvp.Value.Count);
+			groupIds = groups
+				.Select(kvp => kvp.Key)
+				.ToArray();
 		}
 
 		private bool FetchChatBackgrounds(SQLiteConnection connection, string groupId, out ImageInstance[] backgrounds)

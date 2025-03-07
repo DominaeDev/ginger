@@ -75,6 +75,7 @@ namespace Ginger.Integration
 			public string[] members;			// CharacterConfigVersion.id ...
 
 			public bool isDefined { get { return instanceId != null; } }
+			public bool isParty { get { return isDefined && Count > 2; } }
 			public int Count { get { return members != null ? members.Length : 0; } }
 			public bool isEmpty { get { return Count == 0; } }
 
@@ -567,11 +568,7 @@ namespace Ginger.Integration
 				if (ConnectionEstablished)
 				{
 					if (groupId == null)
-					{
-						var group = Database.GetGroupForCharacter(mainActorId);
-						if (group.isDefined)
-							groupId = group.instanceId;
-					}
+						groupId = Database.GetGroupForCharacter(mainActorId).instanceId;
 
 					if (groupId != null)
 					{

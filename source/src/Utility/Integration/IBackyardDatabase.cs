@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Ginger.Integration
 {
@@ -29,7 +30,6 @@ namespace Ginger.Integration
 		Backyard.Error RefreshCharacters();
 		bool GetCharacter(string characterId, out CharacterInstance character);
 		bool GetGroup(string groupId, out GroupInstance group);
-		GroupInstance GetGroupForCharacter(string characterId);
 		string LastError { get; }
 
 		// Characters
@@ -108,6 +108,23 @@ namespace Ginger.Integration
 				return group;
 			return default(GroupInstance);
 		}
+
+		public static GroupInstance GetGroupForCharacter(this IBackyardDatabase impl, string characterId)
+		{
+			return GetGroupsForCharacter(impl, characterId).FirstOrDefault();
+		}
+
+		public static GroupInstance[] GetGroupsForCharacter(this IBackyardDatabase impl, string characterId)
+		{
+			if (string.IsNullOrEmpty(characterId))
+				return new GroupInstance[0];
+
+			return impl.Groups
+				.Where(g => g.members != null && g.members.Contains(characterId))
+				.OrderBy(g => g.members.Length) // Solo group > Party
+				.ToArray();
+		}
+
 
 	}
 }

@@ -769,11 +769,13 @@ namespace Ginger
 			
 			_charactersById = Backyard.CharactersWithGroup.ToDictionary(c => c.instanceId, c => c);
 
-			var groupDlg = new LinkSelectCharacterOrGroupDialog();
-			groupDlg.Options = LinkSelectCharacterOrGroupDialog.Option.Solo | LinkSelectCharacterOrGroupDialog.Option.Parties;
-			if (groupDlg.ShowDialog() == DialogResult.OK)
+			var dlg = new LinkSelectCharacterOrGroupDialog();
+			dlg.Options = LinkSelectCharacterOrGroupDialog.Option.Solo;
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties))
+				dlg.Options |= LinkSelectCharacterOrGroupDialog.Option.Parties;
+			if (dlg.ShowDialog() == DialogResult.OK)
 			{
-				_groupInstance = groupDlg.SelectedGroup;
+				_groupInstance = dlg.SelectedGroup;
 			}
 
 			chatView.Items.Clear();

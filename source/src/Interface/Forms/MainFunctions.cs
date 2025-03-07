@@ -1679,12 +1679,15 @@ namespace Ginger
 			}
 
 			var dlg = new LinkSelectCharacterOrGroupDialog();
-			dlg.Options = LinkSelectCharacterOrGroupDialog.Option.Parties | LinkSelectCharacterOrGroupDialog.Option.Unassigned;
+			dlg.Options = LinkSelectCharacterOrGroupDialog.Option.Solo;
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties))
+				dlg.Options |= LinkSelectCharacterOrGroupDialog.Option.Parties | LinkSelectCharacterOrGroupDialog.Option.Orphans;
+
 			dlg.Text = "Open Backyard AI character";
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return false;
 
-			if (dlg.SelectedGroup.isDefined && dlg.SelectedGroup.members.Length > 2) // Party?
+			if (dlg.SelectedGroup.isParty)
 				return ImportGroupFromBackyard(dlg.SelectedGroup);
 
 			if (ConfirmSave(Resources.cap_import_character) == false)
@@ -2155,8 +2158,7 @@ namespace Ginger
 			_editChatDialog = new LinkEditChatDialog();
 			if (Current.HasActiveLink)
 			{
-				Backyard.GroupInstance group;
-
+				GroupInstance group;
 				if (Current.Link.groupId != null)
 					group = Backyard.Database.GetGroup(Current.Link.groupId);
 				else
@@ -2955,7 +2957,7 @@ namespace Ginger
 				return false;
 			}
 
-			Backyard.GroupInstance groupInstance;
+			GroupInstance groupInstance;
 			if (Current.Link.groupId != null)
 				groupInstance = Backyard.Database.GetGroup(Current.Link.groupId);
 			else
@@ -3087,18 +3089,29 @@ namespace Ginger
 			}
 
 			// Choose character(s)
-			var dlg = new LinkSelectMultipleCharactersDialog();
+			var dlg = new LinkSelectMultipleCharactersOrGroupsDialog();
+			dlg.Options = LinkSelectMultipleCharactersOrGroupsDialog.Option.Solo;
 			dlg.Text = "Select characters to delete";
-			dlg.Characters = Backyard.CharactersWithGroup.ToArray();
-			dlg.Folders = Backyard.Folders.ToArray();
-			if (dlg.ShowDialog() != DialogResult.OK || dlg.Characters.Length == 0)
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties))
+			{
+				dlg.Options |= LinkSelectMultipleCharactersOrGroupsDialog.Option.Orphans | LinkSelectMultipleCharactersOrGroupsDialog.Option.Parties;
+				dlg.Text = "Select characters or groups to delete";
+			}
+
+			if (dlg.ShowDialog() != DialogResult.OK)
 				return false;
 
-			var characters = dlg.Characters;
+			var characterIds = new HashSet<string>(dlg.SelectedCharacters
+				.Select(c => c.instanceId)
+				.Union(dlg.SelectedGroups.SelectMany(g => g.members)));
+
+			var characterInstances = characterIds.Select(id => Backyard.Database.GetCharacter(id))
+				.Where(c => c.isCharacter)
+				.ToArray();
 
 			// Get affected character ids and group ids.
 			Backyard.ConfirmDeleteResult result;
-			Backyard.Error error = Backyard.Database.ConfirmDeleteCharacters(characters, out result);
+			Backyard.Error error = Backyard.Database.ConfirmDeleteCharacters(characterInstances, out result);
 			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_delete_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -3106,7 +3119,7 @@ namespace Ginger
 			}
 
 			// Confirm delete
-			if (MessageBox.Show(string.Format(result.characterIds.Length != result.groupIds.Length ? Resources.msg_link_delete_characters_and_group_chats_confirm : Resources.msg_link_delete_characters_confirm, NumCharacters(characters.Length)), Resources.cap_link_delete_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			if (MessageBox.Show(string.Format(result.characterIds.Length != result.groupIds.Length ? Resources.msg_link_delete_characters_and_group_chats_confirm : Resources.msg_link_delete_characters_confirm, NumCharacters(result.characterIds.Length)), Resources.cap_link_delete_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 				return false;
 
 			error = RunTask(() => Backyard.Database.DeleteCharacters(result.characterIds, result.groupIds, result.imageIds), "Deleting characters...");
@@ -3134,7 +3147,7 @@ namespace Ginger
 			{ 
 			}
 
-			MessageBox.Show(this, string.Format(Resources.msg_link_deleted_characters, NumCharacters(characters.Length)), Resources.cap_link_delete_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MessageBox.Show(this, string.Format(Resources.msg_link_deleted_characters, NumCharacters(characterInstances.Length)), Resources.cap_link_delete_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			
 			return true;
 		}

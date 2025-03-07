@@ -42,6 +42,7 @@
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -255,6 +256,12 @@
     </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\LinkSelectCharacterOrGroupDialog.Designer.cs">
       <DependentUpon>LinkSelectCharacterOrGroupDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectMultipleCharactersOrGroupsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectMultipleCharactersOrGroupsDialog.Designer.cs">
+      <DependentUpon>LinkSelectMultipleCharactersOrGroupsDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\LinkSelectMultipleGroupsDialog.cs">
       <SubType>Form</SubType>
@@ -771,6 +778,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectCharacterOrGroupDialog.resx">
       <DependentUpon>LinkSelectCharacterOrGroupDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectMultipleCharactersOrGroupsDialog.resx">
+      <DependentUpon>LinkSelectMultipleCharactersOrGroupsDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectMultipleGroupsDialog.resx">
       <DependentUpon>LinkSelectMultipleGroupsDialog.cs</DependentUpon>

@@ -12,7 +12,7 @@ namespace Ginger
 	using FolderInstance = Backyard.FolderInstance;
 	using GroupInstance = Backyard.GroupInstance;
 
-	public partial class LinkSelectCharacterOrGroupDialog : FormEx
+	public partial class LinkSelectMultipleCharactersOrGroupsDialog : FormEx
 	{
 		[Flags]
 		public enum Option
@@ -23,19 +23,29 @@ namespace Ginger
 			Parties = 1 << 2,
 		}
 
-		public CharacterInstance SelectedCharacter { get; private set; }
-		public GroupInstance SelectedGroup { get; private set; }
+		public CharacterInstance[] SelectedCharacters { get; private set; }
+		public GroupInstance[] SelectedGroups { get; private set; }
 		public Option Options { get; set; }
 
 		private CharacterInstance[] Characters;
 		private CharacterInstance[] Orphans;
 		private GroupInstance[] Groups;
 		private FolderInstance[] Folders;
+
+		private struct NodeState {
+			public CharacterInstance character;
+			public GroupInstance group;
+			public bool bChecked;
+		}
+		private NodeState[] Nodes;
+
 		private Dictionary<string, CharacterInstance> _charactersById;
 		private Dictionary<string, int> _folderCounts = new Dictionary<string, int>();
 		private Dictionary<string, Backyard.ChatCount> _chatCounts;
 
-		public LinkSelectCharacterOrGroupDialog()
+		private bool _bIgnoreEvents = false;
+
+		public LinkSelectMultipleCharactersOrGroupsDialog()
 		{
 			InitializeComponent();
 
@@ -46,6 +56,7 @@ namespace Ginger
 		{
 			this.Characters = Backyard.Database.Characters.ToArray();
 			this.Orphans = this.Characters.Where(c => c.groupId == null).ToArray();
+
 			this.Folders = Backyard.Database.Folders.ToArray();
 			if (Options.Contains(Option.Parties))
 			{
@@ -58,24 +69,38 @@ namespace Ginger
 					.ToArray();
 			}
 			else
+			{
 				this.Groups = new GroupInstance[0];
+			}
 
 			_charactersById = Characters.ToDictionary(c => c.instanceId, c => c);
-			if (Backyard.Database.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
+			if (Backyard.ConnectionEstablished == false || Backyard.Database.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
 				_chatCounts = new Dictionary<string, Backyard.ChatCount>(); // Empty
 
 			if (Groups.ContainsAny(g => g.Count > 2))
 				this.Text = "Select character or group";
 
+			Nodes = Groups
+				.Select(g => new NodeState() {
+					bChecked = false,
+					group = g,
+				})
+				.Union(
+					Orphans.Select(c => new NodeState() {
+						bChecked = false,
+						character = c,
+					})
+				)
+				.ToArray();
+
 			PopulateTree(false);
 
 			treeView.SelectedNode = null;
-			SelectedGroup = default(GroupInstance);
-			SelectedCharacter = default(CharacterInstance);
 
-			btnOk.Enabled = false;
+			RefreshSelectAllCheckbox();
+			RefreshConfirmButton();
 		}
-				
+
 		private DateTime GetLatestMessageTime(GroupInstance group)
 		{
 			Backyard.ChatCount count;
@@ -96,11 +121,18 @@ namespace Ginger
 
 		private void PopulateTree(bool bRefresh)
 		{
-			HashSet<string> expandedFolders = new HashSet<string>();
+			var expandedFolders = new HashSet<string>();
+			var expandingNodes = new List<TreeNode>();
+			var checkedFolders = new HashSet<string>();
 			foreach (var node in treeView.AllNodes())
 			{
-				if (node.IsExpanded && node.Tag is string)
-					expandedFolders.Add(node.Tag as string);
+				if (node.Tag is string) // Folder
+				{
+					if (node.IsExpanded)
+						expandedFolders.Add(node.Tag as string);
+					if (node.Checked)
+						checkedFolders.Add(node.Tag as string);
+				}
 			}
 
 			treeView.BeginUpdate();
@@ -112,7 +144,6 @@ namespace Ginger
 			if (bRefresh == false)
 			{
 				_folderCounts.Clear();
-
 				// Sum character counts
 				for (int i = 0; i < Folders.Length; ++i)
 					_folderCounts.Add(Folders[i].instanceId, Groups.Count(c => c.folderId == Folders[i].instanceId));
@@ -133,60 +164,60 @@ namespace Ginger
 				.Select(f => f.instanceId)
 				.Distinct());
 
-			var expandedNodes = new List<TreeNode>();
+			_bIgnoreEvents = true;
 			while (openList.Count > 0)
 			{
 				string parentId = openList[0];
 				var subfolders = Folders
 					.Where(f => f.parentId == parentId)
-					.OrderBy(f => f.name);
+					.OrderBy(c => c.name);
 
 				foreach (var folder in subfolders)
 				{
 					var folderNode = CreateFolderNode(folder, nodesById, _folderCounts[folder.instanceId]);
 					if (expandedFolders.Contains(folder.instanceId))
-						expandedNodes.Add(folderNode);
+						expandingNodes.Add(folderNode);
+					if (checkedFolders.Contains(folder.instanceId))
+						folderNode.Checked = true;
 				}
 				
 				openList.Remove(parentId);
 			}
 
-
-			// Sorting
-			IEnumerable<GroupInstance> sortedGroups = Groups;
-			IEnumerable<CharacterInstance> sortedOrphans = Orphans;
+			// Create group nodes
+			IEnumerable<NodeState> sortedGroups = Nodes.Where(n => n.group.isDefined);
+			IEnumerable<NodeState> sortedOrphans = Nodes.Where(n => n.character.isDefined);
 			if (AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByName)
 			{
 				sortedGroups = sortedGroups
-					.OrderBy(g => g.GetDisplayName())
-					.ThenByDescending(c => c.creationDate);
+					.OrderBy(n => n.group.GetDisplayName())
+					.ThenByDescending(n => n.group.creationDate);
 				sortedOrphans = sortedOrphans
-					.OrderBy(g => g.displayName)
-					.ThenByDescending(c => c.creationDate);
+					.OrderBy(n => n.character.displayName)
+					.ThenByDescending(n => n.character.creationDate);
 			}
 			else if (AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByCreation)
 			{
 				sortedGroups = sortedGroups
-					.OrderByDescending(g => g.creationDate);
+					.OrderByDescending(n => n.group.creationDate);
 				sortedOrphans = sortedOrphans
-					.OrderByDescending(c => c.creationDate);
+					.OrderByDescending(n => n.character.creationDate);
 			}
 			else if (AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByLastMessage)
 			{
 				sortedGroups = sortedGroups
-					.OrderByDescending(g => GetLatestMessageTime(g));
+					.OrderByDescending(n => GetLatestMessageTime(n.group));
 				sortedOrphans = sortedOrphans
-					.OrderByDescending(c => GetLatestMessageTime(c));
+					.OrderByDescending(n => GetLatestMessageTime(n.character));
 			}
 			else if (AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByCustom)
 			{
 				sortedGroups = sortedGroups
-					.OrderBy(g => g.folderSortPosition);
+					.OrderBy(n => n.group.folderSortPosition);
 				sortedOrphans = sortedOrphans
-					.OrderByDescending(c => c.creationDate); // Not applicable
+					.OrderByDescending(n => n.character.creationDate); // Not applicable
 			}
-
-			// Create orphan nodes
+						
 			int nOrphans = sortedOrphans.Count();
 			if (nOrphans > 0 && Options.ContainsAny(Option.Orphans) )
 			{
@@ -198,24 +229,24 @@ namespace Ginger
 					folderNode.Tag = "Orphans";
 					treeView.Nodes.Insert(0, folderNode);
 					if (expandedFolders.Contains(folderNode.Tag))
-						expandedNodes.Add(folderNode);
+						expandingNodes.Add(folderNode);
 				}
-								
+				
 				foreach (var character in sortedOrphans)
-					CreateCharacterNode(character, folderNode, true);
+					CreateCharacterNode(character, folderNode, nodesById, true);
 			}
 
-			// Create group nodes
-			foreach (var group in sortedGroups)
-				CreateGroupNode(group, nodesById);
+			foreach (var node in sortedGroups)
+				CreateGroupNode(node, nodesById);
 
 			if (bRefresh)
 			{
-				for (int i = expandedNodes.Count - 1; i >= 0; --i)
-					expandedNodes[i].Expand();
+				for (int i = expandingNodes.Count - 1; i >= 0; --i)
+					expandingNodes[i].Expand();
 			}
 
 			treeView.EndUpdate();
+			_bIgnoreEvents = false;
 		}
 
 		private TreeNode CreateFolderNode(FolderInstance folder, Dictionary<string, TreeNode> nodes, int count)
@@ -233,12 +264,13 @@ namespace Ginger
 			return node;
 		}
 
-		private TreeNode CreateGroupNode(GroupInstance group, Dictionary<string, TreeNode> nodes)
+		private TreeNode CreateGroupNode(NodeState nodeState, Dictionary<string, TreeNode> nodes)
 		{
+			TreeNode parentNode;
+			var group = nodeState.group;
 			if (group.Count < 2)
 				return null;
 
-			TreeNode parentNode;
 			nodes.TryGetValue(group.folderId, out parentNode);
 
 			string groupLabel = group.GetDisplayName();
@@ -246,59 +278,39 @@ namespace Ginger
 
 			CharacterInstance[] characters = group.members
 				.Select(id => _charactersById.GetOrDefault(id))
-				.Where(c => c.isCharacter)
 				.OrderBy(c => c.creationDate)
+				.Where(c => c.isCharacter)
 				.ToArray();
 
-			if (characters.Length >= 2)
+			string[] characterNames = characters
+				.Select(c => Utility.FirstNonEmpty(c.name, Constants.DefaultCharacterName))
+				.ToArray();
+
+			if (characterNames.Length >= 2)
 			{
-				string[] characterNames = characters
-					.Select(c => Utility.FirstNonEmpty(c.name, Constants.DefaultCharacterName))
-					.ToArray();
+				groupLabel = string.Concat("(Group chat) ", groupLabel);
 
 				sbTooltip.Append("Group chat with ");
 				sbTooltip.Append(Utility.CommaSeparatedList(characterNames));
 			}
-			else if (characters.Length == 1)
+			else if (characterNames.Length == 1)
 			{
-				var character = characters[0];
 				sbTooltip.Append("Name: ");
-				sbTooltip.Append(character.displayName);
-				if (string.Compare(character.name, character.displayName, StringComparison.OrdinalIgnoreCase) != 0)
-				{
-					sbTooltip.Append(" (goes by '");
-					sbTooltip.Append(character.name);
-					sbTooltip.Append("')");
-				}
-
-				if (string.IsNullOrEmpty(character.creator) == false)
-				{
-					sbTooltip.NewLine();
-					sbTooltip.Append("By: ");
-					sbTooltip.Append(characters[0].creator);
-					sbTooltip.AppendLine();
-				}
-				if (string.IsNullOrEmpty(character.inferredGender) == false)
-				{
-					sbTooltip.NewLine();
-					sbTooltip.AppendFormat("Gender: {0} (Inferred)", character.inferredGender);
-				}
-				sbTooltip.NewLine();
-				sbTooltip.AppendFormat("Lorebook: {0}", character.hasLorebook ? "Yes" : "No");
+				sbTooltip.Append(characterNames[0]);
 			}
 
-			sbTooltip.NewLine();
-			sbTooltip.Append("Chats: ");
 			Backyard.ChatCount chatCount;
 			if (_chatCounts.TryGetValue(group.instanceId, out chatCount))
 			{
 				if (chatCount.hasMessages)
-					sbTooltip.Append(chatCount.count);
+					sbTooltip.AppendFormat(" ({0} {1})",
+						chatCount.count,
+						chatCount.count == 1 ? "chat" : "chats");
 				else
-					sbTooltip.Append("None");
+					sbTooltip.Append(" (No messages)");
 			}
 			else
-				sbTooltip.Append("None");
+				sbTooltip.Append(" (No chats found)");
 
 			sbTooltip.NewParagraph();
 			sbTooltip.AppendLine($"Created: {group.creationDate.ToShortDateString()}");
@@ -331,24 +343,21 @@ namespace Ginger
 			var node = new TreeNode(groupLabel, icon, icon);
 			node.Tag = group;
 			node.ToolTipText = sbTooltip.ToString();
+			node.Checked = nodeState.bChecked;
 			if (parentNode != null)
 				parentNode.Nodes.Add(node);
 			else
 				treeView.Nodes.Add(node);
-
-			if (characters.Length > 1 && Options.Contains(Option.Orphans))
-			{
-				foreach (var character in characters)
-					CreateCharacterNode(character, node, chatCount.hasMessages == false);
-			}
 			return node;
 		}
-				
-		private TreeNode CreateCharacterNode(CharacterInstance character, TreeNode parentNode, bool bGrayed)
+
+		private TreeNode CreateCharacterNode(NodeState nodeState, TreeNode parentNode, Dictionary<string, TreeNode> nodes, bool bGrayed)
 		{
+			var character = nodeState.character;
+
 			string label = character.displayName;
 			if (string.Compare(character.name, label, StringComparison.OrdinalIgnoreCase) != 0)
-				label = string.Concat(label, " \"", character.name, "\"");
+				label = string.Concat(label, " (", character.name, ")");
 
 			string inferredGender = character.inferredGender;
 			var sbTooltip = new StringBuilder();
@@ -399,6 +408,7 @@ namespace Ginger
 			var node = new TreeNode(label, icon, icon);
 			node.Tag = character;
 			node.ToolTipText = sbTooltip.ToString();
+			node.Checked = nodeState.bChecked;
 			if (parentNode != null)
 				parentNode.Nodes.Add(node);
 			else
@@ -408,6 +418,14 @@ namespace Ginger
 
 		private void BtnOk_Click(object sender, EventArgs e)
 		{
+			SelectedGroups = Nodes
+				.Where(n => n.bChecked && n.group.isDefined)
+				.Select(n => n.group)
+				.ToArray();
+			SelectedCharacters = Nodes
+				.Where(n => n.bChecked&& n.character.isDefined)
+				.Select(n => n.character)
+				.ToArray();
 			DialogResult = DialogResult.OK;
 			Close();
 		}
@@ -418,57 +436,14 @@ namespace Ginger
 			Close();
 		}
 
-		private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
-		{
-			OnSelectedNode(e.Node);
-		}
-
-		private void OnSelectedNode(TreeNode node)
-		{
-			if (node != null && node.Tag is GroupInstance)
-			{
-				GroupInstance group = (GroupInstance)node.Tag;
-				CharacterInstance[] characters = group.members
-					.Select(id => _charactersById.GetOrDefault(id))
-					.Where(c => c.isCharacter)
-					.ToArray();
-
-				if (characters.Length > 1)
-				{
-					SelectedGroup = (GroupInstance)node.Tag;
-					SelectedCharacter = default(CharacterInstance);
-				}
-				else if (characters.Length == 1)
-				{
-					SelectedCharacter = characters[0];
-					SelectedGroup = (GroupInstance)node.Tag;
-				}
-				else
-				{
-					SelectedGroup = default(GroupInstance);
-					SelectedCharacter = default(CharacterInstance);
-				}
-			}
-			else if (node != null && node.Tag is CharacterInstance)
-			{
-				SelectedCharacter = (CharacterInstance)node.Tag;
-				SelectedGroup = default(GroupInstance);
-			}
-			else
-			{
-				SelectedGroup = default(GroupInstance);
-				SelectedCharacter = default(CharacterInstance);
-			}
-			btnOk.Enabled = SelectedGroup.isDefined || SelectedCharacter.isDefined;
-		}
-
 		private void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
-			if (e.Node != null && e.Node == treeView.SelectedNode
+			if (e.Button == MouseButtons.Left
+				&& e.Node != null
+				&& e.Node == treeView.SelectedNode
 				&& (e.Node.Tag is GroupInstance || e.Node.Tag is CharacterInstance))
 			{
-				OnSelectedNode(e.Node);
-				BtnOk_Click(this, EventArgs.Empty);
+				e.Node.Checked = !e.Node.Checked;
 			}
 		}
 
@@ -540,6 +515,127 @@ namespace Ginger
 			treeView.ImageList = Theme.IsDarkModeEnabled ? imageList_Dark : imageList_Light;
 
 			listPanel.BackColor = Theme.Current.TreeViewBackground;
+		}
+
+		private void treeView_AfterCheck(object sender, TreeViewEventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			_bIgnoreEvents = true;
+			if (e.Node.Tag is string) // Is folder
+			{
+				foreach (TreeNode node in e.Node.Nodes)
+					node.Checked = e.Node.Checked;
+				CheckChildren(e.Node, e.Node.Checked);
+			}
+			else
+			{
+				OnCheckNode(e.Node);
+			}
+
+			RefreshParentNode(e.Node);
+
+			_bIgnoreEvents = false;
+
+			RefreshSelectAllCheckbox();
+			RefreshConfirmButton();
+		}
+
+		private void OnCheckNode(TreeNode node)
+		{
+			if (node.Tag is GroupInstance) // Group
+			{
+				var groupId = ((GroupInstance)node.Tag).instanceId;
+				int index = Array.FindIndex(Nodes, n => n.group.instanceId == groupId);
+				if (index != -1)
+					Nodes[index].bChecked = node.Checked;
+			}
+			else if (node.Tag is CharacterInstance) // Group
+			{
+				var characterId = ((CharacterInstance)node.Tag).instanceId;
+				int index = Array.FindIndex(Nodes, n => n.character.instanceId == characterId);
+				if (index != -1)
+					Nodes[index].bChecked = node.Checked;
+			}
+		}
+
+		private static void RefreshParentNode(TreeNode node)
+		{
+			if (node == null || node.Parent == null)
+				return;
+
+			bool bAllChecked = true;
+			foreach (TreeNode sibling in node.Parent.Nodes)
+			{
+				if (sibling.Checked == false)
+				{
+					bAllChecked = false;
+					break;
+				}
+			}
+
+			node.Parent.Checked = bAllChecked;
+			RefreshParentNode(node.Parent);
+		}
+
+		private void CheckChildren(TreeNode parent, bool bChecked)
+		{
+			foreach (TreeNode node in parent.Nodes)
+			{
+				node.Checked = bChecked;
+				CheckChildren(node, bChecked);
+				OnCheckNode(node);
+			}
+		}
+
+		private void cbSelectAll_CheckedChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			bool bChecked = cbSelectAll.Checked;
+			foreach (TreeNode node in treeView.AllNodes())
+				node.Checked = bChecked;
+
+			for (int i = 0; i < Nodes.Length; ++i)
+				Nodes[i].bChecked = bChecked;
+
+			this.Invalidate();
+		}
+
+		private void RefreshSelectAllCheckbox()
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			var checkState = CheckState.Unchecked;
+
+			foreach (TreeNode node in treeView.AllNodes())
+			{
+				if (node.Checked == false)
+				{
+					if (checkState == CheckState.Checked)
+					{
+						checkState = CheckState.Indeterminate;
+						break;
+					}
+				}
+				else
+					checkState = CheckState.Checked;
+			}
+
+			_bIgnoreEvents = true;
+			cbSelectAll.CheckState = checkState;
+			_bIgnoreEvents = false;
+		}
+
+		private void RefreshConfirmButton()
+		{
+			int count = treeView.AllNodes().Count(n => n.Checked && (n.Tag is GroupInstance || n.Tag is CharacterInstance));
+
+			btnOk.Text = count > 0 ? $"Select ({count})" : "Select";
+			btnOk.Enabled = count > 0;
 		}
 	}
 }
