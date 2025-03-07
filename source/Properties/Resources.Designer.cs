@@ -4715,138 +4715,75 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include attributes in the character persona..
+        ///   Looks up a localized string similar to Exclude character attributes from the output.
         /// </summary>
-        internal static string tooltip_enable_attributes {
+        internal static string tooltip_exclude_attributes {
             get {
-                return ResourceManager.GetString("tooltip_enable_attributes", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_attributes", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include example chat in the output..
+        ///   Looks up a localized string similar to Exclude example chat from the output.
         /// </summary>
-        internal static string tooltip_enable_example {
+        internal static string tooltip_exclude_example {
             get {
-                return ResourceManager.GetString("tooltip_enable_example", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_example", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include grammar in the output..
-        /// </summary>
-        internal static string tooltip_enable_grammar {
-            get {
-                return ResourceManager.GetString("tooltip_enable_grammar", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include greeting(s) in the output..
-        /// </summary>
-        internal static string tooltip_enable_greetings {
-            get {
-                return ResourceManager.GetString("tooltip_enable_greetings", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include lore in the output..
-        /// </summary>
-        internal static string tooltip_enable_lore {
-            get {
-                return ResourceManager.GetString("tooltip_enable_lore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include model instructions in the output..
-        /// </summary>
-        internal static string tooltip_enable_model_instructions {
-            get {
-                return ResourceManager.GetString("tooltip_enable_model_instructions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include scenario in the output..
-        /// </summary>
-        internal static string tooltip_enable_scenario {
-            get {
-                return ResourceManager.GetString("tooltip_enable_scenario", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include character attributes in the output.
-        /// </summary>
-        internal static string tooltip_include_attributes {
-            get {
-                return ResourceManager.GetString("tooltip_include_attributes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include example chat in the output.
-        /// </summary>
-        internal static string tooltip_include_example {
-            get {
-                return ResourceManager.GetString("tooltip_include_example", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include grammar in the output
+        ///   Looks up a localized string similar to Exclude grammar from the output
         ///(Only supported by Backyard AI).
         /// </summary>
-        internal static string tooltip_include_grammar {
+        internal static string tooltip_exclude_grammar {
             get {
-                return ResourceManager.GetString("tooltip_include_grammar", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_grammar", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include greeting(s) in the output.
+        ///   Looks up a localized string similar to Exclude greeting(s) from the output.
         /// </summary>
-        internal static string tooltip_include_greeting {
+        internal static string tooltip_exclude_greeting {
             get {
-                return ResourceManager.GetString("tooltip_include_greeting", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_greeting", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include lorebook in the output.
+        ///   Looks up a localized string similar to Exclude lorebook from the output.
         /// </summary>
-        internal static string tooltip_include_lore {
+        internal static string tooltip_exclude_lore {
             get {
-                return ResourceManager.GetString("tooltip_include_lore", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_lore", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include model instructions in the output.
+        ///   Looks up a localized string similar to Exclude model instructions from the output.
         /// </summary>
-        internal static string tooltip_include_model {
+        internal static string tooltip_exclude_model {
             get {
-                return ResourceManager.GetString("tooltip_include_model", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_model", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include scenario in the output.
+        ///   Looks up a localized string similar to Exclude scenario from the output.
         /// </summary>
-        internal static string tooltip_include_scenario {
+        internal static string tooltip_exclude_scenario {
             get {
-                return ResourceManager.GetString("tooltip_include_scenario", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_scenario", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include user persona in the output.
+        ///   Looks up a localized string similar to Exclude user persona from the output.
         /// </summary>
-        internal static string tooltip_include_user_persona {
+        internal static string tooltip_exclude_user_persona {
             get {
-                return ResourceManager.GetString("tooltip_include_user_persona", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_user_persona", resourceCulture);
             }
         }
         

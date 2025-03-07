@@ -54,6 +54,7 @@ namespace Ginger
 			sb.Replace(CharacterMarker, CharacterMarker, true);
 			sb.Replace(UserMarker, UserMarker, true);
 			sb.ConvertLinebreaks(Linebreak.Default);
+			NormalizeSpecialChars.Normalize(sb);
 			sb.Trim();
 			return new GingerString(sb.ToString());
 		}

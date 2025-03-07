@@ -520,6 +520,7 @@
     <Compile Include="src\Utility\Integration\ModelInfo.cs" />
     <Compile Include="src\Utility\Integration\LegacyChatUpdater.cs" />
     <Compile Include="src\Utility\Measurement.cs" />
+    <Compile Include="src\Utility\NormalizeChars.cs" />
     <Compile Include="src\Utility\Random\RandomNoise.cs" />
     <Compile Include="src\Utility\ReplaceWord.cs" />
     <Compile Include="src\Utility\SpellChecking\ISpellChecked.cs" />
@@ -535,6 +536,7 @@
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProvider.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleNoneProvider.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleRoundedProvider.cs" />
+    <Compile Include="src\Utility\ThirdParty\Superfastblur\GaussianBlur.cs" />
     <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\acTLChunk.cs" />
     <Compile Include="src\Utility\ThirdParty\WebPWrapper\WebPWrapper.cs" />
     <Compile Include="src\Utility\Undo\UndoStack.cs" />

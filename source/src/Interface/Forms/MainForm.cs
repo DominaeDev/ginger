@@ -249,6 +249,7 @@ namespace Ginger
 			sidePanel.PasteBackgroundImage += OnPasteBackgroundImage;
 			sidePanel.RemoveBackgroundImage += OnRemoveBackgroundImage;
 			sidePanel.BackgroundFromPortrait += OnBackgroundFromPortrait;
+			sidePanel.BlurBackgroundImage += OnBlurBackgroundImage;
 
 			SetToolTip(btnAdd_Model, "Bot instructions");
 			SetToolTip(btnAdd_Character, "Character");
@@ -490,6 +491,8 @@ namespace Ginger
 
 				if (ConfirmImageSize(ref portraitImage))
 					Current.Card.portraitImage = ImageRef.FromImage(portraitImage);
+				
+				OnAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Change portrait image");
 			}
 			else // Actor
@@ -500,12 +503,10 @@ namespace Ginger
 					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 					return;
 				}
-
+				OnAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Change portrait image (actor)");
 			}
-			Current.IsDirty = true;
-
-			sidePanel.RefreshValues();
+			SetStatusBarMessage("Changed portrait image", Constants.StatusBarMessageInterval);
 		}
 
 		private void OnPastePortraitImage(object sender, EventArgs e)
@@ -527,6 +528,7 @@ namespace Ginger
 			{
 				Current.Card.portraitImage = ImageRef.FromImage(image);
 				Current.Card.assets.RemoveMainPortraitOverride(); // No animation
+				OnAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Change portrait image");
 			}
 			else // Actor
@@ -537,11 +539,10 @@ namespace Ginger
 					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 					return;
 				}
+				OnAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Change portrait image (actor)");
 			}
-
-			Current.IsDirty = true;
-			sidePanel.RefreshValues();
+			SetStatusBarMessage("Changed portrait image", Constants.StatusBarMessageInterval);
 		}
 
 		private void OnRemovePortraitImage(object sender, EventArgs e)
@@ -550,15 +551,15 @@ namespace Ginger
 			{
 				Current.Card.portraitImage = null;
 				Current.Card.assets.RemoveMainPortraitOverride();
+				OnAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Clear portrait");
 			}
-			else // Actor
+			else if (Current.Card.assets.Remove(Current.Card.assets.GetPortrait(Current.SelectedCharacter)))
 			{
-				Current.Card.assets.Remove(Current.Card.assets.GetPortrait(Current.SelectedCharacter));
+				OnAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Clear portrait (actor)");
 			}
-			Current.IsDirty = true;
-			sidePanel.RefreshValues();
+			SetStatusBarMessage("Cleared portrait image", Constants.StatusBarMessageInterval);
 		}
 		
 		private void OnChangeBackgroundImage(object sender, BackgroundPreview.ChangeBackgroundImageEventArgs e)
@@ -582,9 +583,10 @@ namespace Ginger
 			AssetFile tmp;
 			if (Current.Card.assets.AddBackground(filename, out tmp))
 			{
+				OnAssetsChanged();
+
 				Undo.Push(Undo.Kind.Parameter, "Set background image");
-				sidePanel.RefreshValues();
-				Current.IsDirty = true;
+				SetStatusBarMessage("Changed background image", Constants.StatusBarMessageInterval);
 			}
 		}
 
@@ -603,9 +605,10 @@ namespace Ginger
 			AssetFile tmp;
 			if (Current.Card.assets.AddBackground(image, out tmp))
 			{
+				OnAssetsChanged();
+				
 				Undo.Push(Undo.Kind.Parameter, "Set background image");
-				sidePanel.RefreshValues();
-				Current.IsDirty = true;
+				SetStatusBarMessage("Changed background image", Constants.StatusBarMessageInterval);
 			}
 		}
 
@@ -615,18 +618,53 @@ namespace Ginger
 			if (Current.Card.assets.AddBackgroundFromPortrait(out asset))
 			{
 				asset.name = "Background (portrait)";
+				
+				OnAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Set background image");
-				sidePanel.RefreshValues();
-				Current.IsDirty = true;
+				SetStatusBarMessage("Changed background image", Constants.StatusBarMessageInterval);
 			}
 		}
 
 		private void OnRemoveBackgroundImage(object sender, EventArgs e)
 		{
 			Current.Card.assets.RemoveAll(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
+			OnAssetsChanged();
 			Undo.Push(Undo.Kind.Parameter, "Clear background image");
-			Current.IsDirty = true;
-			sidePanel.RefreshValues();
+			SetStatusBarMessage("Cleared background image", Constants.StatusBarMessageInterval);
+		}
+
+		private void OnBlurBackgroundImage(object sender, EventArgs e)
+		{
+			var asset = Current.Card.assets.FirstOrDefault(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
+			if (asset == null)
+				return;
+
+			Image image;
+			if (Utility.LoadImageFromMemory(asset.data.bytes, out image) == false)
+				return;
+
+			int width = image.Width;
+			int height = image.Height;
+
+			// Resample image
+			Bitmap blurredImage = Utility.ResampleImage(image, width / 4, height / 4);
+
+			// Gaussian blur
+			var blurEffect = new SuperfastBlur.GaussianBlur(blurredImage);
+			blurredImage = blurEffect.Process(Math.Max(2, Convert.ToInt32(Math.Max(width, height) / 512.0)));
+
+			// Resample image
+			blurredImage = Utility.ResampleImage(blurredImage, width, height);
+
+			AssetFile tmp;
+			if (Current.Card.assets.AddBackground(blurredImage, out tmp))
+			{
+				Current.Card.assets.Remove(asset);
+				OnAssetsChanged();
+
+				Undo.Push(Undo.Kind.Parameter, "Blur background image");
+				SetStatusBarMessage("Blurred background image", Constants.StatusBarMessageInterval);
+			}
 		}
 
 		private void OnResizePortraitImage(object sender, EventArgs e)
@@ -665,18 +703,18 @@ namespace Ginger
 			if (Current.SelectedCharacter == 0) // Main character
 			{
 				Current.Card.portraitImage = ImageRef.FromImage(resizedImage);
+				OnAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Resize portrait image");
 			}
 			else // Actor
 			{
 				Current.Card.assets.SetActorPortrait(Current.SelectedCharacter, resizedImage);
+				OnAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Resize portrait image (actor)");
 			}
 
-			Current.IsDirty = true;
-			sidePanel.RefreshValues();
 			SetStatusBarMessage("Resized portrait image", Constants.StatusBarMessageInterval);
-		}		
+		}
 		
 		private static bool ConfirmImageSize(ref Image image)
 		{
@@ -2511,15 +2549,9 @@ namespace Ginger
 			if (_assetsDialog.ShowDialog() == DialogResult.OK && _assetsDialog.Changed)
 			{
 				Current.Card.assets = (AssetCollection)_assetsDialog.Assets.Clone();
-
-				if (Current.HasLink)
-					Current.Link.ValidateImages(Current.Card.portraitImage, Current.Card.assets);
+				OnAssetsChanged();
 
 				Undo.Push(Undo.Kind.Parameter, "Changed embedded assets");
-
-				Current.IsFileDirty = true;
-				RefreshTitle();
-				sidePanel.RefreshValues();
 			}
 		}
 
@@ -2908,6 +2940,17 @@ namespace Ginger
 		{
 			sidePanel.Height = splitContainer.Panel1.ClientSize.Height;
 			sidePanel.RefreshLayout();
+		}
+
+		private void OnAssetsChanged()
+		{
+			// Refresh asset links
+			if (Current.HasLink)
+				Current.Link.ValidateImages(Current.Card.portraitImage, Current.Card.assets);
+
+			Current.IsFileDirty = true;
+			RefreshTitle();
+			sidePanel.RefreshValues();
 		}
 	}
 
