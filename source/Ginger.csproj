@@ -496,6 +496,7 @@
     <Compile Include="src\Utility\Integration\ModelInfo.cs" />
     <Compile Include="src\Utility\Integration\LegacyChatUpdater.cs" />
     <Compile Include="src\Utility\Measurement.cs" />
+    <Compile Include="src\Utility\NormalizeChars.cs" />
     <Compile Include="src\Utility\Random\RandomNoise.cs" />
     <Compile Include="src\Utility\ReplaceWord.cs" />
     <Compile Include="src\Utility\SpellChecking\ISpellChecked.cs" />
