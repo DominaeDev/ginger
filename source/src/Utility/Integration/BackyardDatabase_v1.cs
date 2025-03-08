@@ -1578,7 +1578,6 @@ namespace Ginger.Integration
 							int updates = 0;
 							int expectedUpdates = 0;
 
-
 							// Write characters
 							for (int i = 0; i < cards.Length; ++i)
 							{

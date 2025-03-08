@@ -100,7 +100,7 @@ namespace Ginger
 
 		private string GetGroupTitle(GroupInstance group)
 		{
-			if (group.isEmpty)
+			if (group.isDefined == false)
 			{
 				return "Undefined";
 			}
@@ -141,7 +141,7 @@ namespace Ginger
 
 		private string GetCharacterName()
 		{
-			if (_groupInstance.isEmpty)
+			if (_groupInstance.isDefined == false)
 				return Constants.DefaultCharacterName;
 			else if (string.IsNullOrEmpty(_groupInstance.name) == false)
 				return _groupInstance.name;
@@ -209,7 +209,7 @@ namespace Ginger
 			// List chats for group
 			ChatInstance[] chats = null;
 			if (Backyard.ConnectionEstablished == false
-				|| (_groupInstance.isEmpty == false && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError))
+				|| (_groupInstance.isDefined && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError))
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
@@ -950,7 +950,7 @@ namespace Ginger
 
 		private void menuBar_MenuActivate(object sender, EventArgs e)
 		{
-			bool hasGroup = _groupInstance.isEmpty == false;
+			bool hasGroup = _groupInstance.isDefined;
 			bool hasChat = _selectedChatInstance != null;
 
 			importMenuItem.Enabled = hasGroup;
@@ -982,7 +982,7 @@ namespace Ginger
 				return;
 			}
 
-			if (chatInstance == null || _groupInstance.isEmpty)
+			if (chatInstance == null || _groupInstance.isDefined == false)
 				return;
 
 			// Fetch latest
@@ -1031,7 +1031,7 @@ namespace Ginger
 				return;
 			}
 
-			if (_groupInstance.isEmpty)
+			if (_groupInstance.isDefined == false)
 				return; // Error
 
 			var mr = MessageBox.Show(string.Format(Resources.msg_link_purge_chat, GetGroupTitle(_groupInstance)), Resources.cap_link_purge_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button2);
@@ -1125,7 +1125,7 @@ namespace Ginger
 				return;
 			}
 
-			if (chatInstance == null || string.IsNullOrEmpty(messageId) || _groupInstance.isEmpty)
+			if (chatInstance == null || string.IsNullOrEmpty(messageId) || _groupInstance.isDefined == false)
 				return; // Error
 
 			// Fetch latest
@@ -1353,7 +1353,7 @@ namespace Ginger
 			}
 			else
 			{
-				bool hasGroup = _groupInstance.isEmpty == false;
+				bool hasGroup = _groupInstance.isDefined;
 				menu.Items.Add(new ToolStripMenuItem("New chat", null, (s, e) => {
 					NewChat();
 				}) { 
@@ -1509,7 +1509,7 @@ namespace Ginger
 			}
 
 			ChatInstance[] chats = null;
-			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
+			if (_groupInstance.isDefined && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
@@ -1629,7 +1629,7 @@ namespace Ginger
 
 		private void RefreshPortrait()
 		{
-			if (_groupInstance.isEmpty)
+			if (_groupInstance.isDefined == false)
 			{
 				portraitImage.SetImage(null);
 				portraitPanel.Visible = false;
@@ -1709,7 +1709,7 @@ namespace Ginger
 
 		private void setBackgroundFromFileMenuItem_Click(object sender, EventArgs e)
 		{
-			if (_groupInstance.isEmpty)
+			if (_groupInstance.isDefined == false)
 				return;
 
 			if (Backyard.ConnectionEstablished == false)
@@ -1720,7 +1720,7 @@ namespace Ginger
 			}
 
 			ChatInstance[] chats = null;
-			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
+			if (RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();
@@ -1739,7 +1739,7 @@ namespace Ginger
 
 		private void setBackgroundFromPortraitMenuItem_Click(object sender, EventArgs e)
 		{
-			if (_groupInstance.isEmpty)
+			if (_groupInstance.isDefined == false)
 				return;
 
 			if (Backyard.ConnectionEstablished == false)
@@ -1750,7 +1750,7 @@ namespace Ginger
 			}
 
 			ChatInstance[] chats = null;
-			if (_groupInstance.isEmpty == false && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
+			if (RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Close();

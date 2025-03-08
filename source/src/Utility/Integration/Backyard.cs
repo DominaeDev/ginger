@@ -77,7 +77,6 @@ namespace Ginger.Integration
 			public bool isDefined { get { return instanceId != null; } }
 			public bool isParty { get { return isDefined && Count > 2; } }
 			public int Count { get { return members != null ? members.Length : 0; } }
-			public bool isEmpty { get { return Count == 0; } }
 
 			public enum GroupType
 			{
