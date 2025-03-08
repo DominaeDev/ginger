@@ -225,7 +225,7 @@ namespace Ginger
 
 				if (sortedGroups.Count() > 0)
 				{
-					folderNode = new TreeNode(string.Format("Single characters ({0})", nOrphans), 1, 1);
+					folderNode = new TreeNode(string.Format("Stand-alone characters ({0})", nOrphans), 1, 1);
 					folderNode.Tag = "Orphans";
 					treeView.Nodes.Insert(0, folderNode);
 					if (expandedFolders.Contains(folderNode.Tag))
