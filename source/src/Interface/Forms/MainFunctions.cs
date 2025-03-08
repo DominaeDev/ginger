@@ -1700,7 +1700,7 @@ namespace Ginger
 			ImageInstance[] images;
 			UserData userInfo;
 			CharacterInstance characterInstance = dlg.SelectedCharacter;
-			var importError = Backyard.Database.ImportCharacter(characterInstance, out faradayData, out images, out userInfo);
+			var importError = Backyard.Database.ImportCharacter(characterInstance.instanceId, out faradayData, out images, out userInfo);
 			if (importError == Backyard.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1757,7 +1757,7 @@ namespace Ginger
 			CharacterInstance[] characterInstances;
 			ImageInstance[] images;
 			UserData userInfo;
-			var importError = Backyard.Database.ImportGroup(groupInstance, out faradayData, out characterInstances, out images, out userInfo);
+			var importError = Backyard.Database.ImportParty(groupInstance.instanceId, out faradayData, out characterInstances, out images, out userInfo);
 			if (importError == Backyard.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1857,9 +1857,16 @@ namespace Ginger
 			Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
 			BackupData.Chat[] chats = null;
 			if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1)
-				chats = Backyard.Database.GatherChats(card, output, imageInput);
+				chats = BackupUtil.SplitAltGreetings(card, output, imageInput);
 
-			var error = Backyard.Database.CreateNewCharacter(card, imageInput, chats, out createdCharacter, out images, userInfo);
+			var args = new Backyard.CreateCharacterArguments() {
+				card = card,
+				imageInput = imageInput,
+				chats = chats,
+				userInfo = userInfo,
+			};
+
+			var error = Backyard.Database.CreateNewCharacter(args, out createdCharacter, out images);
 			if (error != Backyard.Error.NoError)
 			{
 				return error;
@@ -1933,7 +1940,7 @@ namespace Ginger
 
 			DateTime updateDate;
 			Backyard.Link.Image[] imageLinks;
-			error = Backyard.Database.UpdateCharacter(card, Current.Link, out updateDate, out imageLinks, userInfo);
+			error = Backyard.Database.UpdateCharacter(Current.Link, card, userInfo, out updateDate, out imageLinks);
 			if (error != Backyard.Error.NoError)
 			{
 				return error;
@@ -2049,7 +2056,7 @@ namespace Ginger
 			FaradayCardV4 faradayData;
 			ImageInstance[] images;
 			UserData userInfo;
-			var importError = Backyard.Database.ImportCharacter(characterInstance, out faradayData, out images, out userInfo);
+			var importError = Backyard.Database.ImportCharacter(characterInstance.instanceId, out faradayData, out images, out userInfo);
 			if (importError != Backyard.Error.NoError)
 				return importError;
 
@@ -2084,7 +2091,7 @@ namespace Ginger
 			CharacterInstance[] characterInstances;
 			ImageInstance[] images;
 			UserData userInfo;
-			var importError = Backyard.Database.ImportGroup(groupInstance, out faradayData, out characterInstances, out images, out userInfo);
+			var importError = Backyard.Database.ImportParty(groupInstance.instanceId, out faradayData, out characterInstances, out images, out userInfo);
 			if (faradayData == null || faradayData.Length == 0)
 			{
 				ClearStatusBarMessage();
@@ -2813,9 +2820,16 @@ namespace Ginger
 				backupFolder = default(FolderInstance);
 
 			// Write character
+			var args = new Backyard.CreateCharacterArguments() {
+				card = backup.characterCard,
+				imageInput = images.ToArray(),
+				chats = backup.chats.ToArray(),
+				userInfo = backup.userInfo,
+				folder = backupFolder,
+			};
 			Backyard.Link.Image[] imageLinks; // Ignored
 			CharacterInstance returnedCharacter = default(CharacterInstance);
-			Backyard.Error error = RunTask(() => Backyard.Database.CreateNewCharacter(backup.characterCard, images.ToArray(), backup.chats.ToArray(), out returnedCharacter, out imageLinks, backup.userInfo, backupFolder), "Restoring backup...");
+			Backyard.Error error = RunTask(() => Backyard.Database.CreateNewCharacter(args, out returnedCharacter, out imageLinks), "Restoring backup...");
 			characterInstance = returnedCharacter;
 			if (error != Backyard.Error.NoError)
 			{
@@ -3105,17 +3119,19 @@ namespace Ginger
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return false;
 
-			var characterIds = new HashSet<string>(dlg.SelectedCharacters
+			// Combine and filter character ids
+			var characterIds = dlg.SelectedCharacters
 				.Select(c => c.instanceId)
-				.Union(dlg.SelectedGroups.SelectMany(g => g.members)));
-
-			var characterInstances = characterIds.Select(id => Backyard.Database.GetCharacter(id))
+				.Union(dlg.SelectedGroups.SelectMany(g => g.members))
+				.Select(id => Backyard.Database.GetCharacter(id))
 				.Where(c => c.isCharacter)
+				.Select(c => c.instanceId)
+				.Distinct()
 				.ToArray();
 
 			// Get affected character ids and group ids.
 			Backyard.ConfirmDeleteResult result;
-			Backyard.Error error = Backyard.Database.ConfirmDeleteCharacters(characterInstances, out result);
+			Backyard.Error error = Backyard.Database.ConfirmDeleteCharacters(characterIds, out result);
 			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_delete_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -3151,7 +3167,7 @@ namespace Ginger
 			{ 
 			}
 
-			MessageBox.Show(this, string.Format(Resources.msg_link_deleted_characters, NumCharacters(characterInstances.Length)), Resources.cap_link_delete_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MessageBox.Show(this, string.Format(Resources.msg_link_deleted_characters, NumCharacters(result.characterIds.Length)), Resources.cap_link_delete_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			
 			return true;
 		}
@@ -3340,10 +3356,17 @@ namespace Ginger
 
 			Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
 			BackupData.Chat[] chats = null;
-//			if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1)
+//			if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1) //! @party
 //				chats = Backyard.Database.GatherChats(card, output, imageInput);
+			
+			var args = new Backyard.CreatePartyArguments() {
+				cards = cards,
+				imageInput = imageInput,
+				chats = chats,
+				userInfo = userInfo,
+			};
 
-			var error = Backyard.Database.CreateNewGroup(cards, imageInput, chats, out createdGroup, out createdCharacters, out images, userInfo);
+			var error = Backyard.Database.CreateNewParty(args, out createdGroup, out createdCharacters, out images);
 			if (error != Backyard.Error.NoError)
 				return error;
 
@@ -3422,23 +3445,19 @@ namespace Ginger
 
 			DateTime updateDate;
 			Backyard.Link.Image[] imageLinks;
-			error = Backyard.Database.UpdateGroup(cards, Current.Link, out updateDate, out imageLinks, userInfo);
+			error = Backyard.Database.UpdateParty(Current.Link, cards, userInfo, out updateDate, out imageLinks);
 			if (error != Backyard.Error.NoError)
-			{
 				return error;
-			}
-			else
-			{
-				Current.Link.updateDate = updateDate;
-				Current.Link.imageLinks = imageLinks;
-				Current.IsFileDirty = true;
-				Current.IsLinkDirty = false;
-				RefreshTitle();
 
-				// Refresh character information
-				Backyard.RefreshCharacters();
-				return Backyard.Error.NoError;
-			}
+			Current.Link.updateDate = updateDate;
+			Current.Link.imageLinks = imageLinks;
+			Current.IsFileDirty = true;
+			Current.IsLinkDirty = false;
+			RefreshTitle();
+
+			// Refresh character information
+			Backyard.RefreshCharacters();
+			return Backyard.Error.NoError;
 		}
 	}
 }

@@ -301,10 +301,16 @@ namespace Ginger.Integration
 				BackupData.Chat[] chats = null;
 
 				if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1)
-					chats = Backyard.Database.GatherChats(card, output, imageInput);
+					chats = BackupUtil.SplitAltGreetings(card, output, imageInput);
 
+				var args = new Backyard.CreateCharacterArguments() {
+					card = card,
+					imageInput = imageInput,
+					chats = chats,
+					folder = parentFolder,
+				};
 				Backyard.Link.Image[] imageLinks; // Ignored
-				var writeError = Backyard.Database.CreateNewCharacter(card, imageInput, chats, out characterInstance, out imageLinks, null, parentFolder);
+				var writeError = Backyard.Database.CreateNewCharacter(args, out characterInstance, out imageLinks);
 				if (writeError != Backyard.Error.NoError)
 				{
 					characterInstance = default(CharacterInstance);
@@ -376,8 +382,15 @@ namespace Ginger.Integration
 				chat.parameters = AppSettings.BackyardSettings.UserSettings;
 
 			// Write character to database
+			var args = new Backyard.CreateCharacterArguments() {
+				card = backup.characterCard,
+				imageInput = images.ToArray(),
+				chats = backup.chats.ToArray(),
+				userInfo = backup.userInfo,
+				folder = parentFolder,
+			};
 			Backyard.Link.Image[] imageLinks; // Ignored
-			Backyard.Error error = Backyard.Database.CreateNewCharacter(backup.characterCard, images.ToArray(), backup.chats.ToArray(), out characterInstance, out imageLinks, backup.userInfo, parentFolder);
+			Backyard.Error error = Backyard.Database.CreateNewCharacter(args, out characterInstance, out imageLinks);
 
 			if (error != Backyard.Error.NoError)
 				return WorkerError.DatabaseError;

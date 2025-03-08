@@ -15,7 +15,8 @@ namespace Ginger.Integration
 	using ChatParameters = Backyard.ChatParameters;
 	using ChatStaging = Backyard.ChatStaging;
 	using ChatBackground = Backyard.ChatBackground;
-	using ChatCount = Backyard.ChatCount;
+	using CreateCharacterArguments = Backyard.CreateCharacterArguments;
+	using CreatePartyArguments = Backyard.CreatePartyArguments;
 	using CreateChatArguments = Backyard.CreateChatArguments;
 	using ImageInput = Backyard.ImageInput;
 	using ImageInstance = Backyard.ImageInstance;
@@ -46,6 +47,18 @@ namespace Ginger.Integration
 			public string displayName;
 			public bool isUser;
 			public string persona;
+			public DateTime creationDate;
+			public DateTime updateDate;
+		}
+
+		private struct _Group
+		{
+			public string instanceId;
+			public ChatStaging staging;
+			public string folderId;
+			public string folderSortPosition;
+			public string hubCharId;
+			public string hubAuthorUsername;
 			public DateTime creationDate;
 			public DateTime updateDate;
 		}
@@ -311,7 +324,7 @@ namespace Ginger.Integration
 		#endregion // Enumerate characters and groups
 
 		#region Characters
-		public Backyard.Error ImportCharacter(CharacterInstance characterInstance, out FaradayCardV4 card, out ImageInstance[] images, out UserData userInfo)
+		public Backyard.Error ImportCharacter(string characterId, out FaradayCardV4 card, out ImageInstance[] images, out UserData userInfo)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -320,6 +333,15 @@ namespace Ginger.Integration
 				userInfo = null;
 				LastError = "Not connected";
 				return Backyard.Error.NotConnected;
+			}
+
+			if (string.IsNullOrEmpty(characterId))
+			{
+				card = null;
+				images = null;
+				userInfo = null;
+				LastError = "Invalid argument";
+				return Backyard.Error.InvalidArgument;
 			}
 
 			try
@@ -334,24 +356,34 @@ namespace Ginger.Integration
 					string hubAuthorUsername = null;
 
 					_Character character;
-					FetchCharacter(connection, characterInstance.instanceId, out character);
+					if (FetchCharacter(connection, characterId, out character) == false)
+					{
+						card = null;
+						images = null;
+						userInfo = null;
+						LastError = "Not found";
+						return Backyard.Error.NotFound;
+					}
 
 					// Get primary group (solo)
 					string[] groupIds;
-					FetchGroupMembershipsForCharacter(connection, characterInstance.instanceId, false, out groupIds);
+					FetchGroupMembershipsForCharacter(connection, character.instanceId, false, out groupIds);
 					if (groupIds.Length > 0)
 						groupId = groupIds[0];
 
-					if (groupId != null)
-						FetchGroupInfo(connection, groupId, out staging, out hubCharId, out hubAuthorUsername);
+					if (groupId != null && FetchGroupInfo(connection, groupId, out _Group groupInfo))
+					{
+						hubCharId = groupInfo.hubCharId;
+						hubAuthorUsername = groupInfo.hubAuthorUsername;
+					}
 
 					// Gather lorebook items
 					FaradayCardV1.LoreBookEntry[] entries;
-					FetchLorebook(connection, characterInstance.configId, out entries);
+					FetchLorebook(connection, character.configId, out entries);
 
 					// Gather portrait image files
 					var lsImages = new List<ImageInstance>();
-					FetchPortraitImages(connection, characterInstance.configId, lsImages);
+					FetchPortraitImages(connection, character.configId, lsImages);
 
 					// Gather background image files
 					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
@@ -516,33 +548,43 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void FetchGroupInfo(SQLiteConnection connection, string groupId, out ChatStaging staging, out string hubCharId, out string hubAuthorUsername)
+		private static bool FetchGroupInfo(SQLiteConnection connection, string groupId, out _Group groupInfo)
 		{
+			ChatStaging staging = null;
+			string folderId = "";
+			string folderSortPosition = "";
+			string hubCharId = null;
+			string hubAuthorUsername = null;
+			DateTime createdAt = default(DateTime);
+			DateTime updatedAt = default(DateTime);
+
 			using (var cmdGroupData = connection.CreateCommand())
 			{
 				var sbCommand = new StringBuilder();
 				sbCommand.AppendLine(
 				@"
 					SELECT 
-						hubCharId, hubAuthorUsername
+						hubCharId, hubAuthorUsername, folderId, folderSortPosition, createdAt, updatedAt
 					FROM GroupConfig
 					WHERE id = $groupId;
-							");
+				");
 				cmdGroupData.CommandText = sbCommand.ToString();
 				cmdGroupData.Parameters.AddWithValue("$groupId", groupId);
 
 				using (var reader = cmdGroupData.ExecuteReader())
 				{
-					if (reader.Read())
+					if (reader.Read() == false)
 					{
-						hubCharId = reader[0] as string;
-						hubAuthorUsername = reader[1] as string;
+						groupInfo = default(_Group);
+						return false;
 					}
-					else
-					{
-						hubCharId = null;
-						hubAuthorUsername = null;
-					}
+
+					hubCharId = reader[0] as string;
+					hubAuthorUsername = reader[1] as string;
+					folderId = reader[2] as string;
+					folderSortPosition = reader[3] as string;
+					createdAt = reader.GetTimestamp(4);
+					updatedAt = reader.GetTimestamp(5);
 				}
 			}
 
@@ -578,6 +620,18 @@ namespace Ginger.Integration
 					}
 				}
 			}
+
+			groupInfo = new _Group() {
+				instanceId = groupId,
+				creationDate = createdAt,
+				updateDate = updatedAt,
+				folderId = folderId,
+				folderSortPosition = folderSortPosition,
+				hubCharId = hubCharId,
+				hubAuthorUsername = hubAuthorUsername,
+				staging = staging,
+			};
+			return true;
 		}
 
 		private static bool FetchCharacter(SQLiteConnection connection, string characterId, out _Character character)
@@ -629,7 +683,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error GetImageUrls(CharacterInstance characterInstance, out string[] imageUrls)
+		public Backyard.Error GetImageUrls(string characterConfigId, out string[] imageUrls)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -637,7 +691,7 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			if (characterInstance.configId == null)
+			if (string.IsNullOrEmpty(characterConfigId))
 			{
 				imageUrls = null;
 				return Backyard.Error.InvalidArgument;
@@ -665,7 +719,7 @@ namespace Ginger.Integration
 							)
 							ORDER BY ""order"" ASC
 						";
-						cmdImageLookup.Parameters.AddWithValue("$configId", characterInstance.configId);
+						cmdImageLookup.Parameters.AddWithValue("$configId", characterConfigId);
 
 						using (var reader = cmdImageLookup.ExecuteReader())
 						{
@@ -702,7 +756,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error ConfirmSaveCharacter(Backyard.Link linkInfo, out bool newerChangesFound)
+		public Backyard.Error ConfirmSaveCharacter(Backyard.Link link, out bool newerChangesFound)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -710,7 +764,7 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			if (linkInfo == null || string.IsNullOrEmpty(linkInfo.mainActorId))
+			if (link == null || string.IsNullOrEmpty(link.mainActorId))
 			{
 				newerChangesFound = default(bool);
 				return Backyard.Error.NotFound;
@@ -725,7 +779,7 @@ namespace Ginger.Integration
 					// Fetch character config id
 					using (var cmdGetTime = connection.CreateCommand())
 					{
-						if (linkInfo.isGroup) // Group updated
+						if (link.isGroup) // Group updated
 						{
 							cmdGetTime.CommandText =
 							@"
@@ -734,7 +788,7 @@ namespace Ginger.Integration
 								FROM GroupConfig
 								WHERE id = $groupId;
 							";
-							cmdGetTime.Parameters.AddWithValue("$groupId", linkInfo.groupId);
+							cmdGetTime.Parameters.AddWithValue("$groupId", link.groupId);
 						}
 						else // Character updated
 						{
@@ -745,7 +799,7 @@ namespace Ginger.Integration
 								FROM CharacterConfigVersion
 								WHERE characterConfigId = $charId
 							";
-							cmdGetTime.Parameters.AddWithValue("$charId", linkInfo.mainActorId);
+							cmdGetTime.Parameters.AddWithValue("$charId", link.mainActorId);
 						}
 
 						using (var reader = cmdGetTime.ExecuteReader())
@@ -757,7 +811,7 @@ namespace Ginger.Integration
 							}
 
 							DateTime updatedAt = reader.GetTimestamp(0);
-							newerChangesFound = updatedAt > linkInfo.updateDate;
+							newerChangesFound = updatedAt > link.updateDate;
 
 							connection.Close();
 							return Backyard.Error.NoError;
@@ -782,7 +836,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error CreateNewCharacter(FaradayCardV4 card, ImageInput[] imageInput, BackupData.Chat[] chats, out CharacterInstance characterInstance, out Backyard.Link.Image[] imageLinks, UserData userInfo = null, FolderInstance folder = default(FolderInstance))
+		public Backyard.Error CreateNewCharacter(CreateCharacterArguments args, out CharacterInstance characterInstance, out Backyard.Link.Image[] imageLinks)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -790,6 +844,12 @@ namespace Ginger.Integration
 				imageLinks = null;
 				return Backyard.Error.NotConnected;
 			}
+
+			FaradayCardV4 card = args.card;
+			ImageInput[] imageInput = args.imageInput;
+			BackupData.Chat[] chats = args.chats;
+			UserData userInfo = args.userInfo;
+			FolderInstance folder = args.folder;
 
 			if (card == null)
 			{
@@ -1018,9 +1078,9 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error UpdateCharacter(FaradayCardV4 card, Backyard.Link linkInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks, UserData userInfo = null)
+		public Backyard.Error UpdateCharacter(Backyard.Link link, FaradayCardV4 card, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks)
 		{
-			if (card == null || linkInfo == null || string.IsNullOrEmpty(linkInfo.mainActorId))
+			if (card == null || link == null || string.IsNullOrEmpty(link.mainActorId))
 			{
 				updateDate = default(DateTime);
 				updatedImageLinks = null;
@@ -1034,7 +1094,7 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			string characterId = linkInfo.mainActorId;
+			string characterId = link.mainActorId;
 			bool bAllowUserPersona = userInfo != null;
 
 			try
@@ -1117,7 +1177,7 @@ namespace Ginger.Integration
 					// Compile list of images to update / insert
 					ImageOutput[] imageOutput;
 					Backyard.Link.Image[] imageLinks;
-					PrepareImageUpdates(imageInstances, linkInfo.imageLinks, out imageOutput, out imageLinks);
+					PrepareImageUpdates(imageInstances, link.imageLinks, out imageOutput, out imageLinks);
 
 					List<ImageOutput> images = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Icon || i.imageType == AssetFile.AssetType.Expression).ToList();
 					List<ImageOutput> backgrounds = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Background).ToList();
@@ -1321,7 +1381,7 @@ namespace Ginger.Integration
 			return bModifiedBackground;
 		}
 		
-		public Backyard.Error ImportGroup(GroupInstance group, out FaradayCardV4[] cards, out CharacterInstance[] characterInstances, out ImageInstance[] images, out UserData userInfo)
+		public Backyard.Error ImportParty(string groupId, out FaradayCardV4[] cards, out CharacterInstance[] characterInstances, out ImageInstance[] images, out UserData userInfo)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -1331,6 +1391,16 @@ namespace Ginger.Integration
 				userInfo = null;
 				LastError = "Not connected";
 				return Backyard.Error.NotConnected;
+			}
+
+			if (string.IsNullOrEmpty(groupId))
+			{
+				cards = null;
+				characterInstances = null;
+				images = null;
+				userInfo = null;
+				LastError = "Invalid argument";
+				return Backyard.Error.InvalidArgument;
 			}
 			
 			try
@@ -1342,15 +1412,27 @@ namespace Ginger.Integration
 					ChatStaging staging = new ChatStaging();
 					string hubCharId = null;
 					string hubAuthorUsername = null;
+					string folderId = "";
+					string folderSortPosition = "";
+
+					List<_Character> groupMembers;
+					if (FetchMembersOfGroup(connection, groupId, null, out groupMembers) == false)
+					{
+						cards = null;
+						characterInstances = null;
+						images = null;
+						userInfo = null;
+						return Backyard.Error.NotFound;
+					}
 
 					List<_Character> characters = new List<_Character>();
 					var lsImages = new List<ImageInstance>();
 					Dictionary<string, FaradayCardV1.LoreBookEntry[]> characterLore = new Dictionary<string, FaradayCardV1.LoreBookEntry[]>();
 
-					for (int i = 0; i < group.members.Length; ++i)
+					for (int i = 0; i < groupMembers.Count; ++i)
 					{
 						_Character character;
-						if (FetchCharacter(connection, group.members[i], out character) && character.isUser == false)
+						if (FetchCharacter(connection, groupMembers[i].instanceId, out character) && character.isUser == false)
 						{
 							characters.Add(character);
 
@@ -1369,15 +1451,12 @@ namespace Ginger.Integration
 					}
 								
 					// Get group info
-					FetchGroupInfo(connection, group.instanceId, out staging, out hubCharId, out hubAuthorUsername);
-
-					if (characters.Count == 0 || group.isDefined == false)
+					if (FetchGroupInfo(connection, groupId, out _Group groupInfo))
 					{
-						cards = null;
-						characterInstances = null;
-						images = null;
-						userInfo = null;
-						return Backyard.Error.NotFound;
+						folderId = groupInfo.folderId;
+						folderSortPosition = groupInfo.folderSortPosition;
+						hubCharId = groupInfo.hubCharId;
+						hubAuthorUsername = groupInfo.hubAuthorUsername;
 					}
 
 					// Gather background image files
@@ -1385,7 +1464,7 @@ namespace Ginger.Integration
 					{
 						// Get existing chats
 						ImageInstance[] backgrounds;
-						if (FetchChatBackgrounds(connection, group.instanceId, out backgrounds))
+						if (FetchChatBackgrounds(connection, groupId, out backgrounds))
 							lsImages.AddRange(backgrounds);
 					}
 
@@ -1420,7 +1499,7 @@ namespace Ginger.Integration
 						characterInstances[i] = new CharacterInstance() {
 							instanceId = character.instanceId,
 							configId = character.configId,
-							groupId = group.instanceId,
+							groupId = groupId,
 							creationDate = character.creationDate,
 							updateDate = character.updateDate,
 							isUser = false,
@@ -1431,8 +1510,8 @@ namespace Ginger.Integration
 							
 							hasLorebook = card.data.loreItems.Length > 0,
 							creator = hubAuthorUsername ?? "",
-							folderId = group.folderId,
-							folderSortPosition = group.folderSortPosition,
+							folderId = folderId,
+							folderSortPosition = folderSortPosition,
 						};
 					}
 
@@ -1445,7 +1524,7 @@ namespace Ginger.Integration
 					string userName;
 					string userPersona;
 					ImageInstance userImage;
-					if (FetchUserInfo(connection, group.instanceId, out userId, out userName, out userPersona, out userImage))
+					if (FetchUserInfo(connection, groupId, out userId, out userName, out userPersona, out userImage))
 					{
 						if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 							BackyardUtil.ConvertFromIDPlaceholders(ref userPersona);
@@ -1497,7 +1576,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error CreateNewGroup(FaradayCardV4[] cards, ImageInput[] imageInput, BackupData.Chat[] chats, out GroupInstance groupInstance, out CharacterInstance[] characterInstances, out Backyard.Link.Image[] imageLinks, UserData userInfo = null, FolderInstance folder = default(FolderInstance))
+		public Backyard.Error CreateNewParty(CreatePartyArguments args, out GroupInstance groupInstance, out CharacterInstance[] characterInstances, out Backyard.Link.Image[] imageLinks)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -1514,6 +1593,12 @@ namespace Ginger.Integration
 				imageLinks = null;
 				return Backyard.Error.UnsupportedFeature;
 			}
+
+			FaradayCardV4[] cards = args.cards;
+			ImageInput[] imageInput = args.imageInput;
+			BackupData.Chat[] chats = args.chats;
+			UserData userInfo = args.userInfo;
+			FolderInstance folder = args.folder;
 
 			if (cards == null || cards.Length == 0)
 			{
@@ -1773,9 +1858,9 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error UpdateGroup(FaradayCardV4[] cards, Backyard.Link linkInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks, UserData userInfo = null)
+		public Backyard.Error UpdateParty(Backyard.Link link, FaradayCardV4[] cards, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks)
 		{
-			if (cards == null || cards.Length == 0 || linkInfo == null || string.IsNullOrEmpty(linkInfo.groupId) || linkInfo.actors.Length != cards.Length)
+			if (cards == null || cards.Length == 0 || link == null || string.IsNullOrEmpty(link.groupId) || link.actors.Length != cards.Length)
 			{
 				updateDate = default(DateTime);
 				updatedImageLinks = null;
@@ -1789,11 +1874,11 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			string characterId = linkInfo.mainActorId;
+			string characterId = link.mainActorId;
 			bool bAllowUserPersona = userInfo != null;
 			FaradayCardV4 primaryCard = cards[0];
 
-			var actors = Current.Characters.Select(c => linkInfo.actors.FirstOrDefault(a => a.localId == c.uid)).ToArray();
+			var actors = Current.Characters.Select(c => link.actors.FirstOrDefault(a => a.localId == c.uid)).ToArray();
 			string[] characterIds = new string[actors.Length];
 			for (int i = 0; i < actors.Length; ++i)
 				characterIds[i] = actors[i].remoteId;
@@ -1806,11 +1891,11 @@ namespace Ginger.Integration
 				{
 					connection.Open();
 
-					string groupId = linkInfo.groupId;
+					string groupId = link.groupId;
 					string userId = null;
 
 					// Get configIds
-					string[] configIds = new string[linkInfo.actors.Length];
+					string[] configIds = new string[link.actors.Length];
 					using (var cmdGetIds = connection.CreateCommand())
 					{
 						StringBuilder sbCommand = new StringBuilder();
@@ -1821,11 +1906,11 @@ namespace Ginger.Integration
 							FROM CharacterConfigVersion
 							WHERE characterConfigId IN (
 						");
-						for (int i = 0; i < linkInfo.actors.Length; ++i)
+						for (int i = 0; i < link.actors.Length; ++i)
 						{
 							if (i > 0)
 								sbCommand.Append(',');
-							sbCommand.Append(string.Concat("'", linkInfo.actors[i].remoteId, "'"));
+							sbCommand.Append(string.Concat("'", link.actors[i].remoteId, "'"));
 						}
 						sbCommand.Append(");");
 
@@ -1839,7 +1924,7 @@ namespace Ginger.Integration
 								string configId = reader.GetString(0);
 								string charId = reader.GetString(1);
 
-								int idxActor = Array.FindIndex(linkInfo.actors, a => a.remoteId == charId);
+								int idxActor = Array.FindIndex(link.actors, a => a.remoteId == charId);
 								if (idxActor != -1)
 								{
 									configIds[idxActor] = configId;
@@ -1882,7 +1967,7 @@ namespace Ginger.Integration
 					// Compile list of images to update / insert
 					ImageOutput[] imageOutput;
 					Backyard.Link.Image[] imageLinks;
-					PrepareImageUpdates(imageInstances, linkInfo.imageLinks, out imageOutput, out imageLinks);
+					PrepareImageUpdates(imageInstances, link.imageLinks, out imageOutput, out imageLinks);
 
 					List<ImageOutput> images = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Icon || i.imageType == AssetFile.AssetType.Expression).ToList();
 					List<ImageOutput> backgrounds = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Background).ToList();
@@ -2008,7 +2093,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error ConfirmDeleteCharacters(CharacterInstance[] characterInstances, out ConfirmDeleteResult result)
+		public Backyard.Error ConfirmDeleteCharacters(string[] characterIds, out ConfirmDeleteResult result)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -2016,19 +2101,21 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			if (characterInstances == null || characterInstances.Length == 0)
+			if (characterIds == null || characterIds.Length == 0)
 			{
 				result = default(ConfirmDeleteResult);
 				return Backyard.Error.InvalidArgument;
 			}
 
-			HashSet<string> characterIds = new HashSet<string>(characterInstances.Select(c => c.instanceId));
-			HashSet<string> configIds = new HashSet<string>(characterInstances.Select(c => c.configId));
 			try
 			{
 				using (var connection = CreateSQLiteConnection())
 				{
 					connection.Open();
+
+					// Fetch configIds
+					Dictionary<string, string> configIds;
+					FetchConfigIds(connection, characterIds, out configIds);
 
 					// Fetch (all) character-group memberships
 					Dictionary<string, HashSet<string>> groupMemberships;
@@ -2058,7 +2145,7 @@ namespace Ginger.Integration
 								string configId = reader.GetString(0);
 								string imageId = reader.GetString(1);
 								string imageUrl = reader.GetString(2);
-								if (configIds.Contains(configId))
+								if (configIds.ContainsKey(configId))
 									images.Add(imageId, imageUrl);
 							}
 						}
@@ -2159,38 +2246,8 @@ namespace Ginger.Integration
 				using (var connection = CreateSQLiteConnection())
 				{
 					connection.Open();
-
-					// Get config ids
-					Dictionary<string, string> configIds = new Dictionary<string, string>();
-					using (var cmdConfigs = connection.CreateCommand())
-					{
-						var sbCommand = new StringBuilder();
-						sbCommand.Append(
-						@"
-							SELECT 
-								id, characterConfigId
-							FROM CharacterConfigVersion
-							WHERE characterConfigId IN (");
-
-						for (int i = 0; i < characterIds.Length; ++i)
-						{
-							if (i > 0)
-								sbCommand.Append(", ");
-							sbCommand.AppendFormat("'{0}'", characterIds[i]);
-						}
-						sbCommand.AppendLine(");");
-
-						cmdConfigs.CommandText = sbCommand.ToString();
-						using (var reader = cmdConfigs.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string configId = reader.GetString(0);
-								string characterId = reader.GetString(1);
-								configIds.Add(configId, characterId);
-							}
-						}
-					}
+					Dictionary<string, string> configIds;
+					FetchConfigIds(connection, characterIds, out configIds);
 
 					// Find lore items
 					List<string> loreItems = new List<string>();
@@ -4087,147 +4144,6 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error UpdateChatParameters(string chatId, ChatParameters parameters, ChatStaging staging)
-		{
-			if (ConnectionEstablished == false)
-				return Backyard.Error.NotConnected;
-
-			if (parameters == null && staging == null)
-				return Backyard.Error.InvalidArgument;
-
-			try
-			{
-				using (var connection = CreateSQLiteConnection())
-				{
-					connection.Open();
-
-					int updates = 0;
-					int expectedUpdates = 0;
-
-					DateTime now = DateTime.Now;
-					long updatedAt = now.ToUnixTimeMilliseconds();
-
-					string defaultModel;
-					FetchDefaultModel(connection, out defaultModel);
-
-					using (var transaction = connection.BeginTransaction())
-					{
-						try
-						{
-							// Update chat info
-							using (var cmdUpdateChat = connection.CreateCommand())
-							{
-								var sbCommand = new StringBuilder();
-								sbCommand.AppendLine(
-								@"
-									UPDATE Chat
-									SET ");
-
-								if (staging != null)
-								{
-									sbCommand.AppendLine(
-									@"
-										context = $scenario,
-										customDialogue = $example,
-										modelInstructions = $system,
-										grammar = $grammar,
-										greetingDialogue = $greeting,
-										canDeleteCustomDialogue = $pruneExample");
-								}
-								if (parameters != null)
-								{
-									if (staging != null)
-										sbCommand.Append(",");
-									sbCommand.AppendLine(
-									@"
-										model = $model, 
-										temperature = $temperature,
-										topP = $topP,
-										minP = $minP,
-										minPEnabled = $minPEnabled,
-										topK = $topK,
-										repeatPenalty = $repeatPenalty,
-										repeatLastN = $repeatLastN,
-										promptTemplate = $promptTemplate");
-								}
-								sbCommand.AppendLine(
-								@"
-									WHERE id = $chatId;
-								");
-
-								cmdUpdateChat.CommandText = sbCommand.ToString();
-								cmdUpdateChat.Parameters.AddWithValue("$chatId", chatId);
-								cmdUpdateChat.Parameters.AddWithValue("$timestamp", updatedAt);
-								if (staging != null)
-								{
-									cmdUpdateChat.Parameters.AddWithValue("$system", Utility.FirstNonEmpty(staging.system, FaradayCardV4.OriginalModelInstructionsByFormat[0]));
-									cmdUpdateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
-									cmdUpdateChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
-									cmdUpdateChat.Parameters.AddWithValue("$example", staging.example ?? "");
-									cmdUpdateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
-									cmdUpdateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
-									// staging.authorNote
-									// staging.ttsAutoPlay
-									// staging.ttsInputFilter
-								}
-								if (parameters != null)
-								{
-									cmdUpdateChat.Parameters.AddWithValue("$model", parameters.model ?? defaultModel ?? "");
-									cmdUpdateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
-									cmdUpdateChat.Parameters.AddWithValue("$topP", parameters.topP);
-									cmdUpdateChat.Parameters.AddWithValue("$minP", parameters.minP);
-									cmdUpdateChat.Parameters.AddWithValue("$minPEnabled", parameters.minPEnabled);
-									cmdUpdateChat.Parameters.AddWithValue("$topK", parameters.topK);
-									cmdUpdateChat.Parameters.AddWithValue("$repeatPenalty", parameters.repeatPenalty);
-									cmdUpdateChat.Parameters.AddWithValue("$repeatLastN", parameters.repeatLastN);
-									cmdUpdateChat.Parameters.AddWithValue("$promptTemplate", parameters.promptTemplate);
-								}
-
-								expectedUpdates += 1;
-								updates += cmdUpdateChat.ExecuteNonQuery();
-							}
-
-							if (updates == 0)
-							{
-								transaction.Rollback(); // Superfluous. jic.
-								return Backyard.Error.NotFound;
-							}
-
-							if (updates != expectedUpdates)
-							{
-								transaction.Rollback();
-								return Backyard.Error.SQLCommandFailed;
-							}
-
-							transaction.Commit();
-							return Backyard.Error.NoError;
-
-						}
-						catch (Exception e)
-						{
-							transaction.Rollback();
-							return Backyard.Error.SQLCommandFailed;
-						}
-					}
-				}
-			}
-			catch (FileNotFoundException e)
-			{
-				Backyard.Disconnect();
-				return Backyard.Error.NotConnected;
-			}
-			catch (SQLiteException e)
-			{
-				Backyard.Disconnect();
-				return Backyard.Error.SQLCommandFailed;
-			}
-			catch (Exception e)
-			{
-				Backyard.Disconnect();
-				return Backyard.Error.Unknown;
-			}
-		}
-
 		public Backyard.Error UpdateChatParameters(string[] chatIds, ChatParameters parameters, ChatStaging staging)
 		{
 			if (ConnectionEstablished == false)
@@ -5090,6 +5006,41 @@ namespace Ginger.Integration
 				}
 			}
 		}
+		
+		private static void FetchConfigIds(SQLiteConnection connection, string[] characterIds, out Dictionary<string, string> configIds)
+		{
+			// Get config ids
+			configIds = new Dictionary<string, string>();
+			using (var cmdConfigs = connection.CreateCommand())
+			{
+				var sbCommand = new StringBuilder();
+				sbCommand.Append(
+				@"
+					SELECT 
+						id, characterConfigId
+					FROM CharacterConfigVersion
+					WHERE characterConfigId IN (");
+
+				for (int i = 0; i < characterIds.Length; ++i)
+				{
+					if (i > 0)
+						sbCommand.Append(", ");
+					sbCommand.AppendFormat("'{0}'", characterIds[i]);
+				}
+				sbCommand.AppendLine(");");
+
+				cmdConfigs.CommandText = sbCommand.ToString();
+				using (var reader = cmdConfigs.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						string configId = reader.GetString(0);
+						string characterId = reader.GetString(1);
+						configIds.Add(configId, characterId);
+					}
+				}
+			}
+		}
 
 		private void FetchGroups(SQLiteConnection connection, out GroupInstance[] groups)
 		{
@@ -5202,11 +5153,9 @@ namespace Ginger.Integration
 					}
 				}
 
-				if (members.Count(c => c.isUser) == 0 || members.Count(c => c.isUser == false) == 0)
-				{
-					// Groups must contain at least one user and one non-user
+				// Groups must contain at least one user and one non-user
+				if (members.Count(c => c.isUser) == 0 || members.Count(c => !c.isUser) == 0)
 					return false;
-				}
 
 				// Validate message indices
 				if (chatHistory != null && chatHistory.messages != null)
@@ -5519,67 +5468,6 @@ namespace Ginger.Integration
 					}
 				}
 			}
-		}
-
-		public BackupData.Chat[] GatherChats(FaradayCardV4 card, Generator.Output output, ImageInput[] images)
-		{
-			var lsChats = new List<BackupData.Chat>();
-
-			DateTime timestamp = DateTime.Now;
-
-			string backgroundName = null;
-			if (images != null)
-			{
-				backgroundName = images
-					.Where(i => i.asset != null && i.asset.assetType == AssetFile.AssetType.Background)
-					.Select(i => i.asset.name)
-					.FirstOrDefault();
-			}
-
-			var parameters = AppSettings.BackyardSettings.UserSettings;
-
-			// Primary greeting
-			lsChats.Add(new BackupData.Chat() {
-				name = "Primary greeting",
-				creationDate = timestamp,
-				updateDate = timestamp,
-				backgroundName = backgroundName,
-				staging = new ChatStaging() {
-					system = card.data.system,
-					scenario = card.data.scenario,
-					greeting = card.data.greeting,
-					example = card.data.example,
-					grammar = card.data.grammar,
-				},
-				parameters = parameters,
-				history = new ChatHistory(),
-			});
-
-			// Alternate greetings
-			var altGreetings = output.alternativeGreetings;
-			for (int i = 0; i < altGreetings.Length; ++i)
-			{
-				var altGreeting = altGreetings[i].ToFaradayGreeting();
-				timestamp -= TimeSpan.FromMilliseconds(10);
-
-				lsChats.Add(new BackupData.Chat() {
-					name = string.Format("Alt. greeting #{0}", i + 1),
-					creationDate = timestamp,
-					updateDate = timestamp,
-					staging = new ChatStaging() {
-						system = card.data.system,
-						scenario = card.data.scenario,
-						greeting = altGreeting,
-						example = card.data.example,
-						grammar = card.data.grammar,
-					},
-					parameters = parameters,
-					backgroundName = backgroundName,
-					history = new ChatHistory(),
-				});
-			}
-
-			return lsChats.ToArray();
 		}
 
 		public Backyard.Error RepairImages(out int modified, out int skipped)

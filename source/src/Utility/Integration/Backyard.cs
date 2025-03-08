@@ -9,6 +9,8 @@ using System.Globalization;
 
 namespace Ginger.Integration
 {
+	using FaradayCard = FaradayCardV4;
+
 	public static class Backyard
 	{
 		public struct ConfirmDeleteResult
@@ -17,6 +19,24 @@ namespace Ginger.Integration
 			public string[] groupIds;
 			public string[] imageIds;
 			public string[] imageUrls;
+		}
+
+		public struct CreateCharacterArguments
+		{
+			public FaradayCard card;
+			public ImageInput[] imageInput;
+			public FolderInstance folder;
+			public UserData userInfo;
+			public BackupData.Chat[] chats;
+		}
+
+		public struct CreatePartyArguments
+		{
+			public FaradayCard[] cards;
+			public ImageInput[] imageInput;
+			public FolderInstance folder;
+			public UserData userInfo;
+			public BackupData.Chat[] chats;
 		}
 
 		public struct CreateChatArguments
@@ -1078,12 +1098,12 @@ namespace Ginger.Integration
 			return sbFormat.ToString();
 		}
 
-		public static void ConvertToIDPlaceholders(FaradayCardV4 card, string characterId)
+		public static void ConvertToIDPlaceholders(FaradayCard card, string characterId)
 		{
-			ConvertToIDPlaceholders(new FaradayCardV4[] { card }, new string[] { characterId });
+			ConvertToIDPlaceholders(new FaradayCard[] { card }, new string[] { characterId });
 		}
 
-		public static void ConvertToIDPlaceholders(FaradayCardV4[] cards, string[] characterIds)
+		public static void ConvertToIDPlaceholders(FaradayCard[] cards, string[] characterIds)
 		{
 			var replacements = new List<KeyValuePair<string, string>>();
 			for (int i = 0; i < cards.Length && i < characterIds.Length; ++i)
@@ -1104,7 +1124,7 @@ namespace Ginger.Integration
 				Convert(cards[i], GingerString.BackyardCharacterMarker, replacements[0].Value); // jic
 			}
 
-			void Convert(FaradayCardV4 card, string src, string dest)
+			void Convert(FaradayCard card, string src, string dest)
 			{
 				__ToID(ref card.data.system, src, dest);
 				__ToID(ref card.data.scenario, src, dest);
@@ -1177,7 +1197,7 @@ namespace Ginger.Integration
 			text = sb.ToString();
 		}
 
-		public static void ConvertFromIDPlaceholders(params FaradayCardV4[] cards)
+		public static void ConvertFromIDPlaceholders(params FaradayCard[] cards)
 		{
 			var knownIds = new Dictionary<string, string>();
 			for (int i = 0; i < cards.Length; ++i)
@@ -1200,7 +1220,7 @@ namespace Ginger.Integration
 			__FromID(ref text, knownIds);
 		}
 
-		private static void __FromID(FaradayCardV4 card, Dictionary<string, string> dict)
+		private static void __FromID(FaradayCard card, Dictionary<string, string> dict)
 		{
 			__FromID(ref card.data.system, dict);
 			__FromID(ref card.data.scenario, dict);
@@ -1291,7 +1311,6 @@ namespace Ginger.Integration
 						});
 				}
 			}
-
 			
 			return true;
 		}

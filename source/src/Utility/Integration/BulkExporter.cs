@@ -302,7 +302,7 @@ namespace Ginger.Integration
 			FaradayCardV4 faradayCard;
 			ImageInstance[] images;
 			UserData tmp;
-			var importError = Backyard.Database.ImportCharacter(characterInstance, out faradayCard, out images, out tmp);
+			var importError = Backyard.Database.ImportCharacter(characterInstance.instanceId, out faradayCard, out images, out tmp);
 			if (importError != Backyard.Error.NoError)
 			{
 				filename = default(string);

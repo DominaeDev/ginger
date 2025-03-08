@@ -61,7 +61,7 @@ namespace Ginger.Integration
 			ImageInstance[] images;
 			ChatInstance[] chatInstances = null;
 			UserData userInfo;
-			var error = Backyard.Database.ImportCharacter(characterInstance, out card, out images, out userInfo);
+			var error = Backyard.Database.ImportCharacter(characterInstance.instanceId, out card, out images, out userInfo);
 			if (error != Backyard.Error.NoError)
 			{
 				backupInfo = null;
@@ -638,7 +638,66 @@ namespace Ginger.Integration
 				return FileUtil.Error.FileReadError;
 			}
 		}
-
 		
+		public static BackupData.Chat[] SplitAltGreetings(FaradayCardV4 card, Generator.Output output, Backyard.ImageInput[] images)
+		{
+			var lsChats = new List<BackupData.Chat>();
+
+			DateTime timestamp = DateTime.Now;
+
+			string backgroundName = null;
+			if (images != null)
+			{
+				backgroundName = images
+					.Where(i => i.asset != null && i.asset.assetType == AssetFile.AssetType.Background)
+					.Select(i => i.asset.name)
+					.FirstOrDefault();
+			}
+
+			var parameters = AppSettings.BackyardSettings.UserSettings;
+
+			// Primary greeting
+			lsChats.Add(new BackupData.Chat() {
+				name = "Primary greeting",
+				creationDate = timestamp,
+				updateDate = timestamp,
+				backgroundName = backgroundName,
+				staging = new ChatStaging() {
+					system = card.data.system,
+					scenario = card.data.scenario,
+					greeting = card.data.greeting,
+					example = card.data.example,
+					grammar = card.data.grammar,
+				},
+				parameters = parameters,
+				history = new ChatHistory(),
+			});
+
+			// Alternate greetings
+			var altGreetings = output.alternativeGreetings;
+			for (int i = 0; i < altGreetings.Length; ++i)
+			{
+				var altGreeting = altGreetings[i].ToFaradayGreeting();
+				timestamp -= TimeSpan.FromMilliseconds(10);
+
+				lsChats.Add(new BackupData.Chat() {
+					name = string.Format("Alt. greeting #{0}", i + 1),
+					creationDate = timestamp,
+					updateDate = timestamp,
+					staging = new ChatStaging() {
+						system = card.data.system,
+						scenario = card.data.scenario,
+						greeting = altGreeting,
+						example = card.data.example,
+						grammar = card.data.grammar,
+					},
+					parameters = parameters,
+					backgroundName = backgroundName,
+					history = new ChatHistory(),
+				});
+			}
+
+			return lsChats.ToArray();
+		}
 	}
 }

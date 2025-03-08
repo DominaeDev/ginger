@@ -1655,7 +1655,7 @@ namespace Ginger
 			if (Backyard.ConnectionEstablished)
 			{
 				string[] imageUrls;
-				var error = Backyard.Database.GetImageUrls(character, out imageUrls);
+				var error = Backyard.Database.GetImageUrls(character.configId, out imageUrls);
 				if (error == Backyard.Error.NoError && imageUrls.Length > 0)
 				{
 					Image image;
@@ -1881,7 +1881,7 @@ namespace Ginger
 				.FirstOrDefault();
 
 			string[] imageUrls;
-			var error = Backyard.Database.GetImageUrls(character, out imageUrls);
+			var error = Backyard.Database.GetImageUrls(character.configId, out imageUrls);
 			if (error != Backyard.Error.NoError || imageUrls.Length == 0)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
