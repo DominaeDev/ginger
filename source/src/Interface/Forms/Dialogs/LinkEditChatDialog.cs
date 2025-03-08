@@ -448,7 +448,7 @@ namespace Ginger
 
 			// Fetch latest chat settings
 			ChatInstance latestChat;
-			if (ConfirmChatExists(_groupInstance.instanceId, out latestChat))
+			if (GetLatestChat(_groupInstance.instanceId, out latestChat))
 			{
 				args.parameters = latestChat.parameters;
 				args.staging = latestChat.staging;
@@ -534,7 +534,7 @@ namespace Ginger
 
 			// Fetch latest chat settings
 			ChatInstance latestChat;
-			if (ConfirmChatExists(_groupInstance.instanceId, out latestChat))
+			if (GetLatestChat(_groupInstance.instanceId, out latestChat))
 			{
 				args.parameters = latestChat.parameters;
 				args.staging = latestChat.staging;
@@ -835,7 +835,7 @@ namespace Ginger
 			}
 
 			// Rename
-			var error = RunTask(() => Backyard.Database.RenameChat(_selectedChatInstance, newName), "Renaming chat...");
+			var error = RunTask(() => Backyard.Database.RenameChat(_selectedChatInstance.instanceId, newName), "Renaming chat...");
 			if (error == Backyard.Error.NoError)
 			{
 				SetStatusBarMessage(Resources.status_link_renamed_chat, Constants.StatusBarMessageInterval);
@@ -866,12 +866,13 @@ namespace Ginger
 			if (chatInstance == null)
 				return;
 
-			if (ConfirmChatExists(chatInstance.instanceId, Resources.cap_link_delete_chat) == false)
+			ChatInstance tmp;
+			if (ConfirmChatExists(chatInstance.instanceId, out tmp, Resources.cap_link_delete_chat) == false)
 				return;
 
 			// Fetch chat counts
 			int chatCounts;
-			if (Backyard.Database.ConfirmDeleteChat(chatInstance, _groupInstance, out chatCounts) != Backyard.Error.NoError)
+			if (Backyard.Database.ConfirmDeleteChat(chatInstance.instanceId, _groupInstance.instanceId, out chatCounts) != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
@@ -897,12 +898,12 @@ namespace Ginger
 						}
 					};
 				}
-				error = RunTask(() => Backyard.Database.UpdateChat(chatInstance, _groupInstance.instanceId), "Deleting chat...");
+				error = RunTask(() => Backyard.Database.UpdateChat(chatInstance.instanceId, chatInstance, _groupInstance.instanceId), "Deleting chat...");
 			}
 			else
 			{
 				// Delete chat
-				error = RunTask(() => Backyard.Database.DeleteChat(chatInstance), "Deleting chat...");
+				error = RunTask(() => Backyard.Database.DeleteChat(chatInstance.instanceId), "Deleting chat...");
 			}
 
 			if (error == Backyard.Error.NotConnected)
@@ -985,7 +986,7 @@ namespace Ginger
 			if (chatInstance == null || _groupInstance.isDefined == false)
 				return;
 
-			// Fetch latest
+			// Fetch latest version of this chat
 			ChatInstance latestChat;
 			if (ConfirmChatExists(chatInstance.instanceId, out latestChat) == false)
 				latestChat = chatInstance;
@@ -1038,7 +1039,7 @@ namespace Ginger
 			if (mr != DialogResult.Yes)
 				return;
 
-			var error = RunTask(() => Backyard.Database.PurgeChats(_groupInstance), "Deleting chat history...");
+			var error = RunTask(() => Backyard.Database.DeleteAllChats(_groupInstance.instanceId), "Deleting chat history...");
 			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_purge_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1128,7 +1129,7 @@ namespace Ginger
 			if (chatInstance == null || string.IsNullOrEmpty(messageId) || _groupInstance.isDefined == false)
 				return; // Error
 
-			// Fetch latest
+			// Fetch latest version of this chat
 			ChatInstance latestChat;
 			if (ConfirmChatExists(chatInstance.instanceId, out latestChat) == false)
 				latestChat = chatInstance;
@@ -1185,10 +1186,10 @@ namespace Ginger
 			if (MessageBox.Show(string.Format(Resources.msg_link_restart_confirm, chatInstance.name), Resources.cap_link_restart_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 				return;
 
-			// Fetch latest
+			// Fetch latest version of this chat
 			ChatInstance latestChat;
-			if (ConfirmChatExists(chatInstance.instanceId, out latestChat, Resources.cap_link_restart_chat) == false)
-				return;
+			if (ConfirmChatExists(chatInstance.instanceId, out latestChat) == false)
+				latestChat = chatInstance;
 
 			latestChat.updateDate = DateTime.Now;
 			int messageIndex = Array.FindIndex(latestChat.history.messages, m => m.instanceId == messageId);
@@ -1197,11 +1198,12 @@ namespace Ginger
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_restart_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
+
 			var messages = new ChatHistory.Message[latestChat.history.messages.Length - messageIndex];
 			Array.Copy(latestChat.history.messages, messageIndex, messages, 0, latestChat.history.messages.Length - messageIndex);
 			latestChat.history.messages = messages;
 
-			var error = RunTask(() => Backyard.Database.UpdateChat(latestChat, _groupInstance.instanceId), "Updating chat...");
+			var error = RunTask(() => Backyard.Database.UpdateChat(chatInstance.instanceId, latestChat, _groupInstance.instanceId), "Updating chat...");
 			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_restart_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1234,10 +1236,10 @@ namespace Ginger
 			if (MessageBox.Show(string.Format(Resources.msg_link_scrub_confirm, chatInstance.name), Resources.cap_link_scrub_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 				return;
 
-			// Fetch latest
+			// Fetch latest version of this chat
 			ChatInstance latestChat;
-			if (ConfirmChatExists(chatInstance.instanceId, out latestChat, Resources.cap_link_scrub_chat) == false)
-				return;
+			if (ConfirmChatExists(chatInstance.instanceId, out latestChat) == false)
+				latestChat = chatInstance;
 
 			latestChat.updateDate = DateTime.Now;
 			int messageIndex = Array.FindIndex(latestChat.history.messages, m => m.instanceId == messageId);
@@ -1248,7 +1250,7 @@ namespace Ginger
 			}
 			Array.Resize(ref latestChat.history.messages, messageIndex);
 		
-			var error = RunTask(() => Backyard.Database.UpdateChat(latestChat, _groupInstance.instanceId), "Scrubbing chat...");
+			var error = RunTask(() => Backyard.Database.UpdateChat(chatInstance.instanceId, latestChat, _groupInstance.instanceId), "Scrubbing chat...");
 			if (error == Backyard.Error.NotConnected)
 			{
 				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1417,7 +1419,7 @@ namespace Ginger
 				return;
 			}
 
-			// Fetch latest
+			// Fetch latest version of this chat
 			ChatInstance latestChat;
 			if (ConfirmChatExists(chatInstance.instanceId, out latestChat) == false)
 				latestChat = chatInstance;
@@ -1548,12 +1550,6 @@ namespace Ginger
 			SetStatusBarMessage(Resources.status_link_update_model_settings, Constants.StatusBarMessageInterval);
 		}
 
-		private bool ConfirmChatExists(string chatId, string errorCaption)
-		{
-			ChatInstance tmp;
-			return ConfirmChatExists(chatId, out tmp, errorCaption);
-		}
-
 		private bool ConfirmChatExists(string chatId, out ChatInstance chatInstance, string errorCaption = null)
 		{
 			if (Backyard.ConnectionEstablished == false)
@@ -1562,12 +1558,15 @@ namespace Ginger
 				return false;
 			}
 
-			ChatInstance returnedChat = default(ChatInstance);
-			var error = RunTask(() => Backyard.Database.GetChat(chatId, _groupInstance.instanceId, out returnedChat));
-			chatInstance = returnedChat;
-			
+			ChatInstance[] chats = null;
+			var error = RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats));
 			if (error == Backyard.Error.NoError)
-				return true;
+			{
+				chatInstance = Array.Find(chats, c => c.instanceId == chatId);
+				return chatInstance != null;
+			}
+
+			chatInstance = default(ChatInstance);
 
 			if (errorCaption == null)
 				return chatInstance != null; // Silent
@@ -1593,6 +1592,17 @@ namespace Ginger
 			return chatInstance != null;
 		}
 
+		private bool GetLatestChat(string groupId, out ChatInstance chatInstance)
+		{
+			if (Backyard.ConnectionEstablished == false)
+			{
+				chatInstance = default(ChatInstance);
+				return false;
+			}
+
+			return Backyard.Database.FetchLatestChat(groupId, out chatInstance);
+		}
+		
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
 			if (keyData == Keys.Escape)

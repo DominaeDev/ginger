@@ -11,13 +11,6 @@ namespace Ginger.Integration
 {
 	public static class Backyard
 	{
-		public struct ChatCount
-		{
-			public int count;
-			public DateTime lastMessage;
-			public bool hasMessages { get { return lastMessage != default(DateTime); } }
-		}
-
 		public struct ConfirmDeleteResult
 		{
 			public string[] characterIds;
@@ -407,6 +400,13 @@ namespace Ginger.Integration
 			public bool hasBackground { get { return staging != null && staging.background != null && string.IsNullOrEmpty(staging.background.imageUrl) == false; } }
 
 			public static string DefaultName = "Untitled chat";
+		}
+		
+		public struct ChatCount
+		{
+			public int count;
+			public DateTime lastMessage;
+			public bool hasMessages { get { return lastMessage != default(DateTime); } }
 		}
 
 		public class Link : IXmlLoadable, IXmlSaveable
@@ -1266,6 +1266,34 @@ namespace Ginger.Integration
 
 			text = sb.ToString();
 		}
-				
+
+		public static bool GetChatCounts(out Dictionary<string, Backyard.ChatCount> counts)
+		{
+			counts = new Dictionary<string, Backyard.ChatCount>();
+			if (Backyard.ConnectionEstablished == false)
+				return false;
+
+			foreach (var group in Backyard.Groups)
+			{
+				Backyard.ChatInstance[] chats;
+				var error = Backyard.Database.GetChats(group.instanceId, out chats);
+				if (error == Backyard.Error.NoError)
+				{
+					DateTime lastMessage = default(DateTime);
+
+					if (chats.Length > 0)
+						lastMessage = chats.Select(c => c.history.lastMessageTime).Max();
+
+					counts.Add(group.instanceId, 
+						new Backyard.ChatCount() {
+							count = chats.Length,
+							lastMessage = lastMessage,
+						});
+				}
+			}
+
+			
+			return true;
+		}
 	}
 }

@@ -32,8 +32,7 @@ namespace Ginger
 
 		private void OnLoad(object sender, EventArgs e)
 		{
-			if (Backyard.ConnectionEstablished == false && Backyard.Database.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
-				_chatCounts = new Dictionary<string, Backyard.ChatCount>(); // Empty
+			BackyardUtil.GetChatCounts(out _chatCounts);
 
 			PopulateTree(false);
 
@@ -222,6 +221,7 @@ namespace Ginger
 		{
 			if (string.IsNullOrEmpty(characterInstance.groupId))
 				return DateTime.MinValue;
+
 			Backyard.ChatCount count;
 			if (_chatCounts.TryGetValue(characterInstance.groupId, out count))
 				return count.lastMessage;

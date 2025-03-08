@@ -33,7 +33,7 @@ namespace Ginger.Integration
 			get
 			{
 				if (count > 0)
-					return messages.Max(m => m.updateDate);
+					return messages.Max(m => m.creationDate);
 				return DateTime.MinValue;
 			}
 		}

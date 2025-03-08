@@ -112,7 +112,7 @@ namespace Ginger.Integration
 				return WorkerError.DatabaseError;
 			}
 
-			var error = Backyard.Database.RepairChats(group, out modified);
+			var error = Backyard.Database.RepairChats(group.instanceId, out modified);
 			if (error == Backyard.Error.SQLCommandFailed || error == Backyard.Error.NotConnected)
 				return WorkerError.DatabaseError;
 			else if (error != Backyard.Error.NoError)

@@ -37,9 +37,62 @@ namespace Ginger.Integration
 
 		public bool ConnectionEstablished { get { return Backyard.ConnectionEstablished; } }
 
-		private SQLiteConnection CreateSQLiteConnection()
+		// Intermediaries
+		private struct _Character
 		{
-			return BackyardUtil.CreateSQLiteConnection();
+			public string instanceId;
+			public string configId;
+			public string name;
+			public string displayName;
+			public bool isUser;
+			public string persona;
+			public DateTime creationDate;
+			public DateTime updateDate;
+		}
+
+		private struct _Chat
+		{
+			public string instanceId;
+			public string name;
+			public DateTime creationDate;
+			public DateTime updateDate;
+			public ChatStaging staging;
+			public ChatParameters parameters;
+		}
+
+		private struct _Message
+		{
+			public string messageId;
+			public string characterId;
+			public string text;
+			public DateTime createdAt;
+			public DateTime updatedAt;
+			public DateTime activeAt;
+		}
+		
+		private struct _SwipeRepair
+		{
+			public string instanceId;
+			public string chatId;
+			public string text;
+		}
+
+		private struct _FolderInfo
+		{
+			public string instanceId;
+			public string parentId;
+			public string name;
+			public string url;
+			public bool isRoot;
+			public bool isSortedDesc;
+			public string sortType;
+		}
+		
+		private struct _ImageInfo
+		{
+			public string instanceId;
+			public string imageUrl;
+			public string filename;
 		}
 
 		private struct IDBundle
@@ -128,6 +181,11 @@ namespace Ginger.Integration
 					groupId = groupId,
 				};
 			}
+		}
+
+		private static SQLiteConnection CreateSQLiteConnection()
+		{
+			return BackyardUtil.CreateSQLiteConnection();
 		}
 
 #region Enumerate characters and groups
@@ -2281,31 +2339,6 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error DeleteOrphanedUsers()
-		{
-			string[] imageUrls;
-			Backyard.Error error = DeleteOrphanedUsers(out imageUrls);
-			if (error != Backyard.Error.NoError)
-				return error;
-
-			// Delete image files
-			if (imageUrls != null && imageUrls.Length > 0)
-			{
-				try
-				{
-					foreach (var imageUrl in imageUrls)
-					{
-						if (File.Exists(imageUrl))
-							File.Delete(imageUrl);
-					}
-				}
-				catch
-				{
-				}
-			}
-			return Backyard.Error.NoError;
-		}
-
 		public Backyard.Error DeleteOrphanedUsers(out string[] imageUrls)
 		{
 			if (ConnectionEstablished == false)
@@ -2486,285 +2519,6 @@ namespace Ginger.Integration
 #endregion // Characters
 
 #region Chat
-
-		public Backyard.Error GetChatCounts(out Dictionary<string, ChatCount> counts)
-		{
-			if (ConnectionEstablished == false)
-			{
-				counts = null;
-				return Backyard.Error.NotConnected;
-			}
-
-			try
-			{
-				using (var connection = CreateSQLiteConnection())
-				{
-					connection.Open();
-
-					counts = new Dictionary<string, ChatCount>();
-					using (var cmdChat = connection.CreateCommand())
-					{
-						cmdChat.CommandText =
-						@"
-							SELECT 
-								groupConfigId,
-								(
-									SELECT MAX(M.updatedAt)
-									FROM Message as M
-									WHERE M.chatId = C.id
-								)
-							FROM Chat AS C
-						";
-
-						using (var reader = cmdChat.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string groupId = reader.GetString(0);
-								DateTime lastMessage = reader.IsDBNull(1) ? DateTime.MinValue : reader.GetTimestamp(1);
-
-								if (counts.ContainsKey(groupId) == false)
-								{
-									counts.Add(groupId, new ChatCount() {
-										count = 1,
-										lastMessage = lastMessage,
-									});
-								}
-								else
-								{
-									counts[groupId] = new ChatCount() {
-										count = counts[groupId].count + 1,
-										lastMessage = DateTimeExtensions.Max(counts[groupId].lastMessage, lastMessage),
-									};
-								}
-							}
-						}
-					}
-
-					return Backyard.Error.NoError;
-				}
-			}
-			catch (FileNotFoundException e)
-			{
-				counts = null;
-				return Backyard.Error.NotConnected;
-			}
-			catch (SQLiteException e)
-			{
-				counts = null;
-				return Backyard.Error.SQLCommandFailed;
-			}
-			catch (Exception e)
-			{
-				counts = null;
-				return Backyard.Error.Unknown;
-			}
-		}
-
-		// Intermediaries
-		private struct _Character
-		{
-			public string instanceId;
-			public string configId;
-			public string name;
-			public string displayName;
-			public bool isUser;
-			public string persona;
-			public DateTime creationDate;
-			public DateTime updateDate;
-		}
-
-		private struct _Chat
-		{
-			public string instanceId;
-			public string name;
-			public DateTime creationDate;
-			public DateTime updateDate;
-			public ChatStaging staging;
-			public ChatParameters parameters;
-		}
-
-		private struct _Message
-		{
-			public string messageId;
-			public string characterId;
-			public string text;
-			public DateTime createdAt;
-			public DateTime updatedAt;
-			public DateTime activeAt;
-		}
-
-		public Backyard.Error GetChats(string groupId, out ChatInstance[] chatInstances)
-		{
-			if (ConnectionEstablished == false)
-			{
-				chatInstances = null;
-				return Backyard.Error.NotConnected;
-			}
-
-			if (string.IsNullOrEmpty(groupId))
-			{
-				chatInstances = null;
-				return Backyard.Error.NotFound;
-			}
-
-			try
-			{
-				using (var connection = CreateSQLiteConnection())
-				{
-					connection.Open();
-
-					List<_Character> characters;
-					FetchCharacters(connection, out characters);
-
-					List<_Character> groupMembers;
-					FetchMembersOfGroup(connection, groupId, null, out groupMembers);
-
-					ImageInstance[] backgrounds;
-					FetchChatBackgrounds(connection, groupId, out backgrounds);
-
-					var lsChatInstances = new List<ChatInstance>();
-					var chats = new List<_Chat>();
-					using (var cmdChat = connection.CreateCommand())
-					{
-						cmdChat.CommandText =
-						@"
-							SELECT 
-								id, name, createdAt, updatedAt, 
-								modelInstructions, context, greetingDialogue, customDialogue, grammar,
-								model, temperature, topP, minP, minPEnabled, topK, 
-								repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, 
-								authorNote, ttsAutoplay, ttsInputFilter
-							FROM Chat
-							WHERE groupConfigId = $groupId
-							ORDER BY createdAt;
-						";
-						cmdChat.Parameters.AddWithValue("$groupId", groupId);
-
-						using (var reader = cmdChat.ExecuteReader())
-						{
-							int untitledCounter = 0;
-							while (reader.Read())
-							{
-								string chatId = reader.GetString(0);
-								string name = reader.GetString(1);
-								DateTime createdAt = reader.GetTimestamp(2);
-								DateTime updatedAt = reader.GetTimestamp(3);
-
-								// Staging
-								string system = reader.GetString(4);
-								string scenario = reader.GetString(5);
-								string greeting = reader.GetString(6);
-								string example = reader.GetString(7);
-								string grammar = reader[8] as string;
-
-								// Parameters
-								string model = reader.GetString(9);
-								decimal temperature = reader.GetDecimal(10);
-								decimal topP = reader.GetDecimal(11);
-								decimal minP = reader.GetDecimal(12);
-								bool minPEnabled = reader.GetBoolean(13);
-								int topK = reader.GetInt32(14);
-								decimal repeatPenalty = reader.GetDecimal(15);
-								int repeatLastN = reader.GetInt32(16);
-								string promptTemplate = reader[17] as string;
-								bool pruneExampleChat = reader.GetBoolean(18);
-								string authorNote = reader.GetString(19);
-								bool ttsAutoPlay = reader.GetBoolean(20);
-								string ttsInputFilter = reader.GetString(21);
-
-								if (string.IsNullOrWhiteSpace(name))
-								{
-									if (++untitledCounter > 1)
-										name = string.Concat(ChatInstance.DefaultName, " #", untitledCounter.ToString());
-									else
-										name = ChatInstance.DefaultName;
-								}
-
-								ChatBackground chatBackground = null;
-								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
-								{
-									int idxBackground = Array.FindIndex(backgrounds, b => b.associatedInstanceId == chatId);
-									if (idxBackground != -1)
-									{
-										var bg = backgrounds[idxBackground];
-										chatBackground = new ChatBackground() {
-											instanceId = bg.instanceId,
-											imageUrl = bg.imageUrl,
-											width = bg.width,
-											height = bg.height,
-										};
-									}
-								}
-
-								var staging = new ChatStaging() {
-									system = system,
-									scenario = scenario,
-									greeting = greeting,
-									example = example,
-									grammar = grammar,
-									authorNote = authorNote,
-									background = chatBackground,
-									pruneExampleChat = pruneExampleChat,
-									ttsAutoPlay = ttsAutoPlay,
-									ttsInputFilter = ttsInputFilter,
-								};
-								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-									BackyardUtil.ConvertFromIDPlaceholders(staging);
-
-								chats.Add(new _Chat() {
-									instanceId = chatId,
-									creationDate = createdAt,
-									updateDate = updatedAt,
-									name = name,
-									staging = staging,
-									parameters = new ChatParameters() {
-										model = model,
-										temperature = temperature,
-										topP = topP,
-										minP = minP,
-										minPEnabled = minPEnabled,
-										topK = topK,
-										repeatPenalty = repeatPenalty,
-										repeatLastN = repeatLastN,
-										promptTemplate = promptTemplate,
-									}
-								});
-							}
-						}
-					}
-
-					// Collect messages
-					for (int i = 0; i < chats.Count; ++i)
-					{
-						var chatInstance = FetchChatInstance(connection, chats[i], characters, groupMembers);
-						if (chatInstance != null)
-							lsChatInstances.Add(chatInstance);
-					}
-
-					chatInstances = lsChatInstances
-						.OrderByDescending(c => DateTimeExtensions.Max(c.creationDate, c.updateDate))
-						.ToArray();
-					return Backyard.Error.NoError;
-				}
-			}
-			catch (FileNotFoundException e)
-			{
-				chatInstances = null;
-				return Backyard.Error.NotConnected;
-			}
-			catch (SQLiteException e)
-			{
-				chatInstances = null;
-				return Backyard.Error.SQLCommandFailed;
-			}
-			catch (Exception e)
-			{
-				chatInstances = null;
-				return Backyard.Error.Unknown;
-			}
-		}
-
 		public Backyard.Error GetChat(string chatId, string groupId, out ChatInstance chatInstance)
 		{
 			if (ConnectionEstablished == false)
@@ -2936,6 +2690,177 @@ namespace Ginger.Integration
 			catch (Exception e)
 			{
 				chatInstance = null;
+				return Backyard.Error.Unknown;
+			}
+		}
+
+		public Backyard.Error GetChats(string groupId, out ChatInstance[] chatInstances)
+		{
+			if (ConnectionEstablished == false)
+			{
+				chatInstances = null;
+				return Backyard.Error.NotConnected;
+			}
+
+			if (string.IsNullOrEmpty(groupId))
+			{
+				chatInstances = null;
+				return Backyard.Error.NotFound;
+			}
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					List<_Character> characters;
+					FetchCharacters(connection, out characters);
+
+					List<_Character> groupMembers;
+					FetchMembersOfGroup(connection, groupId, null, out groupMembers);
+
+					ImageInstance[] backgrounds;
+					FetchChatBackgrounds(connection, groupId, out backgrounds);
+
+					var lsChatInstances = new List<ChatInstance>();
+					var chats = new List<_Chat>();
+					using (var cmdChat = connection.CreateCommand())
+					{
+						cmdChat.CommandText =
+						@"
+							SELECT 
+								id, name, createdAt, updatedAt, 
+								modelInstructions, context, greetingDialogue, customDialogue, grammar,
+								model, temperature, topP, minP, minPEnabled, topK, 
+								repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, 
+								authorNote, ttsAutoplay, ttsInputFilter
+							FROM Chat
+							WHERE groupConfigId = $groupId
+							ORDER BY createdAt;
+						";
+						cmdChat.Parameters.AddWithValue("$groupId", groupId);
+
+						using (var reader = cmdChat.ExecuteReader())
+						{
+							int untitledCounter = 0;
+							while (reader.Read())
+							{
+								string chatId = reader.GetString(0);
+								string name = reader.GetString(1);
+								DateTime createdAt = reader.GetTimestamp(2);
+								DateTime updatedAt = reader.GetTimestamp(3);
+
+								// Staging
+								string system = reader.GetString(4);
+								string scenario = reader.GetString(5);
+								string greeting = reader.GetString(6);
+								string example = reader.GetString(7);
+								string grammar = reader[8] as string;
+
+								// Parameters
+								string model = reader.GetString(9);
+								decimal temperature = reader.GetDecimal(10);
+								decimal topP = reader.GetDecimal(11);
+								decimal minP = reader.GetDecimal(12);
+								bool minPEnabled = reader.GetBoolean(13);
+								int topK = reader.GetInt32(14);
+								decimal repeatPenalty = reader.GetDecimal(15);
+								int repeatLastN = reader.GetInt32(16);
+								string promptTemplate = reader[17] as string;
+								bool pruneExampleChat = reader.GetBoolean(18);
+								string authorNote = reader.GetString(19);
+								bool ttsAutoPlay = reader.GetBoolean(20);
+								string ttsInputFilter = reader.GetString(21);
+
+								if (string.IsNullOrWhiteSpace(name))
+								{
+									if (++untitledCounter > 1)
+										name = string.Concat(ChatInstance.DefaultName, " #", untitledCounter.ToString());
+									else
+										name = ChatInstance.DefaultName;
+								}
+
+								ChatBackground chatBackground = null;
+								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
+								{
+									int idxBackground = Array.FindIndex(backgrounds, b => b.associatedInstanceId == chatId);
+									if (idxBackground != -1)
+									{
+										var bg = backgrounds[idxBackground];
+										chatBackground = new ChatBackground() {
+											instanceId = bg.instanceId,
+											imageUrl = bg.imageUrl,
+											width = bg.width,
+											height = bg.height,
+										};
+									}
+								}
+
+								var staging = new ChatStaging() {
+									system = system,
+									scenario = scenario,
+									greeting = greeting,
+									example = example,
+									grammar = grammar,
+									authorNote = authorNote,
+									background = chatBackground,
+									pruneExampleChat = pruneExampleChat,
+									ttsAutoPlay = ttsAutoPlay,
+									ttsInputFilter = ttsInputFilter,
+								};
+								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
+									BackyardUtil.ConvertFromIDPlaceholders(staging);
+
+								chats.Add(new _Chat() {
+									instanceId = chatId,
+									creationDate = createdAt,
+									updateDate = updatedAt,
+									name = name,
+									staging = staging,
+									parameters = new ChatParameters() {
+										model = model,
+										temperature = temperature,
+										topP = topP,
+										minP = minP,
+										minPEnabled = minPEnabled,
+										topK = topK,
+										repeatPenalty = repeatPenalty,
+										repeatLastN = repeatLastN,
+										promptTemplate = promptTemplate,
+									}
+								});
+							}
+						}
+					}
+
+					// Collect messages
+					for (int i = 0; i < chats.Count; ++i)
+					{
+						var chatInstance = FetchChatInstance(connection, chats[i], characters, groupMembers);
+						if (chatInstance != null)
+							lsChatInstances.Add(chatInstance);
+					}
+
+					chatInstances = lsChatInstances
+						.OrderByDescending(c => DateTimeExtensions.Max(c.creationDate, c.updateDate))
+						.ToArray();
+					return Backyard.Error.NoError;
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				chatInstances = null;
+				return Backyard.Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				chatInstances = null;
+				return Backyard.Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				chatInstances = null;
 				return Backyard.Error.Unknown;
 			}
 		}
@@ -3320,12 +3245,12 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error RenameChat(ChatInstance chatInstance, string newName)
+		public Backyard.Error RenameChat(string chatId, string newName)
 		{
 			if (ConnectionEstablished == false)
 				return Backyard.Error.NotConnected;
 
-			if (chatInstance == null || string.IsNullOrEmpty(chatInstance.instanceId))
+			if (string.IsNullOrEmpty(chatId))
 				return Backyard.Error.InvalidArgument;
 
 			try
@@ -3334,7 +3259,6 @@ namespace Ginger.Integration
 				{
 					connection.Open();
 
-					string chatId = chatInstance.instanceId;
 					DateTime now = DateTime.Now;
 					long updatedAt = now.ToUnixTimeMilliseconds();
 					int updates = 0;
@@ -3374,12 +3298,8 @@ namespace Ginger.Integration
 							if (updates != expectedUpdates)
 							{
 								transaction.Rollback();
-								chatInstance = default(ChatInstance);
 								return Backyard.Error.SQLCommandFailed;
 							}
-
-							chatInstance.updateDate = now;
-							chatInstance.history.name = newName;
 
 							transaction.Commit();
 							return Backyard.Error.NoError;
@@ -3387,8 +3307,6 @@ namespace Ginger.Integration
 						catch (Exception e)
 						{
 							transaction.Rollback();
-
-							chatInstance = default(ChatInstance);
 							return Backyard.Error.SQLCommandFailed;
 						}
 					}
@@ -3411,7 +3329,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error ConfirmDeleteChat(ChatInstance chatInstance, GroupInstance groupInstance, out int chatCount)
+		public Backyard.Error ConfirmDeleteChat(string chatId, string groupId, out int chatCount)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -3419,7 +3337,7 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			if (chatInstance == null || string.IsNullOrEmpty(chatInstance.instanceId) || string.IsNullOrEmpty(groupInstance.instanceId))
+			if (string.IsNullOrEmpty(chatId) || string.IsNullOrEmpty(groupId))
 			{
 				chatCount = 0;
 				return Backyard.Error.NotFound;
@@ -3440,7 +3358,7 @@ namespace Ginger.Integration
 							FROM Chat
 							WHERE groupConfigId = $groupId
 						";
-						cmdConfirm.Parameters.AddWithValue("$groupId", groupInstance.instanceId);
+						cmdConfirm.Parameters.AddWithValue("$groupId", groupId);
 
 						var chats = new HashSet<string>();
 						using (var reader = cmdConfirm.ExecuteReader())
@@ -3451,7 +3369,7 @@ namespace Ginger.Integration
 
 						chatCount = chats.Count;
 
-						if (chats.Contains(chatInstance.instanceId) == false)
+						if (chats.Contains(chatId) == false)
 							return Backyard.Error.NotFound;
 
 						return Backyard.Error.NoError;
@@ -3520,15 +3438,15 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error DeleteChat(ChatInstance chatInstance)
+		public Backyard.Error DeleteChat(string chatId)
 		{
 			if (ConnectionEstablished == false)
 				return Backyard.Error.NotConnected;
 
-			if (chatInstance == null || string.IsNullOrEmpty(chatInstance.instanceId))
+			if ( string.IsNullOrEmpty(chatId))
 				return Backyard.Error.InvalidArgument;
 
-			var error = ConfirmChatExists(chatInstance.instanceId);
+			var error = ConfirmChatExists(chatId);
 			if (error != Backyard.Error.NoError)
 				return error;
 
@@ -3538,7 +3456,6 @@ namespace Ginger.Integration
 				{
 					connection.Open();
 
-					string chatId = chatInstance.instanceId;
 					int updates = 0;
 					int expectedUpdates = 0;
 
@@ -3584,7 +3501,6 @@ namespace Ginger.Integration
 							if (updates != expectedUpdates)
 							{
 								transaction.Rollback();
-								chatInstance = default(ChatInstance);
 								return Backyard.Error.SQLCommandFailed;
 							}
 
@@ -3594,8 +3510,6 @@ namespace Ginger.Integration
 						catch (Exception e)
 						{
 							transaction.Rollback();
-
-							chatInstance = default(ChatInstance);
 							return Backyard.Error.SQLCommandFailed;
 						}
 					}
@@ -3618,12 +3532,12 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error PurgeChats(GroupInstance groupInstance)
+		public Backyard.Error DeleteAllChats(string groupId)
 		{
 			if (ConnectionEstablished == false)
 				return Backyard.Error.NotConnected;
 
-			if (string.IsNullOrEmpty(groupInstance.instanceId))
+			if (string.IsNullOrEmpty(groupId))
 				return Backyard.Error.InvalidArgument;
 
 			try
@@ -3642,7 +3556,7 @@ namespace Ginger.Integration
 							FROM Chat
 							WHERE groupConfigId = $groupId
 						";
-						cmdGetChats.Parameters.AddWithValue("$groupId", groupInstance.instanceId);
+						cmdGetChats.Parameters.AddWithValue("$groupId", groupId);
 
 						using (var reader = cmdGetChats.ExecuteReader())
 						{
@@ -3760,18 +3674,15 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error UpdateChat(ChatInstance chatInstance, string groupId)
+		public Backyard.Error UpdateChat(string chatId, ChatInstance chatInstance, string groupId)
 		{
 			if (ConnectionEstablished == false)
 				return Backyard.Error.NotConnected;
 
-			if (chatInstance == null)
+			if (string.IsNullOrEmpty(chatId) || string.IsNullOrEmpty(groupId) || chatInstance == null)
 				return Backyard.Error.InvalidArgument;
 
-			if (string.IsNullOrEmpty(chatInstance.instanceId) || string.IsNullOrEmpty(groupId))
-				return Backyard.Error.InvalidArgument;
-
-			var error = ConfirmChatExists(chatInstance.instanceId);
+			var error = ConfirmChatExists(chatId);
 			if (error != Backyard.Error.NoError)
 				return error;
 
@@ -3781,7 +3692,6 @@ namespace Ginger.Integration
 				{
 					connection.Open();
 
-					string chatId = chatInstance.instanceId;
 					int updates = 0;
 					int expectedUpdates = 0;
 
@@ -3974,14 +3884,7 @@ namespace Ginger.Integration
 			return lsMessages;
 		}
 
-		private struct _SwipeRepair
-		{
-			public string instanceId;
-			public string chatId;
-			public string text;
-		}
-
-		public Backyard.Error RepairChats(GroupInstance groupInstance, out int modified)
+		public Backyard.Error RepairChats(string groupId, out int modified)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -3989,7 +3892,7 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			if (string.IsNullOrEmpty(groupInstance.instanceId))
+			if (string.IsNullOrEmpty(groupId))
 			{
 				modified = 0;
 				return Backyard.Error.InvalidArgument;
@@ -4010,7 +3913,7 @@ namespace Ginger.Integration
 							FROM GroupConfig
 							WHERE id = $groupId
 						";
-						cmdConfirm.Parameters.AddWithValue("$groupId", groupInstance.instanceId);
+						cmdConfirm.Parameters.AddWithValue("$groupId", groupId);
 
 						if (cmdConfirm.ExecuteScalar() == null)
 						{
@@ -4029,7 +3932,7 @@ namespace Ginger.Integration
 							FROM Chat
 							WHERE groupConfigId = $groupId
 						";
-						cmdGetChats.Parameters.AddWithValue("$groupId", groupInstance.instanceId);
+						cmdGetChats.Parameters.AddWithValue("$groupId", groupId);
 
 						using (var reader = cmdGetChats.ExecuteReader())
 						{
@@ -4596,17 +4499,7 @@ namespace Ginger.Integration
 #endregion // Chat
 
 #region Folder
-		private struct _FolderInfo
-		{
-			public string instanceId;
-			public string parentId;
-			public string name;
-			public string url;
-			public bool isRoot;
-			public bool isSortedDesc;
-			public string sortType;
-		}
-
+		
 		public Backyard.Error CreateNewFolder(string folderName, out FolderInstance folderInstance)
 		{
 			if (ConnectionEstablished == false)
@@ -5687,13 +5580,6 @@ namespace Ginger.Integration
 			}
 
 			return lsChats.ToArray();
-		}
-
-		private struct _ImageInfo
-		{
-			public string instanceId;
-			public string imageUrl;
-			public string filename;
 		}
 
 		public Backyard.Error RepairImages(out int modified, out int skipped)
@@ -6785,58 +6671,6 @@ namespace Ginger.Integration
 				int nChanged = cmdReplace.ExecuteNonQuery();
 				expectedUpdates += nChanged;
 				updates += nChanged;
-			}
-		}
-
-		public Backyard.Error GetUserInfo(string groupId, out string userId, out string name, out string persona, out ImageInstance image)
-		{
-			if (ConnectionEstablished == false)
-			{
-				userId = null;
-				name = null;
-				persona = null;
-				image = null;
-				return Backyard.Error.NotConnected;
-			}
-
-			try
-			{
-				using (var connection = CreateSQLiteConnection())
-				{
-					connection.Open();
-
-					if (FetchUserInfo(connection, groupId, out userId, out name, out persona, out image) == false)
-						return Backyard.Error.NotFound;
-
-					return Backyard.Error.NoError;
-				}
-			}
-			catch (FileNotFoundException e)
-			{
-				userId = null;
-				name = null;
-				persona = null;
-				image = null;
-				Backyard.Disconnect();
-				return Backyard.Error.NotConnected;
-			}
-			catch (SQLiteException e)
-			{
-				userId = null;
-				name = null;
-				persona = null;
-				image = null;
-				Backyard.Disconnect();
-				return Backyard.Error.SQLCommandFailed;
-			}
-			catch (Exception e)
-			{
-				userId = null;
-				name = null;
-				persona = null;
-				image = null;
-				Backyard.Disconnect();
-				return Backyard.Error.Unknown;
 			}
 		}
 

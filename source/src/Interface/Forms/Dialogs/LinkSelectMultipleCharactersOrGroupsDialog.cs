@@ -74,8 +74,8 @@ namespace Ginger
 			}
 
 			_charactersById = Characters.ToDictionary(c => c.instanceId, c => c);
-			if (Backyard.ConnectionEstablished == false || Backyard.Database.GetChatCounts(out _chatCounts) != Backyard.Error.NoError)
-				_chatCounts = new Dictionary<string, Backyard.ChatCount>(); // Empty
+
+			BackyardUtil.GetChatCounts(out _chatCounts);
 
 			if (Groups.ContainsAny(g => g.Count > 2))
 				this.Text = "Select character or group";
