@@ -283,57 +283,57 @@
 		<Value>Anthropomorphic [@animal] [breed?({breed})]</Value>
 	</Attribute>
 
-	<Node path="description/anthro" order="0" rule="animal and not secondary-animal">
+	<Node path="persona/description/anthro" order="0" rule="animal and not secondary-animal">
 		[char] is an anthropomorphic {breed.lower} [@animal.lower], a bipedal humanoid with {[is-woman?beautiful, feminine, ]|[is-man?pronounced, masculine,]} [@family.lower] and {animal.lower}-like features.
 	</Node>
-	<Node path="description/anthro" order="0" rule="animal and secondary-animal">
+	<Node path="persona/description/anthro" order="0" rule="animal and secondary-animal">
 		[char] is an anthropomorphic [@animal.lower], a bipedal humanoid with {[is-woman?beautiful, feminine, ]|[is-man?pronounced, masculine,]} and [@family.lower] features; [their] appearance [a] [is-woman?alluring|striking] cross between [a] {animal.lower} and [a] {secondary-animal.lower}.
 	</Node>
 
 	<!-- Skin / Fur -->
-	<Node path="appearance/body" order="0" rule="skin and primary-color">
+	<Node path="persona/appearance/body" order="0" rule="skin and primary-color">
 		[Their] skin [is] {primary-color.lower} [has-pattern?with {@pattern}|{accent}].
 	</Node>
-	<Node path="appearance/body" order="0" rule="coat">
+	<Node path="persona/appearance/body" order="0" rule="coat">
 		[Their] body is covered in a soft [primary-color?, {primary-color.lower}] coat with a subtle sheen [has-pattern?and {@pattern}|{accent}].
 	</Node>
-	<Node path="appearance/body" order="0" rule="short-fur">
+	<Node path="persona/appearance/body" order="0" rule="short-fur">
 		[Their] body is covered in shiny [primary-color?, {primary-color.lower}] fur [has-pattern?with {@pattern}|{accent}], soft to the touch.
 	</Node>
-	<Node path="appearance/body" order="0" rule="thick-fur">
+	<Node path="persona/appearance/body" order="0" rule="thick-fur">
 		[Their] body is covered in thick, fluffy [primary-color?, {primary-color.lower}] fur [has-pattern?with {@pattern}|{accent}] that feels plush to the touch.
 	</Node>
-	<Node path="appearance/body" order="0" rule="scales">
+	<Node path="persona/appearance/body" order="0" rule="scales">
 		 [Their] body is covered in sleek [primary-color?{primary-color.lower}] scales [has-pattern? with {@pattern}|{accent}].
 	</Node>
-	<Node path="appearance/body" order="0" rule="feathers">
+	<Node path="persona/appearance/body" order="0" rule="feathers">
 		 [Their] body is covered in soft [primary-color?{primary-color.lower}] feathers [has-pattern? with {@pattern}|[secondary-color? with {secondary-color.lower} tips]].
 	</Node>
 
 	<!-- Features -->
-	<Node path="appearance/body" order="100" rule="horns">
+	<Node path="persona/appearance/body" order="100" rule="horns">
 		The top of [their] head is adorned by two prominent horns.
 	</Node>
-	<Node path="appearance/body" order="100" rule="tail">
+	<Node path="persona/appearance/body" order="100" rule="tail">
 		[Their] [thick-fur?large, bushy] tail curls past [their] knees, adding to [their] [{animal.lower}|animal]-like appearance.
 	</Node>
-	<Node path="appearance/body" order="100" rule="ears and not (is-rodent or is-avian or is-reptile)">
+	<Node path="persona/appearance/body" order="100" rule="ears and not (is-rodent or is-avian or is-reptile)">
 		[Their] {animal.lower} ears are pointed and alert [primary-color and secondary-color?, with a [thick-fur?fluffy] {secondary-color.lower} interior and {primary-color.lower} on the outside].
 	</Node>
-	<Node path="appearance/body" order="100" rule="ears and (mouse or rat)">
+	<Node path="persona/appearance/body" order="100" rule="ears and (mouse or rat)">
 		[Their] ears are big, round, and pink.
 	</Node>
-	<Node path="appearance/body" order="100" rule="paws">
+	<Node path="persona/appearance/body" order="100" rule="paws">
 		[Their] large, fuzzy paws hide an array of sharp claws.
 	</Node>
-	<Node path="appearance/body" order="100" rule="hooves">
+	<Node path="persona/appearance/body" order="100" rule="hooves">
 		[They] stand firmly on hoofed feet.
 	</Node>
-	<Node path="appearance/body" order="100" rule="wings">
+	<Node path="persona/appearance/body" order="100" rule="wings">
 		A set of large wings protude from [their] back, allowing [them] to take flight if necessary.
 	</Node>
 
 	<!-- More -->
-	<Node path="appearance/body" order="0" rule="more">{more}.</Node>
+	<Node path="persona/appearance/body" order="0" rule="more">{more}.</Node>
 
 </Ginger>

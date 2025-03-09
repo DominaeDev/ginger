@@ -1,4 +1,4 @@
-<Ginger id="futanari" version="1.3">
+<Ginger id="futanari" version="1.4">
 	<Name>Gender/Futanari</Name>
 	<Description>(Gender override) The character is a futanari (woman with male genitals).</Description>
 	<Author>Ginger</Author>
@@ -23,6 +23,10 @@
 		<Label>Testicles</Label>
 		<Default>yes</Default>
 	</Toggle>
+	
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
 	
 	<Rule id="is-futanari">futa-term:index eq 0</Rule>
 	<Rule id="is-shemale">futa-term:index eq 1</Rule>
@@ -53,10 +57,12 @@
 	<Node path="system/exceptions/futanari">When [char] gets aroused, [their] penis grows hard and erect [has-vagina?, and [their] pussy gets wet].</Node>
 	<Node path="system/exceptions/futanari">When [char] climaxes, [their] penis ejaculates.</Node>
 	
-	<Node path="description/futanari">
+	<Node path="persona/description/futanari">
 		Being a [@futanari], [char] looks like any other woman but was, in fact, born with [has-vagina?both a cock and pussy|a cock].
 		[has-balls?Below [their] cock hangs a proud pair of testicles.]
 	</Node>
+		
+	<Node path="persona/description/futanari" rule="more">{more}.</Node>
 	
 	<Attribute rule="not has-vagina" mode="replace">
 		<Name>Gender</Name>

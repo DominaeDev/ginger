@@ -1,4 +1,4 @@
-<Ginger id="equine-penis" version="1.0">
+<Ginger id="equine-penis" version="1.1">
 	<Name>Anatomy/Intimate parts/Equine penis</Name>
 	<Description>The character has an equine penis.</Description>
 	<Category>Body</Category>
@@ -12,6 +12,10 @@
 		<Placeholder>Enter length (in inches)</Placeholder>
 		<Default>16 in</Default>
 	</Number>
+		
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
 	
 	<!-- Output -->	
 	<Attribute style="comma" rule="less-detail">
@@ -35,6 +39,8 @@
 	<Node path="persona/genitals/equine" order="0">
 		[char] has a large, sheathed equine-like cock. [Their] horse penis is [penis-length?{penis-length.inch.value} inches (or {penis-length.cm}) long,] smooth with thick veins running along its length. It has a medial ring located a third of its length from the base, near the sheath. [char]'s penis is usually hidden inside its sheath. When [char] is aroused, [their] penis slowly grows and drops out of its sheath, before becoming fully erect, hard and rigid.
 	</Node>
+	
+	<Node path="persona/genitals/equine" rule="more">{more}.</Node>
 	
 	<Lore>
 		<Name>naked, strip, pants, bulge, [__support-lore-wildcards?undress*|undress]</Name>

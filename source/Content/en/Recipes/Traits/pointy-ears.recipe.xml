@@ -7,7 +7,7 @@
 	<Requires>not (animal or anthro)</Requires>
 	
 	<!-- Features -->
-	<Node path="appearance/body">
+	<Node path="persona/appearance/body">
 		[Their] ears are elongated and pointy.
 	</Node>
 	

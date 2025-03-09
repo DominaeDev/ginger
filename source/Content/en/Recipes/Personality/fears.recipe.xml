@@ -20,5 +20,5 @@
 		<Value>{fears}</Value>
 	</Attribute>
 
-	<Node path="description/fears" rule="more">{more}.</Node>
+	<Node path="persona/description/fears" rule="more">{more}.</Node>
 </Ginger>

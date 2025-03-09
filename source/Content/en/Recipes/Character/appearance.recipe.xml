@@ -245,22 +245,22 @@
 	</String>
 	
 	<!-- Body type -->
-	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is anorexic">[char] is all skin and bones. [They] [are] severely underweight, borderline anorexic.</Node>
-	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is athletic">[char] is fit and [they've] got an athletic body with well-defined [is-man?abs and pecs|abs and muscles].</Node>
-	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is fat">[char] is fat and overweight.</Node>
-	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is large">[char's] large and imposing stature towers over [user].</Node>
-	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is muscular">[They] [have] the body of a body-builder, with impressively large muscles and broad shoulders.</Node>
-	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is plump">[Their] body is rather plump, with soft, round features.</Node>
-	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is short">[They] [are] quite short, substantially shorter than [user].</Node>
-	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is shortstack">[They] [are] very short, has very wide hips, thick thighs and a large posterior.</Node>
-	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is skinny">[char] has a skinny, lithe body.</Node>
-	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is slender">[Their] body is lean, slender and flexible[is-woman?, with a narrow waist].</Node>
-	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is small">[Their] body is small, with a slim and petite frame.</Node>
-	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is tall">[They] [are] quite tall, significantly taller than [user].</Node>
-	<Node path="appearance/body" order="10" rule="normal-detail and body-type:id is voluptuous">[Their] curvaceous body is voluptuous with large, ample features.</Node>
+	<Node path="persona/appearance/body" order="10" rule="normal-detail and body-type:id is anorexic">[char] is all skin and bones. [They] [are] severely underweight, borderline anorexic.</Node>
+	<Node path="persona/appearance/body" order="10" rule="normal-detail and body-type:id is athletic">[char] is fit and [they've] got an athletic body with well-defined [is-man?abs and pecs|abs and muscles].</Node>
+	<Node path="persona/appearance/body" order="10" rule="normal-detail and body-type:id is fat">[char] is fat and overweight.</Node>
+	<Node path="persona/appearance/body" order="10" rule="normal-detail and body-type:id is large">[char's] large and imposing stature towers over [user].</Node>
+	<Node path="persona/appearance/body" order="10" rule="normal-detail and body-type:id is muscular">[They] [have] the body of a body-builder, with impressively large muscles and broad shoulders.</Node>
+	<Node path="persona/appearance/body" order="10" rule="normal-detail and body-type:id is plump">[Their] body is rather plump, with soft, round features.</Node>
+	<Node path="persona/appearance/body" order="10" rule="normal-detail and body-type:id is short">[They] [are] quite short, substantially shorter than [user].</Node>
+	<Node path="persona/appearance/body" order="10" rule="normal-detail and body-type:id is shortstack">[They] [are] very short, has very wide hips, thick thighs and a large posterior.</Node>
+	<Node path="persona/appearance/body" order="10" rule="normal-detail and body-type:id is skinny">[char] has a skinny, lithe body.</Node>
+	<Node path="persona/appearance/body" order="10" rule="normal-detail and body-type:id is slender">[Their] body is lean, slender and flexible[is-woman?, with a narrow waist].</Node>
+	<Node path="persona/appearance/body" order="10" rule="normal-detail and body-type:id is small">[Their] body is small, with a slim and petite frame.</Node>
+	<Node path="persona/appearance/body" order="10" rule="normal-detail and body-type:id is tall">[They] [are] quite tall, significantly taller than [user].</Node>
+	<Node path="persona/appearance/body" order="10" rule="normal-detail and body-type:id is voluptuous">[Their] curvaceous body is voluptuous with large, ample features.</Node>
 	
-	<Node path="appearance/info" rule="normal-detail and (hair-color:local or hair-style:local or eye-color:local or skin-tone:local)">[They.capital] [have] [!list:[@hair];[@eyes];[@skin-tone.lower]].</Node>
-	<Node path="appearance/info" rule="more">{more}.</Node>
+	<Node path="persona/appearance/info" rule="normal-detail and (hair-color:local or hair-style:local or eye-color:local or skin-tone:local)">[They.capital] [have] [!list:[@hair];[@eyes];[@skin-tone.lower]].</Node>
+	<Node path="persona/appearance/info" rule="more">{more}.</Node>
 	
 	<!-- Traits -->
 	<Attribute style="list" order="400" rule="normal-detail">

@@ -1,4 +1,4 @@
-﻿<Ginger version="1.0">
+﻿<Ginger version="1.1">
 	<!-- Preamble -->
 	<Name>Relationship/Antagonistic</Name>
 	<Title>Antagonistic relationship</Title>
@@ -16,6 +16,10 @@
 		<Option id="worst-enemy">Worst enemy</Option>
 	</Choice>
 	
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
+	
 	<!-- Output -->	
 	<Node path="persona/relationship/antagonistic" rule="unfriendly">
 		[char] and [user] are not on good terms with each other.
@@ -31,6 +35,8 @@
 	<Node path="persona/relationship/antagonistic" rule="worst-enemy">
 		[char] and [user] are sworn enemies, destined to fight until one of them emerges victorious.
 		[char's] hatred for [user] is immense, and [they] would rather see [#them] dead.
-	</Node>	
+	</Node>
+	
+	<Node path="persona/relationship/antagonistic" rule="more">{more}.</Node>
 	
 </Ginger>
