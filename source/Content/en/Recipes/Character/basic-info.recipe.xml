@@ -67,7 +67,7 @@
 		<Value>{age}</Value>
 	</Attribute>
 	
-	<Node path="description/age" rule="age:local and more-detail and not immortal" order="0" mode="exclude">[char] is [a] {age.numeral} year old [race?{gender} {race.lower}|[@age-group]].</Node>
+	<Node path="persona/description/age" rule="age:local and more-detail and not immortal" order="0" mode="exclude">[char] is [a] {age.numeral} year old [race?{gender} {race.lower}|[@age-group]].</Node>
 
 	<!-- Nationality -->
 	<Attribute rule="nationality:local">
@@ -82,6 +82,6 @@
 	</Attribute>
 
 	<!-- Background -->
-	<Node path="description/background" order="100" rule="background">{background}.</Node>
+	<Node path="persona/description/background" order="100" rule="background">{background}.</Node>
 
 </Ginger>

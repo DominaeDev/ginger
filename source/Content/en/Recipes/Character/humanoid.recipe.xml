@@ -130,35 +130,35 @@
 		<String rule="skin-metallic" priority="1">is shiny and metallic</String>	
 		<String rule="skin-tone">is a shade of {skin-tone.lower}</String>
 	</String>
-	<Node path="appearance/body" order="0" rule="skin-tone:local">[Their] skin [@skin-tone].</Node>
+	<Node path="persona/appearance/body" order="0" rule="skin-tone:local">[Their] skin [@skin-tone].</Node>
 	
 	<!-- Features -->
-	<Node path="appearance/features" rule="wings">
+	<Node path="persona/appearance/features" rule="wings">
 		Protuding from [their] back is a pair of large wings.
 	</Node>
-	<Node path="appearance/features" rule="tail">
+	<Node path="persona/appearance/features" rule="tail">
 		The [thick-fur?large, fluffy|prominent] tail that curls down to [their] knees only emphasizes [their] inhumanity.
 	</Node>
-	<Node path="appearance/features" rule="ears and not (rodent or avian or reptile)">
+	<Node path="persona/appearance/features" rule="ears and not (rodent or avian or reptile)">
 		[Their] [animal.lower] ears stand pert and alert [primary-color and secondary-color?, with a [thick-fur?fluffy] {secondary-color.lower} interior and [thick-fur?fluffy] {primary-color.lower} exterior].
 	</Node>
-	<Node path="appearance/features" rule="ears and rodent">
+	<Node path="persona/appearance/features" rule="ears and rodent">
 		[Their] [animal.lower] ears are big, round, and pink.
 	</Node>
-	<Node path="appearance/features" rule="claws and not fangs">
+	<Node path="persona/appearance/features" rule="claws and not fangs">
 		[They] [has] an impressive set of claws on [their] hands.
 	</Node>
-	<Node path="appearance/features" rule="fangs and not claws">
+	<Node path="persona/appearance/features" rule="fangs and not claws">
 		[Their] sharp teeth and fangs grant[s] [them] an imposing snarl, should [they] choose[s] to bare them.
 	</Node>
-	<Node path="appearance/features" rule="hooves">
+	<Node path="persona/appearance/features" rule="hooves">
 		[They] stand firmly on a set of hooves.
 	</Node>	
-	<Node path="appearance/features" rule="horn or horns">
+	<Node path="persona/appearance/features" rule="horn or horns">
 		The top of [their] head is adorned by [horns?prominent horns|a prominent horn].
 	</Node>
 	
 	<!-- More -->
-	<Node path="appearance/body" order="0" rule="more">{more}.</Node>
+	<Node path="persona/appearance/body" order="0" rule="more">{more}.</Node>
 			
 </Ginger>

@@ -1,4 +1,4 @@
-<Ginger id="knotted-penis" version="1.0">
+<Ginger id="knotted-penis" version="1.1">
 	<Name>Anatomy/Intimate parts/Knotted penis</Name>
 	<Description>The character has a knotted penis.</Description>
 	<Category>Body</Category>
@@ -12,6 +12,10 @@
 		<Placeholder>Length</Placeholder>
 		<Default>10 in</Default>
 	</Number>
+		
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>	
 
 	<!-- Output -->	
 	<Attribute style="comma" rule="less-detail">
@@ -41,7 +45,9 @@
 		[char] has a large, sheathed canine-like penis that has a bulbous knot near the base. 
 		[Their] penis is [penis-length?{penis-length.inch.value} inches (or {penis-length.cm}) long,] smooth and mottled with veins running along its length. 
 		During sex, the knot at the base of [their] penis swells up to an enormous girth, forming a tie.
-	</Node>	
+	</Node>
+	
+	<Node path="persona/genitals/knotted" rule="more">{more}.</Node>
 
 	<Lore>
 		<Name>fuck, cock, knot, knotting, tie, cum, cumming, [__support-lore-wildcards?ejacul*|ejaculate]</Name>

@@ -1,4 +1,4 @@
-<Ginger version="1.0">
+<Ginger version="1.1">
 	<Name>Relationship/Romantic</Name>
 	<Title>Romantic relationship</Title>
 	<Description>A romantic relationship to User.</Description>
@@ -13,6 +13,10 @@
 		<Option id="dating">Dating</Option>
 		<Option id="spouse">Spouse</Option>
 	</Choice>
+	
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
 	
 	<!-- Output -->	
 	<String id="spouse">
@@ -30,4 +34,6 @@
 
 	<Node path="persona/relationship/romantic" rule="dating">[@dating]</Node>
 	<Node path="persona/relationship/romantic" rule="spouse">They're married. [@spouse]</Node>
+	
+	<Node path="persona/relationship/romantic" rule="more">{more}.</Node>
 </Ginger>

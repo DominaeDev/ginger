@@ -1,4 +1,4 @@
-<Ginger id="friendship" version="1.0">
+<Ginger id="friendship" version="1.1">
 	<Name>Relationship/Friendly</Name>
 	<Title>Friendly relationship</Title>
 	<Description>A friendly relationship to User.</Description>	
@@ -17,6 +17,10 @@
 		<Option id="roommate">Roommate</Option>
 		<Option id="rival">Rival</Option>
 	</Choice>
+	
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
 	
 	<!-- Output -->	
 	<Node path="persona/relationship/friend" rule="acquaintance">
@@ -48,4 +52,5 @@
 		[char] and [user] have a friendly rivalry between them, challenging each other through friendly competition.
 	</Node>
 	
+	<Node path="persona/relationship/friend" rule="more">{more}.</Node>
 </Ginger>

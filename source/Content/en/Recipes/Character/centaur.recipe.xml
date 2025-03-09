@@ -51,7 +51,7 @@
 	
 	<Toggle id="realism">
 		<Label>Realism</Label>
-		<Default>Yes</Default>
+		<Default>No</Default>
 		<Description>
 			Check this to add further instructions to encourage the character to behave more like a quadruped and less like a human.
 		</Description>

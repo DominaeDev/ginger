@@ -10,19 +10,19 @@
 
 	<!-- System prompt guidelines -->
 	<Node path="system/guidelines" style="number-list" mode="exclude" order="-200">
-		GUIDELINES:  
+		# GUIDELINES:  
 		{inner}
 	</Node>
 
 	<!-- Exceptions block -->
 	<Node path="system/exceptions" style="number-list" mode="exclude" order="-100">
-		EXCEPTIONS:  
+		# EXCEPTIONS:  
 		{inner}  
 	</Node>
 		
 	<!-- Important block -->
 	<Node path="system/important" style="default" mode="exclude" order="-0" rule="not (__bake or __snippet or __tavern or __author-note)">
-		### IMPORTANT:  
+		# IMPORTANT:  
 		{inner}
 	</Node>
 	<Node path="system/important" style="line" mode="exclude" order="-0" rule="__tavern or __author-note"/>
@@ -51,25 +51,48 @@
 	<Node path="persona/attributes/appearance" style="list" order="400">[!__attrib:Appearance]{inner}</Node>
 
 	<!-- Description block -->
-	<Node path="persona/description" style="block" order="600" rule="not multi-character"/>
+	<Node path="persona/description" style="block" order="600" rule="not multi-character and less-detail"/>
+	<Node path="persona/description" style="block" order="600" rule="not multi-character and normal-detail">
+		Description:  
+		{inner}
+	</Node>
 	<Node path="persona/description" style="block" order="600" rule="multi-character">
 		[char's] description:  
 		{inner}
 	</Node>
 
 	<!-- Appearance block -->
-	<Node path="persona/appearance" style="block" order="700" rule="not multi-character"/>
-	<Node path="persona/appearance" style="block" order="700" rule="multi-character">
+	<Node path="persona/appearance" style="block" order="650" rule="not multi-character and less-detail"/>
+	<Node path="persona/appearance" style="block" order="650" rule="not multi-character and normal-detail">
+		Appearance:  
+		{inner}
+	</Node>
+	<Node path="persona/appearance" style="block" order="650" rule="multi-character">
 		[char's] appearance:  
 		{inner}
 	</Node>
 	
-	<!-- Relationship block -->
-	<Node path="persona/relationship" style="block" order="800" rule="not less-detail">
-		[char's] relationship to [user]:  
+	<!-- Sexuality block -->
+	<Node path="persona/sexuality" style="block" order="700" rule="not multi-character and less-detail"/>
+	<Node path="persona/sexuality" style="block" order="700" rule="not multi-character and normal-detail">
+		Sexuality:  
 		{inner}
 	</Node>
-	<Node path="persona/relationship" style="block" order="800" rule="less-detail"/>
+	<Node path="persona/sexuality" style="block" order="700" rule="multi-character">
+		[char's] sexuality:  
+		{inner}
+	</Node>
+	
+	<!-- Relationship block -->
+	<Node path="persona/relationship" style="block" order="750" rule="not multi-character and less-detail"/>
+	<Node path="persona/relationship" style="block" order="750" rule="not multi-character and normal-detail">
+		Relationships:  
+		{inner}
+	</Node>
+	<Node path="persona/relationship" style="block" order="750" rule="multi-character">
+		[char's] relationships:  
+		{inner}
+	</Node>
 	
 	<!-- User persona block -->
 	<Node path="user/attributes" style="line" order="200">
