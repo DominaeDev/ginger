@@ -1113,7 +1113,7 @@ namespace Ginger
 
 		private void ShowRecipeMenu(Recipe.Drawer drawer, Control control, Point point)
 		{
-			Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, true);
+			Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, Generator.Option.None, true);
 
 			ContextMenuStrip menu = new ContextMenuStrip();
 

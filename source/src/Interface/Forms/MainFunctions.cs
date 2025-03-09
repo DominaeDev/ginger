@@ -3000,7 +3000,7 @@ namespace Ginger
 				Current.Card.assets.Validate();
 
 				// Validate recipes
-				Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, true);
+				Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, Generator.Option.None, true);
 				var evalCookie = new EvaluationCookie() { ruleSuppliers = Current.RuleSuppliers };
 				Current.Character.recipes.RemoveAll(r => r.isBase || (r.requires != null && r.requires.Evaluate(context, evalCookie)));
 			}
