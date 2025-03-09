@@ -93,8 +93,8 @@ namespace Ginger
 		Image ArrowLeft { get; }
 		Image ArrowRight { get; }
 		Image LinkConnected { get; }
-		Image LinkDisconnected { get; }
 		Image LinkActive { get; }
+		Image LinkActiveDirty { get; }
 		Image LinkInactive { get; }
 		Image LinkBroken { get; }
 		Image EmbeddedAssets { get; }

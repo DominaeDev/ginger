@@ -1374,15 +1374,23 @@ namespace Ginger
 			{
 				if (Current.HasActiveLink)
 				{
-					statusConnectionIcon.Image = Theme.Current.LinkActive;
-					statusConnectionIcon.ToolTipText = "Connected; Linked";
+					if (Current.Link.isDirty)
+					{
+						statusConnectionIcon.Image = Theme.Current.LinkActiveDirty;
+						statusConnectionIcon.ToolTipText = "Connected; Linked (Unsaved changes)";
+					}
+					else
+					{
+						statusConnectionIcon.Image = Theme.Current.LinkActive;
+						statusConnectionIcon.ToolTipText = "Connected; Linked";
+					}
 				}
 				else if (Current.HasLink)
 				{
 					if (Backyard.HasCharacter(Current.Link.characterId))
 					{
 						statusConnectionIcon.Image = Theme.Current.LinkInactive;
-						statusConnectionIcon.ToolTipText = "Connected; Link broken";
+						statusConnectionIcon.ToolTipText = "Connected; Link inactive";
 					}
 					else
 					{
@@ -1398,16 +1406,8 @@ namespace Ginger
 			}
 			else
 			{
-				if (Current.HasLink)
-				{
-					statusConnectionIcon.Image = Theme.Current.LinkDisconnected;
-					statusConnectionIcon.ToolTipText = "Not connected";
-				}
-				else
-				{
-					statusConnectionIcon.Image = null;
-					statusConnectionIcon.ToolTipText = null;
-				}
+				statusConnectionIcon.Image = null;
+				statusConnectionIcon.ToolTipText = null;
 			}
 
 			// Embedded assets status icon
@@ -1636,6 +1636,7 @@ namespace Ginger
 		{
 			// New actor
 			var newActorMenuItem = new ToolStripMenuItem("New actor");
+			newActorMenuItem.Image = Theme.Current.ActorPortraitAsset;
 			newActorMenuItem.Click += AddSupportingCharacterMenuItem_Click;
 			items.Add(newActorMenuItem);
 

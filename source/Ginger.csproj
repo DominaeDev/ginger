@@ -1119,6 +1119,7 @@
     <None Include="Resources\Icons\Dark\asset_actor.png" />
     <None Include="Resources\Icons\Dark\dark_asset_actor_portrait.png" />
     <None Include="Resources\Icons\Dark\dark_asset_override.png" />
+    <None Include="Resources\Icons\Dark\dark_link_dirty.png" />
     <Content Include="Resources\Icons\Light\arrow_down.png" />
     <Content Include="Resources\Icons\Light\arrow_left.png" />
     <Content Include="Resources\Icons\Light\arrow_right.png" />
@@ -1140,6 +1141,12 @@
     <None Include="Resources\Icons\Light\embedded_assets.png" />
     <Content Include="Resources\Icons\Light\expanded.png" />
     <Content Include="Resources\Icons\Light\folder.png" />
+    <None Include="Resources\Icons\Light\link_active.png" />
+    <None Include="Resources\Icons\Light\link_broken.png" />
+    <None Include="Resources\Icons\Light\link_connected.png" />
+    <None Include="Resources\Icons\Light\link_dirty.png" />
+    <None Include="Resources\Icons\Light\link_disconnected.png" />
+    <None Include="Resources\Icons\Light\link_inactive.png" />
     <Content Include="Resources\Icons\Light\lore.png" />
     <Content Include="Resources\Icons\Light\lore_down.png" />
     <Content Include="Resources\Icons\Light\lore_small.png" />

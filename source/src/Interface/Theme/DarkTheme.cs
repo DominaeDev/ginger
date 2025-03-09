@@ -173,8 +173,8 @@ namespace Ginger
 			public Image ArrowRight => Resources.dark_arrow_right;
 
 			public Image LinkConnected => Resources.dark_link_connected;
-			public Image LinkDisconnected => Resources.dark_link_disconnected;
 			public Image LinkActive => Resources.dark_link_active;
+			public Image LinkActiveDirty => Resources.dark_link_dirty;
 			public Image LinkInactive => Resources.dark_link_inactive;
 			public Image LinkBroken => Resources.dark_link_broken;
 
