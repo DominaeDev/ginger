@@ -1218,7 +1218,7 @@ namespace Ginger
 				var loadError = FileUtil.ImportCharacterFromPNG(filename, out errors);
 				if (loadError == FileUtil.Error.NoDataFound)
 				{
-					MessageBox.Show(string.Format(Resources.error_no_data, Path.GetFileName(filename)), Resources.cap_open_character_card, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show(Resources.error_no_data, Resources.cap_open_character_card, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					ClearStatusBarMessage();
 					return false;
 				}
@@ -1817,7 +1817,7 @@ namespace Ginger
 			outputPreviewSillyTavernMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern;
 			outputPreviewFaradayMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday;
 			outputPreviewPlainTextMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.PlainText;
-			outputPreviewFaradayGroupMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group;
+			outputPreviewFaradayGroupMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty;
 			outputPreviewFaradayGroupMenuItem.Enabled = Current.Characters.Count > 1;
 
 			// Tools
@@ -2126,7 +2126,7 @@ namespace Ginger
 				return;
 
 			Current.SelectedCharacter = characterIndex;
-			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group)
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty)
 				Regenerate(); // Regenerate actor output
 			tabControl.SelectedIndex = 0;
 			recipeList.RecreatePanels();
@@ -2465,7 +2465,7 @@ namespace Ginger
 
 		private void outputPreviewFaradayGroupMenuItem_Click(object sender, EventArgs e)
 		{
-			AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday_Group;
+			AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.FaradayParty;
 			Regenerate();
 			_bShouldRefreshTokenCount = true;
 		}

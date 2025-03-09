@@ -449,7 +449,7 @@ namespace Ginger
 				else
 					sb = new StringBuilder(ToFaraday());
 				break;
-			case AppSettings.Settings.OutputPreviewFormat.Faraday_Group:
+			case AppSettings.Settings.OutputPreviewFormat.FaradayParty:
 				sb = new StringBuilder(ToFaraday());
 				string[] characterNames = Current.Characters.Select(c => c.spokenName).ToArray();
 				for (int i = 0; i < characterNames.Length; ++i)

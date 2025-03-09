@@ -30,7 +30,7 @@ namespace Ginger
 				options |= Generator.Option.SillyTavernV2;
 
 			Generator.Output output;
-			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group)
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty)
 			{
 				var outputs = Generator.GenerateMany(options);
 				output = outputs[Current.SelectedCharacter];
@@ -394,6 +394,12 @@ namespace Ginger
 			else if (error == FileUtil.Error.UnrecognizedFormat)
 			{
 				MessageBox.Show(Resources.error_unrecognized_character_format, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+			else if (error == FileUtil.Error.NoDataFound)
+			{
+				MessageBox.Show(Resources.error_no_data, Resources.cap_open_character_card, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				ClearStatusBarMessage();
 				return false;
 			}
 
@@ -3092,7 +3098,7 @@ namespace Ginger
 			Current.SelectedCharacter = Math.Min(Math.Max(Current.SelectedCharacter, 0), Current.Characters.Count - 1);
 			Current.IsDirty = true;
 
-			if (Current.Characters.Count < 2 && AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group)
+			if (Current.Characters.Count < 2 && AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty)
 				AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday;
 			return true;
 		}

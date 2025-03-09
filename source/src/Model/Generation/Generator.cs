@@ -325,7 +325,7 @@ namespace Ginger
 						context.SetFlag("__ginger");
 						break;
 					case AppSettings.Settings.OutputPreviewFormat.Faraday:
-					case AppSettings.Settings.OutputPreviewFormat.Faraday_Group:
+					case AppSettings.Settings.OutputPreviewFormat.FaradayParty:
 						context.SetFlag("__backyard");
 						 context.SetFlag("__faraday");
 						break;
