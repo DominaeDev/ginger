@@ -1799,6 +1799,20 @@ namespace Ginger
 			}
 		}
 
+		// Strong indicators
+		private static string[] _strong_words = new string[] { 
+			"hermaphrodite", "futanari", "dickgirl", "shemale", "dick-girl", "she-male", "newhalf", 
+			"transgender", "trans-gender", "transsexual", "trans-sexual", 
+			"non-binary", "nonbinary", "intersex", };
+
+		private static string[] _explicit_genders = new string[] { 
+			"none", "genderless", "undefined", "n/a", 
+			"futa", 
+			"trans",
+			"female", "woman", 
+			"male", "man", 
+			};
+
 		public static string InferGender(string persona, bool isUser = false)
 		{
 			if (string.IsNullOrEmpty(persona))
@@ -1806,19 +1820,20 @@ namespace Ginger
 
 			persona = persona.ToLowerInvariant();
 
-			// Strong indicators
-			if (FindAnyWord(persona, new string[] { "hermaphrodite" }, 0, StringComparison.Ordinal) != -1)
-				return "Hermaphrodite";
-			if (FindAnyWord(persona, new string[] { "futanari", "dickgirl", "shemale", "dick-girl", "she-male", "newhalf" }, 0, StringComparison.Ordinal) != -1)
-				return "Futanari";
-			if (FindAnyWord(persona, new string[] { "transgender", "trans-gender", "transsexual", "trans-sexual" }, 0, StringComparison.Ordinal) != -1)
-				return "Transgender";
-			if (FindAnyWord(persona, new string[] { "non-binary", "nonbinary", "intersex" }, 0, StringComparison.Ordinal) != -1)
-				return "Non-binary";
+			int idx_strong = FindAnyWord(persona, _strong_words, 0, StringComparison.Ordinal);
+			if (idx_strong != -1)
+			{
+				if (idx_strong < 7)
+					return "Hermaphrodite";
+				else if (idx_strong < 11)
+					return "Transgender";
+				else
+					return "Non-binary";
+			}
 
 			// Split text into lines/sentences, skipping any that mention the user
 			string[] lines = persona
-				.Split(new char[] { '\r', '\n', '.', ',' }, StringSplitOptions.RemoveEmptyEntries)
+				.Split(new char[] { '\n', '.', ',' }, StringSplitOptions.RemoveEmptyEntries)
 				.Where(s => isUser || s.Contains("{user}") == false)
 				.ToArray();
 
@@ -1832,17 +1847,20 @@ namespace Ginger
 				int pos_gender = FindWholeWord(lines[i], "gender", 0, StringComparison.Ordinal, WholeWordOptions.None);
 				if (pos_gender != -1)
 				{
-					var line = lines[i];
-					if (Scan(line, pos_gender, "none", "genderless", "undefined", "n/a"))
-						return null;
-					if (Scan(line, pos_gender, "futa"))
-						return "Futanari";
-					if (Scan(line, pos_gender, "female", "woman"))
-						return "Female";
-					if (Scan(line, pos_gender, "male", "man"))
-						return "Male";
-					if (Scan(line, pos_gender, "trans"))
-						return "Transgender";
+					int idx_gender = FindAnyWord(lines[i], _explicit_genders, pos_gender, StringComparison.Ordinal);
+					if (idx_gender != -1)
+					{
+						if (idx_gender < 4)
+							return null;
+						else if (idx_gender < 5)
+							return "Futanari";
+						else if (idx_gender < 6)
+							return "Transgender";
+						else if (idx_gender < 8)
+							return "Female";
+						else
+							return "Male";
+					}
 				}
 			}
 
@@ -1895,27 +1913,26 @@ namespace Ginger
 			}
 
 			return null; // None (or Neutral)
-
-			bool ScanFirst(string text, ref int index, params string[] words)
-			{
-				int found = FindFirstWholeWord(text, words, 0, StringComparison.Ordinal, WholeWordOptions.None);
-				if (found == -1)
-					return false;
-
-				if (index == -1 || found < index)
-				{
-					index = found;
-					return true;
-				}
-				return false;
-			}
-
-			bool Scan(string text, int pos, params string[] words)
-			{
-				return FindAnyWord(text, words, pos, StringComparison.Ordinal) != -1;
-			}
 		}
 
+		private static bool ScanFirst(string text, ref int index, params string[] words)
+		{
+			int found = FindFirstWholeWord(text, words, 0, StringComparison.Ordinal, WholeWordOptions.None);
+			if (found == -1)
+				return false;
+
+			if (index == -1 || found < index)
+			{
+				index = found;
+				return true;
+			}
+			return false;
+		}
+
+		private static bool Scan(string text, int pos, params string[] words)
+		{
+			return FindAnyWord(text, words, pos, StringComparison.Ordinal) != -1;
+		}
 
 		public static string CreateRandomFilename(string ext)
 		{
@@ -1990,5 +2007,4 @@ namespace Ginger
 			return destImage;
 		}
 	}
-
 }
