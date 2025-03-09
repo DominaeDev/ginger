@@ -1430,7 +1430,7 @@ namespace Ginger
 			return found.ToArray();
 		}
 
-		public static int FindFirstWholeWord(string text, string[] words, StringComparison comparison = StringComparison.Ordinal, WholeWordOptions options = WholeWordOptions.Default)
+		public static int FindFirstWholeWord(string text, string[] words, int startPos = 0, StringComparison comparison = StringComparison.Ordinal, WholeWordOptions options = WholeWordOptions.Default)
 		{
 			if (words == null || words.Length == 0)
 				return -1;
@@ -1438,7 +1438,7 @@ namespace Ginger
 			int found = int.MaxValue;
 			for (int i = 0; i < words.Length; ++i)
 			{
-				int index = Math.Min(found, FindWholeWord(text, words[i], 0, comparison, options));
+				int index = Math.Min(found, FindWholeWord(text, words[i], startPos, comparison, options));
 				if (index >= 0)
 					found = Math.Min(found, index);
 			}
@@ -1448,14 +1448,14 @@ namespace Ginger
 			return -1;
 		}
 
-		public static int FindAnyWord(string text, string[] words, StringComparison comparison = StringComparison.Ordinal)
+		public static int FindAnyWord(string text, string[] words, int startPos = 0, StringComparison comparison = StringComparison.Ordinal)
 		{
 			if (words == null || words.Length == 0)
 				return -1;
 
 			for (int i = 0; i < words.Length; ++i)
 			{
-				int index = text.IndexOf(words[i], comparison);
+				int index = text.IndexOf(words[i], startPos, comparison);
 				if (index != -1)
 					return i;
 			}
@@ -1813,25 +1813,45 @@ namespace Ginger
 
 			persona = persona.ToLowerInvariant();
 
-			// Unambiguous indicators
-			if (FindAnyWord(persona, new string[] { "hermaphrodite" }, StringComparison.Ordinal) != -1)
+			// Strong indicators
+			if (FindAnyWord(persona, new string[] { "hermaphrodite" }, 0, StringComparison.Ordinal) != -1)
 				return "Hermaphrodite";
-			if (FindAnyWord(persona, new string[] { "futanari", "dickgirl", "shemale", "dick-girl", "she-male", "newhalf" }, StringComparison.Ordinal) != -1)
+			if (FindAnyWord(persona, new string[] { "futanari", "dickgirl", "shemale", "dick-girl", "she-male", "newhalf" }, 0, StringComparison.Ordinal) != -1)
 				return "Futanari";
-			if (FindAnyWord(persona, new string[] { "transgender", "transsexual" }, StringComparison.Ordinal) != -1)
+			if (FindAnyWord(persona, new string[] { "transgender", "trans-gender", "transsexual", "trans-sexual" }, 0, StringComparison.Ordinal) != -1)
 				return "Transgender";
-			if (FindAnyWord(persona, new string[] { "non-binary", "nonbinary", "intersex" }, StringComparison.Ordinal) != -1)
+			if (FindAnyWord(persona, new string[] { "non-binary", "nonbinary", "intersex" }, 0, StringComparison.Ordinal) != -1)
 				return "Non-binary";
 
-			// Split text into lines/sentences
+			// Split text into lines/sentences, skipping any that mention the user
 			string[] lines = persona
-				.Split(new char[] { '\n', '.' }, StringSplitOptions.RemoveEmptyEntries)
+				.Split(new char[] { '\r', '\n', '.', ',' }, StringSplitOptions.RemoveEmptyEntries)
 				.Where(s => isUser || s.Contains("{user}") == false)
 				.ToArray();
 
 			string primaryGuess = null;
 			string secondaryGuess = null;
 			string tertiaryGuess = null;
+
+			// Find explicit gender
+			for (int i = 0; i < lines.Length; ++i)
+			{
+				int pos_gender = FindWholeWord(lines[i], "gender", 0, StringComparison.Ordinal, WholeWordOptions.None);
+				if (pos_gender != -1)
+				{
+					var line = lines[i];
+					if (Scan(line, pos_gender, "none", "genderless", "undefined", "n/a"))
+						return null;
+					if (Scan(line, pos_gender, "futa"))
+						return "Futanari";
+					if (Scan(line, pos_gender, "female", "woman"))
+						return "Female";
+					if (Scan(line, pos_gender, "male", "man"))
+						return "Male";
+					if (Scan(line, pos_gender, "trans"))
+						return "Transgender";
+				}
+			}
 
 			// Primary indicators
 			for (int i = 0; i < lines.Length; ++i)
@@ -1840,32 +1860,36 @@ namespace Ginger
 
 				if (primaryGuess == null)
 				{
-					int index = -1;
-					if (Scan(line, ref index, "futa"))
+					int cookie = -1;
+					if (ScanFirst(line, ref cookie, "futa"))
 						return "Futanari";
-					if (Scan(line, ref index, "male", "man", "boy"))
+					if (ScanFirst(line, ref cookie, "male", "man", "boy"))
 						primaryGuess = "Male";
-					if (Scan(line, ref index, "female", "woman", "girl"))
+					if (ScanFirst(line, ref cookie, "female", "woman", "girl"))
 						primaryGuess = "Female";
-					if (Scan(line, ref index, "trans"))
+					if (ScanFirst(line, ref cookie, "trans"))
 						primaryGuess = "Transgender";
+					if (ScanFirst(line, ref cookie, "assistant", "story teller", "dungeon master", "narrator", "narration", "narrates", "narrate"))
+						return null;
 				}
 
 				if (secondaryGuess == null)
 				{
-					int index = -1;
-					if (Scan(line, ref index, "he", "him", "himself", "his"))
+					int cookie = -1;
+					if (ScanFirst(line, ref cookie, "his or her"))
+						secondaryGuess = null;
+					if (ScanFirst(line, ref cookie, "he", "him", "himself", "his"))
 						secondaryGuess = "Male";
-					if (Scan(line, ref index, "she", "her", "herself", "hers"))
+					if (ScanFirst(line, ref cookie, "she", "her", "herself", "hers"))
 						secondaryGuess = "Female";
 				}
 
 				if (tertiaryGuess == null)
 				{
-					int index = -1;
-					if (Scan(line, ref index, "boyfriend", "husband", "father", "dad", "son", "patriarch", "incubus", "master", "gentleman"))
+					int cookie = -1;
+					if (ScanFirst(line, ref cookie, "boyfriend", "husband", "father", "dad", "daddy", "son", "patriarch", "incubus", "master", "gentleman"))
 						tertiaryGuess = "Male";
-					if (Scan(line, ref index, "girlfriend", "wife", "waifu", "mother", "mom", "milf", "daughter", "matron", "matriarch", "succubus", "mistress", "lady"))
+					if (ScanFirst(line, ref cookie, "girlfriend", "wife", "waifu", "mother", "mom", "mommy", "milf", "daughter", "matron", "matriarch", "succubus", "mistress", "lady"))
 						tertiaryGuess = "Female";
 				}
 
@@ -1878,21 +1902,27 @@ namespace Ginger
 			}
 
 			return null; // None (or Neutral)
-		}
 
-		private static bool Scan(string text, ref int index, params string[] words)
-		{
-			int found = FindFirstWholeWord(text, words, StringComparison.Ordinal, WholeWordOptions.None);
-			if (found == -1)
-				return false;
-
-			if (index == -1 || found < index)
+			bool ScanFirst(string text, ref int index, params string[] words)
 			{
-				index = found;
-				return true;
+				int found = FindFirstWholeWord(text, words, 0, StringComparison.Ordinal, WholeWordOptions.None);
+				if (found == -1)
+					return false;
+
+				if (index == -1 || found < index)
+				{
+					index = found;
+					return true;
+				}
+				return false;
 			}
-			return false;
+
+			bool Scan(string text, int pos, params string[] words)
+			{
+				return FindAnyWord(text, words, pos, StringComparison.Ordinal) != -1;
+			}
 		}
+
 
 		public static string CreateRandomFilename(string ext)
 		{
