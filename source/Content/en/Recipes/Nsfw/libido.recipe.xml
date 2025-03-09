@@ -1,4 +1,4 @@
-<Ginger id="libido" version="1.1">
+<Ginger id="libido" version="1.2">
 	<Name>Sexuality/Libido</Name>
 	<Category>Sexual</Category>
 	<Author>Ginger</Author>
@@ -21,13 +21,17 @@
 		<Option>Average</Option>
 		<Option>High</Option>
 	</Choice>
-
+	
 	<SetFlag rule="experience is none">Virgin</SetFlag>
 	
 	<List id="sexual-likes">
 		<Label>Sexual kinks</Label>
 		<Placeholder>Enter one or more kinks, separated by commas</Placeholder>
 	</List>
+		
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
 	
 	<!-- Output -->	
 	<Attribute>
@@ -40,20 +44,22 @@
 		<Value>{experience}</Value>
 	</Attribute>
 	
+	<Node path="persona/sexuality/libido" rule="libido is none">[char] has no interest in sex whatsoever. It never crosses [their] mind.</Node>
+	<Node path="persona/sexuality/libido" rule="libido is low">[char] cares little about sex and would rather not.</Node>
+	<Node path="persona/sexuality/libido" rule="libido is moderate">[char's] has an average appetite for sex.</Node>
+	<Node path="persona/sexuality/libido" rule="libido is high">[char] has a strong appetite for sex and is open about [their] sexual desires.</Node>
+	<Node path="persona/sexuality/libido" rule="libido is insatiable">[char] has an incredibly strong appetite for sex and is upfront and honest about [their] sexual desires. In bed, [they] [are] insatiable and tireless.</Node>
 	
-	<Node path="description/libido" rule="libido is none">[char] has no interest in sex whatsoever. It never crosses [their] mind.</Node>
-	<Node path="description/libido" rule="libido is low">[char] cares little about sex and would rather not.</Node>
-	<Node path="description/libido" rule="libido is moderate">[char's] has an average appetite for sex.</Node>
-	<Node path="description/libido" rule="libido is high">[char] has a strong appetite for sex and is open about [their] sexual desires.</Node>
-	<Node path="description/libido" rule="libido is insatiable">[char] has an incredibly strong appetite for sex and is upfront and honest about [their] sexual desires. In bed, [they] [are] insatiable and tireless.</Node>
+	<Node path="persona/sexuality/sex-exp" rule="experience is none">[char] is a virgin.</Node>
+	<Node path="persona/sexuality/sex-exp" rule="experience is low">[char] has only had sex once, maybe twice, in [their] life.</Node>
+	<Node path="persona/sexuality/sex-exp" rule="experience is average">[char] has had multiple sexual parters before.</Node>
+	<Node path="persona/sexuality/sex-exp" rule="experience is high">[char] has had sex many times with several partners in [their] past.</Node>
 	
-	<Node path="description/sex-exp" rule="experience is none">[char] is a virgin.</Node>
-	<Node path="description/sex-exp" rule="experience is low">[char] has only had sex once, maybe twice, in [their] life.</Node>
-	<Node path="description/sex-exp" rule="experience is average">[char] has had multiple sexual parters before.</Node>
-	<Node path="description/sex-exp" rule="experience is high">[char] has had sex many times with several partners in [their] past.</Node>
+	<Node path="persona/sexuality/sex-likes" rule="sexual-likes">During sex, [char] is especially into [!list:{sexual-likes}].</Node>
+
+	<Node path="persona/sexuality/more" rule="more">{more}.</Node>
 	
-	<Node path="description/sex-likes" rule="sexual-likes">During sex, [char] especially enjoys [!list:{sexual-likes}].</Node>
-	
+	<!-- Descriptor -->
 	<Adjective order="quality" rule="libido:index is 3">horny</Adjective>
 	<Adjective order="quality" rule="libido:index is 4">insatiable</Adjective>
 </Ginger>

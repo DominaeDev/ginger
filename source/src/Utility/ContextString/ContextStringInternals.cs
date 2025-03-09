@@ -119,6 +119,19 @@ namespace Ginger
 		public static int MaxStackDepth = 100;
 		public bool haltParsing = false;
 
+		public ContextString.EvaluationConfig evalConfig
+		{
+			get
+			{
+				return new ContextString.EvaluationConfig() {
+					macroSuppliers = macroSuppliers,
+					referenceSuppliers = referenceStringBanks,
+					valueSuppliers = valueSuppliers,
+					ruleSuppliers = ruleSuppliers,
+				};
+			}
+		}
+
 		private Internal_Context()
 		{
 		}

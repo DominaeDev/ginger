@@ -281,6 +281,7 @@ namespace Ginger
 				if (eChannel == Recipe.Component.Greeting)
 				{
 					greetings = outputPerCharacter
+						.Where(o => o.greetings != null)
 						.SelectMany(o => o.greetings)
 						.Where(g => g.IsNullOrEmpty() == false)
 						.ToArray(); 
@@ -288,6 +289,7 @@ namespace Ginger
 				else if (eChannel == Recipe.Component.Greeting_Group)
 				{
 					group_greetings = outputPerCharacter
+						.Where(o => o.group_greetings != null)
 						.SelectMany(o => o.group_greetings)
 						.Where(g => g.IsNullOrEmpty() == false)
 						.ToArray(); 

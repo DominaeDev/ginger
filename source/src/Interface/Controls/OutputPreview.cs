@@ -49,13 +49,13 @@ namespace Ginger
 				string original = FaradayCardV4.OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)];
 				if (string.IsNullOrWhiteSpace(outputSystem) == false)
 				{
-					int pos_original = outputSystem.IndexOf("{original}", 0);
+					int pos_original = outputSystem.IndexOf(GingerString.OriginalMarker, 0);
 					if (pos_original != -1)
 					{
 						var sbSystem = new StringBuilder(outputSystem);
 						sbSystem.Remove(pos_original, 10);
 						sbSystem.Insert(pos_original, original);
-						sbSystem.Replace("{original}", ""); // Only once
+						sbSystem.Replace(GingerString.OriginalMarker, ""); // Only once
 						outputSystem = sbSystem.ToString();
 					}
 				}
@@ -353,13 +353,13 @@ namespace Ginger
 					outputSystem = original;
 				else
 				{
-					int pos_original = outputSystem.IndexOf("{original}", 0);
+					int pos_original = outputSystem.IndexOf(GingerString.OriginalMarker, 0);
 					if (pos_original != -1)
 					{
 						var sbSystem = new StringBuilder(outputSystem);
 						sbSystem.Remove(pos_original, 10);
 						sbSystem.Insert(pos_original, original);
-						sbSystem.Replace("{original}", ""); // Only once
+						sbSystem.Replace(GingerString.OriginalMarker, ""); // Only once
 						outputSystem = sbSystem.ToString();
 					}
 				}
@@ -429,13 +429,13 @@ namespace Ginger
 					outputSystem = original;
 				else
 				{
-					int pos_original = outputSystem.IndexOf("{original}", 0);
+					int pos_original = outputSystem.IndexOf(GingerString.OriginalMarker, 0);
 					if (pos_original != -1)
 					{
 						var sbSystem = new StringBuilder(outputSystem);
 						sbSystem.Remove(pos_original, 10);
 						sbSystem.Insert(pos_original, original);
-						sbSystem.Replace("{original}", ""); // Only once
+						sbSystem.Replace(GingerString.OriginalMarker, ""); // Only once
 						outputSystem = sbSystem.ToString();
 					}
 				}

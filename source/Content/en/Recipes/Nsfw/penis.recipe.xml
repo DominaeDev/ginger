@@ -1,4 +1,4 @@
-<Ginger id="penis" version="1.0">
+<Ginger id="penis" version="1.1">
 	<Name>Anatomy/Intimate parts/Penis</Name>
 	<Title>Penis</Title>
 	<Description>Describe the character's penis.</Description>
@@ -15,6 +15,10 @@
 	</Number>
 	<SetVar id="penis-length">{penis-length:value}</SetVar>
 	
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
+	
 	<!-- Output -->	
 	
 	<!-- Low detail -->
@@ -24,4 +28,6 @@
 	<Node path="persona/attributes/genitals" style="comma" rule="normal-detail">Genitals: {inner}</Node>
 	<Node path="persona/attributes/genitals/penis" rule="normal-detail">Penis [penis-length?({penis-length.in.value} inches / {penis-length.cm} long)]</Node>
 	<Node path="persona/attributes/genitals/other" rule="more-detail">Testicles, Balls, Scrotum, Anus</Node>
+	
+	<Node path="persona/appearance/genitals" rule="more">{more}.</Node>
 </Ginger>

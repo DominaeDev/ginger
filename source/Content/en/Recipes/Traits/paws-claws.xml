@@ -12,7 +12,7 @@
 	<!-- Output -->	
 	<Node path="system/exceptions/paws">[char] has paws for hands.</Node>
 	
-	<Node path="appearance/body">
+	<Node path="persona/appearance/body">
 		[They] [has] large, fuzzy paws [claws?that hide an array of razor-sharp claws].
 	</Node>	
 </Ginger>

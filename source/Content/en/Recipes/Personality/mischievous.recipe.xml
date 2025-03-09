@@ -9,7 +9,7 @@
 		<Value>mischievous, cheeky</Value>
 	</Attribute>
 	
-	<Node path="description/mischievous">[char] is unrelenting, bratty, cheeky, and childish.</Node>
+	<Node path="persona/description/mischievous">[char] is unrelenting, bratty, cheeky, and childish.</Node>
 	
 	<Attribute>
 		<Name>Likes</Name>

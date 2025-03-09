@@ -12,17 +12,18 @@ namespace Ginger.Integration
 {
 	public struct CharacterInstance
 	{
-		public string instanceId;       // CharacterConfig.id
-		public DateTime creationDate;   // CharacterConfig.createdAt
-		public DateTime updateDate;     // CharacterConfig.updatedAt
-		public bool isUser;             // CharacterConfig.isUserControlled
-		public string configId;         // CharacterConfigVersion.id
-		public string displayName;      // CharacterConfigVersion.displayName
-		public string name;             // CharacterConfigVersion.name
-		public string groupId;          // GroupConfig.id (Primary group)
-		public string folderId;         // GroupConfig.folderId (Primary group)
-		public string creator;          // GroupConfig.hubAuthorUsername
-		public string persona;          // CharacterConfigVersion.persona
+		public string instanceId;			// CharacterConfig.id
+		public DateTime creationDate;		// CharacterConfig.createdAt
+		public DateTime updateDate;			// CharacterConfig.updatedAt
+		public bool isUser;					// CharacterConfig.isUserControlled
+		public string configId;				// CharacterConfigVersion.id
+		public string displayName;			// CharacterConfigVersion.displayName
+		public string name;					// CharacterConfigVersion.name
+		public string groupId;				// GroupConfig.id (Primary group)
+		public string folderId;				// GroupConfig.folderId (Primary group)
+		public string folderSortPosition;	// GroupConfig.folderSortPosition (Primary group)
+		public string creator;				// GroupConfig.hubAuthorUsername
+		public string persona;				// CharacterConfigVersion.persona
 		public int loreEntries;
 
 		public bool isCharacter { get { return !isUser; } }
@@ -35,7 +36,8 @@ namespace Ginger.Integration
 		public string name;					// GroupConfig.name
 		public string folderId;				// GroupConfig.folderId
 		public string hubCharId;			// GroupConfig.hubCharId
-		public string hubAuthorUsername;	// GroupConfig.hubAuthorUsername
+		public string hubAuthorUsername;    // GroupConfig.hubAuthorUsername
+		public string folderSortPosition;	// GroupConfig.folderSortPosition
 		public DateTime creationDate;		// CharacterConfig.createdAt
 		public DateTime updateDate;			// CharacterConfig.updatedAt
 		public string[] members;			// CharacterConfigVersion.id ...
@@ -629,6 +631,15 @@ namespace Ginger.Integration
 
 					// Compare database structure with known tables
 					var validationTable = BackyardValidation.TablesByVersion[DatabaseVersion];
+
+					// Ignore tables we know of but don't care about
+					var ignoredTables = validationTable
+						.Where(t => t.Length == 1)
+						.Select(t => t[0])
+						.ToArray();
+					foundTables.ExceptWith(ignoredTables);
+					validationTable = validationTable.Where(t => t.Length > 1).ToArray();
+
 					if (AppSettings.BackyardLink.Strict && foundTables.Count != validationTable.Length)
 					{
 						LastError = "Validation failed";
@@ -663,9 +674,6 @@ namespace Ginger.Integration
 								}
 							}
 						}
-
-						if (expectedNames.Length == 0 && foundColumns.Count > 0)
-							continue; // A table we want to exist, but don't care about its columns/contents
 
 						if ((AppSettings.BackyardLink.Strict && foundColumns.Count != expectedNames.Length)
 							|| foundColumns.Count < expectedNames.Length)
@@ -719,7 +727,7 @@ namespace Ginger.Integration
 			{
 				Disconnect();
 				LastError = e.Message;
-				return Error.ValidationFailed;
+				return Error.Unknown;
 			}
 			catch (Exception e)
 			{
@@ -834,7 +842,7 @@ namespace Ginger.Integration
 						cmdGroupData.CommandText =
 						@"
 							SELECT 
-								id, createdAt, updatedAt, name, folderId, hubCharId, hubAuthorUsername
+								id, createdAt, updatedAt, name, folderId, folderSortPosition, hubCharId, hubAuthorUsername
 							FROM GroupConfig
 						";
 
@@ -847,8 +855,9 @@ namespace Ginger.Integration
 								DateTime updatedAt = reader.GetTimestamp(2);
 								string name = reader.GetString(3);
 								string folderId = reader.GetString(4);
-								string hubCharId = reader[5] as string;
-								string hubAuthorUsername = reader[6] as string;
+								string folderSortPosition = reader.GetString(5);
+								string hubCharId = reader[6] as string;
+								string hubAuthorUsername = reader[7] as string;
 
 								HashSet<string> members;
 								if (groupMembers.TryGetValue(instanceId, out members) == false)
@@ -861,6 +870,7 @@ namespace Ginger.Integration
 										creationDate = createdAt,
 										updateDate = updatedAt,
 										folderId = folderId,
+										folderSortPosition = folderSortPosition,
 										hubCharId = hubCharId,
 										hubAuthorUsername = hubAuthorUsername,
 										members = members.ToArray(),
@@ -929,6 +939,7 @@ namespace Ginger.Integration
 								// Get group info
 								GroupInstance groupInstance = GetGroupForCharacter(instanceId);
 								string folderId = groupInstance.folderId;
+								string folderSortPosition = groupInstance.folderSortPosition;
 								string hubCharId = groupInstance.hubCharId;
 								string hubAuthorUsername = groupInstance.hubAuthorUsername;
 
@@ -946,6 +957,7 @@ namespace Ginger.Integration
 										loreEntries = numLoreEntries,
 										creator = hubAuthorUsername ?? "",
 										folderId = folderId,
+										folderSortPosition = folderSortPosition,
 									});
 							}
 						}
@@ -1488,6 +1500,7 @@ namespace Ginger.Integration
 					string[] chatIds = null;
 					string defaultModel = null;
 					ChatParameters chatParameters = AppSettings.BackyardSettings.UserSettings;
+					string folderSortPosition = null;
 
 					// Fetch default user
 					if (FetchDefaultUser(connection, out userId) == false)
@@ -1512,6 +1525,7 @@ namespace Ginger.Integration
 						";
 						cmdFolderOrder.Parameters.AddWithValue("$folderId", parentFolder.instanceId);
 						folderOrder = cmdFolderOrder.ExecuteScalar() as string;
+						folderSortPosition = MakeFolderSortPosition(SortPosition.Before, folderOrder);
 					}
 
 					// Write to database
@@ -1761,7 +1775,7 @@ namespace Ginger.Integration
 								cmdCreate.Parameters.AddWithValue("$groupName", "");
 								cmdCreate.Parameters.AddWithValue("$persona", card.data.persona ?? "");
 								cmdCreate.Parameters.AddWithValue("$folderId", parentFolder.instanceId ?? "");
-								cmdCreate.Parameters.AddWithValue("$folderSortPosition", MakeFolderSortPosition(SortPosition.Before, folderOrder));
+								cmdCreate.Parameters.AddWithValue("$folderSortPosition", folderSortPosition);
 								cmdCreate.Parameters.AddWithValue("$isNSFW", card.data.isNSFW);
 								cmdCreate.Parameters.AddWithValue("$timestamp", createdAt);
 
@@ -1880,6 +1894,7 @@ namespace Ginger.Integration
 								creationDate = now,
 								updateDate = now,
 								folderId = parentFolder.instanceId,
+								folderSortPosition = folderSortPosition,
 							};
 
 							transaction.Commit();
@@ -6247,7 +6262,7 @@ namespace Ginger.Integration
 			return lsChats.ToArray();
 		}
 
-		private struct _ImageInfo
+		private struct _RepairImageInfo
 		{
 			public string instanceId;
 			public string imageUrl;
@@ -6284,7 +6299,7 @@ namespace Ginger.Integration
 					connection.Open();
 
 					// AppImage
-					var characterImages = new List<_ImageInfo>();
+					var characterImages = new List<_RepairImageInfo>();
 					using (var cmdGetImages = connection.CreateCommand())
 					{
 						cmdGetImages.CommandText =
@@ -6301,7 +6316,7 @@ namespace Ginger.Integration
 								string id = reader.GetString(0);
 								string imageUrl = reader.GetString(1);
 
-								characterImages.Add(new _ImageInfo() {
+								characterImages.Add(new _RepairImageInfo() {
 									instanceId = id,
 									filename = Path.GetFileName(imageUrl),
 									imageUrl = imageUrl,
@@ -6311,7 +6326,7 @@ namespace Ginger.Integration
 					}
 
 					// BackgroundChatImage
-					var backgroundImages = new List<_ImageInfo>();
+					var backgroundImages = new List<_RepairImageInfo>();
 					if (CheckFeature(Feature.ChatBackgrounds))
 					{
 						using (var cmdGetBackgrounds = connection.CreateCommand())
@@ -6330,7 +6345,7 @@ namespace Ginger.Integration
 									string id = reader.GetString(0);
 									string imageUrl = reader.GetString(1);
 
-									backgroundImages.Add(new _ImageInfo() {
+									backgroundImages.Add(new _RepairImageInfo() {
 										instanceId = id,
 										filename = Path.GetFileName(imageUrl),
 										imageUrl = imageUrl,
@@ -6339,6 +6354,10 @@ namespace Ginger.Integration
 							}
 						}
 					}
+
+					// Ignore remote links (hub characters)
+					characterImages.RemoveAll(i => i.imageUrl.BeginsWith("http://") || i.imageUrl.BeginsWith("https://"));
+					backgroundImages.RemoveAll(i => i.imageUrl.BeginsWith("http://") || i.imageUrl.BeginsWith("https://"));
 
 					var modifiedCharacterImages = characterImages
 						.Where(i => foundImages.Contains(i.filename, StringComparer.OrdinalIgnoreCase)
@@ -6362,7 +6381,7 @@ namespace Ginger.Integration
 					skipped = unknownImages.Count;
 					if (modified == 0)
 						return Error.NoError; // No changes
-
+					
 					// Write to database
 					int updates = 0;
 					int expectedUpdates = 0;
@@ -6740,8 +6759,8 @@ namespace Ginger.Integration
 					SELECT
 						A.name, A.persona, C.imageUrl, C.aspectRatio
 					FROM CharacterConfigVersion as A
-					INNER JOIN _AppImageToCharacterConfigVersion AS B ON B.B = A.id
-					INNER JOIN AppImage AS C ON C.id = B.A
+					LEFT JOIN _AppImageToCharacterConfigVersion AS B ON B.B = A.id
+					LEFT JOIN AppImage AS C ON C.id = B.A
 					WHERE characterConfigId = $userId
 				";
 				cmdBaseUser.Parameters.AddWithValue("$userId", templateUserId);

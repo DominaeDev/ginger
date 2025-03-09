@@ -248,10 +248,10 @@ namespace Ginger
 		{
 			int tokens = Current.Card.tokens;
 			int permanent_tokens;
-			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
-				permanent_tokens = Current.Card.permanentTokensFaraday;
-			else
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern)
 				permanent_tokens = Current.Card.permanentTokensSilly;
+			else
+				permanent_tokens = Current.Card.permanentTokensFaraday;
 
 
 			// Token budget

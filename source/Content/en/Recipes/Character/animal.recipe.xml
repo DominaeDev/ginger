@@ -5,7 +5,7 @@
 	<Author>Ginger</Author>
 	<Category>Archetype</Category>
 	<Requires>not core</Requires>
-	<Flags>core, animal, fur, non-humanoid</Flags>
+	<Flags>core, animal, fur, non-humanoid, detail-optional</Flags>
 	<Order>-200</Order>
 
 	<!-- Complementary recipes -->
@@ -233,54 +233,54 @@
 		<Value>{animal} [breed?({breed})]</Value>
 	</Attribute>
 
-	<Node path="description/animal" order="0" rule="animal">
+	<Node path="persona/description/animal" order="0" rule="animal">
 		[char] is a [tame?tame|feral] {breed.lower} {animal.lower}, [a] [is-quadruped?four-legged] animal with predominantly [{@family.lower}|animalistic] traits and behavior.
 	</Node>
 
-	<Node path="description/animal" rule="can-talk">
+	<Node path="persona/description/animal" rule="can-talk">
 		Despite being [a] [animal?{animal.lower}|animal], [char] is capable of speech [animal?, albeit with a distinct {animal.lower} vocabulary, perspective, and mannerisms].
 	</Node>
 
 	<!-- Skin / Fur -->
-	<Node path="appearance/body" order="0" rule="skin and primary-color">
+	<Node path="persona/appearance/body" order="0" rule="skin and primary-color">
 		[Their] skin [is] {primary-color.lower} [has-pattern?with {@pattern}|{accent}].
 	</Node>
-	<Node path="appearance/body" order="0" rule="coat">
+	<Node path="persona/appearance/body" order="0" rule="coat">
 		[Their] body is covered in a soft [primary-color?, {primary-color.lower}] coat with a subtle sheen [has-pattern?and {@pattern}|{accent}].
 	</Node>
-	<Node path="appearance/body" order="0" rule="short-fur">
+	<Node path="persona/appearance/body" order="0" rule="short-fur">
 		[Their] body is covered in shiny [primary-color?, {primary-color.lower}] fur [has-pattern?with {@pattern}|{accent}], soft to the touch.
 	</Node>
-	<Node path="appearance/body" order="0" rule="thick-fur">
+	<Node path="persona/appearance/body" order="0" rule="thick-fur">
 		[Their] body is covered in thick, fluffy [primary-color?, {primary-color.lower}] fur [has-pattern?with {@pattern}|{accent}] that feels plush to the touch.
 	</Node>
-	<Node path="appearance/body" order="0" rule="scales">
+	<Node path="persona/appearance/body" order="0" rule="scales">
 		 [Their] body is covered in sleek [primary-color?{primary-color.lower}] scales [has-pattern? with {@pattern}|{accent}].
 	</Node>
-	<Node path="appearance/body" order="0" rule="feathers">
+	<Node path="persona/appearance/body" order="0" rule="feathers">
 		 [Their] body is covered in soft [primary-color?{primary-color.lower}] feathers [has-pattern? with {@pattern}|[secondary-color? with {secondary-color.lower} tips]].
 	</Node>
 
 	<!-- Features -->
-	<Node path="appearance/body" order="100" rule="horns">
+	<Node path="persona/appearance/body" order="100" rule="horns">
 		The top of [their] head is adorned by two prominent horns.
 	</Node>
-	<Node path="appearance/body" order="100" rule="tail">
+	<Node path="persona/appearance/body" order="100" rule="tail">
 		[Their] [thick-fur?large, bushy] tail emphasizes [their] [{animal.lower}|animal]-like appearance.
 	</Node>
-	<Node path="appearance/body" order="100" rule="wings">
+	<Node path="persona/appearance/body" order="100" rule="wings">
 		A set of large wings protude from [their] back, allowing [them] to take flight if necessary.
 	</Node>
 	
 	<!-- Feet -->
-	<Node path="appearance/body" order="100" rule="paws">
+	<Node path="persona/appearance/body" order="100" rule="paws">
 		[Their] large, fuzzy paws hide an array of sharp claws.
 	</Node>
-	<Node path="appearance/body" order="100" rule="hooves">
+	<Node path="persona/appearance/body" order="100" rule="hooves">
 		[They] stand firmly on hoofed feet.
 	</Node>
 
 	<!-- More -->
-	<Node path="appearance/body" order="0" rule="more">{more}.</Node>
+	<Node path="persona/appearance/body" order="0" rule="more">{more}.</Node>
 
 </Ginger>

@@ -32,8 +32,6 @@ namespace Ginger
 			}
 		}
 		private bool _bDirty = false;
-
-		public bool EditingDefaults { get; set; }
 		
 		public EditModelSettingsDialog()
 		{
@@ -120,7 +118,6 @@ namespace Ginger
 				});
 				cbSampling.EndUpdate();
 
-				btnConfirm.Text = EditingDefaults ? "Save" : "Apply";
 //				labelPresets.Enabled = !EditingDefaults;
 //				panelPresets.Enabled = !EditingDefaults;
 			});

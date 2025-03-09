@@ -458,6 +458,7 @@
     <Compile Include="src\Model\CustomVariable.cs" />
     <Compile Include="src\Model\Recipe\ParameterResolver.cs" />
     <Compile Include="src\Model\Recipe\ParameterState.cs" />
+    <Compile Include="src\Utility\Extensions\ListExtensions.cs" />
     <Compile Include="src\Utility\Integration\AsyncFileTypeChecker.cs" />
     <Compile Include="src\Utility\Integration\AsyncTaskQueue.cs" />
     <Compile Include="src\Utility\Integration\BackyardValidation.cs" />
@@ -496,6 +497,7 @@
     <Compile Include="src\Utility\Integration\ModelInfo.cs" />
     <Compile Include="src\Utility\Integration\LegacyChatUpdater.cs" />
     <Compile Include="src\Utility\Measurement.cs" />
+    <Compile Include="src\Utility\NormalizeChars.cs" />
     <Compile Include="src\Utility\Random\RandomNoise.cs" />
     <Compile Include="src\Utility\ReplaceWord.cs" />
     <Compile Include="src\Utility\SpellChecking\ISpellChecked.cs" />

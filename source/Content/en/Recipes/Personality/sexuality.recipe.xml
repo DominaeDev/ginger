@@ -1,4 +1,4 @@
-<Ginger id="sexuality" version="1.1">
+<Ginger id="sexuality" version="1.2">
 	<Name>Sexuality/Sexual orientation</Name>
 	<Description>Describe the sexual preferences of this character.</Description>
 	<Author>Ginger</Author>
@@ -51,8 +51,8 @@
 	
 	<Rule id="has-attraction">((male or female) and (heterosexual or homosexual)) or bisexual or pansexual or asexual or attracted-custom</Rule>
 	
-	<Node path="description/sexuality" order="300" rule="normal-detail and has-attraction">[char] is attracted to [@attracted-to].</Node>
-	<Node path="description/sexuality" order="300" rule="more">{more}.</Node>
+	<Node path="persona/sexuality/attraction" order="100" rule="normal-detail and has-attraction">[char] is attracted to [@attracted-to].</Node>
+	<Node path="persona/sexuality/more" rule="more">{more}.</Node>
 
 	<Attribute style="list">
 		<Name>Turn-ons</Name>
