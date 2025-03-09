@@ -686,7 +686,7 @@ namespace Ginger
 				}
 
 				if (recipe.requires != null && recipe.requires.Evaluate(
-					Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, true),
+					Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, Generator.Option.None, true),
 					new EvaluationCookie() { ruleSuppliers = Current.RuleSuppliers }) == false)
 				{
 					failedCounter++;
@@ -977,7 +977,7 @@ namespace Ginger
 		{
 			if (args.Button == MouseButtons.Right)
 			{
-				Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, true);
+				Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, Generator.Option.None, true);
 
 				// Create recipe context menu
 				var menu = new ContextMenuStrip();

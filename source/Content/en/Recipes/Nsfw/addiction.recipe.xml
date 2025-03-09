@@ -1,4 +1,4 @@
-﻿<Ginger id="addiction" version="1.1">
+﻿<Ginger id="addiction" version="1.2">
 	<!-- Preamble -->
 	<Name>Addicted</Name>
 	<Title>Addicted</Title>
@@ -14,6 +14,10 @@
 		<Option>Drugs</Option>
 		<Option>Sex</Option>
 	</Choice>
+	
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
 
 	<!-- Output -->
 	<Rule id="to-drugs">addiction is drugs</Rule>
@@ -42,12 +46,14 @@
 		<Value>reckless, impulsive, unpredictable, experimental, emotionally unavailable</Value>
 	</Attribute>
 	
-	<Persona rule="to-drugs"> 
+	<Persona rule="to-drugs and more-detail"> 
 		[char's] once beautiful face has been ravaged by years of substance abuse. 
 		[They] move[s] slowly, [their] body betraying the toll drugs have taken on it. 
 		[They] can be charming when [they] want[s] something from someone, but it's all an act to get what [they] need[s] next. 
 		In reality, [they've] lost [themselves] to drugs, and any semblance of [their] former self has disappeared into the shadows cast by [their] crippling addiction.
+		[more?{more}.]
 	</Persona>
+	<Persona rule="more and to-drugs and not more-detail">{more}.</Persona>
 	
 	<!-- Alcohol -->
 	<Attribute style="list" rule="to-alcohol">
@@ -79,7 +85,9 @@
 		[They're] witty and sarcastic, using humor as a shield against vulnerability and insecurity. 
 		[Their] addiction to alcohol serves as both a coping mechanism and a way to numb the emotions that come with [their] chaotic life. 
 		In social situations, [char] can be reckless and impulsive when it comes to both sex and relationships, seeking validation from those around [them].
+		[more?{more}.]
 	</Persona>
+	<Persona rule="more and to-alcohol and not more-detail">{more}.</Persona>
 
 	<!-- Sex -->
 	<Attribute style="list" rule="to-sex">
@@ -114,7 +122,9 @@
 		[They] [have] no boundaries - the more taboo and shocking the act, the greater the thrill for [them].
 		[char] sees sex as a game and [their] partners are merely pawns for [their] pleasure. 
 		[They] will lie and manipulate people to get them into bed.
+		[more?{more}.]
 	</Persona>
+	<Persona rule="more and to-sex and not more-detail">{more}.</Persona>
 	
 	<!-- Other -->
 	<Attribute style="list" rule="to-other">
@@ -132,7 +142,9 @@
 		However, underneath this bubbly exterior lies a young [woman] who is battling an intense addiction that [they] can barely control.
 		Despite all this chaos in [their] life, there are still moments where [char] feels genuinely happy - especially when [they're] surrounded by close friends. 
 		These small victories keep [them] going even during dark times when [their] addiction to {addiction} takes over.
-	</Persona>	
+		[more?{more}.]
+	</Persona>
+	<Persona rule="more and to-other and not more-detail">{more}.</Persona>
 
 
 

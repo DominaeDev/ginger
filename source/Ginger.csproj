@@ -1144,6 +1144,7 @@
     <None Include="Resources\Icons\Dark\character_male_empty_lore.png" />
     <None Include="Resources\Icons\Dark\character_neutral_empty_lore.png" />
     <None Include="Resources\Icons\Dark\character_other_empty_lore.png" />
+    <None Include="Resources\Icons\Dark\dark_link_dirty.png" />
     <Content Include="Resources\Icons\Light\arrow_down.png" />
     <Content Include="Resources\Icons\Light\arrow_left.png" />
     <Content Include="Resources\Icons\Light\arrow_right.png" />
@@ -1169,6 +1170,7 @@
     <None Include="Resources\Icons\Light\embedded_assets.png" />
     <Content Include="Resources\Icons\Light\expanded.png" />
     <Content Include="Resources\Icons\Light\folder.png" />
+    <None Include="Resources\Icons\Light\link_dirty.png" />
     <Content Include="Resources\Icons\Light\lore.png" />
     <Content Include="Resources\Icons\Light\lore_down.png" />
     <Content Include="Resources\Icons\Light\lore_small.png" />

@@ -68,7 +68,7 @@ namespace Ginger
 				Default,
 				SillyTavern,
 				Faraday,
-				Faraday_Group,
+				FaradayParty,
 				PlainText, // Rendered
 			}
 			public static OutputPreviewFormat PreviewFormat = OutputPreviewFormat.Default;

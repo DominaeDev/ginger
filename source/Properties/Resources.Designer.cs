@@ -1122,46 +1122,6 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap dark_character_female_empty_lore {
-            get {
-                object obj = ResourceManager.GetObject("dark_character_female_empty_lore", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap dark_character_male_empty_lore {
-            get {
-                object obj = ResourceManager.GetObject("dark_character_male_empty_lore", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap dark_character_neutral_empty_lore {
-            get {
-                object obj = ResourceManager.GetObject("dark_character_neutral_empty_lore", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap dark_character_other_empty_lore {
-            get {
-                object obj = ResourceManager.GetObject("dark_character_other_empty_lore", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap dark_characteristic {
             get {
                 object obj = ResourceManager.GetObject("dark_characteristic", resourceCulture);
@@ -1332,9 +1292,9 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap dark_link_disconnected {
+        internal static System.Drawing.Bitmap dark_link_dirty {
             get {
-                object obj = ResourceManager.GetObject("dark_link_disconnected", resourceCulture);
+                object obj = ResourceManager.GetObject("dark_link_dirty", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -2653,9 +2613,9 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap link_disconnected {
+        internal static System.Drawing.Bitmap link_dirty {
             get {
-                object obj = ResourceManager.GetObject("link_disconnected", resourceCulture);
+                object obj = ResourceManager.GetObject("link_dirty", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

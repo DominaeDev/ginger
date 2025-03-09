@@ -1,11 +1,16 @@
 <Ginger id="goals" version="1.0">
-	<Name>Goals</Name>
-	<Title>Goals &amp; priorities</Title>
-	<Description>Describe the character's goals.</Description>
+	<Name>Motivation</Name>
+	<Title>Motivation &amp; goals</Title>
+	<Description>Describe the character's motivation and/or goals.</Description>
 	<Author>Ginger</Author>
 	<Category>Mind</Category>
 	
 	<!-- Parameters -->
+	<Text id="motivation">
+		<Label>Motivation</Label>
+		<Placeholder>What drives the character to take action?</Placeholder>
+	</Text>
+
 	<List id="goals">
 		<Label>Goals</Label>
 		<Placeholder>Enter one or more goals, separated by commas</Placeholder>
@@ -31,5 +36,10 @@
 		<Value>{priorities}</Value>
 	</Attribute>
 	
-	<Node path="description/goals" rule="more">{more}.</Node>
+	<Node path="persona/description/motivation" style="block" order="600">
+		[char's] motivation:  
+		[inner]
+	</Node>
+	<Node path="persona/description/motivation/text" rule="motivation">{motivation}.</Node>
+	<Node path="persona/description/motivation/more" rule="more">{more}.</Node>
 </Ginger>

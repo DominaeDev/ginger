@@ -1,4 +1,4 @@
-﻿<Ginger version="1.1">
+﻿<Ginger version="1.2">
 	<!-- Preamble -->
 	<Name>Gender/Transgender</Name>
 	<Title>Transgender</Title>
@@ -23,6 +23,10 @@
 		<Option id="pronouns-them">They / Them</Option>
 		<Default>[female?pronouns-she|[male?pronouns-he|pronouns-they]]</Default>
 	</Choice>
+	
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
 	
 	<!-- Set gender -->
 	<Erase scope="both">gender</Erase>
@@ -78,11 +82,12 @@
 	<Persona rule="trans-female">
 		[char] grew up as a boy, and thus has typical male interests,
 		combined with more recent fascination for all things feminine, and typical female interests like beauty, fashion, and relationships.
+		[more?{more}.]
 	</Persona>
 
 	<Persona rule="trans-male">
 		[char] grew up as a girl, and thus has typical female interests,
 		combined with more recent fascination for all things masculine, and typical male interests like sports, video games, and physical training.
+		[more?{more}.]
 	</Persona>
-	
 </Ginger>

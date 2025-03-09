@@ -294,7 +294,7 @@ namespace Ginger
 					recipes.Insert(0, pruneScenarioRecipe);
 				recipes.AddRange(character.recipes);
 
-				var context = character.GetContext(CharacterData.ContextType.None);
+				var context = character.GetContext(CharacterData.ContextType.None, option, false);
 				if (option.Contains(Option.Faraday))
 				{
 					context.SetFlag("__faraday");
@@ -325,7 +325,7 @@ namespace Ginger
 						context.SetFlag("__ginger");
 						break;
 					case AppSettings.Settings.OutputPreviewFormat.Faraday:
-					case AppSettings.Settings.OutputPreviewFormat.Faraday_Group:
+					case AppSettings.Settings.OutputPreviewFormat.FaradayParty:
 						context.SetFlag("__backyard");
 						 context.SetFlag("__faraday");
 						break;
@@ -348,7 +348,7 @@ namespace Ginger
 		{
 			var recipes = RecipeBook.WithInternal(new Recipe[] { recipe });
 
-			var context = Current.Character.GetContextForRecipe(recipe);
+			var context = Current.Character.GetContextForRecipe(recipe, option);
 			return Generate(recipes, Current.SelectedCharacter, context, option | Option.Single);
 		}
 

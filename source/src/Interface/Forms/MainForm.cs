@@ -1118,7 +1118,7 @@ namespace Ginger
 
 		private void ShowRecipeMenu(Recipe.Drawer drawer, Control control, Point point)
 		{
-			Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, true);
+			Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, Generator.Option.None, true);
 
 			ContextMenuStrip menu = new ContextMenuStrip();
 
@@ -1223,7 +1223,7 @@ namespace Ginger
 				var loadError = FileUtil.ImportCharacterFromPNG(filename, out errors);
 				if (loadError == FileUtil.Error.NoDataFound)
 				{
-					MessageBox.Show(string.Format(Resources.error_no_data, Path.GetFileName(filename)), Resources.cap_open_character_card, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show(Resources.error_no_data, Resources.cap_open_character_card, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					ClearStatusBarMessage();
 					return false;
 				}
@@ -1377,8 +1377,16 @@ namespace Ginger
 			{
 				if (Current.HasActiveLink)
 				{
-					statusConnectionIcon.Image = Theme.Current.LinkActive;
-					statusConnectionIcon.ToolTipText = "Connected; Linked";
+					if (Current.Link.isDirty)
+					{
+						statusConnectionIcon.Image = Theme.Current.LinkActiveDirty;
+						statusConnectionIcon.ToolTipText = "Connected; Linked (Unsaved changes)";
+					}
+					else
+					{
+						statusConnectionIcon.Image = Theme.Current.LinkActive;
+						statusConnectionIcon.ToolTipText = "Connected; Linked";
+					}
 				}
 				else if (Current.HasLink)
 				{
@@ -1390,7 +1398,7 @@ namespace Ginger
 					else if (Backyard.Database.HasCharacter(Current.Link.mainActorId)) //! @multi-link
 					{
 						statusConnectionIcon.Image = Theme.Current.LinkInactive;
-						statusConnectionIcon.ToolTipText = "Connected; Link broken";
+						statusConnectionIcon.ToolTipText = "Connected; Link inactive";
 					}
 					else
 					{
@@ -1406,16 +1414,8 @@ namespace Ginger
 			}
 			else
 			{
-				if (Current.HasLink)
-				{
-					statusConnectionIcon.Image = Theme.Current.LinkDisconnected;
-					statusConnectionIcon.ToolTipText = "Not connected";
-				}
-				else
-				{
-					statusConnectionIcon.Image = null;
-					statusConnectionIcon.ToolTipText = null;
-				}
+				statusConnectionIcon.Image = null;
+				statusConnectionIcon.ToolTipText = null;
 			}
 
 			// Embedded assets status icon
@@ -1647,6 +1647,7 @@ namespace Ginger
 		{
 			// New actor
 			var newActorMenuItem = new ToolStripMenuItem("New actor");
+			newActorMenuItem.Image = Theme.Current.ActorPortraitAsset;
 			newActorMenuItem.Click += AddSupportingCharacterMenuItem_Click;
 			items.Add(newActorMenuItem);
 
@@ -1828,7 +1829,7 @@ namespace Ginger
 			outputPreviewSillyTavernMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern;
 			outputPreviewFaradayMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday;
 			outputPreviewPlainTextMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.PlainText;
-			outputPreviewFaradayGroupMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group;
+			outputPreviewFaradayGroupMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty;
 			outputPreviewFaradayGroupMenuItem.Enabled = Current.Characters.Count > 1;
 
 			// Tools
@@ -2137,7 +2138,7 @@ namespace Ginger
 				return;
 
 			Current.SelectedCharacter = characterIndex;
-			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday_Group)
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty)
 				Regenerate(); // Regenerate actor output
 			tabControl.SelectedIndex = 0;
 			recipeList.RecreatePanels();
@@ -2476,7 +2477,7 @@ namespace Ginger
 
 		private void outputPreviewFaradayGroupMenuItem_Click(object sender, EventArgs e)
 		{
-			AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday_Group;
+			AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.FaradayParty;
 			Regenerate();
 			_bShouldRefreshTokenCount = true;
 		}

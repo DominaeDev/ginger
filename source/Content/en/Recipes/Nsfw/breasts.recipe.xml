@@ -1,4 +1,4 @@
-<Ginger id="breasts" version="1.1">
+<Ginger id="breasts" version="1.2">
 	<Name>Anatomy/Intimate parts/Breasts</Name>
 	<Title>Breasts</Title>
 	<Description>Describe the character's breasts.</Description>
@@ -103,38 +103,38 @@
 		<Value>None</Value>
 	</Attribute>
 		
-	<Node path="appearance/breasts" rule="is-flat and not male">
+	<Node path="persona/appearance/breasts" rule="is-flat and not male">
 		[They] [don't] have visible breasts. [Their] chest is completely flat and smooth.
 	</Node>
 	
-	<Node path="appearance/breasts" rule="has-breasts and breast-size">
+	<Node path="persona/appearance/breasts" rule="has-breasts and breast-size">
 		[Their] breasts are [!list:[@adjective]][has-cup?, and would fit comfortably in [a] [cup] bra]].
 	</Node>
 		
-	<Node path="appearance/breasts" rule="nipples:index is 0"> <!-- Small -->
+	<Node path="persona/appearance/breasts" rule="nipples:index is 0"> <!-- Small -->
 		[has-breasts?[Their] breasts are adorned by tiny|[Their] nipples are flat and almost imperceptible,] delicate, barely protruding buds.
 	</Node>
 
-	<Node path="appearance/breasts" rule="nipples:index is 1"> <!-- Average -->
+	<Node path="persona/appearance/breasts" rule="nipples:index is 1"> <!-- Average -->
 		[Their] nipples are delicate and pert. When aroused, they harden into achingly sensitive peaks, demanding attention and adoration.
 	</Node>
 	
-	<Node path="appearance/breasts" rule="nipples:index is 2"> <!-- Large -->
+	<Node path="persona/appearance/breasts" rule="nipples:index is 2"> <!-- Large -->
 		[Their] large, pebbled nipples jut out proudly, demanding attention and adoration. 
 		[normal-detail?When aroused, they swell and erect, hardening to the size of large, juicy berries.]
 		[more-detail?The weight of their fullness drags down the sensitive, supple flesh they crown, inviting caresses that stroke and tease.]
 	</Node>
 
-	<Node path="appearance/breasts" rule="nipples:index is 3"> <!-- Inverted -->
+	<Node path="persona/appearance/breasts" rule="nipples:index is 3"> <!-- Inverted -->
 		[Their] delicate, inverted nipples retract into the areola when [they're] not aroused, offering only hints of their presence. 
 		[normal-detail?But upon arousal, they swell and erect, protruding slightly, beckoning touch with their soft, sensual tips.]
 	</Node>
 	
-	<Node path="appearance/breasts" rule="pierced">
+	<Node path="persona/appearance/breasts" rule="pierced">
 		A shiny silver piercing adorns the crown of each of [their] nipples, drawing the eye and inviting gentle tugs and teasing flicks. 
 		[normal-detail?With the slightest touch, the jewelry moves, sending waves of sensation through the responsive nerve bundles it grazes and eliciting soft moans of pleasure.]
 	</Node>
 	
-	<Node path="appearance/breasts">{more}</Node>
+	<Node path="persona/appearance/breasts" rule="more">{more}.</Node>
 		
 </Ginger>

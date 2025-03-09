@@ -738,21 +738,6 @@ Do you want to remove the link from this file?</value>
   <data name="cap_link_character" xml:space="preserve">
     <value>Create link</value>
   </data>
-  <data name="link_active" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Light\link_active.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="link_broken" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Light\link_broken.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="link_connected" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Light\link_connected.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="link_disconnected" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Light\link_disconnected.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="link_inactive" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Light\link_inactive.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="msg_link_create_link" xml:space="preserve">
     <value>Do you want to create a link to the Backyard AI character?
 
@@ -1212,9 +1197,6 @@ Reason: {0}</value>
   <data name="dark_link_connected" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Dark\dark_link_connected.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="dark_link_disconnected" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Dark\dark_link_disconnected.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="dark_link_inactive" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Dark\dark_link_inactive.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -1645,19 +1627,25 @@ Are you sure you want to proceed?</value>
   <data name="character_other_empty_lore" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Light\character_other_empty_lore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="dark_character_female_empty_lore" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Dark\character_female_empty_lore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="dark_character_male_empty_lore" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Dark\character_male_empty_lore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="dark_character_neutral_empty_lore" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Dark\character_neutral_empty_lore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="dark_character_other_empty_lore" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Dark\character_other_empty_lore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="status_revert_character" xml:space="preserve">
     <value>Reverting character</value>
+  </data>
+  <data name="link_active" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Light\link_active.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="link_broken" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Light\link_broken.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="link_connected" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Light\link_connected.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="link_dirty" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Light\link_dirty.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="link_inactive" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Light\link_inactive.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dark_link_dirty" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Dark\dark_link_dirty.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

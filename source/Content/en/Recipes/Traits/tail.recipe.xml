@@ -7,7 +7,7 @@
 	<Requires>not (animal or anthro)</Requires>
 	
 	<!-- Features -->
-	<Node path="appearance/body">
+	<Node path="persona/appearance/body">
 		The [thick-fur?large, fluffy] tail that curls past [their] knees only emphasizes [their] inhumanity.
 	</Node>
 	

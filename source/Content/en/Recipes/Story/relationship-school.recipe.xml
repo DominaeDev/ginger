@@ -1,4 +1,4 @@
-<Ginger version="1.0">
+<Ginger version="1.1">
 	<Name>Relationship/Academic</Name>
 	<Title>Academic relationship</Title>
 	<Description>An academic relationship with User.</Description>
@@ -25,10 +25,14 @@
 		<Label>Club name</Label>
 		<Placeholder>Book club</Placeholder>
 	</Text>
-
-	<Rule id="both-students">not (tutor or tutoring or teacher or student)</Rule>
+	
+	<Text id="more" style="flex">
+		<Label>Additional details</Label>
+	</Text>
 
 	<!-- Output -->	
+
+	<Rule id="both-students">not (tutor or tutoring or teacher or student)</Rule>
 	<Node path="persona/relationship/academic" rule="both-students">
 		[char] and [user] go to the same school and don't know each other very well yet.
 	</Node>
@@ -72,4 +76,6 @@
 		[user] a private tutor and is tutoring [char].
 		They see each other regularly during their private tutoring sessions.
 	</Node>
+	
+	<Node path="persona/relationship/academic" rule="more">{more}.</Node>
 </Ginger>
