@@ -487,7 +487,7 @@ namespace Ginger
 				if (ConfirmImageSize(ref portraitImage))
 					Current.Card.portraitImage = ImageRef.FromImage(portraitImage);
 				
-				OnAssetsChanged();
+				NotifyAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Change portrait image");
 			}
 			else // Actor
@@ -498,7 +498,7 @@ namespace Ginger
 					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 					return;
 				}
-				OnAssetsChanged();
+				NotifyAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Change portrait image (actor)");
 			}
 			SetStatusBarMessage("Changed portrait image", Constants.StatusBarMessageInterval);
@@ -523,7 +523,7 @@ namespace Ginger
 			{
 				Current.Card.portraitImage = ImageRef.FromImage(image);
 				Current.Card.assets.RemoveMainPortraitOverride(); // No animation
-				OnAssetsChanged();
+				NotifyAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Change portrait image");
 			}
 			else // Actor
@@ -534,7 +534,7 @@ namespace Ginger
 					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 					return;
 				}
-				OnAssetsChanged();
+				NotifyAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Change portrait image (actor)");
 			}
 			SetStatusBarMessage("Changed portrait image", Constants.StatusBarMessageInterval);
@@ -546,12 +546,12 @@ namespace Ginger
 			{
 				Current.Card.portraitImage = null;
 				Current.Card.assets.RemoveMainPortraitOverride();
-				OnAssetsChanged();
+				NotifyAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Clear portrait");
 			}
 			else if (Current.Card.assets.Remove(Current.Card.assets.GetPortrait(Current.SelectedCharacter)))
 			{
-				OnAssetsChanged();
+				NotifyAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Clear portrait (actor)");
 			}
 			SetStatusBarMessage("Cleared portrait image", Constants.StatusBarMessageInterval);
@@ -578,7 +578,7 @@ namespace Ginger
 			AssetFile tmp;
 			if (Current.Card.assets.AddBackground(filename, out tmp))
 			{
-				OnAssetsChanged();
+				NotifyAssetsChanged();
 
 				Undo.Push(Undo.Kind.Parameter, "Set background image");
 				SetStatusBarMessage("Changed background image", Constants.StatusBarMessageInterval);
@@ -600,7 +600,7 @@ namespace Ginger
 			AssetFile tmp;
 			if (Current.Card.assets.AddBackground(image, out tmp))
 			{
-				OnAssetsChanged();
+				NotifyAssetsChanged();
 				
 				Undo.Push(Undo.Kind.Parameter, "Set background image");
 				SetStatusBarMessage("Changed background image", Constants.StatusBarMessageInterval);
@@ -614,7 +614,7 @@ namespace Ginger
 			{
 				asset.name = "Background (portrait)";
 				
-				OnAssetsChanged();
+				NotifyAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Set background image");
 				SetStatusBarMessage("Changed background image", Constants.StatusBarMessageInterval);
 			}
@@ -623,7 +623,7 @@ namespace Ginger
 		private void OnRemoveBackgroundImage(object sender, EventArgs e)
 		{
 			Current.Card.assets.RemoveAll(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
-			OnAssetsChanged();
+			NotifyAssetsChanged();
 			Undo.Push(Undo.Kind.Parameter, "Clear background image");
 			SetStatusBarMessage("Cleared background image", Constants.StatusBarMessageInterval);
 		}
@@ -638,24 +638,14 @@ namespace Ginger
 			if (Utility.LoadImageFromMemory(asset.data.bytes, out image) == false)
 				return;
 
-			int width = image.Width;
-			int height = image.Height;
-
-			// Resample image
-			Bitmap blurredImage = Utility.ResampleImage(image, width / 4, height / 4);
-
-			// Gaussian blur
-			var blurEffect = new SuperfastBlur.GaussianBlur(blurredImage);
-			blurredImage = blurEffect.Process(Math.Max(2, Convert.ToInt32(Math.Max(width, height) / 512.0)));
-
-			// Resample image
-			blurredImage = Utility.ResampleImage(blurredImage, width, height);
+			if (Utility.BlurImage(ref image) == false)
+				return;
 
 			AssetFile tmp;
-			if (Current.Card.assets.AddBackground(blurredImage, out tmp))
+			if (Current.Card.assets.AddBackground(image, out tmp))
 			{
 				Current.Card.assets.Remove(asset);
-				OnAssetsChanged();
+				NotifyAssetsChanged();
 
 				Undo.Push(Undo.Kind.Parameter, "Blur background image");
 				SetStatusBarMessage("Blurred background image", Constants.StatusBarMessageInterval);
@@ -698,13 +688,13 @@ namespace Ginger
 			if (Current.SelectedCharacter == 0) // Main character
 			{
 				Current.Card.portraitImage = ImageRef.FromImage(resizedImage);
-				OnAssetsChanged();
+				NotifyAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Resize portrait image");
 			}
 			else // Actor
 			{
 				Current.Card.assets.SetActorPortrait(Current.SelectedCharacter, resizedImage);
-				OnAssetsChanged();
+				NotifyAssetsChanged();
 				Undo.Push(Undo.Kind.Parameter, "Resize portrait image (actor)");
 			}
 
@@ -2539,7 +2529,7 @@ namespace Ginger
 			if (_assetsDialog.ShowDialog() == DialogResult.OK && _assetsDialog.Changed)
 			{
 				Current.Card.assets = (AssetCollection)_assetsDialog.Assets.Clone();
-				OnAssetsChanged();
+				NotifyAssetsChanged();
 
 				Undo.Push(Undo.Kind.Parameter, "Changed embedded assets");
 			}
@@ -2898,7 +2888,7 @@ namespace Ginger
 			sidePanel.RefreshLayout();
 		}
 
-		private void OnAssetsChanged()
+		private void NotifyAssetsChanged()
 		{
 			// Refresh asset links
 			if (Current.HasLink)
