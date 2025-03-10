@@ -282,6 +282,7 @@ namespace Ginger
 			repairLegacyChatsMenuItem.ToolTipText = Resources.tooltip_link_repair_chat;
 			writeAuthorNoteMenuItem.ToolTipText = Resources.tooltip_link_author_note;
 			writeUserPersonaMenuItem.ToolTipText = Resources.tooltip_link_user_persona;
+			resetModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_reset_model_settings;
 
 			RegisterIdleHandler(recipeList);
 
@@ -2779,6 +2780,7 @@ namespace Ginger
 			repairLegacyChatsMenuItem.Image = Theme.Current.RepairIcon;
 			createBackupMenuItem.Image = Theme.Current.CreateBackupIcon;
 			restoreBackupMenuItem.Image = Theme.Current.RestoreBackupIcon;
+			resetModelSettingsMenuItem.Image = Theme.Current.ResetIcon;
 
 			if (_findDialog != null && _findDialog.IsDisposed == false)
 				_findDialog.ApplyTheme();
@@ -2897,6 +2899,11 @@ namespace Ginger
 			Current.IsFileDirty = true;
 			RefreshTitle();
 			sidePanel.RefreshValues();
+		}
+
+		private void resetModelSettingsMenuItem_Click(object sender, EventArgs e)
+		{
+			ResetBackyardModelSettings();
 		}
 	}
 

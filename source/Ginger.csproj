@@ -1120,6 +1120,7 @@
     <None Include="Resources\Icons\Dark\dark_asset_actor_portrait.png" />
     <None Include="Resources\Icons\Dark\dark_asset_override.png" />
     <None Include="Resources\Icons\Dark\dark_link_dirty.png" />
+    <None Include="Resources\Icons\Dark\dark_reset.png" />
     <Content Include="Resources\Icons\Light\arrow_down.png" />
     <Content Include="Resources\Icons\Light\arrow_left.png" />
     <Content Include="Resources\Icons\Light\arrow_right.png" />
@@ -1160,6 +1161,7 @@
     <Content Include="Resources\Icons\Light\red_dot.png" />
     <None Include="Resources\Icons\Light\repair.png" />
     <None Include="Resources\Icons\Light\restore_backup.png" />
+    <None Include="Resources\Icons\Light\reset.png" />
     <Content Include="Resources\Icons\Light\snippet.png" />
     <Content Include="Resources\Icons\Light\snippet_small.png" />
     <Content Include="Resources\Icons\Light\story.png" />

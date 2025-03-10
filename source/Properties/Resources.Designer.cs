@@ -734,6 +734,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reset model settings.
+        /// </summary>
+        internal static string cap_link_reset_model_settings {
+            get {
+                return ResourceManager.GetString("cap_link_reset_model_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start over from here.
         /// </summary>
         internal static string cap_link_restart_chat {
@@ -1385,6 +1394,16 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap dark_repair {
             get {
                 object obj = ResourceManager.GetObject("dark_repair", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_reset {
+            get {
+                object obj = ResourceManager.GetObject("dark_reset", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -3083,6 +3102,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will reset the model settings for {0} in Backyard AI. Do you want to continue?.
+        /// </summary>
+        internal static string msg_link_reset_model_settings {
+            get {
+                return ResourceManager.GetString("msg_link_reset_model_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This will reset the model settings for this chat to their default values.
         ///
         ///Do you want to continue?.
@@ -3658,6 +3686,16 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap repair {
             get {
                 object obj = ResourceManager.GetObject("repair", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap reset {
+            get {
+                object obj = ResourceManager.GetObject("reset", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -5011,6 +5049,15 @@ namespace Ginger.Properties {
         internal static string tooltip_link_repair_images {
             get {
                 return ResourceManager.GetString("tooltip_link_repair_images", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset the model settings for all characters to their default values..
+        /// </summary>
+        internal static string tooltip_link_reset_model_settings {
+            get {
+                return ResourceManager.GetString("tooltip_link_reset_model_settings", resourceCulture);
             }
         }
         

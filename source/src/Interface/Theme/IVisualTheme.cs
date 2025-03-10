@@ -104,6 +104,7 @@ namespace Ginger
 		Image RepairIcon { get; }
 		Image CreateBackupIcon { get; }
 		Image RestoreBackupIcon { get; }
+		Image ResetIcon { get; }
 		Image Collapsed { get; }
 		Image Expanded { get; }
 		Image PortraitOverrideAsset { get; }

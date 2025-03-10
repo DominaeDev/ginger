@@ -163,6 +163,7 @@ namespace Ginger {
 			this.repairBrokenImagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.repairLegacyChatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.purgeUnusedImagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.resetModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem14 = new System.Windows.Forms.ToolStripSeparator();
 			this.optionsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1506,7 +1507,8 @@ namespace Ginger {
             this.toolStripMenuItem10,
             this.repairBrokenImagesMenuItem,
             this.repairLegacyChatsMenuItem,
-            this.purgeUnusedImagesMenuItem});
+            this.purgeUnusedImagesMenuItem,
+            this.resetModelSettingsMenuItem});
 			this.utilitiesToolStripMenuItem.Name = "utilitiesToolStripMenuItem";
 			this.utilitiesToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.utilitiesToolStripMenuItem.Text = "Utilities";
@@ -1555,6 +1557,14 @@ namespace Ginger {
 			this.purgeUnusedImagesMenuItem.Size = new System.Drawing.Size(217, 22);
 			this.purgeUnusedImagesMenuItem.Text = "Clean out unused images...";
 			this.purgeUnusedImagesMenuItem.Click += new System.EventHandler(this.purgeUnusedImages_Click);
+			// 
+			// resetModelSettingsMenuItem
+			// 
+			this.resetModelSettingsMenuItem.Image = global::Ginger.Properties.Resources.reset;
+			this.resetModelSettingsMenuItem.Name = "resetModelSettingsMenuItem";
+			this.resetModelSettingsMenuItem.Size = new System.Drawing.Size(217, 22);
+			this.resetModelSettingsMenuItem.Text = "Reset all model settings...";
+			this.resetModelSettingsMenuItem.Click += new System.EventHandler(this.resetModelSettingsMenuItem_Click);
 			// 
 			// toolStripMenuItem14
 			// 
@@ -1972,6 +1982,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem outputPreviewFaradayGroupMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel statusActors;
 		private System.Windows.Forms.ToolStripMenuItem saveMultipleMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem resetModelSettingsMenuItem;
 	}
 }
 
