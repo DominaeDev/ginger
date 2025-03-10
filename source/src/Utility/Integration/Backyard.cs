@@ -44,45 +44,22 @@ namespace Ginger.Integration
 
 		public int Count { get { return members != null ? members.Length : 0; } }
 		public bool isEmpty { get { return Count == 0; } }
-		public bool isSupported 
-		{ 
-			get
-			{
-				var groupType = GetGroupType();
-				return groupType == GroupType.Solo
-					|| groupType == GroupType.Group;
-			} 
-		}
+		public bool isSupported { get { return members != null && members.Length == 2; } }
 
 		public enum GroupType
 		{
 			Unknown,
 			Solo,	// 1-on-1
 			Group,	// 1-on-many
-			Party,	// Many-on-many (Not supported yet)
 		}
 
 		public GroupType GetGroupType()
 		{
 			if (members == null || members.Length < 2)
 				return GroupType.Unknown;
-
-			var memberInfo = members
-				.Select(id => Backyard.GetCharacter(id))
-				.Where(m => string.IsNullOrEmpty(m.instanceId) == false)
-				.ToArray();
-			int nUsers = memberInfo.Count(m => m.isUser);
-			int nCharacters = memberInfo.Count(m => m.isCharacter);
-			if (nUsers == 1)
-			{
-				if (nCharacters == 1)
-					return GroupType.Solo;
-				else if (nCharacters > 1)
-					return GroupType.Group;
-			}
-			if (nUsers > 1 && nCharacters > 0)
-				return GroupType.Party;
-			return GroupType.Unknown;
+			if (members.Length == 2)
+				return GroupType.Solo;
+			return GroupType.Group;
 		}
 
 		public string[] GetMemberNames(bool includingUser = false)
