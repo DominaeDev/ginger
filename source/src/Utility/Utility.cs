@@ -1801,9 +1801,11 @@ namespace Ginger
 
 		// Strong indicators
 		private static string[] _strong_words = new string[] { 
-			"hermaphrodite", "futanari", "dickgirl", "shemale", "dick-girl", "she-male", "newhalf", 
+			"futanari", "dickgirl", "shemale", "dick-girl", "she-male", "newhalf", 
 			"transgender", "trans-gender", "transsexual", "trans-sexual", 
-			"non-binary", "nonbinary", "intersex", };
+			"hermaphrodite",
+			"non-binary", "nonbinary", "intersex", 
+			};
 
 		private static string[] _explicit_genders = new string[] { 
 			"none", "genderless", "undefined", "n/a", 
@@ -1823,10 +1825,12 @@ namespace Ginger
 			int idx_strong = FindAnyWord(persona, _strong_words, 0, StringComparison.Ordinal);
 			if (idx_strong != -1)
 			{
-				if (idx_strong < 7)
-					return "Hermaphrodite";
-				else if (idx_strong < 11)
+				if (idx_strong < 6)
+					return "Futanari";
+				else if (idx_strong < 10)
 					return "Transgender";
+				else if (idx_strong < 11)
+					return "Hermaphrodite";
 				else
 					return "Non-binary";
 			}
@@ -1836,10 +1840,6 @@ namespace Ginger
 				.Split(new char[] { '\n', '.', ',' }, StringSplitOptions.RemoveEmptyEntries)
 				.Where(s => isUser || s.Contains("{user}") == false)
 				.ToArray();
-
-			string primaryGuess = null;
-			string secondaryGuess = null;
-			string tertiaryGuess = null;
 
 			// Find explicit gender
 			for (int i = 0; i < lines.Length; ++i)
@@ -1864,50 +1864,44 @@ namespace Ginger
 				}
 			}
 
+			string primaryGuess = null;
+			string secondaryGuess = null;
+			string tertiaryGuess = null;
+
 			// Primary indicators
 			for (int i = 0; i < lines.Length; ++i)
 			{
 				string line = lines[i];
 
-				if (primaryGuess == null)
-				{
-					int cookie = -1;
-					if (ScanFirst(line, ref cookie, "futa"))
-						return "Futanari";
-					if (ScanFirst(line, ref cookie, "male", "man", "boy"))
-						primaryGuess = "Male";
-					if (ScanFirst(line, ref cookie, "female", "woman", "girl"))
-						primaryGuess = "Female";
-					if (ScanFirst(line, ref cookie, "trans"))
-						primaryGuess = "Transgender";
-					if (ScanFirst(line, ref cookie, "assistant", "story teller", "dungeon master", "narrator", "narration", "narrates", "narrate"))
-						return null;
-				}
-
-				if (secondaryGuess == null)
-				{
-					int cookie = -1;
-					if (ScanFirst(line, ref cookie, "his or her"))
-						secondaryGuess = null;
-					if (ScanFirst(line, ref cookie, "he", "him", "himself", "his"))
-						secondaryGuess = "Male";
-					if (ScanFirst(line, ref cookie, "she", "her", "herself", "hers"))
-						secondaryGuess = "Female";
-				}
-
-				if (tertiaryGuess == null)
-				{
-					int cookie = -1;
-					if (ScanFirst(line, ref cookie, "boyfriend", "husband", "father", "dad", "daddy", "son", "patriarch", "incubus", "master", "gentleman"))
-						tertiaryGuess = "Male";
-					if (ScanFirst(line, ref cookie, "girlfriend", "wife", "waifu", "mother", "mom", "mommy", "milf", "daughter", "matron", "matriarch", "succubus", "mistress", "lady"))
-						tertiaryGuess = "Female";
-				}
-
+				int cookie = -1;
+				if (ScanFirst(line, ref cookie, "futa"))
+					primaryGuess = "Futanari";
+				if (ScanFirst(line, ref cookie, "male", "man", "boy"))
+					primaryGuess = "Male";
+				if (ScanFirst(line, ref cookie, "female", "woman", "girl"))
+					primaryGuess = "Female";
+				if (ScanFirst(line, ref cookie, "trans"))
+					primaryGuess = "Transgender";
+				if (ScanFirst(line, ref cookie, "assistant", "story teller", "dungeon master", "narrator", "narration", "narrates", "narrate"))
+					return null;
 				if (primaryGuess != null)
 					return primaryGuess;
+
+				cookie = -1;
+				if (ScanFirst(line, ref cookie, "his or her"))
+					secondaryGuess = null;
+				if (ScanFirst(line, ref cookie, "he", "him", "himself", "his"))
+					secondaryGuess = "Male";
+				if (ScanFirst(line, ref cookie, "she", "her", "herself", "hers"))
+					secondaryGuess = "Female";
 				if (secondaryGuess != null)
 					return secondaryGuess;
+
+				cookie = -1;
+				if (ScanFirst(line, ref cookie, "boyfriend", "husband", "father", "dad", "daddy", "son", "patriarch", "incubus", "master", "gentleman"))
+					tertiaryGuess = "Male";
+				if (ScanFirst(line, ref cookie, "girlfriend", "wife", "waifu", "mother", "mom", "mommy", "milf", "daughter", "matron", "matriarch", "succubus", "mistress", "lady"))
+					tertiaryGuess = "Female";
 				if (tertiaryGuess != null)
 					return tertiaryGuess;
 			}

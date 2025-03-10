@@ -31,11 +31,11 @@ namespace Ginger
 		{
 			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.FlowLayoutPanel buttonLayout;
-			System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Character", 1, 1);
-			System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Group", 2, 2, new System.Windows.Forms.TreeNode[] {
-            treeNode4});
-			System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
-            treeNode5});
+			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Character", 1, 1);
+			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Group", 2, 2, new System.Windows.Forms.TreeNode[] {
+            treeNode1});
+			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
+            treeNode2});
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectCharacterOrGroupDialog));
 			this.btnCancel = new Ginger.ButtonEx();
 			this.btnOk = new Ginger.ButtonEx();
@@ -113,19 +113,19 @@ namespace Ginger
 			this.treeView.ImageList = this.imageList_Light;
 			this.treeView.Location = new System.Drawing.Point(2, 4);
 			this.treeView.Name = "treeView";
-			treeNode4.ImageIndex = 1;
-			treeNode4.Name = "Node1";
-			treeNode4.SelectedImageIndex = 1;
-			treeNode4.Text = "Character";
-			treeNode5.ImageIndex = 2;
-			treeNode5.Name = "tmpNode1";
-			treeNode5.SelectedImageIndex = 2;
-			treeNode5.Text = "Group";
-			treeNode6.Name = "tmpNode1";
-			treeNode6.SelectedImageIndex = 0;
-			treeNode6.Text = "Folder";
+			treeNode1.ImageIndex = 1;
+			treeNode1.Name = "Node1";
+			treeNode1.SelectedImageIndex = 1;
+			treeNode1.Text = "Character";
+			treeNode2.ImageIndex = 2;
+			treeNode2.Name = "tmpNode1";
+			treeNode2.SelectedImageIndex = 2;
+			treeNode2.Text = "Group";
+			treeNode3.Name = "tmpNode1";
+			treeNode3.SelectedImageIndex = 0;
+			treeNode3.Text = "Folder";
 			this.treeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode6});
+            treeNode3});
 			this.treeView.SelectedImageIndex = 0;
 			this.treeView.ShowLines = false;
 			this.treeView.ShowNodeToolTips = true;
@@ -142,23 +142,27 @@ namespace Ginger
 			this.imageList_Light.Images.SetKeyName(0, "tree_folder.png");
 			this.imageList_Light.Images.SetKeyName(1, "tree_folder_single.png");
 			this.imageList_Light.Images.SetKeyName(2, "character_neutral.png");
-			this.imageList_Light.Images.SetKeyName(3, "character_male.png");
-			this.imageList_Light.Images.SetKeyName(4, "character_female.png");
-			this.imageList_Light.Images.SetKeyName(5, "character_other.png");
-			this.imageList_Light.Images.SetKeyName(6, "character_neutral_lore.png");
+			this.imageList_Light.Images.SetKeyName(3, "character_neutral_lore.png");
+			this.imageList_Light.Images.SetKeyName(4, "character_neutral_empty.png");
+			this.imageList_Light.Images.SetKeyName(5, "character_neutral_empty_lore.png");
+			this.imageList_Light.Images.SetKeyName(6, "character_male.png");
 			this.imageList_Light.Images.SetKeyName(7, "character_male_lore.png");
-			this.imageList_Light.Images.SetKeyName(8, "character_female_lore.png");
-			this.imageList_Light.Images.SetKeyName(9, "character_other_lore.png");
-			this.imageList_Light.Images.SetKeyName(10, "character_group.png");
-			this.imageList_Light.Images.SetKeyName(11, "character_neutral_empty.png");
-			this.imageList_Light.Images.SetKeyName(12, "character_male_empty.png");
-			this.imageList_Light.Images.SetKeyName(13, "character_female_empty.png");
-			this.imageList_Light.Images.SetKeyName(14, "character_other_empty.png");
-			this.imageList_Light.Images.SetKeyName(15, "character_neutral_empty_lore.png");
-			this.imageList_Light.Images.SetKeyName(16, "character_male_empty_lore.png");
-			this.imageList_Light.Images.SetKeyName(17, "character_female_empty_lore.png");
-			this.imageList_Light.Images.SetKeyName(18, "character_other_empty_lore.png");
-			this.imageList_Light.Images.SetKeyName(19, "character_group_empty.png");
+			this.imageList_Light.Images.SetKeyName(8, "character_male_empty.png");
+			this.imageList_Light.Images.SetKeyName(9, "character_male_empty_lore.png");
+			this.imageList_Light.Images.SetKeyName(10, "character_female.png");
+			this.imageList_Light.Images.SetKeyName(11, "character_female_lore.png");
+			this.imageList_Light.Images.SetKeyName(12, "character_female_empty.png");
+			this.imageList_Light.Images.SetKeyName(13, "character_female_empty_lore.png");
+			this.imageList_Light.Images.SetKeyName(14, "character_other.png");
+			this.imageList_Light.Images.SetKeyName(15, "character_other_lore.png");
+			this.imageList_Light.Images.SetKeyName(16, "character_other_empty.png");
+			this.imageList_Light.Images.SetKeyName(17, "character_other2.png");
+			this.imageList_Light.Images.SetKeyName(18, "character_other2_lore.png");
+			this.imageList_Light.Images.SetKeyName(19, "character_other_empty_lore.png");
+			this.imageList_Light.Images.SetKeyName(20, "character_other2_empty.png");
+			this.imageList_Light.Images.SetKeyName(21, "character_other2_empty_lore.png");
+			this.imageList_Light.Images.SetKeyName(22, "character_group.png");
+			this.imageList_Light.Images.SetKeyName(23, "character_group_empty.png");
 			// 
 			// toolTip
 			// 
@@ -176,23 +180,27 @@ namespace Ginger
 			this.imageList_Dark.Images.SetKeyName(0, "dark_tree_folder.png");
 			this.imageList_Dark.Images.SetKeyName(1, "tree_folder_single.png");
 			this.imageList_Dark.Images.SetKeyName(2, "character_neutral.png");
-			this.imageList_Dark.Images.SetKeyName(3, "character_male.png");
-			this.imageList_Dark.Images.SetKeyName(4, "character_female.png");
-			this.imageList_Dark.Images.SetKeyName(5, "character_other.png");
-			this.imageList_Dark.Images.SetKeyName(6, "character_neutral_lore.png");
+			this.imageList_Dark.Images.SetKeyName(3, "character_neutral_lore.png");
+			this.imageList_Dark.Images.SetKeyName(4, "character_neutral_empty.png");
+			this.imageList_Dark.Images.SetKeyName(5, "character_neutral_empty_lore.png");
+			this.imageList_Dark.Images.SetKeyName(6, "character_male.png");
 			this.imageList_Dark.Images.SetKeyName(7, "character_male_lore.png");
-			this.imageList_Dark.Images.SetKeyName(8, "character_female_lore.png");
-			this.imageList_Dark.Images.SetKeyName(9, "character_other_lore.png");
-			this.imageList_Dark.Images.SetKeyName(10, "character_group.png");
-			this.imageList_Dark.Images.SetKeyName(11, "character_neutral_empty.png");
-			this.imageList_Dark.Images.SetKeyName(12, "character_male_empty.png");
-			this.imageList_Dark.Images.SetKeyName(13, "character_female_empty.png");
-			this.imageList_Dark.Images.SetKeyName(14, "character_other_empty.png");
-			this.imageList_Dark.Images.SetKeyName(15, "character_neutral_empty_lore.png");
-			this.imageList_Dark.Images.SetKeyName(16, "character_male_empty_lore.png");
-			this.imageList_Dark.Images.SetKeyName(17, "character_female_empty_lore.png");
-			this.imageList_Dark.Images.SetKeyName(18, "character_other_empty_lore.png");
-			this.imageList_Dark.Images.SetKeyName(19, "character_group_empty.png");
+			this.imageList_Dark.Images.SetKeyName(8, "character_male_empty.png");
+			this.imageList_Dark.Images.SetKeyName(9, "character_male_empty_lore.png");
+			this.imageList_Dark.Images.SetKeyName(10, "character_female.png");
+			this.imageList_Dark.Images.SetKeyName(11, "character_female_lore.png");
+			this.imageList_Dark.Images.SetKeyName(12, "character_female_empty.png");
+			this.imageList_Dark.Images.SetKeyName(13, "character_female_empty_lore.png");
+			this.imageList_Dark.Images.SetKeyName(14, "character_other.png");
+			this.imageList_Dark.Images.SetKeyName(15, "character_other_lore.png");
+			this.imageList_Dark.Images.SetKeyName(16, "character_other_empty.png");
+			this.imageList_Dark.Images.SetKeyName(17, "character_other_empty_lore.png");
+			this.imageList_Dark.Images.SetKeyName(18, "character_other2.png");
+			this.imageList_Dark.Images.SetKeyName(19, "character_other2_lore.png");
+			this.imageList_Dark.Images.SetKeyName(20, "character_other2_empty.png");
+			this.imageList_Dark.Images.SetKeyName(21, "character_other2_empty_lore.png");
+			this.imageList_Dark.Images.SetKeyName(22, "character_group.png");
+			this.imageList_Dark.Images.SetKeyName(23, "character_group_empty.png");
 			// 
 			// LinkSelectCharacterOrGroupDialog
 			// 

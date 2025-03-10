@@ -72,7 +72,17 @@ namespace Ginger.Integration
 
 			public bool isDefined { get { return instanceId != null; } }
 			public bool isCharacter { get { return isDefined && !isUser; } }
-			public string inferredGender { get { return Utility.InferGender(GingerString.FromFaraday(persona).ToString()); } }
+			
+			public string inferredGender
+			{
+				get
+				{
+					if (_inferredGender == null)
+						_inferredGender = Utility.InferGender(persona);
+					return _inferredGender;
+				}
+			}
+			private string _inferredGender;
 		}
 
 		public struct GroupInstance
@@ -1287,32 +1297,12 @@ namespace Ginger.Integration
 			text = sb.ToString();
 		}
 
-		public static bool GetChatCounts(out Dictionary<string, Backyard.ChatCount> counts)
+		public static void GetChatCounts(out Dictionary<string, Backyard.ChatCount> counts)
 		{
-			counts = new Dictionary<string, Backyard.ChatCount>();
-			if (Backyard.ConnectionEstablished == false)
-				return false;
+			if (Backyard.ConnectionEstablished && Backyard.Database.GetChatCounts(out counts) == Backyard.Error.NoError)
+				return;
 
-			foreach (var group in Backyard.Groups)
-			{
-				Backyard.ChatInstance[] chats;
-				var error = Backyard.Database.GetChats(group.instanceId, out chats);
-				if (error == Backyard.Error.NoError)
-				{
-					DateTime lastMessage = default(DateTime);
-
-					if (chats.Length > 0)
-						lastMessage = chats.Select(c => c.history.lastMessageTime).Max();
-
-					counts.Add(group.instanceId, 
-						new Backyard.ChatCount() {
-							count = chats.Length,
-							lastMessage = lastMessage,
-						});
-				}
-			}
-			
-			return true;
+			counts = new Dictionary<string, Backyard.ChatCount>(); // Empty
 		}
 	}
 }

@@ -2922,6 +2922,80 @@ namespace Ginger.Integration
 			}
 		}
 
+		public Backyard.Error GetChatCounts(out Dictionary<string, Backyard.ChatCount> counts)
+		{
+			if (ConnectionEstablished == false)
+			{
+				counts = null;
+				return Backyard.Error.NotConnected;
+			}
+
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					counts = new Dictionary<string, Backyard.ChatCount>();
+					using (var cmdChat = connection.CreateCommand())
+					{
+						cmdChat.CommandText =
+						@"
+							SELECT 
+								groupConfigId,
+								(
+									SELECT MAX(M.updatedAt)
+									FROM Message as M
+									WHERE M.chatId = C.id
+								)
+							FROM Chat AS C
+						";
+
+						using (var reader = cmdChat.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								string groupId = reader.GetString(0);
+								DateTime lastMessage = reader.IsDBNull(1) ? DateTime.MinValue : reader.GetTimestamp(1);
+
+								if (counts.ContainsKey(groupId) == false)
+								{
+									counts.Add(groupId, new Backyard.ChatCount() {
+										count = 1,
+										lastMessage = lastMessage,
+									});
+								}
+								else
+								{
+									counts[groupId] = new Backyard.ChatCount() {
+										count = counts[groupId].count + 1,
+										lastMessage = DateTimeExtensions.Max(counts[groupId].lastMessage, lastMessage),
+									};
+								}
+							}
+						}
+					}
+
+					return Backyard.Error.NoError;
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				counts = null;
+				return Backyard.Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				counts = null;
+				return Backyard.Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				counts = null;
+				return Backyard.Error.Unknown;
+			}
+		}
+
 		private ChatInstance FetchChatInstance(SQLiteConnection connection, _Chat chatInfo, List<_Character> characters, List<_Character> groupMembers)
 		{
 			int index = 1;

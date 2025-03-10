@@ -51,6 +51,7 @@ namespace Ginger.Integration
 		// Chat
 		Backyard.Error GetChat(string chatId, string groupId, out ChatInstance chatInstance);
 		Backyard.Error GetChats(string groupId, out ChatInstance[] chatInstances);
+		Backyard.Error GetChatCounts(out Dictionary<string, Backyard.ChatCount> counts);
 		Backyard.Error CreateNewChat(CreateChatArguments args, string groupId, out ChatInstance chatInstance);
 		Backyard.Error RenameChat(string chatId, string newName);
 		Backyard.Error ConfirmDeleteChat(string chatId, string groupId, out int chatCount);

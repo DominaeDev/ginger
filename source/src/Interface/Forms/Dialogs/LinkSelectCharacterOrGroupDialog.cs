@@ -305,28 +305,28 @@ namespace Ginger
 			sbTooltip.AppendLine($"Last modified: {group.updateDate.ToShortDateString()}");
 
 			// Icon
-			int icon = 2;
+			int icon;
 			if (characters.Length >= 2)
-				icon = 10; // Group
+				icon = 22; // Group
 			else if (characters.Length == 1)
 			{
-				string inferredGender = characters[0].inferredGender;
-				if (string.IsNullOrEmpty(inferredGender))
+				string inferredGender = characters[0].inferredGender?.ToLowerInvariant();
+				if (inferredGender == "male")
+					icon = 6;
+				else if (inferredGender == "female")
+					icon = 10;
+				else if (inferredGender == "transgender")
+					icon = 14;
+				else if (inferredGender == "futanari" || inferredGender == "hermaphrodite")
+					icon = 18;
+				else
 					icon = 2;
-				else if (string.Compare(inferredGender, "male", StringComparison.OrdinalIgnoreCase) == 0)
-					icon = 3;
-				else if (string.Compare(inferredGender, "female", StringComparison.OrdinalIgnoreCase) == 0)
-					icon = 4;
-				else if (string.Compare(inferredGender, "transgender", StringComparison.OrdinalIgnoreCase) == 0)
-					icon = 2;
-				else if (string.Compare(inferredGender, "non-binary", StringComparison.OrdinalIgnoreCase) == 0)
-					icon = 2;
-				else // Other, futa
-					icon = 5;
 
 				if (characters[0].hasLorebook)
-					icon += 4; // Lore
+					icon += 2; // Lore
 			}
+			else
+				icon = 2;
 
 			var node = new TreeNode(groupLabel, icon, icon);
 			node.Tag = group;
@@ -350,7 +350,6 @@ namespace Ginger
 			if (string.Compare(character.name, label, StringComparison.OrdinalIgnoreCase) != 0)
 				label = string.Concat(label, " \"", character.name, "\"");
 
-			string inferredGender = character.inferredGender;
 			var sbTooltip = new StringBuilder();
 			sbTooltip.Append("Name: ");
 			sbTooltip.Append(character.displayName);
@@ -367,34 +366,34 @@ namespace Ginger
 				sbTooltip.Append(character.creator);
 				sbTooltip.AppendLine();
 			}
-			if (string.IsNullOrEmpty(inferredGender) == false)
+			if (string.IsNullOrEmpty(character.inferredGender) == false)
 			{
 				sbTooltip.NewLine();
-				sbTooltip.AppendFormat("Gender: {0} (Inferred)", inferredGender);
+				sbTooltip.AppendFormat("Gender: {0} (Inferred)", character.inferredGender);
 			}
 
+			string inferredGender = character.inferredGender?.ToLowerInvariant();
 			sbTooltip.NewParagraph();
 			sbTooltip.AppendLine($"Created: {character.creationDate.ToShortDateString()}");
 			sbTooltip.AppendLine($"Last modified: {character.updateDate.ToShortDateString()}");
 
 			// Set icon
 			int icon;
-			if (string.IsNullOrEmpty(inferredGender))
+			if (inferredGender == "male")
+				icon = 6;
+			else if (inferredGender == "female")
+				icon = 10;
+			else if (inferredGender == "transgender")
+				icon = 14;
+			else if (inferredGender == "futanari" || inferredGender == "hermaphrodite")
+				icon = 18;
+			else
 				icon = 2;
-			else if (string.Compare(inferredGender, "male", StringComparison.OrdinalIgnoreCase) == 0)
-				icon = 3;
-			else if (string.Compare(inferredGender, "female", StringComparison.OrdinalIgnoreCase) == 0)
-				icon = 4;
-			else if (string.Compare(inferredGender, "transgender", StringComparison.OrdinalIgnoreCase) == 0)
-				icon = 2;
-			else if (string.Compare(inferredGender, "non-binary", StringComparison.OrdinalIgnoreCase) == 0)
-				icon = 2;
-			else 
-				icon = 5;
+
 			if (character.hasLorebook)
-				icon += 4;
+				icon += 2; // Lore
 			if (bGrayed)
-				icon += 9; // Grayed out
+				icon += 2; // Grayed out
 
 			var node = new TreeNode(label, icon, icon);
 			node.Tag = character;
