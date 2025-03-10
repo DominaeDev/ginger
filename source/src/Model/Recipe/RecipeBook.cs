@@ -1,8 +1,10 @@
 ﻿using Ginger.Properties;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml;
 
 namespace Ginger
 {
@@ -50,8 +52,8 @@ namespace Ginger
 			var recipeFiles = Utility.FindFilesInFolder(Utility.ContentPath("Recipes"), "*.xml", true);
 			for (int i = 0; i < recipeFiles.Length; ++i)
 			{
-				var recipe = new Recipe(recipeFiles[i]);
-				if (recipe.LoadFromXml(recipeFiles[i], "Ginger"))
+				Recipe recipe;
+				if (LoadRecipe(recipeFiles[i], out recipe))
 					recipes.Add(recipe);
 			}
 			recipes = recipes.DistinctByVersion().ToList();
@@ -105,6 +107,58 @@ namespace Ginger
 
 			// Load macros
 			Current.LoadMacros();
+		}
+
+		private static bool LoadRecipe(string filename, out Recipe recipe)
+		{
+			byte[] buffer = Utility.LoadFile(filename);
+			if (buffer == null || buffer.Length == 0)
+			{
+				recipe = default(Recipe);
+				return false;
+			}
+
+			XmlDocument xmlDoc = new XmlDocument();
+			try
+			{
+				using (var stream = new MemoryStream(buffer))
+				{
+					xmlDoc.Load(stream);
+					if (string.Compare(xmlDoc.DocumentElement.Name, "Ginger") != 0)
+					{
+						recipe = default(Recipe);
+						return false;
+					}
+
+					recipe = new Recipe(filename);
+					if (recipe.LoadFromXml(xmlDoc.DocumentElement))
+					{
+						string xmlSource = Encoding.UTF8.GetString(stream.ToArray());
+						AutodetectFlags(recipe, xmlSource);
+						return true;
+					}
+				}
+			}
+			catch
+			{
+			}
+			recipe = default(Recipe);
+			return false;
+		}
+
+		private static string[] _detail_flags = new string[] { "less-detail", "normal-detail", "more-detail" };
+
+		private static void AutodetectFlags(Recipe recipe, string xml)
+		{
+			int pos_detail = xml.IndexOfAny(_detail_flags, 0, StringComparison.OrdinalIgnoreCase);
+			if (pos_detail != -1)
+				recipe.flags.Add(Constants.Flag.LevelOfDetail);
+			if (recipe.flags.Contains(Constants.Flag.NSFW) == false)
+			{
+				int pos_nsfw = xml.IndexOf("allow-nsfw", 0, StringComparison.OrdinalIgnoreCase);
+				if (pos_nsfw != -1)
+					recipe.flags.Add(Constants.Flag.NSFWOptional);
+			}
 		}
 
 		private static List<Recipe> recipes = new List<Recipe>();

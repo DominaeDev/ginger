@@ -11,7 +11,7 @@
 	<!-- Output -->
 	<Attribute rule="is-woman">
 		<Name>Appearance</Name>
-		<Value>chubby, curvy, round face, double chin, full lips, overweight, [nsfw?large breasts], wide hips and thick thighs</Value>
+		<Value>chubby, curvy, round face, double chin, full lips, overweight, [allow-nsfw?large breasts], wide hips and thick thighs</Value>
 	</Attribute>
 	
 	<Attribute rule="not is-woman">
@@ -25,7 +25,7 @@
 	</Attribute>
 	
 	<Node path="persona/appearance/chubby" order="50" rule="normal-detail">
-		[char] carries some extra weight that gives [them] a slightly chubby build with noticeable love handles and round and squishy belly and [allow-nsfw?fat ass|plump backside]. 
+		[char] carries some extra weight that gives [them] a slightly chubby build with noticeable love handles and round and squishy belly and [allow-nsfw?a thick ass|plump backside]. 
 		[Their] arms are soft and pudgy. [char] could stand to lose some weight. [They've] gotten into bad habits of sitting too much and eating fatty foods.
 	</Node>
 	

@@ -4,7 +4,7 @@
 	<Title>Orc</Title>
 	<Author>Ginger</Author>
 	<Category>Archetype</Category>
-	<Flags>humanoid, biped, orc, core, detail-optional</Flags>
+	<Flags>humanoid, biped, orc, core</Flags>
 	<Requires>not core</Requires>
 	<Order>-200</Order>
 	<Description>

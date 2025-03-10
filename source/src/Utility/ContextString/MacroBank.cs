@@ -74,7 +74,7 @@ namespace Ginger
 					sb.Remove(pos, 1);
 					break;
 				}
-				pos = sb.IndexOfAny(pos, bad_chars);
+				pos = sb.IndexOfAny(bad_chars, pos);
 			}
 
 			value = sb.ToString();

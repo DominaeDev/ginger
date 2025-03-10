@@ -3,7 +3,7 @@
 	<Description>Describe what the character is wearing.</Description>
 	<Author>Ginger</Author>
 	<Category>Character</Category>
-	<Flags>outfit, detail-optional, nsfw-optional</Flags>
+	<Flags>outfit</Flags>
 	<Order>-100</Order>
 	
 	<!-- Parameters --> 

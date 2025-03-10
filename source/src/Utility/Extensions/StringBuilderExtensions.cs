@@ -25,7 +25,7 @@ namespace Ginger
 			return sb.ToString().IndexOf(value, startIndex, StringComparison.OrdinalIgnoreCase);
 		}
 
-		public static int IndexOf(this StringBuilder sb, string value, int startIndex)
+		public static int IndexOf(this StringBuilder sb, string value, int startIndex = 0)
 		{
 			int index;
 			int length = value.Length;
@@ -48,7 +48,7 @@ namespace Ginger
 			return -1;
 		}
 
-		public static int IndexOf(this StringBuilder sb, char value, int startIndex)
+		public static int IndexOf(this StringBuilder sb, char value, int startIndex = 0)
 		{
 			for (int i = startIndex; i < sb.Length; ++i)
 			{
@@ -59,7 +59,7 @@ namespace Ginger
 			return -1;
 		}
 
-		public static int IndexOfAny(this StringBuilder sb, int startIndex, params char[] chars)
+		public static int IndexOfAny(this StringBuilder sb, char[] chars, int startIndex = 0)
 		{
 			if (chars == null)
 				return -1;
@@ -69,6 +69,21 @@ namespace Ginger
 				for (int j = 0; j < chars.Length; ++j)
 					if (sb[i] == chars[j])
 						return i;
+			}
+
+			return -1;
+		}
+
+		public static int IndexOfAny(this StringBuilder sb, string[] words, int startIndex = 0)
+		{
+			if (words == null)
+				return -1;
+
+			foreach (var word in words)
+			{
+				int idx = sb.IndexOf(word, startIndex);
+				if (idx != -1)
+					return idx;
 			}
 
 			return -1;

@@ -4,7 +4,7 @@
 	<Author>Ginger</Author>
 	<Category>Location</Category>
 	<Requires>not location</Requires>
-	<Flags>location, nsfw-optional</Flags>
+	<Flags>location</Flags>
 	
 	<!-- Parameters -->
 	<Text id="ship" required="yes">

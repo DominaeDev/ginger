@@ -5,7 +5,7 @@
 	<Author>Ginger</Author>
 	<Category>Speech</Category>
 	<Requires>not speech-pattern</Requires>
-	<Flags>speech-pattern, detail-optional</Flags>	
+	<Flags>speech-pattern</Flags>	
 	
 	<Node path="system/guidelines/riddles" rule="normal-detail">[char] clouds and obscures [their] responses under a veil of riddles, rhymes, puns, and word play.</Node>
 	<Node path="system/genre" style="list" order="600" mode="exclude" rule="more-detail">Genre: {inner}.</Node>

@@ -5,7 +5,7 @@
 	<Author>Ginger</Author>
 	<Category>Body</Category>
 	<Requires>not breasts</Requires>
-	<Flags>breasts, nsfw, detail-optional</Flags>
+	<Flags>breasts, nsfw</Flags>
 	<Order>0</Order>
 	
 	<!-- Parameters -->

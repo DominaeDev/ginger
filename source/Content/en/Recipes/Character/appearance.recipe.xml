@@ -5,7 +5,7 @@
 	<Author>Ginger</Author>
 	<Category>Character</Category>
 	<Requires>not appearance</Requires>
-	<Flags>appearance, detail-optional</Flags>
+	<Flags>appearance</Flags>
 	<Order>-100</Order>
 			
 	<!-- Parameters -->
