@@ -608,7 +608,7 @@ namespace Ginger
 			var pos_var = sb.IndexOf("{$", 0);
 			while (pos_var != -1)
 			{
-				int pos_var_end = sb.IndexOfAny(pos_var + 2, '}', ' ', '\r', '\n', '\t');
+				int pos_var_end = sb.IndexOfAny(new char[] { '}', ' ', '\r', '\n', '\t' }, pos_var + 2);
 				if (pos_var_end == -1 || char.IsWhiteSpace(sb[pos_var_end]))
 					break;
 
@@ -683,7 +683,7 @@ namespace Ginger
 		public static void Escape(StringBuilder sb)
 		{
 			// Escape curly brackets (except for macros)
-			int pos = sb.IndexOfAny(0, '{', '}');
+			int pos = sb.IndexOfAny(new char[] { '{', '}' }, 0);
 			while (pos != -1)
 			{
 				char ch = sb[pos];
@@ -694,7 +694,7 @@ namespace Ginger
 				if (pos_end == -1)
 				{
 					sb.Insert(pos, ch);
-					pos = sb.IndexOfAny(pos + 2, '{', '}');
+					pos = sb.IndexOfAny(new char[] { '{', '}' }, pos + 2);
 					continue;
 				}
 
@@ -702,14 +702,14 @@ namespace Ginger
 				if (_commands.Contains(word))
 				{
 					// Don't escape
-					pos = sb.IndexOfAny(pos_end + 1, '{', '}');
+					pos = sb.IndexOfAny(new char[] { '{', '}' }, pos_end + 1);
 					continue;
 				}
 
 				// Escape
 				sb.Insert(pos_end, '}');
 				sb.Insert(pos, '{');
-				pos = sb.IndexOfAny(pos_end + 3, '{', '}');
+				pos = sb.IndexOfAny(new char[] { '{', '}' }, pos_end + 3);
 			}
 
 			sb.Replace("[", "[[");

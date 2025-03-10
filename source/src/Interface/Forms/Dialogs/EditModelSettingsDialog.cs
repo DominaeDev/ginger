@@ -69,7 +69,7 @@ namespace Ginger
 			SetToolTip(labelPenaltyTokens, Resources.tooltip_model_repeat_lastn);
 			SetToolTip(btnCopy, Resources.tooltip_link_copy_settings);
 			SetToolTip(btnPaste, Resources.tooltip_link_paste_settings);
-			SetToolTip(btnPaste, Resources.tooltip_link_reset_settings);
+			SetToolTip(btnReset, Resources.tooltip_link_reset_settings);
 			SetToolTip(cbSavePromptTemplate, Resources.tooltip_model_associate_prompt_template);
 		}
 

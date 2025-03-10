@@ -91,7 +91,7 @@ namespace Ginger
 			int loop_count = 0;
 			while (pos < sbInput.Length)
 			{
-				int beginBracket = sbInput.IndexOfAny(pos, '[', '{', ']', '}');
+				int beginBracket = sbInput.IndexOfAny(new char[] { '[', '{', ']', '}' }, pos);
 				if (beginBracket < 0)
 					break;
 
@@ -775,7 +775,7 @@ namespace Ginger
 					// Expect [if.. bracket to end with ']'.
 					if (i + 3 < sb.Length && char.IsWhiteSpace(sb[i + 3]))
 					{
-						int pos_bracket = sb.IndexOfAny(i + 4, new char[] { '[', ']', '{', '}' });
+						int pos_bracket = sb.IndexOfAny(new char[] { '[', ']', '{', '}' }, i + 4);
 						if (pos_bracket != -1 && sb[pos_bracket] == ']')
 						{
 							if (currScope == 0)
@@ -793,7 +793,7 @@ namespace Ginger
 					}
 					else // No condition
 					{
-						int pos_bracket = sb.IndexOfAny(i + 3, new char[] { '[', ']', '{', '}' });
+						int pos_bracket = sb.IndexOfAny(new char[] { '[', ']', '{', '}' }, i + 3);
 						if (pos_bracket != -1)
 						{
 							result.error = true;
@@ -815,7 +815,7 @@ namespace Ginger
 					// Expect [elif.. to end with ']'.
 					if (i + 5 < sb.Length && char.IsWhiteSpace(sb[i + 5]))
 					{
-						int pos_bracket = sb.IndexOfAny(i + 5, new char[] { '[', ']', '{', '}' });
+						int pos_bracket = sb.IndexOfAny(new char[] { '[', ']', '{', '}' }, i + 5);
 						if (pos_bracket != -1 && sb[pos_bracket] == ']')
 						{
 							if (currScope == 1)
@@ -836,7 +836,7 @@ namespace Ginger
 					}
 					else // No condition
 					{
-						int pos_bracket = sb.IndexOfAny(i + 5, new char[] { '[', ']', '{', '}' });
+						int pos_bracket = sb.IndexOfAny(new char[] { '[', ']', '{', '}' }, i + 5);
 						if (pos_bracket != -1 && sb[pos_bracket] == ']')
 						{
 							if (bElseFound == false)  // [elif] -> [else]

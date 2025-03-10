@@ -185,6 +185,7 @@ namespace Ginger
 			public Image RepairIcon => Resources.dark_repair;
 			public Image CreateBackupIcon => Resources.dark_create_backup;
 			public Image RestoreBackupIcon => Resources.dark_restore_backup;
+			public Image ResetIcon => Resources.dark_reset;
 
 			public Image Collapsed => Resources.dark_collapsed;
 			public Image Expanded => Resources.dark_expanded;

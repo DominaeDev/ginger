@@ -123,8 +123,8 @@ namespace Ginger
 			public static readonly string Hidden = "__hidden";
 			public static readonly string PruneScenario = "__prune-scenario";
 			public static readonly string ToggleFormatting = "__formatting";
-			public static readonly string ToggleNSFW = "nsfw-optional";
-			public static readonly string LevelOfDetail = "detail-optional";
+			public static readonly string NSFWOptional = "__nsfw-optional";
+			public static readonly string LevelOfDetail = "__detail-optional";
 		}
 
 		public static readonly string DefaultCharacterName = "Unnamed";

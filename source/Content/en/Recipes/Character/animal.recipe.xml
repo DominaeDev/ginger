@@ -5,7 +5,7 @@
 	<Author>Ginger</Author>
 	<Category>Archetype</Category>
 	<Requires>not core</Requires>
-	<Flags>core, animal, fur, non-humanoid, detail-optional</Flags>
+	<Flags>core, animal, fur, non-humanoid</Flags>
 	<Order>-200</Order>
 
 	<!-- Complementary recipes -->

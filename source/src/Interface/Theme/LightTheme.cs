@@ -183,6 +183,7 @@ namespace Ginger
 			public Image RepairIcon => Resources.repair;
 			public Image CreateBackupIcon => Resources.create_backup;
 			public Image RestoreBackupIcon => Resources.restore_backup;
+			public Image ResetIcon => Resources.reset;
 
 			public Image Collapsed => Resources.collapsed;
 			public Image Expanded => Resources.expanded;

@@ -5,7 +5,6 @@
 	<Author>Ginger</Author>
 	<Category>User</Category>
 	<Order>0</Order>
-	<Flags>detail-optional</Flags>
 	
 	<!-- Parameters -->
 	<Choice id="user-gender" style="custom">

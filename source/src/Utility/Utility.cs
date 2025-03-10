@@ -2000,5 +2000,30 @@ namespace Ginger
 
 			return destImage;
 		}
+
+		public static bool BlurImage(ref Image image)
+		{
+			try
+			{
+				int width = image.Width;
+				int height = image.Height;
+				int radial = Math.Max(1, Convert.ToInt32(Math.Max(width, height) / 768.0));
+
+				// Downsample image
+				Bitmap blurredImage = ResampleImage(image, width / 4, height / 4);
+
+				// Gaussian blur
+				var gaussianBlur = new SuperfastBlur.GaussianBlur(blurredImage);
+				blurredImage = gaussianBlur.Process(radial);
+
+				// Upsample image
+				image = ResampleImage(blurredImage, width, height);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
 	}
 }

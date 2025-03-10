@@ -3415,7 +3415,7 @@ namespace Ginger
 				options |= Generator.Option.Group;
 
 			var outputs = Generator.GenerateMany(options);
-			
+
 			// User persona
 			UserData userInfo = null;
 			if (AppSettings.BackyardLink.WriteUserPersona)
@@ -3464,6 +3464,56 @@ namespace Ginger
 			// Refresh character information
 			Backyard.RefreshCharacters();
 			return Backyard.Error.NoError;
+		}
+			
+		private bool ResetBackyardModelSettings()
+		{
+			// Refresh character list
+            if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+            {
+                MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                AppSettings.BackyardLink.Enabled = false;
+                return false;
+            }
+
+			// Choose character(s)
+			var groups = Backyard.Groups.ToArray();
+
+			// Confirm
+			if (MessageBox.Show(string.Format(Resources.msg_link_reset_model_settings, NumCharacters(groups.Length)), Resources.cap_link_reset_model_settings, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+				return false;
+
+			var updater = new BulkUpdateModelSettings();
+
+			var progressDlg = new ProgressBarDialog();
+			progressDlg.Message = "Updating...";
+
+			progressDlg.onCancel += (s, e) => {
+				updater.Cancel();
+				progressDlg.Close();
+			};
+			updater.onProgress += (value) => {
+				progressDlg.Percentage = value;
+			};
+			updater.onComplete += (result) => {
+				progressDlg.Percentage = 100;
+				progressDlg.TopMost = false;
+				progressDlg.Close();
+
+				CompleteUpdateSettings(result);
+				_bCanRegenerate = true;
+				_bCanIdle = true;
+			};
+
+			for (int i = 0; i < groups.Length; ++i)
+				updater.Enqueue(groups[i]);
+
+			_bCanRegenerate = false;
+			_bCanIdle = false;
+			updater.Start(new Backyard.ChatParameters());
+			progressDlg.ShowDialog(this);
+
+			return true;
 		}
 	}
 }

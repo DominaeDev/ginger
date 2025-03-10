@@ -6,7 +6,7 @@
 	<Author>Ginger</Author>
 	<Category>Job</Category>
 	<Requires>not job</Requires>
-	<Flags>nsfw, prostitute, job, detail-optional</Flags>
+	<Flags>nsfw, prostitute, job</Flags>
 		
 	<!-- Personality -->
 	<Attribute>
