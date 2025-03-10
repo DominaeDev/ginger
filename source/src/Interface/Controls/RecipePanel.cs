@@ -216,6 +216,9 @@ namespace Ginger
 					case ChoiceParameter.Style.Slider:
 						panel = CreateParameterPanel(new ChoiceSliderParameterPanel(), parameter as ChoiceParameter);
 						break;
+					case ChoiceParameter.Style.Actors:
+						panel = CreateParameterPanel(new ActorChoiceParameterPanel(), parameter as ChoiceParameter);
+						break;
 					}
 				}
 				else if (parameter is MultiChoiceParameter)

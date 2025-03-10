@@ -19,6 +19,7 @@ namespace Ginger
 			Multiple,
 			Slider,
 			Custom,
+			Actors,
 			Default = List,
 		}
 		public Style style;
@@ -69,6 +70,13 @@ namespace Ginger
 			}
 
 			selectedIndex = -1;
+
+			if (style == Style.Actors)
+			{
+				defaultValue = null;
+				items.Clear();
+				return true;
+			}
 
 			if (items.Count == 0)
 				return false;
@@ -123,9 +131,6 @@ namespace Ginger
 			if (string.IsNullOrEmpty(value))
 				return;
 
-			if (scope == Parameter.Scope.Local)
-				state.SetFlag(value, scope);
-
 			if (selectedIndex == -2) // Custom
 			{
 				state.SetValue(id, value, scope);
@@ -138,6 +143,21 @@ namespace Ginger
 				if (isGlobal && scope == Parameter.Scope.Global)
 					state.Reserve(id, uid, value);
 			}
+			else if (style == Style.Actors) // Actors
+			{
+				int actorIndex;
+				if (int.TryParse(value, out actorIndex) && actorIndex >= 0 && actorIndex < Current.Characters.Count)
+				{
+					string name = Current.Characters[actorIndex].spokenName;
+					state.SetValue(id, name, scope);
+					state.SetValue(id + ":id", string.Format("actor-{0}", actorIndex), scope);
+					state.SetValue(id + ":text", name, scope);
+					state.SetValue(id + ":value", name, scope);    // Deprecated
+
+					if (isGlobal && scope == Parameter.Scope.Global)
+						state.Reserve(id, uid, value);
+				}
+			}
 			else if (selectedIndex >= 0 && selectedIndex < items.Count)
 			{
 				string textValue = items[selectedIndex].label;
@@ -146,6 +166,9 @@ namespace Ginger
 				state.SetValue(id + ":text", textValue, scope);
 				state.SetValue(id + ":value", textValue, scope);	// Deprecated
 				state.SetValue(id + ":index", selectedIndex, scope);
+
+				if (scope == Parameter.Scope.Local)
+					state.SetFlag(value, scope);
 
 				if (isGlobal && scope == Parameter.Scope.Global)
 					state.Reserve(id, uid, textValue);
