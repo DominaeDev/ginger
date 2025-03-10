@@ -3480,7 +3480,7 @@ namespace Ginger
 			var groups = Backyard.Groups.ToArray();
 
 			// Confirm
-			if (MessageBox.Show(string.Format(Resources.msg_link_reset_model_settings, NumCharacters(groups.Length)), Resources.cap_link_reset_model_settings, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+			if (MessageBox.Show(Resources.msg_link_reset_model_settings, Resources.cap_link_reset_model_settings, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
 				return false;
 
 			var updater = new BulkUpdateModelSettings();
@@ -3500,7 +3500,7 @@ namespace Ginger
 				progressDlg.TopMost = false;
 				progressDlg.Close();
 
-				CompleteUpdateSettings(result);
+				CompleteResetModelSettings(result);
 				_bCanRegenerate = true;
 				_bCanIdle = true;
 			};
@@ -3514,6 +3514,22 @@ namespace Ginger
 			progressDlg.ShowDialog(this);
 
 			return true;
+		}
+
+		private void CompleteResetModelSettings(BulkUpdateModelSettings.Result result)
+		{
+			if (result.error == BulkUpdateModelSettings.Error.NoError)
+			{
+				MessageBox.Show(this, string.Format(result.skipped == 0 ? Resources.msg_link_update_many_characters : Resources.msg_link_update_some_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_link_reset_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else if (result.error == BulkUpdateModelSettings.Error.Cancelled)
+			{
+				MessageBox.Show(this, Resources.error_canceled, Resources.cap_link_reset_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				MessageBox.Show(this, Resources.error_link_update_many_characters, Resources.cap_link_reset_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 	}
 }
