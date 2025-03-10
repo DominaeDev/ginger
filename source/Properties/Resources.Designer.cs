@@ -3102,7 +3102,9 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will reset the model settings for {0} in Backyard AI. Do you want to continue?.
+        ///   Looks up a localized string similar to This will reset the model settings for all characters in Backyard AI.
+        ///
+        ///Do you want to continue?.
         /// </summary>
         internal static string msg_link_reset_model_settings {
             get {
