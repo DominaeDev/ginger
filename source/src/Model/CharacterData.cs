@@ -95,10 +95,18 @@ namespace Ginger
 			// Is actor?
 			if (isMainCharacter == false)
 				context.SetFlag(Constants.Flag.Actor);
-			if (Current.Characters.Count > 1 && options.Contains(Generator.Option.Group) == false)
+			if (Current.Characters.Count > 1)
 			{
-				context.SetFlag("__multi");
-				context.SetFlag("multi-character");
+				if (options.Contains(Generator.Option.Group))
+				{
+					context.SetFlag("group");
+					context.SetFlag("__group");
+				}
+				else
+				{
+					context.SetFlag("multi-character");
+					context.SetFlag("__multi");
+				}
 			}
 
 			// Allow nsfw?
