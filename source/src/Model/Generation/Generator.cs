@@ -1065,7 +1065,7 @@ namespace Ginger
 					if (sSuffix.BeginsWith("-"))
 						sNoun = string.Concat(sNoun, sSuffix);
 					else
-						sNoun =string.Concat(sNoun, " ", sSuffix);
+						sNoun = string.Concat(sNoun, " ", sSuffix);
 					bSuffix = true;
 				}
 
