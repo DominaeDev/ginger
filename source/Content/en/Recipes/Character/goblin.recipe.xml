@@ -157,9 +157,11 @@
 	<Adjective order="size" rule="normal-detail and height:value lt 1500">small</Adjective>
 	<Adjective order="color" rule="normal-detail and skin-tone">{skin-tone.lower}-skinned</Adjective>
 	
-	<Noun priority="1" rule="normal-detail and hunter-gatherer">{gender} goblin hunter-gatherer</Noun>
-	<Noun priority="1" rule="normal-detail and soldier">{gender} goblin soldier</Noun>
-	<Noun priority="1" rule="normal-detail and shaman">{gender} goblin shaman</Noun>
-	<Noun priority="1" rule="normal-detail and chieftain">{gender} goblin [is-woman?Chieftess|Chieftain]</Noun>
+	<Noun affix="prefix" rule="not chieftain" priority="-1">{gender}</Noun>
+	<Noun>goblin</Noun>
+	<Noun affix="suffix" rule="hunter-gatherer">hunter-gatherer</Noun>
+	<Noun affix="suffix" rule="soldier">soldier</Noun>
+	<Noun affix="suffix" rule="shaman">shaman</Noun>
+	<Noun affix="suffix" rule="chieftain">[is-woman?chieftess|chieftain]</Noun>
 	
 </Ginger>

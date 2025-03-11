@@ -337,6 +337,7 @@
 	<Node path="persona/appearance/body" order="0" rule="more">{more}.</Node>
 
 	<!-- Descriptor -->
+	<Noun affix="prefix" priority="-1">{gender}</Noun>
 	<Noun rule="animal and not secondary-animal">anthropomorphic [@animal.lower]</Noun>
 	<Noun rule="secondary-animal">[@animal.lower] humanoid [secondary-animal?hybrid]</Noun>
 

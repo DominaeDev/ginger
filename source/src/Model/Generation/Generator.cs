@@ -1047,6 +1047,10 @@ namespace Ginger
 
 			if (string.IsNullOrEmpty(sNoun) == false)
 			{
+				bool bPrefix = false;
+				bool bSuffix = false;
+				string origNoun = sNoun;
+
 				// Affixes
 				if (string.IsNullOrEmpty(sPrefix) == false)
 				{
@@ -1054,6 +1058,7 @@ namespace Ginger
 						sNoun = string.Concat(sPrefix, sNoun);
 					else
 						sNoun = string.Concat(sPrefix, " ", sNoun);
+					bPrefix = true;
 				}
 				if (string.IsNullOrEmpty(sSuffix) == false)
 				{
@@ -1061,10 +1066,19 @@ namespace Ginger
 						sNoun = string.Concat(sNoun, sSuffix);
 					else
 						sNoun =string.Concat(sNoun, " ", sSuffix);
+					bSuffix = true;
 				}
 
 				for (int i = 0; i < recipeContexts.Length; ++i)
-					recipeContexts[i].SetValue(Constants.Variables.Noun, sNoun);
+				{
+					var context = recipeContexts[i];
+					context.SetValue(Constants.Variables.Noun, sNoun);
+					context.SetValue(string.Concat(Constants.Variables.Noun, ":noaffix"), origNoun);
+					if (bPrefix)
+						context.SetFlag(string.Concat(Constants.Variables.Noun, ":prefix"));
+					if (bSuffix)
+						context.SetFlag(string.Concat(Constants.Variables.Noun, ":suffix"));
+				}
 			}
 
 			string SelectOne(IEnumerable<AdjectiveNoun> adjNoun)
