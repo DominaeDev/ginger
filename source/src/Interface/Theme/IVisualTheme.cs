@@ -93,8 +93,8 @@ namespace Ginger
 		Image ArrowLeft { get; }
 		Image ArrowRight { get; }
 		Image LinkConnected { get; }
-		Image LinkDisconnected { get; }
 		Image LinkActive { get; }
+		Image LinkActiveDirty { get; }
 		Image LinkInactive { get; }
 		Image LinkBroken { get; }
 		Image EmbeddedAssets { get; }
@@ -104,7 +104,10 @@ namespace Ginger
 		Image RepairIcon { get; }
 		Image CreateBackupIcon { get; }
 		Image RestoreBackupIcon { get; }
+		Image ResetIcon { get; }
 		Image Collapsed { get; }
 		Image Expanded { get; }
+		Image PortraitOverrideAsset { get; }
+		Image ActorPortraitAsset { get; }
 	}
 }

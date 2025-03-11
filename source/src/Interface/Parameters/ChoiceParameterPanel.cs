@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace Ginger
@@ -7,6 +8,8 @@ namespace Ginger
 	{
 		protected override CheckBox parameterCheckBox { get { return cbEnabled; } }
 		protected override Label parameterLabel { get { return label; } }
+
+		protected virtual List<ChoiceParameter.Item> ChoiceItems { get { return this.parameter.items; } }
 
 		private int _contentHash;
 
@@ -82,7 +85,7 @@ namespace Ginger
 			// Drop down
 			if (parameter.isOptional)
 				comboBox.Items.Add("\u2014"); // Empty
-			foreach (var item in parameter.items)
+			foreach (var item in ChoiceItems)
 				comboBox.Items.Add(item.label);
 			if (parameter.style == ChoiceParameter.Style.Custom)
 				comboBox.Items.Add("(Other)");
@@ -100,7 +103,7 @@ namespace Ginger
 			SetTooltip(label, comboBox);
 		}
 
-		private void SetSelectedIndex()
+		protected void SetSelectedIndex()
 		{
 			int index = comboBox.SelectedIndex;
 			if (index <= -1 && parameter.isOptional)
@@ -162,7 +165,7 @@ namespace Ginger
 			NotifyEnabledChanged();
 		}
 
-		private void OnValueChanged(object sender, EventArgs e)
+		protected virtual void OnValueChanged(object sender, EventArgs e)
 		{
 			if (isIgnoringEvents)
 				return;
@@ -188,7 +191,7 @@ namespace Ginger
 
 				if (index >= 0 && index < comboBox.Items.Count)
 				{
-					this.parameter.value = parameter.items[index].value;
+					this.parameter.value = ChoiceItems[index].value;
 					this.parameter.selectedIndex = index;
 				}
 				else
@@ -227,7 +230,7 @@ namespace Ginger
 				return;
 
 			WhileIgnoringEvents(() => {
-				int index = this.parameter.items.FindIndex(i => string.Compare(i.value, value, true) == 0 || string.Compare(i.label, value, true) == 0);
+				int index = ChoiceItems.FindIndex(i => string.Compare(i.value, value, true) == 0 || string.Compare(i.label, value, true) == 0);
 
 				if (index == -1 && parameter.style == ChoiceParameter.Style.Custom && string.IsNullOrWhiteSpace(value) == false)
 				{
@@ -267,7 +270,7 @@ namespace Ginger
 			WhileIgnoringEvents(() => {
 				if (string.IsNullOrEmpty(reservedValue) == false) // Reserved
 				{
-					int index = this.parameter.items.FindIndex(i => string.Compare(i.value, reservedValue, true) == 0 || string.Compare(i.label, reservedValue, true) == 0);
+					int index = ChoiceItems.FindIndex(i => string.Compare(i.value, reservedValue, true) == 0 || string.Compare(i.label, reservedValue, true) == 0);
 					if (index != -1)
 					{
 						if (parameter.isOptional)

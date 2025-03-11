@@ -81,6 +81,7 @@
 			this.textBox_Custom.SpellChecking = true;
 			this.textBox_Custom.SyntaxHighlighting = true;
 			this.textBox_Custom.TabIndex = 3;
+			this.textBox_Custom.TextSize = new System.Drawing.Size(0, 0);
 			// 
 			// spacer
 			// 
@@ -143,12 +144,12 @@
 		}
 
 		#endregion
-		private System.Windows.Forms.Label label;
-		private Ginger.ComboBoxEx comboBox;
 		private System.Windows.Forms.Panel valuePanel;
 		private System.Windows.Forms.Panel spacer;
-		private FlatRichTextBox textBox_Custom;
 		private System.Windows.Forms.Panel rightPanel;
-		private System.Windows.Forms.CheckBox cbEnabled;
+		protected System.Windows.Forms.Label label;
+		protected ComboBoxEx comboBox;
+		protected FlatRichTextBox textBox_Custom;
+		protected System.Windows.Forms.CheckBox cbEnabled;
 	}
 }

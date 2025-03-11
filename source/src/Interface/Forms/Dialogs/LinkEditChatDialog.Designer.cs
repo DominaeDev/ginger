@@ -181,7 +181,6 @@ namespace Ginger
 			this.portraitImage.BackColor = System.Drawing.Color.DimGray;
 			this.portraitImage.BackgroundImage = global::Ginger.Properties.Resources.checker;
 			this.portraitImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.portraitImage.IsAnimation = false;
 			this.portraitImage.Location = new System.Drawing.Point(3, 2);
 			this.portraitImage.Name = "portraitImage";
 			this.portraitImage.Size = new System.Drawing.Size(150, 200);

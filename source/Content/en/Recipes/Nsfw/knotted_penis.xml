@@ -4,7 +4,7 @@
 	<Category>Body</Category>
 	<Author>Ginger</Author>
 	<Requires>not genitals</Requires>
-	<Flags>genitals, nsfw, detail-optional</Flags>
+	<Flags>genitals, nsfw</Flags>
 	
 	<!-- Parameters -->
 	<Number id="penis-length" style="length" optional="yes" min-value="0" max-value="99">

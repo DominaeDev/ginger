@@ -216,6 +216,9 @@ namespace Ginger
 					case ChoiceParameter.Style.Slider:
 						panel = CreateParameterPanel(new ChoiceSliderParameterPanel(), parameter as ChoiceParameter);
 						break;
+					case ChoiceParameter.Style.Actors:
+						panel = CreateParameterPanel(new ActorChoiceParameterPanel(), parameter as ChoiceParameter);
+						break;
 					}
 				}
 				else if (parameter is MultiChoiceParameter)
@@ -442,7 +445,7 @@ namespace Ginger
 					if (optionsMenu.DropDownItems.Count > 0)
 						optionsMenu.DropDownItems.Add(new ToolStripSeparator());
 
-					bool bCanToggleNSFW = recipe.flags.Contains(Constants.Flag.ToggleNSFW);
+					bool bCanToggleNSFW = recipe.flags.Contains(Constants.Flag.NSFWOptional);
 					optionsMenu.DropDownItems.Add(new ToolStripMenuItem("Allow NSFW content", null, (s, e) => {
 						CommitChange();
 						OnToggleNSFW?.Invoke(this, EventArgs.Empty);

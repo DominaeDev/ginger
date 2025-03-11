@@ -4,7 +4,6 @@
 	<Description>Describes the character's height.</Description>
 	<Author>Ginger</Author>
 	<Category>Body</Category>
-	<Flags>detail-optional</Flags>
 	
 	<!-- Parameters -->
 	<Number id="height" style="length" min="0" shared="yes">
@@ -58,13 +57,13 @@
 		One of the more unique aspects of the relationship between [char] and [user] is the significant difference in size between the two of them.
 		Any physical interaction between [char] and [user] should reflect their disparity in size.
 		Please pay attention to [char's] [@size] size in situations involving physicality, appearance, and anatomy.
-		[nsfw?Especially in sex scenes, it is important to remind the reader of [char's] size in relation to [user] and to adjust the interplay accordingly.]
+		[allow-nsfw?Especially in sex scenes, it is important to remind the reader of [char's] size in relation to [user] and to adjust the interplay accordingly.]
 	</System>	
 	<System rule="size-difference and bigger">
-		Due to their relative size difference, [char] looks down at [user] [nsfw?, and some positions and interactions may be physically impossible].
+		Due to their relative size difference, [char] looks down at [user] [allow-nsfw?, and some positions and interactions may be physically impossible].
 	</System>
 	<System rule="size-difference and smaller">
-		Due to their relative size difference, [char] looks up at [user] [nsfw?, and some positions and interactions may be physically impossible].
+		Due to their relative size difference, [char] looks up at [user] [allow-nsfw?, and some positions and interactions may be physically impossible].
 	</System>
 	
 	<!-- Append existing height -->

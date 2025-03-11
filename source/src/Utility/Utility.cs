@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
@@ -31,14 +32,14 @@ namespace Ginger
 
 		public static byte[] LoadFile(string filename)
 		{
-			byte[] bytes;
+			byte[] buffer;
 			
 			try
 			{
 				using (FileStream fs = File.OpenRead(filename))
 				{
-					bytes = new byte[fs.Length];
-					fs.Read(bytes, 0, (int)fs.Length);
+					buffer = new byte[fs.Length];
+					fs.Read(buffer, 0, (int)fs.Length);
 				}
 			}
 			catch
@@ -46,18 +47,18 @@ namespace Ginger
 				return null;
 			}
 
-			return bytes;
+			return buffer;
 		}
 
 
 		public static string LoadTextFile(string filename)
 		{
-			byte[] bytes = LoadFile(filename);
-			if (bytes != null)
+			byte[] buffer = LoadFile(filename);
+			if (buffer != null)
 			{
 				try
 				{
-					return Encoding.UTF8.GetString(bytes);
+					return Encoding.UTF8.GetString(buffer);
 				}
 				catch
 				{
@@ -85,14 +86,14 @@ namespace Ginger
 
 			try
 			{
-				byte[] bytes = File.ReadAllBytes(filename);
+				byte[] buffer = File.ReadAllBytes(filename);
 
 				// WebP
-				if (IsWebP(bytes))
-					return LoadWebPFromMemory(bytes, out image);
+				if (IsWebP(buffer))
+					return LoadWebPFromMemory(buffer, out image);
 
-				// Png, Jpeg, ...
-				using (var stream = new MemoryStream(bytes))
+				// Png, Jpeg, Gif, ...
+				using (var stream = new MemoryStream(buffer))
 				{
 					image = Image.FromStream(stream);
 					return true;
@@ -105,22 +106,22 @@ namespace Ginger
 			}
 		}
 
-		public static bool LoadImageFromMemory(byte[] bytes, out Image image)
+		public static bool LoadImageFromMemory(byte[] buffer, out Image image)
 		{
-			if (bytes == null || bytes.Length == 0)
+			if (buffer == null || buffer.Length == 0)
 			{
 				image = default(Image);
 				return false;
 			}
 
 			// WebP
-			if (IsWebP(bytes))
-				return LoadWebPFromMemory(bytes, out image);
+			if (IsWebP(buffer))
+				return LoadWebPFromMemory(buffer, out image);
 
 			// Load image first
 			try
 			{
-				using (var stream = new MemoryStream(bytes))
+				using (var stream = new MemoryStream(buffer))
 				{
 					image = Image.FromStream(stream);
 					return true;
@@ -128,26 +129,12 @@ namespace Ginger
 			}
 			catch
 			{
+				image = default(Image);
 			}
-			image = default(Image);
 			return false;
 		}
 
-		private static bool LoadWebPFromFile(string filename, out Image image)
-		{
-			try
-			{
-				byte[] bytes = File.ReadAllBytes(filename);
-				return LoadWebPFromMemory(bytes, out image);
-			}
-			catch
-			{
-				image = default(Image);
-				return false;
-			}
-		}
-
-		private static bool LoadWebPFromMemory(byte[] bytes, out Image image)
+		private static bool LoadWebPFromMemory(byte[] buffer, out Image image)
 		{
 			try
 			{
@@ -156,11 +143,11 @@ namespace Ginger
 					int w, h;
 					bool alpha, animation;
 					string format;
-					webp.GetInfo(bytes, out w, out h, out alpha, out animation, out format);
+					webp.GetInfo(buffer, out w, out h, out alpha, out animation, out format);
 
 					if (animation)
 					{
-						var frames = webp.AnimDecode(bytes);
+						var frames = webp.AnimDecode(buffer);
 						if (frames.Count > 0)
 						{
 							image = (Image)frames[0].Bitmap;
@@ -171,7 +158,7 @@ namespace Ginger
 					}
 					else 
 					{ 
-						image = (Image)webp.Decode(bytes);
+						image = (Image)webp.Decode(buffer);
 						return true;
 					}
 				}
@@ -179,48 +166,6 @@ namespace Ginger
 			catch (Exception e)
 			{
 				image = default(Image);
-				return false;
-			}
-		}
-		
-		public static bool IsAnimatedImage(Image image)
-		{
-			var dimension = new FrameDimension(image.FrameDimensionsList[0]);
-			int frameCount = image.GetFrameCount(dimension);
-			return frameCount > 1;
-		}
-
-		public static bool IsAnimatedWebP(string filename)
-		{
-			try
-			{
-				byte[] bytes = File.ReadAllBytes(filename);
-				return IsAnimatedWebP(bytes);
-			}
-			catch
-			{
-				return false;
-			}
-		}
-
-		public static bool IsAnimatedWebP(byte[] bytes)
-		{
-			if (IsWebP(bytes) == false)
-				return false;
-
-			try
-			{
-				using (var webp = new WebP())
-				{
-					int w, h;
-					bool alpha, animation;
-					string format;
-					webp.GetInfo(bytes, out w, out h, out alpha, out animation, out format);
-					return animation;
-				}
-			}
-			catch
-			{
 				return false;
 			}
 		}
@@ -234,7 +179,7 @@ namespace Ginger
 				&& buffer[ 8] == 'W' && buffer[ 9] == 'E' && buffer[10] == 'B' && buffer[11] == 'P';
 		}
 
-		public static bool IsWebPFile(string filename)
+		public static bool IsWebP(string filename)
 		{
 			byte[] buffer = new byte[12];
 			try
@@ -251,13 +196,53 @@ namespace Ginger
 				return false;
 			}
 		}
+				
+		public static bool IsGif(byte[] buffer)
+		{
+			if (buffer == null || buffer.Length < 6)
+				return false;
 
-		public static bool IsAnimatedPNG(string filename)
+			return (buffer[0] == 'G' && buffer[1] == 'I' && buffer[2] == 'F' && buffer[3] == '8' && buffer[4] == '7' && buffer[5] == 'a')
+				|| (buffer[0] == 'G' && buffer[1] == 'I' && buffer[2] == 'F' && buffer[3] == '8' && buffer[4] == '9' && buffer[5] == 'a');
+		}
+
+		public static bool IsAnimation(string filename)
 		{
 			try
 			{
-				byte[] bytes = File.ReadAllBytes(filename);
-				return IsAnimatedPNG(bytes);
+				byte[] buffer = File.ReadAllBytes(filename);
+				return IsAnimation(buffer);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+		
+		public static bool IsAnimation(byte[] buffer)
+		{
+			if (buffer == null || buffer.Length == 0)
+				return false;
+
+			if (WebP.IsWebP(buffer))
+				return IsAnimatedWebP(buffer);
+			if (IsGif(buffer))
+				return IsAnimatedGif(buffer);
+			return IsAnimatedPng(buffer);
+		}
+
+		private static bool IsAnimatedWebP(byte[] buffer)
+		{
+			try
+			{
+				using (var webp = new WebP())
+				{
+					int w, h;
+					bool alpha, animation;
+					string format;
+					webp.GetInfo(buffer, out w, out h, out alpha, out animation, out format);
+					return animation;
+				}
 			}
 			catch
 			{
@@ -265,38 +250,38 @@ namespace Ginger
 			}
 		}
 
-		public static bool IsAnimatedPNG(byte[] bytes)
+		private static bool IsAnimatedGif(byte[] buffer)
 		{
-			using (var stream = new MemoryStream(bytes))
+			Image image;
+			if (LoadImageFromMemory(buffer, out image))
 			{
-				PNGImage image = new PNGImage(stream);
-
-				foreach (var chunk in image.Chunks)
-				{
-					if (chunk is acTLChunk)
-					{
-						var acTL = chunk as acTLChunk;
-						return acTL.NumFrames > 1;
-					}
-				}
+				var dimension = new FrameDimension(image.FrameDimensionsList[0]);
+				int frameCount = image.GetFrameCount(dimension);
+				return frameCount > 1;
 			}
 			return false;
 		}
 
-		private static bool IsAnimatedPng(byte[] bytes)
+		private static bool IsAnimatedPng(byte[] buffer)
 		{
-			using (var stream = new MemoryStream(bytes))
+			try
 			{
-				PNGImage image = new PNGImage(stream);
-
-				foreach (var chunk in image.Chunks)
+				using (var stream = new MemoryStream(buffer))
 				{
-					if (chunk is acTLChunk)
+					PNGImage image = new PNGImage(stream);
+
+					foreach (var chunk in image.Chunks)
 					{
-						var acTL = chunk as acTLChunk;
-						return acTL.NumFrames > 1;
+						if (chunk is acTLChunk)
+						{
+							var acTL = chunk as acTLChunk;
+							return acTL.NumFrames > 1;
+						}
 					}
 				}
+			}
+			catch
+			{
 			}
 			return false;
 		}
@@ -315,9 +300,9 @@ namespace Ginger
 				|| ext == "apng" || ext == "bmp" || ext == "webp";
 		}
 
-		public static bool GetImageDimensions(byte[] bytes, out int width, out int height)
+		public static bool GetImageDimensions(byte[] buffer, out int width, out int height)
 		{
-			if (bytes == null || bytes.Length == 0)
+			if (buffer == null || buffer.Length == 0)
 			{
 				width = default(int);
 				height = default(int);
@@ -327,7 +312,7 @@ namespace Ginger
 			// Load image first
 			try
 			{
-				using (var stream = new MemoryStream(bytes))
+				using (var stream = new MemoryStream(buffer))
 				{
 					var image = Image.FromStream(stream, false, false);
 					width = image.Width;
@@ -340,7 +325,7 @@ namespace Ginger
 			}
 
 			// WebP
-			if (WebP.IsWebP(bytes, out width, out height))
+			if (WebP.IsWebP(buffer, out width, out height))
 				return true;
 			
 			width = default(int);
@@ -1430,7 +1415,7 @@ namespace Ginger
 			return found.ToArray();
 		}
 
-		public static int FindFirstWholeWord(string text, string[] words, StringComparison comparison = StringComparison.Ordinal, WholeWordOptions options = WholeWordOptions.Default)
+		public static int FindFirstWholeWord(string text, string[] words, int startPos = 0, StringComparison comparison = StringComparison.Ordinal, WholeWordOptions options = WholeWordOptions.Default)
 		{
 			if (words == null || words.Length == 0)
 				return -1;
@@ -1438,7 +1423,7 @@ namespace Ginger
 			int found = int.MaxValue;
 			for (int i = 0; i < words.Length; ++i)
 			{
-				int index = Math.Min(found, FindWholeWord(text, words[i], 0, comparison, options));
+				int index = Math.Min(found, FindWholeWord(text, words[i], startPos, comparison, options));
 				if (index >= 0)
 					found = Math.Min(found, index);
 			}
@@ -1448,14 +1433,14 @@ namespace Ginger
 			return -1;
 		}
 
-		public static int FindAnyWord(string text, string[] words, StringComparison comparison = StringComparison.Ordinal)
+		public static int FindAnyWord(string text, string[] words, int startPos = 0, StringComparison comparison = StringComparison.Ordinal)
 		{
 			if (words == null || words.Length == 0)
 				return -1;
 
 			for (int i = 0; i < words.Length; ++i)
 			{
-				int index = text.IndexOf(words[i], comparison);
+				int index = text.IndexOf(words[i], startPos, comparison);
 				if (index != -1)
 					return i;
 			}
@@ -1590,36 +1575,38 @@ namespace Ginger
 			return sbFilename.ToString().Trim();
 		}
 
-		public static string MakeUniqueFilename(string filename)
+		public static string MakeUniqueFilename(string path, string filename, ISet<string> used = null)
 		{
-			return NextAvailableFilename(ValidFilename(filename));
+			if (used == null)
+				used = new HashSet<string>();
+
+			var nextFilename = NextAvailableFilename(path, ValidFilename(filename), used);
+			used.Add(nextFilename.ToLowerInvariant());
+			return nextFilename;
 		}
 
 		private static string NumberPattern = " ({0})";
 
-		public static string NextAvailableFilename(string filePath)
+		private static string NextAvailableFilename(string path, string filename, ISet<string> used)
 		{
-			// Short-cut if already available
-			if (!File.Exists(filePath))
+			var filePath = Path.Combine(path, filename);
+			if (!File.Exists(filePath) && !used.Contains(filePath.ToLowerInvariant()))
 				return filePath;
 
-			// If path has extension then insert the number pattern just before the extension and return next filename
-			if (Path.HasExtension(filePath))
-				return GetNextFilename(filePath.Insert(filePath.LastIndexOf(Path.GetExtension(filePath)), NumberPattern));
+			string ext = GetFileExt(filename, false);
 
-			// Otherwise just append the pattern to the path and return next filename
-			return GetNextFilename(filePath + NumberPattern);
+			return GetNextFilename(path, string.Concat(Path.GetFileNameWithoutExtension(filename), NumberPattern, ".", ext), used);
 		}
 
-		private static string GetNextFilename(string pattern)
+		private static string GetNextFilename(string path, string pattern, ISet<string> used)
 		{
 			string tmp = string.Format(pattern, 1);
-			if (!File.Exists(tmp))
-				return tmp; // short-circuit if no matches
+			if (!Unavailable(tmp))
+				return Path.Combine(path, tmp);
 
 			int min = 1, max = 2; // min is inclusive, max is exclusive/untested
 
-			while (File.Exists(string.Format(pattern, max)))
+			while (Unavailable(string.Format(pattern, max)))
 			{
 				min = max;
 				max *= 2;
@@ -1628,13 +1615,19 @@ namespace Ginger
 			while (max != min + 1)
 			{
 				int pivot = (max + min) / 2;
-				if (File.Exists(string.Format(pattern, pivot)))
+				if (Unavailable(string.Format(pattern, pivot)))
 					min = pivot;
 				else
 					max = pivot;
 			}
 
-			return string.Format(pattern, max);
+			return Path.Combine(path, string.Format(pattern, max));
+
+			bool Unavailable(string filename)
+			{
+				string filePath = Path.Combine(path, filename).ToLowerInvariant();
+				return used.Contains(filePath) || File.Exists(filePath);
+			}
 		}
 
 		public static void OpenUrl(string url)
@@ -1788,8 +1781,8 @@ namespace Ginger
 				Image image;
 				try
 				{
-					byte[] bytes = Convert.FromBase64String(base64);
-					using (var stream = new MemoryStream(bytes))
+					byte[] buffer = Convert.FromBase64String(base64);
+					using (var stream = new MemoryStream(buffer))
 					{
 						image = Image.FromStream(stream);
 						return image;
@@ -1806,6 +1799,20 @@ namespace Ginger
 			}
 		}
 
+		// Strong indicators
+		private static string[] _strong_words = new string[] { 
+			"hermaphrodite", "futanari", "dickgirl", "shemale", "dick-girl", "she-male", "newhalf", 
+			"transgender", "trans-gender", "transsexual", "trans-sexual", 
+			"non-binary", "nonbinary", "intersex", };
+
+		private static string[] _explicit_genders = new string[] { 
+			"none", "genderless", "undefined", "n/a", 
+			"futa", 
+			"trans",
+			"female", "woman", 
+			"male", "man", 
+			};
+
 		public static string InferGender(string persona, bool isUser = false)
 		{
 			if (string.IsNullOrEmpty(persona))
@@ -1813,25 +1820,49 @@ namespace Ginger
 
 			persona = persona.ToLowerInvariant();
 
-			// Unambiguous indicators
-			if (FindAnyWord(persona, new string[] { "hermaphrodite" }, StringComparison.Ordinal) != -1)
-				return "Hermaphrodite";
-			if (FindAnyWord(persona, new string[] { "futanari", "dickgirl", "shemale", "dick-girl", "she-male", "newhalf" }, StringComparison.Ordinal) != -1)
-				return "Futanari";
-			if (FindAnyWord(persona, new string[] { "transgender", "transsexual" }, StringComparison.Ordinal) != -1)
-				return "Transgender";
-			if (FindAnyWord(persona, new string[] { "non-binary", "nonbinary", "intersex" }, StringComparison.Ordinal) != -1)
-				return "Non-binary";
+			int idx_strong = FindAnyWord(persona, _strong_words, 0, StringComparison.Ordinal);
+			if (idx_strong != -1)
+			{
+				if (idx_strong < 7)
+					return "Hermaphrodite";
+				else if (idx_strong < 11)
+					return "Transgender";
+				else
+					return "Non-binary";
+			}
 
-			// Split text into lines/sentences
+			// Split text into lines/sentences, skipping any that mention the user
 			string[] lines = persona
-				.Split(new char[] { '\n', '.' }, StringSplitOptions.RemoveEmptyEntries)
+				.Split(new char[] { '\n', '.', ',' }, StringSplitOptions.RemoveEmptyEntries)
 				.Where(s => isUser || s.Contains("{user}") == false)
 				.ToArray();
 
 			string primaryGuess = null;
 			string secondaryGuess = null;
 			string tertiaryGuess = null;
+
+			// Find explicit gender
+			for (int i = 0; i < lines.Length; ++i)
+			{
+				int pos_gender = FindWholeWord(lines[i], "gender", 0, StringComparison.Ordinal, WholeWordOptions.None);
+				if (pos_gender != -1)
+				{
+					int idx_gender = FindAnyWord(lines[i], _explicit_genders, pos_gender, StringComparison.Ordinal);
+					if (idx_gender != -1)
+					{
+						if (idx_gender < 4)
+							return null;
+						else if (idx_gender < 5)
+							return "Futanari";
+						else if (idx_gender < 6)
+							return "Transgender";
+						else if (idx_gender < 8)
+							return "Female";
+						else
+							return "Male";
+					}
+				}
+			}
 
 			// Primary indicators
 			for (int i = 0; i < lines.Length; ++i)
@@ -1840,32 +1871,36 @@ namespace Ginger
 
 				if (primaryGuess == null)
 				{
-					int index = -1;
-					if (Scan(line, ref index, "futa"))
+					int cookie = -1;
+					if (ScanFirst(line, ref cookie, "futa"))
 						return "Futanari";
-					if (Scan(line, ref index, "male", "man", "boy"))
+					if (ScanFirst(line, ref cookie, "male", "man", "boy"))
 						primaryGuess = "Male";
-					if (Scan(line, ref index, "female", "woman", "girl"))
+					if (ScanFirst(line, ref cookie, "female", "woman", "girl"))
 						primaryGuess = "Female";
-					if (Scan(line, ref index, "trans"))
+					if (ScanFirst(line, ref cookie, "trans"))
 						primaryGuess = "Transgender";
+					if (ScanFirst(line, ref cookie, "assistant", "story teller", "dungeon master", "narrator", "narration", "narrates", "narrate"))
+						return null;
 				}
 
 				if (secondaryGuess == null)
 				{
-					int index = -1;
-					if (Scan(line, ref index, "he", "him", "himself", "his"))
+					int cookie = -1;
+					if (ScanFirst(line, ref cookie, "his or her"))
+						secondaryGuess = null;
+					if (ScanFirst(line, ref cookie, "he", "him", "himself", "his"))
 						secondaryGuess = "Male";
-					if (Scan(line, ref index, "she", "her", "herself", "hers"))
+					if (ScanFirst(line, ref cookie, "she", "her", "herself", "hers"))
 						secondaryGuess = "Female";
 				}
 
 				if (tertiaryGuess == null)
 				{
-					int index = -1;
-					if (Scan(line, ref index, "boyfriend", "husband", "father", "dad", "son", "patriarch", "incubus", "master", "gentleman"))
+					int cookie = -1;
+					if (ScanFirst(line, ref cookie, "boyfriend", "husband", "father", "dad", "daddy", "son", "patriarch", "incubus", "master", "gentleman"))
 						tertiaryGuess = "Male";
-					if (Scan(line, ref index, "girlfriend", "wife", "waifu", "mother", "mom", "milf", "daughter", "matron", "matriarch", "succubus", "mistress", "lady"))
+					if (ScanFirst(line, ref cookie, "girlfriend", "wife", "waifu", "mother", "mom", "mommy", "milf", "daughter", "matron", "matriarch", "succubus", "mistress", "lady"))
 						tertiaryGuess = "Female";
 				}
 
@@ -1880,9 +1915,9 @@ namespace Ginger
 			return null; // None (or Neutral)
 		}
 
-		private static bool Scan(string text, ref int index, params string[] words)
+		private static bool ScanFirst(string text, ref int index, params string[] words)
 		{
-			int found = FindFirstWholeWord(text, words, StringComparison.Ordinal, WholeWordOptions.None);
+			int found = FindFirstWholeWord(text, words, 0, StringComparison.Ordinal, WholeWordOptions.None);
 			if (found == -1)
 				return false;
 
@@ -1892,6 +1927,11 @@ namespace Ginger
 				return true;
 			}
 			return false;
+		}
+
+		private static bool Scan(string text, int pos, params string[] words)
+		{
+			return FindAnyWord(text, words, pos, StringComparison.Ordinal) != -1;
 		}
 
 		public static string CreateRandomFilename(string ext)
@@ -1935,6 +1975,55 @@ namespace Ginger
 				.Select(s => s.Trim())
 				.ToArray();
 		}
-	}
 
+		public static Bitmap ResampleImage(Image image, int width, int height)
+		{
+			var destRect = new Rectangle(0, 0, width, height);
+			var destImage = new Bitmap(width, height);
+
+			destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+			using (var graphics = Graphics.FromImage(destImage))
+			{
+				graphics.CompositingMode = CompositingMode.SourceCopy;
+				graphics.CompositingQuality = CompositingQuality.HighQuality;
+				graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+				graphics.SmoothingMode = SmoothingMode.HighQuality;
+				graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+				using (var wrapMode = new ImageAttributes())
+				{
+					wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+					graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+				}
+			}
+
+			return destImage;
+		}
+
+		public static bool BlurImage(ref Image image)
+		{
+			try
+			{
+				int width = image.Width;
+				int height = image.Height;
+				int radial = Math.Max(1, Convert.ToInt32(Math.Max(width, height) / 768.0));
+
+				// Downsample image
+				Bitmap blurredImage = ResampleImage(image, width / 4, height / 4);
+
+				// Gaussian blur
+				var gaussianBlur = new SuperfastBlur.GaussianBlur(blurredImage);
+				blurredImage = gaussianBlur.Process(radial);
+
+				// Upsample image
+				image = ResampleImage(blurredImage, width, height);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+	}
 }

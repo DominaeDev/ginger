@@ -211,6 +211,12 @@
     <Compile Include="src\Interface\Controls\PageChanger.Designer.cs">
       <DependentUpon>PageChanger.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Interface\Controls\BackgroundPreview.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Controls\BackgroundPreview.Designer.cs">
+      <DependentUpon>BackgroundPreview.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\Interface\Controls\RecipeList.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -273,6 +279,9 @@
     </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\VariablesDialog.Designer.cs">
       <DependentUpon>VariablesDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Interface\Parameters\ActorChoiceParameterPanel.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="src\Interface\Theme\DarkTheme.cs" />
     <Compile Include="src\Interface\Theme\IVisualTheme.cs" />
@@ -439,6 +448,8 @@
       <DependentUpon>RecipePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Model\CardData.cs" />
+    <Compile Include="src\Model\Formats\Assets\AssetCollection.cs" />
+    <Compile Include="src\Model\Formats\Assets\AssetImageCache.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\BackyardChatBackupV1.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\GingerChatV2.cs" />
     <Compile Include="src\Model\Formats\UserData.cs" />
@@ -447,7 +458,7 @@
     <Compile Include="src\Model\Clipboard\ChatClipboard.cs" />
     <Compile Include="src\Model\Clipboard\ChatParametersClipboard.cs" />
     <Compile Include="src\Model\Clipboard\ChatStagingClipboard.cs" />
-    <Compile Include="src\Model\Formats\AssetFile.cs" />
+    <Compile Include="src\Model\Formats\Assets\AssetFile.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\AgnaiChat.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\BackyardChatBackupV2.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\BackyardChat.cs" />
@@ -458,6 +469,7 @@
     <Compile Include="src\Model\CustomVariable.cs" />
     <Compile Include="src\Model\Recipe\ParameterResolver.cs" />
     <Compile Include="src\Model\Recipe\ParameterState.cs" />
+    <Compile Include="src\Utility\ImageRef.cs" />
     <Compile Include="src\Utility\Extensions\ListExtensions.cs" />
     <Compile Include="src\Utility\Integration\AsyncFileTypeChecker.cs" />
     <Compile Include="src\Utility\Integration\AsyncTaskQueue.cs" />
@@ -513,6 +525,7 @@
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProvider.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleNoneProvider.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleRoundedProvider.cs" />
+    <Compile Include="src\Utility\ThirdParty\Superfastblur\GaussianBlur.cs" />
     <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\acTLChunk.cs" />
     <Compile Include="src\Utility\ThirdParty\WebPWrapper\WebPWrapper.cs" />
     <Compile Include="src\Utility\Undo\UndoStack.cs" />
@@ -732,6 +745,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Controls\PageChanger.resx">
       <DependentUpon>PageChanger.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Controls\BackgroundPreview.resx">
+      <DependentUpon>BackgroundPreview.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Controls\RecipeList.resx">
       <DependentUpon>RecipeList.cs</DependentUpon>
@@ -1102,10 +1118,19 @@
     <None Include="Resources\Icons\Dark\dark_repair.png" />
     <None Include="Resources\Icons\Dark\dark_restore_backup.png" />
     <None Include="Resources\Icons\Dark\dark_traits.png" />
+    <None Include="Resources\Icons\Dark\asset_portrait.png" />
+    <None Include="Resources\Icons\Dark\asset_override.png" />
+    <None Include="Resources\Icons\Dark\asset_actor.png" />
+    <None Include="Resources\Icons\Dark\dark_asset_actor_portrait.png" />
+    <None Include="Resources\Icons\Dark\dark_asset_override.png" />
+    <None Include="Resources\Icons\Dark\dark_link_dirty.png" />
+    <None Include="Resources\Icons\Dark\dark_reset.png" />
     <Content Include="Resources\Icons\Light\arrow_down.png" />
     <Content Include="Resources\Icons\Light\arrow_left.png" />
     <Content Include="Resources\Icons\Light\arrow_right.png" />
     <Content Include="Resources\Icons\Light\arrow_up.png" />
+    <None Include="Resources\Icons\Light\asset_actor_portrait.png" />
+    <None Include="Resources\Icons\Light\asset_override.png" />
     <Content Include="Resources\Icons\Light\characteristic.png" />
     <Content Include="Resources\Icons\Light\checker.png" />
     <None Include="Resources\Icons\Light\clean.png" />
@@ -1121,6 +1146,12 @@
     <None Include="Resources\Icons\Light\embedded_assets.png" />
     <Content Include="Resources\Icons\Light\expanded.png" />
     <Content Include="Resources\Icons\Light\folder.png" />
+    <None Include="Resources\Icons\Light\link_active.png" />
+    <None Include="Resources\Icons\Light\link_broken.png" />
+    <None Include="Resources\Icons\Light\link_connected.png" />
+    <None Include="Resources\Icons\Light\link_dirty.png" />
+    <None Include="Resources\Icons\Light\link_disconnected.png" />
+    <None Include="Resources\Icons\Light\link_inactive.png" />
     <Content Include="Resources\Icons\Light\lore.png" />
     <Content Include="Resources\Icons\Light\lore_down.png" />
     <Content Include="Resources\Icons\Light\lore_small.png" />
@@ -1134,6 +1165,7 @@
     <Content Include="Resources\Icons\Light\red_dot.png" />
     <None Include="Resources\Icons\Light\repair.png" />
     <None Include="Resources\Icons\Light\restore_backup.png" />
+    <None Include="Resources\Icons\Light\reset.png" />
     <Content Include="Resources\Icons\Light\snippet.png" />
     <Content Include="Resources\Icons\Light\snippet_small.png" />
     <Content Include="Resources\Icons\Light\story.png" />

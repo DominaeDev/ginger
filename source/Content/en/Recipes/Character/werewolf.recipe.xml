@@ -9,7 +9,7 @@
 	<Author>Ginger</Author>
 	<Category>Archetype</Category>
 	<Requires>not core</Requires>
-	<Flags>core, werewolf, fur, detail-optional</Flags>
+	<Flags>core, werewolf, fur</Flags>
 	<Order>-200</Order>
 	
 	<!-- Complementary recipes -->

@@ -184,6 +184,7 @@ namespace Ginger
 				{
 					// system_post_history is equivalent to the author note.
 					card.authorNote = output.system_post_history.ToFaraday();
+					output.system_post_history = GingerString.Empty;
 				}
 				else
 				{
@@ -194,21 +195,15 @@ namespace Ginger
 				}
 			}
 
-			// Insert default system prompt if empty
-			if (string.IsNullOrWhiteSpace(card.data.system))
-				card.data.system = OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)];
-			else
+			// Resolve {original} 
+			int pos_original = card.data.system.IndexOf("{original}", 0, StringComparison.OrdinalIgnoreCase);
+			if (pos_original != -1)
 			{
-				// Replace 
-				int pos_original = card.data.system.IndexOf(GingerString.OriginalMarker, 0, StringComparison.OrdinalIgnoreCase);
-				if (pos_original != -1)
-				{
-					var sbSystem = new StringBuilder(card.data.system);
-					sbSystem.Remove(pos_original, 10);
-					sbSystem.Insert(pos_original, OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)]);
-					sbSystem.Replace(GingerString.OriginalMarker, ""); // Remove any remaining
-					card.data.system = sbSystem.ToString();
-				}
+				var sbSystem = new StringBuilder(card.data.system);
+				sbSystem.Remove(pos_original, 10);
+				sbSystem.Insert(pos_original, OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)]);
+				sbSystem.Replace("{original}", ""); // Remove any remaining
+				card.data.system = sbSystem.ToString();
 			}
 
 			if (output.hasLore)
@@ -225,6 +220,13 @@ namespace Ginger
 			card.data.isNSFW = Current.IsNSFW && AppSettings.BackyardLink.MarkNSFW;
 
 			return card;
+		}
+
+		public void EnsureSystemPrompt()
+		{
+			// Insert default system prompt if empty
+			if (string.IsNullOrWhiteSpace(data.system))
+				data.system = OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)];
 		}
 
 		public static FaradayCardV4 FromJson(string json)

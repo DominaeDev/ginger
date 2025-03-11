@@ -4,7 +4,7 @@
 	<Author>Ginger</Author>
 	<Category>Personality</Category>
 	<Requires>not dere</Requires>
-	<Flags>yandere, dere, detail-optional</Flags>
+	<Flags>yandere, dere</Flags>
 
 	<Attribute>
 		<Name>Personality</Name>

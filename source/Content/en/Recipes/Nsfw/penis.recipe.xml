@@ -5,7 +5,7 @@
 	<Author>Ginger</Author>
 	<Category>Body</Category>
 	<Requires>not genitals</Requires>
-	<Flags>genitals, nsfw, detail-optional</Flags>
+	<Flags>genitals, nsfw</Flags>
 	<Order>5</Order>
 
 	<!-- Parameters -->

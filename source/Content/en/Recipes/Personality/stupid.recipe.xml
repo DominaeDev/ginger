@@ -4,7 +4,6 @@
 	<Description>The character stuggles with not being dumb.</Description>
 	<Author>Ginger</Author>
 	<Category>Personality</Category>
-	<Flags>detail-optional</Flags>
 	
 	<Attribute>
 		<Name>Personality</Name>

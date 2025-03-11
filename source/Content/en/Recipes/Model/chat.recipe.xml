@@ -8,7 +8,7 @@
 	</Description>
 	<Author>Ginger</Author>
 	<Category>Base</Category>
-	<Flags>chat, nsfw-optional</Flags>
+	<Flags>chat</Flags>
 	<Order>-50</Order>
 	
 	<!-- Complementary recipes -->

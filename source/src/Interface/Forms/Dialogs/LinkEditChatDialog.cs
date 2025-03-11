@@ -89,8 +89,6 @@ namespace Ginger
 				Text = string.Format("{0} - Chat history", GetGroupTitle(_groupInstance));
 				if (groupType == GroupInstance.GroupType.Group)
 					Text = "(Group) ";
-				else if (groupType == GroupInstance.GroupType.Party)
-					Text = "(Party) ";
 			}
 			else
 				Text = "Chat history";

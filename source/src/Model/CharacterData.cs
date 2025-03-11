@@ -47,7 +47,7 @@ namespace Ginger
 			Full,		// + Parameters
 		}
 
-		public Context GetContext(ContextType type, bool includeInactive = false)
+		public Context GetContext(ContextType type, Generator.Option options = Generator.Option.None, bool includeInactiveRecipes = false)
 		{
 			Context context = Context.CreateEmpty();
 			// Name(s)
@@ -95,7 +95,7 @@ namespace Ginger
 			// Is actor?
 			if (isMainCharacter == false)
 				context.SetFlag(Constants.Flag.Actor);
-			if (Current.Characters.Count > 1)
+			if (Current.Characters.Count > 1 && options.Contains(Generator.Option.Group) == false)
 			{
 				context.SetFlag("__multi");
 				context.SetFlag("multi-character");
@@ -165,7 +165,7 @@ namespace Ginger
 			{
 				foreach (var recipe in recipes)
 				{
-					if (recipe.isEnabled == false && includeInactive == false)
+					if (recipe.isEnabled == false && includeInactiveRecipes == false)
 						continue;
 
 					context.SetFlags(recipe.flags);
@@ -175,14 +175,14 @@ namespace Ginger
 			return context;
 		}
 
-		public Context GetContextForRecipe(Recipe targetRecipe)
+		public Context GetContextForRecipe(Recipe targetRecipe, Generator.Option option = Generator.Option.None)
 		{
 			int index = recipes.IndexOf(targetRecipe);
 			if (index == -1)
-				return GetContext(ContextType.None);
+				return GetContext(ContextType.None, option);
 
 			// Prepare contexts
-			var localContexts = ParameterResolver.GetLocalContexts(recipes.ToArray(), GetContext(ContextType.None));
+			var localContexts = ParameterResolver.GetLocalContexts(recipes.ToArray(), GetContext(ContextType.None, option));
 			return localContexts[index];
 		}
 

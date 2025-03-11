@@ -292,6 +292,7 @@ namespace Ginger.Integration
 				// Write character to Backyard
 				var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
 				FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+				card.EnsureSystemPrompt();
 
 				Backyard.ImageInput[] imageInput = Backyard.GatherImages();
 				BackupData.Chat[] chats = null;

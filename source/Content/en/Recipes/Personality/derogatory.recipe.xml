@@ -5,7 +5,6 @@
 	<Author>Ginger</Author>
 	<Category>Speech</Category>
 	<Description>The character tends to use belittling and demeaning language.</Description>
-	<Flags>detail-optional</Flags>
 	
 	<List id="nicknames">
 		<Placeholder>List of derogatory words or nicknames, separated by commas</Placeholder>

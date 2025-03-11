@@ -7,7 +7,6 @@
 	<Color>FloralWhite</Color>
 	<Order>102</Order>
 	<Multiple>True</Multiple>
-	<Requires>not __actor</Requires>
 	<Flags>__group-greeting, __component, __internal, __ccv3</Flags>
 	
 	<!-- Parameters -->

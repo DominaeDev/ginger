@@ -91,7 +91,7 @@ namespace Ginger
 			}
 		}
 		
-		public static bool ContainsV3Data
+		public static bool ContainsEmbeddedAssets
 		{
 			get
 			{
@@ -350,10 +350,11 @@ namespace Ginger
 
 		public static void AddCharacter()
 		{
-			var character = new CharacterData();
+			var character = new CharacterData() {
+				_spokenName = Constants.DefaultCharacterName,
+			};
 			Characters.Add(character);
 			SelectedCharacter = Characters.Count - 1;
-
 			IsDirty = true;
 		}
 
@@ -406,12 +407,14 @@ namespace Ginger
 			if (imageType == AssetFile.AssetType.Icon)
 			{
 				Image portraitImage;
-				if (Card.LoadPortraitImageFromFile(images[0], out portraitImage))
+				if (Card.LoadPortraitFromFile(images[0], out portraitImage))
 				{
+					Card.portraitImage = ImageRef.FromImage(portraitImage);
 					lsImageLinks.Add(new Backyard.Link.Image() {
 						filename = Path.GetFileName(images[0]),
 						uid = Card.portraitImage.uid,
 					});
+					IsFileDirty = true;
 				}
 				++i;
 			}
@@ -438,6 +441,7 @@ namespace Ginger
 						filename = Path.GetFileName(images[i]),
 						uid = asset.uid,
 					});
+					IsFileDirty = true;
 				}
 			}
 
@@ -477,19 +481,28 @@ namespace Ginger
 		{
 			public GingerCharacter instance;
 			public Backyard.Link link;
+			public int selectedCharacter;
 			public bool isDirty;
 			public bool isFileDirty;
+			public string filename;
 		}
 
 		public static StashInfo Stash()
 		{
 			var stash = new StashInfo() {
 				instance = Instance,
+				filename = Filename,
 				link = Link,
 				isDirty = _bDirty,
 				isFileDirty = _bFileDirty,
+				selectedCharacter = SelectedCharacter,
 			};
+			Instance = null;
+			Filename = null;
+			SelectedCharacter = 0;
 			Link = null;
+			_bDirty = false;
+			_bFileDirty = false;
 			return stash;
 		}
 
@@ -497,8 +510,10 @@ namespace Ginger
 		{
 			Instance = stash.instance;
 			Link = stash.link;
+			Filename = stash.filename;
 			_bDirty = stash.isDirty;
 			_bFileDirty = stash.isFileDirty;
+			SelectedCharacter = stash.selectedCharacter;
 		}
 	}
 

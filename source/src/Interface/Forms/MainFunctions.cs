@@ -28,11 +28,25 @@ namespace Ginger
 			}
 			else if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern)
 				options |= Generator.Option.SillyTavernV2;
-			
 
-			Generator.Output output = Generator.Generate(options);
+			Generator.Output output;
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty)
+			{
+				var outputs = Generator.GenerateMany(options);
+				output = outputs[Current.SelectedCharacter];
+				outputBox.SetOutput(outputs);
+			}
+			else
+			{
+				output = Generator.Generate(options);
+				outputBox.SetOutput(output);
+			}
 
-			outputBox.SetOutput(output);
+			sidePanel.SetLoreCount(output.hasLore ? output.lorebook.entries.Count : 0, true);
+			sidePanel.OnRegenerate();
+
+			// Recalculate token count
+			CalculateTokens(output);
 
 #if DEBUG && false
 			string faradayJson;
@@ -47,12 +61,6 @@ namespace Ginger
 			tavernJson = tavernCard.ToJson();
 			outputBox_Raw2.Text = tavernJson;
 #endif
-
-			sidePanel.SetLoreCount(output.hasLore ? output.lorebook.entries.Count : 0, true);
-			sidePanel.OnRegenerate();
-
-			// Recalculate token count
-			CalculateTokens(output);
 		}
 
 		private void CalculateTokens(Generator.Output output)
@@ -343,7 +351,7 @@ namespace Ginger
 			int jsonErrors = 0;
 			FileUtil.Error error;
 			if (ext == ".png")
-				error = FileUtil.ImportCharacterFromPNG(filename, out jsonErrors, FileUtil.Format.SillyTavernV2 | FileUtil.Format.SillyTavernV3 | FileUtil.Format.Faraday);
+				error = FileUtil.ImportCharacterFromPNG(filename, out jsonErrors, FileUtil.Format.All);
 			else if (ext == ".json")
 				error = FileUtil.ImportCharacterJson(filename, out jsonErrors);
 			else if (ext == ".charx")
@@ -358,7 +366,11 @@ namespace Ginger
 					var pngFilename = Path.Combine(Path.GetDirectoryName(filename), string.Concat(Path.GetFileNameWithoutExtension(filename), ".png"));
 
 					Image portraitImage;
-					Current.Card.LoadPortraitImageFromFile(pngFilename, out portraitImage);
+					if (Current.Card.LoadPortraitFromFile(pngFilename, out portraitImage))
+					{
+						Current.Card.portraitImage = ImageRef.FromImage(portraitImage);
+						Current.IsFileDirty = true;
+					}
 				}
 			}
 			else
@@ -382,6 +394,12 @@ namespace Ginger
 			else if (error == FileUtil.Error.UnrecognizedFormat)
 			{
 				MessageBox.Show(Resources.error_unrecognized_character_format, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+			else if (error == FileUtil.Error.NoDataFound)
+			{
+				MessageBox.Show(Resources.error_no_data, Resources.cap_open_character_card, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				ClearStatusBarMessage();
 				return false;
 			}
 
@@ -1049,7 +1067,7 @@ namespace Ginger
 
 			// Only write ccv3 if necessary
 			var formats = FileUtil.Format.Ginger | FileUtil.Format.Faraday | FileUtil.Format.SillyTavernV2;
-			if (Current.ContainsV3Data)
+			if (Current.ContainsEmbeddedAssets)
 				formats |= FileUtil.Format.SillyTavernV3;
 
 			// Linking: Check filename
@@ -1083,9 +1101,7 @@ namespace Ginger
 					Current.IsLinkDirty = false;
 			}
 
-			Image portraitImage = Current.Card.portraitImage;
-			if (portraitImage == null)
-				portraitImage = GetPortraitToSave();
+			Image portraitImage = GetPortraitToSave();
 
 			if (FileUtil.Export(filename, portraitImage ?? DefaultPortrait.Image, formats))
 			{
@@ -1127,42 +1143,6 @@ namespace Ginger
 				MessageBox.Show(Resources.error_save_character_card, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
-		}
-
-		private Image GetPortraitToSave()
-		{
-			if (Current.Card.portraitImage != null)
-				return Current.Card.portraitImage;
-
-			if (Current.Card.assets == null)
-				return null;
-
-			var mainPortraitOverride = Current.Card.assets.GetMainPortraitOverride();
-			if (mainPortraitOverride != null)
-			{
-				if (mainPortraitOverride.data.isEmpty)
-					return null; // Error
-
-				Image image;
-				if (Utility.LoadImageFromMemory(mainPortraitOverride.data.bytes, out image))
-					return image;
-			}
-
-			var portraitAsset = Current.Card.assets.GetPortraitAsset();
-			if (portraitAsset != null)
-			{
-				// Promote to override
-				portraitAsset.name = AssetFile.PortraitOverrideName;
-
-				Image image;
-				if (Utility.LoadImageFromMemory(portraitAsset.data.bytes, out image))
-				{
-					Current.Card.portraitImage = ImageRef.FromImage(image);
-					_bShouldRefreshSidePanel = true;
-					return image;
-				}
-			}
-			return null;
 		}
 
 		private bool SaveAs()
@@ -1265,6 +1245,114 @@ namespace Ginger
 				return false;
 			}
 		}
+		
+		private bool SaveAsSeparately()
+		{
+			var folderDialog = new WinAPICodePack.CommonOpenFileDialog();
+			folderDialog.Title = Resources.cap_export_folder;
+			folderDialog.IsFolderPicker = true;
+			folderDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			folderDialog.EnsurePathExists = true;
+			folderDialog.AllowNonFileSystemItems = false;
+			folderDialog.EnsureFileExists = true;
+			folderDialog.EnsureReadOnly = false;
+			folderDialog.EnsureValidNames = true;
+			folderDialog.Multiselect = false;
+			folderDialog.AddToMostRecentlyUsedList = false;
+			folderDialog.ShowPlacesList = true;
+
+			if (folderDialog.ShowDialog() != WinAPICodePack.CommonFileDialogResult.Ok)
+				return false;
+
+			var outputDirectory = folderDialog.FileName;
+			if (Directory.Exists(outputDirectory) == false)
+				return false;
+
+			AppSettings.Paths.LastImportExportPath = outputDirectory;
+
+			// Generate filenames
+			var filenames = new List<string>(Current.Characters.Count);
+			HashSet<string> used_filenames = new HashSet<string>();
+			for (int i = 0; i < Current.Characters.Count; ++i)
+			{
+				filenames.Add(Utility.MakeUniqueFilename(outputDirectory, 
+						string.Format("{0} - {1}.png", Current.Card.name, Current.Characters[i].spokenName), 
+						used_filenames)
+				);
+			}
+
+			Undo.Suspend();
+			int successful = 0;
+			try
+			{
+				for (int i = 0; i < Current.Characters.Count; ++i)
+				{
+					var character = Current.Characters[i].Clone();
+
+					Image portraitImage = null;
+					AssetFile portraitAsset = null;
+					if (i == 0)
+					{
+						portraitImage = Current.Card.portraitImage;
+						portraitAsset = Current.Card.assets.GetPortraitOverride();
+					}
+					else
+					{
+						portraitAsset = Current.Card.assets.GetPortrait(i);
+						if (portraitAsset != null)
+						{
+							Image actorImage;
+							Utility.LoadImageFromMemory(portraitAsset.data.bytes, out actorImage);
+							portraitImage = actorImage;
+						}
+					}
+
+					var stash = Current.Stash();
+					try
+					{
+						Current.Instance = new GingerCharacter();
+						Current.Reset();
+						Current.Characters.Clear();
+						Current.Characters.Add(character);
+
+						if (portraitAsset != null && portraitAsset.HasTag(AssetFile.Tag.Animation))
+						{
+							// Set portrait override
+							portraitAsset = (AssetFile)portraitAsset.Clone();
+							portraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
+							Current.Card.assets.Add(portraitAsset);
+						}
+
+						var formats = FileUtil.Format.Ginger | FileUtil.Format.Faraday | FileUtil.Format.SillyTavernV2;
+						if (Current.ContainsEmbeddedAssets)
+							formats |= FileUtil.Format.SillyTavernV3;
+
+						if (FileUtil.Export(filenames[i], portraitImage ?? DefaultPortrait.Image, formats))
+							successful++;
+					}
+					finally
+					{
+						Current.Restore(stash);
+					}
+				}
+			}
+			finally
+			{
+				Undo.Resume();
+			}
+
+			if (successful > 0)
+			{
+				MessageBox.Show(string.Format(Resources.msg_save_multiple, NumCharacters(successful)), Resources.cap_save_multiple, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else
+			{
+				MessageBox.Show(Resources.error_save_character_card, Resources.cap_save_multiple, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			RefreshTitle();
+			return true;
+		}
 
 		private bool ConfirmSave(string caption)
 		{
@@ -1293,6 +1381,32 @@ namespace Ginger
 
 			IsClosing = true;
 			return Save(Current.Filename);
+		}
+		
+		private Image GetPortraitToSave()
+		{
+			if (Current.Card.portraitImage != null)
+				return Current.Card.portraitImage;
+
+			// Main portrait override
+			AssetFile portraitAsset = Current.Card.assets.GetPortrait(0);
+			if (portraitAsset != null)
+			{
+				// Promote to override if not already
+				if (portraitAsset.HasTag(AssetFile.Tag.PortraitOverride) == false)
+					portraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
+
+				var image = portraitAsset.ToImage();
+				if (image != null)
+				{
+					Current.Card.portraitImage = ImageRef.FromImage(image);
+					_bShouldRefreshSidePanel = true;
+					Undo.Push(Undo.Kind.Parameter, "Change portrait image");
+					return image;
+				}
+			}
+
+			return null;
 		}
 
 		private void ConfirmName()
@@ -1628,6 +1742,57 @@ namespace Ginger
 			return true;
 		}
 
+		private Backyard.Error CreateNewCharacterInBackyard(out CharacterInstance createdCharacter, out Backyard.Link.Image[] images)
+		{
+			if (Backyard.ConnectionEstablished == false)
+			{
+				createdCharacter = default(CharacterInstance);
+				images = null;
+				return Backyard.Error.NotConnected;
+			}
+
+			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
+			
+			// User persona
+			UserData userInfo = null;
+			if (AppSettings.BackyardLink.WriteUserPersona)
+			{
+				string userPersona = output.userPersona.ToFaraday();
+				if (string.IsNullOrEmpty(userPersona) == false)
+				{
+					userInfo = new UserData() {
+						name = Current.Card.userPlaceholder,
+						persona = userPersona,
+					};
+					output.userPersona = GingerString.Empty;
+				}
+			}
+
+			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+			card.EnsureSystemPrompt();
+
+			Backyard.ImageInput[] imageInput = Backyard.GatherImages();
+			BackupData.Chat[] chats = null;
+			if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1)
+				chats = Backyard.GatherChats(card, output, imageInput);
+
+			var error = Backyard.CreateNewCharacter(card, imageInput, chats, out createdCharacter, out images, userInfo);
+			if (error != Backyard.Error.NoError)
+			{
+				return error;
+			}
+			else
+			{
+				Current.IsFileDirty = true;
+				Current.IsLinkDirty = false;
+				RefreshTitle();
+
+				// Refresh character information
+				Backyard.RefreshCharacters();
+				return Backyard.Error.NoError;
+			}
+		}
+		
 		private Backyard.Error UpdateCharacterInBackyard()
 		{
 			if (Backyard.ConnectionEstablished == false)
@@ -1660,6 +1825,7 @@ namespace Ginger
 			}
 
 			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+			card.EnsureSystemPrompt();
 
 			// Check if character exists, has newer changes
 			bool hasChanges;
@@ -1693,56 +1859,6 @@ namespace Ginger
 			{
 				Current.Link.updateDate = updateDate;
 				Current.Link.imageLinks = imageLinks;
-				Current.IsFileDirty = true;
-				Current.IsLinkDirty = false;
-				RefreshTitle();
-
-				// Refresh character information
-				Backyard.RefreshCharacters();
-				return Backyard.Error.NoError;
-			}
-		}
-
-		private Backyard.Error CreateNewCharacterInBackyard(out CharacterInstance createdCharacter, out Backyard.Link.Image[] images)
-		{
-			if (Backyard.ConnectionEstablished == false)
-			{
-				createdCharacter = default(CharacterInstance);
-				images = null;
-				return Backyard.Error.NotConnected;
-			}
-
-			var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
-			
-			// User persona
-			UserData userInfo = null;
-			if (AppSettings.BackyardLink.WriteUserPersona)
-			{
-				string userPersona = output.userPersona.ToFaraday();
-				if (string.IsNullOrEmpty(userPersona) == false)
-				{
-					userInfo = new UserData() {
-						name = Current.Card.userPlaceholder,
-						persona = userPersona,
-					};
-					output.userPersona = GingerString.Empty;
-				}
-			}
-
-			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
-
-			Backyard.ImageInput[] imageInput = Backyard.GatherImages();
-			BackupData.Chat[] chats = null;
-			if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1)
-				chats = Backyard.GatherChats(card, output, imageInput);
-
-			var error = Backyard.CreateNewCharacter(card, imageInput, chats, out createdCharacter, out images, userInfo);
-			if (error != Backyard.Error.NoError)
-			{
-				return error;
-			}
-			else
-			{
 				Current.IsFileDirty = true;
 				Current.IsLinkDirty = false;
 				RefreshTitle();
@@ -2019,31 +2135,32 @@ namespace Ginger
 			AppSettings.Paths.LastImportExportPath = outputDirectory;
 		
 			var filenames = new List<string>(dlg.Characters.Length);
+			HashSet<string> used_filenames = new HashSet<string>();
 			if (formatDialog.FileFormat.Contains(FileUtil.FileType.Backup))
 			{
 				string now = DateTime.Now.ToString("yyyy-MM-dd");
 				foreach (var character in dlg.Characters)
 				{
-					filenames.Add(Path.Combine(outputDirectory,
-						Utility.MakeUniqueFilename(
+					filenames.Add(Utility.MakeUniqueFilename(outputDirectory,
 							string.Format("{0}_{1}_{2}.backup.zip",
 								character.displayName.Replace(" ", "_"),
 								character.creationDate.ToFileTimeUtc() / 1000L,
-								now)
-						)
-					));
+								now),
+						used_filenames)
+					);
 				}
 			}
 			else
 			{
 				foreach (var character in dlg.Characters)
 				{
-					filenames.Add(Path.Combine(outputDirectory,
-						Utility.MakeUniqueFilename(string.Format("{0}_{1}.{2}",
+					filenames.Add(Utility.MakeUniqueFilename(outputDirectory,
+						string.Format("{0}_{1}.{2}",
 							character.displayName,
 							character.creationDate.ToFileTimeUtc() / 1000L,
-							ext))
-					));
+							ext),
+						used_filenames)
+					);
 				}
 			}
 
@@ -2847,6 +2964,209 @@ namespace Ginger
 			MessageBox.Show(this, string.Format(Resources.msg_link_deleted_characters, NumCharacters(characters.Length)), Resources.cap_link_delete_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			
 			return true;
+		}
+
+		private bool ImportActorFromFile(string filename)
+		{
+			var stash = Current.Stash();
+			try
+			{
+				Undo.Suspend();
+				Current.Instance = new GingerCharacter();
+				Current.Reset();
+
+				if (ImportCharacter(filename) == false)
+				{
+					Current.Restore(stash);
+					return false;
+				}
+
+				// Get portrait
+				AssetFile portraitAsset = Current.Card.assets.GetPortraitOverride();
+				if (portraitAsset == null && Current.Card.portraitImage != null)
+					portraitAsset = AssetFile.FromImage(Current.Card.portraitImage);
+
+				// Add actor
+				CharacterData importedCharacter = Current.Character;
+				importedCharacter.spokenName = Current.Name;
+				Current.Restore(stash);
+
+				Current.Characters.Add(importedCharacter);
+				Current.SelectedCharacter = Current.Characters.Count - 1;
+				Current.IsDirty = true;
+
+				// Add portrait
+				if (portraitAsset != null)
+				{
+					portraitAsset.name = string.Format("Portrait ({0})", Current.Character.spokenName);
+					portraitAsset.actorIndex = Current.Characters.Count - 1;
+					portraitAsset.RemoveTags(AssetFile.Tag.PortraitOverride);
+					Current.Card.assets.Add(portraitAsset);
+				}
+				Current.Card.assets.Validate();
+
+				// Validate recipes
+				Context context = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly, Generator.Option.None, true);
+				var evalCookie = new EvaluationCookie() { ruleSuppliers = Current.RuleSuppliers };
+				Current.Character.recipes.RemoveAll(r => r.isBase || (r.requires != null && r.requires.Evaluate(context, evalCookie)));
+			}
+			finally
+			{
+				Undo.Resume();
+			}
+			return true;
+		}
+
+		private bool ExportCurrentActor()
+		{
+			var character = Current.Character.Clone();
+
+			Image portraitImage = Current.Card.portraitImage;
+			AssetFile portraitAsset = Current.Card.assets.GetPortraitOverride();
+			if (Current.SelectedCharacter > 0)
+			{
+				portraitAsset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
+				if (portraitAsset != null)
+					portraitImage = portraitAsset.ToImage();
+			}
+
+			var stash = Current.Stash();
+			try
+			{
+				Undo.Suspend();
+				Current.Instance = new GingerCharacter();
+				Current.Reset();
+				Current.Characters.Clear();
+				Current.Characters.Add(character);
+
+				if (portraitAsset != null && portraitAsset.HasTag(AssetFile.Tag.Animation))
+				{
+					// Set portrait override
+					portraitAsset = (AssetFile)portraitAsset.Clone();
+					portraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
+					Current.Card.assets.Add(portraitAsset);
+				}
+
+				if (portraitImage != null)
+					Current.Card.portraitImage = ImageRef.FromImage(portraitImage, false);
+
+				return SaveAs();
+			}
+			finally
+			{
+				Current.Restore(stash);
+				Undo.Resume();
+			}
+		}
+
+		private bool RemoveCurrentActor()
+		{
+			if (Current.SelectedCharacter < 0 
+				|| Current.SelectedCharacter >= Current.Characters.Count 
+				|| Current.Characters.Count < 2)
+				return false;
+
+			var assets = (AssetCollection)Current.Card.assets.Clone(); // jic
+
+			// Remove portrait(s)
+			if (Current.SelectedCharacter == 0)
+			{
+				assets.RemoveAll(a => a.isMainPortraitOverride
+					|| (a.isEmbeddedAsset
+						&& a.assetType == AssetFile.AssetType.Icon
+						&& a.actorIndex < 1));
+
+				var portraitAsset = assets.GetPortrait(1);
+				if (portraitAsset != null)
+				{
+					Image actorImage;
+					Utility.LoadImageFromMemory(portraitAsset.data.bytes, out actorImage);
+					Current.Card.portraitImage = ImageRef.FromImage(actorImage);
+
+					if (portraitAsset.HasTag(AssetFile.Tag.Animation))
+						portraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
+					else
+						assets.Remove(portraitAsset);
+				}
+			}
+
+			assets.RemoveActorAssets(Current.SelectedCharacter);
+			assets.Validate();
+
+			Current.Card.assets = (AssetCollection)assets.Clone();
+			Current.Characters.RemoveAt(Current.SelectedCharacter);
+			Current.SelectedCharacter = Math.Min(Math.Max(Current.SelectedCharacter, 0), Current.Characters.Count - 1);
+			Current.IsDirty = true;
+
+			if (Current.Characters.Count < 2 && AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty)
+				AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday;
+			return true;
+		}
+
+		private bool ResetBackyardModelSettings()
+		{
+			// Refresh character list
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+			{
+				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				AppSettings.BackyardLink.Enabled = false;
+				return false;
+			}
+
+			// Choose character(s)
+			var groups = Backyard.Groups.ToArray();
+
+			// Confirm
+			if (MessageBox.Show(Resources.msg_link_reset_model_settings, Resources.cap_link_reset_model_settings, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+				return false;
+
+			var updater = new BulkUpdateModelSettings();
+
+			var progressDlg = new ProgressBarDialog();
+			progressDlg.Message = "Updating...";
+
+			progressDlg.onCancel += (s, e) => {
+				updater.Cancel();
+				progressDlg.Close();
+			};
+			updater.onProgress += (value) => {
+				progressDlg.Percentage = value;
+			};
+			updater.onComplete += (result) => {
+				progressDlg.Percentage = 100;
+				progressDlg.TopMost = false;
+				progressDlg.Close();
+
+				CompleteResetModelSettings(result);
+				_bCanRegenerate = true;
+				_bCanIdle = true;
+			};
+
+			for (int i = 0; i < groups.Length; ++i)
+				updater.Enqueue(groups[i]);
+
+			_bCanRegenerate = false;
+			_bCanIdle = false;
+			updater.Start(new ChatParameters());
+			progressDlg.ShowDialog(this);
+
+			return true;
+		}
+
+		private void CompleteResetModelSettings(BulkUpdateModelSettings.Result result)
+		{
+			if (result.error == BulkUpdateModelSettings.Error.NoError)
+			{
+				MessageBox.Show(this, string.Format(result.skipped == 0 ? Resources.msg_link_update_many_characters : Resources.msg_link_update_some_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_link_reset_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else if (result.error == BulkUpdateModelSettings.Error.Cancelled)
+			{
+				MessageBox.Show(this, Resources.error_canceled, Resources.cap_link_reset_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				MessageBox.Show(this, Resources.error_link_update_many_characters, Resources.cap_link_reset_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 	}
 }

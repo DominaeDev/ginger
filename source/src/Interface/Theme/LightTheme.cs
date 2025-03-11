@@ -171,8 +171,8 @@ namespace Ginger
 			public Image ArrowRight => Resources.arrow_right;
 
 			public Image LinkConnected => Resources.link_connected;
-			public Image LinkDisconnected => Resources.link_disconnected;
 			public Image LinkActive => Resources.link_active;
+			public Image LinkActiveDirty => Resources.link_dirty;
 			public Image LinkInactive => Resources.link_inactive;
 			public Image LinkBroken => Resources.link_broken;
 
@@ -183,9 +183,13 @@ namespace Ginger
 			public Image RepairIcon => Resources.repair;
 			public Image CreateBackupIcon => Resources.create_backup;
 			public Image RestoreBackupIcon => Resources.restore_backup;
+			public Image ResetIcon => Resources.reset;
 
 			public Image Collapsed => Resources.collapsed;
 			public Image Expanded => Resources.expanded;
+
+			public Image PortraitOverrideAsset => Resources.asset_override;
+			public Image ActorPortraitAsset => Resources.asset_actor_portrait;
 		}
 
 	}

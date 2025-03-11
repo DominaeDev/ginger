@@ -29,14 +29,13 @@
 	
 	<Node path="system/important/output" mode="exclude" style="default"/>
 	
-	<!-- Attribute root node -->
-	<Node path="persona/attributes" style="line" order="200" rule="not multi-character"/>
-	<Node path="persona/attributes" style="line" order="200" rule="multi-character">
-		[["{char}":  
-		{inner}  
-		]]
+	<Node path="persona/header" order="0" rule="multi-character">
+		# {char}:
 	</Node>
 	
+	<!-- Attribute root node -->
+	<Node path="persona/attributes" style="line" order="200"/>
+		
 	<!-- Setup common attribute styles and ordering -->
 	<Node path="persona/attributes/age" style="number" order="20">[!__attrib:Age]{inner}</Node>
 	<Node path="persona/attributes/nationality" style="attribute" order="100">[!__attrib:Nationality]{inner}</Node>

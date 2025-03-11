@@ -182,5 +182,20 @@ namespace Ginger
 					return i;
 			return -1;
 		}
+
+		public static int IndexOfAny(this string text, string[] words, int startIndex, StringComparison comparisonType)
+		{
+			if (words == null)
+				return -1;
+
+			foreach (var word in words)
+			{
+				int idx = text.IndexOf(word, startIndex, comparisonType);
+				if (idx != -1)
+					return idx;
+			}
+
+			return -1;
+		}
 	}
 }

@@ -54,6 +54,7 @@
 			System.Windows.Forms.TableLayoutPanel tableOptions;
 			System.Windows.Forms.Panel panel_AdvOptions;
 			System.Windows.Forms.Panel panel_UserPersona;
+			System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SidePanel));
 			this.label_Context_Value = new System.Windows.Forms.Label();
 			this.label_TokenBudget_Value = new System.Windows.Forms.Label();
@@ -84,18 +85,20 @@
 			this.cbPruneScenario = new System.Windows.Forms.CheckBox();
 			this.rbUserInScenario = new System.Windows.Forms.RadioButton();
 			this.rbUserInPersona = new System.Windows.Forms.RadioButton();
+			this.backgroundPreview = new Ginger.BackgroundPreview();
 			this.root = new System.Windows.Forms.Panel();
 			this.group_Stats = new Ginger.CollapsibleGroupBox();
+			this.group_Background = new Ginger.CollapsibleGroupBox();
 			this.group_Components = new Ginger.CollapsibleGroupBox();
 			this.tableFilters = new System.Windows.Forms.TableLayoutPanel();
-			this.cbIncludeModelInstructions = new System.Windows.Forms.CheckBox();
-			this.cbIncludeScenario = new System.Windows.Forms.CheckBox();
-			this.cbIncludeAttributes = new System.Windows.Forms.CheckBox();
-			this.cbIncludeGreetings = new System.Windows.Forms.CheckBox();
-			this.cbIncludeExampleChat = new System.Windows.Forms.CheckBox();
-			this.cbIncludeLore = new System.Windows.Forms.CheckBox();
-			this.cbIncludeUser = new System.Windows.Forms.CheckBox();
-			this.cbIncludeGrammar = new System.Windows.Forms.CheckBox();
+			this.cbExcludeModelInstructions = new System.Windows.Forms.CheckBox();
+			this.cbExcludeScenario = new System.Windows.Forms.CheckBox();
+			this.cbExcludeAttributes = new System.Windows.Forms.CheckBox();
+			this.cbExcludeGreetings = new System.Windows.Forms.CheckBox();
+			this.cbExcludeExampleChat = new System.Windows.Forms.CheckBox();
+			this.cbExcludeLore = new System.Windows.Forms.CheckBox();
+			this.cbExcludeUser = new System.Windows.Forms.CheckBox();
+			this.cbExcludeGrammar = new System.Windows.Forms.CheckBox();
 			this.group_Generation = new Ginger.CollapsibleGroupBox();
 			this.group_User = new Ginger.CollapsibleGroupBox();
 			this.group_CardInfo = new Ginger.CollapsibleGroupBox();
@@ -130,6 +133,7 @@
 			tableOptions = new System.Windows.Forms.TableLayoutPanel();
 			panel_AdvOptions = new System.Windows.Forms.Panel();
 			panel_UserPersona = new System.Windows.Forms.Panel();
+			tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			panel_right.SuspendLayout();
 			panel_left.SuspendLayout();
 			table_Format.SuspendLayout();
@@ -148,8 +152,11 @@
 			tableOptions.SuspendLayout();
 			panel_AdvOptions.SuspendLayout();
 			panel_UserPersona.SuspendLayout();
+			tableLayoutPanel3.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.backgroundPreview)).BeginInit();
 			this.root.SuspendLayout();
 			this.group_Stats.SuspendLayout();
+			this.group_Background.SuspendLayout();
 			this.group_Components.SuspendLayout();
 			this.tableFilters.SuspendLayout();
 			this.group_Generation.SuspendLayout();
@@ -416,7 +423,7 @@
 			this.label_textStyle.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			this.label_textStyle.Size = new System.Drawing.Size(285, 21);
 			this.label_textStyle.TabIndex = 9;
-			this.label_textStyle.Text = "Dialogue format";
+			this.label_textStyle.Text = "Text style";
 			// 
 			// panel3
 			// 
@@ -766,7 +773,7 @@
 			this.label_characterSpokenName.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
 			this.label_characterSpokenName.Size = new System.Drawing.Size(417, 23);
 			this.label_characterSpokenName.TabIndex = 0;
-			this.label_characterSpokenName.Text = "Goes by";
+			this.label_characterSpokenName.Text = "Character name (goes by)";
 			// 
 			// textBox_characterName
 			// 
@@ -794,7 +801,7 @@
 			this.label_characterName.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			this.label_characterName.Size = new System.Drawing.Size(417, 21);
 			this.label_characterName.TabIndex = 0;
-			this.label_characterName.Text = "Character name";
+			this.label_characterName.Text = "Card name";
 			// 
 			// portraitPanel
 			// 
@@ -811,7 +818,7 @@
 			this.portraitImage.BackColor = System.Drawing.Color.DimGray;
 			this.portraitImage.BackgroundImage = global::Ginger.Properties.Resources.checker;
 			this.portraitImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.portraitImage.IsAnimation = false;
+			this.portraitImage.IsGrayedOut = false;
 			this.portraitImage.Location = new System.Drawing.Point(0, 0);
 			this.portraitImage.Name = "portraitImage";
 			this.portraitImage.Size = new System.Drawing.Size(165, 220);
@@ -819,7 +826,6 @@
 			this.portraitImage.TabIndex = 0;
 			this.portraitImage.TabStop = false;
 			this.portraitImage.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseClick);
-			this.portraitImage.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.PortraitImage_MouseDoubleClick);
 			// 
 			// label1
 			// 
@@ -847,7 +853,7 @@
 			label2.Size = new System.Drawing.Size(571, 25);
 			label2.TabIndex = 13;
 			label2.Tag = "";
-			label2.Text = "Included in output";
+			label2.Text = "Filter";
 			// 
 			// label3
 			// 
@@ -948,10 +954,43 @@
 			this.rbUserInPersona.Text = "In Persona";
 			this.rbUserInPersona.CheckedChanged += new System.EventHandler(this.rbUserInPersona_CheckedChanged);
 			// 
+			// tableLayoutPanel3
+			// 
+			tableLayoutPanel3.ColumnCount = 3;
+			tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 231F));
+			tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			tableLayoutPanel3.Controls.Add(this.backgroundPreview, 1, 0);
+			tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+			tableLayoutPanel3.Location = new System.Drawing.Point(6, 19);
+			tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(0);
+			tableLayoutPanel3.Name = "tableLayoutPanel3";
+			tableLayoutPanel3.RowCount = 1;
+			tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			tableLayoutPanel3.Size = new System.Drawing.Size(571, 144);
+			tableLayoutPanel3.TabIndex = 2;
+			// 
+			// backgroundPreview
+			// 
+			this.backgroundPreview.AllowDrop = true;
+			this.backgroundPreview.BackColor = System.Drawing.Color.DimGray;
+			this.backgroundPreview.BackgroundImage = global::Ginger.Properties.Resources.checker;
+			this.backgroundPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.backgroundPreview.IsAnimation = false;
+			this.backgroundPreview.Location = new System.Drawing.Point(170, 0);
+			this.backgroundPreview.Margin = new System.Windows.Forms.Padding(0);
+			this.backgroundPreview.Name = "backgroundPreview";
+			this.backgroundPreview.Size = new System.Drawing.Size(231, 144);
+			this.backgroundPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+			this.backgroundPreview.TabIndex = 1;
+			this.backgroundPreview.TabStop = false;
+			this.backgroundPreview.MouseClick += new System.Windows.Forms.MouseEventHandler(this.BackgroundPreview_MouseClick);
+			// 
 			// root
 			// 
 			this.root.AutoScroll = true;
 			this.root.Controls.Add(this.group_Stats);
+			this.root.Controls.Add(this.group_Background);
 			this.root.Controls.Add(this.group_Components);
 			this.root.Controls.Add(this.group_Generation);
 			this.root.Controls.Add(this.group_User);
@@ -968,13 +1007,26 @@
 			this.group_Stats.Controls.Add(panel_right);
 			this.group_Stats.Controls.Add(panel_left);
 			this.group_Stats.Dock = System.Windows.Forms.DockStyle.Top;
-			this.group_Stats.Location = new System.Drawing.Point(0, 576);
+			this.group_Stats.Location = new System.Drawing.Point(0, 747);
 			this.group_Stats.Name = "group_Stats";
 			this.group_Stats.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
 			this.group_Stats.Size = new System.Drawing.Size(583, 152);
 			this.group_Stats.TabIndex = 4;
 			this.group_Stats.TabStop = false;
 			this.group_Stats.Text = "Statistics";
+			// 
+			// group_Background
+			// 
+			this.group_Background.BottomMargin = 4;
+			this.group_Background.Controls.Add(tableLayoutPanel3);
+			this.group_Background.Dock = System.Windows.Forms.DockStyle.Top;
+			this.group_Background.Location = new System.Drawing.Point(0, 576);
+			this.group_Background.Name = "group_Background";
+			this.group_Background.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
+			this.group_Background.Size = new System.Drawing.Size(583, 171);
+			this.group_Background.TabIndex = 5;
+			this.group_Background.TabStop = false;
+			this.group_Background.Text = "Background";
 			// 
 			// group_Components
 			// 
@@ -989,7 +1041,7 @@
 			this.group_Components.Size = new System.Drawing.Size(583, 200);
 			this.group_Components.TabIndex = 3;
 			this.group_Components.TabStop = false;
-			this.group_Components.Text = "Advanced settings";
+			this.group_Components.Text = "Output settings";
 			// 
 			// tableFilters
 			// 
@@ -997,14 +1049,14 @@
 			this.tableFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
 			this.tableFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
 			this.tableFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-			this.tableFilters.Controls.Add(this.cbIncludeModelInstructions, 0, 0);
-			this.tableFilters.Controls.Add(this.cbIncludeScenario, 1, 0);
-			this.tableFilters.Controls.Add(this.cbIncludeAttributes, 2, 0);
-			this.tableFilters.Controls.Add(this.cbIncludeGreetings, 0, 1);
-			this.tableFilters.Controls.Add(this.cbIncludeExampleChat, 1, 1);
-			this.tableFilters.Controls.Add(this.cbIncludeLore, 2, 1);
-			this.tableFilters.Controls.Add(this.cbIncludeUser, 0, 2);
-			this.tableFilters.Controls.Add(this.cbIncludeGrammar, 1, 2);
+			this.tableFilters.Controls.Add(this.cbExcludeModelInstructions, 0, 0);
+			this.tableFilters.Controls.Add(this.cbExcludeScenario, 1, 0);
+			this.tableFilters.Controls.Add(this.cbExcludeAttributes, 2, 0);
+			this.tableFilters.Controls.Add(this.cbExcludeGreetings, 0, 1);
+			this.tableFilters.Controls.Add(this.cbExcludeExampleChat, 1, 1);
+			this.tableFilters.Controls.Add(this.cbExcludeLore, 2, 1);
+			this.tableFilters.Controls.Add(this.cbExcludeUser, 0, 2);
+			this.tableFilters.Controls.Add(this.cbExcludeGrammar, 1, 2);
 			this.tableFilters.Dock = System.Windows.Forms.DockStyle.Top;
 			this.tableFilters.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.tableFilters.Location = new System.Drawing.Point(6, 112);
@@ -1017,93 +1069,93 @@
 			this.tableFilters.Size = new System.Drawing.Size(571, 74);
 			this.tableFilters.TabIndex = 1;
 			// 
-			// cbIncludeModelInstructions
+			// cbExcludeModelInstructions
 			// 
-			this.cbIncludeModelInstructions.AutoEllipsis = true;
-			this.cbIncludeModelInstructions.Location = new System.Drawing.Point(3, 3);
-			this.cbIncludeModelInstructions.Name = "cbIncludeModelInstructions";
-			this.cbIncludeModelInstructions.Size = new System.Drawing.Size(125, 18);
-			this.cbIncludeModelInstructions.TabIndex = 0;
-			this.cbIncludeModelInstructions.Text = "Model instuctions";
-			this.cbIncludeModelInstructions.UseVisualStyleBackColor = true;
-			this.cbIncludeModelInstructions.CheckedChanged += new System.EventHandler(this.cbIncludeModelInstructions_CheckedChanged);
+			this.cbExcludeModelInstructions.AutoEllipsis = true;
+			this.cbExcludeModelInstructions.Location = new System.Drawing.Point(3, 3);
+			this.cbExcludeModelInstructions.Name = "cbExcludeModelInstructions";
+			this.cbExcludeModelInstructions.Size = new System.Drawing.Size(125, 18);
+			this.cbExcludeModelInstructions.TabIndex = 0;
+			this.cbExcludeModelInstructions.Text = "Model instuctions";
+			this.cbExcludeModelInstructions.UseVisualStyleBackColor = true;
+			this.cbExcludeModelInstructions.CheckedChanged += new System.EventHandler(this.cbExcludeModelInstructions_CheckedChanged);
 			// 
-			// cbIncludeScenario
+			// cbExcludeScenario
 			// 
-			this.cbIncludeScenario.AutoSize = true;
-			this.cbIncludeScenario.Location = new System.Drawing.Point(193, 3);
-			this.cbIncludeScenario.Name = "cbIncludeScenario";
-			this.cbIncludeScenario.Size = new System.Drawing.Size(71, 18);
-			this.cbIncludeScenario.TabIndex = 1;
-			this.cbIncludeScenario.Text = "Scenario";
-			this.cbIncludeScenario.UseVisualStyleBackColor = true;
-			this.cbIncludeScenario.CheckedChanged += new System.EventHandler(this.cbIncludeScenario_CheckedChanged);
+			this.cbExcludeScenario.AutoSize = true;
+			this.cbExcludeScenario.Location = new System.Drawing.Point(193, 3);
+			this.cbExcludeScenario.Name = "cbExcludeScenario";
+			this.cbExcludeScenario.Size = new System.Drawing.Size(71, 18);
+			this.cbExcludeScenario.TabIndex = 1;
+			this.cbExcludeScenario.Text = "Scenario";
+			this.cbExcludeScenario.UseVisualStyleBackColor = true;
+			this.cbExcludeScenario.CheckedChanged += new System.EventHandler(this.cbExcludeScenario_CheckedChanged);
 			// 
-			// cbIncludeAttributes
+			// cbExcludeAttributes
 			// 
-			this.cbIncludeAttributes.AutoSize = true;
-			this.cbIncludeAttributes.Location = new System.Drawing.Point(383, 3);
-			this.cbIncludeAttributes.Name = "cbIncludeAttributes";
-			this.cbIncludeAttributes.Size = new System.Drawing.Size(78, 18);
-			this.cbIncludeAttributes.TabIndex = 2;
-			this.cbIncludeAttributes.Text = "Attributes";
-			this.cbIncludeAttributes.UseVisualStyleBackColor = true;
-			this.cbIncludeAttributes.CheckedChanged += new System.EventHandler(this.cbIncludeAttributes_CheckedChanged);
+			this.cbExcludeAttributes.AutoSize = true;
+			this.cbExcludeAttributes.Location = new System.Drawing.Point(383, 3);
+			this.cbExcludeAttributes.Name = "cbExcludeAttributes";
+			this.cbExcludeAttributes.Size = new System.Drawing.Size(78, 18);
+			this.cbExcludeAttributes.TabIndex = 2;
+			this.cbExcludeAttributes.Text = "Attributes";
+			this.cbExcludeAttributes.UseVisualStyleBackColor = true;
+			this.cbExcludeAttributes.CheckedChanged += new System.EventHandler(this.cbExcludeAttributes_CheckedChanged);
 			// 
-			// cbIncludeGreetings
+			// cbExcludeGreetings
 			// 
-			this.cbIncludeGreetings.AutoSize = true;
-			this.cbIncludeGreetings.Location = new System.Drawing.Point(3, 27);
-			this.cbIncludeGreetings.Name = "cbIncludeGreetings";
-			this.cbIncludeGreetings.Size = new System.Drawing.Size(71, 18);
-			this.cbIncludeGreetings.TabIndex = 3;
-			this.cbIncludeGreetings.Text = "Greeting";
-			this.cbIncludeGreetings.UseVisualStyleBackColor = true;
-			this.cbIncludeGreetings.CheckedChanged += new System.EventHandler(this.cbIncludeGreetings_CheckedChanged);
+			this.cbExcludeGreetings.AutoSize = true;
+			this.cbExcludeGreetings.Location = new System.Drawing.Point(3, 27);
+			this.cbExcludeGreetings.Name = "cbExcludeGreetings";
+			this.cbExcludeGreetings.Size = new System.Drawing.Size(71, 18);
+			this.cbExcludeGreetings.TabIndex = 3;
+			this.cbExcludeGreetings.Text = "Greeting";
+			this.cbExcludeGreetings.UseVisualStyleBackColor = true;
+			this.cbExcludeGreetings.CheckedChanged += new System.EventHandler(this.cbExcludeGreetings_CheckedChanged);
 			// 
-			// cbIncludeExampleChat
+			// cbExcludeExampleChat
 			// 
-			this.cbIncludeExampleChat.AutoSize = true;
-			this.cbIncludeExampleChat.Location = new System.Drawing.Point(193, 27);
-			this.cbIncludeExampleChat.Name = "cbIncludeExampleChat";
-			this.cbIncludeExampleChat.Size = new System.Drawing.Size(97, 18);
-			this.cbIncludeExampleChat.TabIndex = 4;
-			this.cbIncludeExampleChat.Text = "Example chat";
-			this.cbIncludeExampleChat.UseVisualStyleBackColor = true;
-			this.cbIncludeExampleChat.CheckedChanged += new System.EventHandler(this.cbIncludeExampleChat_CheckedChanged);
+			this.cbExcludeExampleChat.AutoSize = true;
+			this.cbExcludeExampleChat.Location = new System.Drawing.Point(193, 27);
+			this.cbExcludeExampleChat.Name = "cbExcludeExampleChat";
+			this.cbExcludeExampleChat.Size = new System.Drawing.Size(97, 18);
+			this.cbExcludeExampleChat.TabIndex = 4;
+			this.cbExcludeExampleChat.Text = "Example chat";
+			this.cbExcludeExampleChat.UseVisualStyleBackColor = true;
+			this.cbExcludeExampleChat.CheckedChanged += new System.EventHandler(this.cbExcludeExampleChat_CheckedChanged);
 			// 
-			// cbIncludeLore
+			// cbExcludeLore
 			// 
-			this.cbIncludeLore.AutoSize = true;
-			this.cbIncludeLore.Location = new System.Drawing.Point(383, 27);
-			this.cbIncludeLore.Name = "cbIncludeLore";
-			this.cbIncludeLore.Size = new System.Drawing.Size(76, 18);
-			this.cbIncludeLore.TabIndex = 5;
-			this.cbIncludeLore.Text = "Lorebook";
-			this.cbIncludeLore.UseVisualStyleBackColor = true;
-			this.cbIncludeLore.CheckedChanged += new System.EventHandler(this.cbIncludeLore_CheckedChanged);
+			this.cbExcludeLore.AutoSize = true;
+			this.cbExcludeLore.Location = new System.Drawing.Point(383, 27);
+			this.cbExcludeLore.Name = "cbExcludeLore";
+			this.cbExcludeLore.Size = new System.Drawing.Size(76, 18);
+			this.cbExcludeLore.TabIndex = 5;
+			this.cbExcludeLore.Text = "Lorebook";
+			this.cbExcludeLore.UseVisualStyleBackColor = true;
+			this.cbExcludeLore.CheckedChanged += new System.EventHandler(this.cbExcludeLore_CheckedChanged);
 			// 
-			// cbIncludeUser
+			// cbExcludeUser
 			// 
-			this.cbIncludeUser.AutoSize = true;
-			this.cbIncludeUser.Location = new System.Drawing.Point(3, 51);
-			this.cbIncludeUser.Name = "cbIncludeUser";
-			this.cbIncludeUser.Size = new System.Drawing.Size(94, 19);
-			this.cbIncludeUser.TabIndex = 6;
-			this.cbIncludeUser.Text = "User persona";
-			this.cbIncludeUser.UseVisualStyleBackColor = true;
-			this.cbIncludeUser.CheckedChanged += new System.EventHandler(this.cbIncludeUser_CheckedChanged);
+			this.cbExcludeUser.AutoSize = true;
+			this.cbExcludeUser.Location = new System.Drawing.Point(3, 51);
+			this.cbExcludeUser.Name = "cbExcludeUser";
+			this.cbExcludeUser.Size = new System.Drawing.Size(94, 19);
+			this.cbExcludeUser.TabIndex = 6;
+			this.cbExcludeUser.Text = "User persona";
+			this.cbExcludeUser.UseVisualStyleBackColor = true;
+			this.cbExcludeUser.CheckedChanged += new System.EventHandler(this.cbExcludeUser_CheckedChanged);
 			// 
-			// cbIncludeGrammar
+			// cbExcludeGrammar
 			// 
-			this.cbIncludeGrammar.AutoSize = true;
-			this.cbIncludeGrammar.Location = new System.Drawing.Point(193, 51);
-			this.cbIncludeGrammar.Name = "cbIncludeGrammar";
-			this.cbIncludeGrammar.Size = new System.Drawing.Size(76, 19);
-			this.cbIncludeGrammar.TabIndex = 7;
-			this.cbIncludeGrammar.Text = "Grammar";
-			this.cbIncludeGrammar.UseVisualStyleBackColor = true;
-			this.cbIncludeGrammar.CheckedChanged += new System.EventHandler(this.cbIncludeGrammar_CheckedChanged);
+			this.cbExcludeGrammar.AutoSize = true;
+			this.cbExcludeGrammar.Location = new System.Drawing.Point(193, 51);
+			this.cbExcludeGrammar.Name = "cbExcludeGrammar";
+			this.cbExcludeGrammar.Size = new System.Drawing.Size(76, 19);
+			this.cbExcludeGrammar.TabIndex = 7;
+			this.cbExcludeGrammar.Text = "Grammar";
+			this.cbExcludeGrammar.UseVisualStyleBackColor = true;
+			this.cbExcludeGrammar.CheckedChanged += new System.EventHandler(this.cbExcludeGrammar_CheckedChanged);
 			// 
 			// group_Generation
 			// 
@@ -1116,7 +1168,7 @@
 			this.group_Generation.Size = new System.Drawing.Size(583, 76);
 			this.group_Generation.TabIndex = 2;
 			this.group_Generation.TabStop = false;
-			this.group_Generation.Text = "Output settings";
+			this.group_Generation.Text = "Output format";
 			// 
 			// group_User
 			// 
@@ -1245,8 +1297,11 @@
 			panel_AdvOptions.PerformLayout();
 			panel_UserPersona.ResumeLayout(false);
 			panel_UserPersona.PerformLayout();
+			tableLayoutPanel3.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.backgroundPreview)).EndInit();
 			this.root.ResumeLayout(false);
 			this.group_Stats.ResumeLayout(false);
+			this.group_Background.ResumeLayout(false);
 			this.group_Components.ResumeLayout(false);
 			this.tableFilters.ResumeLayout(false);
 			this.tableFilters.PerformLayout();
@@ -1292,22 +1347,24 @@
 		private CollapsibleGroupBox group_CardInfo;
 		private CollapsibleGroupBox group_Components;
 		private System.Windows.Forms.TableLayoutPanel tableFilters;
-		private System.Windows.Forms.CheckBox cbIncludeModelInstructions;
-		private System.Windows.Forms.CheckBox cbIncludeScenario;
-		private System.Windows.Forms.CheckBox cbIncludeAttributes;
-		private System.Windows.Forms.CheckBox cbIncludeGreetings;
-		private System.Windows.Forms.CheckBox cbIncludeExampleChat;
-		private System.Windows.Forms.CheckBox cbIncludeLore;
-		private System.Windows.Forms.CheckBox cbIncludeGrammar;
+		private System.Windows.Forms.CheckBox cbExcludeModelInstructions;
+		private System.Windows.Forms.CheckBox cbExcludeScenario;
+		private System.Windows.Forms.CheckBox cbExcludeAttributes;
+		private System.Windows.Forms.CheckBox cbExcludeGreetings;
+		private System.Windows.Forms.CheckBox cbExcludeExampleChat;
+		private System.Windows.Forms.CheckBox cbExcludeLore;
+		private System.Windows.Forms.CheckBox cbExcludeGrammar;
 		private ComboBoxEx comboBox_textStyle;
 		private ComboBoxEx comboBox_Detail;
 		private System.Windows.Forms.CheckBox cbPruneScenario;
 		private System.Windows.Forms.RadioButton rbUserInScenario;
 		private System.Windows.Forms.RadioButton rbUserInPersona;
-		private System.Windows.Forms.CheckBox cbIncludeUser;
+		private System.Windows.Forms.CheckBox cbExcludeUser;
 		private System.Windows.Forms.Label label_textStyle;
 		private System.Windows.Forms.Label label_Detail;
 		private System.Windows.Forms.Label label_userPlaceholder;
 		private System.Windows.Forms.Label label_userGender;
+		private CollapsibleGroupBox group_Background;
+		private BackgroundPreview backgroundPreview;
 	}
 }

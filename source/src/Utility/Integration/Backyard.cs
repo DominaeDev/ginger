@@ -44,45 +44,22 @@ namespace Ginger.Integration
 
 		public int Count { get { return members != null ? members.Length : 0; } }
 		public bool isEmpty { get { return Count == 0; } }
-		public bool isSupported 
-		{ 
-			get
-			{
-				var groupType = GetGroupType();
-				return groupType == GroupType.Solo
-					|| groupType == GroupType.Group;
-			} 
-		}
+		public bool isSupported { get { return members != null && members.Length == 2; } }
 
 		public enum GroupType
 		{
 			Unknown,
 			Solo,	// 1-on-1
 			Group,	// 1-on-many
-			Party,	// Many-on-many (Not supported yet)
 		}
 
 		public GroupType GetGroupType()
 		{
 			if (members == null || members.Length < 2)
 				return GroupType.Unknown;
-
-			var memberInfo = members
-				.Select(id => Backyard.GetCharacter(id))
-				.Where(m => string.IsNullOrEmpty(m.instanceId) == false)
-				.ToArray();
-			int nUsers = memberInfo.Count(m => m.isUser);
-			int nCharacters = memberInfo.Count(m => m.isCharacter);
-			if (nUsers == 1)
-			{
-				if (nCharacters == 1)
-					return GroupType.Solo;
-				else if (nCharacters > 1)
-					return GroupType.Group;
-			}
-			if (nUsers > 1 && nCharacters > 0)
-				return GroupType.Party;
-			return GroupType.Unknown;
+			if (members.Length == 2)
+				return GroupType.Solo;
+			return GroupType.Group;
 		}
 
 		public string[] GetMemberNames(bool includingUser = false)
@@ -547,6 +524,36 @@ namespace Ginger.Integration
 					return hash.Equals(_filenameHash);
 				}
 			}
+
+			public Link Clone()
+			{
+				var clone = (Link)MemberwiseClone();
+				if (this.imageLinks != null)
+				{
+					clone.imageLinks = new Image[this.imageLinks.Length];
+					Array.Copy(this.imageLinks, clone.imageLinks, this.imageLinks.Length);
+				}
+
+				return clone;
+			}
+
+			public void ValidateImages(ImageRef mainPortrait, AssetCollection assets)
+			{
+				// Update image links
+				if (imageLinks == null)
+					return;
+
+				var uids = new HashSet<string>();
+				if (mainPortrait != null)
+					uids.Add(mainPortrait.uid);
+				if (assets != null)
+					uids.UnionWith(assets.Select(a => a.uid));
+
+				imageLinks = imageLinks
+					.Where(l => uids.Contains(l.uid))
+					.ToArray();
+			}
+
 		}
 
 		public enum Error
@@ -5401,9 +5408,7 @@ namespace Ginger.Integration
 			int idxPortraitLink = -1;
 			string portraitUID = null;
 
-			var mainPortraitAsset = assets.GetMainPortraitOverride();
-			if (portraitImage == null && mainPortraitAsset == null)
-				mainPortraitAsset = assets.GetPortraitAsset(); // Use first portrait asset
+			var mainPortraitAsset = assets.GetPortraitOverride();
 
 			if (mainPortraitAsset != null) // Has embedded asset
 			{
@@ -6104,9 +6109,7 @@ namespace Ginger.Integration
 		{
 			var lsImages = new List<ImageInput>();
 			var assets = (AssetCollection)Current.Card.assets.Clone();
-			AssetFile mainPortraitOverride = assets.GetMainPortraitOverride();
-			if (Current.Card.portraitImage == null && mainPortraitOverride == null)
-				mainPortraitOverride = assets.GetPortraitAsset();
+			AssetFile mainPortraitOverride = assets.GetPortraitOverride();
 
 			if (mainPortraitOverride != null) // Embedded portrait (animated)
 			{
@@ -6123,12 +6126,24 @@ namespace Ginger.Integration
 					fileExt = "png",
 				});
 			}
-			else // Default portrait
+			else
 			{
-				lsImages.Add(new ImageInput() {
-					image = DefaultPortrait.Image,
-					fileExt = "png",
-				});
+				AssetFile portraitAsset = assets.GetPortrait();
+				if (portraitAsset != null) // Portrait asset
+				{
+					lsImages.Add(new ImageInput() {
+						asset = portraitAsset,
+						fileExt = portraitAsset.ext,
+					});
+					assets.Remove(portraitAsset);
+				}
+				else // Default portrait
+				{
+					lsImages.Add(new ImageInput() {
+						image = DefaultPortrait.Image,
+						fileExt = "png",
+					});
+				}
 			}
 
 			// Portrait as background?
@@ -6136,34 +6151,12 @@ namespace Ginger.Integration
 				&& (Current.Card.portraitImage != null || mainPortraitOverride != null)
 				&& assets.ContainsNoneOf(a => a.assetType == AssetFile.AssetType.Background))
 			{
-				if (assets == null)
-					assets = new AssetCollection();
-
 				AssetFile portraitBackground;
-				if (mainPortraitOverride != null)
+				if (Current.Card.assets.AddBackgroundFromPortrait(out portraitBackground))
 				{
-					portraitBackground = new AssetFile() {
-						name = "Portrait background",
-						ext = mainPortraitOverride.ext,
-						assetType = AssetFile.AssetType.Background,
-						data = mainPortraitOverride.data,
-						uriType = AssetFile.UriType.Embedded,
-					};
+					assets.Add(portraitBackground);
+					Current.IsFileDirty = true;
 				}
-				else
-				{
-					portraitBackground = new AssetFile() {
-						name = "Portrait background",
-						ext = "jpeg",
-						assetType = AssetFile.AssetType.Background,
-						data = AssetData.FromBytes(Utility.ImageToMemory(Current.Card.portraitImage, Utility.ImageFileFormat.Jpeg)),
-						uriType = AssetFile.UriType.Embedded,
-					};
-				}
-
-				assets.Add(portraitBackground);
-				Current.Card.assets.Add(portraitBackground);
-				Current.IsFileDirty = true;
 			}
 
 			if (assets != null)

@@ -240,6 +240,26 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap asset_actor_portrait {
+            get {
+                object obj = ResourceManager.GetObject("asset_actor_portrait", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap asset_override {
+            get {
+                object obj = ResourceManager.GetObject("asset_override", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__attribute&quot; version=&quot;1.0&quot;&gt;
         ///	&lt;Name&gt;Attribute/Custom attribute&lt;/Name&gt;
         ///	&lt;Title&gt;Custom attribute&lt;/Title&gt;
@@ -714,6 +734,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reset model settings.
+        /// </summary>
+        internal static string cap_link_reset_model_settings {
+            get {
+                return ResourceManager.GetString("cap_link_reset_model_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start over from here.
         /// </summary>
         internal static string cap_link_restart_chat {
@@ -894,6 +923,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Save multiple.
+        /// </summary>
+        internal static string cap_save_multiple {
+            get {
+                return ResourceManager.GetString("cap_save_multiple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save snippet.
         /// </summary>
         internal static string cap_save_snippet {
@@ -1026,6 +1064,26 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap dark_arrow_up {
             get {
                 object obj = ResourceManager.GetObject("dark_arrow_up", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_asset_actor_portrait {
+            get {
+                object obj = ResourceManager.GetObject("dark_asset_actor_portrait", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_asset_override {
+            get {
+                object obj = ResourceManager.GetObject("dark_asset_override", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1203,9 +1261,9 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap dark_link_disconnected {
+        internal static System.Drawing.Bitmap dark_link_dirty {
             get {
-                object obj = ResourceManager.GetObject("dark_link_disconnected", resourceCulture);
+                object obj = ResourceManager.GetObject("dark_link_dirty", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1336,6 +1394,16 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap dark_repair {
             get {
                 object obj = ResourceManager.GetObject("dark_repair", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dark_reset {
+            get {
+                object obj = ResourceManager.GetObject("dark_reset", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -2401,7 +2469,6 @@ namespace Ginger.Properties {
         ///	&lt;Order&gt;3&lt;/Order&gt;
         ///	&lt;Color&gt;FloralWhite&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;greeting, __greeting,  __component, __internal&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
@@ -2428,7 +2495,6 @@ namespace Ginger.Properties {
         ///	&lt;Color&gt;FloralWhite&lt;/Color&gt;
         ///	&lt;Order&gt;102&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;__group-greeting, __component, __internal, __ccv3&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
@@ -2436,7 +2502,8 @@ namespace Ginger.Properties {
         ///		&lt;Label&gt;First message&lt;/Label&gt;
         ///	&lt;/Text&gt;
         ///	
-        ///	&lt;Greeting group=&quot;true&quot;&gt;{greeting:local}&lt;/Greetin [rest of string was truncated]&quot;;.
+        ///	&lt;Greeting group=&quot;true&quot;&gt;{greeting:local}&lt;/Greeting&gt;
+        ///&lt;/Ginger&gt;.
         /// </summary>
         internal static string group_greeting_recipe {
             get {
@@ -2525,9 +2592,9 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap link_disconnected {
+        internal static System.Drawing.Bitmap link_dirty {
             get {
-                object obj = ResourceManager.GetObject("link_disconnected", resourceCulture);
+                object obj = ResourceManager.GetObject("link_dirty", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -3035,6 +3102,17 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will reset the model settings for all characters in Backyard AI.
+        ///
+        ///Do you want to continue?.
+        /// </summary>
+        internal static string msg_link_reset_model_settings {
+            get {
+                return ResourceManager.GetString("msg_link_reset_model_settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This will reset the model settings for this chat to their default values.
         ///
         ///Do you want to continue?.
@@ -3153,6 +3231,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No actor portrait.
+        /// </summary>
+        internal static string msg_no_actor_portrait {
+            get {
+                return ResourceManager.GetString("msg_no_actor_portrait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No matches found..
         /// </summary>
         internal static string msg_no_match {
@@ -3258,6 +3345,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Successfully saved {0}..
+        /// </summary>
+        internal static string msg_save_multiple {
+            get {
+                return ResourceManager.GetString("msg_save_multiple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap persona {
@@ -3332,13 +3428,12 @@ namespace Ginger.Properties {
         ///	&lt;/Description&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;system-prompt, model, __post-history, __component, __formatting, __internal, __hidden&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
         ///	&lt;Text id=&quot;system&quot; style=&quot;component&quot;&gt;
         ///		&lt;Label&gt;Instructions&lt;/Label&gt;
-        ///		&lt;Description&gt;In [rest of string was truncated]&quot;;.
+        ///		&lt;Description&gt;Instructions to the model. Not meant  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string post_history_recipe {
             get {
@@ -3593,6 +3688,16 @@ namespace Ginger.Properties {
         internal static System.Drawing.Bitmap repair {
             get {
                 object obj = ResourceManager.GetObject("repair", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap reset {
+            get {
+                object obj = ResourceManager.GetObject("reset", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -3930,7 +4035,6 @@ namespace Ginger.Properties {
         ///	&lt;Order&gt;100&lt;/Order&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;system-prompt, model, __system, __component, __formatting, __internal&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
@@ -3941,7 +4045,8 @@ namespace Ginger.Properties {
         ///	
         ///	&lt;Toggle id=&quot;important&quot;&gt;
         ///		&lt;Label&gt;Important&lt;/Label&gt;
-        ///	 [rest of string was truncated]&quot;;.
+        ///		&lt;Default&gt;no&lt;/Default&gt;
+        ///		&lt;Descript [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string system_recipe {
             get {
@@ -4450,6 +4555,24 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (Actor portrait) This asset will be used for the portrait of {0}, when applicable..
+        /// </summary>
+        internal static string tooltip_asset_actor_portrait {
+            get {
+                return ResourceManager.GetString("tooltip_asset_actor_portrait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (Portrait override) This asset will replace the main portrait, when applicable..
+        /// </summary>
+        internal static string tooltip_asset_override {
+            get {
+                return ResourceManager.GetString("tooltip_asset_override", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This recipe cannot be added..
         /// </summary>
         internal static string tooltip_cant_add {
@@ -4543,138 +4666,75 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include attributes in the character persona..
+        ///   Looks up a localized string similar to Exclude character attributes from the output.
         /// </summary>
-        internal static string tooltip_enable_attributes {
+        internal static string tooltip_exclude_attributes {
             get {
-                return ResourceManager.GetString("tooltip_enable_attributes", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_attributes", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include example chat in the output..
+        ///   Looks up a localized string similar to Exclude example chat from the output.
         /// </summary>
-        internal static string tooltip_enable_example {
+        internal static string tooltip_exclude_example {
             get {
-                return ResourceManager.GetString("tooltip_enable_example", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_example", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include grammar in the output..
-        /// </summary>
-        internal static string tooltip_enable_grammar {
-            get {
-                return ResourceManager.GetString("tooltip_enable_grammar", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include greeting(s) in the output..
-        /// </summary>
-        internal static string tooltip_enable_greetings {
-            get {
-                return ResourceManager.GetString("tooltip_enable_greetings", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include lore in the output..
-        /// </summary>
-        internal static string tooltip_enable_lore {
-            get {
-                return ResourceManager.GetString("tooltip_enable_lore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include model instructions in the output..
-        /// </summary>
-        internal static string tooltip_enable_model_instructions {
-            get {
-                return ResourceManager.GetString("tooltip_enable_model_instructions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include scenario in the output..
-        /// </summary>
-        internal static string tooltip_enable_scenario {
-            get {
-                return ResourceManager.GetString("tooltip_enable_scenario", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include character attributes in the output.
-        /// </summary>
-        internal static string tooltip_include_attributes {
-            get {
-                return ResourceManager.GetString("tooltip_include_attributes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include example chat in the output.
-        /// </summary>
-        internal static string tooltip_include_example {
-            get {
-                return ResourceManager.GetString("tooltip_include_example", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include grammar in the output
+        ///   Looks up a localized string similar to Exclude grammar from the output
         ///(Only supported by Backyard AI).
         /// </summary>
-        internal static string tooltip_include_grammar {
+        internal static string tooltip_exclude_grammar {
             get {
-                return ResourceManager.GetString("tooltip_include_grammar", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_grammar", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include greeting(s) in the output.
+        ///   Looks up a localized string similar to Exclude greeting(s) from the output.
         /// </summary>
-        internal static string tooltip_include_greeting {
+        internal static string tooltip_exclude_greeting {
             get {
-                return ResourceManager.GetString("tooltip_include_greeting", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_greeting", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include lorebook in the output.
+        ///   Looks up a localized string similar to Exclude lorebook from the output.
         /// </summary>
-        internal static string tooltip_include_lore {
+        internal static string tooltip_exclude_lore {
             get {
-                return ResourceManager.GetString("tooltip_include_lore", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_lore", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include model instructions in the output.
+        ///   Looks up a localized string similar to Exclude model instructions from the output.
         /// </summary>
-        internal static string tooltip_include_model {
+        internal static string tooltip_exclude_model {
             get {
-                return ResourceManager.GetString("tooltip_include_model", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_model", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include scenario in the output.
+        ///   Looks up a localized string similar to Exclude scenario from the output.
         /// </summary>
-        internal static string tooltip_include_scenario {
+        internal static string tooltip_exclude_scenario {
             get {
-                return ResourceManager.GetString("tooltip_include_scenario", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_scenario", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include user persona in the output.
+        ///   Looks up a localized string similar to Exclude user persona from the output.
         /// </summary>
-        internal static string tooltip_include_user_persona {
+        internal static string tooltip_exclude_user_persona {
             get {
-                return ResourceManager.GetString("tooltip_include_user_persona", resourceCulture);
+                return ResourceManager.GetString("tooltip_exclude_user_persona", resourceCulture);
             }
         }
         
@@ -4991,6 +5051,15 @@ namespace Ginger.Properties {
         internal static string tooltip_link_repair_images {
             get {
                 return ResourceManager.GetString("tooltip_link_repair_images", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset the model settings for all characters to their default values..
+        /// </summary>
+        internal static string tooltip_link_reset_model_settings {
+            get {
+                return ResourceManager.GetString("tooltip_link_reset_model_settings", resourceCulture);
             }
         }
         
@@ -5507,7 +5576,6 @@ namespace Ginger.Properties {
         ///	&lt;Color&gt;#ddf5ef&lt;/Color&gt;
         ///	&lt;Order&gt;8&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Requires&gt;not __actor&lt;/Requires&gt;
         ///	&lt;Flags&gt;user-persona, __user, __component, __formatting, __internal&lt;/Flags&gt;
         ///	
         ///	&lt;Text id=&quot;user-persona&quot; style=&quot;component&quot;&gt;
