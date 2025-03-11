@@ -114,6 +114,6 @@
 	<Node path="system/genre" style="list" order="600" mode="exclude" rule="more-detail">Genre: {inner}.</Node>
 	<Node path="system/genre/value" rule="more-detail">zombie horror, living dead</Node>
 	
-	<Adjective order="qualifier" priority="1">zombie</Adjective>
+	<Noun affix="prefix" priority="1">zombie</Noun>
 	
 </Ginger>

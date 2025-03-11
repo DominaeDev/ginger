@@ -87,6 +87,15 @@ namespace Ginger
 		public string value;
 		public ICondition condition;
 		public int priority = 0;
+		public Affix affix = Affix.Default;
+
+		public enum Affix
+		{
+			None = 0,
+			Prefix,
+			Suffix,
+			Default	= None,
+		}
 
 		public bool LoadFromXml(XmlNode xmlNode)
 		{
@@ -96,6 +105,7 @@ namespace Ginger
 			value = value.Trim();
 
 			priority = xmlNode.GetAttributeInt("priority", 0);
+			affix = xmlNode.GetAttributeEnum("affix", Affix.Default);
 
 			if (xmlNode.HasAttribute("rule"))
 				condition = Rule.Parse(xmlNode.GetAttribute("rule"));
@@ -104,6 +114,8 @@ namespace Ginger
 
 		public void SaveToXml(XmlNode xmlNode)
 		{
+			if (affix != Affix.None)
+				xmlNode.AddAttribute("affix", EnumHelper.ToString(affix));
 			if (priority != 0)
 				xmlNode.AddAttribute("priority", priority);
 			if (condition != null)

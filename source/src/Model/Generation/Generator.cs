@@ -972,9 +972,18 @@ namespace Ginger
 					if (string.IsNullOrEmpty(text))
 						continue;
 
+					int order;
+					if (noun.affix == CharacterNoun.Affix.Prefix)
+						order = -1;
+					else if (noun.affix == CharacterNoun.Affix.Suffix)
+						order = 1;
+					else
+						order = 0;
+
 					var words = Utility.ListFromCommaSeparatedString(text);
 					lsNouns.Add(new AdjectiveNoun() {
 						value = randomizer.Item(words),
+						order = order,
 						priority = noun.priority,
 					});
 				}
@@ -1026,10 +1035,41 @@ namespace Ginger
 					recipeContexts[i].SetValue(Constants.Variables.Adjectives, sAdjectives);
 			}
 
+			lsNouns = lsNouns.DistinctBy(n => n.value.ToLowerInvariant()).ToList();
+
 			// Choose noun
-			var sNoun = lsNouns
-				.DistinctBy(n => n.value.ToLowerInvariant())
-				.GroupBy(n => n.priority)
+			var nouns = lsNouns.Where(n => n.order == 0);
+			var prefixes = lsNouns.Where(n => n.order == -1);
+			var suffixes = lsNouns.Where(n => n.order == 1);
+			var sNoun = SelectOne(nouns);
+			var sPrefix = SelectOne(prefixes);
+			var sSuffix = SelectOne(suffixes);
+
+			if (string.IsNullOrEmpty(sNoun) == false)
+			{
+				// Affixes
+				if (string.IsNullOrEmpty(sPrefix) == false)
+				{
+					if (sPrefix.EndsWith("-"))
+						sNoun = string.Concat(sPrefix, sNoun);
+					else
+						sNoun = string.Concat(sPrefix, " ", sNoun);
+				}
+				if (string.IsNullOrEmpty(sSuffix) == false)
+				{
+					if (sSuffix.BeginsWith("-"))
+						sNoun = string.Concat(sNoun, sSuffix);
+					else
+						sNoun =string.Concat(sNoun, " ", sSuffix);
+				}
+
+				for (int i = 0; i < recipeContexts.Length; ++i)
+					recipeContexts[i].SetValue(Constants.Variables.Noun, sNoun);
+			}
+
+			string SelectOne(IEnumerable<AdjectiveNoun> adjNoun)
+			{
+				return adjNoun.GroupBy(n => n.priority)
 				.Select(g => new {
 					priority = g.First().priority,
 					value = g.Select(gg => gg.value).ToList(),
@@ -1038,11 +1078,6 @@ namespace Ginger
 				.Take(1)
 				.Select(x => x.value.Shuffle(randomizer).FirstOrDefault())
 				.FirstOrDefault();
-
-			if (string.IsNullOrEmpty(sNoun) == false)
-			{
-				for (int i = 0; i < recipeContexts.Length; ++i)
-					recipeContexts[i].SetValue(Constants.Variables.Noun, sNoun);
 			}
 		}
 

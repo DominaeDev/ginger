@@ -164,5 +164,6 @@
 	<!-- Descriptor -->
 	<Adjective order="color" rule="normal-detail and skin-tone">{skin-tone.lower}-skinned</Adjective>
 	<Noun rule="beastfolk or merfolk or lizardfolk">[@race.lower]</Noun>
-	<Noun rule="not (beastfolk or merfolk or lizardfolk)">{gender} {humanoid-race.lower}</Noun>
+	<Noun rule="not (beastfolk or merfolk or lizardfolk)">{humanoid-race.lower}</Noun>
+	<Noun affix="prefix" rule="not (beastfolk or merfolk or lizardfolk)" priority="-1">{gender}</Noun>
 </Ginger>

@@ -735,6 +735,7 @@ namespace Ginger
 				var other = this.nouns[i];
 				clone.nouns.Add(new CharacterNoun() {
 					value = other.value,
+					affix = other.affix,
 					priority = other.priority,
 					condition = other.condition
 				});

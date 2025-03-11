@@ -81,7 +81,7 @@
 	<Rule id="is-futanari, is-futa, is-shemale">futanari or futa or shemale or ladyboy or new-half</Rule>
 	<Rule id="is-adult">age and age ge 18</Rule>
 	<Rule id="is-minor">age and age lt 18</Rule>
-	<Rule id="is-group">multi-character</Rule>
+	<Rule id="is-group">__multi or __group</Rule>
 	<Rule id="is-human">human and not is-creature</Rule>
 	<Rule id="is-humanoid">human or anthro or biped</Rule>
 	<Rule id="is-anthro">anthro or anthropomorph or anthropomorphic</Rule>

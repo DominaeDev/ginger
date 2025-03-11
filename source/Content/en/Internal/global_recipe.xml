@@ -142,7 +142,9 @@
 	</Attribute>
 	
 	<!-- Character adjectives/noun -->
-	<Noun priority="-100">[person]</Noun>
+	<Noun priority="-100" rule="species">{species}</Noun>
+	<Noun affix="prefix" priority="-100" rule="species">{gender}</Noun>
+	<Noun priority="-200">[person]</Noun>
 			
 	<Name>__global</Name>
 	<Flags>__nobake, __internal, __hidden</Flags>
