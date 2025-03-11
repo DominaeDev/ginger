@@ -1154,9 +1154,9 @@ namespace Ginger
 			SaveIncremental();
 		}
 
-		private void saveMultipleMenuItem_Click(object sender, EventArgs e)
+		private void saveSeparatelyMenuItem_Click(object sender, EventArgs e)
 		{
-			SaveMultipleAs();
+			SaveAsSeparately();
 		}
 
 		private void OpenFileMenuItem_Click(object sender, EventArgs e)
@@ -1472,7 +1472,7 @@ namespace Ginger
 			saveIncrementalMenuItem.Enabled = string.IsNullOrEmpty(Current.Filename) == false;
 
 			// Save multiple
-			saveMultipleMenuItem.Visible = Current.Characters.Count > 1;
+			saveSeparatelyMenuItem.Visible = Current.Characters.Count > 1;
 
 			// MRU
 			PopulateMRUMenu(openRecentMenuItem.DropDownItems);

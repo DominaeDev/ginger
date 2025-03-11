@@ -91,7 +91,7 @@ namespace Ginger
 			}
 		}
 		
-		public static bool ContainsV3Data
+		public static bool ContainsEmbeddedAssets
 		{
 			get
 			{

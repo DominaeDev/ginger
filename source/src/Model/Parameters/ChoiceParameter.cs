@@ -145,18 +145,28 @@ namespace Ginger
 			}
 			else if (style == Style.Actors) // Actors
 			{
+				string actorID;
+				string actorName;
 				int actorIndex;
-				if (int.TryParse(value, out actorIndex) && actorIndex >= 0 && actorIndex < Current.Characters.Count)
+				if (value == "user")
 				{
-					string name = Current.Characters[actorIndex].spokenName;
-					state.SetValue(id, name, scope);
-					state.SetValue(id + ":id", string.Format("actor-{0}", actorIndex), scope);
-					state.SetValue(id + ":text", name, scope);
-					state.SetValue(id + ":value", name, scope);    // Deprecated
-
-					if (isGlobal && scope == Parameter.Scope.Global)
-						state.Reserve(id, uid, value);
+					actorID = "user";
+					actorName = AppSettings.Settings.AutoConvertNames ? Current.Card.userPlaceholder : GingerString.UserMarker;
 				}
+				else if (int.TryParse(value, out actorIndex) && actorIndex >= 0 && actorIndex < Current.Characters.Count)
+				{
+					actorID = string.Format("actor-{0}", actorIndex);
+					actorName = Current.Characters[actorIndex].spokenName;
+				}
+				else
+					return;
+
+				state.SetValue(id, actorName, scope);
+				state.SetValue(id + ":id", actorID, scope);
+				state.SetValue(id + ":text", actorName, scope);
+				state.SetValue(id + ":value", actorName, scope);    // Deprecated
+				if (isGlobal && scope == Parameter.Scope.Global)
+					state.Reserve(id, uid, value);
 			}
 			else if (selectedIndex >= 0 && selectedIndex < items.Count)
 			{

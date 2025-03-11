@@ -1067,7 +1067,7 @@ namespace Ginger
 
 			// Only write ccv3 if necessary
 			var formats = FileUtil.Format.Ginger | FileUtil.Format.Faraday | FileUtil.Format.SillyTavernV2;
-			if (Current.ContainsV3Data)
+			if (Current.ContainsEmbeddedAssets)
 				formats |= FileUtil.Format.SillyTavernV3;
 
 			// Linking: Check filename
@@ -1246,7 +1246,7 @@ namespace Ginger
 			}
 		}
 		
-		private bool SaveMultipleAs()
+		private bool SaveAsSeparately()
 		{
 			var folderDialog = new WinAPICodePack.CommonOpenFileDialog();
 			folderDialog.Title = Resources.cap_export_folder;
@@ -1324,7 +1324,7 @@ namespace Ginger
 						}
 
 						var formats = FileUtil.Format.Ginger | FileUtil.Format.Faraday | FileUtil.Format.SillyTavernV2;
-						if (Current.ContainsV3Data)
+						if (Current.ContainsEmbeddedAssets)
 							formats |= FileUtil.Format.SillyTavernV3;
 
 						if (FileUtil.Export(filenames[i], portraitImage ?? DefaultPortrait.Image, formats))

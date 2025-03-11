@@ -13,6 +13,11 @@ namespace Ginger
 			get
 			{
 				var items = new List<ChoiceParameter.Item>(Current.Characters.Count);
+				items.Add(new ChoiceParameter.Item() {
+					id = "user",
+					label = Current.Card.userPlaceholder,
+					value = "user",
+				});
 				for (int i = 0; i < Current.Characters.Count; ++i)
 				{
 					items.Add(new ChoiceParameter.Item() {
