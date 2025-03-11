@@ -942,7 +942,7 @@ namespace Ginger
 			if (sAdjectives.Length > 0)
 			{
 				for (int i = 0; i < recipeContexts.Length; ++i)
-					recipeContexts[i].SetValue("char-adjectives", sAdjectives);
+					recipeContexts[i].SetValue(Constants.Variables.Adjectives, sAdjectives);
 			}
 
 			// Choose noun
@@ -961,7 +961,7 @@ namespace Ginger
 			if (string.IsNullOrEmpty(sNoun) == false)
 			{
 				for (int i = 0; i < recipeContexts.Length; ++i)
-					recipeContexts[i].SetValue("char-noun", sNoun);
+					recipeContexts[i].SetValue(Constants.Variables.Noun, sNoun);
 			}
 		}
 

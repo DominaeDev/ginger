@@ -127,6 +127,18 @@ namespace Ginger
 			public static readonly string LevelOfDetail = "detail-optional";
 		}
 
+		public static class Variables
+		{
+			public static readonly string Adjectives = "adjectives";
+			public static readonly string Noun = "noun";
+			
+			public static readonly string CardName = "card"; //! todo
+			public static readonly string CharacterName = "name";
+			public static readonly string CharacterGender = "gender";
+			public static readonly string UserName = "#name";
+			public static readonly string UserGender = "#gender";
+		}
+
 		public static readonly string DefaultCharacterName = "Unnamed";
 		public static readonly string DefaultUserName = "User";
 		public static readonly float AutoWrapWidth = 54;
