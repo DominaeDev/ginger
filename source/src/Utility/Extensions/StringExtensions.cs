@@ -197,5 +197,13 @@ namespace Ginger
 
 			return -1;
 		}
+
+		public static bool ContainsPhrase(this string text, string phrase, bool ignoreCase = true)
+		{
+			if (text == null)
+				return false;
+
+			return text.IndexOf(phrase, 0, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) != -1;
+		}
 	}
 }

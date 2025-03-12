@@ -17,11 +17,14 @@
 	<Node path="system/important" style="paragraph" mode="exclude"/>
 	<Node path="system/important/output" style="default" order="500" mode="exclude"/>
 	
+	<!-- Attribute node -->
+	<Node path="persona/attributes" style="line" order="200" mode="exclude"/>
+	
+	<!-- Character introduction -->
+	<Node path="persona/summary" style="default" order="300" mode="exclude"/>
+	
 	<!-- Personality summary -->
 	<Node path="persona/output/personality" style="default" order="1000" mode="exclude"/>
-	
-	<!-- Attribute node -->
-	<Node path="persona/attributes" style="line" order="250" mode="exclude"/>
 	
 	<Name>__internal</Name>
 	<Flags>__nobake, __internal, __hidden</Flags>

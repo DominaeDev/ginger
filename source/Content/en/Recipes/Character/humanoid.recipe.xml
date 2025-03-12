@@ -109,8 +109,6 @@
 		<Value>[@race]</Value>
 	</Attribute>
 	
-	<Node path="persona/description/race" rule="humanoid-race">[char] is [a] {gender} {@race.lower}.</Node>
-
 	<!-- Skin tone -->
 	<String id="skin-tone">
 		<String rule="skin-albino" priority="1">is albino white</String>
@@ -161,9 +159,20 @@
 	<!-- More -->
 	<Node path="persona/appearance/body" order="0" rule="more">{more}.</Node>
 	
-	<!-- Descriptor -->
+	<!-- Adjectives -->
 	<Adjective order="color" rule="normal-detail and skin-tone">{skin-tone.lower}-skinned</Adjective>
-	<Noun affix="prefix" rule="not (beastfolk or merfolk or lizardfolk)" priority="-1">{gender}</Noun>
-	<Noun rule="beastfolk or merfolk or lizardfolk">[@race.lower]</Noun>
-	<Noun rule="not (beastfolk or merfolk or lizardfolk)">{humanoid-race.lower}</Noun>
+	
+	<!-- Noun -->
+	<String id="noun">
+		<String rule="beastfolk" priority="1">beast[man-or-woman]</String>
+		<String rule="merfolk" priority="1">[is-male?merman|mermaid]</String>
+		<String rule="lizardfolk" priority="1">lizard[man-or-woman]</String>
+		<String rule="elf and is-male" priority="1">elven man</String>
+		<String rule="elf and is-female" priority="1">elven woman</String>
+		<String rule="elf">elf</String>
+		<String>[{humanoid-race.lower}|humanoid] [man-or-woman]</String>
+	</String>
+	
+	<Noun>[@noun]</Noun>
+	
 </Ginger>

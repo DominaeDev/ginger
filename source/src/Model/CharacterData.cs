@@ -82,6 +82,15 @@ namespace Ginger
 				{
 					context.SetFlag("custom-gender");
 				}
+
+				// Transgender
+				if (this.gender.ContainsPhrase("trans"))
+				{
+					if (this.gender.ContainsPhrase("woman") || this.gender.ContainsPhrase("female"))
+						context.SetFlag("trans-female");
+					else if (this.gender.ContainsPhrase("man") || this.gender.ContainsPhrase("male"))
+						context.SetFlag("trans-male");
+				}
 			}
 
 			// Gender (user)

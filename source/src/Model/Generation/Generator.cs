@@ -367,7 +367,7 @@ namespace Ginger
 			// (Silly tavern) Build personality block
 			GingerString personality = GingerString.Empty;
 			if (options.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3) && options.ContainsAny(Option.Snippet | Option.Bake) == false)
-				personality = GingerString.FromOutput(blockBuilder.Build("persona/output/personality"), characterIndex, options, Text.EvalOption.OutputFormatting);
+				personality = GingerString.FromOutput(blockBuilder.Build("persona/summary"), characterIndex, options, Text.EvalOption.OutputFormatting);
 
 			// Option: Prune scenario
 			if (context.HasFlag(Constants.Flag.PruneScenario) && options.ContainsAny(Option.Snippet | Option.Bake) == false)
@@ -388,6 +388,9 @@ namespace Ginger
 			// Omit attributes block
 			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitAttributes))
 				blockBuilder.RemoveBlock("persona/attributes");
+			// Omit personality block
+			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitPersonality))
+				blockBuilder.RemoveBlock("persona/summary");
 
 			// Build blocks
 			blockBuilder.Build();
@@ -416,6 +419,8 @@ namespace Ginger
 				systemOutput = GingerString.Empty;
 				postHistory = GingerString.Empty;
 			}
+			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitPersonality))
+				personality = GingerString.Empty;
 			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitUserPersona))
 				userPersonaOutput = GingerString.Empty;
 			if (Current.Card.extraFlags.Contains(CardData.Flag.OmitScenario))
@@ -991,7 +996,6 @@ namespace Ginger
 
 			// Select 
 			var adjByOrder = lsAdjectives
-				.DistinctBy(a => a.value.ToLowerInvariant())
 				.GroupBy(a => a.order)
 				.ToDictionary(g => g.Key, g => {
 					int max = CharacterAdjective.CountByOrder[g.Key];
@@ -1023,7 +1027,8 @@ namespace Ginger
 				.GroupBy(a => a.order)
 				.Select(g => new {
 					order = g.First().order,
-					values = g.Select(gg => gg.value),
+					values = g.Select(gg => gg.value)
+						.DistinctBy(s => s.ToLowerInvariant()),
 				})
 				.OrderBy(x => x.order)
 				.SelectMany(x => x.values);
@@ -1034,8 +1039,6 @@ namespace Ginger
 				for (int i = 0; i < recipeContexts.Length; ++i)
 					recipeContexts[i].SetValue(Constants.Variables.Adjectives, sAdjectives);
 			}
-
-			lsNouns = lsNouns.DistinctBy(n => n.value.ToLowerInvariant()).ToList();
 
 			// Choose noun
 			var nouns = lsNouns.Where(n => n.order == 0);
@@ -1084,14 +1087,16 @@ namespace Ginger
 			string SelectOne(IEnumerable<AdjectiveNoun> adjNoun)
 			{
 				return adjNoun.GroupBy(n => n.priority)
-				.Select(g => new {
-					priority = g.First().priority,
-					value = g.Select(gg => gg.value).ToList(),
-				})
-				.OrderByDescending(x => x.priority)
-				.Take(1)
-				.Select(x => x.value.Shuffle(randomizer).FirstOrDefault())
-				.FirstOrDefault();
+					.Select(g => new {
+						priority = g.First().priority,
+						value = g.Select(gg => gg.value)
+							.DistinctBy(s => s.ToLowerInvariant())
+							.ToList(),
+					})
+					.OrderByDescending(x => x.priority)
+					.Take(1)
+					.Select(x => x.value.Shuffle(randomizer).FirstOrDefault())
+					.FirstOrDefault();
 			}
 		}
 
