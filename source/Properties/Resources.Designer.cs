@@ -4555,6 +4555,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This is card contains multiple character definitions..
+        /// </summary>
+        internal static string tooltip_actors {
+            get {
+                return ResourceManager.GetString("tooltip_actors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (Actor portrait) This asset will be used for the portrait of {0}, when applicable..
         /// </summary>
         internal static string tooltip_asset_actor_portrait {
@@ -4662,6 +4671,15 @@ namespace Ginger.Properties {
         internal static string tooltip_detail_level {
             get {
                 return ResourceManager.GetString("tooltip_detail_level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This card contains embedded assets..
+        /// </summary>
+        internal static string tooltip_embedded_assets {
+            get {
+                return ResourceManager.GetString("tooltip_embedded_assets", resourceCulture);
             }
         }
         

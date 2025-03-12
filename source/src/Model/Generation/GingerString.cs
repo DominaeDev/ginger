@@ -58,6 +58,7 @@ namespace Ginger
 			sb.Replace(OriginalMarker, "{{original}}", true);
 			sb.Replace(NameMarker, Current.Name, true);
 			sb.Replace(ContinueMarker, "", true);
+			UnescapeBackslash(sb);
 			sb.ConvertLinebreaks(Linebreak.LF);
 			sb.TrimTrailingSpaces();
 			return sb.ToString();
@@ -156,6 +157,7 @@ namespace Ginger
 			sb.Replace(OriginalMarker, "{original}", true);
 			sb.Replace(NameMarker, Current.Name, true);
 			sb.Replace(ContinueMarker, "", true);
+			UnescapeBackslash(sb);
 
 			sb.ConvertLinebreaks(Linebreak.LF);
 			sb.Trim();
@@ -418,6 +420,7 @@ namespace Ginger
 			sb.Replace(UserMarker, UserMarker, true); // Case insensitive
 			sb.Replace(OriginalMarker, OriginalMarker, true); // Case insensitive
 			sb.Replace(NameMarker, NameMarker, true); // Case insensitive
+			UnescapeBackslash(sb);
 
 			sb.Trim();
 			sb.ConvertLinebreaks(Linebreak.Default);
@@ -707,14 +710,6 @@ namespace Ginger
 			sb.Replace("]", "]]");
 		}
 
-		public static string Unescape(string text)
-		{
-			StringBuilder sb = new StringBuilder(text);
-			Unescape(sb);
-			text = sb.ToString();
-			return text;
-		}
-
 		public static void Unescape(StringBuilder sb)
 		{
 			sb.Replace("{{", "{");
@@ -745,6 +740,14 @@ namespace Ginger
 			if (string.IsNullOrEmpty(value) == false)
 				value = TextStyleConverter.Convert(value, CardData.TextStyle.Mixed);
 			return this;
+		}
+
+		private static void UnescapeBackslash(StringBuilder sb)
+		{
+			sb.Replace("\\*", "*");
+			sb.Replace("\\\"", "\"");
+			sb.Replace("\\\\", "\\");
+			
 		}
 
 	}

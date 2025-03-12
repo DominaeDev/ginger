@@ -72,7 +72,6 @@ namespace Ginger {
 			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveIncrementalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveSeparatelyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importLorebookMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -713,7 +712,6 @@ namespace Ginger {
             this.saveToolStripMenuItem,
             this.saveasToolStripMenuItem,
             this.saveIncrementalMenuItem,
-            this.saveSeparatelyMenuItem,
             toolStripMenuItem3,
             this.importToolStripMenuItem,
             this.exportToolStripMenuItem,
@@ -792,13 +790,6 @@ namespace Ginger {
 			this.saveIncrementalMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.saveIncrementalMenuItem.Text = "Save &incremental";
 			this.saveIncrementalMenuItem.Click += new System.EventHandler(this.SaveIncrementalMenuItem_Click);
-			// 
-			// saveSeparatelyMenuItem
-			// 
-			this.saveSeparatelyMenuItem.Name = "saveSeparatelyMenuItem";
-			this.saveSeparatelyMenuItem.Size = new System.Drawing.Size(227, 22);
-			this.saveSeparatelyMenuItem.Text = "Save separately...";
-			this.saveSeparatelyMenuItem.Click += new System.EventHandler(this.saveSeparatelyMenuItem_Click);
 			// 
 			// importToolStripMenuItem
 			// 
@@ -1766,12 +1757,14 @@ namespace Ginger {
 			// 
 			// statusEmbeddedAssets
 			// 
+			this.statusEmbeddedAssets.DoubleClickEnabled = true;
 			this.statusEmbeddedAssets.Image = global::Ginger.Properties.Resources.embedded_assets;
 			this.statusEmbeddedAssets.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
 			this.statusEmbeddedAssets.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.statusEmbeddedAssets.Name = "statusEmbeddedAssets";
 			this.statusEmbeddedAssets.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusEmbeddedAssets.Size = new System.Drawing.Size(24, 17);
+			this.statusEmbeddedAssets.DoubleClick += new System.EventHandler(this.embeddedAssetsMenuItem_Click);
 			// 
 			// statusConnectionIcon
 			// 
@@ -1981,7 +1974,6 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem additionalCharactersMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem outputPreviewFaradayGroupMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel statusActors;
-		private System.Windows.Forms.ToolStripMenuItem saveSeparatelyMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem resetModelSettingsMenuItem;
 	}
 }
