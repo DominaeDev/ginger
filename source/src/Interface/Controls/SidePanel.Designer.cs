@@ -1222,7 +1222,8 @@
 			this.textBox_creatorNotes.Location = new System.Drawing.Point(6, 132);
 			this.textBox_creatorNotes.Multiline = true;
 			this.textBox_creatorNotes.Name = "textBox_creatorNotes";
-			this.textBox_creatorNotes.Placeholder = "Enter name...";
+			this.textBox_creatorNotes.Placeholder = "";
+			this.textBox_creatorNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textBox_creatorNotes.Size = new System.Drawing.Size(571, 80);
 			this.textBox_creatorNotes.TabIndex = 2;
 			this.textBox_creatorNotes.TextChanged += new System.EventHandler(this.TextBox_creatorNotes_TextChanged);
