@@ -197,5 +197,21 @@ namespace Ginger
 
 			return -1;
 		}
+
+		public static bool ContainsPhrase(this string text, string phrase, bool ignoreCase = true)
+		{
+			if (text == null)
+				return false;
+
+			return text.IndexOf(phrase, 0, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) != -1;
+		}
+
+		public static bool ContainsWholeWord(this string text, string phrase, bool ignoreCase = true)
+		{
+			if (text == null)
+				return false;
+
+			return Utility.FindWholeWord(text, phrase, 0, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal, Utility.WholeWordOptions.None) != -1;
+		}
 	}
 }

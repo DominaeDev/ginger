@@ -11,6 +11,7 @@ namespace Ginger
 	using CharacterInstance = Backyard.CharacterInstance;
 	using FolderInstance = Backyard.FolderInstance;
 	using GroupInstance = Backyard.GroupInstance;
+	using Timer = System.Timers.Timer;
 
 	public partial class LinkSelectCharacterOrGroupDialog : FormEx
 	{
@@ -35,6 +36,10 @@ namespace Ginger
 		private Dictionary<string, int> _folderCounts = new Dictionary<string, int>();
 		private Dictionary<string, Backyard.ChatCount> _chatCounts;
 
+		private bool _bIgnoreEvents = false;
+		private string _filterString;
+		private Timer _timer = new Timer();
+
 		public LinkSelectCharacterOrGroupDialog()
 		{
 			InitializeComponent();
@@ -42,8 +47,15 @@ namespace Ginger
 			this.Load += OnLoad;
 		}
 
+		~LinkSelectCharacterOrGroupDialog()
+		{
+			_timer.Dispose();
+		}
+
 		private void OnLoad(object sender, EventArgs e)
 		{
+			filterTextBox.KeyDown += FilterTextBox_KeyDown;
+
 			this.Characters = Backyard.Database.Characters.ToArray();
 			this.Orphans = this.Characters.Where(c => c.groupId == null).ToArray();
 			this.Folders = Backyard.Database.Folders.ToArray();
@@ -61,21 +73,36 @@ namespace Ginger
 				this.Groups = new GroupInstance[0];
 
 			_charactersById = Characters.ToDictionary(c => c.instanceId, c => c);
-			
+
+			treeView.SelectedNode = null;
+			SelectedGroup = default(GroupInstance);
+			SelectedCharacter = default(CharacterInstance);
+						
 			BackyardUtil.GetChatCounts(out _chatCounts);
 
 			if (Groups.ContainsAny(g => g.Count > 2))
 				this.Text = "Select character or group";
 
+			_bIgnoreEvents = false;
+
 			PopulateTree(false);
-
-			treeView.SelectedNode = null;
-			SelectedGroup = default(GroupInstance);
-			SelectedCharacter = default(CharacterInstance);
-
+			filterTextBox.Text = "";
 			btnOk.Enabled = false;
+
+			_timer.Interval = 250;
+			_timer.Elapsed += OnTimerElapsed;
+			_timer.AutoReset = false;
+			_timer.SynchronizingObject = this;
+
+			_bIgnoreEvents = false;
 		}
-				
+
+		private void FilterTextBox_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Down)
+				treeView.Focus();
+		}
+
 		private DateTime GetLatestMessageTime(GroupInstance group)
 		{
 			Backyard.ChatCount count;
@@ -97,6 +124,7 @@ namespace Ginger
 		private void PopulateTree(bool bRefresh)
 		{
 			HashSet<string> expandedFolders = new HashSet<string>();
+			HashSet<string> emptyFolders = new HashSet<string>();
 			foreach (var node in treeView.AllNodes())
 			{
 				if (node.IsExpanded && node.Tag is string)
@@ -109,20 +137,41 @@ namespace Ginger
 			if (Folders == null || Groups == null)
 				return; // Nothing to show
 
-			if (bRefresh == false)
+			IEnumerable<GroupInstance> sortedGroups = Groups;
+			IEnumerable<CharacterInstance> sortedOrphans = Orphans;
+
+			// Filter
+			bool bFiltered = string.IsNullOrWhiteSpace(_filterString) == false;
+
+			if (bFiltered)
+			{
+				var filteredCharacters = new HashSet<string>(this.Characters
+					.Where(c => {
+						return c.isCharacter
+							&& (c.displayName.ContainsPhrase(_filterString)
+								|| c.name.ContainsPhrase(_filterString)
+								|| c.persona.ContainsWholeWord(_filterString));
+					})
+					.Select(c => c.instanceId));
+
+				sortedGroups = sortedGroups.Where(g => filteredCharacters.ContainsAnyIn(g.members));
+				sortedOrphans = sortedOrphans.Where(c => filteredCharacters.Contains(c.instanceId));
+			}
+
+			if (bRefresh == false || bFiltered)
 			{
 				_folderCounts.Clear();
 
 				// Sum character counts
 				for (int i = 0; i < Folders.Length; ++i)
-					_folderCounts.Add(Folders[i].instanceId, Groups.Count(c => c.folderId == Folders[i].instanceId));
+					_folderCounts.Add(Folders[i].instanceId, sortedGroups.Count(c => c.folderId == Folders[i].instanceId));
+
 				for (int i = Folders.Length - 1; i >= 0; --i)
 				{
 					if (string.IsNullOrEmpty(Folders[i].parentId) == false)
 						_folderCounts[Folders[i].parentId] += _folderCounts[Folders[i].instanceId];
 				}
 			}
-
 
 			// Create folder nodes
 			var nodesById = new Dictionary<string, TreeNode>();
@@ -143,18 +192,18 @@ namespace Ginger
 
 				foreach (var folder in subfolders)
 				{
-					var folderNode = CreateFolderNode(folder, nodesById, _folderCounts[folder.instanceId]);
-					if (expandedFolders.Contains(folder.instanceId))
+					int count = _folderCounts[folder.instanceId];
+					if (count == 0)
+						continue;
+
+					var folderNode = CreateFolderNode(folder, nodesById, count);
+					if (bFiltered || expandedFolders.Contains(folder.instanceId))
 						expandedNodes.Add(folderNode);
 				}
 				
 				openList.Remove(parentId);
 			}
 
-
-			// Sorting
-			IEnumerable<GroupInstance> sortedGroups = Groups;
-			IEnumerable<CharacterInstance> sortedOrphans = Orphans;
 			if (AppSettings.User.SortGroups == AppSettings.CharacterSortOrder.ByName)
 			{
 				sortedGroups = sortedGroups
@@ -209,7 +258,7 @@ namespace Ginger
 			foreach (var group in sortedGroups)
 				CreateGroupNode(group, nodesById);
 
-			if (bRefresh)
+			if (bRefresh || bFiltered)
 			{
 				for (int i = expandedNodes.Count - 1; i >= 0; --i)
 					expandedNodes[i].Expand();
@@ -540,5 +589,20 @@ namespace Ginger
 
 			listPanel.BackColor = Theme.Current.TreeViewBackground;
 		}
+
+		private void filterTextBox_TextChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			_timer.Stop();
+			_timer.Start();
+		}
+
+		private void OnTimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
+		{
+			_filterString = filterTextBox.Text.Trim().ToLowerInvariant();
+			PopulateTree(false);
+		}	
 	}
 }
