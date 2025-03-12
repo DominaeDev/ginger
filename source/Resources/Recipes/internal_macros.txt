@@ -46,6 +46,7 @@
 	<Rule id="normal-detail">detail ge 0</Rule>
 	<Rule id="#male">#gender is male</Rule>
 	<Rule id="#female">#gender is female</Rule>
+	<Rule id="#male-or-female">#gender is any</Rule>
 	
 	<!-- Support flags -->
 	<Rule id="__support-grammar">__backyard or __bake or __snippet</Rule>

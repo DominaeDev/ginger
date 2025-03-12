@@ -874,11 +874,12 @@ namespace Ginger
 					}
 					for (int i = 0; i < lsOutputsByChannel[iChannel].Count; ++i)
 					{
+						string text = Text.Process(lsOutputsByChannel[iChannel][i], Text.EvalOption.Minimal);
 						blockBuilder.Add(new Block() {
 							id = blockID,
 							style = Block.Style.Undefined,
 							formatting = Block.Formatting.None,
-						}, lsOutputsByChannel[iChannel][i]);
+						}, text);
 					}
 				}
 			}

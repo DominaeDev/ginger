@@ -110,11 +110,14 @@ namespace Ginger
 			if (Current.Characters.Count > 1)
 			{
 				if (options.Contains(Generator.Option.Group))
+				{
+					context.SetFlag("group");
 					context.SetFlag("__group");
+				}
 				else
 				{
-					context.SetFlag("__multi");
 					context.SetFlag("multi-character");
+					context.SetFlag("__multi");
 				}
 			}
 

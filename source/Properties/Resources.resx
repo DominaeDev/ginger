@@ -1662,4 +1662,10 @@ Do you want to continue?</value>
   <data name="tooltip_link_reset_model_settings" xml:space="preserve">
     <value>Reset the model settings for all characters to their default values.</value>
   </data>
+  <data name="tooltip_actors" xml:space="preserve">
+    <value>This is card contains multiple character definitions.</value>
+  </data>
+  <data name="tooltip_embedded_assets" xml:space="preserve">
+    <value>This card contains embedded assets.</value>
+  </data>
 </root>

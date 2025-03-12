@@ -72,7 +72,6 @@ namespace Ginger {
 			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveIncrementalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveMultipleMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importLorebookMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -714,7 +713,6 @@ namespace Ginger {
             this.saveToolStripMenuItem,
             this.saveasToolStripMenuItem,
             this.saveIncrementalMenuItem,
-            this.saveMultipleMenuItem,
             toolStripMenuItem3,
             this.importToolStripMenuItem,
             this.exportToolStripMenuItem,
@@ -793,13 +791,6 @@ namespace Ginger {
 			this.saveIncrementalMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.saveIncrementalMenuItem.Text = "Save &incremental";
 			this.saveIncrementalMenuItem.Click += new System.EventHandler(this.SaveIncrementalMenuItem_Click);
-			// 
-			// saveMultipleMenuItem
-			// 
-			this.saveMultipleMenuItem.Name = "saveMultipleMenuItem";
-			this.saveMultipleMenuItem.Size = new System.Drawing.Size(227, 22);
-			this.saveMultipleMenuItem.Text = "Save multiple...";
-			this.saveMultipleMenuItem.Click += new System.EventHandler(this.saveMultipleMenuItem_Click);
 			// 
 			// importToolStripMenuItem
 			// 
@@ -1768,12 +1759,14 @@ namespace Ginger {
 			// 
 			// statusEmbeddedAssets
 			// 
+			this.statusEmbeddedAssets.DoubleClickEnabled = true;
 			this.statusEmbeddedAssets.Image = global::Ginger.Properties.Resources.embedded_assets;
 			this.statusEmbeddedAssets.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
 			this.statusEmbeddedAssets.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.statusEmbeddedAssets.Name = "statusEmbeddedAssets";
 			this.statusEmbeddedAssets.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusEmbeddedAssets.Size = new System.Drawing.Size(24, 17);
+			this.statusEmbeddedAssets.DoubleClick += new System.EventHandler(this.embeddedAssetsMenuItem_Click);
 			// 
 			// statusConnectionIcon
 			// 

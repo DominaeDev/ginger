@@ -374,6 +374,9 @@ namespace Ginger
 			int pos = 0;
 			SkipSpans(ref pos, spans);
 			int pos_next = text.IndexOf(ch, pos);
+			while (pos_next > 0 && text[pos_next - 1] == '\\') // Escape
+				pos_next = text.IndexOf(ch, pos_next + 1);
+
 			while (pos_next != -1)
 			{
 				if (SkipSpans(ref pos_next, spans))
@@ -385,6 +388,8 @@ namespace Ginger
 				string symbol = GetEncapsulationMark(text, pos_next);
 
 				int pos_end = text.IndexOf(symbol, pos_next + symbol.Length);
+				while (pos_end > 0 && text[pos_end - 1] == '\\') // Escape
+					pos_end = text.IndexOf(symbol, pos_end + 1);
 				if (pos_end != -1)
 				{
 					if (spans.CheckSpan(pos_next, pos_end)) // Not overlapping

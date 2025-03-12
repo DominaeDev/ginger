@@ -1159,9 +1159,9 @@ namespace Ginger
 			SaveIncremental();
 		}
 
-		private void saveMultipleMenuItem_Click(object sender, EventArgs e)
+		private void saveSeparatelyMenuItem_Click(object sender, EventArgs e)
 		{
-			SaveMultipleAs();
+			SaveAsSeparately();
 		}
 
 		private void OpenFileMenuItem_Click(object sender, EventArgs e)
@@ -1412,13 +1412,13 @@ namespace Ginger
 			// Embedded assets status icon
 			int embeddedCount = Current.Card.assets.Count(a => a.isEmbeddedAsset);
 			statusEmbeddedAssets.Image = Theme.Current.EmbeddedAssets;
-			statusEmbeddedAssets.ToolTipText = string.Format("This character card contains {0} embedded asset{1}.", embeddedCount, embeddedCount != 1 ? "s": "");
+			statusEmbeddedAssets.ToolTipText = Resources.tooltip_embedded_assets;
 			statusEmbeddedAssets.Visible = embeddedCount > 0;
 
 			// Actors status icon
 			int actorCount = Current.Characters.Count;
 			statusActors.Image = Theme.Current.ActorPortraitAsset;
-			statusActors.ToolTipText = string.Format("This character card contains {0} actor{1}.", actorCount, actorCount != 1 ? "s": "");
+			statusActors.ToolTipText = Resources.tooltip_actors;
 			statusActors.Visible = actorCount > 1;
 
 
@@ -1478,9 +1478,6 @@ namespace Ginger
 
 			// Save incremental
 			saveIncrementalMenuItem.Enabled = string.IsNullOrEmpty(Current.Filename) == false;
-
-			// Save multiple
-			saveMultipleMenuItem.Visible = Current.Characters.Count > 1;
 
 			// MRU
 			PopulateMRUMenu(openRecentMenuItem.DropDownItems);
@@ -1653,6 +1650,13 @@ namespace Ginger
 			};
 			exportActorMenuItem.Click += ExportSupportingCharacterMenuItem_Click;
 			items.Add(exportActorMenuItem);
+
+			// Save separately
+			var exportActorsMenuItem = new ToolStripMenuItem("Save separately...") {
+				Visible = Current.Characters.Count > 1,
+			};
+			exportActorsMenuItem.Click += saveSeparatelyMenuItem_Click;
+			items.Add(exportActorsMenuItem);
 
 			items.Add(new ToolStripSeparator());
 
@@ -2950,6 +2954,7 @@ namespace Ginger
 		{
 			ResetBackyardModelSettings();
 		}
+
 	}
 
 	public interface IIdleHandler
