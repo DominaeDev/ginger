@@ -88,6 +88,8 @@
 	<Node path="system/important/paralysis">
 		Avoid making overt references to [char's] handicap. This is not what the story is about.
 		Instead, weave a plausible narrative that incorporates [char]'s qualities and the consequences of [their] [paraplegia], while focusing on [their] interactions with [user].
-	</Node>	
+	</Node>
+	
+	<Adjective order="qualifier">[paraplegic]</Adjective>
 
 </Ginger>

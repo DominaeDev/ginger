@@ -11,9 +11,8 @@
 	
 	<Text id="personality" style="component">
 		<Label>Personality</Label>
+		<Default>[char] is [a] {adjectives.commalist} [noun:prefix?,] {noun}.</Default>
 	</Text>
 	
-	<Node path="persona/output/personality" style="space" order="1000" mode="exclude" rule="not __tavern">[br][char]'s personality: {inner}</Node>
-	<Node path="persona/output/personality" style="space" order="1000" mode="exclude" rule="__tavern"/>
-	<Node path="persona/output/personality/value">{personality:local}</Node>
+	<Node path="persona/summary/value">{personality:local}</Node>
 </Ginger>

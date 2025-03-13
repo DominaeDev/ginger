@@ -26,7 +26,6 @@
 		{inner}
 	</Node>
 	<Node path="system/important" style="line" mode="exclude" order="-0" rule="__tavern or __author-note"/>
-	
 	<Node path="system/important/output" mode="exclude" style="default"/>
 	
 	<Node path="persona/header" order="0" rule="multi-character">
@@ -48,6 +47,9 @@
 	<Node path="persona/attributes/goals" style="list" order="300">[!__attrib:Goals]{inner}</Node>
 	<Node path="persona/attributes/priorities" style="list" order="300">[!__attrib:Priorities]{inner}</Node>
 	<Node path="persona/attributes/appearance" style="list" order="400">[!__attrib:Appearance]{inner}</Node>
+
+	<!-- Auto-summary -->
+	<Node path="persona/summary/auto" order="100" mode="exclude" rule="normal-detail and adjectives and __tavern and not (system-summary or __personality)">[char] is [summary].</Node>
 
 	<!-- Description block -->
 	<Node path="persona/description" style="block" order="600" rule="not multi-character and less-detail"/>
@@ -140,7 +142,10 @@
 		<Name>Gender</Name>
 		<Value>{gender.capital}</Value>
 	</Attribute>
-		
+	
+	<!-- Default character adjectives/noun -->
+	<Noun priority="-200" rule="not species or race">[species or race?[{species.lower}|{race.lower}]|[man-or-woman]]</Noun>
+	
 	<Name>__global</Name>
 	<Flags>__nobake, __internal, __hidden</Flags>
 </Ginger>

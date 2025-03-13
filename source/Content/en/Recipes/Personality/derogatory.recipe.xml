@@ -31,5 +31,5 @@
 	<Node path="persona/derogatory/list" style="comma-list">[They] call[s] [less-detail?{user}|[#them]] things like [inner].</Node>
 	<Node path="persona/derogatory/list/names" rule="nicknames:local">{nicknames}</Node>
 
-
+	<Adjective>derogatory, rude, arrogant</Adjective>
 </Ginger>

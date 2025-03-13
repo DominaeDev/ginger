@@ -62,5 +62,7 @@
 		<Name>Dislikes</Name>
 		<Value>{dislikes}</Value>
 	</Attribute>
-
+	
+	<!-- Descriptors -->
+	<Adjective order="quality">{personality-traits}</Adjective>
 </Ginger>

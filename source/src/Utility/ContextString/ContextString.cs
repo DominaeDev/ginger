@@ -956,43 +956,51 @@ namespace Ginger
 					break;
 				case "list":
 				case "andlist":
+				case "and-list":
 				{
 					var words = ListFromDelimitedString(text);
-					text = Text.Eval(Utility.CommaSeparatedList(words, Text.Eval("[@conjugates/and]", internalContext.context, evalConfig, Text.EvalOption.None)), null, Text.EvalOption.None);
+					text = Text.Eval(Utility.CommaSeparatedList(words, Text.Eval("[{@conjugates/and}|and]", internalContext.context, evalConfig, Text.EvalOption.None)), null, Text.EvalOption.None);
 					break;
 				}
 				case "orlist":
+				case "or-list":
 				{
 					var words = ListFromDelimitedString(text);
-					text = Text.Eval(Utility.CommaSeparatedList(words, Text.Eval("[@conjugates/or]", internalContext.context, evalConfig, Text.EvalOption.None)), null, Text.EvalOption.None);
+					text = Text.Eval(Utility.CommaSeparatedList(words, Text.Eval("[{@conjugates/or}|or]", internalContext.context, evalConfig, Text.EvalOption.None)), null, Text.EvalOption.None);
 					break;
 				}
 				case "norlist":
+				case "nor-list":
 				{
 					var words = ListFromDelimitedString(text);
-					text = Text.Eval(Utility.CommaSeparatedList(words, Text.Eval("[@conjugates/nor]", internalContext.context, evalConfig, Text.EvalOption.None)), null, Text.EvalOption.None);
+					text = Text.Eval(Utility.CommaSeparatedList(words, Text.Eval("[{@conjugates/nor}|nor]", internalContext.context, evalConfig, Text.EvalOption.None)), null, Text.EvalOption.None);
 					break;
 				}
 				case "pluslist":
+				case "plus-list":
 				{
 					var words = ListFromDelimitedString(text);
 					text = Text.Eval(Utility.ListToDelimitedString(words, " + "), null, Text.EvalOption.None);
 					break;
 				}
 				case "commalist":
+				case "comma-list":
 				{
 					var words = ListFromDelimitedString(text);
 					text = Text.Eval(Utility.ListToDelimitedString(words, ", "), null, Text.EvalOption.None);
 					break;
 				}
 				case "semilist":
+				case "semi-list":
 				case "semicolonlist":
+				case "semicolon-list":
 				{
 					var words = ListFromDelimitedString(text);
 					text = Text.Eval(Utility.ListToDelimitedString(words, "; "), null, Text.EvalOption.None);
 					break;
 				}
 				case "quotelist":
+				case "quote-list":
 				{
 					var words = ListFromDelimitedString(text);
 					StringBuilder sb = new StringBuilder();
@@ -1008,6 +1016,9 @@ namespace Ginger
 					break;
 				}	
 				case "numlist":
+				case "numberlist":
+				case "num-list":
+				case "number-list":
 				{
 					var words = ListFromDelimitedString(text);
 					StringBuilder sb = new StringBuilder();
@@ -1021,6 +1032,7 @@ namespace Ginger
 					break;
 				}	
 				case "bulletlist":
+				case "bullet-list":
 				{
 					var words = ListFromDelimitedString(text);
 					StringBuilder sb = new StringBuilder();
@@ -1068,6 +1080,7 @@ namespace Ginger
 					break;
 				}
 				case "ceil":
+				case "ceiling":
 				{
 					float fValue;
 					if (Utility.StringToFloat(text, out fValue))

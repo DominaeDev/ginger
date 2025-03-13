@@ -453,6 +453,7 @@
     <Compile Include="src\Model\Formats\ChatLogs\BackyardChatBackupV1.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\GingerChatV2.cs" />
     <Compile Include="src\Model\Formats\UserData.cs" />
+    <Compile Include="src\Model\Generation\Adjective.cs" />
     <Compile Include="src\Model\GingerCharacter.cs" />
     <Compile Include="src\Model\Clipboard\ChatClipboard.cs" />
     <Compile Include="src\Model\Clipboard\ChatParametersClipboard.cs" />

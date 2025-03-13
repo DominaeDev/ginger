@@ -58,7 +58,7 @@
 	
 	<Attribute style="list" rule="not speech-pattern or accent">
 		<Name>Speech</Name>
-		<Value>Orcish, Mushmouth, Boastful, Jumbled, Basic</Value>
+		<Value>orcish, mushmouth, boastful, jumbled, simple</Value>
 	</Attribute>
 	
 	<Attribute order="20">
@@ -110,4 +110,10 @@
 	</Node>
 			
 	<Node path="persona/description/orc" rule="more">{more}.</Node>
+	
+	<!-- Descriptors -->
+	<Adjective order="color" rule="normal-detail and skin-tone">{skin-tone.lower}-skinned</Adjective>
+	
+	<Noun affix="prefix" priority="-1">{gender}</Noun>
+	<Noun>orc</Noun>
 </Ginger>
