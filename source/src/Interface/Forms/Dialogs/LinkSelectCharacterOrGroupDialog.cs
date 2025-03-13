@@ -361,21 +361,21 @@ namespace Ginger
 			{
 				string inferredGender = characters[0].inferredGender?.ToLowerInvariant();
 				if (inferredGender == "male")
-					icon = 6;
+					icon = 6; // Blue
 				else if (inferredGender == "female")
-					icon = 10;
+					icon = 10; // Pink
 				else if (inferredGender == "transgender")
-					icon = 14;
+					icon = 14; // Green
 				else if (inferredGender == "futanari" || inferredGender == "hermaphrodite")
-					icon = 18;
+					icon = 18; // Yellow
 				else
-					icon = 2;
+					icon = 2; // White
 
 				if (characters[0].hasLorebook)
-					icon += 2; // Lore
+					icon += 1; // Lore
 			}
 			else
-				icon = 2;
+				icon = 2; // White
 
 			var node = new TreeNode(groupLabel, icon, icon);
 			node.Tag = group;
@@ -429,18 +429,17 @@ namespace Ginger
 			// Set icon
 			int icon;
 			if (inferredGender == "male")
-				icon = 6;
+				icon = 6; // Blue
 			else if (inferredGender == "female")
-				icon = 10;
+				icon = 10; // Pink
 			else if (inferredGender == "transgender")
-				icon = 14;
+				icon = 14; // Green
 			else if (inferredGender == "futanari" || inferredGender == "hermaphrodite")
-				icon = 18;
+				icon = 18; // Yellow
 			else
-				icon = 2;
-
+				icon = 2; // White
 			if (character.hasLorebook)
-				icon += 2; // Lore
+				icon += 1; // Lore
 			if (bGrayed)
 				icon += 2; // Grayed out
 

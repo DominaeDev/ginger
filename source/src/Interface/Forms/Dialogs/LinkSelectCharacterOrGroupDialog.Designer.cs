@@ -31,21 +31,21 @@ namespace Ginger
 		{
 			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.FlowLayoutPanel buttonLayout;
-			System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Character", 1, 1);
-			System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Group", 2, 2, new System.Windows.Forms.TreeNode[] {
-            treeNode4});
-			System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
-            treeNode5});
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectCharacterOrGroupDialog));
 			System.Windows.Forms.Panel spacer;
+			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Character", 1, 1);
+			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Group", 2, 2, new System.Windows.Forms.TreeNode[] {
+            treeNode1});
+			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Folder", new System.Windows.Forms.TreeNode[] {
+            treeNode2});
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LinkSelectCharacterOrGroupDialog));
 			this.btnCancel = new Ginger.ButtonEx();
 			this.btnOk = new Ginger.ButtonEx();
 			this.listPanel = new System.Windows.Forms.Panel();
 			this.treeView = new Ginger.TreeViewEx();
 			this.imageList_Light = new System.Windows.Forms.ImageList(this.components);
+			this.filterTextBox = new Ginger.TextBoxEx();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.imageList_Dark = new System.Windows.Forms.ImageList(this.components);
-			this.filterTextBox = new Ginger.TextBoxEx();
 			buttonLayout = new System.Windows.Forms.FlowLayoutPanel();
 			spacer = new System.Windows.Forms.Panel();
 			buttonLayout.SuspendLayout();
@@ -93,6 +93,14 @@ namespace Ginger
 			this.btnOk.UseVisualStyleBackColor = true;
 			this.btnOk.Click += new System.EventHandler(this.BtnOk_Click);
 			// 
+			// spacer
+			// 
+			spacer.Dock = System.Windows.Forms.DockStyle.Top;
+			spacer.Location = new System.Drawing.Point(2, 27);
+			spacer.Name = "spacer";
+			spacer.Size = new System.Drawing.Size(480, 2);
+			spacer.TabIndex = 2;
+			// 
 			// listPanel
 			// 
 			this.listPanel.BackColor = System.Drawing.SystemColors.Window;
@@ -118,19 +126,19 @@ namespace Ginger
 			this.treeView.ImageList = this.imageList_Light;
 			this.treeView.Location = new System.Drawing.Point(2, 29);
 			this.treeView.Name = "treeView";
-			treeNode4.ImageIndex = 1;
-			treeNode4.Name = "Node1";
-			treeNode4.SelectedImageIndex = 1;
-			treeNode4.Text = "Character";
-			treeNode5.ImageIndex = 2;
-			treeNode5.Name = "tmpNode1";
-			treeNode5.SelectedImageIndex = 2;
-			treeNode5.Text = "Group";
-			treeNode6.Name = "tmpNode1";
-			treeNode6.SelectedImageIndex = 0;
-			treeNode6.Text = "Folder";
+			treeNode1.ImageIndex = 1;
+			treeNode1.Name = "Node1";
+			treeNode1.SelectedImageIndex = 1;
+			treeNode1.Text = "Character";
+			treeNode2.ImageIndex = 2;
+			treeNode2.Name = "tmpNode1";
+			treeNode2.SelectedImageIndex = 2;
+			treeNode2.Text = "Group";
+			treeNode3.Name = "tmpNode1";
+			treeNode3.SelectedImageIndex = 0;
+			treeNode3.Text = "Folder";
 			this.treeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode6});
+            treeNode3});
 			this.treeView.SelectedImageIndex = 0;
 			this.treeView.ShowLines = false;
 			this.treeView.ShowNodeToolTips = true;
@@ -161,13 +169,23 @@ namespace Ginger
 			this.imageList_Light.Images.SetKeyName(14, "character_other.png");
 			this.imageList_Light.Images.SetKeyName(15, "character_other_lore.png");
 			this.imageList_Light.Images.SetKeyName(16, "character_other_empty.png");
-			this.imageList_Light.Images.SetKeyName(17, "character_other2.png");
-			this.imageList_Light.Images.SetKeyName(18, "character_other2_lore.png");
-			this.imageList_Light.Images.SetKeyName(19, "character_other_empty_lore.png");
+			this.imageList_Light.Images.SetKeyName(17, "character_other_empty_lore.png");
+			this.imageList_Light.Images.SetKeyName(18, "character_other2.png");
+			this.imageList_Light.Images.SetKeyName(19, "character_other2_lore.png");
 			this.imageList_Light.Images.SetKeyName(20, "character_other2_empty.png");
 			this.imageList_Light.Images.SetKeyName(21, "character_other2_empty_lore.png");
 			this.imageList_Light.Images.SetKeyName(22, "character_group.png");
 			this.imageList_Light.Images.SetKeyName(23, "character_group_empty.png");
+			// 
+			// filterTextBox
+			// 
+			this.filterTextBox.Dock = System.Windows.Forms.DockStyle.Top;
+			this.filterTextBox.Location = new System.Drawing.Point(2, 4);
+			this.filterTextBox.Name = "filterTextBox";
+			this.filterTextBox.Placeholder = "Search...";
+			this.filterTextBox.Size = new System.Drawing.Size(480, 23);
+			this.filterTextBox.TabIndex = 0;
+			this.filterTextBox.TextChanged += new System.EventHandler(this.filterTextBox_TextChanged);
 			// 
 			// toolTip
 			// 
@@ -207,24 +225,6 @@ namespace Ginger
 			this.imageList_Dark.Images.SetKeyName(22, "character_group.png");
 			this.imageList_Dark.Images.SetKeyName(23, "character_group_empty.png");
 			// 
-			// filterTextBox
-			// 
-			this.filterTextBox.Dock = System.Windows.Forms.DockStyle.Top;
-			this.filterTextBox.Location = new System.Drawing.Point(2, 4);
-			this.filterTextBox.Name = "filterTextBox";
-			this.filterTextBox.Placeholder = "Search...";
-			this.filterTextBox.Size = new System.Drawing.Size(480, 23);
-			this.filterTextBox.TabIndex = 0;
-			this.filterTextBox.TextChanged += new System.EventHandler(this.filterTextBox_TextChanged);
-			// 
-			// spacer
-			// 
-			spacer.Dock = System.Windows.Forms.DockStyle.Top;
-			spacer.Location = new System.Drawing.Point(2, 27);
-			spacer.Name = "spacer";
-			spacer.Size = new System.Drawing.Size(480, 2);
-			spacer.TabIndex = 2;
-			// 
 			// LinkSelectCharacterOrGroupDialog
 			// 
 			this.AcceptButton = this.btnOk;
@@ -236,6 +236,7 @@ namespace Ginger
 			this.Controls.Add(buttonLayout);
 			this.DoubleBuffered = true;
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.ForeColor = System.Drawing.SystemColors.ControlText;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;

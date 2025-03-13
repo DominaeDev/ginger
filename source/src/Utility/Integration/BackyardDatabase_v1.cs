@@ -373,6 +373,7 @@ namespace Ginger.Integration
 
 					if (groupId != null && FetchGroupInfo(connection, groupId, out _Group groupInfo))
 					{
+						staging = groupInfo.staging;
 						hubCharId = groupInfo.hubCharId;
 						hubAuthorUsername = groupInfo.hubAuthorUsername;
 					}
