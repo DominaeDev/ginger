@@ -150,4 +150,6 @@
 		[char]: "Yes [master]!"
 	</Example>
 	
+	<Noun affix="suffix" rule="normal-detail">slave</Noun>
+	
 </Ginger>

@@ -75,7 +75,8 @@ namespace Ginger
 			None = 0,
 			PruneScenario				= 1 << 0,
 			UserPersonaInScenario		= 1 << 1,
-
+			
+			OmitPersonality				= 1 << 23,
 			OmitUserPersona				= 1 << 24,
 			OmitSystemPrompt			= 1 << 25,
 			OmitAttributes				= 1 << 26,

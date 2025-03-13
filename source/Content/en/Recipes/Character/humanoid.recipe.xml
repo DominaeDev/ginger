@@ -13,7 +13,7 @@
 	<Include>Personality</Include>
 	
 	<!-- Parameters -->
-	<Choice id="_race" style="custom">
+	<Choice id="humanoid-race" style="custom">
 		<Label>Species/Race</Label>
 		<Placeholder>Elf, Orc, Goblin, etc.</Placeholder>
 		<Option>Alien</Option>
@@ -101,7 +101,7 @@
 		<String rule="beastfolk">[is-woman?Beastwoman|Beastman]</String>
 		<String rule="merfolk">[is-woman?Mermaid|Merman]</String>
 		<String rule="lizardfolk">[is-woman?Lizardwoman|Lizardman]</String>
-		<String>{_race}</String>
+		<String>{humanoid-race}</String>
 	</String>
 	
 	<Attribute>
@@ -109,8 +109,6 @@
 		<Value>[@race]</Value>
 	</Attribute>
 	
-	<Node path="persona/description/race" rule="_race">[Char] is [a] {gender} {@race.lower}.</Node>
-
 	<!-- Skin tone -->
 	<String id="skin-tone">
 		<String rule="skin-albino" priority="1">is albino white</String>
@@ -160,5 +158,21 @@
 	
 	<!-- More -->
 	<Node path="persona/appearance/body" order="0" rule="more">{more}.</Node>
-			
+	
+	<!-- Adjectives -->
+	<Adjective order="color" rule="normal-detail and skin-tone">{skin-tone.lower}-skinned</Adjective>
+	
+	<!-- Noun -->
+	<String id="noun">
+		<String rule="beastfolk" priority="1">beast[man-or-woman]</String>
+		<String rule="merfolk" priority="1">[is-male?merman|mermaid]</String>
+		<String rule="lizardfolk" priority="1">lizard[man-or-woman]</String>
+		<String rule="elf and is-male" priority="1">elven man</String>
+		<String rule="elf and is-female" priority="1">elven woman</String>
+		<String rule="elf">elf</String>
+		<String>[{humanoid-race.lower}|humanoid] [man-or-woman]</String>
+	</String>
+	
+	<Noun>[@noun]</Noun>
+	
 </Ginger>

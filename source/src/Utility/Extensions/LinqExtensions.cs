@@ -123,5 +123,25 @@ namespace Ginger
 		}
 
 
+		public static IList<T> Shuffle<T>(this IList<T> list, IRandom randomizer = null)
+		{
+			if (randomizer == null)
+				randomizer = new RandomNoise();
+
+			if (list.Count <= 1)
+				return list;
+
+			int n = list.Count;
+			while (n > 1)
+			{  
+				n--;  
+				int k = randomizer.Int(0, n, RandomOption.Inclusive);
+				// Swap 
+				T value = list[k];  
+				list[k] = list[n];  
+				list[n] = value;  
+			}
+			return list;
+		}
 	}
 }

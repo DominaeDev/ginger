@@ -7,7 +7,7 @@
 
 	<Attribute>
 		<Name>Personality</Name>
-		<Value>motherly, nurturing, serene, platonically servile, unselfish</Value>
+		<Value>[female?maternal,] nurturing, serene, platonically servile, unselfish</Value>
 	</Attribute>
 
 	<Attribute>
@@ -28,4 +28,6 @@
 	<Persona rule="nsfw">
 		[They'd] do almost anything to make [#them] feel better.
 	</Persona>
+	
+	<Adjective>[female?maternal,] nurturing, unselfish</Adjective>
 </Ginger>

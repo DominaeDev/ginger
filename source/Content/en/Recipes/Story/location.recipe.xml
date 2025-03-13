@@ -14,7 +14,7 @@
 		<Label>Name</Label>
 		<Description>Name of the location (or names, separated by comma)</Description>
 	</Text>
-	<Text id="summary" style="single">
+	<Text id="location-summary" style="single">
 		<Label>Summary</Label>
 		<Description>Short description of the location.</Description>
 	</Text>
@@ -31,7 +31,7 @@
 	</Node>
 
 	<Node path="scenario/world/locations/entry" rule="location-name">
-		{location-name}[summary?: "{summary}."]
+		{location-name}[location-summary?: "{location-summary}."]
 	</Node>
 	
 	<Lore>

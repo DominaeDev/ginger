@@ -442,6 +442,7 @@ namespace Ginger
 			}
 			else if (m.Msg == Win32.WM_NCPAINT)
 			{
+				base.WndProc(ref m);
 				DrawBorder();
 				return;
 			}

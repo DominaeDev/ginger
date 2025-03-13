@@ -34,6 +34,11 @@ namespace Ginger
 			string outputGrammar = output.grammar.ToOutputPreview();
 			string outputUserPersona = output.userPersona.ToOutputPreview();
 
+			bool bSillyTavern = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern;
+			bool bFaraday = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday
+				|| AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty;
+			bool bUserPersona = Integration.Backyard.ConnectionEstablished && AppSettings.BackyardLink.WriteUserPersona;
+
 			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday 
 				&& (Integration.Backyard.ConnectionEstablished && AppSettings.BackyardLink.WriteAuthorNote) == false)
 			{
@@ -43,7 +48,8 @@ namespace Ginger
 				outputSystemPostHistory = null;
 
 			}
-			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
+
+			if (bFaraday)
 			{
 				// Replace {original}
 				string original = FaradayCardV4.OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)];
@@ -61,8 +67,7 @@ namespace Ginger
 				}
 			}
 			
-			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern
-				|| AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
+			if ((bFaraday && !bUserPersona) || bSillyTavern)
 			{
 				// Combine user persona
 				if (string.IsNullOrEmpty(outputUserPersona) == false)
@@ -89,14 +94,20 @@ namespace Ginger
 
 			if (string.IsNullOrEmpty(outputSystem) == false)
 			{
-				sbOutput.AppendLine(Header("MODEL INSTRUCTIONS"));
+				if (bSillyTavern)
+					sbOutput.AppendLine(Header("SYSTEM INSTRUCTIONS"));
+				else
+					sbOutput.AppendLine(Header("MODEL INSTRUCTIONS"));
 				sbOutput.AppendLine();
 				sbOutput.AppendLine(outputSystem);
 				sbOutput.AppendLine();
 			}
 			if (string.IsNullOrEmpty(outputSystemPostHistory) == false)
 			{
-				sbOutput.AppendLine(Header("MODEL INSTRUCTIONS (IMPORTANT)"));
+				if (bSillyTavern)
+					sbOutput.AppendLine(Header("POST HISTORY INSTRUCTIONS"));
+				else
+					sbOutput.AppendLine(Header("MODEL INSTRUCTIONS (IMPORTANT)"));
 				sbOutput.AppendLine();
 				sbOutput.AppendLine(outputSystemPostHistory);
 				sbOutput.AppendLine();
@@ -138,7 +149,7 @@ namespace Ginger
 			}
 			if (string.IsNullOrEmpty(outputGreeting) == false)
 			{
-				if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
+				if (bFaraday)
 					sbOutput.AppendLine(Header("FIRST MESSAGE"));
 				else
 					sbOutput.AppendLine(Header("GREETING"));
@@ -147,6 +158,7 @@ namespace Ginger
 				sbOutput.AppendLine(outputGreeting);
 				sbOutput.AppendLine();
 			}
+
 			if (output.greetings != null && output.greetings.Length > 1)
 			{
 				for (int i = 1; i < output.greetings.Length; ++i)

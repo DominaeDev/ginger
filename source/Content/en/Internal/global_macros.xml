@@ -9,38 +9,25 @@
 	<!-- Attribute labels template -->
 	<Wrapper id="__attrib, attrib">_:[sp]</Wrapper>
 
-	<!-- Gendered descriptors -->
-	<Macro id="person, man, woman, girl, boy">[@person]</Macro>
-	<Macro id="#person, #man, #woman, #girl, #boy">[@#person]</Macro>
+	<!-- Person noun -->
+	<Macro id="person">[@__person]</Macro>
+	<Macro id="man-or-woman, man, woman, girl, boy">[@__man-or-woman]</Macro>
 		
-	<String id="person">
-		<String rule="animal or creature" priority="2">
-			<String rule="species">
-				<String rule="is-man">male {species}</String>
-				<String rule="is-woman">female {species}</String>
-				<String>{species}</String>
-			</String>
-			<String rule="not species">animal</String>
-		</String>
-		<String rule="age and age le 12" priority="2">
-			<String rule="is-man">little boy</String>
-			<String rule="is-woman">little girl</String>
-		</String>
-		<String rule="age and age le 18" priority="1">
-			<String rule="is-man">boy</String>
-			<String rule="is-woman">girl</String>
-		</String>
-		<String rule="is-man">man</String>
-		<String rule="is-woman">woman</String>
-		<String>person</String>
-	</String>
-	<String id="#person">
-		<String rule="#male">man</String>
-		<String rule="#female">woman</String>
-		<String>person</String>
+	<String id="__man-or-woman">
+		<String rule="is-man">[trans?trans] [__man]</String>
+		<String rule="is-woman">[trans?trans] [__woman]</String>
+		<String>[__neutral]</String>
 	</String>
 	
-	<!-- Grammar -->
+	<String id="__person">
+		<String rule="is-creature or is-humanoid" priority="1">{noun}</String>
+		<String>[@__man-or-woman]</String>
+	</String>
+	
+	<!-- Auto-summary -->
+	<Macro id="summary">[adjectives?[a] {adjectives.commalist} [noun:prefix?,] {noun}]</Macro>
+	
+	<!-- Pronouns -->
 	<Rule id="custom-pronoun">pronoun-masculine or pronoun-feminine or pronoun-neutral or pronoun-objective</Rule>
 	<Rule id="use-masculine-pronoun">
 		<Or>
@@ -80,14 +67,29 @@
 			<Rule>pronoun-neutral</Rule>
 		</Or>
 	</Rule>
+	
 	<Rule id="use-objective-pronoun">pronoun-objective</Rule>
 	
+	<!-- Classifications -->
 	<Rule id="is-masculine">is-man or use-masculine-pronoun</Rule>
-	<Rule id="is-feminine">is-woman or use-feminine-pronoun</Rule>
-	<Rule id="is-man">male or man or trans-male</Rule>
-	<Rule id="is-woman">female or woman or trans-female or is-futanari</Rule>
-	<Rule id="is-futanari">futanari or futa or shemale or ladyboy or new-half</Rule>
+	<Rule id="is-feminine">is-woman or is-futanari or use-feminine-pronoun</Rule>
+	<Rule id="is-man, is-male">male or man or trans-male or trans-man</Rule>
+	<Rule id="is-woman, is-female">female or woman or trans-female or trans-woman</Rule>
+	<Rule id="is-trans">trans or trans-male or trans-female or transsexual or trans-sexual or transgender or trans-gender</Rule>
+	<Rule id="is-nonbinary">non-binary or nonbinary</Rule>
+	<Rule id="is-futanari, is-futa, is-shemale">futanari or futa or shemale or ladyboy or new-half</Rule>
 	<Rule id="is-adult">age and age ge 18</Rule>
-	<Rule id="is-group">multi-character</Rule>
+	<Rule id="is-minor">age and age lt 18</Rule>
+	<Rule id="is-group">__multi or __group</Rule>
+	<Rule id="is-human">human and not is-creature</Rule>
+	<Rule id="is-humanoid">human or anthro or biped</Rule>
+	<Rule id="is-anthro">anthro or anthropomorph or anthropomorphic</Rule>
+	<Rule id="is-animal">animal or species</Rule>
+	<Rule id="is-creature">is-animal or quadruped or (feral and not is-humanoid)</Rule>
+
+	<!-- Internal macros -->
+	<Macro id="__man">[is-minor?boy|man]</Macro>
+	<Macro id="__woman">[is-minor?girl|woman]</Macro>
+	<Macro id="__neutral">[is-minor?child|person]</Macro>
 
 </Ginger>

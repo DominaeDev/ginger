@@ -128,4 +128,7 @@
 	<Node path="scenario/hint/centaur" rule="realism and nsfw">As a centaur, [char] has horse genitals.</Node>
 	<Node path="scenario/hint/centaur" rule="realism and nsfw">Sex with a centaur is different than sex with a human. It should be described akin to horse sex/mating, where [char] plays the role of a {[male or penis?stud, standing or mounting]|[is-feminine?mare]|horse}, and [user] [male or penis?bent over and being mounted|behind the rump]. Use equine anatomy and mating terms.</Node>
 	<Node path="scenario/hint/centaur" rule="realism and nsfw">[char]'s lower horse half is both large and heavy and could easily crush a person.</Node>
+	
+	<Noun affix="prefix" priority="-1">{gender}</Noun>
+	<Noun>centaur</Noun>
 </Ginger>

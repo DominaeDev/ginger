@@ -175,9 +175,13 @@
 	</Text>
 
 	<SetVar id="species" rule="animal">{animal}</SetVar>
-	<SetVar id="race" rule="animal">{animal}</SetVar>
 	<SetVar id="breed" rule="breed">{breed}</SetVar>
 	<SetFlag rule="animal">{animal}</SetFlag>
+	<SetFlag rule="is-feral">feral</SetFlag>
+	<SetFlag rule="is-quadruped">quadruped</SetFlag>
+	<Erase rule="is-quadruped">biped</Erase>
+	<SetFlag rule="is-biped">biped</SetFlag>
+	<Erase rule="is-biped">quadruped</Erase>
 
 	<!-- Output -->
 	<Rule id="is-aquatic">dolphin or orca or shark</Rule>
@@ -190,6 +194,7 @@
 	<Rule id="is-reptile">alligator or chameleon or crocodile or dragon or frog or gecko or lizard or snake</Rule>
 	<Rule id="is-rodent">bat or beaver or ferret or mink or mouse or otter or rabbit or rat</Rule>
 	<Rule id="is-feral">not tame</Rule>
+	<Rule id="is-biped">species and not is-quadruped</Rule>
 	<Rule id="is-quadruped">not (is-aquatic or is-primate or is-avian or snake or bat)</Rule>
 	<Rule id="has-pattern">pattern</Rule>
 
@@ -277,5 +282,9 @@
 
 	<!-- More -->
 	<Node path="persona/appearance/body" order="0" rule="more">{more}.</Node>
+
+	<!-- Descriptor -->
+	<Noun affix="prefix" priority="-1">{gender}</Noun>
+	<Noun rule="animal">[animal.lower]</Noun>
 
 </Ginger>

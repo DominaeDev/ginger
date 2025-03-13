@@ -24,5 +24,6 @@
 		<Name>Weight</Name>
 		<Value>{weight.lb.value} lbs ({weight.kg})</Value>
 	</Attribute>
-		
+	
+	<Adjective order="quality" rule="weight:value ge 150000">heavy</Adjective>
 </Ginger>

@@ -145,7 +145,6 @@
 		[more?{more}.]
 	</Persona>
 	<Persona rule="more and to-other and not more-detail">{more}.</Persona>
-
-
-
+	
+	<Adjective>addicted</Adjective>
 </Ginger>

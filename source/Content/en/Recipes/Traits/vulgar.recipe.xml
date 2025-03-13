@@ -13,4 +13,5 @@
 	<Persona>[char] is a foul-mouthed [person] who casually litters [their] vocabulary with profane and vulgar words for emphasis without giving it a second thought.</Persona>
 	<Persona rule="allow-nsfw">During sex, [their] language become[s] especially perverse and obscene. [They] enjoy[s] getting a rise out of [user].</Persona>
 
+	<Adjective>vulgar</Adjective>
 </Ginger>

@@ -18,39 +18,5 @@
 		<Value>{age}</Value>
 	</Attribute>
 
-	<String id="boy">[trans?trans] boy</String>
-	<String id="girl">[trans?trans] girl</String>
-	<String id="woman">[trans?trans] woman</String>
-	<String id="man">[trans?trans] man</String>
-	
-	<String id="age-group">
-		<String rule="age le 13">
-			<String rule="is-man">[@boy]</String>
-			<String rule="is-woman">[@girl]</String>
-			<String>child</String>
-		</String>
-		<String rule="age in 14~18">
-			<String rule="is-man">teenage [@boy]</String>
-			<String rule="is-woman">teenage [@girl]</String>
-			<String>teenager</String>
-		</String>
-		<String rule="age in 19~34">
-			<String rule="is-man">[@man]</String>
-			<String rule="is-woman">[@woman]</String>
-			<String>{gender}</String>
-		</String>
-		<String rule="age in 35~49">
-			<String rule="is-man">adult [@man]</String>
-			<String rule="is-woman">adult [@woman]</String>
-			<String>adult {gender}</String>
-		</String>
-		<String rule="age ge 50">
-			<String rule="is-man">older [@man]</String>
-			<String rule="is-woman">older [@woman]</String>
-			<String>older {gender}</String>
-		</String>
-	</String>
-	
-	<Node path="persona/output/age" rule="age" order="100" mode="exclude">[char] is [a] {age.numeral} year old [race?{gender} {race.lower}|[@age-group]].</Node>
-	
+	<Adjective order="age" rule="age">{age}-year-old</Adjective>
 </Ginger>

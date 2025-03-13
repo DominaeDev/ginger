@@ -84,4 +84,5 @@
 	<!-- Background -->
 	<Node path="persona/description/background" order="100" rule="background">{background}.</Node>
 
+	<Adjective rule="normal-detail" order="origin">{nationality}</Adjective>
 </Ginger>
