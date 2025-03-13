@@ -832,7 +832,7 @@ namespace Ginger
 			if (parameters.ContainsAny(p => p is IResettableParameter) == false)
 				return;
 
-			Context evalContext = Current.Character.GetContext(CharacterData.ContextType.FlagsOnly);
+			Context evalContext = Current.Character.GetContext(CharacterData.ContextType.Full);
 			var evalConfig = new ContextString.EvaluationConfig() {
 				macroSuppliers = new IMacroSupplier[] { Current.Strings },
 				referenceSuppliers = new IStringReferenceSupplier[] { Current.Strings },
@@ -843,6 +843,10 @@ namespace Ginger
 			var characterNames = new string[] { Current.Name };
 			var userName = Current.Card.userPlaceholder;
 
+			// Eval adjectives
+			if (parameters.OfType<IResettableParameter>().ContainsAny(p => p.defaultValue.ContainsPhrase("adjective")) )
+				Generator.GetAdjectivesAndNoun(Current.Character.recipes, evalContext);
+
 			foreach (var parameter in parameters.OfType<IResettableParameter>())
 			{
 				string defaultValue = parameter.defaultValue;
@@ -850,7 +854,7 @@ namespace Ginger
 				// Evaluate default value
 				if (string.IsNullOrEmpty(defaultValue) == false && defaultValue.IndexOfAny(brackets, 0) != -1)
 				{
-					defaultValue = GingerString.FromString(Text.Eval(defaultValue, evalContext, evalConfig, Text.EvalOption.Minimal)).ToParameter();
+					defaultValue = GingerString.FromString(Text.Eval(defaultValue, evalContext, evalConfig, Text.EvalOption.Default)).ToParameter();
 					if (AppSettings.Settings.AutoConvertNames)
 						defaultValue = GingerString.WithNames(defaultValue, characterNames, userName);
 				}

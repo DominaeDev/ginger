@@ -11,6 +11,7 @@
 	
 	<Text id="personality" style="component">
 		<Label>Personality</Label>
+		<Default>[char] is [a] {adjectives.commalist} [noun:prefix?,] {noun}.</Default>
 	</Text>
 	
 	<Node path="persona/summary/value">{personality:local}</Node>

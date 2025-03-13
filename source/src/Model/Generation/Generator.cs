@@ -909,7 +909,7 @@ namespace Ginger
 			public int priority;
 		}
 
-		private static void CompileAdjectivesAndNoun(List<Recipe> recipes, Context[] recipeContexts, IRandom randomizer)
+		private static void CompileAdjectivesAndNoun(IList<Recipe> recipes, Context[] recipeContexts, IRandom randomizer)
 		{
 			List<AdjectiveNoun> lsAdjectives = new List<AdjectiveNoun>();
 			List<AdjectiveNoun> lsNouns = new List<AdjectiveNoun>();
@@ -1041,9 +1041,9 @@ namespace Ginger
 			}
 
 			// Choose noun
-			var nouns = lsNouns.Where(n => n.order == 0);
-			var prefixes = lsNouns.Where(n => n.order == -1);
-			var suffixes = lsNouns.Where(n => n.order == 1);
+			var nouns = lsNouns.Where(n => n.order == 0).ToList();
+			var prefixes = lsNouns.Where(n => n.order == -1).ToList();
+			var suffixes = lsNouns.Where(n => n.order == 1).ToList();
 			var sNoun = SelectOne(nouns);
 			var sPrefix = SelectOne(prefixes);
 			var sSuffix = SelectOne(suffixes);
@@ -1098,6 +1098,24 @@ namespace Ginger
 					.Select(x => x.value.Shuffle(randomizer).FirstOrDefault())
 					.FirstOrDefault();
 			}
+
+		}
+
+		public static void GetAdjectivesAndNoun(IList<Recipe> recipes, Context targetContext)
+		{
+			if (recipes == null || recipes.Count() == 0)
+				return;
+
+			Context[] recipeContexts = ParameterResolver.GetLocalContexts(recipes.ToArray(), targetContext);
+			CompileAdjectivesAndNoun(recipes, recipeContexts, new RandomDefault());
+
+			string adjectives;
+			if (recipeContexts[0].TryGetValue(Constants.Variables.Adjectives, out adjectives))
+				targetContext.SetValue(Constants.Variables.Adjectives, adjectives);
+			
+			string noun;
+			if (recipeContexts[0].TryGetValue(Constants.Variables.Noun, out noun))
+				targetContext.SetValue(Constants.Variables.Noun, noun);
 		}
 
 		public struct OutputWithNodes

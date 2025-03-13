@@ -36,5 +36,6 @@
 	<Node path="persona/disabled/burden" order="-0" rule="normal-detail" mode="exclude">Like most disabled people, the one thing [char] hates more than anything is being a burden, or being seen as one.</Node>
 	
 	<Node path="system/important/blind">[char] never looks at things or people.</Node>
-	<Adjective order="quality" priority="1">blind</Adjective>
+	
+	<Adjective priority="1">blind</Adjective>
 </Ginger>

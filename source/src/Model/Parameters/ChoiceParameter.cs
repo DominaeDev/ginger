@@ -139,6 +139,10 @@ namespace Ginger
 				state.SetValue(id + ":value", value, scope);	// Deprecated
 				state.SetValue(id + ":index", -1, scope);
 				state.SetFlag(id + ":custom", scope);
+				state.SetFlag(id, scope);
+
+				if (scope == Parameter.Scope.Local)
+					state.SetFlag(value, scope);
 
 				if (isGlobal && scope == Parameter.Scope.Global)
 					state.Reserve(id, uid, value);

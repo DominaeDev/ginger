@@ -278,4 +278,7 @@
 		<Name>Height</Name>
 		<Value>[less-detail?{height}|{height.ftin} ({height.cm})]</Value>
 	</Attribute>
+	
+	<Adjective order="color" rule="normal-detail and skin-tone">{skin-tone.lower}-skinned</Adjective>
+
 </Ginger>
