@@ -376,7 +376,6 @@ namespace Ginger
 					var text = componentNode.GetTextValue();
 					bool detached = componentNode.GetAttributeBool("detached", false);
 					bool raw = componentNode.GetAttributeBool("raw", false);
-					bool perActor = componentNode.GetAttributeBool("per-actor", false);
 
 					bool important = false;
 					if (componentNode.Name == "System")
@@ -384,6 +383,9 @@ namespace Ginger
 					bool groupOnly = false;
 					if (componentNode.Name == "Greeting")
 						groupOnly = componentNode.GetAttributeBool("group", false);
+					bool perActor = false;
+					if (componentNode.Name != "Grammar")
+						perActor = componentNode.GetAttributeBool("per-actor", false);
 
 					ICondition condition = null;
 					if (componentNode.HasAttribute("rule"))

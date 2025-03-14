@@ -280,7 +280,7 @@ namespace Ginger
 			Recipe internalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalInternal)?.Instantiate();
 			Recipe externalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalExternal)?.Instantiate();
 			Recipe pruneScenarioRecipe = RecipeBook.GetRecipeByID(RecipeBook.PruneScenario)?.Instantiate();
-			Recipe perActorRecipe = GetPerActorRecipe(Current.Characters);
+//			Recipe perActorRecipe = GetPerActorRecipe(Current.Characters);
 
 			for (int index = 0; index < Current.Characters.Count; ++index)
 			{
@@ -293,15 +293,7 @@ namespace Ginger
 					recipes.Insert(0, internalGlobalRecipe);
 				if (pruneScenarioRecipe != null && Current.Card.extraFlags.Contains(CardData.Flag.PruneScenario))
 					recipes.Insert(0, pruneScenarioRecipe);
-				recipes.AddRange(character.recipes.Select(r => (Recipe)r.Clone()));
-
-				foreach (var recipe in recipes)
-				{
-					recipe.templates.RemoveAll(t => t.isPerActor);
-					recipe.blocks.RemoveAll(b => b.isPerActor);
-				}
-				if (perActorRecipe != null)
-					recipes.Add((Recipe)perActorRecipe.Clone());
+				recipes.AddRange(character.recipes);
 
 				var context = character.GetContext(CharacterData.ContextType.None, option, false);
 				if (option.Contains(Option.Faraday))
@@ -550,6 +542,37 @@ namespace Ginger
 			public GingerString[] group_greetings;
 			public GingerString grammarOutput;
 			public Lorebook lore;
+
+			public static PartialOutput Merge(PartialOutput a, PartialOutput b)
+			{
+				BlockBuilder blockBuilder;
+				if (a.blockBuilder != null && b.blockBuilder != null)
+					blockBuilder = BlockBuilder.Merge(a.blockBuilder, b.blockBuilder);
+				else if (a.blockBuilder == null && b.blockBuilder != null)
+					blockBuilder = b.blockBuilder;
+				else if (a.blockBuilder != null && b.blockBuilder == null)
+					blockBuilder = a.blockBuilder;
+				else
+					blockBuilder = new BlockBuilder();
+
+				Lorebook lorebook;
+				if (a.lore != null && b.lore != null)
+					lorebook = Lorebook.Merge(new List<Lorebook> { a.lore, b.lore });
+				else if (a.lore == null && b.lore != null)
+					lorebook = b.lore;
+				else if (a.lore != null && b.lore == null)
+					lorebook = a.lore;
+				else
+					lorebook = null;
+
+				return new PartialOutput() {
+					blockBuilder = blockBuilder,
+					lore = lorebook,
+					greetings = Utility.ConcatenateArrays(a.greetings, b.greetings),
+					group_greetings = Utility.ConcatenateArrays(a.group_greetings, b.group_greetings),
+					grammarOutput = GingerString.FromString(string.Concat(a.grammarOutput.ToString(), b.grammarOutput.ToString())),
+				};
+			}
 		}
 
 		private static PartialOutput BuildGraph(List<Recipe> recipes, int characterIndex, Context context, Option options)
@@ -1149,6 +1172,7 @@ namespace Ginger
 			if (templates.Count > 0 || blocks.Count > 0)
 			{
 				return new Recipe() {
+					id = "__per-actor",
 					templates = templates,
 					blocks = blocks,
 				};

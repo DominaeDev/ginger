@@ -1011,5 +1011,31 @@ namespace Ginger
 			_finishedBlocks = _finishedBlocks.Where(kvp => !(kvp.Key == blockID || (includeChildren && kvp.Key.IsChildOf(blockID))))
 				.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 		}
+
+		public static BlockBuilder Merge(BlockBuilder a, BlockBuilder b)
+		{
+			if (a != null && b == null)
+				return a;
+			if (b != null && a == null)
+				return b;
+
+			var blockBuilder = new BlockBuilder() {
+				_entries = new Dictionary<BlockID, List<Entry>>(a._entries),
+				_attributeEntries = a._attributeEntries.Union(b._attributeEntries).ToList(),
+				_finishedBlocks = new Dictionary<BlockID, BlockOutput>(a._finishedBlocks),
+			};
+
+			foreach (var kvp in b._entries)
+			{
+				var blockID = kvp.Key;
+
+				if (blockBuilder._entries.ContainsKey(blockID))
+					blockBuilder._entries[blockID].AddRange(kvp.Value);
+				else
+					blockBuilder._entries.Add(blockID, kvp.Value);
+			}
+
+			return blockBuilder;
+		}
 	}
 }
