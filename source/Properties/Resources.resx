@@ -694,7 +694,7 @@ Continue?</value>
   <data name="msg_link_confirm_overwrite" xml:space="preserve">
     <value>This character has been modified in Backyard AI.
 
-Do you want to overwrite those changes?</value>
+Are you sure you want to overwrite the changes?</value>
   </data>
   <data name="msg_link_saved" xml:space="preserve">
     <value>Successfully saved character to Backyard AI.</value>
@@ -755,7 +755,7 @@ Do you want to remove the link from this file?</value>
   <data name="msg_link_revert" xml:space="preserve">
     <value>This will reimport the character from Backyard AI, replacing any recipes or changes in the file. This action can be undone.
 
-Do you want to continue?</value>
+Are you sure you want to continue?</value>
   </data>
   <data name="status_link_connect" xml:space="preserve">
     <value>Connected to Backyard AI</value>
@@ -868,7 +868,7 @@ Are you sure you want to permanently delete the chats?</value>
   <data name="msg_link_repair_chat" xml:space="preserve">
     <value>This will update and fix all legacy chats for '{0}'.
 
-Do you want to continue?</value>
+Are you sure you want to continue?</value>
   </data>
   <data name="msg_link_scrub_confirm" xml:space="preserve">
     <value>This will delete this message and everything below it. This action cannot be reversed. If you want to keep these messages, please duplicate the chat first.
@@ -947,7 +947,7 @@ Do you want to scrub the chat from here?</value>
   <data name="msg_link_restore_backup" xml:space="preserve">
     <value>This will restore '{0}' along with {1} chat(s).
 
-Do you want to continue?</value>
+Are you sure you want to continue?</value>
   </data>
   <data name="msg_link_restore_backup_settings" xml:space="preserve">
     <value>One or more chats have associated model settings. Do you want to import these settings as well? (Click No to use your current defaults).</value>
@@ -1035,7 +1035,7 @@ Would you like to reduce it to a more appropriate size?</value>
   <data name="msg_link_chat_too_many_speakers" xml:space="preserve">
     <value>The imported chat contains messages from more characters than there are in this group.
 
-Do you want to import it anyway? (Messages from characters outside the group will be omitted.)</value>
+Do you want to import it anyway? (Messages from extraneous characters will be ignored.)</value>
   </data>
   <data name="tooltip_resize_portrait_image" xml:space="preserve">
     <value>Reduce the size of the portrait image to a more appropriate size.</value>
@@ -1064,7 +1064,7 @@ Do you want to import it anyway? (Messages from characters outside the group wil
   <data name="msg_link_reset_settings" xml:space="preserve">
     <value>This will reset the model settings for this chat to their default values.
 
-Do you want to continue?</value>
+Are you sure you want to continue?</value>
   </data>
   <data name="msg_link_restart_confirm" xml:space="preserve">
     <value>This will delete all messages prior to this one. This action cannot be reversed. If you want to keep these messages, please duplicate the chat first.
@@ -1287,7 +1287,7 @@ Reason: {0}</value>
   <data name="msg_link_confirm_import_many" xml:space="preserve">
     <value>This will import {0} to Backyard AI.
 
-Do you want to continue?</value>
+Are you sure you want to continue?</value>
   </data>
   <data name="msg_link_import_some_characters" xml:space="preserve">
     <value>Successfully imported {0}. (Skipped {1}.)</value>
@@ -1335,7 +1335,7 @@ Some models require specific prompt templates to function properly.</value>
   <data name="msg_link_confirm_update_many" xml:space="preserve">
     <value>This will update {0} in Backyard AI.
 
-Do you want to continue?</value>
+Are you sure you want to continue?</value>
   </data>
   <data name="msg_link_update_many_characters" xml:space="preserve">
     <value>Successfully updated {0}.</value>
@@ -1380,7 +1380,7 @@ Skipped {1} broken images that could not be repaired.</value>
   <data name="msg_link_repair_images" xml:space="preserve">
     <value>This will attempt to repair any broken images in Backyard AI.
 
-Do you want to continue?</value>
+Are you sure you want to continue?</value>
   </data>
   <data name="msg_link_no_images_repaired" xml:space="preserve">
     <value>No broken images found. Everything is OK.</value>
@@ -1450,7 +1450,7 @@ CAUTION: Depending on your recycle bin settings, the images may get permanently 
   <data name="msg_link_bulk_repair_chats_confirm" xml:space="preserve">
     <value>This will attempt to find and repair any legacy chats in Backyard AI.
 
-Do you want to continue?</value>
+Are you sure you want to continue?</value>
   </data>
   <data name="msg_link_bulk_repair_chats_none" xml:space="preserve">
     <value>No legacy chats found. Everything is OK.</value>
@@ -1640,9 +1640,9 @@ Are you sure you want to proceed?</value>
     <value>..\Resources\Icons\Dark\dark_reset.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="msg_link_reset_model_settings" xml:space="preserve">
-    <value>This will reset the model settings for all characters in Backyard AI.
+    <value>This will reset the model settings to their default values for all Backyard AI characters.
 
-Do you want to continue?</value>
+Are you sure you want to continue?</value>
   </data>
   <data name="reset" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\Light\reset.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

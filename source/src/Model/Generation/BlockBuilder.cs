@@ -158,7 +158,7 @@ namespace Ginger
 		}
 	}
 
-	public class Block : IXmlLoadable, IXmlSaveable
+	public class Block : IXmlLoadable, IXmlSaveable, ICloneable
 	{
 		public BlockID id;
 		public ICondition condition;
@@ -222,6 +222,7 @@ namespace Ginger
 		public Mode mode = Mode.Default;
 		public int order = DefaultOrder;
 		public bool isConditionalOnMode	{ get { return mode == Mode.Sibling || mode == Mode.Parent; } }
+		public bool isPerActor = false;
 
 		protected static readonly int DefaultOrder = 500;
 		protected static readonly int MaxOrder = 1000;
@@ -242,6 +243,7 @@ namespace Ginger
 			_styleName = xmlNode.GetAttribute("style", null);
 			style = BlockStyles.FromString(_styleName);
 			mode = xmlNode.GetAttributeEnum("mode", Mode.Default);
+			isPerActor = xmlNode.GetAttributeBool("per-actor", false);
 			
 			string sOrder = xmlNode.GetAttribute("order", null);
 			if (string.IsNullOrEmpty(sOrder) == false)
@@ -283,6 +285,8 @@ namespace Ginger
 				xmlNode.AddAttribute("mode", EnumHelper.ToString(mode).ToLowerInvariant());
 			if (formatting != Formatting.Undefined)
 				xmlNode.AddAttribute("format", EnumHelper.ToString(formatting).ToLowerInvariant());
+			if (isPerActor)
+				xmlNode.AddAttribute("per-actor", true);
 			if (condition != null)
 				xmlNode.AddAttribute("rule", condition.ToString());
 			xmlNode.AddTextValue(value);
@@ -297,7 +301,22 @@ namespace Ginger
 				style,
 				mode,
 				formatting,
-				order);
+				order,
+				isPerActor);
+		}
+
+		public virtual object Clone()
+		{
+			return new Block() {
+				id = this.id,
+				value = this.value,
+				condition = this.condition,
+				style = this.style,
+				mode = this.mode,
+				formatting = this.formatting,
+				order = this.order,
+				isPerActor = this.isPerActor,
+			};
 		}
 	}
 
@@ -361,6 +380,20 @@ namespace Ginger
 				mode,
 				formatting,
 				order);
+		}
+
+		public override object Clone()
+		{
+			return new AttributeBlock() {
+				id = this.id,
+				name = this.name,
+				value = this.value,
+				condition = this.condition,
+				style = this.style,
+				mode = this.mode,
+				formatting = this.formatting,
+				order = this.order,
+			};
 		}
 	}
 

@@ -280,6 +280,7 @@ namespace Ginger
 			Recipe internalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalInternal)?.Instantiate();
 			Recipe externalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalExternal)?.Instantiate();
 			Recipe pruneScenarioRecipe = RecipeBook.GetRecipeByID(RecipeBook.PruneScenario)?.Instantiate();
+			Recipe perActorRecipe = GetPerActorRecipe(Current.Characters);
 
 			for (int index = 0; index < Current.Characters.Count; ++index)
 			{
@@ -292,7 +293,15 @@ namespace Ginger
 					recipes.Insert(0, internalGlobalRecipe);
 				if (pruneScenarioRecipe != null && Current.Card.extraFlags.Contains(CardData.Flag.PruneScenario))
 					recipes.Insert(0, pruneScenarioRecipe);
-				recipes.AddRange(character.recipes);
+				recipes.AddRange(character.recipes.Select(r => (Recipe)r.Clone()));
+
+				foreach (var recipe in recipes)
+				{
+					recipe.templates.RemoveAll(t => t.isPerActor);
+					recipe.blocks.RemoveAll(b => b.isPerActor);
+				}
+				if (perActorRecipe != null)
+					recipes.Add((Recipe)perActorRecipe.Clone());
 
 				var context = character.GetContext(CharacterData.ContextType.None, option, false);
 				if (option.Contains(Option.Faraday))
@@ -1116,6 +1125,35 @@ namespace Ginger
 			string noun;
 			if (recipeContexts[0].TryGetValue(Constants.Variables.Noun, out noun))
 				targetContext.SetValue(Constants.Variables.Noun, noun);
+		}
+
+		private static Recipe GetPerActorRecipe(List<CharacterData> characters)
+		{
+			// Get per-actor templates, nodes
+			var templates = new List<Recipe.Template>();
+			var blocks = new List<Block>();
+			foreach (var recipe in characters.SelectMany(c => c.recipes).Where(r => r.isEnabled))
+			{
+				for (int i = recipe.templates.Count - 1; i >= 0; i--)
+				{
+					if (recipe.templates[i].isPerActor)
+						templates.Add(recipe.templates[i]);
+				}
+
+				for (int i = recipe.blocks.Count - 1; i >= 0; i--)
+				{
+					if (recipe.blocks[i].isPerActor)
+						blocks.Add(recipe.blocks[i]);
+				}
+			}
+			if (templates.Count > 0 || blocks.Count > 0)
+			{
+				return new Recipe() {
+					templates = templates,
+					blocks = blocks,
+				};
+			}
+			return null;
 		}
 
 		public struct OutputWithNodes

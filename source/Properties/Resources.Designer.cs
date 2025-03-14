@@ -2803,7 +2803,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will attempt to find and repair any legacy chats in Backyard AI.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_bulk_repair_chats_confirm {
             get {
@@ -2823,7 +2823,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The imported chat contains messages from more characters than there are in this group.
         ///
-        ///Do you want to import it anyway? (Messages from characters outside the group will be omitted.).
+        ///Do you want to import it anyway? (Messages from extraneous characters will be ignored.).
         /// </summary>
         internal static string msg_link_chat_too_many_speakers {
             get {
@@ -2834,7 +2834,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will import {0} to Backyard AI.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_confirm_import_many {
             get {
@@ -2845,7 +2845,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This character has been modified in Backyard AI.
         ///
-        ///Do you want to overwrite those changes?.
+        ///Are you sure you want to overwrite the changes?.
         /// </summary>
         internal static string msg_link_confirm_overwrite {
             get {
@@ -2856,7 +2856,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will update {0} in Backyard AI.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_confirm_update_many {
             get {
@@ -3054,7 +3054,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will update and fix all legacy chats for &apos;{0}&apos;.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_repair_chat {
             get {
@@ -3065,7 +3065,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will attempt to repair any broken images in Backyard AI.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_repair_images {
             get {
@@ -3102,9 +3102,9 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will reset the model settings for all characters in Backyard AI.
+        ///   Looks up a localized string similar to This will reset the model settings to their default values for all Backyard AI characters.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_reset_model_settings {
             get {
@@ -3115,7 +3115,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will reset the model settings for this chat to their default values.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_reset_settings {
             get {
@@ -3137,7 +3137,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will restore &apos;{0}&apos; along with {1} chat(s).
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_restore_backup {
             get {
@@ -3166,7 +3166,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will reimport the character from Backyard AI, replacing any recipes or changes in the file. This action can be undone.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_revert {
             get {
@@ -3409,10 +3409,8 @@ namespace Ginger.Properties {
         ///	
         ///	&lt;Text id=&quot;personality&quot; style=&quot;component&quot;&gt;
         ///		&lt;Label&gt;Personality&lt;/Label&gt;
-        ///	&lt;/Text&gt;
-        ///	
-        ///	&lt;Node path=&quot;persona/summary/value&quot;&gt;{personality:local}&lt;/Node&gt;
-        ///&lt;/Ginger&gt;.
+        ///		&lt;Default&gt;[char] is [a] {adjectives.commalist} [noun:prefix?,] {noun}.&lt;/Default&gt;
+        ///	&lt;/ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string personality_recipe {
             get {
