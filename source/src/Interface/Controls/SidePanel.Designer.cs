@@ -62,6 +62,7 @@
 			this.label_Tokens_Value = new System.Windows.Forms.Label();
 			this.label_Lore_Value = new System.Windows.Forms.Label();
 			this.label_Image_Value = new System.Windows.Forms.Label();
+			this.cbStyleGrammar = new System.Windows.Forms.CheckBox();
 			this.comboBox_textStyle = new Ginger.ComboBoxEx();
 			this.label_textStyle = new System.Windows.Forms.Label();
 			this.comboBox_Detail = new Ginger.ComboBoxEx();
@@ -376,19 +377,34 @@
 			table_Format.Name = "table_Format";
 			table_Format.RowCount = 1;
 			table_Format.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			table_Format.Size = new System.Drawing.Size(571, 44);
+			table_Format.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 68F));
+			table_Format.Size = new System.Drawing.Size(571, 68);
 			table_Format.TabIndex = 6;
 			// 
 			// panel4
 			// 
+			panel4.Controls.Add(this.cbStyleGrammar);
 			panel4.Controls.Add(this.comboBox_textStyle);
 			panel4.Controls.Add(this.label_textStyle);
 			panel4.Dock = System.Windows.Forms.DockStyle.Fill;
 			panel4.Location = new System.Drawing.Point(0, 0);
 			panel4.Margin = new System.Windows.Forms.Padding(0);
 			panel4.Name = "panel4";
-			panel4.Size = new System.Drawing.Size(285, 44);
+			panel4.Size = new System.Drawing.Size(285, 68);
 			panel4.TabIndex = 0;
+			// 
+			// cbStyleGrammar
+			// 
+			this.cbStyleGrammar.AutoSize = true;
+			this.cbStyleGrammar.Dock = System.Windows.Forms.DockStyle.Top;
+			this.cbStyleGrammar.Location = new System.Drawing.Point(0, 44);
+			this.cbStyleGrammar.Name = "cbStyleGrammar";
+			this.cbStyleGrammar.Padding = new System.Windows.Forms.Padding(1, 6, 0, 0);
+			this.cbStyleGrammar.Size = new System.Drawing.Size(285, 23);
+			this.cbStyleGrammar.TabIndex = 10;
+			this.cbStyleGrammar.Text = "Use grammar";
+			this.cbStyleGrammar.UseVisualStyleBackColor = true;
+			this.cbStyleGrammar.CheckedChanged += new System.EventHandler(this.cbStyleGrammar_CheckedChanged);
 			// 
 			// comboBox_textStyle
 			// 
@@ -434,7 +450,7 @@
 			panel3.Location = new System.Drawing.Point(291, 0);
 			panel3.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
 			panel3.Name = "panel3";
-			panel3.Size = new System.Drawing.Size(280, 44);
+			panel3.Size = new System.Drawing.Size(280, 68);
 			panel3.TabIndex = 1;
 			// 
 			// comboBox_Detail
@@ -1008,7 +1024,7 @@
 			this.group_Stats.Controls.Add(panel_right);
 			this.group_Stats.Controls.Add(panel_left);
 			this.group_Stats.Dock = System.Windows.Forms.DockStyle.Top;
-			this.group_Stats.Location = new System.Drawing.Point(0, 747);
+			this.group_Stats.Location = new System.Drawing.Point(0, 763);
 			this.group_Stats.Name = "group_Stats";
 			this.group_Stats.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
 			this.group_Stats.Size = new System.Drawing.Size(583, 152);
@@ -1021,7 +1037,7 @@
 			this.group_Background.BottomMargin = 4;
 			this.group_Background.Controls.Add(tableLayoutPanel3);
 			this.group_Background.Dock = System.Windows.Forms.DockStyle.Top;
-			this.group_Background.Location = new System.Drawing.Point(0, 576);
+			this.group_Background.Location = new System.Drawing.Point(0, 592);
 			this.group_Background.Name = "group_Background";
 			this.group_Background.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
 			this.group_Background.Size = new System.Drawing.Size(583, 171);
@@ -1036,10 +1052,10 @@
 			this.group_Components.Controls.Add(label2);
 			this.group_Components.Controls.Add(tableOptions);
 			this.group_Components.Dock = System.Windows.Forms.DockStyle.Top;
-			this.group_Components.Location = new System.Drawing.Point(0, 376);
+			this.group_Components.Location = new System.Drawing.Point(0, 398);
 			this.group_Components.Name = "group_Components";
 			this.group_Components.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
-			this.group_Components.Size = new System.Drawing.Size(583, 200);
+			this.group_Components.Size = new System.Drawing.Size(583, 194);
 			this.group_Components.TabIndex = 3;
 			this.group_Components.TabStop = false;
 			this.group_Components.Text = "Output settings";
@@ -1180,7 +1196,7 @@
 			this.group_Generation.Location = new System.Drawing.Point(0, 300);
 			this.group_Generation.Name = "group_Generation";
 			this.group_Generation.Padding = new System.Windows.Forms.Padding(6, 6, 6, 8);
-			this.group_Generation.Size = new System.Drawing.Size(583, 76);
+			this.group_Generation.Size = new System.Drawing.Size(583, 98);
 			this.group_Generation.TabIndex = 2;
 			this.group_Generation.TabStop = false;
 			this.group_Generation.Text = "Output format";
@@ -1292,6 +1308,7 @@
 			panel_left.ResumeLayout(false);
 			table_Format.ResumeLayout(false);
 			panel4.ResumeLayout(false);
+			panel4.PerformLayout();
 			panel3.ResumeLayout(false);
 			tableLayoutPanel2.ResumeLayout(false);
 			panel1.ResumeLayout(false);
@@ -1383,5 +1400,6 @@
 		private CollapsibleGroupBox group_Background;
 		private BackgroundPreview backgroundPreview;
 		private System.Windows.Forms.CheckBox cbIncludePersonality;
+		private System.Windows.Forms.CheckBox cbStyleGrammar;
 	}
 }

@@ -77,6 +77,7 @@ namespace Ginger
 			SetToolTip(Resources.tooltip_user_gender, label_userGender, comboBox_userGender);
 			SetToolTip(Resources.tooltip_detail_level, label_Detail, comboBox_Detail);
 			SetToolTip(Resources.tooltip_text_style, label_textStyle, comboBox_textStyle);
+			SetToolTip(Resources.tooltip_style_grammar, cbStyleGrammar);
 			SetToolTip(Resources.tooltip_tokens, label_Tokens_Value);
 			SetToolTip(Resources.tooltip_tokens_permanent, label_Tokens_Permanent_Value);
 
@@ -269,6 +270,9 @@ namespace Ginger
 			}
 			
 			cbPruneScenario.Checked = Current.Card.extraFlags.Contains(CardData.Flag.PruneScenario);
+
+			cbStyleGrammar.Enabled = Current.Card.textStyle > CardData.TextStyle.None;
+			cbStyleGrammar.Checked = Current.Card.useStyleGrammar;
 
 			_bIgnoreEvents = false;
 		}
@@ -831,10 +835,14 @@ namespace Ginger
 				SetToolTip(control, text);
 		}
 
-		public void OnRegenerate()
+		public void OnRegenerate(Generator.Output output)
 		{
 			_bIgnoreEvents = true;
+
 			RefreshGender(true);
+			SetLoreCount(output.hasLore ? output.lorebook.entries.Count : 0, true);
+			RefreshStyleGrammar(output);
+
 			_bIgnoreEvents = false;
 		}
 
@@ -1177,6 +1185,28 @@ namespace Ginger
 				Theme.Apply(menu);
 				menu.Show(sender as Control, new System.Drawing.Point(args.X, args.Y));
 			}
+		}
+
+		private void cbStyleGrammar_CheckedChanged(object sender, EventArgs e)
+		{
+			if (_bIgnoreEvents)
+				return;
+
+			Current.Card.useStyleGrammar = cbStyleGrammar.Checked;
+			Current.IsDirty = true;
+		}
+
+		private void RefreshStyleGrammar(Generator.Output output)
+		{
+			bool bEnabled = Current.Card.textStyle > CardData.TextStyle.None;
+			if (output.context != null)
+			{
+				bEnabled &= output.grammar.IsNullOrEmpty()
+					|| output.context.flags.Contains("__style-grammar");
+			}
+			
+			cbStyleGrammar.Enabled = bEnabled;
+			cbStyleGrammar.Checked = Current.Card.useStyleGrammar;
 		}
 	}
 }

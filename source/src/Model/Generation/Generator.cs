@@ -19,6 +19,7 @@ namespace Ginger
 				userPersona = other.userPersona;
 				grammar = other.grammar;
 				personality = other.personality;
+				context = other.context;
 
 				if (other.greetings != null)
 				{
@@ -66,6 +67,7 @@ namespace Ginger
 				} 
 			}
 			public Lorebook lorebook;
+			public Context context;
 
 			public bool isEmpty
 			{
@@ -116,7 +118,7 @@ namespace Ginger
 				}
 			}
 
-			public void SetText(Recipe.Component channel, GingerString value)
+			public Output WithText(Recipe.Component channel, GingerString value)
 			{
 				switch (channel)
 				{
@@ -148,6 +150,8 @@ namespace Ginger
 					grammar = value;
 					break;
 				}
+
+				return (Output)this.MemberwiseClone();
 			}
 
 			public bool HasText(Recipe.Component channel)
@@ -252,6 +256,9 @@ namespace Ginger
 				.Select(o => o.lorebook)
 				.NotNull()
 				.ToList());
+			var context = outputPerCharacter[0].context;
+			for (int i = 1; i < outputPerCharacter.Count; ++i)
+				context = Context.Merge(context, outputPerCharacter[i].context);
 
 			var output = new Output() 
 			{
@@ -265,6 +272,7 @@ namespace Ginger
 				greetings = greetings,
 				group_greetings = group_greetings,
 				lorebook = lorebook,
+				context = context,
 			};
 #if DEBUG
 			if (option.Contains(Option.Preview) == false)
@@ -280,6 +288,7 @@ namespace Ginger
 			Recipe internalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalInternal)?.Instantiate();
 			Recipe externalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalExternal)?.Instantiate();
 			Recipe pruneScenarioRecipe = RecipeBook.GetRecipeByID(RecipeBook.PruneScenario)?.Instantiate();
+
 //			Recipe perActorRecipe = GetPerActorRecipe(Current.Characters);
 
 			for (int index = 0; index < Current.Characters.Count; ++index)
@@ -287,12 +296,12 @@ namespace Ginger
 				var character = Current.Characters[index];
 
 				var recipes = new List<Recipe>(character.recipes.Count + 1);
+				if (internalGlobalRecipe != null) // First
+					recipes.Add(internalGlobalRecipe);
 				if (externalGlobalRecipe != null)
-					recipes.Insert(0, externalGlobalRecipe);
-				if (internalGlobalRecipe != null)
-					recipes.Insert(0, internalGlobalRecipe);
+					recipes.Add(externalGlobalRecipe);
 				if (pruneScenarioRecipe != null && Current.Card.extraFlags.Contains(CardData.Flag.PruneScenario))
-					recipes.Insert(0, pruneScenarioRecipe);
+					recipes.Add(pruneScenarioRecipe);
 				recipes.AddRange(character.recipes);
 
 				var context = character.GetContext(CharacterData.ContextType.None, option, false);
@@ -328,7 +337,7 @@ namespace Ginger
 					case AppSettings.Settings.OutputPreviewFormat.Faraday:
 					case AppSettings.Settings.OutputPreviewFormat.FaradayParty:
 						context.SetFlag("__backyard");
-						 context.SetFlag("__faraday");
+						context.SetFlag("__faraday");
 						break;
 					case AppSettings.Settings.OutputPreviewFormat.SillyTavern:
 						context.SetFlag("__tavern");
@@ -342,6 +351,23 @@ namespace Ginger
 				var characterOutput = Generate(recipes, index, context, option);
 				outputPerCharacter.Add(characterOutput);
 			}
+
+			// Add style grammar?
+			if (Current.Card.useStyleGrammar
+				&& outputPerCharacter.Count > 0
+				&& outputPerCharacter.ContainsNoneOf(o => o.grammar.IsNullOrEmpty() == false))
+			{
+				int textStyle = Math.Min(Math.Max(EnumHelper.ToInt(Current.Card.textStyle) - 1, 0), 7);
+				Recipe grammarStyleRecipe = RecipeBook.GetRecipeByID(RecipeBook.StyleGrammar[textStyle])?.Instantiate();
+				if (grammarStyleRecipe != null)
+				{
+					var grammarOutput = Generate(new List<Recipe> { grammarStyleRecipe }, 0, outputPerCharacter[0].context, option);
+					outputPerCharacter[0] = outputPerCharacter[0].WithText(Recipe.Component.Grammar, grammarOutput.grammar);
+					outputPerCharacter[0].context.SetFlags(grammarOutput.context.GetFlags());
+				}
+			}
+
+
 			return outputPerCharacter;
 		}
 
@@ -405,6 +431,7 @@ namespace Ginger
 			var group_greetings = partialOutput.group_greetings;
 			var grammar = partialOutput.grammarOutput;
 			var lore = partialOutput.lore;
+			var finalContext = partialOutput.context;
 
 			// Insert original model instructions
 			if (bPrependOriginal 
@@ -458,6 +485,7 @@ namespace Ginger
 				greetings = greetings,
 				group_greetings = group_greetings,
 				lorebook = lore,
+				context = finalContext,
 			};
 		}
 
@@ -521,6 +549,7 @@ namespace Ginger
 				grammar = outputByChannel[5],
 				greetings = greetings,
 				group_greetings = group_greetings,
+				context = outputPerCharacter[0].context,
 			};
 
 			// Actor outputs
@@ -529,6 +558,7 @@ namespace Ginger
 				outputs[i] = new Output() {
 					persona = outputPerCharacter[i].persona,
 					lorebook = outputPerCharacter[i].lorebook,
+					context = outputPerCharacter[i].context,
 				};
 			}
 
@@ -542,6 +572,7 @@ namespace Ginger
 			public GingerString[] group_greetings;
 			public GingerString grammarOutput;
 			public Lorebook lore;
+			public Context context;
 
 			public static PartialOutput Merge(PartialOutput a, PartialOutput b)
 			{
@@ -571,6 +602,7 @@ namespace Ginger
 					greetings = Utility.ConcatenateArrays(a.greetings, b.greetings),
 					group_greetings = Utility.ConcatenateArrays(a.group_greetings, b.group_greetings),
 					grammarOutput = GingerString.FromString(string.Concat(a.grammarOutput.ToString(), b.grammarOutput.ToString())),
+					context = Context.Merge(a.context, b.context),
 				};
 			}
 		}
@@ -595,7 +627,8 @@ namespace Ginger
 				globalContext.SetFlag("__single");
 
 			// Prepare contexts
-			Context[] recipeContexts = ParameterResolver.GetLocalContexts(recipes.ToArray(), globalContext);
+			Context finalContext;
+			Context[] recipeContexts = ParameterResolver.GetLocalContexts(recipes.ToArray(), globalContext, out finalContext);
 
 			// Adjectives & nouns
 			CompileAdjectivesAndNoun(recipes, recipeContexts, randomizer);
@@ -930,6 +963,7 @@ namespace Ginger
 				greetings = greetings,
 				group_greetings = group_greetings,
 				lore = Lorebook.Merge(loreEntries),
+				context = finalContext,
 			};
 
 		}

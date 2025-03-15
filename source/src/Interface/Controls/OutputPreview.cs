@@ -31,15 +31,16 @@ namespace Ginger
 			string outputScenario = output.scenario.ToOutputPreview();
 			string outputGreeting = output.greeting.ToOutputPreview(Recipe.Component.Greeting);
 			string outputExample = output.example.ToOutputPreview(Recipe.Component.Example);
-			string outputGrammar = output.grammar.ToOutputPreview();
+			string outputGrammar = output.grammar.ToGrammarPreview();
 			string outputUserPersona = output.userPersona.ToOutputPreview();
 
 			bool bSillyTavern = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern;
 			bool bFaraday = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday
 				|| AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty;
 			bool bUserPersona = Integration.Backyard.ConnectionEstablished && AppSettings.BackyardLink.WriteUserPersona;
+			bool bShowGrammar = AppSettings.Settings.PreviewFormat != AppSettings.Settings.OutputPreviewFormat.SillyTavern;
 
-			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday 
+			if (bFaraday
 				&& (Integration.Backyard.ConnectionEstablished && AppSettings.BackyardLink.WriteAuthorNote) == false)
 			{
 				// Combine system prompts
@@ -187,7 +188,7 @@ namespace Ginger
 					sbOutput.AppendLine();
 				}
 			}
-			if (string.IsNullOrEmpty(outputGrammar) == false)
+			if (string.IsNullOrEmpty(outputGrammar) == false && bShowGrammar)
 			{
 				sbOutput.AppendLine(Header("GRAMMAR"));
 				sbOutput.AppendLine();
@@ -236,7 +237,14 @@ namespace Ginger
 			string outputGrammar = outputs[0].grammar.ToOutputPreview();
 			string outputUserPersona = outputs[0].userPersona.ToOutputPreview();
 			
-			if ((Integration.Backyard.ConnectionEstablished && AppSettings.BackyardLink.WriteAuthorNote) == false)
+			bool bSillyTavern = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.SillyTavern;
+			bool bFaraday = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday
+				|| AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty;
+			bool bUserPersona = Integration.Backyard.ConnectionEstablished && AppSettings.BackyardLink.WriteUserPersona;
+			bool bShowGrammar = AppSettings.Settings.PreviewFormat != AppSettings.Settings.OutputPreviewFormat.SillyTavern;
+
+			if (bFaraday
+				&& (Integration.Backyard.ConnectionEstablished && AppSettings.BackyardLink.WriteAuthorNote) == false)
 			{
 				// Combine system prompts
 				if (string.IsNullOrEmpty(outputSystemPostHistory) == false)
@@ -244,47 +252,51 @@ namespace Ginger
 				outputSystemPostHistory = null;
 			}
 
-			// Replace {original}
-			string original = FaradayCardV4.OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)];
-			if (string.IsNullOrWhiteSpace(outputSystem) == false)
+			if (bFaraday)
 			{
-				int pos_original = outputSystem.IndexOf("{original}", 0);
-				if (pos_original != -1)
+				// Replace {original}
+				string original = FaradayCardV4.OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)];
+				if (string.IsNullOrWhiteSpace(outputSystem) == false)
 				{
-					var sbSystem = new StringBuilder(outputSystem);
-					sbSystem.Remove(pos_original, 10);
-					sbSystem.Insert(pos_original, original);
-					sbSystem.Replace("{original}", ""); // Only once
-					outputSystem = sbSystem.ToString();
+					int pos_original = outputSystem.IndexOf(GingerString.OriginalMarker, 0);
+					if (pos_original != -1)
+					{
+						var sbSystem = new StringBuilder(outputSystem);
+						sbSystem.Remove(pos_original, 10);
+						sbSystem.Insert(pos_original, original);
+						sbSystem.Replace(GingerString.OriginalMarker, ""); // Only once
+						outputSystem = sbSystem.ToString();
+					}
 				}
 			}
-
+			
 			if (outputs[0].userPersona.IsNullOrEmpty() == false)
 			{
 				// Append user persona to the persona for a more accurate token count
-				string scenario = outputs[0].scenario.ToString() ?? "";
-				string userPersona = outputs[0].userPersona.ToString();
-
-				scenario = string.Concat(scenario, "\n\n", userPersona).Trim();
-				outputs[0].scenario = GingerString.FromString(scenario);
-				outputs[0].userPersona = new GingerString(); // Empty
+				outputScenario = string.Concat(outputScenario, "\n\n", outputUserPersona).Trim();
+				outputUserPersona = "";
 			}
 
 			if (string.IsNullOrEmpty(outputSystem) == false)
 			{
-				sbOutput.AppendLine(Header("MODEL INSTRUCTIONS"));
+				if (bSillyTavern)
+					sbOutput.AppendLine(Header("SYSTEM INSTRUCTIONS"));
+				else
+					sbOutput.AppendLine(Header("MODEL INSTRUCTIONS"));
 				sbOutput.AppendLine();
 				sbOutput.AppendLine(outputSystem);
 				sbOutput.AppendLine();
 			}
 			if (string.IsNullOrEmpty(outputSystemPostHistory) == false)
 			{
-				sbOutput.AppendLine(Header("MODEL INSTRUCTIONS (IMPORTANT)"));
+				if (bSillyTavern)
+					sbOutput.AppendLine(Header("POST HISTORY INSTRUCTIONS"));
+				else
+					sbOutput.AppendLine(Header("MODEL INSTRUCTIONS (IMPORTANT)"));
 				sbOutput.AppendLine();
 				sbOutput.AppendLine(outputSystemPostHistory);
 				sbOutput.AppendLine();
 			}
-
 			for (int i = 0; i < Current.Characters.Count && i < outputs.Length; ++i)
 			{
 				string outputPersona = outputs[i].persona.ToOutputPreview();
@@ -303,7 +315,13 @@ namespace Ginger
 					sbOutput.AppendLine();
 				}
 			}
-
+			if (string.IsNullOrEmpty(outputPersonality) == false)
+			{
+				sbOutput.AppendLine(Header("PERSONALITY SUMMARY"));
+				sbOutput.AppendLine();
+				sbOutput.AppendLine(outputPersonality);
+				sbOutput.AppendLine();
+			}
 			if (string.IsNullOrEmpty(outputUserPersona) == false)
 			{
 				sbOutput.AppendLine(Header("USER PERSONA"));
@@ -327,7 +345,7 @@ namespace Ginger
 			}
 			if (string.IsNullOrEmpty(outputGreeting) == false)
 			{
-				if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday)
+				if (bFaraday)
 					sbOutput.AppendLine(Header("FIRST MESSAGE"));
 				else
 					sbOutput.AppendLine(Header("GREETING"));
@@ -351,7 +369,6 @@ namespace Ginger
 					sbOutput.AppendLine();
 				}
 			}
-
 			if (outputs[0].group_greetings != null && outputs[0].group_greetings.Length > 0)
 			{
 				for (int i = 0; i < outputs[0].group_greetings.Length; ++i)
@@ -366,7 +383,7 @@ namespace Ginger
 					sbOutput.AppendLine();
 				}
 			}
-			if (string.IsNullOrEmpty(outputGrammar) == false)
+			if (string.IsNullOrEmpty(outputGrammar) == false && bShowGrammar)
 			{
 				sbOutput.AppendLine(Header("GRAMMAR"));
 				sbOutput.AppendLine();

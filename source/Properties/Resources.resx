@@ -1660,4 +1660,29 @@ Are you sure you want to continue?</value>
     <value>Uncheck to exclude the personality summary from the output.
 (Not to be confused with the character persona.)</value>
   </data>
+  <data name="tooltip_style_grammar" xml:space="preserve">
+    <value>Use a grammar to enforce the text style.
+(Only applicable with Backyard AI.)</value>
+  </data>
+  <data name="grammar_recipe_bold" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Grammar\grammar_recipe_bold.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="grammar_recipe_brackets" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Grammar\grammar_recipe_brackets.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="grammar_recipe_chat" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Grammar\grammar_recipe_chat.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="grammar_recipe_cjk" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Grammar\grammar_recipe_cjk.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="grammar_recipe_decorative" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Grammar\grammar_recipe_decorative.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="grammar_recipe_mixed" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Grammar\grammar_recipe_mixed.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="grammar_recipe_novel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Recipes\Grammar\grammar_recipe_novel.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
 </root>

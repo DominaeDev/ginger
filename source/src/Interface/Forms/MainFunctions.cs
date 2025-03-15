@@ -42,8 +42,7 @@ namespace Ginger
 				outputBox.SetOutput(output);
 			}
 
-			sidePanel.SetLoreCount(output.hasLore ? output.lorebook.entries.Count : 0, true);
-			sidePanel.OnRegenerate();
+			sidePanel.OnRegenerate(output);
 
 			// Recalculate token count
 			CalculateTokens(output);
