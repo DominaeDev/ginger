@@ -49,7 +49,7 @@
 	<Rule id="#male-or-female">#gender is any</Rule>
 	
 	<!-- Support flags -->
-	<Rule id="__support-grammar">__backyard or __bake or __snippet</Rule>
+	<Rule id="__support-grammar">__backyard or __bake or __snippet or __preview</Rule>
 	<Rule id="__support-lore-wildcards">__backyard or __bake or __snippet</Rule>
 
 	<!-- Internal macros-->

@@ -1113,6 +1113,20 @@
     <None Include="Resources\Icons\Dark\dark_write.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Recipes\Grammar\grammar_recipe_novel.txt" />
+    <None Include="Resources\Recipes\Grammar\grammar_recipe_mixed.txt" />
+    <None Include="Resources\Recipes\Grammar\grammar_recipe_decorative.txt" />
+    <None Include="Resources\Recipes\Grammar\grammar_recipe_cjk.txt" />
+    <None Include="Resources\Recipes\Grammar\grammar_recipe_chat.txt" />
+    <None Include="Resources\Recipes\Grammar\grammar_recipe_brackets.txt" />
+    <None Include="Resources\Recipes\Grammar\grammar_recipe_bold.txt" />
+    <None Include="Resources\Recipes\Grammar\grammar_novel.xml" />
+    <None Include="Resources\Recipes\Grammar\grammar_mixed.xml" />
+    <None Include="Resources\Recipes\Grammar\grammar_decorative.xml" />
+    <None Include="Resources\Recipes\Grammar\grammar_cjk.xml" />
+    <None Include="Resources\Recipes\Grammar\grammar_chat.xml" />
+    <None Include="Resources\Recipes\Grammar\grammar_brackets.xml" />
+    <None Include="Resources\Recipes\Grammar\grammar_bold.xml" />
     <None Include="Resources\Schemas\ginger_chat_v2_schema.txt" />
     <None Include="Resources\Schemas\ginger_user_data_schema_v1.schema.txt" />
     <None Include="Resources\Schemas\backup_chat_v2.schema.txt" />

@@ -43,6 +43,16 @@ namespace Ginger
 		public static readonly string GlobalExternal = "__global";
 		public static readonly string PruneScenario = "__prune-scenario";
 
+		public static readonly string[] StyleGrammar = new string[] {
+			"__style_grammar_chat",
+			"__style_grammar_novel",
+			"__style_grammar_mixed",
+			"__style_grammar_decorative",
+			"__style_grammar_bold",
+			"__style_grammar_brackets",
+			"__style_grammar_cjk",
+		};
+
 		public static void LoadRecipes()
 		{
 			recipes.Clear();
@@ -104,6 +114,15 @@ namespace Ginger
 
 			// Hidden (Internal) components
 			recipes.Add(CreateRecipeFromResource(Resources.prune_scenario_recipe,	Recipe.Type.Component,	Recipe.Drawer.Undefined));
+
+			// Style grammar recipes
+			recipes.Add(CreateRecipeFromResource(Resources.grammar_recipe_chat,			Recipe.Type.Component,	Recipe.Drawer.Undefined));
+			recipes.Add(CreateRecipeFromResource(Resources.grammar_recipe_novel,		Recipe.Type.Component,	Recipe.Drawer.Undefined));
+			recipes.Add(CreateRecipeFromResource(Resources.grammar_recipe_mixed,		Recipe.Type.Component,	Recipe.Drawer.Undefined));
+			recipes.Add(CreateRecipeFromResource(Resources.grammar_recipe_decorative,	Recipe.Type.Component,	Recipe.Drawer.Undefined));
+			recipes.Add(CreateRecipeFromResource(Resources.grammar_recipe_bold,			Recipe.Type.Component,	Recipe.Drawer.Undefined));
+			recipes.Add(CreateRecipeFromResource(Resources.grammar_recipe_brackets,		Recipe.Type.Component,	Recipe.Drawer.Undefined));
+			recipes.Add(CreateRecipeFromResource(Resources.grammar_recipe_cjk,			Recipe.Type.Component,	Recipe.Drawer.Undefined));
 
 			// Load macros
 			Current.LoadMacros();

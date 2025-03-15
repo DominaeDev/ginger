@@ -69,6 +69,8 @@ namespace Ginger
 		}
 		public TextStyle textStyle = TextStyle.Default;
 
+		public bool useStyleGrammar = false;
+
 		[Flags]
 		public enum Flag : int
 		{

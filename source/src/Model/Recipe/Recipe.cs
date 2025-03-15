@@ -49,6 +49,7 @@ namespace Ginger
 				Raw			= 1 << 1,
 				Important	= 1 << 2,
 				GroupOnly	= 1 << 3,
+				PerActor	= 1 << 4,
 			}
 
 			public Component channel;
@@ -60,6 +61,7 @@ namespace Ginger
 			public bool isDetached { get { return flags.Contains(Flags.Detached); } }
 			public bool isImportant { get { return flags.Contains(Flags.Important); } }
 			public bool isGroupOnly { get { return flags.Contains(Flags.GroupOnly); } }
+			public bool isPerActor { get { return flags.Contains(Flags.PerActor); } }
 
 			public override int GetHashCode()
 			{
@@ -374,12 +376,16 @@ namespace Ginger
 					var text = componentNode.GetTextValue();
 					bool detached = componentNode.GetAttributeBool("detached", false);
 					bool raw = componentNode.GetAttributeBool("raw", false);
+
 					bool important = false;
-					bool groupOnly = false;
 					if (componentNode.Name == "System")
 						important = componentNode.GetAttributeBool("important", false);
-					else if (componentNode.Name == "Greeting")
+					bool groupOnly = false;
+					if (componentNode.Name == "Greeting")
 						groupOnly = componentNode.GetAttributeBool("group", false);
+					bool perActor = false;
+					if (componentNode.Name != "Grammar")
+						perActor = componentNode.GetAttributeBool("per-actor", false);
 
 					ICondition condition = null;
 					if (componentNode.HasAttribute("rule"))
@@ -392,7 +398,8 @@ namespace Ginger
 						flags = (detached ? Template.Flags.Detached : 0) 
 							| (raw ? Template.Flags.Raw : 0)
 							| (important ? Template.Flags.Important : 0)
-							| (groupOnly ? Template.Flags.GroupOnly : 0),
+							| (groupOnly ? Template.Flags.GroupOnly : 0)
+							| (perActor ? Template.Flags.PerActor : 0),
 					});
 					componentNode = componentNode.GetNextSibling();
 				}
@@ -633,7 +640,7 @@ namespace Ginger
 			clone.origName = this.origName;
 			clone.name = this.name;
 			clone.title = this.title;
-			clone.path = (string[])this.path.Clone();
+			clone.path = (string[])this.path?.Clone();
 			clone.drawer = this.drawer;
 			clone.category = this.category;
 			clone.categoryTag = this.categoryTag;
@@ -661,31 +668,9 @@ namespace Ginger
 			{
 				var other = this.blocks[i];
 				if (other is AttributeBlock)
-				{
-					var attribute = other as AttributeBlock;
-					clone.blocks.Add(new AttributeBlock() {
-						id = attribute.id,
-						name = attribute.name,
-						value = attribute.value,
-						condition = attribute.condition,
-						style = attribute.style,
-						mode = attribute.mode,
-						formatting = attribute.formatting,
-						order = attribute.order,
-					});
-				}
+					clone.blocks.Add((AttributeBlock)other.Clone());
 				else
-				{
-					clone.blocks.Add(new Block() {
-						id = other.id,
-						value = other.value,
-						condition = other.condition,
-						style = other.style,
-						mode = other.mode,
-						formatting = other.formatting,
-						order = other.order,
-					});
-				}
+					clone.blocks.Add((Block)other.Clone());
 			}
 
 			clone.templates = new List<Template>(this.templates.Count);

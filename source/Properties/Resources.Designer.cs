@@ -2494,6 +2494,166 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_chat&quot;&gt;
+        ///	&lt;Grammar&gt;&lt;![CDATA[
+        ///		root ::= patterns &quot;\n&quot;
+        ///		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
+        ///		pa ::= action &quot; &quot; dialogue
+        ///		pb ::= dialogue &quot; &quot; action
+        ///		pc ::= action &quot; &quot; dialogue &quot; &quot; action
+        ///		pd ::= dialogue &quot; &quot; action &quot; &quot; dialogue
+        ///		pe ::= dialogue &quot; &quot; action &quot; &quot; dialogue &quot; &quot; action
+        ///		pf ::= action &quot; &quot; dialogue &quot; &quot; action &quot; &quot; dialogue
+        ///		dialogue ::= [[^&lt;\n*#\&quot;]]+
+        ///		action ::= &quot;**&quot; [[a-z .,&apos;?!:;0-9-]]+ &quot;**&quot;
+        ///	]]&gt;&lt;/Grammar&gt;
+        ///
+        ///	&lt;Name&gt;__style_gr [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string grammar_recipe_bold {
+            get {
+                return ResourceManager.GetString("grammar_recipe_bold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_chat&quot;&gt;
+        ///	&lt;Grammar&gt;&lt;![CDATA[
+        ///		root ::= patterns &quot;\n&quot;
+        ///		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
+        ///		pa ::= action &quot; &quot; dialogue
+        ///		pb ::= dialogue &quot; &quot; action
+        ///		pc ::= action &quot; &quot; dialogue &quot; &quot; action
+        ///		pd ::= dialogue &quot; &quot; action &quot; &quot; dialogue
+        ///		pe ::= dialogue &quot; &quot; action &quot; &quot; dialogue &quot; &quot; action
+        ///		pf ::= action &quot; &quot; dialogue &quot; &quot; action &quot; &quot; dialogue
+        ///		dialogue ::= [[^&lt;\n*#\&quot;]]+
+        ///		action ::= &quot;(&quot; [[^ *]][[a-z .,&apos;?!:;0-9-]]+[[^ *]] &quot;)&quot;
+        ///	]]&gt;&lt;/Grammar&gt;
+        ///
+        ///	&lt;Nam [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string grammar_recipe_brackets {
+            get {
+                return ResourceManager.GetString("grammar_recipe_brackets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_chat&quot;&gt;
+        ///	&lt;Grammar&gt;&lt;![CDATA[
+        ///		root ::= patterns &quot;\n&quot;
+        ///		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
+        ///		pa ::= action &quot; &quot; dialogue
+        ///		pb ::= dialogue &quot; &quot; action
+        ///		pc ::= action &quot; &quot; dialogue &quot; &quot; action
+        ///		pd ::= dialogue &quot; &quot; action &quot; &quot; dialogue
+        ///		pe ::= dialogue &quot; &quot; action &quot; &quot; dialogue &quot; &quot; action
+        ///		pf ::= action &quot; &quot; dialogue &quot; &quot; action &quot; &quot; dialogue
+        ///		dialogue ::= [[^&lt;\n*#\&quot;]]+
+        ///		action ::= &quot;*&quot; [[a-z .,&apos;?!:;0-9-]]+ &quot;*&quot;
+        ///	]]&gt;&lt;/Grammar&gt;
+        ///	&lt;Name&gt;__style_gramma [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string grammar_recipe_chat {
+            get {
+                return ResourceManager.GetString("grammar_recipe_chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_chat&quot;&gt;
+        ///	&lt;Grammar&gt;&lt;![CDATA[
+        ///		root ::= patterns &quot;\n&quot;
+        ///		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
+        ///		pa ::= action &quot; &quot; dialogue
+        ///		pb ::= dialogue &quot; &quot; action
+        ///		pc ::= action &quot; &quot; dialogue &quot; &quot; action
+        ///		pd ::= dialogue &quot; &quot; action &quot; &quot; dialogue
+        ///		pe ::= dialogue &quot; &quot; action &quot; &quot; dialogue &quot; &quot; action
+        ///		pf ::= action &quot; &quot; dialogue &quot; &quot; action &quot; &quot; dialogue
+        ///		dialogue ::= &quot;「&quot; [[^&lt;\n*#\&quot;]]+ &quot;」&quot;
+        ///		action ::= [[^&lt;\n*#\&quot;]]+
+        ///	]]&gt;&lt;/Grammar&gt;
+        ///
+        ///	&lt;Name&gt;__style_grammar&lt;/Na [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string grammar_recipe_cjk {
+            get {
+                return ResourceManager.GetString("grammar_recipe_cjk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_chat&quot;&gt;
+        ///	&lt;Grammar&gt;&lt;![CDATA[
+        ///		root ::= patterns &quot;\n&quot;
+        ///		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
+        ///		pa ::= action &quot; &quot; dialogue
+        ///		pb ::= dialogue &quot; &quot; action
+        ///		pc ::= action &quot; &quot; dialogue &quot; &quot; action
+        ///		pd ::= dialogue &quot; &quot; action &quot; &quot; dialogue
+        ///		pe ::= dialogue &quot; &quot; action &quot; &quot; dialogue &quot; &quot; action
+        ///		pf ::= action &quot; &quot; dialogue &quot; &quot; action &quot; &quot; dialogue
+        ///		dialogue ::= &quot;“&quot; [[^&lt;\n*#\&quot;]]+ &quot;”&quot;
+        ///		action ::= [[^&lt;\n*#\&quot;]]+
+        ///	]]&gt;&lt;/Grammar&gt;
+        ///
+        ///	&lt;Name&gt;__style_grammar&lt;/Na [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string grammar_recipe_decorative {
+            get {
+                return ResourceManager.GetString("grammar_recipe_decorative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_chat&quot;&gt;
+        ///	&lt;Grammar&gt;&lt;![CDATA[
+        ///		root ::= patterns &quot;\n&quot;
+        ///		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
+        ///		pa ::= action &quot; &quot; dialogue
+        ///		pb ::= dialogue &quot; &quot; action
+        ///		pc ::= action &quot; &quot; dialogue &quot; &quot; action
+        ///		pd ::= dialogue &quot; &quot; action &quot; &quot; dialogue
+        ///		pe ::= dialogue &quot; &quot; action &quot; &quot; dialogue &quot; &quot; action
+        ///		pf ::= action &quot; &quot; dialogue &quot; &quot; action &quot; &quot; dialogue
+        ///		dialogue ::= &quot;\&quot;&quot; [[^&lt;\n*#\&quot;]]+ &quot;\&quot;&quot;
+        ///		action ::= &quot;*&quot; [[a-z .,&apos;?!:;0-9-]]+ &quot;*&quot;
+        ///	]]&gt;&lt;/Grammar&gt;
+        ///
+        ///	&lt;Name&gt;__ [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string grammar_recipe_mixed {
+            get {
+                return ResourceManager.GetString("grammar_recipe_mixed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_chat&quot;&gt;
+        ///	&lt;Grammar&gt;&lt;![CDATA[
+        ///		root ::= patterns &quot;\n&quot;
+        ///		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
+        ///		pa ::= action &quot; &quot; dialogue
+        ///		pb ::= dialogue &quot; &quot; action
+        ///		pc ::= action &quot; &quot; dialogue &quot; &quot; action
+        ///		pd ::= dialogue &quot; &quot; action &quot; &quot; dialogue
+        ///		pe ::= dialogue &quot; &quot; action &quot; &quot; dialogue &quot; &quot; action
+        ///		pf ::= action &quot; &quot; dialogue &quot; &quot; action &quot; &quot; dialogue
+        ///		dialogue ::= &quot;\&quot;&quot; [[^&lt;\n*#\&quot;]]+ &quot;\&quot;&quot;
+        ///		action ::= [[^&lt;\n*#\&quot;]]+
+        ///	]]&gt;&lt;/Grammar&gt;
+        ///
+        ///	&lt;Name&gt;__style_grammar&lt;/ [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string grammar_recipe_novel {
+            get {
+                return ResourceManager.GetString("grammar_recipe_novel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__greeting&quot;&gt;
         ///	&lt;Name&gt;Greeting&lt;/Name&gt;
         ///	&lt;Order&gt;3&lt;/Order&gt;
@@ -2833,7 +2993,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will attempt to find and repair any legacy chats in Backyard AI.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_bulk_repair_chats_confirm {
             get {
@@ -2853,7 +3013,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The imported chat contains messages from more characters than there are in this group.
         ///
-        ///Do you want to import it anyway? (Messages from characters outside the group will be omitted.).
+        ///Do you want to import it anyway? (Messages from extraneous characters will be ignored.).
         /// </summary>
         internal static string msg_link_chat_too_many_speakers {
             get {
@@ -2864,7 +3024,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will import {0} to Backyard AI.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_confirm_import_many {
             get {
@@ -2875,7 +3035,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This character has been modified in Backyard AI.
         ///
-        ///Do you want to overwrite those changes?.
+        ///Are you sure you want to overwrite the changes?.
         /// </summary>
         internal static string msg_link_confirm_overwrite {
             get {
@@ -2886,7 +3046,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will update {0} in Backyard AI.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_confirm_update_many {
             get {
@@ -3084,7 +3244,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will update and fix all legacy chats for &apos;{0}&apos;.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_repair_chat {
             get {
@@ -3095,7 +3255,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will attempt to repair any broken images in Backyard AI.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_repair_images {
             get {
@@ -3132,9 +3292,9 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will reset the model settings for all characters in Backyard AI.
+        ///   Looks up a localized string similar to This will reset the model settings to their default values for all Backyard AI characters.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_reset_model_settings {
             get {
@@ -3145,7 +3305,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will reset the model settings for this chat to their default values.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_reset_settings {
             get {
@@ -3167,7 +3327,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will restore &apos;{0}&apos; along with {1} chat(s).
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_restore_backup {
             get {
@@ -3196,7 +3356,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This will reimport the character from Backyard AI, replacing any recipes or changes in the file. This action can be undone.
         ///
-        ///Do you want to continue?.
+        ///Are you sure you want to continue?.
         /// </summary>
         internal static string msg_link_revert {
             get {
@@ -3439,10 +3599,8 @@ namespace Ginger.Properties {
         ///	
         ///	&lt;Text id=&quot;personality&quot; style=&quot;component&quot;&gt;
         ///		&lt;Label&gt;Personality&lt;/Label&gt;
-        ///	&lt;/Text&gt;
-        ///	
-        ///	&lt;Node path=&quot;persona/summary/value&quot;&gt;{personality:local}&lt;/Node&gt;
-        ///&lt;/Ginger&gt;.
+        ///		&lt;Default&gt;[char] is [a] {adjectives.commalist} [noun:prefix?,] {noun}.&lt;/Default&gt;
+        ///	&lt;/ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string personality_recipe {
             get {
@@ -5531,6 +5689,16 @@ namespace Ginger.Properties {
         internal static string tooltip_spoken_name {
             get {
                 return ResourceManager.GetString("tooltip_spoken_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use a grammar to enforce the text style.
+        ///(Only applicable with Backyard AI.).
+        /// </summary>
+        internal static string tooltip_style_grammar {
+            get {
+                return ResourceManager.GetString("tooltip_style_grammar", resourceCulture);
             }
         }
         

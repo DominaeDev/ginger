@@ -35,6 +35,7 @@ namespace Ginger
 				creationDate = card.creationDate,
 				detailLevel = EnumHelper.FromInt(card.detailLevel, CardData.DetailLevel.Normal),
 				textStyle = EnumHelper.FromInt(card.textStyle, CardData.TextStyle.None),
+				useStyleGrammar = card.useStyleGrammar,
 				extraFlags = EnumHelper.FromInt(card.flags, CardData.Flag.None),
 				lastTokenCounts = card.tokens ?? new int[] { 0, 0, 0 },
 			};

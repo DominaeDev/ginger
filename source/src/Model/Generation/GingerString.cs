@@ -423,16 +423,29 @@ namespace Ginger
 				return null;
 
 			StringBuilder sb = new StringBuilder(value);
-
 			sb.Replace(CharacterMarker, CharacterMarker, true); // Case insensitive
 			sb.Replace(UserMarker, UserMarker, true); // Case insensitive
 			sb.Replace(OriginalMarker, OriginalMarker, true); // Case insensitive
 			sb.Replace(NameMarker, NameMarker, true); // Case insensitive
 			UnescapeBackslash(sb);
-
 			sb.Trim();
 			sb.ConvertLinebreaks(Linebreak.Default);
 
+			return sb.ToString();
+		}
+
+		public string ToGrammarPreview()
+		{
+			if (value == null)
+				return null;
+
+			StringBuilder sb = new StringBuilder(value);
+			sb.Replace(CharacterMarker, CharacterMarker, true); // Case insensitive
+			sb.Replace(UserMarker, UserMarker, true); // Case insensitive
+			sb.Replace(OriginalMarker, OriginalMarker, true); // Case insensitive
+			sb.Replace(NameMarker, NameMarker, true); // Case insensitive
+			sb.Trim();
+			sb.ConvertLinebreaks(Linebreak.Default);
 			return sb.ToString();
 		}
 

@@ -26,6 +26,7 @@ namespace Ginger
 		public int[] tokens = new int[3] { 0, 0, 0 };
 		public DateTime creationDate = DateTime.UtcNow;
 		public int missingRecipes = 0;
+		public bool useStyleGrammar = false;
 		public string[] sources = null;
 
 		public class Character
@@ -53,7 +54,14 @@ namespace Ginger
 			tags = Utility.ListFromCommaSeparatedString(xmlNode.GetValueElement("Tags")).ToArray();
 			versionString = xmlNode.GetValueElement("Version");
 			detailLevel = xmlNode.GetValueElementInt("Detail");
-			textStyle = xmlNode.GetValueElementInt("TextStyle");
+
+			var textStyleNode = xmlNode.GetFirstElement("TextStyle");
+			if (textStyleNode != null)
+			{
+				textStyle = textStyleNode.GetTextValueInt();
+				useStyleGrammar = textStyleNode.GetAttributeBool("use-grammar");
+			}
+			
 			flags = xmlNode.GetValueElementInt("Flags");
 			sources = Utility.ListFromCommaSeparatedString(xmlNode.GetValueElement("Sources")).ToArray();
 
@@ -241,7 +249,9 @@ namespace Ginger
 			if (string.IsNullOrWhiteSpace(versionString) == false)
 				xmlNode.AddValueElement("Version", versionString);
 			xmlNode.AddValueElement("Detail", detailLevel);
-			xmlNode.AddValueElement("TextStyle", textStyle);
+			var textStyleNode = xmlNode.AddElement("TextStyle");
+			textStyleNode.AddAttribute("use-grammar", useStyleGrammar);
+			textStyleNode.AddTextValue(textStyle);
 			xmlNode.AddValueElement("Flags", flags);
 			xmlNode.AddValueElement("TokenCount", string.Format("{0}, {1}, {2}", tokens[0], tokens[1], tokens[2]));
 			xmlNode.AddValueElement("Created", creationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK"));
@@ -417,6 +427,7 @@ namespace Ginger
 				creationDate = Current.Card.creationDate ?? DateTime.UtcNow,
 				tokens = Current.Card.lastTokenCounts,
 				sources = Current.Card.sources != null ? Current.Card.sources.ToArray() : null,
+				useStyleGrammar = Current.Card.useStyleGrammar,
 			};
 
 			card.characters = Current.Characters.Select(c => new Character() {

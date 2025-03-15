@@ -147,10 +147,19 @@ namespace Ginger
 
 		public static Context[] GetLocalContexts(Recipe[] recipes, Context outerContext)
 		{
-			if (recipes == null || recipes.Length == 0)
-				return new Context[0];
+			Context tmp;
+			return GetLocalContexts(recipes, outerContext, out tmp);
+		}
 
-			ParameterStates parameterStates = ResolveParameters(recipes, outerContext);
+		public static Context[] GetLocalContexts(Recipe[] recipes, Context outerContext, out Context finalContext)
+		{
+			if (recipes == null || recipes.Length == 0)
+			{
+				finalContext = outerContext;
+				return new Context[0];
+			}
+
+			ParameterStates parameterStates = ResolveParameters(recipes, outerContext, out finalContext);
 			Context[] localContexts = new Context[recipes.Length];
 
 			// Create contexts
