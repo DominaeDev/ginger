@@ -1687,7 +1687,7 @@ namespace Ginger
 			dlg.Options = LinkSelectCharacterOrGroupDialog.Option.Solo;
 			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties))
 				dlg.Options |= LinkSelectCharacterOrGroupDialog.Option.Parties | LinkSelectCharacterOrGroupDialog.Option.Orphans;
-
+			dlg.ConfirmButton = "Open";
 			dlg.Text = "Open Backyard AI character";
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return false;

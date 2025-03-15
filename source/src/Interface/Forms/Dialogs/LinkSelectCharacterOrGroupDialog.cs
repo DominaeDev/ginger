@@ -28,6 +28,8 @@ namespace Ginger
 		public GroupInstance SelectedGroup { get; private set; }
 		public Option Options { get; set; }
 
+		public string ConfirmButton { set { btnOk.Text = value; } }
+
 		private CharacterInstance[] Characters;
 		private CharacterInstance[] Orphans;
 		private GroupInstance[] Groups;
@@ -94,6 +96,13 @@ namespace Ginger
 			_timer.AutoReset = false;
 			_timer.SynchronizingObject = this;
 
+			if (Characters.Length > 0 || Groups.Length > 0)
+			{
+				var characterIds = Characters.Select(c => c.instanceId)
+					.Union(Groups.Select(g => g.instanceId));
+				AppSettings.BackyardSettings.StarredCharacters.IntersectWith(characterIds);
+			}
+
 			_bIgnoreEvents = false;
 		}
 
@@ -130,6 +139,8 @@ namespace Ginger
 				if (node.IsExpanded && node.Tag is string)
 					expandedFolders.Add(node.Tag as string);
 			}
+
+			HashSet<string> starredIds = AppSettings.BackyardSettings.StarredCharacters;
 
 			treeView.BeginUpdate();
 			treeView.Nodes.Clear();
@@ -235,6 +246,23 @@ namespace Ginger
 					.OrderByDescending(c => c.creationDate); // Not applicable
 			}
 
+			// Starred folder
+			TreeNode starredFolder = null;
+			if (bFiltered == false)
+			{
+				int nStarred = sortedGroups.Select(g => g.instanceId).Count(id => starredIds.Contains(id));
+				if (Options.ContainsAny(Option.Orphans))
+					nStarred += sortedOrphans.Select(c => c.instanceId).Count(id => starredIds.Contains(id));
+				if (nStarred > 0)
+				{
+					starredFolder = new TreeNode(string.Format("Starred ({0})", nStarred), 2, 2);
+					starredFolder.Tag = "Starred";
+					treeView.Nodes.Insert(0, starredFolder);
+					if (expandedFolders.Contains(starredFolder.Tag))
+						expandedNodes.Add(starredFolder);
+				}
+			}
+
 			// Create orphan nodes
 			int nOrphans = sortedOrphans.Count();
 			if (nOrphans > 0 && Options.ContainsAny(Option.Orphans) )
@@ -245,18 +273,34 @@ namespace Ginger
 				{
 					folderNode = new TreeNode(string.Format("Stand-alone characters ({0})", nOrphans), 1, 1);
 					folderNode.Tag = "Orphans";
-					treeView.Nodes.Insert(0, folderNode);
+					treeView.Nodes.Insert(starredFolder != null ? 1 : 0, folderNode);
 					if (expandedFolders.Contains(folderNode.Tag))
 						expandedNodes.Add(folderNode);
 				}
-								
+
 				foreach (var character in sortedOrphans)
-					CreateCharacterNode(character, folderNode, true);
+				{
+					bool bStarred = starredIds.Contains(character.instanceId);
+					CreateCharacterNode(character, folderNode, true, bStarred);
+
+					if (starredFolder != null && bStarred)
+					{
+						Backyard.ChatCount chatCount;
+						_chatCounts.TryGetValue(character.instanceId, out chatCount);
+						CreateCharacterNode(character, starredFolder, chatCount.hasMessages == false, true);
+					}
+				}
 			}
 
 			// Create group nodes
 			foreach (var group in sortedGroups)
-				CreateGroupNode(group, nodesById);
+			{
+				bool bStarred = starredIds.Contains(group.instanceId);
+				CreateGroupNode(group, nodesById, null, bStarred);
+
+				if (starredFolder != null && bStarred)
+					CreateGroupNode(group, nodesById, starredFolder, true);
+			}
 
 			if (bRefresh || bFiltered)
 			{
@@ -282,13 +326,13 @@ namespace Ginger
 			return node;
 		}
 
-		private TreeNode CreateGroupNode(GroupInstance group, Dictionary<string, TreeNode> nodes)
+		private TreeNode CreateGroupNode(GroupInstance group, Dictionary<string, TreeNode> nodes, TreeNode parentNode, bool isStarred)
 		{
 			if (group.Count < 2)
 				return null;
 
-			TreeNode parentNode;
-			nodes.TryGetValue(group.folderId, out parentNode);
+			if (parentNode == null)
+				nodes.TryGetValue(group.folderId, out parentNode);
 
 			string groupLabel = group.GetDisplayName();
 			var sbTooltip = new StringBuilder();
@@ -356,26 +400,36 @@ namespace Ginger
 			// Icon
 			int icon;
 			if (characters.Length >= 2)
-				icon = 22; // Group
+			{
+				icon = 33; // Group
+				if (isStarred)
+					icon += 1;
+			}
 			else if (characters.Length == 1)
 			{
 				string inferredGender = characters[0].inferredGender?.ToLowerInvariant();
 				if (inferredGender == "male")
-					icon = 6; // Blue
+					icon = 9; // Blue
 				else if (inferredGender == "female")
-					icon = 10; // Pink
+					icon = 15; // Pink
 				else if (inferredGender == "transgender")
-					icon = 14; // Green
+					icon = 21; // Green
 				else if (inferredGender == "futanari" || inferredGender == "hermaphrodite")
-					icon = 18; // Yellow
+					icon = 27; // Yellow
 				else
-					icon = 2; // White
+					icon = 3; // White
 
-				if (characters[0].hasLorebook)
+				if (isStarred)
+					icon += 2;
+				else if (characters[0].hasLorebook)
 					icon += 1; // Lore
 			}
 			else
-				icon = 2; // White
+			{
+				icon = 3; // White
+				if (isStarred)
+					icon += 1;
+			}
 
 			var node = new TreeNode(groupLabel, icon, icon);
 			node.Tag = group;
@@ -388,12 +442,12 @@ namespace Ginger
 			if (characters.Length > 1 && Options.Contains(Option.Orphans))
 			{
 				foreach (var character in characters)
-					CreateCharacterNode(character, node, chatCount.hasMessages == false);
+					CreateCharacterNode(character, node, chatCount.hasMessages == false, false);
 			}
 			return node;
 		}
 				
-		private TreeNode CreateCharacterNode(CharacterInstance character, TreeNode parentNode, bool bGrayed)
+		private TreeNode CreateCharacterNode(CharacterInstance character, TreeNode parentNode, bool bGrayed, bool isStarred)
 		{
 			string label = character.displayName;
 			if (string.Compare(character.name, label, StringComparison.OrdinalIgnoreCase) != 0)
@@ -426,22 +480,25 @@ namespace Ginger
 			sbTooltip.AppendLine($"Created: {character.creationDate.ToShortDateString()}");
 			sbTooltip.AppendLine($"Last modified: {character.updateDate.ToShortDateString()}");
 
-			// Set icon
+			// Icon
 			int icon;
 			if (inferredGender == "male")
-				icon = 6; // Blue
+				icon = 9; // Blue
 			else if (inferredGender == "female")
-				icon = 10; // Pink
+				icon = 15; // Pink
 			else if (inferredGender == "transgender")
-				icon = 14; // Green
+				icon = 21; // Green
 			else if (inferredGender == "futanari" || inferredGender == "hermaphrodite")
-				icon = 18; // Yellow
+				icon = 27; // Yellow
 			else
-				icon = 2; // White
-			if (character.hasLorebook)
+				icon = 3; // White
+
+			if (isStarred)
+				icon += 2;
+			else if (character.hasLorebook)
 				icon += 1; // Lore
 			if (bGrayed)
-				icon += 2; // Grayed out
+				icon += 3; // Grayed out
 
 			var node = new TreeNode(label, icon, icon);
 			node.Tag = character;
@@ -506,6 +563,7 @@ namespace Ginger
 				SelectedGroup = default(GroupInstance);
 				SelectedCharacter = default(CharacterInstance);
 			}
+
 			btnOk.Enabled = SelectedGroup.isDefined || SelectedCharacter.isDefined;
 		}
 
@@ -530,6 +588,38 @@ namespace Ginger
 		private void ShowContextMenu(Control control, Point location)
 		{
 			ContextMenuStrip menu = new ContextMenuStrip();
+
+			// Starred?
+			var node = treeView.GetNodeAt(location);
+			if (node != null)
+			{
+				string id;
+				if (node.Tag is GroupInstance)
+					id = ((GroupInstance)node.Tag).instanceId;
+				else if (node.Tag is CharacterInstance)
+					id = ((CharacterInstance)node.Tag).instanceId;
+				else 
+					id = null;
+
+				if (id != null)
+				{
+					menu.Items.Add(new ToolStripMenuItem("Starred", null, (s, e) => {
+						if (AppSettings.BackyardSettings.StarredCharacters.Contains(id) == false)
+							AppSettings.BackyardSettings.StarredCharacters.Add(id);
+						else
+							AppSettings.BackyardSettings.StarredCharacters.Remove(id);
+
+						treeView.LockScrollAndDo(() => {
+							PopulateTree(true);
+						});
+					}) {
+						Checked = AppSettings.BackyardSettings.StarredCharacters.Contains(id),
+					});
+
+					menu.Items.Add(new ToolStripSeparator());
+				};
+			}
+
 			menu.Items.Add(new ToolStripMenuItem("Sort by name", null, (s, e) => {
 				if (AppSettings.User.SortGroups != AppSettings.CharacterSortOrder.ByName)
 				{

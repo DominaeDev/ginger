@@ -140,6 +140,20 @@ namespace Ginger
 			return controls;
 		}
 
+		public static void LockScrollAndDo(this Control control, Action action)
+		{
+			DisableRedrawAndDo(control, () => {
+				// Get scroll position
+				Win32.SCROLLINFO si = new Win32.SCROLLINFO();
+				si.cbSize = (uint)Marshal.SizeOf(si);
+				si.fMask = (uint)Win32.ScrollInfoMask.SIF_ALL;
+				Win32.GetScrollInfo(control.Handle, (int)Win32.ScrollBarDirection.SB_VERT, ref si);
 
+				action.Invoke();
+
+				// Restore scroll position
+				Win32.SetScrollInfo(control.Handle, (int)Win32.ScrollBarDirection.SB_VERT, ref si, true);
+			});
+		}
 	}
 }

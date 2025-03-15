@@ -187,6 +187,7 @@ namespace Ginger
 			public static ChatParameters UserSettings = new ChatParameters();
 			public static List<Preset> Presets = new List<Preset>();
 			public static List<KeyValuePair<string, int>> ModelPromptTemplates = new List<KeyValuePair<string, int>>();
+			public static HashSet<string> StarredCharacters = new HashSet<string>();
 
 			public static int GetPromptTemplateForModel(string model)
 			{
@@ -419,6 +420,15 @@ namespace Ginger
 				}
 			}
 
+			// Starred characters
+			BackyardSettings.StarredCharacters.Clear();
+			var starredSection = iniData.Sections["BackyardAI.Starred"];
+			if (starredSection != null)
+			{
+				foreach (KeyData item in starredSection)
+					BackyardSettings.StarredCharacters.Add(item.Value);
+			}
+
 			var mruSection = iniData.Sections["MRU"];
 			if (mruSection != null)
 			{
@@ -595,6 +605,15 @@ namespace Ginger
 						WriteSection(outputFile, "BackyardAI.PromptTemplate");
 						foreach (var kvp in BackyardSettings.ModelPromptTemplates.OrderBy(kvp => kvp.Key).Where(kvp => kvp.Value >= 0))
 							Write(outputFile, kvp.Key, kvp.Value);
+					}
+
+					// Starred characters
+					if (BackyardSettings.ModelPromptTemplates.Count > 0)
+					{
+						WriteSection(outputFile, "BackyardAI.Starred");
+						int i = 0;
+						foreach (var charID in BackyardSettings.StarredCharacters)
+							Write(outputFile, string.Format("Starred{0:00}", i++), charID);
 					}
 
 				}

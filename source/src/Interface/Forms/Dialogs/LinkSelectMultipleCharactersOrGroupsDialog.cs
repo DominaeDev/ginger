@@ -164,6 +164,8 @@ namespace Ginger
 				.Select(f => f.instanceId)
 				.Distinct());
 
+			var starredIds = AppSettings.BackyardSettings.StarredCharacters;
+
 			_bIgnoreEvents = true;
 			while (openList.Count > 0)
 			{
@@ -232,12 +234,12 @@ namespace Ginger
 						expandingNodes.Add(folderNode);
 				}
 				
-				foreach (var character in sortedOrphans)
-					CreateCharacterNode(character, folderNode, nodesById, true);
+				foreach (var node in sortedOrphans)
+					CreateCharacterNode(node, folderNode, true, starredIds.Contains(node.character.instanceId));
 			}
 
 			foreach (var node in sortedGroups)
-				CreateGroupNode(node, nodesById);
+				CreateGroupNode(node, nodesById, starredIds.Contains(node.group.instanceId));
 
 			if (bRefresh)
 			{
@@ -264,7 +266,7 @@ namespace Ginger
 			return node;
 		}
 
-		private TreeNode CreateGroupNode(NodeState nodeState, Dictionary<string, TreeNode> nodes)
+		private TreeNode CreateGroupNode(NodeState nodeState, Dictionary<string, TreeNode> nodes, bool isStarred)
 		{
 			TreeNode parentNode;
 			var group = nodeState.group;
@@ -317,27 +319,37 @@ namespace Ginger
 			sbTooltip.AppendLine($"Last modified: {group.updateDate.ToShortDateString()}");
 
 			// Icon
-			int icon = 2;
+			int icon;
 			if (characters.Length >= 2)
-				icon = 10; // Group
+			{
+				icon = 33; // Group
+				if (isStarred)
+					icon += 1;
+			}
 			else if (characters.Length == 1)
 			{
-				string inferredGender = characters[0].inferredGender;
-				if (string.IsNullOrEmpty(inferredGender))
-					icon = 2;
-				else if (string.Compare(inferredGender, "male", StringComparison.OrdinalIgnoreCase) == 0)
-					icon = 3;
-				else if (string.Compare(inferredGender, "female", StringComparison.OrdinalIgnoreCase) == 0)
-					icon = 4;
-				else if (string.Compare(inferredGender, "transgender", StringComparison.OrdinalIgnoreCase) == 0)
-					icon = 2;
-				else if (string.Compare(inferredGender, "non-binary", StringComparison.OrdinalIgnoreCase) == 0)
-					icon = 2;
-				else // Other, futa
-					icon = 5;
+				string inferredGender = characters[0].inferredGender?.ToLowerInvariant();
+				if (inferredGender == "male")
+					icon = 9; // Blue
+				else if (inferredGender == "female")
+					icon = 15; // Pink
+				else if (inferredGender == "transgender")
+					icon = 21; // Green
+				else if (inferredGender == "futanari" || inferredGender == "hermaphrodite")
+					icon = 27; // Yellow
+				else
+					icon = 3; // White
 
-				if (characters[0].hasLorebook)
-					icon += 4; // Lore
+				if (isStarred)
+					icon += 2;
+				else if (characters[0].hasLorebook)
+					icon += 1; // Lore
+			}
+			else
+			{
+				icon = 3; // White
+				if (isStarred)
+					icon += 1;
 			}
 
 			var node = new TreeNode(groupLabel, icon, icon);
@@ -351,7 +363,7 @@ namespace Ginger
 			return node;
 		}
 
-		private TreeNode CreateCharacterNode(NodeState nodeState, TreeNode parentNode, Dictionary<string, TreeNode> nodes, bool bGrayed)
+		private TreeNode CreateCharacterNode(NodeState nodeState, TreeNode parentNode, bool bGrayed, bool isStarred)
 		{
 			var character = nodeState.character;
 
@@ -386,24 +398,25 @@ namespace Ginger
 			sbTooltip.AppendLine($"Created: {character.creationDate.ToShortDateString()}");
 			sbTooltip.AppendLine($"Last modified: {character.updateDate.ToShortDateString()}");
 
-			// Set icon
+			// Icon
 			int icon;
-			if (string.IsNullOrEmpty(inferredGender))
-				icon = 2;
-			else if (string.Compare(inferredGender, "male", StringComparison.OrdinalIgnoreCase) == 0)
-				icon = 3;
-			else if (string.Compare(inferredGender, "female", StringComparison.OrdinalIgnoreCase) == 0)
-				icon = 4;
-			else if (string.Compare(inferredGender, "transgender", StringComparison.OrdinalIgnoreCase) == 0)
-				icon = 2;
-			else if (string.Compare(inferredGender, "non-binary", StringComparison.OrdinalIgnoreCase) == 0)
-				icon = 2;
-			else 
-				icon = 5;
-			if (character.hasLorebook)
-				icon += 4;
+			if (inferredGender == "male")
+				icon = 9; // Blue
+			else if (inferredGender == "female")
+				icon = 15; // Pink
+			else if (inferredGender == "transgender")
+				icon = 21; // Green
+			else if (inferredGender == "futanari" || inferredGender == "hermaphrodite")
+				icon = 27; // Yellow
+			else
+				icon = 3; // White
+
+			if (isStarred)
+				icon += 2;
+			else if (character.hasLorebook)
+				icon += 1; // Lore
 			if (bGrayed)
-				icon += 9; // Grayed out
+				icon += 3; // Grayed out
 
 			var node = new TreeNode(label, icon, icon);
 			node.Tag = character;
@@ -418,14 +431,28 @@ namespace Ginger
 
 		private void BtnOk_Click(object sender, EventArgs e)
 		{
-			SelectedGroups = Nodes
-				.Where(n => n.bChecked && n.group.isDefined)
-				.Select(n => n.group)
-				.ToArray();
-			SelectedCharacters = Nodes
-				.Where(n => n.bChecked&& n.character.isDefined)
-				.Select(n => n.character)
-				.ToArray();
+			var groups = new List<GroupInstance>();
+			var characters = new List<CharacterInstance>();
+
+			foreach (var node in Nodes.Where(n => n.bChecked))
+			{
+				if (node.group.isDefined)
+				{
+					CharacterInstance[] members = node.group.members
+						.Select(id => _charactersById.GetOrDefault(id))
+						.Where(c => c.isCharacter)
+						.ToArray();
+
+					groups.Add(node.group);
+					if (members.Length == 1) // Solo
+						characters.Add(members[0]);
+				}
+				else if (node.character.isDefined) // Orphan
+					characters.Add(node.character);
+			}
+
+			SelectedGroups = groups.ToArray();
+			SelectedCharacters = characters.ToArray();
 			DialogResult = DialogResult.OK;
 			Close();
 		}
