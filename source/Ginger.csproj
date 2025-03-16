@@ -733,6 +733,8 @@
     <Compile Include="src\Utility\ContextString\Text.cs" />
     <Compile Include="src\Utility\Utility.cs" />
     <Compile Include="src\Utility\VersionNumber.cs" />
+    <Compile Include="src\Utility\Web\CheckLatestRelease.cs" />
+    <Compile Include="src\Utility\Web\LatestReleaseJson.cs" />
     <Compile Include="src\Utility\Win32.cs" />
     <EmbeddedResource Include="src\Interface\Controls\ChatListBox.resx">
       <DependentUpon>ChatListBox.cs</DependentUpon>
@@ -1092,6 +1094,7 @@
     <None Include="Resources\Icons\Dark\dark_write.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Schemas\github_rest_latest_release.schema.txt" />
     <None Include="Resources\Recipes\Grammar\grammar_recipe_novel.txt" />
     <None Include="Resources\Recipes\Grammar\grammar_recipe_mixed.txt" />
     <None Include="Resources\Recipes\Grammar\grammar_recipe_decorative.txt" />
