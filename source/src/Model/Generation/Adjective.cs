@@ -94,6 +94,7 @@ namespace Ginger
 			None = 0,
 			Prefix,
 			Suffix,
+			Addendum,
 			Default	= None,
 		}
 
@@ -104,9 +105,8 @@ namespace Ginger
 				return false;
 			value = value.Trim();
 
-			priority = xmlNode.GetAttributeInt("priority", 0);
 			affix = xmlNode.GetAttributeEnum("affix", Affix.Default);
-
+			priority = xmlNode.GetAttributeInt("priority", 0);
 			if (xmlNode.HasAttribute("rule"))
 				condition = Rule.Parse(xmlNode.GetAttribute("rule"));
 			return true;
@@ -129,7 +129,8 @@ namespace Ginger
 			return Utility.MakeHashCode(
 				"Noun",
 				value,
-				condition, 
+				condition,
+				affix,
 				priority);
 		}
 	}

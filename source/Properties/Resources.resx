@@ -1661,8 +1661,8 @@ Are you sure you want to continue?</value>
 (Not to be confused with the character persona.)</value>
   </data>
   <data name="tooltip_style_grammar" xml:space="preserve">
-    <value>Use a grammar to enforce the text style.
-(Only applicable with Backyard AI.)</value>
+    <value>Include a grammar to enforce the text style.
+(Only available in Backyard AI.)</value>
   </data>
   <data name="grammar_recipe_bold" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Recipes\Grammar\grammar_recipe_bold.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

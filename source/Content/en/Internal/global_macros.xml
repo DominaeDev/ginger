@@ -25,7 +25,9 @@
 	</String>
 	
 	<!-- Auto-summary -->
-	<Macro id="summary">[adjectives?[a] {adjectives.commalist} [noun:prefix?,] {noun}]</Macro>
+	<Rule id="has-summary">summary:adjectives or summary:addendum</Rule>
+	<Macro id="summary">[has-summary?[a] {summary:adjectives.commalist} [summary:prefix?,] {summary:noun} {summary:addendum}]</Macro>
+	<Macro id="short-summary">[summary:adjectives.commalist] [summary:prefix?,] [summary:noun]</Macro>
 	
 	<!-- Pronouns -->
 	<Rule id="custom-pronoun">pronoun-masculine or pronoun-feminine or pronoun-neutral or pronoun-objective</Rule>

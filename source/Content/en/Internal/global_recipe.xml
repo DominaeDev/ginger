@@ -49,7 +49,7 @@
 	<Node path="persona/attributes/appearance" style="list" order="400">[!__attrib:Appearance]{inner}</Node>
 
 	<!-- Auto-summary -->
-	<Node path="persona/summary/auto" order="100" mode="exclude" rule="normal-detail and adjectives and __tavern and not (system-summary or __personality)">[char] is [summary].</Node>
+	<Node path="persona/summary/auto" order="100" mode="exclude" rule="normal-detail and has-summary and __tavern and not (system-summary or __personality)">[char] is [summary].</Node>
 
 	<!-- Description block -->
 	<Node path="persona/description" style="block" order="600" rule="not multi-character and less-detail"/>

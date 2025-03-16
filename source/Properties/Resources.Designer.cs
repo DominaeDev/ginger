@@ -5718,8 +5718,8 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use a grammar to enforce the text style.
-        ///(Only applicable with Backyard AI.).
+        ///   Looks up a localized string similar to Include a grammar to enforce the text style.
+        ///(Only available in Backyard AI.).
         /// </summary>
         internal static string tooltip_style_grammar {
             get {

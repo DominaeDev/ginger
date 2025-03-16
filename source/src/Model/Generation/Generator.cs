@@ -1048,6 +1048,8 @@ namespace Ginger
 						order = -1;
 					else if (noun.affix == CharacterNoun.Affix.Suffix)
 						order = 1;
+					else if (noun.affix == CharacterNoun.Affix.Addendum)
+						order = 2;
 					else
 						order = 0;
 
@@ -1099,25 +1101,49 @@ namespace Ginger
 				.OrderBy(x => x.order)
 				.SelectMany(x => x.values);
 
-			string sAdjectives = string.Join(Text.Delimiter, adjectives);
-			if (sAdjectives.Length > 0)
+			string sAdjectivesAll		= string.Join(Text.Delimiter, adjectives);
+			string sAdjectivesOpinion	= string.Join(Text.Delimiter, selectedAdjectives.Where(a => a.order == 0).Select(a => a.value).DistinctBy(a => a.ToLowerInvariant()));
+			string sAdjectivesSize		= string.Join(Text.Delimiter, selectedAdjectives.Where(a => a.order == 1).Select(a => a.value).DistinctBy(a => a.ToLowerInvariant()));
+			string sAdjectivesQuality	= string.Join(Text.Delimiter, selectedAdjectives.Where(a => a.order == 2).Select(a => a.value).DistinctBy(a => a.ToLowerInvariant()));
+			string sAdjectivesAge		= string.Join(Text.Delimiter, selectedAdjectives.Where(a => a.order == 3).Select(a => a.value).DistinctBy(a => a.ToLowerInvariant()));
+			string sAdjectivesShape		= string.Join(Text.Delimiter, selectedAdjectives.Where(a => a.order == 4).Select(a => a.value).DistinctBy(a => a.ToLowerInvariant()));
+			string sAdjectivesColor		= string.Join(Text.Delimiter, selectedAdjectives.Where(a => a.order == 5).Select(a => a.value).DistinctBy(a => a.ToLowerInvariant()));
+			string sAdjectivesPattern	= string.Join(Text.Delimiter, selectedAdjectives.Where(a => a.order == 6).Select(a => a.value).DistinctBy(a => a.ToLowerInvariant()));
+			string sAdjectivesOrigin	= string.Join(Text.Delimiter, selectedAdjectives.Where(a => a.order == 6).Select(a => a.value).DistinctBy(a => a.ToLowerInvariant()));
+			string sAdjectivesMaterial	= string.Join(Text.Delimiter, selectedAdjectives.Where(a => a.order == 7).Select(a => a.value).DistinctBy(a => a.ToLowerInvariant()));
+			string sAdjectivesQualifier	= string.Join(Text.Delimiter, selectedAdjectives.Where(a => a.order == 8).Select(a => a.value).DistinctBy(a => a.ToLowerInvariant()));
+
+
+			if (sAdjectivesAll.Length > 0)
 			{
 				for (int i = 0; i < recipeContexts.Length; ++i)
-					recipeContexts[i].SetValue(Constants.Variables.Adjectives, sAdjectives);
+				{
+					recipeContexts[i].SetValue(Constants.Variables.Adjectives, sAdjectivesAll);
+					recipeContexts[i].SetValue(string.Concat(Constants.Variables.Adjectives, ":opinion"), sAdjectivesOpinion);
+					recipeContexts[i].SetValue(string.Concat(Constants.Variables.Adjectives, ":size"), sAdjectivesSize);
+					recipeContexts[i].SetValue(string.Concat(Constants.Variables.Adjectives, ":quality"), sAdjectivesQuality);
+					recipeContexts[i].SetValue(string.Concat(Constants.Variables.Adjectives, ":age"), sAdjectivesAge);
+					recipeContexts[i].SetValue(string.Concat(Constants.Variables.Adjectives, ":shape"), sAdjectivesShape);
+					recipeContexts[i].SetValue(string.Concat(Constants.Variables.Adjectives, ":color"), sAdjectivesColor);
+					recipeContexts[i].SetValue(string.Concat(Constants.Variables.Adjectives, ":pattern"), sAdjectivesPattern);
+					recipeContexts[i].SetValue(string.Concat(Constants.Variables.Adjectives, ":origin"), sAdjectivesOrigin);
+					recipeContexts[i].SetValue(string.Concat(Constants.Variables.Adjectives, ":material"), sAdjectivesMaterial);
+					recipeContexts[i].SetValue(string.Concat(Constants.Variables.Adjectives, ":qualifier"), sAdjectivesQualifier);
+				}
 			}
 
 			// Choose noun
 			var nouns = lsNouns.Where(n => n.order == 0).ToList();
 			var prefixes = lsNouns.Where(n => n.order == -1).ToList();
 			var suffixes = lsNouns.Where(n => n.order == 1).ToList();
+			var addendums = lsNouns.Where(n => n.order == 2).ToList();
 			var sNoun = SelectOne(nouns);
 			var sPrefix = SelectOne(prefixes);
 			var sSuffix = SelectOne(suffixes);
+			var sAddendum = SelectOne(addendums);
 
 			if (string.IsNullOrEmpty(sNoun) == false)
 			{
-				bool bPrefix = false;
-				bool bSuffix = false;
 				string origNoun = sNoun;
 
 				// Affixes
@@ -1127,7 +1153,6 @@ namespace Ginger
 						sNoun = string.Concat(sPrefix, sNoun);
 					else
 						sNoun = string.Concat(sPrefix, " ", sNoun);
-					bPrefix = true;
 				}
 				if (string.IsNullOrEmpty(sSuffix) == false)
 				{
@@ -1135,18 +1160,16 @@ namespace Ginger
 						sNoun = string.Concat(sNoun, sSuffix);
 					else
 						sNoun = string.Concat(sNoun, " ", sSuffix);
-					bSuffix = true;
 				}
 
 				for (int i = 0; i < recipeContexts.Length; ++i)
 				{
 					var context = recipeContexts[i];
 					context.SetValue(Constants.Variables.Noun, sNoun);
-					context.SetValue(string.Concat(Constants.Variables.Noun, ":noaffix"), origNoun);
-					if (bPrefix)
-						context.SetFlag(string.Concat(Constants.Variables.Noun, ":prefix"));
-					if (bSuffix)
-						context.SetFlag(string.Concat(Constants.Variables.Noun, ":suffix"));
+					context.SetValue(Constants.Variables.Addendum, sAddendum);
+					context.SetValue(Constants.Variables.NoAffix, origNoun);
+					context.SetValue(Constants.Variables.Prefix, sPrefix);
+					context.SetValue(Constants.Variables.Suffix, sSuffix);
 				}
 			}
 
