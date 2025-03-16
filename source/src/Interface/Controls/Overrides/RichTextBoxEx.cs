@@ -689,13 +689,13 @@ namespace Ginger
 			// Dialogue "..."
 			if (_syntaxFlags.Contains(SyntaxFlags.Dialogue))
 			{
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"(?<![\d""])""([^""\\]*(\\.)?)*"""), new SyntaxStyle(colorDialogue), 0);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"(?<!\d)""(?:[^""\\]|\\.)*"""), new SyntaxStyle(colorDialogue), 0);
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"\u201C[^\x22]*\u201D"), new SyntaxStyle(colorDialogue), 0);
 			}
 
 			// Narration *...*
 			if (_syntaxFlags.Contains(SyntaxFlags.Actions))
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"\*+([^\*\\]*(\\.)?)*\*+"), new SyntaxStyle(colorNarration, false, false), 0);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\*+(?:[^*\\]|\\.)*\*+"), new SyntaxStyle(colorNarration, false, false), 0);
 
 			if (_syntaxFlags.Contains(SyntaxFlags.Numbers))
 			{
