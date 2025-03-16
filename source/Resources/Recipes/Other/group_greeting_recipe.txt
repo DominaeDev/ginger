@@ -3,11 +3,12 @@
 	<Title>Greeting (Groups only)</Title>
 	<Description>
 		Greeting for group chats.
+		(Used for compatibility with the CCV3 format.)
 	</Description>
 	<Color>FloralWhite</Color>
 	<Order>102</Order>
 	<Multiple>True</Multiple>
-	<Flags>__group-greeting, __component, __internal, __ccv3</Flags>
+	<Flags>__group-greeting, __component, __internal, __ccv3, __hidden</Flags>
 	
 	<!-- Parameters -->
 	<Text id="greeting" style="component">

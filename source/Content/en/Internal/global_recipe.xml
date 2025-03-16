@@ -28,7 +28,7 @@
 	<Node path="system/important" style="line" mode="exclude" order="-0" rule="__tavern or __author-note"/>
 	<Node path="system/important/output" mode="exclude" style="default"/>
 	
-	<Node path="persona/header" order="0" rule="multi-character">
+	<Node path="persona/header" order="0" rule="multi-character and not (__bake or __snippet)">
 		# {char}:
 	</Node>
 	
@@ -57,7 +57,7 @@
 		Description:  
 		{inner}
 	</Node>
-	<Node path="persona/description" style="block" order="600" rule="multi-character">
+	<Node path="persona/description" style="block" order="600" rule="multi-character and not (__bake or __snippet)">
 		[char's] description:  
 		{inner}
 	</Node>
@@ -68,7 +68,7 @@
 		Appearance:  
 		{inner}
 	</Node>
-	<Node path="persona/appearance" style="block" order="650" rule="multi-character">
+	<Node path="persona/appearance" style="block" order="650" rule="multi-character and not (__bake or __snippet)">
 		[char's] appearance:  
 		{inner}
 	</Node>
@@ -79,7 +79,7 @@
 		Sexuality:  
 		{inner}
 	</Node>
-	<Node path="persona/sexuality" style="block" order="700" rule="multi-character">
+	<Node path="persona/sexuality" style="block" order="700" rule="multi-character and not (__bake or __snippet)">
 		[char's] sexuality:  
 		{inner}
 	</Node>
@@ -90,7 +90,7 @@
 		Relationships:  
 		{inner}
 	</Node>
-	<Node path="persona/relationship" style="block" order="750" rule="multi-character">
+	<Node path="persona/relationship" style="block" order="750" rule="multi-character and not (__bake or __snippet)">
 		[char's] relationships:  
 		{inner}
 	</Node>

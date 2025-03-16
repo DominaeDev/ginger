@@ -2031,7 +2031,7 @@ namespace Ginger
 			try
 			{
 				var darken = new DarkenImage((Bitmap)image);
-				image = darken.Process(0.30);
+				image = darken.Process(0.20);
 				return true;
 			}
 			catch
