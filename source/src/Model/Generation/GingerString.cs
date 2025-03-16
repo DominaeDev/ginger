@@ -156,10 +156,6 @@ namespace Ginger
 		{
 			StringBuilder sb = new StringBuilder(value);
 
-			var names = new HashSet<string>(
-				Current.Characters.Select(c => c.spokenName.ToLowerInvariant())
-				.Where(s => string.IsNullOrWhiteSpace(s) == false));
-			
 			sb.Replace(CharacterMarker, BackyardCharacterMarker, true);
 			sb.Replace(UserMarker, BackyardUserMarker, true);
 			sb.Replace(OriginalMarker, BackyardOriginalMarker, true);
@@ -194,8 +190,7 @@ namespace Ginger
 			string text = ToFaraday();
 
 			var names = new HashSet<string>(
-				Current.Characters.Select(c => c.spokenName.ToLowerInvariant())
-				.Where(s => string.IsNullOrWhiteSpace(s) == false));
+				Current.Characters.Select(c => c.spokenName.ToLowerInvariant()));
 
 			var paragraphs = text.Split(new string[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Where(s => s.Length > 0).ToArray();
 			for (int i = 0; i < paragraphs.Length; ++i)
@@ -754,10 +749,14 @@ namespace Ginger
 
 		private static void UnescapeBackslash(StringBuilder sb)
 		{
-			sb.Replace("\\*", "*");
-			sb.Replace("\\\"", "\"");
-			sb.Replace("\\\\", "\\");
-			
+			char[] escapedCharacters = new char[] {
+				'\\', '*', '\"', '(', ')', '`', '\u201C', '\u201D', '\u300C', '\u300D'
+			};
+			for (int i = 0; i < sb.Length - 1; ++i)
+			{
+				if (sb[i] == '\\' && escapedCharacters.Contains(sb[i + 1]))
+					sb.Remove(i, 1);
+			}			
 		}
 
 	}

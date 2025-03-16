@@ -406,6 +406,8 @@ namespace Ginger
 			int pos = 0;
 			SkipSpans(ref pos, spans);
 			int pos_next = text.IndexOf(chBegin, pos);
+			while (pos_next > 0 && text[pos_next - 1] == '\\') // Escape
+				pos_next = text.IndexOf(chBegin, pos_next + 1);
 			while (pos_next != -1)
 			{
 				if (SkipSpans(ref pos_next, spans))
@@ -415,6 +417,8 @@ namespace Ginger
 				}
 
 				int pos_end = text.IndexOf(chEnd, pos_next + 1);
+				while (pos_end > 0 && text[pos_end - 1] == '\\') // Escape
+					pos_end = text.IndexOf(chEnd, pos_end + 1);
 				if (pos_end != -1)
 				{
 					if (spans.CheckSpan(pos_next, pos_end)) // Not overlapping
