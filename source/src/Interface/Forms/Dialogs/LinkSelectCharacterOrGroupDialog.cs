@@ -161,6 +161,7 @@ namespace Ginger
 						return c.isCharacter
 							&& (c.displayName.ContainsPhrase(_filterString)
 								|| c.name.ContainsPhrase(_filterString)
+								|| c.creator.ContainsPhrase(_filterString)
 								|| c.persona.ContainsWholeWord(_filterString));
 					})
 					.Select(c => c.instanceId));

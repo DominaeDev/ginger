@@ -263,12 +263,6 @@
     <Compile Include="src\Interface\Forms\Dialogs\LinkSelectMultipleCharactersOrGroupsDialog.Designer.cs">
       <DependentUpon>LinkSelectMultipleCharactersOrGroupsDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectMultipleGroupsDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectMultipleGroupsDialog.Designer.cs">
-      <DependentUpon>LinkSelectMultipleGroupsDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\ProgressBarDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -280,12 +274,6 @@
     </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\FileFormatDialog.Designer.cs">
       <DependentUpon>FileFormatDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectMultipleCharactersDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectMultipleCharactersDialog.Designer.cs">
-      <DependentUpon>LinkSelectMultipleCharactersDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\VariablesDialog.cs">
       <SubType>Form</SubType>
@@ -305,18 +293,6 @@
     </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.Designer.cs">
       <DependentUpon>LinkEditChatDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectGroupDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectGroupDialog.Designer.cs">
-      <DependentUpon>LinkSelectGroupDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectCharacterDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="src\Interface\Forms\Dialogs\LinkSelectCharacterDialog.Designer.cs">
-      <DependentUpon>LinkSelectCharacterDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\AssetViewDialog.cs">
       <SubType>Form</SubType>
@@ -791,9 +767,6 @@
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectMultipleCharactersOrGroupsDialog.resx">
       <DependentUpon>LinkSelectMultipleCharactersOrGroupsDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectMultipleGroupsDialog.resx">
-      <DependentUpon>LinkSelectMultipleGroupsDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\ProgressBarDialog.resx">
       <DependentUpon>ProgressBarDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -802,15 +775,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkEditChatDialog.resx">
       <DependentUpon>LinkEditChatDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectMultipleCharactersDialog.resx">
-      <DependentUpon>LinkSelectMultipleCharactersDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectGroupDialog.resx">
-      <DependentUpon>LinkSelectGroupDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="src\Interface\Forms\Dialogs\LinkSelectCharacterDialog.resx">
-      <DependentUpon>LinkSelectCharacterDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\AssetViewDialog.resx">
       <DependentUpon>AssetViewDialog.cs</DependentUpon>
