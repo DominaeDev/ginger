@@ -245,6 +245,7 @@ namespace Ginger
 			sidePanel.RemoveBackgroundImage += OnRemoveBackgroundImage;
 			sidePanel.BackgroundFromPortrait += OnBackgroundFromPortrait;
 			sidePanel.BlurBackgroundImage += OnBlurBackgroundImage;
+			sidePanel.DarkenBackgroundImage += OnDarkenBackgroundImage;
 
 			SetToolTip(btnAdd_Model, "Bot instructions");
 			SetToolTip(btnAdd_Character, "Character");
@@ -650,6 +651,30 @@ namespace Ginger
 
 				Undo.Push(Undo.Kind.Parameter, "Blur background image");
 				SetStatusBarMessage("Blurred background image", Constants.StatusBarMessageInterval);
+			}
+		}
+
+		private void OnDarkenBackgroundImage(object sender, EventArgs e)
+		{
+			var asset = Current.Card.assets.FirstOrDefault(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
+			if (asset == null)
+				return;
+
+			Image image;
+			if (Utility.LoadImageFromMemory(asset.data.bytes, out image) == false)
+				return;
+
+			if (Utility.DarkenImage(ref image) == false)
+				return;
+
+			AssetFile tmp;
+			if (Current.Card.assets.AddBackground(image, out tmp))
+			{
+				Current.Card.assets.Remove(asset);
+				NotifyAssetsChanged();
+
+				Undo.Push(Undo.Kind.Parameter, "Darken background image");
+				SetStatusBarMessage("Darken background image", Constants.StatusBarMessageInterval);
 			}
 		}
 

@@ -2025,5 +2025,19 @@ namespace Ginger
 				return false;
 			}
 		}
+
+		public static bool DarkenImage(ref Image image)
+		{
+			try
+			{
+				var darken = new DarkenImage((Bitmap)image);
+				image = darken.Process(0.30);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
 	}
 }
