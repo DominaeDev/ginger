@@ -18,6 +18,7 @@ namespace Ginger
 		public event EventHandler PasteBackgroundImage;
 		public event EventHandler RemoveBackgroundImage;
 		public event EventHandler BlurBackgroundImage;
+		public event EventHandler DarkenBackgroundImage;
 
 		public class EditNameEventArgs : EventArgs
 		{
@@ -1169,9 +1170,14 @@ namespace Ginger
 						Enabled = false 
 					});
 				}
-
+				menu.Items.Add(new ToolStripSeparator()); // ----
 				menu.Items.Add(new ToolStripMenuItem("Blur image", null, (s, e) => {
 					BlurBackgroundImage?.Invoke(this, EventArgs.Empty);
+				}) {
+					Enabled = bHasBackground,
+				});
+				menu.Items.Add(new ToolStripMenuItem("Darken image", null, (s, e) => {
+					DarkenBackgroundImage?.Invoke(this, EventArgs.Empty);
 				}) {
 					Enabled = bHasBackground,
 				});

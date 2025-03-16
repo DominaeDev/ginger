@@ -540,6 +540,7 @@
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProvider.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleNoneProvider.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleRoundedProvider.cs" />
+    <Compile Include="src\Utility\DarkenImage.cs" />
     <Compile Include="src\Utility\ThirdParty\Superfastblur\GaussianBlur.cs" />
     <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\acTLChunk.cs" />
     <Compile Include="src\Utility\ThirdParty\WebPWrapper\WebPWrapper.cs" />

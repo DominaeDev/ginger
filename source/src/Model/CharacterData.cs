@@ -89,6 +89,9 @@ namespace Ginger
 					.Except(new CharacterData[] { this })
 					.Select(c => c.spokenName)
 					.Where(s => string.IsNullOrEmpty(s) == false)));
+			context.SetValue("actor:count", Current.Characters.Count);
+			for (int i = 0; i < Current.Characters.Count; ++i)
+				context.SetValue($"actor:{i + 1}", GingerString.MakeInternalCharacterMarker(i));
 
 			// Gender
 			if (string.IsNullOrWhiteSpace(this.gender) == false)
@@ -133,7 +136,7 @@ namespace Ginger
 			{
 				if (options.Contains(Generator.Option.Group))
 				{
-					context.SetFlag("group");
+					context.SetFlag("group-chat");
 					context.SetFlag("__group");
 				}
 				else

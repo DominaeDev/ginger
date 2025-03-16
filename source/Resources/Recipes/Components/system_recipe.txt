@@ -1,6 +1,6 @@
 <Ginger id="__system">
 	<Name>Model instructions</Name>
-	<Order>100</Order>
+	<Order>9</Order>
 	<Color>#bfd0db</Color>
 	<Multiple>True</Multiple>
 	<Flags>system-prompt, model, __system, __component, __formatting, __internal</Flags>

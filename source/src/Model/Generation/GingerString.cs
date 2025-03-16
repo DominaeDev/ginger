@@ -20,7 +20,7 @@ namespace Ginger
 		public static readonly string ContinueMarker = "{continue}"; // Greetings
 
 		// Markers (internal representation)
-		public static readonly string InternalCharacterMarker = "<##CHAR##>";
+		public static readonly string InternalCharacterMarker = "<##CHAR##>"; // Current character
 		public static readonly string InternalUserMarker = "<##USER##>";
 		public static readonly string InternalOriginalMarker = "<##ORIGINAL##>";
 		public static readonly string InternalNameMarker = "<##NAME##>";
@@ -375,41 +375,25 @@ namespace Ginger
 			if (value == null)
 				return new GingerString(value);
 
-			var sb = new StringBuilder(value);
-
 			string[] characterNames = Current.Characters.Select(c => c.spokenName).ToArray();
-			bool bUseCharacterPlaceholder = (characterIndex == 0 && Current.Characters.Count == 1) || options.Contains(Generator.Option.Single);
-			bool bGroup = options.Contains(Generator.Option.Group);
 
-			if (bGroup)
-			{
-				sb.Replace(InternalCharacterMarker, MakeInternalCharacterMarker(characterIndex));
-			}
-			else
-			{
-				if (bUseCharacterPlaceholder)
-				{
-					sb.Replace(InternalCharacterMarker, CharacterMarker);
-					sb.Replace(MakeInternalCharacterMarker(characterIndex), CharacterMarker);
-				}
-				else if (characterIndex >= 0 && characterIndex < characterNames.Length)
-				{
-					sb.Replace(MakeInternalCharacterMarker(0), CharacterMarker);
-					sb.Replace(InternalCharacterMarker, characterNames[characterIndex]);
-				}
-				else
-					sb.Replace(InternalCharacterMarker, CharacterMarker); // Error
-			}
-
+			var sb = new StringBuilder(value);
+			sb.Replace(InternalCharacterMarker, MakeInternalCharacterMarker(characterIndex));
 			sb.Replace(InternalUserMarker, UserMarker);
 			sb.Replace(InternalOriginalMarker, OriginalMarker);
 			sb.Replace(InternalNameMarker, NameMarker);
 			sb.Replace(InternalContinueMarker, ContinueMarker);
 
-			if (!bGroup)
+			// Convert internal markers
+			if (options.ContainsAny(Generator.Option.Single | Generator.Option.All)) // Solo
 			{
-				for (int i = 0; i < characterNames.Length; ++i)
+				sb.Replace(MakeInternalCharacterMarker(0), CharacterMarker);
+				for (int i = 1; i < characterNames.Length; ++i)
 					sb.Replace(MakeInternalCharacterMarker(i), characterNames[i]);
+			} 
+			else if (options.ContainsAny(Generator.Option.Group)) // Group
+			{
+				// Do nothing
 			}
 
 			string text = Text.Process(sb.ToString(), evalOption)
@@ -477,7 +461,7 @@ namespace Ginger
 				sb = new StringBuilder(ToFaraday());
 				string[] characterNames = Current.Characters.Select(c => c.spokenName).ToArray();
 				for (int i = 0; i < characterNames.Length; ++i)
-					sb.Replace(MakeInternalCharacterMarker(i), characterNames[i]);
+					sb.Replace(MakeInternalCharacterMarker(i), string.Concat("{", characterNames[i], "}"));
 				break;
 			case AppSettings.Settings.OutputPreviewFormat.PlainText:
 				sb = new StringBuilder(ToGinger());
@@ -488,7 +472,7 @@ namespace Ginger
 				sb.Replace(NameMarker, Current.Name, true);
 				break;
 			}
-			
+
 			sb.Trim();
 			sb.ConvertLinebreaks(Linebreak.CRLF);
 			return sb.ToString();
