@@ -71,6 +71,12 @@ namespace Ginger
 					.Except(new CharacterData[] { Current.MainCharacter })
 					.Select(c => c.spokenName)
 					.Where(s => string.IsNullOrEmpty(s) == false)));
+			context.SetValue("others",
+				string.Join(Text.Delimiter,
+				Current.Characters
+					.Except(new CharacterData[] { this })
+					.Select(c => c.spokenName)
+					.Where(s => string.IsNullOrEmpty(s) == false)));
 
 			// Gender
 			if (string.IsNullOrWhiteSpace(this.gender) == false)
