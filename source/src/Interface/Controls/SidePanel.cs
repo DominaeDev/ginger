@@ -271,7 +271,7 @@ namespace Ginger
 			
 			cbPruneScenario.Checked = Current.Card.extraFlags.Contains(CardData.Flag.PruneScenario);
 
-			cbStyleGrammar.Enabled = Current.Card.textStyle > CardData.TextStyle.None;
+			cbStyleGrammar.Enabled = Current.Card.textStyle > CardData.TextStyle.None && !Current.Card.extraFlags.Contains(CardData.Flag.OmitGrammar);
 			cbStyleGrammar.Checked = Current.Card.useStyleGrammar;
 
 			_bIgnoreEvents = false;
@@ -1198,7 +1198,7 @@ namespace Ginger
 
 		private void RefreshStyleGrammar(Generator.Output output)
 		{
-			bool bEnabled = Current.Card.textStyle > CardData.TextStyle.None;
+			bool bEnabled = Current.Card.textStyle > CardData.TextStyle.None && !Current.Card.extraFlags.Contains(CardData.Flag.OmitGrammar);
 			if (output.context != null)
 			{
 				bEnabled &= output.grammar.IsNullOrEmpty()

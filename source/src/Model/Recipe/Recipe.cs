@@ -503,6 +503,18 @@ namespace Ginger
 				nounNode = nounNode.GetNextSibling();
 			}
 
+			var addendumNode = xmlNode.GetFirstElement("Addendum");
+			while (addendumNode != null)
+			{
+				var addendum = new CharacterNoun();
+				if (addendum.LoadFromXml(addendumNode))
+				{
+					addendum.affix = CharacterNoun.Affix.Addendum;
+					nouns.Add(addendum);
+				}
+				addendumNode = addendumNode.GetNextSibling();
+			}
+
 			uid = GetHashCode();
 			return true;
 		}

@@ -689,13 +689,13 @@ namespace Ginger
 			// Dialogue "..."
 			if (_syntaxFlags.Contains(SyntaxFlags.Dialogue))
 			{
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"(?<![\d""])""([^""\\]*(\\.)?)*"""), new SyntaxStyle(colorDialogue), 0);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"(?<!\d)""(?:[^""\\]|\\.)*"""), new SyntaxStyle(colorDialogue), 0);
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"\u201C[^\x22]*\u201D"), new SyntaxStyle(colorDialogue), 0);
 			}
 
 			// Narration *...*
 			if (_syntaxFlags.Contains(SyntaxFlags.Actions))
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"\*+([^\*\\]*(\\.)?)*\*+"), new SyntaxStyle(colorNarration, false, false), 0);
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\*+(?:[^*\\]|\\.)*\*+"), new SyntaxStyle(colorNarration, false, false), 0);
 
 			if (_syntaxFlags.Contains(SyntaxFlags.Numbers))
 			{
@@ -731,7 +731,7 @@ namespace Ginger
 				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{\bcharacter\b\}"), SyntaxStyle.Underlined(colorError), 4);
 
 				// character
-				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{(?i)\b(char|user|card|name|original|gender|unknown|they'll|they're|they've|they'd|they|them|theirs|their|themselves|he'll|he's|he's|he'd|he|him|his|his|himself|she'll|she's|she's|she'd|she|her|hers|her|herself|is|are|isn't|aren't|has|have|hasn't|haven't|was|were|wasn't|weren't|does|do|doesn't|don't|s|y|ies|es)\b\}"),
+				syntaxHighlighter.AddPattern(new PatternDefinition(@"\{(?i)\b(char|user|card|name|gender|names|actors|others|everyone|original|unknown|they'll|they're|they've|they'd|they|them|theirs|their|themselves|he'll|he's|he's|he'd|he|him|his|his|himself|she'll|she's|she's|she'd|she|her|hers|her|herself|is|are|isn't|aren't|has|have|hasn't|haven't|was|were|wasn't|weren't|does|do|doesn't|don't|s|y|ies|es)\b\}"),
 					new SyntaxStyle(colorCommand), 3);
 
 				// user

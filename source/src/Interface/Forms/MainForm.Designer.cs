@@ -192,6 +192,7 @@ namespace Ginger {
 			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
 			this.saveAsNewPartyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.checkForUpdateMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -244,7 +245,7 @@ namespace Ginger {
 			// toolStripMenuItem6
 			// 
 			toolStripMenuItem6.Name = "toolStripMenuItem6";
-			toolStripMenuItem6.Size = new System.Drawing.Size(163, 6);
+			toolStripMenuItem6.Size = new System.Drawing.Size(177, 6);
 			// 
 			// linkMenuItem
 			// 
@@ -1676,6 +1677,7 @@ namespace Ginger {
 			this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.viewHelpToolStripMenuItem,
             this.visitGitHubPageMenuItem,
+            this.checkForUpdateMenuItem,
             toolStripMenuItem6,
             this.aboutGingerToolStripMenuItem});
 			this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
@@ -1687,21 +1689,21 @@ namespace Ginger {
 			this.viewHelpToolStripMenuItem.Name = "viewHelpToolStripMenuItem";
 			this.viewHelpToolStripMenuItem.ShortcutKeyDisplayString = "F1";
 			this.viewHelpToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-			this.viewHelpToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+			this.viewHelpToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.viewHelpToolStripMenuItem.Text = "Ginger &Help";
 			this.viewHelpToolStripMenuItem.Click += new System.EventHandler(this.viewHelpToolStripMenuItem_Click);
 			// 
 			// visitGitHubPageMenuItem
 			// 
 			this.visitGitHubPageMenuItem.Name = "visitGitHubPageMenuItem";
-			this.visitGitHubPageMenuItem.Size = new System.Drawing.Size(166, 22);
+			this.visitGitHubPageMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.visitGitHubPageMenuItem.Text = "Visit GitHub page";
 			this.visitGitHubPageMenuItem.Click += new System.EventHandler(this.visitGitHubPageMenuItem_Click);
 			// 
 			// aboutGingerToolStripMenuItem
 			// 
 			this.aboutGingerToolStripMenuItem.Name = "aboutGingerToolStripMenuItem";
-			this.aboutGingerToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+			this.aboutGingerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.aboutGingerToolStripMenuItem.Text = "About Ginger";
 			this.aboutGingerToolStripMenuItem.Click += new System.EventHandler(this.aboutGingerToolStripMenuItem_Click);
 			// 
@@ -1782,6 +1784,13 @@ namespace Ginger {
 			this.saveAsNewPartyMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.saveAsNewPartyMenuItem.Text = "Save as new party";
 			this.saveAsNewPartyMenuItem.Click += new System.EventHandler(this.saveAsNewPartyMenuItem_Click);
+			//
+			// checkForUpdateMenuItem
+			// 
+			this.checkForUpdateMenuItem.Name = "checkForUpdateMenuItem";
+			this.checkForUpdateMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.checkForUpdateMenuItem.Text = "Check for update...";
+			this.checkForUpdateMenuItem.Click += new System.EventHandler(this.checkForUpdateMenuItem_Click);
 			// 
 			// MainForm
 			// 
@@ -1986,6 +1995,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem saveMultipleMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem saveAsNewPartyMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem resetModelSettingsMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem checkForUpdateMenuItem;
 	}
 }
 

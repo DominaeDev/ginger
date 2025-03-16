@@ -2955,6 +2955,28 @@ namespace Ginger
 			ResetBackyardModelSettings();
 		}
 
+		private void checkForUpdateMenuItem_Click(object sender, EventArgs e)
+		{
+			CheckLatestRelease.ReleaseInfo releaseInfo;
+			CheckLatestRelease.GetLatestRelease((info) => {
+				if (info.success == false)
+				{
+					MessageBox.Show(Resources.error_check_update, Resources.cap_check_update, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+				else if (info.version > VersionNumber.Application)
+				{
+					if (MessageBox.Show(Resources.msg_update_found, Resources.cap_check_update, MessageBoxButtons.OKCancel, MessageBoxIcon.Information)
+						== DialogResult.OK)
+					{
+						Utility.OpenUrl(info.url);
+					}
+				}
+				else
+				{
+					MessageBox.Show(Resources.msg_latest_version, Resources.cap_check_update, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+			});
+		}
 	}
 
 	public interface IIdleHandler

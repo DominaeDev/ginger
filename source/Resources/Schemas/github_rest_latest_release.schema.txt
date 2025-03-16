@@ -1,0 +1,1 @@
+{"type":"object","properties":{"name":{"required":true,"type":"string"},"tag_name":{"required":true,"type":"string"},"html_url":{"required":true,"type":"string"}}}

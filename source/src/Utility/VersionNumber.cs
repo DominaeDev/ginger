@@ -56,6 +56,25 @@ namespace Ginger
 			};
 		}
 
+		public static VersionNumber ParseInside(string text)
+		{
+			char[] digits = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
+			if (string.IsNullOrEmpty(text))
+				return Zero;
+
+			int firstDigit = text.IndexOfAny(digits, 0);
+			if (firstDigit == -1)
+				return Zero;
+
+			string version;
+			int lastDigit = text.FindIndex(firstDigit, c => !(c == '.' || char.IsDigit(c)));
+			if (lastDigit != -1)
+				return Parse(text.Substring(firstDigit, lastDigit - firstDigit));
+			else
+				return Parse(text.Substring(firstDigit));
+		}
+
 		public static bool TryParse(string value, out VersionNumber version)
 		{
 			int iMajor = 0;
@@ -221,6 +240,9 @@ namespace Ginger
 		}
 
 		public static VersionNumber Zero = new VersionNumber(0, 0, 0);
+
+		public static VersionNumber Application = Parse(AppVersion.ProductVersion);
+		
 	}
 
 }

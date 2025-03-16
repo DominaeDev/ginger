@@ -129,8 +129,12 @@ namespace Ginger
 
 		public static class Variables
 		{
-			public static readonly string Adjectives = "adjectives";
-			public static readonly string Noun = "noun";
+			public static readonly string Adjectives	= "summary:adjectives";
+			public static readonly string Noun			= "summary:noun";
+			public static readonly string Addendum		= "summary:addendum";
+			public static readonly string NoAffix		= "summary:noun:noaffix";
+			public static readonly string Prefix		= "summary:noun:prefix";
+			public static readonly string Suffix		= "summary:noun:suffix";
 			
 			public static readonly string CardName = "card"; //! todo
 			public static readonly string CharacterName = "name";

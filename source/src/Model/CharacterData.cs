@@ -62,6 +62,13 @@ namespace Ginger
 		public Context GetContext(ContextType type, Generator.Option options = Generator.Option.None, bool includeInactiveRecipes = false)
 		{
 			Context context = Context.CreateEmpty();
+			
+			// Application version
+			context.SetValue("__version", VersionNumber.Application.ToFullString());
+			context.SetValue("__version_major", VersionNumber.Application.Major);
+			context.SetValue("__version_minor", VersionNumber.Application.Minor);
+			context.SetValue("__version_build", VersionNumber.Application.Build);
+
 			// Name(s)
 			context.SetValue("card", Utility.FirstNonEmpty(Current.Card.name, Current.Name, Constants.DefaultCharacterName));
 			context.SetValue("name", Utility.FirstNonEmpty(this.spokenName, Current.Card.name, Constants.DefaultCharacterName));
@@ -74,6 +81,12 @@ namespace Ginger
 				string.Join(Text.Delimiter,
 				Current.Characters
 					.Except(new CharacterData[] { Current.MainCharacter })
+					.Select(c => c.spokenName)
+					.Where(s => string.IsNullOrEmpty(s) == false)));
+			context.SetValue("others",
+				string.Join(Text.Delimiter,
+				Current.Characters
+					.Except(new CharacterData[] { this })
 					.Select(c => c.spokenName)
 					.Where(s => string.IsNullOrEmpty(s) == false)));
 

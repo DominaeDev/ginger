@@ -374,6 +374,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Check for update.
+        /// </summary>
+        internal static string cap_check_update {
+            get {
+                return ResourceManager.GetString("cap_check_update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Confirm.
         /// </summary>
         internal static string cap_confirm {
@@ -1596,6 +1605,17 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to connect to GitHub.
+        ///
+        ///Make sure you have an active internet connection..
+        /// </summary>
+        internal static string error_check_update {
+            get {
+                return ResourceManager.GetString("error_check_update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Disk is full..
         /// </summary>
         internal static string error_disk_full {
@@ -2467,6 +2487,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {&quot;type&quot;:&quot;object&quot;,&quot;properties&quot;:{&quot;name&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;tag_name&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;html_url&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;}}}.
+        /// </summary>
+        internal static string github_rest_latest_release_schema {
+            get {
+                return ResourceManager.GetString("github_rest_latest_release_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__grammar&quot;&gt;
         ///	&lt;Name&gt;Grammar&lt;/Name&gt;
         ///	&lt;Description&gt;
@@ -2494,21 +2523,23 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_chat&quot;&gt;
-        ///	&lt;Grammar&gt;&lt;![CDATA[
-        ///		root ::= patterns &quot;\n&quot;
-        ///		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
-        ///		pa ::= action &quot; &quot; dialogue
-        ///		pb ::= dialogue &quot; &quot; action
-        ///		pc ::= action &quot; &quot; dialogue &quot; &quot; action
-        ///		pd ::= dialogue &quot; &quot; action &quot; &quot; dialogue
-        ///		pe ::= dialogue &quot; &quot; action &quot; &quot; dialogue &quot; &quot; action
-        ///		pf ::= action &quot; &quot; dialogue &quot; &quot; action &quot; &quot; dialogue
-        ///		dialogue ::= [[^&lt;\n*#\&quot;]]+
-        ///		action ::= &quot;**&quot; [[a-z .,&apos;?!:;0-9-]]+ &quot;**&quot;
-        ///	]]&gt;&lt;/Grammar&gt;
+        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_bold&quot;&gt;
+        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
+        ///root ::= pattern stop
+        ///pattern ::= pa | pb
+        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)
+        ///delim ::= (&quot; &quot;|&quot;\n&quot;)
+        ///text ::= [[^&lt;#\n*&quot;]]+
+        ///dialogue ::= text
+        ///action ::= &quot;*&quot;{{2}} text &quot;*&quot;{{2}}
+        ///pa ::= action (delim pattern)?
+        ///pb ::= dialogue (delim pattern)?
+        ///]]&gt;&lt;/Grammar&gt;
         ///
-        ///	&lt;Name&gt;__style_gr [rest of string was truncated]&quot;;.
+        ///	&lt;Name&gt;__style_grammar&lt;/Name&gt;
+        ///	&lt;Flags&gt;__nobake, __internal, __hidden, __grammar, __style-grammar&lt;/Flags&gt;
+        ///&lt;/Ginger&gt;
+        ///.
         /// </summary>
         internal static string grammar_recipe_bold {
             get {
@@ -2517,21 +2548,23 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_chat&quot;&gt;
-        ///	&lt;Grammar&gt;&lt;![CDATA[
-        ///		root ::= patterns &quot;\n&quot;
-        ///		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
-        ///		pa ::= action &quot; &quot; dialogue
-        ///		pb ::= dialogue &quot; &quot; action
-        ///		pc ::= action &quot; &quot; dialogue &quot; &quot; action
-        ///		pd ::= dialogue &quot; &quot; action &quot; &quot; dialogue
-        ///		pe ::= dialogue &quot; &quot; action &quot; &quot; dialogue &quot; &quot; action
-        ///		pf ::= action &quot; &quot; dialogue &quot; &quot; action &quot; &quot; dialogue
-        ///		dialogue ::= [[^&lt;\n*#\&quot;]]+
-        ///		action ::= &quot;(&quot; [[^ *]][[a-z .,&apos;?!:;0-9-]]+[[^ *]] &quot;)&quot;
-        ///	]]&gt;&lt;/Grammar&gt;
+        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_brackets&quot;&gt;
+        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
+        ///root ::= pattern stop
+        ///pattern ::= pa | pb
+        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)
+        ///delim ::= (&quot; &quot;|&quot;\n&quot;)
+        ///text ::= [[^&lt;#\n*&quot;()]]+
+        ///dialogue ::= text
+        ///action ::= &quot;(&quot; text &quot;)&quot;
+        ///pa ::= action (delim pattern)?
+        ///pb ::= dialogue (delim pattern)?
+        ///]]&gt;&lt;/Grammar&gt;
         ///
-        ///	&lt;Nam [rest of string was truncated]&quot;;.
+        ///	&lt;Name&gt;__style_grammar&lt;/Name&gt;
+        ///	&lt;Flags&gt;__nobake, __internal, __hidden, __grammar, __style-grammar&lt;/Flags&gt;
+        ///&lt;/Ginger&gt;
+        ///.
         /// </summary>
         internal static string grammar_recipe_brackets {
             get {
@@ -2541,19 +2574,22 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_chat&quot;&gt;
-        ///	&lt;Grammar&gt;&lt;![CDATA[
-        ///		root ::= patterns &quot;\n&quot;
-        ///		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
-        ///		pa ::= action &quot; &quot; dialogue
-        ///		pb ::= dialogue &quot; &quot; action
-        ///		pc ::= action &quot; &quot; dialogue &quot; &quot; action
-        ///		pd ::= dialogue &quot; &quot; action &quot; &quot; dialogue
-        ///		pe ::= dialogue &quot; &quot; action &quot; &quot; dialogue &quot; &quot; action
-        ///		pf ::= action &quot; &quot; dialogue &quot; &quot; action &quot; &quot; dialogue
-        ///		dialogue ::= [[^&lt;\n*#\&quot;]]+
-        ///		action ::= &quot;*&quot; [[a-z .,&apos;?!:;0-9-]]+ &quot;*&quot;
-        ///	]]&gt;&lt;/Grammar&gt;
-        ///	&lt;Name&gt;__style_gramma [rest of string was truncated]&quot;;.
+        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
+        ///root ::= pattern stop
+        ///pattern ::= pa | pb
+        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;|&quot;\n&quot;)
+        ///delim ::= &quot; &quot;
+        ///text ::= [[^&lt;#\n*&quot;]]+
+        ///dialogue ::= text
+        ///action ::= &quot;*&quot; text &quot;*&quot;
+        ///pa ::= action (delim pattern)?
+        ///pb ::= dialogue (delim pattern)?
+        ///]]&gt;&lt;/Grammar&gt;
+        ///	
+        ///	&lt;Name&gt;__style_grammar&lt;/Name&gt;
+        ///	&lt;Flags&gt;__nobake, __internal, __hidden, __grammar, __style-grammar&lt;/Flags&gt;
+        ///&lt;/Ginger&gt;
+        ///.
         /// </summary>
         internal static string grammar_recipe_chat {
             get {
@@ -2562,21 +2598,23 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_chat&quot;&gt;
-        ///	&lt;Grammar&gt;&lt;![CDATA[
-        ///		root ::= patterns &quot;\n&quot;
-        ///		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
-        ///		pa ::= action &quot; &quot; dialogue
-        ///		pb ::= dialogue &quot; &quot; action
-        ///		pc ::= action &quot; &quot; dialogue &quot; &quot; action
-        ///		pd ::= dialogue &quot; &quot; action &quot; &quot; dialogue
-        ///		pe ::= dialogue &quot; &quot; action &quot; &quot; dialogue &quot; &quot; action
-        ///		pf ::= action &quot; &quot; dialogue &quot; &quot; action &quot; &quot; dialogue
-        ///		dialogue ::= &quot;「&quot; [[^&lt;\n*#\&quot;]]+ &quot;」&quot;
-        ///		action ::= [[^&lt;\n*#\&quot;]]+
-        ///	]]&gt;&lt;/Grammar&gt;
+        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_cjk&quot;&gt;
+        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
+        ///root ::= pattern stop
+        ///pattern ::= pa | pb
+        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)
+        ///delim ::= (&quot; &quot;|&quot;\n&quot;)
+        ///text ::= [[^&lt;#\n*&quot;「」]]+
+        ///dialogue ::= &quot;「&quot; text &quot;」&quot;
+        ///action ::= text
+        ///pa ::= action (delim pattern)?
+        ///pb ::= dialogue (delim pattern)?
+        ///]]&gt;&lt;/Grammar&gt;
         ///
-        ///	&lt;Name&gt;__style_grammar&lt;/Na [rest of string was truncated]&quot;;.
+        ///	&lt;Name&gt;__style_grammar&lt;/Name&gt;
+        ///	&lt;Flags&gt;__nobake, __internal, __hidden, __grammar, __style-grammar&lt;/Flags&gt;
+        ///&lt;/Ginger&gt;
+        ///.
         /// </summary>
         internal static string grammar_recipe_cjk {
             get {
@@ -2585,21 +2623,23 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_chat&quot;&gt;
-        ///	&lt;Grammar&gt;&lt;![CDATA[
-        ///		root ::= patterns &quot;\n&quot;
-        ///		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
-        ///		pa ::= action &quot; &quot; dialogue
-        ///		pb ::= dialogue &quot; &quot; action
-        ///		pc ::= action &quot; &quot; dialogue &quot; &quot; action
-        ///		pd ::= dialogue &quot; &quot; action &quot; &quot; dialogue
-        ///		pe ::= dialogue &quot; &quot; action &quot; &quot; dialogue &quot; &quot; action
-        ///		pf ::= action &quot; &quot; dialogue &quot; &quot; action &quot; &quot; dialogue
-        ///		dialogue ::= &quot;“&quot; [[^&lt;\n*#\&quot;]]+ &quot;”&quot;
-        ///		action ::= [[^&lt;\n*#\&quot;]]+
-        ///	]]&gt;&lt;/Grammar&gt;
+        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_decorative&quot;&gt;
+        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
+        ///root ::= pattern stop
+        ///pattern ::= pa | pb
+        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)
+        ///delim ::= (&quot; &quot;|&quot;\n&quot;)
+        ///text ::= [[^&lt;#\n*&quot;“”]]+
+        ///dialogue ::= &quot;“&quot; text &quot;”&quot;
+        ///action ::= text
+        ///pa ::= action (delim pattern)?
+        ///pb ::= dialogue (delim pattern)?
+        ///]]&gt;&lt;/Grammar&gt;
         ///
-        ///	&lt;Name&gt;__style_grammar&lt;/Na [rest of string was truncated]&quot;;.
+        ///	&lt;Name&gt;__style_grammar&lt;/Name&gt;
+        ///	&lt;Flags&gt;__nobake, __internal, __hidden, __grammar, __style-grammar&lt;/Flags&gt;
+        ///&lt;/Ginger&gt;
+        ///.
         /// </summary>
         internal static string grammar_recipe_decorative {
             get {
@@ -2608,21 +2648,23 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_chat&quot;&gt;
-        ///	&lt;Grammar&gt;&lt;![CDATA[
-        ///		root ::= patterns &quot;\n&quot;
-        ///		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
-        ///		pa ::= action &quot; &quot; dialogue
-        ///		pb ::= dialogue &quot; &quot; action
-        ///		pc ::= action &quot; &quot; dialogue &quot; &quot; action
-        ///		pd ::= dialogue &quot; &quot; action &quot; &quot; dialogue
-        ///		pe ::= dialogue &quot; &quot; action &quot; &quot; dialogue &quot; &quot; action
-        ///		pf ::= action &quot; &quot; dialogue &quot; &quot; action &quot; &quot; dialogue
-        ///		dialogue ::= &quot;\&quot;&quot; [[^&lt;\n*#\&quot;]]+ &quot;\&quot;&quot;
-        ///		action ::= &quot;*&quot; [[a-z .,&apos;?!:;0-9-]]+ &quot;*&quot;
-        ///	]]&gt;&lt;/Grammar&gt;
+        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_mixed&quot;&gt;
+        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
+        ///root ::= pattern stop
+        ///pattern ::= pa | pb
+        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)
+        ///delim ::= (&quot; &quot;|&quot;\n&quot;)
+        ///text ::= [[^&lt;#\n*&quot;]]+
+        ///dialogue ::= &quot;\&quot;&quot; text &quot;\&quot;&quot;
+        ///action ::= &quot;*&quot; text &quot;*&quot;
+        ///pa ::= action (delim pattern)?
+        ///pb ::= dialogue (delim pattern)?
+        ///]]&gt;&lt;/Grammar&gt;
         ///
-        ///	&lt;Name&gt;__ [rest of string was truncated]&quot;;.
+        ///	&lt;Name&gt;__style_grammar&lt;/Name&gt;
+        ///	&lt;Flags&gt;__nobake, __internal, __hidden, __grammar, __style-grammar&lt;/Flags&gt;
+        ///&lt;/Ginger&gt;
+        ///.
         /// </summary>
         internal static string grammar_recipe_mixed {
             get {
@@ -2631,21 +2673,23 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_chat&quot;&gt;
-        ///	&lt;Grammar&gt;&lt;![CDATA[
-        ///		root ::= patterns &quot;\n&quot;
-        ///		patterns ::= (action | dialogue | pa | pb | pc | pd | pe | pf )
-        ///		pa ::= action &quot; &quot; dialogue
-        ///		pb ::= dialogue &quot; &quot; action
-        ///		pc ::= action &quot; &quot; dialogue &quot; &quot; action
-        ///		pd ::= dialogue &quot; &quot; action &quot; &quot; dialogue
-        ///		pe ::= dialogue &quot; &quot; action &quot; &quot; dialogue &quot; &quot; action
-        ///		pf ::= action &quot; &quot; dialogue &quot; &quot; action &quot; &quot; dialogue
-        ///		dialogue ::= &quot;\&quot;&quot; [[^&lt;\n*#\&quot;]]+ &quot;\&quot;&quot;
-        ///		action ::= [[^&lt;\n*#\&quot;]]+
-        ///	]]&gt;&lt;/Grammar&gt;
+        ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_novel&quot;&gt;
+        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
+        ///root ::= pattern stop
+        ///pattern ::= pa | pb
+        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)
+        ///delim ::= (&quot; &quot;|&quot;\n&quot;)
+        ///text ::= [[^&lt;#\n*&quot;]]+
+        ///dialogue ::= &quot;\&quot;&quot; text &quot;\&quot;&quot;
+        ///action ::= text
+        ///pa ::= action (delim pattern)?
+        ///pb ::= dialogue (delim pattern)?
+        ///]]&gt;&lt;/Grammar&gt;
         ///
-        ///	&lt;Name&gt;__style_grammar&lt;/ [rest of string was truncated]&quot;;.
+        ///	&lt;Name&gt;__style_grammar&lt;/Name&gt;
+        ///	&lt;Flags&gt;__nobake, __internal, __hidden, __grammar, __style-grammar&lt;/Flags&gt;
+        ///&lt;/Ginger&gt;
+        ///.
         /// </summary>
         internal static string grammar_recipe_novel {
             get {
@@ -2978,6 +3022,15 @@ namespace Ginger.Properties {
         internal static string msg_incremental_file_exists {
             get {
                 return ResourceManager.GetString("msg_incremental_file_exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This is the latest version of Ginger..
+        /// </summary>
+        internal static string msg_latest_version {
+            get {
+                return ResourceManager.GetString("msg_latest_version", resourceCulture);
             }
         }
         
@@ -3540,6 +3593,17 @@ namespace Ginger.Properties {
         internal static string msg_save_multiple {
             get {
                 return ResourceManager.GetString("msg_save_multiple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A new version of Ginger is available.
+        ///
+        ///Click OK to view it in your web browser..
+        /// </summary>
+        internal static string msg_update_found {
+            get {
+                return ResourceManager.GetString("msg_update_found", resourceCulture);
             }
         }
         
@@ -5693,8 +5757,8 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use a grammar to enforce the text style.
-        ///(Only applicable with Backyard AI.).
+        ///   Looks up a localized string similar to Include a grammar to enforce the text style.
+        ///(Only available in Backyard AI.).
         /// </summary>
         internal static string tooltip_style_grammar {
             get {

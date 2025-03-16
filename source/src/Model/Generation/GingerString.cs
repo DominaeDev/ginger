@@ -550,6 +550,10 @@ namespace Ginger
 			new Replacement((ctx, cfg) => Text.Eval("[card]", ctx, cfg, Text.EvalOption.None), "{card}"),
 			new Replacement((ctx, cfg) => Text.Eval("[gender]", ctx, cfg, Text.EvalOption.None), "{gender}"),
 			new Replacement((ctx, cfg) => Text.Eval("[#gender]", ctx, cfg, Text.EvalOption.None), "{#gender}"),
+			new Replacement((ctx, cfg) => Text.Eval("[names.list]", ctx, cfg, Text.EvalOption.None), "{names}"),
+			new Replacement((ctx, cfg) => Text.Eval("[actors.list]", ctx, cfg, Text.EvalOption.None), "{actors}"),
+			new Replacement((ctx, cfg) => Text.Eval("[others.list]", ctx, cfg, Text.EvalOption.None), "{others}"),
+			new Replacement((ctx, cfg) => Text.Eval("[everyone.list]", ctx, cfg, Text.EvalOption.None), "{everyone}"),
 			new Replacement((ctx, cfg) => "", "{unknown}"),
 
 			// Character grammar macros
@@ -693,7 +697,7 @@ namespace Ginger
 		}
 
 		private static HashSet<string> _commands = new HashSet<string>() {
-			"{char}", "{user}", "{card}", "{name}", "{gender}", "{unknown}", "{they}", "{he}", "{she}", "{they've}", "{they'd}", "{he'd}", "{she'd}", "{they'll}", "{he'll}", "{she'll}", "{they're}", "{he's}", "{she's}", "{them}", "{him}", "{their}", "{his}", "{her}", "{theirs}", "{hers}", "{themselves}", "{himself}", "{herself}", "{is}", "{are}", "{isn't}", "{aren't}", "{has}", "{have}", "{hasn't}", "{haven't}", "{was}", "{were}", "{wasn't}", "{weren't}", "{does}", "{do}", "{doesn't}", "{don't}", "{s}", "{es}", "{y}", "{ies}", "{#name}", "{#gender}", "{#they}", "{#he}", "{#she}", "{#they've}", "{#they'd}", "{#he'd}", "{#she'd}", "{#they'll}", "{#he'll}", "{#she'll}", "{#they're}", "{#he's}", "{#she's}", "{#them}", "{#him}", "{#their}", "{#his}", "{#hers}", "{#theirs}", "{#hers}", "{#themselves}", "{#himself}", "{#herself}", "{#is}", "{#are}", "{#isn't}", "{#aren't}", "{#has}", "{#have}", "{#hasn't}", "{#haven't}", "{#was}", "{#were}", "{#wasn't}", "{#weren't}", "{#does}", "{#do}", "{#doesn't}", "{#don't}", "{#s}", "{#es}", "{#y}", "{#ies}",
+			"{char}", "{user}", "{card}", "{name}", "{gender}", "{unknown}", "{names}", "{actors}", "{others}", "{everyone}", "{they}", "{he}", "{she}", "{they've}", "{they'd}", "{he'd}", "{she'd}", "{they'll}", "{he'll}", "{she'll}", "{they're}", "{he's}", "{she's}", "{them}", "{him}", "{their}", "{his}", "{her}", "{theirs}", "{hers}", "{themselves}", "{himself}", "{herself}", "{is}", "{are}", "{isn't}", "{aren't}", "{has}", "{have}", "{hasn't}", "{haven't}", "{was}", "{were}", "{wasn't}", "{weren't}", "{does}", "{do}", "{doesn't}", "{don't}", "{s}", "{es}", "{y}", "{ies}", "{#name}", "{#gender}", "{#they}", "{#he}", "{#she}", "{#they've}", "{#they'd}", "{#he'd}", "{#she'd}", "{#they'll}", "{#he'll}", "{#she'll}", "{#they're}", "{#he's}", "{#she's}", "{#them}", "{#him}", "{#their}", "{#his}", "{#hers}", "{#theirs}", "{#hers}", "{#themselves}", "{#himself}", "{#herself}", "{#is}", "{#are}", "{#isn't}", "{#aren't}", "{#has}", "{#have}", "{#hasn't}", "{#haven't}", "{#was}", "{#were}", "{#wasn't}", "{#weren't}", "{#does}", "{#do}", "{#doesn't}", "{#don't}", "{#s}", "{#es}", "{#y}", "{#ies}",
 		};
 
 		public static void Escape(StringBuilder sb)

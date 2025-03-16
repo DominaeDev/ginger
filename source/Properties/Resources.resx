@@ -1673,8 +1673,8 @@ Are you sure you want to continue?</value>
 (Not to be confused with the character persona.)</value>
   </data>
   <data name="tooltip_style_grammar" xml:space="preserve">
-    <value>Use a grammar to enforce the text style.
-(Only applicable with Backyard AI.)</value>
+    <value>Include a grammar to enforce the text style.
+(Only available in Backyard AI.)</value>
   </data>
   <data name="grammar_recipe_bold" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Recipes\Grammar\grammar_recipe_bold.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
@@ -1696,5 +1696,24 @@ Are you sure you want to continue?</value>
   </data>
   <data name="grammar_recipe_novel" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Recipes\Grammar\grammar_recipe_novel.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="cap_check_update" xml:space="preserve">
+    <value>Check for update</value>
+  </data>
+  <data name="error_check_update" xml:space="preserve">
+    <value>Failed to connect to GitHub.
+
+Make sure you have an active internet connection.</value>
+  </data>
+  <data name="github_rest_latest_release_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\github_rest_latest_release.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="msg_latest_version" xml:space="preserve">
+    <value>This is the latest version of Ginger.</value>
+  </data>
+  <data name="msg_update_found" xml:space="preserve">
+    <value>A new version of Ginger is available.
+
+Click OK to view it in your web browser.</value>
   </data>
 </root>
