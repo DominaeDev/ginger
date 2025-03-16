@@ -397,10 +397,11 @@
 			// 
 			this.cbStyleGrammar.AutoSize = true;
 			this.cbStyleGrammar.Dock = System.Windows.Forms.DockStyle.Top;
+			this.cbStyleGrammar.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.cbStyleGrammar.Location = new System.Drawing.Point(0, 44);
 			this.cbStyleGrammar.Name = "cbStyleGrammar";
-			this.cbStyleGrammar.Padding = new System.Windows.Forms.Padding(1, 6, 0, 0);
-			this.cbStyleGrammar.Size = new System.Drawing.Size(285, 23);
+			this.cbStyleGrammar.Padding = new System.Windows.Forms.Padding(1, 5, 0, 0);
+			this.cbStyleGrammar.Size = new System.Drawing.Size(285, 24);
 			this.cbStyleGrammar.TabIndex = 10;
 			this.cbStyleGrammar.Text = "Use grammar";
 			this.cbStyleGrammar.UseVisualStyleBackColor = true;
@@ -1043,7 +1044,7 @@
 			this.group_Background.Size = new System.Drawing.Size(583, 171);
 			this.group_Background.TabIndex = 5;
 			this.group_Background.TabStop = false;
-			this.group_Background.Text = "Background";
+			this.group_Background.Text = "Background image";
 			// 
 			// group_Components
 			// 
