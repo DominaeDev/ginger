@@ -25,7 +25,7 @@ namespace Ginger
 		public static readonly string InternalOriginalMarker = "<##ORIGINAL##>";
 		public static readonly string InternalNameMarker = "<##NAME##>";
 		public static readonly string InternalContinueMarker = "<##CONTINUE##>";
-		private static string MakeInternalCharacterMarker(int index) => string.Format("<##CHAR{0:D2}##>", index);
+		public static string MakeInternalCharacterMarker(int index) => string.Format("<##CHAR{0:D2}##>", index);
 
 		private GingerString(string value)
 		{
