@@ -15,7 +15,7 @@ namespace Ginger
 		public VersionNumber version { get { return _template != null ? _template.version : default(VersionNumber); } }
 		public string tooltip { get { return _template != null ? _template.GetTooltip() : string.Empty; } }
 		public Recipe.Type type { get { return _template != null ? _template.type : Recipe.Type.Recipe; } }
-		public bool allowMultiple { get { return _template != null ? _template.allowMultiple : false; } }
+		public Recipe.AllowMultiple allowMultiple { get { return _template != null ? _template.allowMultiple : Recipe.AllowMultiple.No; } }
 		public ICondition requires { get { return _template != null ? _template.requires : null; } }
 		public int? order { get { return _template != null ? _template.order : null; } }
 		public int includes { get { return _template != null ? _template.includes.Count : 0; } }

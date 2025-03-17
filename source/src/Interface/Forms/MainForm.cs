@@ -847,10 +847,10 @@ namespace Ginger
 
 				if (recipeTemplate.type == Recipe.Type.Snippet)
 					menuItem.Image = Theme.Current.MenuSnippet;
-				if (Current.Character.recipes.ContainsAny(r => r.uid == recipeTemplate.uid) && recipeTemplate.allowMultiple == false)
-				{
+				if (recipeTemplate.allowMultiple == Recipe.AllowMultiple.No && Current.Character.recipes.ContainsAny(r => r.uid == recipeTemplate.uid))
 					menuItem.Checked = true;
-				}
+				else if (recipeTemplate.allowMultiple == Recipe.AllowMultiple.One && Current.AllRecipes.ContainsAny(r => r.uid == recipeTemplate.uid))
+					menuItem.Checked = true;
 				else if (recipeTemplate.requires != null
 					&& recipeTemplate.requires.Evaluate(context, new EvaluationCookie() { ruleSuppliers = Current.RuleSuppliers }) == false)
 				{

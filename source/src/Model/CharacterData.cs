@@ -57,6 +57,14 @@ namespace Ginger
 			context.SetValue("__version_minor", VersionNumber.Application.Minor);
 			context.SetValue("__version_build", VersionNumber.Application.Build);
 
+			// Character marker
+			int actorIndex = Current.Characters.IndexOf(this);
+			context.SetValue("char", GingerString.MakeInternalCharacterMarker(actorIndex));
+			int charactersIndex = 0;
+			context.SetValue("characters", string.Join(Text.Delimiter, Current.Characters.Select(c => GingerString.MakeInternalCharacterMarker(charactersIndex++))));
+			context.SetValue("user", GingerString.InternalUserMarker);
+			context.SetValue("actor:index", actorIndex);
+
 			// Name(s)
 			context.SetValue("card", Utility.FirstNonEmpty(Current.Card.name, Current.Name, Constants.DefaultCharacterName));
 			context.SetValue("name", Utility.FirstNonEmpty(this.spokenName, Current.Card.name, Constants.DefaultCharacterName));
@@ -327,7 +335,9 @@ namespace Ginger
 
 		public bool AddRecipe(Recipe recipe)
 		{
-			if (recipe.allowMultiple == false && recipes.ContainsAny(r => r.uid == recipe.uid))
+			if (recipe.allowMultiple == Recipe.AllowMultiple.No && recipes.ContainsAny(r => r.uid == recipe.uid))
+				return false; // Already added
+			if (recipe.allowMultiple == Recipe.AllowMultiple.One && Current.AllRecipes.ContainsAny(r => r.uid == recipe.uid))
 				return false; // Already added
 
 			if (recipe.isSnippet)

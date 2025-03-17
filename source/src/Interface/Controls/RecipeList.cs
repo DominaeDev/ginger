@@ -679,7 +679,12 @@ namespace Ginger
 			RecipePanel pastedPanel = null;
 			foreach (var recipe in recipes)
 			{
-				if (recipe.allowMultiple == false && Current.Character.recipes.ContainsAny(r => r.id == recipe.id))
+				if (recipe.allowMultiple == Recipe.AllowMultiple.No && Current.Character.recipes.ContainsAny(r => r.id == recipe.id))
+				{
+					failedCounter++;
+					continue;
+				}
+				else if (recipe.allowMultiple == Recipe.AllowMultiple.One && Current.AllRecipes.ContainsAny(r => r.id == recipe.id))
 				{
 					failedCounter++;
 					continue;
