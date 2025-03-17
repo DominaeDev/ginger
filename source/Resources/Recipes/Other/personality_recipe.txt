@@ -6,11 +6,11 @@
 	</Description>
 	<Order>100</Order>
 	<Multiple>True</Multiple>
-	<Flags>persona, __personality, __component, __internal</Flags>
+	<Flags>persona, __personality, __component, __internal, __summary</Flags>
 	
 	<Text id="personality" style="component">
 		<Label>Personality</Label>
-		<Default>[char] is [a] {adjectives.commalist} [noun:prefix?,] {noun}.</Default>
+		<Default>[summary:adjectives or summary:addendum?[char] is [a] {summary:adjectives.commalist} [summary:noun:prefix?,] [{summary:noun}|{person}] {summary:addendum}.|[char] is ...]</Default>
 	</Text>
 	
 	<Node path="persona/summary/value">{personality:local}</Node>

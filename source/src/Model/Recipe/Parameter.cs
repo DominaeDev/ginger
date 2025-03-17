@@ -32,6 +32,7 @@ namespace Ginger
 	public interface IResettableParameter
 	{
 		string defaultValue { get; set; }
+		bool raw { get; }
 		void ResetValue(string value);
 	}
 
@@ -155,6 +156,7 @@ namespace Ginger
 		public ICondition condition { get; protected set; }
 		public abstract void OnApply(ParameterState state, Parameter.Scope scope);
 		public Recipe recipe { get; set; }
+		public virtual bool raw { get { return false; } }
 
 		public Parameter.Scope scope { 
 			get { return _scope; } 

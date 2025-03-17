@@ -163,16 +163,10 @@
 	<Adjective order="color" rule="normal-detail and skin-tone">{skin-tone.lower}-skinned</Adjective>
 	
 	<!-- Noun -->
-	<String id="noun">
-		<String rule="beastfolk" priority="1">beast[man-or-woman]</String>
-		<String rule="merfolk" priority="1">[is-male?merman|mermaid]</String>
-		<String rule="lizardfolk" priority="1">lizard[man-or-woman]</String>
-		<String rule="elf and is-male" priority="1">elven man</String>
-		<String rule="elf and is-female" priority="1">elven woman</String>
-		<String rule="elf">elf</String>
-		<String>[{humanoid-race.lower}|humanoid] [man-or-woman]</String>
-	</String>
-	
-	<Noun>[@noun]</Noun>
+	<Noun rule="beastfolk">beast[man-or-woman]</Noun>
+	<Noun rule="merfolk">[is-male?merman|mermaid]</Noun>
+	<Noun rule="lizardfolk">lizard[man-or-woman]</Noun>
+	<Noun affix="prefix" rule="not (beastfolk or merfolk or lizardfolk)" priority="-1">{gender}</Noun>
+	<Noun rule="not (beastfolk or merfolk or lizardfolk)">[{humanoid-race.lower}|humanoid]</Noun>
 	
 </Ginger>

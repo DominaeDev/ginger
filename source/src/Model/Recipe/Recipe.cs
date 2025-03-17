@@ -847,6 +847,11 @@ namespace Ginger
 			foreach (var parameter in parameters.OfType<IResettableParameter>())
 			{
 				string defaultValue = parameter.defaultValue;
+				if (parameter.raw)
+				{
+					parameter.ResetValue(defaultValue);
+					continue;
+				}
 
 				// Evaluate default value
 				if (string.IsNullOrEmpty(defaultValue) == false && defaultValue.IndexOfAny(brackets, 0) != -1)

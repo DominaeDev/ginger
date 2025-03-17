@@ -11,7 +11,7 @@
 	<!-- Parameters -->
 	<Choice id="breast-size">
 		<Label>Breast size</Label>
-		<Option id="flat">None (Flat)</Option>
+		<Option id="flat">None / Flat</Option>
 		<Option id="very-small">Very small</Option>
 		<Option id="small">Small</Option>
 		<Option id="average">Average</Option>
@@ -32,6 +32,7 @@
 		<Option id="k">K-cup</Option>
 	</Choice>
 	<SetVar id="cup-size" rule="has-cup">{breast-size}</SetVar>
+	<SetVar id="breasts" rule="has-breasts">[@breast-size.lower] [pierced?, pierced] breasts</SetVar>
 	
 	<Choice id="nipples">
 		<Option>Small</Option>
@@ -43,7 +44,7 @@
 	<Toggle id="pierced">
 		<Label>Pierced</Label>
 	</Toggle>
-	<SetFlag rule="pierced">pierced-nipples, nipple-piercings</SetFlag>
+	<SetFlag rule="pierced">pierced-nipples, nipple-piercing</SetFlag>
 	
 	<Text id="more" style="flex">
 		<Label>Additional details</Label>
@@ -65,10 +66,16 @@
 		<String rule="breast-size:index ge 17">impressively enormous</String> <!-- J-K -->
 	</String>
 
+	<String id="breast-size">
+		<String rule="breast-size:index in 1~2 or breast-size:index in 7~10">small</String> <!-- Small -->
+		<String rule="breast-size:index in 3~4 or breast-size:index in 11~13">perky</String> <!-- Average -->
+		<String rule="breast-size:index in 5~6 or breast-size:index ge 14">large</String> <!-- Large-->
+	</String>
+
 	<String id="curve">
-		<String rule="brease-size:index in 1~2 or breast-size:index in 7~10">delicate</String> <!-- Small -->
-		<String rule="brease-size:index in 3~4 or breast-size:index in 11~13">perky</String> <!-- Average -->
-		<String rule="brease-size:index in 5~6 or breast-size:index ge 14">voluptuos</String> <!-- Large-->
+		<String rule="breast-size:index in 1~2 or breast-size:index in 7~10">delicate</String> <!-- Small -->
+		<String rule="breast-size:index in 3~4 or breast-size:index in 11~13">perky</String> <!-- Average -->
+		<String rule="breast-size:index in 5~6 or breast-size:index ge 14">voluptuos</String> <!-- Large-->
 	</String>
 	
 	<String id="nipples">
@@ -136,5 +143,9 @@
 	</Node>
 	
 	<Node path="persona/appearance/breasts" rule="more">{more}.</Node>
-		
+	
+	<Adjective order="quality" rule="is-flat">flat-chested</Adjective>
+	
+	<Addendum priority="-5" rule="normal-detail and has-breasts and allow-nsfw">with [@breast-size.lower] [pierced?, pierced] breasts</Addendum>
+	
 </Ginger>

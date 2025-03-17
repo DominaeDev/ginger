@@ -102,7 +102,7 @@
 	
 	<Node path="persona/description/orc" rule="normal-detail">
 		While orcs share many similarities with humans, their many differences stand out in stark contrast. 
-		The most obvious being their [!list:[skin-tone?{skin-tone} skin]; large, muscular size], much taller than the average human.
+		The most obvious being their [!list:[skin-tone?{skin-tone.lower} skin]; large, muscular size], much taller than the average human.
 	</Node>
 
 	<Node path="persona/description/orc" rule="caste">

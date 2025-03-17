@@ -1044,6 +1044,12 @@ namespace Ginger
 						continue;
 
 					int order;
+					List<string> words;
+					if (noun.affix == CharacterNoun.Affix.Addendum)
+						words = new List<string> { text }; // Include commas
+					else
+						words = Utility.ListFromCommaSeparatedString(text); // Separate by comma
+
 					if (noun.affix == CharacterNoun.Affix.Prefix)
 						order = -1;
 					else if (noun.affix == CharacterNoun.Affix.Suffix)
@@ -1052,8 +1058,7 @@ namespace Ginger
 						order = 2;
 					else
 						order = 0;
-
-					var words = Utility.ListFromCommaSeparatedString(text);
+					
 					lsNouns.Add(new AdjectiveNoun() {
 						value = randomizer.Item(words),
 						order = order,

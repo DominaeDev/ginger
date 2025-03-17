@@ -17,6 +17,8 @@ namespace Ginger
 		public Mode mode = Mode.Single;
 		public bool isRaw = false;
 
+		public override bool raw { get { return isRaw; } }
+
 		public TextParameter() : base()
 		{
 		}
