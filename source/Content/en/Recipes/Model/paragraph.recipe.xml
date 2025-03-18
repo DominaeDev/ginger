@@ -1,4 +1,4 @@
-﻿<Ginger id="format-paragraphs" version="1.0">
+﻿<Ginger id="format-paragraphs" version="1.1">
 	<!-- Preamble -->
 	<Name>Format/Paragraph format</Name>
 	<Title>Paragraph format</Title>
@@ -8,11 +8,30 @@
 	<Flags>model-format</Flags>
 	<Description>Instruct the model to write at least a few paragraphs.</Description>
 	
+	<Choice id="paragraphs">
+		<Label>Length</Label>
+		<Description>Enforce response length with a grammar (Backyard AI only).</Description>
+		<Option>At least 1 paragraph</Option>
+		<Option>At least 2 paragraphs</Option>
+		<Option>At least 3 paragraphs</Option>
+		<Option>At least 4 paragraphs</Option>
+	</Choice>
+	
 	<!-- Output -->
 	<Node path="system/guidelines/paragraph">Respond to the [user]'s input in the style of an immersive fictional narrative as [char].</Node>
 	<Node path="system/guidelines/paragraph">[user] will provide his or her own responses and you mustn't speak for [user].</Node>
 	<Node path="system/guidelines/paragraph">Keep your responses long and descriptive, about 2 to 4 paragraphs in length, but no longer than 4 paragraphs.</Node>
 		
-	<Grammar><![CDATA[root ::= text ("\n" text)* ("\n#" | "<")
-text ::= [[^\n#]][[^\n]]*]]></Grammar>
+	<Grammar rule="paragraphs:index is 0"><![CDATA[
+		root ::= text ("\n" text)* stop
+		text ::= [[^<#\n]]+
+		stop ::= ("#"|"<"|"\n")?
+	]]></Grammar>
+	
+	<Grammar rule="paragraphs:index ge 1"><![CDATA[
+		root ::= text ("\n" text){{{paragraphs:index}}} stop
+		text ::= [[^<#\n]]+
+		stop ::= ("#"|"<"|"\n")?
+	]]></Grammar>
+	
 </Ginger>
