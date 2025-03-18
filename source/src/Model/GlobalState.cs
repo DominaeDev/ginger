@@ -545,13 +545,13 @@ namespace Ginger
 			foreach (var asset in assets.EmbeddedPortraits)
 			{
 				int actorIndex = asset.actorIndex;
-				if (actorIndex != -1)
-				{
-					if (actorIndex >= 0 && actorIndex < newOrder.Length)
-						asset.actorIndex = moves[actorIndex];
-					else
-						asset.actorIndex = -1; // Error
-				}
+				if (actorIndex == -1)
+					actorIndex = 0;
+
+				if (actorIndex >= 0 && actorIndex < newOrder.Length)
+					asset.actorIndex = moves[actorIndex];
+				else
+					asset.actorIndex = -1; // Error
 			}
 
 			if (mainTo != 0)
