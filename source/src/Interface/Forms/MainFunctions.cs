@@ -3070,50 +3070,6 @@ namespace Ginger
 			}
 		}
 
-		/*private bool RemoveCurrentActor()
-		{
-			if (Current.SelectedCharacter < 0 
-				|| Current.SelectedCharacter >= Current.Characters.Count 
-				|| Current.Characters.Count < 2)
-				return false;
-
-			var assets = (AssetCollection)Current.Card.assets.Clone(); // jic
-
-			// Remove portrait(s)
-			if (Current.SelectedCharacter == 0)
-			{
-				assets.RemoveAll(a => a.isMainPortraitOverride
-					|| (a.isEmbeddedAsset
-						&& a.assetType == AssetFile.AssetType.Icon
-						&& a.actorIndex < 1));
-
-				var portraitAsset = assets.GetPortrait(1);
-				if (portraitAsset != null)
-				{
-					Image actorImage;
-					Utility.LoadImageFromMemory(portraitAsset.data.bytes, out actorImage);
-					Current.Card.portraitImage = ImageRef.FromImage(actorImage);
-
-					if (portraitAsset.HasTag(AssetFile.Tag.Animation))
-						portraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
-					else
-						assets.Remove(portraitAsset);
-				}
-			}
-
-			assets.RemoveActorAssets(Current.SelectedCharacter);
-			assets.Validate();
-
-			Current.Card.assets = (AssetCollection)assets.Clone();
-			Current.Characters.RemoveAt(Current.SelectedCharacter);
-			Current.SelectedCharacter = Math.Min(Math.Max(Current.SelectedCharacter, 0), Current.Characters.Count - 1);
-			Current.IsDirty = true;
-
-			if (Current.Characters.Count < 2 && AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty)
-				AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday;
-			return true;
-		}*/
-
 		private bool ResetBackyardModelSettings()
 		{
 			// Refresh character list

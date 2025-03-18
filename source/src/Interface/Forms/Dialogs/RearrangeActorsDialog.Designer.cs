@@ -52,7 +52,7 @@ namespace Ginger
 			listPanel.Location = new System.Drawing.Point(0, 0);
 			listPanel.Name = "listPanel";
 			listPanel.Padding = new System.Windows.Forms.Padding(4, 4, 0, 4);
-			listPanel.Size = new System.Drawing.Size(304, 262);
+			listPanel.Size = new System.Drawing.Size(284, 261);
 			listPanel.TabIndex = 0;
 			// 
 			// lbActors
@@ -60,7 +60,7 @@ namespace Ginger
 			this.lbActors.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.lbActors.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.lbActors.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lbActors.FormattingEnabled = true;
+			this.lbActors.IntegralHeight = false;
 			this.lbActors.ItemHeight = 20;
 			this.lbActors.Items.AddRange(new object[] {
             "Adam",
@@ -68,7 +68,7 @@ namespace Ginger
             "Cindy"});
 			this.lbActors.Location = new System.Drawing.Point(4, 4);
 			this.lbActors.Name = "lbActors";
-			this.lbActors.Size = new System.Drawing.Size(300, 254);
+			this.lbActors.Size = new System.Drawing.Size(280, 253);
 			this.lbActors.TabIndex = 0;
 			this.lbActors.SelectedIndexChanged += new System.EventHandler(this.lbActors_SelectedIndexChanged);
 			// 
@@ -79,17 +79,17 @@ namespace Ginger
 			leftPanel.Controls.Add(this.btnMoveDown);
 			leftPanel.Controls.Add(this.btnMoveUp);
 			leftPanel.Dock = System.Windows.Forms.DockStyle.Right;
-			leftPanel.Location = new System.Drawing.Point(304, 0);
+			leftPanel.Location = new System.Drawing.Point(284, 0);
 			leftPanel.Name = "leftPanel";
 			leftPanel.Padding = new System.Windows.Forms.Padding(4);
-			leftPanel.Size = new System.Drawing.Size(200, 262);
+			leftPanel.Size = new System.Drawing.Size(200, 261);
 			leftPanel.TabIndex = 0;
 			// 
 			// btnApply
 			// 
 			this.btnApply.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.btnApply.Highlighted = false;
-			this.btnApply.Location = new System.Drawing.Point(4, 196);
+			this.btnApply.Location = new System.Drawing.Point(4, 195);
 			this.btnApply.Name = "btnApply";
 			this.btnApply.Size = new System.Drawing.Size(192, 31);
 			this.btnApply.TabIndex = 5;
@@ -101,7 +101,7 @@ namespace Ginger
 			// 
 			this.btnCancel.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.btnCancel.Highlighted = false;
-			this.btnCancel.Location = new System.Drawing.Point(4, 227);
+			this.btnCancel.Location = new System.Drawing.Point(4, 226);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(192, 31);
 			this.btnCancel.TabIndex = 8;
@@ -142,15 +142,16 @@ namespace Ginger
 			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(504, 262);
+			this.ClientSize = new System.Drawing.Size(484, 261);
 			this.Controls.Add(listPanel);
 			this.Controls.Add(leftPanel);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.MinimumSize = new System.Drawing.Size(400, 200);
+			this.MinimumSize = new System.Drawing.Size(500, 240);
 			this.Name = "RearrangeActorsDialog";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

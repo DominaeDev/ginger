@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Ginger
@@ -114,5 +115,17 @@ namespace Ginger
 			DialogResult = DialogResult.Cancel;
 			Close();
 		}
+				
+		public override void ApplyTheme()
+		{
+			base.ApplyTheme();
+
+			this.Suspend();
+			lbActors.ForeColor = Theme.Current.TextBoxForeground;
+			lbActors.BackColor = Theme.IsDarkModeEnabled ? Theme.Current.TextBoxBackground : Color.WhiteSmoke;
+			lbActors.Invalidate();
+			this.Resume();
+		}
+
 	}
 }
