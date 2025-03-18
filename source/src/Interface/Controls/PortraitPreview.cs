@@ -118,10 +118,10 @@ namespace Ginger
 				return;
 			}
 
-			ResizeImage();
+			CropAndResize();
 		}
 
-		public void ResizeImage()
+		public void CropAndResize()
 		{
 			if (_image == null)
 				return;

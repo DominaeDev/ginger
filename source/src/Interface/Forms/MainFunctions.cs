@@ -3070,7 +3070,7 @@ namespace Ginger
 			}
 		}
 
-		private bool RemoveCurrentActor()
+		/*private bool RemoveCurrentActor()
 		{
 			if (Current.SelectedCharacter < 0 
 				|| Current.SelectedCharacter >= Current.Characters.Count 
@@ -3112,7 +3112,7 @@ namespace Ginger
 			if (Current.Characters.Count < 2 && AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty)
 				AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday;
 			return true;
-		}
+		}*/
 
 		private bool ResetBackyardModelSettings()
 		{

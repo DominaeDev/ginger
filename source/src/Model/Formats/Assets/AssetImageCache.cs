@@ -16,6 +16,7 @@ namespace Ginger
 			None = 0,
 			FitInside,
 			FitOutside,
+			Portrait,
 		}
 
 		public static Image GetImageForAsset(AssetFile asset, int width = 0, int height = 0, ResizeFlag resizeFlag = ResizeFlag.None)
@@ -69,15 +70,20 @@ namespace Ginger
 				float scale;
 				if (resizeFlag == ResizeFlag.FitInside)
 					scale = Math.Min((float)fitWidth / srcWidth, (float)fitHeight / srcHeight);
-				else if (resizeFlag == ResizeFlag.FitOutside)
+				else if (resizeFlag == ResizeFlag.FitOutside || resizeFlag == ResizeFlag.Portrait)
 					scale = Math.Max((float)fitWidth / srcWidth, (float)fitHeight / srcHeight);
 				else
 					scale = 1.0f;
 
 				int newWidth = Math.Max((int)Math.Round(srcWidth * scale), 1);
 				int newHeight = Math.Max((int)Math.Round(srcHeight * scale), 1);
+				int newX = -(newWidth - fitWidth) / 2;
+				int newY = -(newHeight - fitHeight) / 2;
+				if (resizeFlag == ResizeFlag.Portrait)
+					newY = 0;
+
 				gfxNewImage.DrawImage(image,
-					new Rectangle(-(newWidth - fitWidth) / 2, -(newHeight - fitHeight) / 2, newWidth, newHeight),
+					new Rectangle(newX, newY, newWidth, newHeight),
 						0, 0, srcWidth, srcHeight,
 						GraphicsUnit.Pixel);
 			}

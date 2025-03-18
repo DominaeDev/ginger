@@ -181,7 +181,7 @@ namespace Ginger
 				var asset = Current.Card.assets.GetPortrait(Current.SelectedCharacter);
 				if (asset != null)
 				{
-					Image actorImage = AssetImageCache.GetImageForAsset(asset, portraitImage.Width, portraitImage.Height, AssetImageCache.ResizeFlag.FitOutside);
+					Image actorImage = AssetImageCache.GetImageForAsset(asset, portraitImage.Width, portraitImage.Height, AssetImageCache.ResizeFlag.Portrait);
 
 					if (actorImage != null)
 					{
@@ -1148,7 +1148,10 @@ namespace Ginger
 			{
 				bool bHasPortrait = Current.Card.portraitImage != null || Current.Card.assets.ContainsAny(a => a.isEmbeddedAsset && a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Icon);
 				bool bHasPortraitBackground = Current.Card.assets.ContainsAny(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background && a.HasTag(AssetFile.Tag.PortraitBackground));
-				bool bHasBackground = Current.Card.assets.ContainsAny(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
+				
+				var backgroundAsset = Current.Card.assets.GetBackground();
+				bool bHasBackground = backgroundAsset != null;
+				bool bHasAnimatedBackground = backgroundAsset != null && backgroundAsset.HasTag(AssetFile.Tag.Animation);
 				
 				var menu = new ContextMenuStrip();
 
@@ -1174,12 +1177,12 @@ namespace Ginger
 				menu.Items.Add(new ToolStripMenuItem("Blur image", null, (s, e) => {
 					BlurBackgroundImage?.Invoke(this, EventArgs.Empty);
 				}) {
-					Enabled = bHasBackground,
+					Enabled = bHasBackground && !bHasAnimatedBackground,
 				});
 				menu.Items.Add(new ToolStripMenuItem("Darken image", null, (s, e) => {
 					DarkenBackgroundImage?.Invoke(this, EventArgs.Empty);
 				}) {
-					Enabled = bHasBackground,
+					Enabled = bHasBackground && !bHasAnimatedBackground,
 				});
 				menu.Items.Add(new ToolStripSeparator()); // ----
 				menu.Items.Add(new ToolStripMenuItem("Clear background", null, (s, e) => {

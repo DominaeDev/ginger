@@ -515,6 +515,124 @@ namespace Ginger
 			_bFileDirty = stash.isFileDirty;
 			SelectedCharacter = stash.selectedCharacter;
 		}
+
+		public static void RearrangeCharacters(int[] newOrder)
+		{
+			if (newOrder == null || newOrder.Length != Characters.Count)
+				return; // Error
+
+			// Rearrange portraits
+			var oldPortrait = Card.portraitImage;
+			var oldOverride = Card.assets.GetPortraitOverride();
+
+			int[] moves = new int[newOrder.Length];
+			for (int i = 0; i < moves.Length; ++i)
+				moves[i] = Array.IndexOf(newOrder, i);
+
+			int mainTo = moves[0];
+			int mainFrom = newOrder[0];
+			AssetFile newPortraitAsset = null;
+
+			var assets = (AssetCollection)Card.assets.Clone();
+			if (mainFrom != 0)
+			{
+				newPortraitAsset = assets.GetPortrait(mainFrom);
+				if (newPortraitAsset != null)
+					assets.Remove(newPortraitAsset);
+				assets.RemoveMainPortraitOverride();
+			}
+
+			foreach (var asset in assets.EmbeddedPortraits)
+			{
+				int actorIndex = asset.actorIndex;
+				if (actorIndex != -1)
+				{
+					if (actorIndex >= 0 && actorIndex < newOrder.Length)
+						asset.actorIndex = moves[actorIndex];
+					else
+						asset.actorIndex = -1; // Error
+				}
+			}
+
+			if (mainTo != 0)
+			{
+				if (oldOverride != null)
+				{
+					var portraitAsset = oldOverride;
+					portraitAsset.RemoveTags(AssetFile.Tag.PortraitOverride);
+					portraitAsset.actorIndex = mainTo;
+					assets.Add(portraitAsset);
+				}
+				else if (oldPortrait != null)
+				{
+					var portraitAsset = AssetFile.FromImage(oldPortrait);
+					portraitAsset.actorIndex = mainTo;
+					assets.Add(portraitAsset);
+				}
+			}
+			if (mainFrom != 0)
+			{
+				if (newPortraitAsset != null)
+				{
+					if (newPortraitAsset.HasTag(AssetFile.Tag.Animation))
+					{
+						newPortraitAsset.actorIndex = -1;
+						newPortraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
+						assets.Add(newPortraitAsset);
+					}
+
+					Card.portraitImage = ImageRef.FromImage(newPortraitAsset.ToImage());
+				}
+				else
+					Card.portraitImage = null;
+			}
+
+			assets.Validate();
+
+			Card.assets = (AssetCollection)assets.Clone();
+
+			// Rearrange characters
+			var characters = Characters.ToArray();
+			Characters.Clear();
+			for (int i = 0; i < characters.Length; ++i)
+				Characters.Add(characters[newOrder[i]]);
+
+			IsDirty = true;
+		}
+
+		public static bool RemoveCharacter(int characterIndex)
+		{
+			if (characterIndex < 0 
+				|| characterIndex >= Characters.Count
+				|| Characters.Count < 2)
+				return false;
+
+			int lastIndex = Characters.Count - 1;
+			if (characterIndex < lastIndex)
+			{
+				// Rearrange characters (resolves portraits)
+				int[] indices = new int[Characters.Count];
+				int index = 0;
+				for (int i = 0; i < indices.Length; ++i)
+				{
+					if (i == characterIndex)
+						continue;
+					indices[index++] = i;
+				}
+				indices[lastIndex] = characterIndex;
+				RearrangeCharacters(indices);
+			}
+
+			// Remove character
+			Characters.RemoveAt(lastIndex);
+
+			// Remove assets
+			Card.assets.RemoveAll(a => a.isEmbeddedAsset && a.actorIndex == lastIndex);
+			Card.assets.Validate();
+
+			IsDirty = true;
+			return true;
+		}
 	}
 
 }
