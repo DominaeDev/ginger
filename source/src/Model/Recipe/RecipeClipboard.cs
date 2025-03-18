@@ -147,7 +147,7 @@ namespace Ginger
 					StringHandle parameterID = parameterNode.GetAttribute("id", null);
 					var parameter = recipe.parameters.Find(p => p.id == parameterID);
 					if (parameter != null)
-						parameter.LoadValueFromXml(parameterNode, Utility.FirstNonEmpty(Current.MainCharacter.spokenName, Constants.DefaultCharacterName), Current.Card.userPlaceholder);
+						parameter.LoadValueFromXml(parameterNode, Utility.FirstNonEmpty(Current.Character.spokenName, Constants.DefaultCharacterName), Current.Card.userPlaceholder);
 					parameterNode = parameterNode.GetNextSibling();
 				}
 

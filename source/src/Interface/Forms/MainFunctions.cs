@@ -256,10 +256,11 @@ namespace Ginger
 				return;
 
 			string userPlaceholder = (Current.Card.userPlaceholder ?? "").Trim();
-			string characterPlaceholder = (Current.MainCharacter.spokenName ?? "").Trim();
+			string characterPlaceholder = (Current.Character.spokenName ?? "").Trim();
 
 			foreach (var character in Current.Characters)
 			{
+
 				// Text parameters
 				foreach (var parameter in character.recipes.SelectMany(r => r.parameters.OfType<TextParameter>()))
 				{
@@ -754,58 +755,66 @@ namespace Ginger
 
 		private void ConvertCharacterNameMarkers(bool bEnabled)
 		{
-			string characterPlaceholder = (Current.Character.namePlaceholder ?? "").Trim();
 			string userPlaceholder = (Current.Card.userPlaceholder ?? "").Trim();
 
 			if (bEnabled)
 			{
-				foreach (var parameter in Current.Character.recipes.SelectMany(r => r.parameters).OfType<TextParameter>())
+				foreach (var character in Current.Characters)
 				{
-					StringBuilder sb = new StringBuilder(parameter.value);
-					if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
-						Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, characterPlaceholder, StringComparison.OrdinalIgnoreCase);
-					if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
-						Utility.ReplaceWholeWord(sb, GingerString.UserMarker, userPlaceholder, StringComparison.OrdinalIgnoreCase);
-					parameter.value = sb.ToString();
-				}
-
-				foreach (var parameter in Current.Character.recipes.SelectMany(r => r.parameters).OfType<LorebookParameter>())
-				{
-					var lorebook = parameter.value;
-					foreach (var entry in lorebook.entries)
+					string characterPlaceholder = (character.namePlaceholder ?? "").Trim();
+					foreach (var parameter in character.recipes.SelectMany(r => r.parameters).OfType<TextParameter>())
 					{
-						StringBuilder sb = new StringBuilder(entry.value);
+						StringBuilder sb = new StringBuilder(parameter.value);
 						if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
 							Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, characterPlaceholder, StringComparison.OrdinalIgnoreCase);
 						if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
 							Utility.ReplaceWholeWord(sb, GingerString.UserMarker, userPlaceholder, StringComparison.OrdinalIgnoreCase);
-						entry.value = sb.ToString();
+						parameter.value = sb.ToString();
+					}
+
+					foreach (var parameter in character.recipes.SelectMany(r => r.parameters).OfType<LorebookParameter>())
+					{
+						var lorebook = parameter.value;
+						foreach (var entry in lorebook.entries)
+						{
+							StringBuilder sb = new StringBuilder(entry.value);
+							if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
+								Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, characterPlaceholder, StringComparison.OrdinalIgnoreCase);
+							if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
+								Utility.ReplaceWholeWord(sb, GingerString.UserMarker, userPlaceholder, StringComparison.OrdinalIgnoreCase);
+							entry.value = sb.ToString();
+						}
 					}
 				}
 			}
 			else
 			{
-				foreach (var parameter in Current.Character.recipes.SelectMany(r => r.parameters).OfType<TextParameter>())
+				foreach (var character in Current.Characters)
 				{
-					StringBuilder sb = new StringBuilder(parameter.value);
-					if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
-						Utility.ReplaceWholeWord(sb, characterPlaceholder, GingerString.CharacterMarker, StringComparison.Ordinal);
-					if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
-						Utility.ReplaceWholeWord(sb, userPlaceholder, GingerString.UserMarker, StringComparison.Ordinal);
-					parameter.value = sb.ToString();
-				}
+					string characterPlaceholder = (character.namePlaceholder ?? "").Trim();
 
-				foreach (var parameter in Current.Character.recipes.SelectMany(r => r.parameters).OfType<LorebookParameter>())
-				{
-					var lorebook = parameter.value;
-					foreach (var entry in lorebook.entries)
+					foreach (var parameter in character.recipes.SelectMany(r => r.parameters).OfType<TextParameter>())
 					{
-						StringBuilder sb = new StringBuilder(entry.value);
+						StringBuilder sb = new StringBuilder(parameter.value);
 						if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
 							Utility.ReplaceWholeWord(sb, characterPlaceholder, GingerString.CharacterMarker, StringComparison.Ordinal);
 						if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
 							Utility.ReplaceWholeWord(sb, userPlaceholder, GingerString.UserMarker, StringComparison.Ordinal);
-						entry.value = sb.ToString();
+						parameter.value = sb.ToString();
+					}
+
+					foreach (var parameter in character.recipes.SelectMany(r => r.parameters).OfType<LorebookParameter>())
+					{
+						var lorebook = parameter.value;
+						foreach (var entry in lorebook.entries)
+						{
+							StringBuilder sb = new StringBuilder(entry.value);
+							if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
+								Utility.ReplaceWholeWord(sb, characterPlaceholder, GingerString.CharacterMarker, StringComparison.Ordinal);
+							if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
+								Utility.ReplaceWholeWord(sb, userPlaceholder, GingerString.UserMarker, StringComparison.Ordinal);
+							entry.value = sb.ToString();
+						}
 					}
 				}
 			}

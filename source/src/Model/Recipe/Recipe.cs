@@ -865,7 +865,8 @@ namespace Ginger
 				// Evaluate default value
 				if (string.IsNullOrEmpty(defaultValue) == false && defaultValue.IndexOfAny(brackets, 0) != -1)
 				{
-					defaultValue = GingerString.FromString(Text.Eval(defaultValue, evalContext, evalConfig, Text.EvalOption.Default)).ToParameter();
+					defaultValue = GingerString.FromString(Text.Eval(defaultValue, evalContext, evalConfig, Text.EvalOption.Default))
+						.ToParameter();
 					if (AppSettings.Settings.AutoConvertNames)
 						defaultValue = GingerString.WithNames(defaultValue, characterNames, userName);
 				}
