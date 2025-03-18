@@ -2066,7 +2066,7 @@ namespace Ginger
 
 		private void AddSupportingCharacterMenuItem_Click(object sender, EventArgs e)
 		{
-			if (Current.Characters.Count >= 32) // This number is arbitrary. I just wanted an upper bound.
+			if (Current.Characters.Count >= Constants.MaxActorCount)
 			{
 				MessageBox.Show(Resources.error_max_characters, Resources.cap_save_snippet, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				return;
@@ -2085,7 +2085,7 @@ namespace Ginger
 
 		private void ImportSupportingCharacterMenuItem_Click(object sender, EventArgs e)
 		{
-			if (Current.Characters.Count >= 32) // This number is arbitrary. I just wanted an upper bound.
+			if (Current.Characters.Count >= Constants.MaxActorCount)
 			{
 				MessageBox.Show(Resources.error_max_characters, Resources.cap_save_snippet, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				return;

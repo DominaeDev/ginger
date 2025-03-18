@@ -2967,6 +2967,9 @@ namespace Ginger
 
 		private bool ImportActorFromFile(string filename)
 		{
+			if (Current.Characters.Count >= Constants.MaxActorCount)
+				return false;
+
 			var stash = Current.Stash();
 			try
 			{

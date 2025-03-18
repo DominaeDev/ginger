@@ -157,6 +157,7 @@ namespace Ginger
 		public static readonly int StatusBarMessageInterval = 3500;
 
 		public static readonly int MaxImageDimension = 1800;
+		public static readonly int MaxActorCount = 8;
 
 		public static class ParameterPanel
 		{

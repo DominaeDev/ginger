@@ -980,7 +980,7 @@ namespace Ginger
 					lsOutput.Add(GingerString.FromString(sbGreeting.ToString()).ApplyTextStyle(Current.Card.textStyle));
 				}
 
-				greetingsOutput = lsOutput.ToArray();
+				groupGreetingsOutput = lsOutput.ToArray();
 			}
 			if (example_chat_text.Count > 0) // Example chat
 			{
@@ -1003,8 +1003,8 @@ namespace Ginger
 
 			return new PartialOutput() {
 				blockBuilder = graph,
-				greetings = greetingsOutput,
-				group_greetings = groupGreetingsOutput,
+				greetings = greetingsOutput ?? new GingerString[0],
+				group_greetings = groupGreetingsOutput ?? new GingerString[0],
 				lore = Lorebook.Merge(loreEntries),
 				grammarOutput = grammarOutput,
 				context = finalContext,
