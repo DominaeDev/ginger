@@ -852,10 +852,10 @@ namespace Ginger
 
 				if (recipeTemplate.type == Recipe.Type.Snippet)
 					menuItem.Image = Theme.Current.MenuSnippet;
-				if (Current.Character.recipes.ContainsAny(r => r.uid == recipeTemplate.uid) && recipeTemplate.allowMultiple == false)
-				{
+				if (recipeTemplate.allowMultiple == Recipe.AllowMultiple.No && Current.Character.recipes.ContainsAny(r => r.uid == recipeTemplate.uid))
 					menuItem.Checked = true;
-				}
+				else if (recipeTemplate.allowMultiple == Recipe.AllowMultiple.One && Current.AllRecipes.ContainsAny(r => r.uid == recipeTemplate.uid))
+					menuItem.Checked = true;
 				else if (recipeTemplate.requires != null
 					&& recipeTemplate.requires.Evaluate(context, new EvaluationCookie() { ruleSuppliers = Current.RuleSuppliers }) == false)
 				{
@@ -1677,11 +1677,18 @@ namespace Ginger
 			items.Add(exportActorMenuItem);
 
 			// Save separately
-			var exportActorsMenuItem = new ToolStripMenuItem("Save separately...") {
+			var exportActorsMenuItem = new ToolStripMenuItem("Save all separately...") {
 				Visible = Current.Characters.Count > 1,
 			};
 			exportActorsMenuItem.Click += saveSeparatelyMenuItem_Click;
 			items.Add(exportActorsMenuItem);
+
+			if (Current.Characters.Count > 1)
+			{
+				var rearrangeActors = new ToolStripMenuItem("Rearrange...");
+				rearrangeActors.Click += RearrangeSupportingCharacterMenuItem_Click;
+				items.Add(rearrangeActors);
+			}
 
 			items.Add(new ToolStripSeparator());
 
@@ -1720,6 +1727,7 @@ namespace Ginger
 			if (Current.Characters.Count > 1)
 			{
 				items.Add(new ToolStripSeparator());
+
 				var removeActor = new ToolStripMenuItem(string.Format("Remove {0}", string.IsNullOrEmpty(Current.Character.spokenName) ? "actor" : Current.Character.spokenName));
 				removeActor.Click += RemoveSupportingCharacterMenuItem_Click;
 				items.Add(removeActor);
@@ -2077,7 +2085,7 @@ namespace Ginger
 
 		private void AddSupportingCharacterMenuItem_Click(object sender, EventArgs e)
 		{
-			if (Current.Characters.Count >= 32) // This number is arbitrary. I just wanted an upper bound.
+			if (Current.Characters.Count >= Constants.MaxActorCount)
 			{
 				MessageBox.Show(Resources.error_max_characters, Resources.cap_save_snippet, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				return;
@@ -2096,7 +2104,7 @@ namespace Ginger
 
 		private void ImportSupportingCharacterMenuItem_Click(object sender, EventArgs e)
 		{
-			if (Current.Characters.Count >= 32) // This number is arbitrary. I just wanted an upper bound.
+			if (Current.Characters.Count >= Constants.MaxActorCount)
 			{
 				MessageBox.Show(Resources.error_max_characters, Resources.cap_save_snippet, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				return;
@@ -2137,8 +2145,13 @@ namespace Ginger
 
 		private void RemoveSupportingCharacterMenuItem_Click(object sender, EventArgs e)
 		{
-			if (RemoveCurrentActor())
+			int characterIndex = Current.SelectedCharacter;
+			if (Current.RemoveCharacter(characterIndex))
 			{
+				Current.SelectedCharacter = Math.Min(characterIndex, Current.Characters.Count - 1);
+				NotifyAssetsChanged();
+
+				Regenerate();
 				tabControl.SelectedIndex = 0;
 				recipeList.RecreatePanels();
 				sidePanel.RefreshValues();
@@ -2146,6 +2159,25 @@ namespace Ginger
 				RefreshTitle();
 				StealFocus();
 				Undo.Push(Undo.Kind.RecipeList, "Remove actor");
+			}
+		}
+		
+		private void RearrangeSupportingCharacterMenuItem_Click(object sender, EventArgs e)
+		{
+			var dlg = new RearrangeActorsDialog();
+			if (dlg.ShowDialog() == DialogResult.OK && dlg.Changed)
+			{
+				var prevCharacter = Current.Character;
+				Current.RearrangeCharacters(dlg.NewOrder);
+				Current.SelectedCharacter = Current.Characters.IndexOf(prevCharacter);
+				NotifyAssetsChanged();
+				Regenerate(); 
+				tabControl.SelectedIndex = 0;
+				recipeList.RecreatePanels();
+				sidePanel.RefreshValues();
+				sidePanel.OnActorChanged();
+				RefreshTitle();
+				Undo.Push(Undo.Kind.RecipeList, "Rearrange actors");
 			}
 		}
 
@@ -2165,7 +2197,6 @@ namespace Ginger
 			sidePanel.RefreshValues();
 			sidePanel.OnActorChanged();
 			RefreshTitle();
-
 
 			Undo.Push(Undo.Kind.RecipeList, "Select actor", "select-actor");
 		}

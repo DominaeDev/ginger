@@ -260,10 +260,11 @@ namespace Ginger
 				return;
 
 			string userPlaceholder = (Current.Card.userPlaceholder ?? "").Trim();
-			string characterPlaceholder = (Current.MainCharacter.spokenName ?? "").Trim();
+			string characterPlaceholder = (Current.Character.spokenName ?? "").Trim();
 
 			foreach (var character in Current.Characters)
 			{
+
 				// Text parameters
 				foreach (var parameter in character.recipes.SelectMany(r => r.parameters.OfType<TextParameter>()))
 				{
@@ -758,58 +759,66 @@ namespace Ginger
 
 		private void ConvertCharacterNameMarkers(bool bEnabled)
 		{
-			string characterPlaceholder = (Current.Character.namePlaceholder ?? "").Trim();
 			string userPlaceholder = (Current.Card.userPlaceholder ?? "").Trim();
 
 			if (bEnabled)
 			{
-				foreach (var parameter in Current.Character.recipes.SelectMany(r => r.parameters).OfType<TextParameter>())
+				foreach (var character in Current.Characters)
 				{
-					StringBuilder sb = new StringBuilder(parameter.value);
-					if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
-						Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, characterPlaceholder, StringComparison.OrdinalIgnoreCase);
-					if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
-						Utility.ReplaceWholeWord(sb, GingerString.UserMarker, userPlaceholder, StringComparison.OrdinalIgnoreCase);
-					parameter.value = sb.ToString();
-				}
-
-				foreach (var parameter in Current.Character.recipes.SelectMany(r => r.parameters).OfType<LorebookParameter>())
-				{
-					var lorebook = parameter.value;
-					foreach (var entry in lorebook.entries)
+					string characterPlaceholder = (character.namePlaceholder ?? "").Trim();
+					foreach (var parameter in character.recipes.SelectMany(r => r.parameters).OfType<TextParameter>())
 					{
-						StringBuilder sb = new StringBuilder(entry.value);
+						StringBuilder sb = new StringBuilder(parameter.value);
 						if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
 							Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, characterPlaceholder, StringComparison.OrdinalIgnoreCase);
 						if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
 							Utility.ReplaceWholeWord(sb, GingerString.UserMarker, userPlaceholder, StringComparison.OrdinalIgnoreCase);
-						entry.value = sb.ToString();
+						parameter.value = sb.ToString();
+					}
+
+					foreach (var parameter in character.recipes.SelectMany(r => r.parameters).OfType<LorebookParameter>())
+					{
+						var lorebook = parameter.value;
+						foreach (var entry in lorebook.entries)
+						{
+							StringBuilder sb = new StringBuilder(entry.value);
+							if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
+								Utility.ReplaceWholeWord(sb, GingerString.CharacterMarker, characterPlaceholder, StringComparison.OrdinalIgnoreCase);
+							if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
+								Utility.ReplaceWholeWord(sb, GingerString.UserMarker, userPlaceholder, StringComparison.OrdinalIgnoreCase);
+							entry.value = sb.ToString();
+						}
 					}
 				}
 			}
 			else
 			{
-				foreach (var parameter in Current.Character.recipes.SelectMany(r => r.parameters).OfType<TextParameter>())
+				foreach (var character in Current.Characters)
 				{
-					StringBuilder sb = new StringBuilder(parameter.value);
-					if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
-						Utility.ReplaceWholeWord(sb, characterPlaceholder, GingerString.CharacterMarker, StringComparison.Ordinal);
-					if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
-						Utility.ReplaceWholeWord(sb, userPlaceholder, GingerString.UserMarker, StringComparison.Ordinal);
-					parameter.value = sb.ToString();
-				}
+					string characterPlaceholder = (character.namePlaceholder ?? "").Trim();
 
-				foreach (var parameter in Current.Character.recipes.SelectMany(r => r.parameters).OfType<LorebookParameter>())
-				{
-					var lorebook = parameter.value;
-					foreach (var entry in lorebook.entries)
+					foreach (var parameter in character.recipes.SelectMany(r => r.parameters).OfType<TextParameter>())
 					{
-						StringBuilder sb = new StringBuilder(entry.value);
+						StringBuilder sb = new StringBuilder(parameter.value);
 						if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
 							Utility.ReplaceWholeWord(sb, characterPlaceholder, GingerString.CharacterMarker, StringComparison.Ordinal);
 						if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
 							Utility.ReplaceWholeWord(sb, userPlaceholder, GingerString.UserMarker, StringComparison.Ordinal);
-						entry.value = sb.ToString();
+						parameter.value = sb.ToString();
+					}
+
+					foreach (var parameter in character.recipes.SelectMany(r => r.parameters).OfType<LorebookParameter>())
+					{
+						var lorebook = parameter.value;
+						foreach (var entry in lorebook.entries)
+						{
+							StringBuilder sb = new StringBuilder(entry.value);
+							if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
+								Utility.ReplaceWholeWord(sb, characterPlaceholder, GingerString.CharacterMarker, StringComparison.Ordinal);
+							if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
+								Utility.ReplaceWholeWord(sb, userPlaceholder, GingerString.UserMarker, StringComparison.Ordinal);
+							entry.value = sb.ToString();
+						}
 					}
 				}
 			}
@@ -3179,6 +3188,9 @@ namespace Ginger
 
 		private bool ImportActorFromFile(string filename)
 		{
+			if (Current.Characters.Count >= Constants.MaxActorCount)
+				return false;
+
 			var stash = Current.Stash();
 			try
 			{
@@ -3270,50 +3282,6 @@ namespace Ginger
 			}
 		}
 
-		private bool RemoveCurrentActor()
-		{
-			if (Current.SelectedCharacter < 0 
-				|| Current.SelectedCharacter >= Current.Characters.Count 
-				|| Current.Characters.Count < 2)
-				return false;
-
-			var assets = (AssetCollection)Current.Card.assets.Clone(); // jic
-
-			// Remove portrait(s)
-			if (Current.SelectedCharacter == 0)
-			{
-				assets.RemoveAll(a => a.isMainPortraitOverride
-					|| (a.isEmbeddedAsset
-						&& a.assetType == AssetFile.AssetType.Icon
-						&& a.actorIndex < 1));
-
-				var portraitAsset = assets.GetPortrait(1);
-				if (portraitAsset != null)
-				{
-					Image actorImage;
-					Utility.LoadImageFromMemory(portraitAsset.data.bytes, out actorImage);
-					Current.Card.portraitImage = ImageRef.FromImage(actorImage);
-
-					if (portraitAsset.HasTag(AssetFile.Tag.Animation))
-						portraitAsset.AddTags(AssetFile.Tag.PortraitOverride);
-					else
-						assets.Remove(portraitAsset);
-				}
-			}
-
-			assets.RemoveActorAssets(Current.SelectedCharacter);
-			assets.Validate();
-
-			Current.Card.assets = (AssetCollection)assets.Clone();
-			Current.Characters.RemoveAt(Current.SelectedCharacter);
-			Current.SelectedCharacter = Math.Min(Math.Max(Current.SelectedCharacter, 0), Current.Characters.Count - 1);
-			Current.IsDirty = true;
-
-			if (Current.Characters.Count < 2 && AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty)
-				AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.Faraday;
-			return true;
-		}
-		
 		private Backyard.Error CreateNewPartyInBackyard(out GroupInstance createdGroup, out CharacterInstance[] createdCharacters, out Backyard.Link.Image[] images)
 		{
 			if (Backyard.ConnectionEstablished == false)

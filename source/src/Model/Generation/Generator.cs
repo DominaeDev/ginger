@@ -281,35 +281,48 @@ namespace Ginger
 			return output;
 		}
 
-		private static List<Output> GenerateAllCharacters(Option option)
+		private static List<Output> GenerateAllCharacters(Option options)
 		{
-			List<Output> outputPerCharacter = new List<Output>();
-
 			Recipe internalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalInternal)?.Instantiate();
 			Recipe externalGlobalRecipe = RecipeBook.GetRecipeByID(RecipeBook.GlobalExternal)?.Instantiate();
 			Recipe pruneScenarioRecipe = RecipeBook.GetRecipeByID(RecipeBook.PruneScenario)?.Instantiate();
 
-//			Recipe perActorRecipe = GetPerActorRecipe(Current.Characters);
+			List<PartialOutput> partialOutputPerCharacter = new List<PartialOutput>();
+			List<Recipe> perActorRecipes = new List<Recipe>();
 
 			for (int index = 0; index < Current.Characters.Count; ++index)
 			{
 				var character = Current.Characters[index];
 
-				var recipes = new List<Recipe>(character.recipes.Count + 1);
+				var perActorRecipe = GetPerActorRecipe(character);
+				perActorRecipes.Add(perActorRecipe);
+
+				var recipes = new List<Recipe>(character.recipes.Count + 4);
 				if (internalGlobalRecipe != null) // First
 					recipes.Add(internalGlobalRecipe);
 				if (externalGlobalRecipe != null)
 					recipes.Add(externalGlobalRecipe);
 				if (pruneScenarioRecipe != null && Current.Card.extraFlags.Contains(CardData.Flag.PruneScenario))
 					recipes.Add(pruneScenarioRecipe);
-				recipes.AddRange(character.recipes);
 
-				var context = character.GetContext(CharacterData.ContextType.None, option, false);
-				if (option.Contains(Option.Faraday))
+				if (perActorRecipe != null)
+				{
+					recipes.AddRange(character.recipes.Select(r => (Recipe)r.Clone()));
+					foreach (var recipe in recipes)
+					{
+						recipe.templates.RemoveAll(t => t.isPerActor);
+						recipe.blocks.RemoveAll(b => b.isPerActor);
+					}
+				}
+				else
+					recipes.AddRange(character.recipes);
+
+				var context = character.GetContext(CharacterData.ContextType.None, options, false);
+				if (options.Contains(Option.Faraday))
 				{
 					context.SetFlag("__faraday");
 					context.SetFlag("__backyard");
-					if (option.Contains(Option.Linked))
+					if (options.Contains(Option.Linked))
 					{
 						context.SetFlag("__link");
 						if (AppSettings.BackyardLink.WriteUserPersona)
@@ -318,14 +331,14 @@ namespace Ginger
 							context.SetFlag("__author-note");
 					}
 				}
-				else if (option.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3))
+				else if (options.ContainsAny(Option.SillyTavernV2 | Option.SillyTavernV3))
 					context.SetFlag("__tavern");
-				if (option.ContainsAny(Option.SillyTavernV2))
+				if (options.ContainsAny(Option.SillyTavernV2))
 					context.SetFlag("__ccv2");
-				else if (option.ContainsAny(Option.SillyTavernV3))
+				else if (options.ContainsAny(Option.SillyTavernV3))
 					context.SetFlag("__ccv3");
 
-				if (option.Contains(Option.Preview))
+				if (options.Contains(Option.Preview))
 				{
 					context.SetFlag("__preview");
 
@@ -348,9 +361,27 @@ namespace Ginger
 					}
 				}
 
-				var characterOutput = Generate(recipes, index, context, option);
-				outputPerCharacter.Add(characterOutput);
+				partialOutputPerCharacter.Add(BuildGraph(recipes, index, context, options));
 			}
+
+			for (int index = 0; index < Current.Characters.Count; ++index)
+			{
+				var character = Current.Characters[index];
+				if (perActorRecipes[index] == null)
+					continue;
+
+				var perActorRecipe = perActorRecipes[index];
+
+				for (int i = 0; i < Current.Characters.Count; ++i)
+				{
+					var perActorOutput = BuildGraph(new List<Recipe> { perActorRecipe }, i, partialOutputPerCharacter[i].context, options);
+					partialOutputPerCharacter[index] = PartialOutput.Merge(partialOutputPerCharacter[index], perActorOutput);
+				}
+			}
+
+			List<Output> outputPerCharacter = new List<Output>();
+			for (int index = 0; index < Current.Characters.Count; ++index)
+				outputPerCharacter.Add(CompileOutput(partialOutputPerCharacter[index], index, options));
 
 			// Add style grammar?
 			if (Current.Card.useStyleGrammar
@@ -361,12 +392,11 @@ namespace Ginger
 				Recipe grammarStyleRecipe = RecipeBook.GetRecipeByID(RecipeBook.StyleGrammar[textStyle])?.Instantiate();
 				if (grammarStyleRecipe != null)
 				{
-					var grammarOutput = Generate(new List<Recipe> { grammarStyleRecipe }, 0, outputPerCharacter[0].context, option);
+					var grammarOutput = Generate(new List<Recipe> { grammarStyleRecipe }, 0, outputPerCharacter[0].context, options);
 					outputPerCharacter[0] = outputPerCharacter[0].WithText(Recipe.Component.Grammar, grammarOutput.grammar);
 					outputPerCharacter[0].context.SetFlags(grammarOutput.context.GetFlags());
 				}
 			}
-
 
 			return outputPerCharacter;
 		}
@@ -382,7 +412,14 @@ namespace Ginger
 		public static Output Generate(List<Recipe> recipes, int characterIndex, Context context, Option options)
 		{
 			var partialOutput = BuildGraph(recipes, characterIndex, context, options);
+			return CompileOutput(partialOutput, characterIndex, options);
+		}
+
+		private static Output CompileOutput(PartialOutput partialOutput, int characterIndex, Option options)
+		{
 			var blockBuilder = partialOutput.blockBuilder;
+
+			Context context = partialOutput.context;
 
 			// (Silly tavern) Build important block separately
 			GingerString postHistory = GingerString.Empty;
@@ -408,7 +445,8 @@ namespace Ginger
 			}
 
 			// Should insert original model instructions?
-			bool bPrependOriginal = options.ContainsAny(Option.Export | Option.Preview)
+			bool bPrependOriginal = characterIndex == 0 
+				&& options.ContainsAny(Option.Export | Option.Preview)
 				&& !(context.HasFlag(Constants.Flag.System) || context.HasFlag(Constants.Flag.Base) || context.HasFlag("system-prompt")
 					|| blockBuilder.BlockHasChildren("system/output", true));
 
@@ -431,7 +469,6 @@ namespace Ginger
 			var group_greetings = partialOutput.group_greetings;
 			var grammar = partialOutput.grammarOutput;
 			var lore = partialOutput.lore;
-			var finalContext = partialOutput.context;
 
 			// Insert original model instructions
 			if (bPrependOriginal 
@@ -485,13 +522,13 @@ namespace Ginger
 				greetings = greetings,
 				group_greetings = group_greetings,
 				lorebook = lore,
-				context = finalContext,
+				context = context,
 			};
 		}
 
 		public static Output[] GenerateMany(Option option = Option.Export)
 		{
-			List<Output> outputPerCharacter = GenerateAllCharacters(option);
+			List<Output> outputPerCharacter = GenerateAllCharacters(option | Option.Group);
 
 			// Combine character outputs
 			int numChannels = EnumHelper.ToInt(Recipe.Component.Count);
@@ -575,47 +612,61 @@ namespace Ginger
 
 			public static PartialOutput Merge(PartialOutput a, PartialOutput b)
 			{
-				BlockBuilder blockBuilder;
+				BlockBuilder mergedBlocks;
 				if (a.blockBuilder != null && b.blockBuilder != null)
-					blockBuilder = BlockBuilder.Merge(a.blockBuilder, b.blockBuilder);
+					mergedBlocks = BlockBuilder.Merge(a.blockBuilder, b.blockBuilder);
 				else if (a.blockBuilder == null && b.blockBuilder != null)
-					blockBuilder = b.blockBuilder;
+					mergedBlocks = b.blockBuilder;
 				else if (a.blockBuilder != null && b.blockBuilder == null)
-					blockBuilder = a.blockBuilder;
+					mergedBlocks = a.blockBuilder;
 				else
-					blockBuilder = new BlockBuilder();
+					mergedBlocks = new BlockBuilder();
 
-				Lorebook lorebook;
+				Lorebook mergedLorebook;
 				if (a.lore != null && b.lore != null)
-					lorebook = Lorebook.Merge(new List<Lorebook> { a.lore, b.lore });
+					mergedLorebook = Lorebook.Merge(new List<Lorebook> { a.lore, b.lore });
 				else if (a.lore == null && b.lore != null)
-					lorebook = b.lore;
+					mergedLorebook = b.lore;
 				else if (a.lore != null && b.lore == null)
-					lorebook = a.lore;
+					mergedLorebook = a.lore;
 				else
-					lorebook = null;
+					mergedLorebook = null;
+
+				GingerString mergedGrammar;
+				if (!a.grammarOutput.IsNullOrEmpty() && !b.grammarOutput.IsNullOrEmpty())
+					mergedGrammar = GingerString.FromString(string.Concat(a.grammarOutput.ToString(), "\n", b.grammarOutput.ToString()));
+				else if (!a.grammarOutput.IsNullOrEmpty())
+					mergedGrammar = a.grammarOutput;
+				else if (!b.grammarOutput.IsNullOrEmpty())
+					mergedGrammar = b.grammarOutput;
+				else
+					mergedGrammar = GingerString.Empty;
+
+				var mergedGreetings = Utility.ConcatenateArrays(a.greetings, b.greetings);
+				var mergedGreetingsGroup = Utility.ConcatenateArrays(a.group_greetings, b.group_greetings);
 
 				return new PartialOutput() {
-					blockBuilder = blockBuilder,
-					lore = lorebook,
-					greetings = Utility.ConcatenateArrays(a.greetings, b.greetings),
-					group_greetings = Utility.ConcatenateArrays(a.group_greetings, b.group_greetings),
-					grammarOutput = GingerString.FromString(string.Concat(a.grammarOutput.ToString(), b.grammarOutput.ToString())),
-					context = Context.Merge(a.context, b.context),
+					blockBuilder = mergedBlocks,
+					greetings = mergedGreetings,
+					group_greetings = mergedGreetingsGroup,
+					grammarOutput = mergedGrammar,
+					lore = mergedLorebook,
+					context = a.context, //!
 				};
 			}
 		}
 
 		private static PartialOutput BuildGraph(List<Recipe> recipes, int characterIndex, Context context, Option options)
 		{
-			BlockBuilder blockBuilder = new BlockBuilder();
+			BlockBuilder graph = new BlockBuilder();
 			List<Lorebook> loreEntries = new List<Lorebook>();
 
 			var randomizer = new RandomNoise(Current.seed);
 			int numChannels = EnumHelper.ToInt(Recipe.Component.Count);
-			List<string>[] lsOutputsByChannel = new List<string>[numChannels];
-			for (int i = 0; i < numChannels; ++i)
-				lsOutputsByChannel[i] = new List<string>();
+			List<string> greetings_text = new List<string>();
+			List<string> example_chat_text = new List<string>();
+			List<string> greetings_group_text = new List<string>();
+			List<string> grammar_text = new List<string>();
 
 			var globalContext = Context.Copy(context);
 			if (options.Contains(Option.Bake) || options.Contains(Option.Snippet))
@@ -709,11 +760,11 @@ namespace Ginger
 						string attributeLabel = Text.Eval(string.Format("[!__attrib:{0}]", attributeName), localContext, evalConfig,
 							Text.EvalOption.None);
 
-						blockBuilder.AddAttribute(attribute, attributeName, attributeLabel, text);
+						graph.AddAttribute(attribute, attributeName, attributeLabel, text);
 					}
 					else
 					{
-						blockBuilder.Add(block, text);
+						graph.Add(block, text);
 					}
 				}
 			}
@@ -751,27 +802,59 @@ namespace Ginger
 							randomizer = randomizer,
 						}, Text.EvalOption.None);
 
-					if (text.Length > 0)
-					{
-						var channel = template.channel;
-						if (channel == Recipe.Component.System && template.isImportant)
-							channel = Recipe.Component.System_PostHistory;
-						else if (channel == Recipe.Component.Greeting && template.isGroupOnly)
-							channel = Recipe.Component.Greeting_Group;
+					if (string.IsNullOrWhiteSpace(text))
+						continue;
 
-						if (channel == Recipe.Component.Grammar)
-						{
-							if (options.Contains(Option.Snippet) == false)
-								text = GingerString.RemoveComments(text);
-							lsOutputsByChannel[(int)channel].Add(Text.DontProcess(Utility.Unindent(Text.Process(text, Text.EvalOption.Minimal))));
-						}
-						else if (channel == Recipe.Component.Example || channel == Recipe.Component.Greeting || channel == Recipe.Component.Greeting_Group)
-							lsOutputsByChannel[(int)channel].Add(Text.DontProcess(Utility.Unindent(Text.Process(text, Text.EvalOption.ExampleFormatting))));
-						else if (template.isRaw)
-							lsOutputsByChannel[(int)channel].Add(Text.DontProcess(text));
-						else
-							lsOutputsByChannel[(int)channel].Add(text);
+					var channel = template.channel;
+					if (channel == Recipe.Component.System && template.isImportant)
+						channel = Recipe.Component.System_PostHistory;
+					else if (channel == Recipe.Component.Greeting && template.isGroupOnly)
+						channel = Recipe.Component.Greeting_Group;
+
+					// Process text
+					Text.EvalOption evalOptions;
+					if (channel == Recipe.Component.Persona
+						|| channel == Recipe.Component.System
+						|| channel == Recipe.Component.System_PostHistory
+						|| channel == Recipe.Component.Scenario
+						|| channel == Recipe.Component.UserPersona)
+						evalOptions = Text.EvalOption.StandardOutputFormatting;
+					else
+					{
+						evalOptions = Text.EvalOption.LimitedOutputFormatting;
 					}
+
+					if (channel == Recipe.Component.Grammar)
+					{
+						if (options.Contains(Option.Snippet) == false)
+							text = GingerString.RemoveComments(text);
+						text = Text.DontProcess(Utility.Unindent(Text.Process(text, Text.EvalOption.Minimal)));
+					}
+					else if (channel == Recipe.Component.Example || channel == Recipe.Component.Greeting || channel == Recipe.Component.Greeting_Group)
+						text = Text.DontProcess(Utility.Unindent(Text.Process(text, Text.EvalOption.ExampleFormatting)));
+					else if (template.isRaw)
+						text = Text.DontProcess(text);
+					else
+						text = Text.Process(text, evalOptions);
+
+					string blockID = GetOutputNodePath(channel);
+
+					if (blockID != null)
+					{
+						graph.Add(new Block() {
+							id = blockID,
+							style = Block.Style.Undefined,
+							formatting = Block.Formatting.None,
+						}, text);
+					}
+					else if (channel == Recipe.Component.Greeting)
+						greetings_text.Add(text);
+					else if (channel == Recipe.Component.Greeting_Group)
+						greetings_group_text.Add(text);
+					else if (channel == Recipe.Component.Example)
+						example_chat_text.Add(text);
+					else if (channel == Recipe.Component.Grammar)
+						grammar_text.Add(text);
 				}
 
 				// Lore items <Lore>
@@ -837,134 +920,115 @@ namespace Ginger
 			}
 
 			// Combine and finalize outputs
-			GingerString[] greetings = null;
-			GingerString[] group_greetings = null;
+			GingerString[] greetingsOutput = null;
+			GingerString[] groupGreetingsOutput = null;
 			GingerString grammarOutput = new GingerString();
 
-			for (int iChannel = 0; iChannel < numChannels; ++iChannel)
+			if (greetings_text.Count > 0) // Compile greetings
 			{
-				Recipe.Component channel = EnumHelper.FromInt(iChannel, Recipe.Component.Invalid);
-
-				// Process outputs
-				for (int i = 0; i < lsOutputsByChannel[iChannel].Count; ++i)
+				StringBuilder sbGreeting = new StringBuilder();
+				var lsOutput = new List<GingerString>();
+				for (int i = 0; i < greetings_text.Count; ++i)
 				{
-					if (channel == Recipe.Component.Grammar)
-						continue; // Grammar mustn't be processed
-
-					Text.EvalOption evalOptions;
-					if (channel == Recipe.Component.Persona
-						|| channel == Recipe.Component.System
-						|| channel == Recipe.Component.System_PostHistory
-						|| channel == Recipe.Component.Scenario
-						|| channel == Recipe.Component.UserPersona)
-						evalOptions = Text.EvalOption.StandardOutputFormatting;
+					string text = GingerString.FromOutput(greetings_text[i], characterIndex, options).ToString();
+					if (sbGreeting.Length == 0)
+						sbGreeting.Append(text);
 					else
 					{
-						evalOptions = Text.EvalOption.LimitedOutputFormatting;
-					}
-
-					string text = lsOutputsByChannel[iChannel][i];
-					text = Text.Process(text, evalOptions);
-					lsOutputsByChannel[iChannel][i] = text;
-				}
-
-				if (channel == Recipe.Component.Greeting || channel == Recipe.Component.Greeting_Group) // Separate greetings
-				{
-					StringBuilder sbGreeting = new StringBuilder();
-					var lsGreetings = new List<GingerString>();
-					for (int i = 0; i < lsOutputsByChannel[iChannel].Count; ++i)
-					{
-						string text = GingerString.FromOutput(lsOutputsByChannel[iChannel][i], characterIndex, options).ToString();
-						if (sbGreeting.Length == 0)
-						{
-							sbGreeting.Append(text);
-						}
+						if (sbGreeting.Contains(GingerString.InternalContinueMarker, false))
+							sbGreeting.Replace(GingerString.InternalContinueMarker, text);
 						else
 						{
-							if (sbGreeting.Contains(GingerString.InternalContinueMarker, false))
-							{
-								sbGreeting.Replace(GingerString.InternalContinueMarker, text);
-							}
-							else
-							{
-								lsGreetings.Add(GingerString.FromString(sbGreeting.ToString()).ApplyTextStyle(Current.Card.textStyle));
-								sbGreeting.Clear();
-								sbGreeting.Append(text);
-							}
+							lsOutput.Add(GingerString.FromString(sbGreeting.ToString()).ApplyTextStyle(Current.Card.textStyle));
+							sbGreeting.Clear();
+							sbGreeting.Append(text);
 						}
 					}
-
-					if (sbGreeting.Length > 0)
-					{
-						sbGreeting.Replace(GingerString.InternalContinueMarker, "");
-						lsGreetings.Add(GingerString.FromString(sbGreeting.ToString()).ApplyTextStyle(Current.Card.textStyle));
-					}
-
-					if (channel == Recipe.Component.Greeting)
-						greetings = lsGreetings.ToArray();
-					else if (channel == Recipe.Component.Greeting_Group)
-						group_greetings = lsGreetings.ToArray();
 				}
-				else if (channel == Recipe.Component.Example)
+				if (sbGreeting.Length > 0)
 				{
-					string text = string.Join(Text.ParagraphBreak, lsOutputsByChannel[iChannel]);
-					text = GingerString.FromOutput(text, characterIndex, options, Text.EvalOption.Minimal)
-						.ApplyTextStyle(Current.Card.textStyle)
-						.ToString();
+					sbGreeting.Replace(GingerString.InternalContinueMarker, "");
+					lsOutput.Add(GingerString.FromString(sbGreeting.ToString()).ApplyTextStyle(Current.Card.textStyle));
+				}
 
-					blockBuilder.Add(new Block() {
-						id = "example/output/value",
-						style = Block.Style.Undefined,
-						formatting = Block.Formatting.None,
-					}, text);
-				}
-				else if (channel == Recipe.Component.Grammar)
+				greetingsOutput = lsOutput.ToArray();
+			}
+			if (greetings_group_text.Count > 0) // Compile greetings (group-only)
+			{
+				StringBuilder sbGreeting = new StringBuilder();
+				var lsOutput = new List<GingerString>();
+				for (int i = 0; i < greetings_group_text.Count; ++i)
 				{
-					string text = string.Join(Text.Separator, lsOutputsByChannel[iChannel]);
-					grammarOutput = GingerString.FromOutput(text, characterIndex, options);
-				}
-				else
-				{
-					string blockID;
-					switch (channel)
+					string text = GingerString.FromOutput(greetings_group_text[i], characterIndex, options).ToString();
+					if (sbGreeting.Length == 0)
+						sbGreeting.Append(text);
+					else
 					{
-					case Recipe.Component.System:
-						blockID = "system/output/value";
-						break;
-					case Recipe.Component.System_PostHistory:
-						blockID = "system/important/output/value";
-						break;
-					case Recipe.Component.UserPersona:
-						blockID = "user/output/value";
-						break;
-					case Recipe.Component.Scenario:
-						blockID = "scenario/output/value";
-						break;
-					default:
-						blockID = "persona/output/value";
-						break;
-					}
-					for (int i = 0; i < lsOutputsByChannel[iChannel].Count; ++i)
-					{
-						string text = Text.Process(lsOutputsByChannel[iChannel][i], Text.EvalOption.Minimal);
-						blockBuilder.Add(new Block() {
-							id = blockID,
-							style = Block.Style.Undefined,
-							formatting = Block.Formatting.None,
-						}, text);
+						if (sbGreeting.Contains(GingerString.InternalContinueMarker, false))
+							sbGreeting.Replace(GingerString.InternalContinueMarker, text);
+						else
+						{
+							lsOutput.Add(GingerString.FromString(sbGreeting.ToString()).ApplyTextStyle(Current.Card.textStyle));
+							sbGreeting.Clear();
+							sbGreeting.Append(text);
+						}
 					}
 				}
+				if (sbGreeting.Length > 0)
+				{
+					sbGreeting.Replace(GingerString.InternalContinueMarker, "");
+					lsOutput.Add(GingerString.FromString(sbGreeting.ToString()).ApplyTextStyle(Current.Card.textStyle));
+				}
+
+				groupGreetingsOutput = lsOutput.ToArray();
+			}
+			if (example_chat_text.Count > 0) // Example chat
+			{
+				string text = string.Join(Text.ParagraphBreak, example_chat_text);
+				text = GingerString.FromOutput(text, characterIndex, options, Text.EvalOption.Minimal)
+					.ApplyTextStyle(Current.Card.textStyle)
+					.ToString();
+
+				graph.Add(new Block() {
+					id = "example/output/value",
+					style = Block.Style.Undefined,
+					formatting = Block.Formatting.None,
+				}, text);
+			}
+			if (grammar_text.Count > 0) // Grammar
+			{
+				string grammarText = string.Join(Text.Separator, grammar_text);
+				grammarOutput = GingerString.FromOutput(grammarText, characterIndex, options);
 			}
 
 			return new PartialOutput() {
-				blockBuilder = blockBuilder,
-				grammarOutput = grammarOutput,
-				greetings = greetings,
-				group_greetings = group_greetings,
+				blockBuilder = graph,
+				greetings = greetingsOutput ?? new GingerString[0],
+				group_greetings = groupGreetingsOutput ?? new GingerString[0],
 				lore = Lorebook.Merge(loreEntries),
+				grammarOutput = grammarOutput,
 				context = finalContext,
 			};
 
+		}
+
+		private static string GetOutputNodePath(Recipe.Component channel)
+		{
+			switch (channel)
+			{
+			case Recipe.Component.System:
+				return "system/output/value";
+			case Recipe.Component.System_PostHistory:
+				return "system/important/output/value";
+			case Recipe.Component.UserPersona:
+				return "user/output/value";
+			case Recipe.Component.Scenario:
+				return "scenario/output/value";
+			case Recipe.Component.Persona:
+				return "persona/output/value";
+			default:
+				return null;
+			}
 		}
 
 		private struct AdjectiveNoun
@@ -1043,6 +1107,12 @@ namespace Ginger
 						continue;
 
 					int order;
+					List<string> words;
+					if (noun.affix == CharacterNoun.Affix.Addendum)
+						words = new List<string> { text }; // Include commas
+					else
+						words = Utility.ListFromCommaSeparatedString(text); // Separate by comma
+
 					if (noun.affix == CharacterNoun.Affix.Prefix)
 						order = -1;
 					else if (noun.affix == CharacterNoun.Affix.Suffix)
@@ -1051,8 +1121,7 @@ namespace Ginger
 						order = 2;
 					else
 						order = 0;
-
-					var words = Utility.ListFromCommaSeparatedString(text);
+					
 					lsNouns.Add(new AdjectiveNoun() {
 						value = randomizer.Item(words),
 						order = order,
@@ -1206,12 +1275,12 @@ namespace Ginger
 				targetContext.SetValue(Constants.Variables.Noun, noun);
 		}
 
-		private static Recipe GetPerActorRecipe(List<CharacterData> characters)
+		private static Recipe GetPerActorRecipe(CharacterData character)
 		{
 			// Get per-actor templates, nodes
 			var templates = new List<Recipe.Template>();
 			var blocks = new List<Block>();
-			foreach (var recipe in characters.SelectMany(c => c.recipes).Where(r => r.isEnabled))
+			foreach (var recipe in character.recipes.Where(r => r.isEnabled))
 			{
 				for (int i = recipe.templates.Count - 1; i >= 0; i--)
 				{
@@ -1266,6 +1335,8 @@ namespace Ginger
 				|| ((options.Contains(Option.Export | Option.Linked) || options.Contains(Option.Preview | Option.Linked)) 
 				&& AppSettings.BackyardLink.WriteAuthorNote)) // Backyard, linked (author's note)
 				postHistory = GingerString.FromOutput(blockBuilder.Build("system/important"), characterIndex, options, Text.EvalOption.OutputFormatting);
+
+			// Lore 
 
 			// Standard output:
 			var systemOutput = GingerString.FromOutput(blockBuilder.Build("system/output"), characterIndex, options, Text.EvalOption.OutputFormatting);

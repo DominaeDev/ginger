@@ -1,7 +1,6 @@
 <Ginger>
 	<!-- Macros -->
-	<Macro id="characters">[!semilist:[char];[actors]]</Macro>
-	<Macro id="everyone">[!semilist:[char];[actors];[user]]</Macro>
+	<Macro id="everyone">[!semilist:[characters];[user]]</Macro>
 	<Wrapper id="abbr">[noparse]_[parse][nocap]</Wrapper>
 	<Wrapper id="raw, ignore">[noparse]_[parse]</Wrapper>
 	<Macro id="the">[..the?|the]</Macro>
@@ -53,11 +52,10 @@
 	<Rule id="__support-lore-wildcards">__backyard or __bake or __snippet</Rule>
 
 	<!-- Internal macros-->
-	<Macro id="char, character, bot">&lt;##CHAR##&gt;</Macro>
-	<Macro id="user">&lt;##USER##&gt;</Macro>
+	<Macro id="character, bot">[char]</Macro>
+	<Macro id="char's, character's, bot's">[char]'s</Macro>
+	<Macro id="user's">[char]'s</Macro>
 	<Macro id="original">[__faraday or __backyard or __tavern?&lt;##ORIGINAL##&gt;]</Macro>
-	<Macro id="char's, character's, bot's">&lt;##CHAR##&gt;'s</Macro>
-	<Macro id="user's">&lt;##USER##&gt;'s</Macro>
 	<Macro id="inner">&lt;##INNER##&gt;</Macro>
 	<Macro id="continue">&lt;##CONTINUE##&gt;</Macro>
 	

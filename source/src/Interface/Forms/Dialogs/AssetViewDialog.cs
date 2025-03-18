@@ -806,7 +806,5 @@ namespace Ginger
 		{
 			AddImageAssets(AssetFile.AssetType.Background);
 		}
-
-
 	}
 }

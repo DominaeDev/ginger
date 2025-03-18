@@ -190,7 +190,7 @@ namespace Ginger
 		public Color color = Constants.DefaultColor;
 		public bool hasCustomColor;
 		public StringBank strings = new StringBank();
-		public bool allowMultiple = false;
+		public AllowMultiple allowMultiple = AllowMultiple.No;
 		public bool isBase { get { return flags.Contains(Constants.Flag.Base) || category == Category.Base; } }
 		public bool isInternal { get { return flags.Contains(Constants.Flag.Internal); } }
 		public bool isExternal { get { return filename == Constants.Flag.External; } }
@@ -218,6 +218,13 @@ namespace Ginger
 		}
 		public DetailLevel levelOfDetail = DetailLevel.Default;
 		public bool enableNSFWContent = true;
+
+		public enum AllowMultiple
+		{ 
+			No = 0,
+			Yes,
+			One,
+		}
 
 		private static ICondition BaseExclusivityRule = Rule.Parse("not base");
 
@@ -322,7 +329,9 @@ namespace Ginger
 			author = xmlNode.GetValueElement("Author").SingleLine();
 
 			// Multiple
-			allowMultiple = xmlNode.GetValueElementBool("Multiple", false);
+			string multiple = xmlNode.GetValueElement("Multiple", "No");
+			if (EnumInfo<AllowMultiple>.Convert(multiple, out this.allowMultiple) == false)
+				allowMultiple = Utility.StringToBool(multiple) ? AllowMultiple.Yes : AllowMultiple.No;
 
 			// Order?
 			var orderNode = xmlNode.GetFirstElement("Order");
@@ -543,8 +552,8 @@ namespace Ginger
 				xmlNode.AddValueElement("Author", author);
 
 			// Multiple
-			if (allowMultiple)
-				xmlNode.AddValueElement("Multiple", true);
+			if (allowMultiple != AllowMultiple.No)
+				xmlNode.AddValueElement("Multiple", EnumHelper.ToString(allowMultiple));
 
 			// Order?
 			if (order.HasValue)
@@ -847,11 +856,17 @@ namespace Ginger
 			foreach (var parameter in parameters.OfType<IResettableParameter>())
 			{
 				string defaultValue = parameter.defaultValue;
+				if (parameter.raw)
+				{
+					parameter.ResetValue(defaultValue);
+					continue;
+				}
 
 				// Evaluate default value
 				if (string.IsNullOrEmpty(defaultValue) == false && defaultValue.IndexOfAny(brackets, 0) != -1)
 				{
-					defaultValue = GingerString.FromString(Text.Eval(defaultValue, evalContext, evalConfig, Text.EvalOption.Default)).ToParameter();
+					defaultValue = GingerString.FromString(Text.Eval(defaultValue, evalContext, evalConfig, Text.EvalOption.Default))
+						.ToParameter();
 					if (AppSettings.Settings.AutoConvertNames)
 						defaultValue = GingerString.WithNames(defaultValue, characterNames, userName);
 				}

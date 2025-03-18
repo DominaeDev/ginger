@@ -27,7 +27,7 @@
 		<Option id="voluptuous">Voluptuous</Option>
 		<Option id="weak">Weak</Option>
 	</Choice>
-	<SetVar id="body-type">{body-type}</SetVar>
+	<SetVar id="body" scope="global">{body-type:id.lower} body</SetVar>
 	
 	<!-- Hair style -->
 	<Choice id="hair-style" style="custom">
@@ -188,6 +188,7 @@
 		<String rule="not hair-color and hair-style">[@hair-color]</String>
 		<String rule="hair-color and not hair-style">[@hair-color] hair</String>
 	</String>
+	<SetVar id="hair" scope="global">[@hair.lower]</SetVar>
 	
 	<String id="hair-color-short" rule="hair-color">[@hair-color] hair</String>
 	
@@ -215,7 +216,7 @@
 		<String rule="hair-very-short" priority="1">very short hair</String>
 		<String rule="hair-wild" priority="1">wild, messy hair</String>
 		<String rule="hair-color and hair-style">{hair-style.lower}</String>
-	</String>	
+	</String>
 	
 	<String id="eyes">
 		<String rule="eye-color-black" priority="1">deep black eyes</String>
@@ -229,6 +230,7 @@
 		<String rule="eye-color-purple" priority="1">purple eyes</String>
 		<String rule="eye-color">{eye-color.lower} eyes</String>
 	</String>
+	<SetVar id="eyes" scope="global">[@eyes.lower]</SetVar>
 
 	<String id="skin-tone">
 		<String rule="skin-albino" priority="1">Albino skin</String>
@@ -243,6 +245,7 @@
 		<String rule="skin-gray" priority="1">Ash gray</String>
 		<String rule="skin-tone">{skin-tone} skin</String>
 	</String>
+	<SetVar id="skin" scope="global">[@skin-tone.lower]</SetVar>
 	
 	<!-- Body type -->
 	<Node path="persona/appearance/body" order="10" rule="normal-detail and body-type:id is anorexic">[char] is all skin and bones. [They] [are] severely underweight, borderline anorexic.</Node>
@@ -280,5 +283,6 @@
 	</Attribute>
 	
 	<Adjective order="color" rule="normal-detail and skin-tone">{skin-tone.lower}-skinned</Adjective>
+	<Adjective order="quality" rule="normal-detail">{body-type:id.lower}</Adjective>
 
 </Ginger>

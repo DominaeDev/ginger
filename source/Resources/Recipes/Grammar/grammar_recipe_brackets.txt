@@ -2,7 +2,7 @@
 	<Grammar rule="__support-grammar"><![CDATA[
 root ::= pattern stop
 pattern ::= pa | pb
-stop ::= ("#"|"<")
+stop ::= ("#"|"<")?
 delim ::= (" "|"\n")
 text ::= [[^<#\n*"()]]+
 dialogue ::= text

@@ -52,7 +52,7 @@ namespace Ginger
 			{
 				string sValue;
 				if (value.IndexOfAny(new char[] { '{', '}', '[', ']' }) != -1)
-					sValue = Text.Eval(value, state.evalContext, state.evalConfig);
+					sValue = Text.Eval(value, state.evalContext, state.evalConfig, Text.EvalOption.None);
 				else
 					sValue = value;
 				state.SetValue(id, sValue, scope);

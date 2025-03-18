@@ -160,7 +160,7 @@ namespace Ginger
 				panelHeight = snippetPanel.Size.Height;
 			}
 
-			canSwap &= GenderSwap.PronounsFromGender(Current.MainCharacter) != GenderSwap.Pronouns.Neutral
+			canSwap &= GenderSwap.PronounsFromGender(Current.Character) != GenderSwap.Pronouns.Neutral
 				|| GenderSwap.PronounsFromGender(Current.Card.userGender) != GenderSwap.Pronouns.Neutral;
 
 			_bIgnoreEvents = true;
@@ -188,7 +188,9 @@ namespace Ginger
 			if (channel == Recipe.Component.Greeting
 				|| channel == Recipe.Component.Greeting_Group
 				|| channel == Recipe.Component.Example)
+			{
 				originalText = TextStyleConverter.Convert(originalText, CardData.TextStyle.Mixed);
+			}
 
 			string swappedText = originalText;
 			GenderSwap.ToNeutralMarkers(ref swappedText); // him -> {them}
@@ -213,6 +215,7 @@ namespace Ginger
 
 			// Unescape
 			GingerString.Unescape(sb);
+			GingerString.ReplaceNameMarkers(sb);
 
 			sb.Trim();
 

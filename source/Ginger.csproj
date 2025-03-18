@@ -239,6 +239,12 @@
     <Compile Include="src\Interface\Controls\UserNotes.Designer.cs">
       <DependentUpon>UserNotes.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\RearrangeActorsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Interface\Forms\Dialogs\RearrangeActorsDialog.Designer.cs">
+      <DependentUpon>RearrangeActorsDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\EditModelSettingsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -754,6 +760,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Controls\UserNotes.resx">
       <DependentUpon>UserNotes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Interface\Forms\Dialogs\RearrangeActorsDialog.resx">
+      <DependentUpon>RearrangeActorsDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Interface\Forms\Dialogs\EditModelSettingsDialog.resx">
       <DependentUpon>EditModelSettingsDialog.cs</DependentUpon>

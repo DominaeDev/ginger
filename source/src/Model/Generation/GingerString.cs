@@ -327,6 +327,11 @@ namespace Ginger
 			sb.Replace(InternalNameMarker, NameMarker);
 			sb.Replace(InternalContinueMarker, ContinueMarker);
 
+			sb.Replace(MakeInternalCharacterMarker(0), CharacterMarker);
+			string[] characterNames = Current.Characters.Select(c => c.spokenName).ToArray();
+			for (int i = 1; i < characterNames.Length; ++i)
+				sb.Replace(MakeInternalCharacterMarker(i), characterNames[i]);
+
 			return sb.TrimStart().ToString();
 		}
 
@@ -757,6 +762,29 @@ namespace Ginger
 				if (sb[i] == '\\' && escapedCharacters.Contains(sb[i + 1]))
 					sb.Remove(i, 1);
 			}			
+		}
+
+		public static void ReplaceNameMarkers(StringBuilder sb, int selectedCharacter = -1)
+		{
+			sb.Replace(InternalCharacterMarker, CharacterMarker);
+
+			if (selectedCharacter < 0)
+				selectedCharacter = Current.SelectedCharacter;
+
+			for (int i = 0; i < Current.Characters.Count; ++i)
+			{
+				if (i == selectedCharacter)
+					sb.Replace(MakeInternalCharacterMarker(i), CharacterMarker);
+				else
+					sb.Replace(MakeInternalCharacterMarker(i), Current.Characters[i].spokenName);
+			}
+		}
+
+		public static string ReplaceNameMarkers(string text, int selectedCharacter = -1)
+		{
+			StringBuilder sb = new StringBuilder(text);
+			ReplaceNameMarkers(sb, selectedCharacter);
+			return sb.ToString();
 		}
 
 	}

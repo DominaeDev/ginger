@@ -345,7 +345,8 @@ namespace Ginger
 					ext = "jpeg";
 
 				var data = AssetData.FromBytes(bytes);
-				if (assets.ContainsAny(a => a.data.hash == data.hash
+				if (assets.ContainsAny(a => a.assetType == AssetFile.AssetType.Background 
+					&& a.data.hash == data.hash
 					&& string.Compare(a.ext, ext, StringComparison.InvariantCultureIgnoreCase) == 0))
 				{
 					asset = default(AssetFile);
@@ -364,6 +365,9 @@ namespace Ginger
 						uriType = AssetFile.UriType.Embedded,
 						tags = new HashSet<StringHandle>() { AssetFile.Tag.MainBackground }
 					};
+
+					if (Utility.IsAnimation(bytes))
+						asset.AddTags(AssetFile.Tag.Animation);
 
 					int idxExisting = assets.IndexOfAny(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
 					if (idxExisting != -1)
@@ -485,6 +489,16 @@ namespace Ginger
 					_asset.AddTags(AssetFile.Tag.Animation);
 				return _asset;
 			}
+		}
+				
+		public static AssetFile GetBackground(this AssetCollection assets)
+		{
+			return assets
+				.Where(a => a.assetType == AssetFile.AssetType.Background
+					&& a.isEmbeddedAsset
+					&& a.data.isEmpty == false
+					&& Utility.IsSupportedImageFileExt(a.ext))
+				.FirstOrDefault();
 		}
 	}
 }
