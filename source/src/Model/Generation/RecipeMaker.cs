@@ -34,7 +34,7 @@ namespace Ginger
 			if (output.hasLore)
 			{
 				loreItems = output.lorebook.entries
-					.Select(l => new KeyValuePair<string, string>(l.key, GingerString.ReplaceNameMarkers(l.value)))
+					.Select(l => new KeyValuePair<string, string>(l.key, GingerString.ConvertNamePlaceholders(l.value)))
 					.ToArray();
 			}
 
@@ -514,7 +514,7 @@ namespace Ginger
 
 			// Unescape
 			GingerString.Unescape(sb);
-			GingerString.ReplaceNameMarkers(sb);
+			GingerString.ConvertNamePlaceholders(sb);
 
 			sb.Trim();
 			sb.ConvertLinebreaks(Linebreak.CRLF);

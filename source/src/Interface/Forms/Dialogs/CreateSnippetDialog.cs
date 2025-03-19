@@ -215,7 +215,7 @@ namespace Ginger
 
 			// Unescape
 			GingerString.Unescape(sb);
-			GingerString.ReplaceNameMarkers(sb);
+			GingerString.ConvertNamePlaceholders(sb);
 
 			sb.Trim();
 

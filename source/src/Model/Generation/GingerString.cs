@@ -58,6 +58,8 @@ namespace Ginger
 			sb.Replace(OriginalMarker, "{{original}}", true);
 			sb.Replace(NameMarker, Current.Name, true);
 			sb.Replace(ContinueMarker, "", true);
+			ConvertNamePlaceholders(sb, TavernCharacterMarker);
+
 			UnescapeBackslash(sb);
 			sb.ConvertLinebreaks(Linebreak.LF);
 			sb.TrimTrailingSpaces();
@@ -153,6 +155,28 @@ namespace Ginger
 			sb.Replace(OriginalMarker, "{original}", true);
 			sb.Replace(NameMarker, Current.Name, true);
 			sb.Replace(ContinueMarker, "", true);
+			ConvertNamePlaceholders(sb, BackyardCharacterMarker);
+			UnescapeBackslash(sb);
+
+			sb.ConvertLinebreaks(Linebreak.LF);
+			sb.Trim();
+			sb.TrimTrailingSpaces();
+			return sb.ToString();
+		}
+
+		public string ToFaradayPartyPreview()
+		{
+			StringBuilder sb = new StringBuilder(value);
+
+			sb.Replace(CharacterMarker, string.Concat("{", Current.MainCharacter.spokenName, "}"), true);
+			sb.Replace(UserMarker, BackyardUserMarker, true);
+			sb.Replace(OriginalMarker, BackyardOriginalMarker, true);
+			sb.Replace(NameMarker, Current.Name, true);
+			sb.Replace(ContinueMarker, "", true);
+			
+			for (int i = 0; i < Current.Characters.Count; ++i)
+				sb.Replace(MakeInternalCharacterMarker(i), string.Concat("{", Current.Characters[i].spokenName, "}"));
+
 			UnescapeBackslash(sb);
 
 			sb.ConvertLinebreaks(Linebreak.LF);
@@ -375,19 +399,6 @@ namespace Ginger
 			sb.Replace(InternalOriginalMarker, OriginalMarker);
 			sb.Replace(InternalNameMarker, NameMarker);
 			sb.Replace(InternalContinueMarker, ContinueMarker);
-
-			// Convert internal markers
-			if (options.ContainsAny(Generator.Option.Single | Generator.Option.All)) // Solo
-			{
-				sb.Replace(MakeInternalCharacterMarker(0), CharacterMarker);
-				for (int i = 1; i < characterNames.Length; ++i)
-					sb.Replace(MakeInternalCharacterMarker(i), characterNames[i]);
-			} 
-			else if (options.ContainsAny(Generator.Option.Group)) // Group
-			{
-				// Do nothing
-			}
-
 			string text = Text.Process(sb.ToString(), evalOption)
 				.ConvertLinebreaks(Linebreak.LF);
 			return new GingerString(text);
@@ -403,6 +414,7 @@ namespace Ginger
 			sb.Replace(UserMarker, UserMarker, true); // Case insensitive
 			sb.Replace(OriginalMarker, OriginalMarker, true); // Case insensitive
 			sb.Replace(NameMarker, NameMarker, true); // Case insensitive
+			ConvertNamePlaceholders(sb, CharacterMarker);
 			UnescapeBackslash(sb);
 			sb.Trim();
 			sb.ConvertLinebreaks(Linebreak.Default);
@@ -430,13 +442,14 @@ namespace Ginger
 			if (value == null)
 				return null;
 
+			string mainCharacterPlaceholder;
 			StringBuilder sb;
-
 			switch (AppSettings.Settings.PreviewFormat)
 			{
 			default:
 			case AppSettings.Settings.OutputPreviewFormat.Default:
-				return ToGinger();
+				sb = new StringBuilder(ToGinger());
+				break;
 			case AppSettings.Settings.OutputPreviewFormat.SillyTavern:
 				if (channel == Recipe.Component.Example)
 					sb = new StringBuilder(ToTavernChat());
@@ -450,14 +463,13 @@ namespace Ginger
 					sb = new StringBuilder(ToFaraday());
 				break;
 			case AppSettings.Settings.OutputPreviewFormat.FaradayParty:
-				sb = new StringBuilder(ToFaraday());
-				string[] characterNames = Current.Characters.Select(c => c.spokenName).ToArray();
-				for (int i = 0; i < characterNames.Length; ++i)
-					sb.Replace(MakeInternalCharacterMarker(i), string.Concat("{", characterNames[i], "}"));
+				sb = new StringBuilder(ToFaradayPartyPreview());
 				break;
 			case AppSettings.Settings.OutputPreviewFormat.PlainText:
 				sb = new StringBuilder(ToGinger());
-				sb.Replace(CharacterMarker, Current.Name, true);
+				
+				// Resolve placeholders
+				sb.Replace(CharacterMarker, Current.MainCharacter.spokenName, true);
 				sb.Replace(UserMarker, Current.Card.userPlaceholder, true);
 				sb.Replace(OriginalMarker, "", true);
 				sb.Replace(ContinueMarker, "", true);
@@ -755,9 +767,9 @@ namespace Ginger
 			}			
 		}
 
-		public static void ReplaceNameMarkers(StringBuilder sb, int selectedCharacter = -1)
+		public static void ConvertNamePlaceholders(StringBuilder sb, string characterPlaceholder = null, int selectedCharacter = -1)
 		{
-			sb.Replace(InternalCharacterMarker, CharacterMarker);
+			sb.Replace(InternalCharacterMarker, characterPlaceholder);
 
 			if (selectedCharacter < 0)
 				selectedCharacter = Current.SelectedCharacter;
@@ -765,16 +777,16 @@ namespace Ginger
 			for (int i = 0; i < Current.Characters.Count; ++i)
 			{
 				if (i == selectedCharacter)
-					sb.Replace(MakeInternalCharacterMarker(i), CharacterMarker);
+					sb.Replace(MakeInternalCharacterMarker(i), characterPlaceholder ?? CharacterMarker);
 				else
 					sb.Replace(MakeInternalCharacterMarker(i), Current.Characters[i].spokenName);
 			}
 		}
 
-		public static string ReplaceNameMarkers(string text, int selectedCharacter = -1)
+		public static string ConvertNamePlaceholders(string text, string placeholder = null, int selectedCharacter = -1)
 		{
 			StringBuilder sb = new StringBuilder(text);
-			ReplaceNameMarkers(sb, selectedCharacter);
+			ConvertNamePlaceholders(sb, placeholder, selectedCharacter);
 			return sb.ToString();
 		}
 
