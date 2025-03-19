@@ -27,6 +27,16 @@ namespace Ginger
 		public static readonly string InternalContinueMarker = "<##CONTINUE##>";
 		public static string MakeInternalCharacterMarker(int index) => string.Format("<##CHAR{0:D2}##>", index);
 
+		// Backyard markers
+		public static readonly string BackyardCharacterMarker = "{character}";
+		public static readonly string BackyardUserMarker = "{user}";
+		public static readonly string BackyardOriginalMarker = "{original}";
+		
+		// SillyTavern markers
+		public static readonly string TavernCharacterMarker = "{{char}}";
+		public static readonly string TavernUserMarker = "{{user}}";
+		public static readonly string TavernOriginalMarker = "{{original}}";
+
 		private GingerString(string value)
 		{
 			this.value = value;
