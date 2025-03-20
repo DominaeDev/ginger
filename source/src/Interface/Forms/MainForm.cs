@@ -1672,12 +1672,6 @@ namespace Ginger
 			exportActorsMenuItem.Click += saveSeparatelyMenuItem_Click;
 			items.Add(exportActorsMenuItem);
 
-			if (Current.Characters.Count > 1)
-			{
-				var rearrangeActors = new ToolStripMenuItem("Rearrange...");
-				rearrangeActors.Click += RearrangeSupportingCharacterMenuItem_Click;
-				items.Add(rearrangeActors);
-			}
 
 			items.Add(new ToolStripSeparator());
 
@@ -1716,7 +1710,11 @@ namespace Ginger
 			if (Current.Characters.Count > 1)
 			{
 				items.Add(new ToolStripSeparator());
+				var rearrangeActors = new ToolStripMenuItem("Rearrange...");
+				rearrangeActors.Click += RearrangeSupportingCharacterMenuItem_Click;
+				items.Add(rearrangeActors);
 
+				items.Add(new ToolStripSeparator());
 				var removeActor = new ToolStripMenuItem(string.Format("Remove {0}", string.IsNullOrEmpty(Current.Character.spokenName) ? "actor" : Current.Character.spokenName));
 				removeActor.Click += RemoveSupportingCharacterMenuItem_Click;
 				items.Add(removeActor);

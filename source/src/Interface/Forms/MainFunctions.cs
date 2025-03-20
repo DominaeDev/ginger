@@ -3002,6 +3002,16 @@ namespace Ginger
 				importedCharacter.spokenName = Current.Name;
 				Current.Restore(stash);
 
+				// Replace last (if empty)
+				int lastIndex = Current.Characters.Count - 1;
+				var lastCharacter = Current.Characters[lastIndex];
+				if (lastCharacter.recipes.IsEmpty() && lastCharacter.namePlaceholder == Constants.DefaultCharacterName
+					&& ((lastIndex > 0 && Current.Card.assets.Count(a => a.actorIndex == lastIndex) == 0)
+						|| (lastIndex == 0 && Current.Card.portraitImage == null && Current.Card.assets.Count(a => a.actorIndex <= 0) == 0)) )
+				{
+					Current.Characters.RemoveAt(lastIndex);
+				}
+
 				Current.Characters.Add(importedCharacter);
 				Current.SelectedCharacter = Current.Characters.Count - 1;
 				Current.IsDirty = true;

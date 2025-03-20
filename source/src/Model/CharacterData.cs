@@ -409,6 +409,23 @@ namespace Ginger
 			}
 			return false;
 		}
+
+		public bool IsEmpty()
+		{
+			if (!recipes.IsEmpty() || namePlaceholder != Constants.DefaultCharacterName)
+				return false;
+			int index = Current.Characters.IndexOf(this);
+			if (index == 0)
+			{
+				return Current.Card.portraitImage == null 
+					&& Current.Card.assets.Count(a => a.actorIndex <= 0) == 0;
+			}
+			else if (index > 0)
+			{
+				return Current.Card.assets.Count(a => a.actorIndex == index) == 0;
+			}
+			return true;
+		}
 	}
 
 }

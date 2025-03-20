@@ -188,13 +188,6 @@ namespace Ginger
 					sbOutput.AppendLine();
 				}
 			}
-			if (string.IsNullOrEmpty(outputGrammar) == false && bShowGrammar)
-			{
-				sbOutput.AppendLine(Header("GRAMMAR"));
-				sbOutput.AppendLine();
-				sbOutput.AppendLine(outputGrammar);
-				sbOutput.AppendLine();
-			}
 
 			if (output.hasLore)
 			{
@@ -207,7 +200,17 @@ namespace Ginger
 					sbOutput.AppendLine(string.Format("#{0} [{1}]", i + 1, GingerString.FromString(entry.key).ToOutputPreview(Recipe.Component.Invalid)));
 					sbOutput.AppendLine(GingerString.FromString(entry.value).ToOutputPreview(Recipe.Component.Invalid));
 				}
+				sbOutput.AppendLine();
 			}
+
+			if (string.IsNullOrEmpty(outputGrammar) == false && bShowGrammar)
+			{
+				sbOutput.AppendLine(Header("GRAMMAR"));
+				sbOutput.AppendLine();
+				sbOutput.AppendLine(outputGrammar);
+				sbOutput.AppendLine();
+			}
+
 
 			if (sbOutput.Length == 0)
 			{
@@ -383,13 +386,7 @@ namespace Ginger
 					sbOutput.AppendLine();
 				}
 			}
-			if (string.IsNullOrEmpty(outputGrammar) == false && bShowGrammar)
-			{
-				sbOutput.AppendLine(Header("GRAMMAR"));
-				sbOutput.AppendLine();
-				sbOutput.AppendLine(outputGrammar);
-				sbOutput.AppendLine();
-			}
+
 
 			for (int i = 0; i < Current.Characters.Count && i < outputs.Length; ++i)
 			{
@@ -410,6 +407,15 @@ namespace Ginger
 					}
 					sbOutput.AppendLine();
 				}
+			}
+
+			
+			if (string.IsNullOrEmpty(outputGrammar) == false && bShowGrammar)
+			{
+				sbOutput.AppendLine(Header("GRAMMAR"));
+				sbOutput.AppendLine();
+				sbOutput.AppendLine(outputGrammar);
+				sbOutput.AppendLine();
 			}
 
 			if (sbOutput.Length == 0)
