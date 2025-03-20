@@ -15,6 +15,7 @@ namespace Ginger
 				None,
 				Dialogue,   // "..."
 				NonVerbal,  // *...*
+				Name,
 			}
 
 			public struct Span
@@ -142,16 +143,14 @@ namespace Ginger
 			if (string.IsNullOrEmpty(value) || textStyle == CardData.TextStyle.None)
 				return value;
 
-			bool useQuotes = textStyle == CardData.TextStyle.Novel
-				|| textStyle == CardData.TextStyle.Mixed
-				|| textStyle == CardData.TextStyle.Decorative
-				|| textStyle == CardData.TextStyle.Japanese;
-			bool useAsterisks = textStyle == CardData.TextStyle.Chat
-				|| textStyle == CardData.TextStyle.Mixed;
-			bool useDecorativeQuotes = textStyle == CardData.TextStyle.Decorative;
-			bool useJapaneseQuotes = textStyle == CardData.TextStyle.Japanese;
-			bool useParentheses = textStyle == CardData.TextStyle.Parentheses;
-			bool useBold = textStyle == CardData.TextStyle.Bold;
+			value = MarkStyles(value);
+			return ApplyStyle(value, textStyle);
+		}
+
+		public static string MarkStyles(string value)
+		{
+			if (string.IsNullOrEmpty(value))
+				return value;
 
 			StringBuilder sbReplace = new StringBuilder(value);
 			sbReplace.Replace(GingerString.CharacterMarker, "__CCCC__");
@@ -212,12 +211,13 @@ namespace Ginger
 					if (possibleName == "__CCCC__"
 						|| possibleName == "__UUUU__"
 						|| string.Compare(Current.Card.name, possibleName, true) == 0
+						|| possibleName.BeginsWith("<##CHAR")
 						|| Current.Characters.ContainsAny(c => string.Compare(c.spokenName, possibleName, true) == 0) // Known name
-						|| (possibleName.IndexOfAny(new char[] { ',', '.', ':', ';', '!', '?' }, 0) == -1 // No punctuation
+						|| (possibleName.IndexOfAny(new char[] { ',', '.', ':', ';', '!', '?', '<', '>' }, 0) == -1 // No punctuation
 							&& possibleName.Count(c => char.IsWhiteSpace(c)) < 4)) // 4 words or less
 					{
 						// Don't format
-						spans.Add(Spans.Mode.None, pos_line, pos_colon - pos_line + 1);
+						spans.Add(Spans.Mode.Name, pos_line, pos_colon - pos_line + 1);
 					}
 
 					pos_begin = pos_colon + 1;
@@ -255,26 +255,13 @@ namespace Ginger
 					var span = spans.spans[i];
 
 					if (span.mode == Spans.Mode.Dialogue)
-					{
-						if (useQuotes && useDecorativeQuotes)
-							ReplaceEncapsulationMarks(sb, span, '\u201C', '\u201D');
-						else if (useQuotes && useJapaneseQuotes)
-							ReplaceEncapsulationMarks(sb, span, '\u300C', '\u300D');
-						else if (useQuotes)
-							ReplaceEncapsulationMarks(sb, span, '"');
-						else if (hasQuotes)
-							ReplaceEncapsulationMarks(sb, span);
-					}
+						ReplaceEncapsulationMarks(sb, span, "<__DIALOGUE>", "</__DIALOGUE>");
 					else if (span.mode == Spans.Mode.NonVerbal)
+						ReplaceEncapsulationMarks(sb, span, "<__ACTION>", "</__ACTION>");
+					else if (span.mode == Spans.Mode.Name)
 					{
-						if (useAsterisks)
-							ReplaceEncapsulationMarks(sb, span, '*');
-						else if (useParentheses)
-							ReplaceEncapsulationMarks(sb, span, '(', ')');
-						else if (useBold)
-							ReplaceEncapsulationMarks(sb, span, "**", "**");
-						else if (hasAsterisks)
-							ReplaceEncapsulationMarks(sb, span);
+						sb.Insert(span.endPos, "</__NAME>");
+						sb.Insert(span.startPos, "<__NAME>");
 					}
 				}
 
@@ -286,6 +273,60 @@ namespace Ginger
 			sbNewValue.Replace("__UUUU__", GingerString.UserMarker);
 			sbNewValue.ConvertLinebreaks(Linebreak.CRLF);
 			return sbNewValue.ToString();
+		}
+
+		public static string ApplyStyle(string value, CardData.TextStyle textStyle)
+		{
+			if (string.IsNullOrEmpty(value))
+				return value;
+
+			string[] Dialogue;
+			string[] Action;
+			switch (textStyle)
+			{
+			default:
+			case CardData.TextStyle.None:
+				Dialogue	= new string[] { "", "" };
+				Action		= new string[] { "", "" };
+				break;
+			case CardData.TextStyle.Chat:
+				Dialogue	= new string[] { "", "" };
+				Action		= new string[] { "*", "*" };
+				break;
+			case CardData.TextStyle.Novel:
+				Dialogue	= new string[] { "\"", "\"" };
+				Action		= new string[] { "", "" };
+				break;
+			case CardData.TextStyle.Mixed:
+				Dialogue	= new string[] { "\"", "\"" };
+				Action		= new string[] { "*", "*" };
+				break;
+			case CardData.TextStyle.Decorative:
+				Dialogue	= new string[] { "\u201C", "\u201D" };
+				Action		= new string[] { "", "" };
+				break;
+			case CardData.TextStyle.Bold:
+				Dialogue	= new string[] { "", "" };
+				Action		= new string[] { "**", "**" };
+				break;
+			case CardData.TextStyle.Parentheses:
+				Dialogue	= new string[] { "", "" };
+				Action		= new string[] { "(", ")" };
+				break;
+			case CardData.TextStyle.Japanese:
+				Dialogue	= new string[] { "\u300C", "\u300D" };
+				Action		= new string[] { "", "" };
+				break;
+			}
+
+			StringBuilder sb = new StringBuilder(value);
+			sb.Replace("<__DIALOGUE>", Dialogue[0]);
+			sb.Replace("</__DIALOGUE>", Dialogue[1]);
+			sb.Replace("<__ACTION>", Action[0]);
+			sb.Replace("</__ACTION>", Action[1]);
+			sb.Replace("<__NAME>", "");
+			sb.Replace("</__NAME>", "");
+			return sb.ToString();
 		}
 
 		private static bool SkipSpans(ref int pos, Spans spans)

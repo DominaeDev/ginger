@@ -379,9 +379,20 @@ namespace Ginger
 				}
 			}
 
+			// Interweave example chats
+			var exampleChats = partialOutputPerCharacter
+				.Where(o => o.example_messages != null)
+				.SelectMany(o => o.example_messages)
+				.ToArray();
+
+			for (int i = 0; i < partialOutputPerCharacter.Count; ++i)
+				partialOutputPerCharacter[i].example_messages = null;
+
+			partialOutputPerCharacter[0].example_messages = exampleChats.ToArray();
+
 			List<Output> outputPerCharacter = new List<Output>();
 			for (int index = 0; index < Current.Characters.Count; ++index)
-				outputPerCharacter.Add(CompileOutput(partialOutputPerCharacter[index], index, options));
+				outputPerCharacter.Add(FinalizeOutput(partialOutputPerCharacter[index], index, options));
 
 			// Add style grammar?
 			if (Current.Card.useStyleGrammar
@@ -412,10 +423,10 @@ namespace Ginger
 		public static Output Generate(List<Recipe> recipes, int characterIndex, Context context, Option options)
 		{
 			var partialOutput = BuildGraph(recipes, characterIndex, context, options);
-			return CompileOutput(partialOutput, characterIndex, options);
+			return FinalizeOutput(partialOutput, characterIndex, options);
 		}
 
-		private static Output CompileOutput(PartialOutput partialOutput, int characterIndex, Option options)
+		private static Output FinalizeOutput(PartialOutput partialOutput, int characterIndex, Option options)
 		{
 			var blockBuilder = partialOutput.blockBuilder;
 
@@ -442,6 +453,23 @@ namespace Ginger
 					style = Block.Style.Undefined,
 					formatting = Block.Formatting.None,
 				}, scenario.ToString());
+			}
+			
+			// Example chat
+			if (partialOutput.example_messages != null && partialOutput.example_messages.Length > 0)
+			{
+				foreach (var message in partialOutput.example_messages)
+				{
+					string text = TextStyleConverter.ApplyStyle(message.message, Current.Card.textStyle);
+					if (message.name != null)
+						text = string.Concat(message.name, ": ", text);
+					
+					blockBuilder.Add(new Block() {
+						id = "example/output/value",
+						style = Block.Style.Undefined,
+						formatting = Block.Formatting.None,
+					}, text);
+				}
 			}
 
 			// Should insert original model instructions?
@@ -601,14 +629,21 @@ namespace Ginger
 			return outputs;
 		}
 
-		private struct PartialOutput
+		private class PartialOutput
 		{
 			public BlockBuilder blockBuilder;
 			public GingerString[] greetings;
 			public GingerString[] group_greetings;
 			public GingerString grammarOutput;
+			public ExampleChatMessage[] example_messages;
 			public Lorebook lore;
 			public Context context;
+
+			public struct ExampleChatMessage
+			{
+				public string name;
+				public string message;
+			}
 
 			public static PartialOutput Merge(PartialOutput a, PartialOutput b)
 			{
@@ -644,12 +679,14 @@ namespace Ginger
 
 				var mergedGreetings = Utility.ConcatenateArrays(a.greetings, b.greetings);
 				var mergedGreetingsGroup = Utility.ConcatenateArrays(a.group_greetings, b.group_greetings);
+				var mergedExampleChat = Utility.ConcatenateArrays(a.example_messages, b.example_messages);
 
 				return new PartialOutput() {
 					blockBuilder = mergedBlocks,
 					greetings = mergedGreetings,
 					group_greetings = mergedGreetingsGroup,
 					grammarOutput = mergedGrammar,
+					example_messages = mergedExampleChat,
 					lore = mergedLorebook,
 					context = a.context, //!
 				};
@@ -830,8 +867,10 @@ namespace Ginger
 							text = GingerString.RemoveComments(text);
 						text = Text.DontProcess(Utility.Unindent(Text.Process(text, Text.EvalOption.Minimal)));
 					}
-					else if (channel == Recipe.Component.Example || channel == Recipe.Component.Greeting || channel == Recipe.Component.Greeting_Group)
+					else if (channel == Recipe.Component.Greeting || channel == Recipe.Component.Greeting_Group)
 						text = Text.DontProcess(Utility.Unindent(Text.Process(text, Text.EvalOption.ExampleFormatting)));
+					else if (channel == Recipe.Component.Example || channel == Recipe.Component.Greeting || channel == Recipe.Component.Greeting_Group)
+						text = Utility.Unindent(Text.Process(text, Text.EvalOption.ExampleFormatting));
 					else if (template.isRaw)
 						text = Text.DontProcess(text);
 					else
@@ -982,18 +1021,17 @@ namespace Ginger
 
 				groupGreetingsOutput = lsOutput.ToArray();
 			}
-			if (example_chat_text.Count > 0) // Example chat
-			{
-				string text = string.Join(Text.ParagraphBreak, example_chat_text);
-				text = GingerString.FromOutput(text, characterIndex, options, Text.EvalOption.Minimal)
-					.ApplyTextStyle(Current.Card.textStyle)
-					.ToString();
 
-				graph.Add(new Block() {
-					id = "example/output/value",
-					style = Block.Style.Undefined,
-					formatting = Block.Formatting.None,
-				}, text);
+			List<PartialOutput.ExampleChatMessage> lsExampleChatMessages = new List<PartialOutput.ExampleChatMessage>();
+			if (example_chat_text.Count > 0)
+			{
+				// Split the example chat into individual messages so they can be interleaved later
+				foreach (var message in example_chat_text)
+				{
+					string text = GingerString.FromOutput(message, characterIndex, options, Text.EvalOption.Minimal).ToString();
+					text = TextStyleConverter.MarkStyles(text);
+					lsExampleChatMessages.AddRange(SplitChatMessage(text));
+				}
 			}
 			if (grammar_text.Count > 0) // Grammar
 			{
@@ -1005,11 +1043,72 @@ namespace Ginger
 				blockBuilder = graph,
 				greetings = greetingsOutput ?? new GingerString[0],
 				group_greetings = groupGreetingsOutput ?? new GingerString[0],
+				example_messages = lsExampleChatMessages.ToArray(),
 				lore = Lorebook.Merge(loreEntries),
 				grammarOutput = grammarOutput,
 				context = finalContext,
 			};
 
+		}
+
+		private static PartialOutput.ExampleChatMessage[] SplitChatMessage(string text)
+		{
+			var messages = new List<PartialOutput.ExampleChatMessage>();
+
+			var paragraphs = text
+				.Split(new string[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+			foreach (var paragraph in paragraphs)
+			{
+				var lines = paragraph.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+				int row = 0;
+				int firstRow = -1;
+				string name = null;
+				while (row < lines.Length)
+				{
+					if (lines[row].Length == 0)
+					{
+						++row;
+						continue;
+					}
+					
+					int pos_colon = lines[row].IndexOf(":</__NAME>");
+					if (pos_colon != -1)
+					{
+						if (firstRow != -1) // New name?
+						{
+							string message = string.Join("\n", lines.Skip(firstRow).Take(row - firstRow));
+							messages.Add(new PartialOutput.ExampleChatMessage() {
+								name = name,
+								message = message,
+							});
+						}
+
+						name = lines[row].Substring(8, pos_colon - 8).Trim();
+						lines[row] = lines[row].Substring(pos_colon + 10).TrimStart();
+						firstRow = row;
+					}
+					++row;
+				}
+
+				if (firstRow != -1) // New name?
+				{
+					string message = string.Join("\n", lines.Skip(firstRow).Take(row - firstRow));
+					messages.Add(new PartialOutput.ExampleChatMessage() {
+						name = name,
+						message = message,
+					});
+				}
+				else
+				{
+					messages.Add(new PartialOutput.ExampleChatMessage() {
+						name = null, // Unknown
+						message = paragraph,
+					});
+				}
+			}
+
+			return messages.ToArray();
 		}
 
 		private static string GetOutputNodePath(Recipe.Component channel)
