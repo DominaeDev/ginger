@@ -2993,9 +2993,8 @@ namespace Ginger
 				}
 
 				// Get portrait
-				AssetFile portraitAsset = Current.Card.assets.GetPortraitOverride();
-				if (portraitAsset == null && Current.Card.portraitImage != null)
-					portraitAsset = AssetFile.FromImage(Current.Card.portraitImage);
+				var portraitImage = Current.Card.portraitImage;
+				var portraitAsset = Current.Card.assets.GetPortraitOverride();
 
 				// Add actor
 				CharacterData importedCharacter = Current.Character;
@@ -3017,13 +3016,25 @@ namespace Ginger
 				Current.IsDirty = true;
 
 				// Add portrait
+				if (Current.SelectedCharacter > 0 && portraitAsset == null && portraitImage != null)
+					portraitAsset = AssetFile.FromImage(portraitImage);
+
 				if (portraitAsset != null)
 				{
 					portraitAsset.name = string.Format("Portrait ({0})", Current.Character.spokenName);
 					portraitAsset.actorIndex = Current.Characters.Count - 1;
-					portraitAsset.RemoveTags(AssetFile.Tag.PortraitOverride);
+					if (Current.SelectedCharacter > 0)
+						portraitAsset.RemoveTags(AssetFile.Tag.PortraitOverride);
 					Current.Card.assets.Add(portraitAsset);
 				}
+				if (Current.SelectedCharacter == 0) // Also set main portrait
+				{
+					if (portraitAsset != null)
+						Current.Card.portraitImage = ImageRef.FromImage(portraitAsset.ToImage());
+					else
+						Current.Card.portraitImage = portraitImage;
+				}
+
 				Current.Card.assets.Validate();
 
 				// Validate recipes
