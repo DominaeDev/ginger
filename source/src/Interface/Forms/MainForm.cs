@@ -2079,11 +2079,7 @@ namespace Ginger
 			}
 
 			Current.AddCharacter();
-			tabControl.SelectedIndex = 0;
-			recipeList.RecreatePanels();
-			sidePanel.RefreshValues();
-			sidePanel.OnActorChanged();
-			RefreshTitle();
+			SelectCharacter(Current.Characters.Count - 1, true);
 			sidePanel.SetSpokenName(Constants.DefaultCharacterName);
 
 			Undo.Push(Undo.Kind.RecipeList, "New actor");
@@ -2116,11 +2112,7 @@ namespace Ginger
 
 			if (ImportActorFromFile(importFileDialog.FileName))
 			{
-				tabControl.SelectedIndex = 0;
-				recipeList.RecreatePanels();
-				sidePanel.RefreshValues();
-				sidePanel.OnActorChanged();
-				RefreshTitle();
+				SelectCharacter(Current.Characters.Count - 1, true);
 				Undo.Push(Undo.Kind.RecipeList, "Import actor");
 			}
 		}
@@ -2135,15 +2127,8 @@ namespace Ginger
 			int characterIndex = Current.SelectedCharacter;
 			if (Current.RemoveCharacter(characterIndex))
 			{
-				Current.SelectedCharacter = Math.Min(characterIndex, Current.Characters.Count - 1);
+				SelectCharacter(Math.Min(characterIndex, Current.Characters.Count - 1), true);
 				NotifyAssetsChanged();
-
-				Regenerate();
-				tabControl.SelectedIndex = 0;
-				recipeList.RecreatePanels();
-				sidePanel.RefreshValues();
-				sidePanel.OnActorChanged();
-				RefreshTitle();
 				StealFocus();
 				Undo.Push(Undo.Kind.RecipeList, "Remove actor");
 			}
@@ -2156,36 +2141,37 @@ namespace Ginger
 			{
 				var prevCharacter = Current.Character;
 				Current.RearrangeCharacters(dlg.NewOrder);
-				Current.SelectedCharacter = Current.Characters.IndexOf(prevCharacter);
 				NotifyAssetsChanged();
-				Regenerate(); 
-				tabControl.SelectedIndex = 0;
-				recipeList.RecreatePanels();
-				sidePanel.RefreshValues();
-				sidePanel.OnActorChanged();
-				RefreshTitle();
+				SelectCharacter(Current.Characters.IndexOf(prevCharacter));
 				Undo.Push(Undo.Kind.RecipeList, "Rearrange actors");
 			}
 		}
 
-		private void SelectCharacter(int characterIndex)
+		private void SelectCharacter(int characterIndex, bool bForce = false)
 		{
 			if (characterIndex < 0 || characterIndex >= Current.Characters.Count)
 				return;
 
-			if (Current.SelectedCharacter == characterIndex)
-				return;
-
+			int prevCharacter = Current.SelectedCharacter;
 			Current.SelectedCharacter = characterIndex;
-			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty)
-				Regenerate(); // Regenerate actor output
-			tabControl.SelectedIndex = 0;
-			recipeList.RecreatePanels();
+
 			sidePanel.RefreshValues();
 			sidePanel.OnActorChanged();
+
+			if (AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty)
+				Regenerate(); // Regenerate actor output
+
+			if (bForce || prevCharacter != Current.SelectedCharacter)
+			{
+//				tabControl.SelectedIndex = 0;
+//				recipeList.RecreatePanels();
+				RefreshRecipeList();
+			}
+
 			RefreshTitle();
 
-			Undo.Push(Undo.Kind.RecipeList, "Select actor", "select-actor");
+			if (prevCharacter != Current.SelectedCharacter)
+				Undo.Push(Undo.Kind.RecipeList, "Select actor", "select-actor");
 		}
 
 		private void CreateSnippetMenuItem_Click(object sender, EventArgs e)
@@ -2429,7 +2415,10 @@ namespace Ginger
 			if (tabControl.SelectedIndex == 0)
 				recipeList.RecreatePanels();
 			else
+			{
+				recipeList.Invalidate();
 				_bShouldRecreatePanels = true;
+			}
 		}
 
 		private void visitGitHubPageMenuItem_Click(object sender, EventArgs e)

@@ -777,12 +777,9 @@ namespace Ginger
 			}			
 		}
 
-		public static void ConvertNamePlaceholders(StringBuilder sb, string characterPlaceholder = null, int selectedCharacter = -1)
+		public static void ConvertNamePlaceholders(StringBuilder sb, string characterPlaceholder = null, int selectedCharacter = 0)
 		{
 			sb.Replace(InternalCharacterMarker, characterPlaceholder);
-
-			if (selectedCharacter < 0)
-				selectedCharacter = Current.SelectedCharacter;
 
 			for (int i = 0; i < Current.Characters.Count; ++i)
 			{
@@ -793,10 +790,10 @@ namespace Ginger
 			}
 		}
 
-		public static string ConvertNamePlaceholders(string text, string placeholder = null, int selectedCharacter = -1)
+		public static string ConvertNamePlaceholders(string text, string characterPlaceholder = null, int selectedCharacter = 0)
 		{
 			StringBuilder sb = new StringBuilder(text);
-			ConvertNamePlaceholders(sb, placeholder, selectedCharacter);
+			ConvertNamePlaceholders(sb, characterPlaceholder, selectedCharacter);
 			return sb.ToString();
 		}
 

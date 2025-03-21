@@ -514,7 +514,7 @@ namespace Ginger
 
 			// Unescape
 			GingerString.Unescape(sb);
-			GingerString.ConvertNamePlaceholders(sb);
+			GingerString.ConvertNamePlaceholders(sb, null, Current.SelectedCharacter);
 
 			sb.Trim();
 			sb.ConvertLinebreaks(Linebreak.CRLF);
