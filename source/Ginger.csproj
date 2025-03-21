@@ -464,6 +464,7 @@
     <Compile Include="src\Model\CustomVariable.cs" />
     <Compile Include="src\Model\Recipe\ParameterResolver.cs" />
     <Compile Include="src\Model\Recipe\ParameterState.cs" />
+    <Compile Include="src\Utility\HashTable.cs" />
     <Compile Include="src\Utility\ImageRef.cs" />
     <Compile Include="src\Utility\Extensions\ListExtensions.cs" />
     <Compile Include="src\Utility\Integration\AsyncFileTypeChecker.cs" />

@@ -1,5 +1,5 @@
-﻿<Ginger version="1.0">
-	<Name>Personality/Supportive</Name>
+﻿<Ginger id="supportive" version="1.0">
+	<Name>Personality/Caring</Name>
 	<Description>The character has a caring and supporting personality.</Description>
 	<Author>Ginger</Author>
 	<Category>Personality</Category>
