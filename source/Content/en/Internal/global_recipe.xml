@@ -28,7 +28,7 @@
 	<Node path="system/important" style="line" mode="exclude" order="-0" rule="__tavern or __author-note"/>
 	<Node path="system/important/output" mode="exclude" style="default"/>
 	
-	<Node path="persona/header" order="0" rule="multi-character and not (__bake or __snippet)">
+	<Node path="persona/header" order="0" rule="multi-character and not (__bake or __snippet)" mode="sibling">
 		# {char}:
 	</Node>
 	

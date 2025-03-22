@@ -584,7 +584,7 @@ namespace Ginger
 				_entries.Remove(key);
 			removeKeys.Clear();
 
-			// Remove lonely children (mode = parent)
+			// Remove nodes with parent constraint
 			foreach (var kvp in _entries.Where(kvp => kvp.Key.depth > 0).OrderBy(kvp => kvp.Key).ToList())
 			{
 				BlockID key = kvp.Key;
@@ -606,26 +606,48 @@ namespace Ginger
 				}
 			}
 
-			// Remove lonely siblings (mode = sibling)
-			foreach (var kvp in _entries)
-			{
-				BlockID key = kvp.Key;
-				var siblings = kvp.Value.Where(e => e.mode == Block.Mode.Sibling).ToList();
-				if (siblings.IsEmpty())
-					continue;
-				
-				int count = siblings.Count();
-				if (count < kvp.Value.Count)
-					continue;
+			// Remove nodes with sibling constraint
+			var flattenedNodes = _entries
+				.SelectMany((e, i) => e.Value.Select(ee => new KeyValuePair<BlockID, Entry>(e.Key, ee)));
 
-				// Must have at least one sibling that doesn't also need a sibling
-				if (_entries.ContainsAny(k => (k.Key == key || k.Key.IsSiblingOf(key)) && k.Value.ContainsAny(e => e.mode != Block.Mode.Sibling)) )
-					continue;
+			foreach (var g in flattenedNodes.GroupBy(kvp => kvp.Key.GetParent()).OrderByDescending(g => g.Key.depth))
+			{
+				BlockID parentKey = g.Key;
+				var siblings = g.Select(x => x)
+					.Where(kvp => kvp.Value.mode == Block.Mode.Sibling)
+					.ToList();
+
+				int count = siblings.Count;
+				if (count == 0)
+					continue; // No siblings
+
+				if (siblings.ContainsAny(kvp => kvp.Value.mode != Block.Mode.Sibling))
+					continue; // Has sibling
+
+				var nodes = flattenedNodes
+					.Except(siblings)
+					.Where(kvp => removeKeys.Contains(kvp.Key) == false);
+
+				bool bFoundInnerSibling = false;
+				foreach (var sibling in siblings)
+				{
+					if (nodes.ContainsAny(kvp => kvp.Key.IsChildOf(parentKey) && kvp.Key.IsChildOf(sibling.Key) == false && kvp.Value.hasInnerBlock == false))
+					{
+						bFoundInnerSibling = true;
+						break;
+					}
+				}
+				if (bFoundInnerSibling)
+					continue; // Has (inner) sibling
 
 				// Remove (including children)
-				foreach (var x in _entries.Keys.Where(k => k == key || k.IsSiblingOf(key) || k.IsChildOf(key)))
-					removeKeys.Add(x);
+				foreach (var s in siblings)
+				{
+					foreach (var x in flattenedNodes.Select(kvp => kvp.Key).Where(k => k == s.Key || k.IsChildOf(s.Key)))
+						removeKeys.Add(x);
+				}
 			}
+
 			foreach (var key in removeKeys)
 				_entries.Remove(key);
 

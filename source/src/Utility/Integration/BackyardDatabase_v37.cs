@@ -1449,6 +1449,7 @@ namespace Ginger.Integration
 					// Get group info
 					if (FetchGroupInfo(connection, groupId, out _Group groupInfo))
 					{
+						staging = groupInfo.staging;
 						folderId = groupInfo.folderId;
 						folderSortPosition = groupInfo.folderSortPosition;
 						hubCharId = groupInfo.hubCharId;
@@ -1482,7 +1483,7 @@ namespace Ginger.Integration
 						if (characterLore.TryGetValue(character.instanceId, out card.data.loreItems) == false)
 							card.data.loreItems = new FaradayCardV1.LoreBookEntry[0];
 
-						if (i == 0) // Primary card only
+						if (i == 0) // Staging goes into the primary card
 						{
 							card.data.system = staging.system;
 							card.data.scenario = staging.scenario;
