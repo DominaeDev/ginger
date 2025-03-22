@@ -22,7 +22,7 @@ namespace Ginger.Integration
 	using ImageInstance = Backyard.ImageInstance;
 	using ConfirmDeleteResult = Backyard.ConfirmDeleteResult;
 
-	public class BackyardDatabase_v1 : IBackyardDatabase
+	public class BackyardDatabase_v28 : IBackyardDatabase
 	{
 		public IEnumerable<CharacterInstance> Everyone { get { return _Characters.Values; } }
 		public IEnumerable<CharacterInstance> Characters { get { return _Characters.Values.Where(c => c.isCharacter); } }
@@ -82,7 +82,7 @@ namespace Ginger.Integration
 			public DateTime updatedAt;
 			public DateTime activeAt;
 		}
-		
+
 		private struct _SwipeRepair
 		{
 			public string instanceId;
@@ -100,7 +100,7 @@ namespace Ginger.Integration
 			public bool isSortedDesc;
 			public string sortType;
 		}
-		
+
 		private struct _ImageInfo
 		{
 			public string instanceId;
@@ -158,7 +158,7 @@ namespace Ginger.Integration
 			public string[] configIds;
 			public string userId;
 			public string groupId;
-			
+
 			public static IDBundle FromCharacter(string characterId, string configId)
 			{
 				return new IDBundle() {
@@ -201,7 +201,7 @@ namespace Ginger.Integration
 			return BackyardUtil.CreateSQLiteConnection();
 		}
 
-#region Enumerate characters and groups
+		#region Enumerate characters and groups
 		public bool GetCharacter(string characterId, out CharacterInstance character)
 		{
 			return _Characters.TryGetValue(characterId, out character);
@@ -411,10 +411,6 @@ namespace Ginger.Integration
 					card.hubCharacterId = hubCharId;
 					card.hubAuthorUsername = hubAuthorUsername;
 
-					// Convert character references
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-						BackyardUtil.ConvertFromIDPlaceholders(card);
-
 					// Get user persona and portrait
 					string userId;
 					string userName;
@@ -422,9 +418,6 @@ namespace Ginger.Integration
 					ImageInstance userImage;
 					if (FetchUserInfo(connection, groupId, out userId, out userName, out userPersona, out userImage))
 					{
-						if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-							BackyardUtil.ConvertFromIDPlaceholders(ref userPersona);
-
 						userInfo = new UserData() {
 							name = userName?.Trim(),
 							persona = userPersona?.Trim(),
@@ -508,7 +501,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void FetchLorebook(SQLiteConnection connection, string configId, out FaradayCardV1.LoreBookEntry[] entries )
+		private static void FetchLorebook(SQLiteConnection connection, string configId, out FaradayCardV1.LoreBookEntry[] entries)
 		{
 			using (var cmdLoreItems = connection.CreateCommand())
 			{
@@ -881,8 +874,6 @@ namespace Ginger.Integration
 
 			bool bAllowUserPersona = userInfo != null;
 			string characterId = Cuid.NewCuid();
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-				BackyardUtil.ConvertToIDPlaceholders(card, characterId);
 
 			// Prepare image information
 			List<ImageOutput> images = new List<ImageOutput>();
@@ -962,8 +953,6 @@ namespace Ginger.Integration
 							// Create custom user (default user as base)
 							if (bAllowUserPersona)
 							{
-								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-									BackyardUtil.ConvertToIDPlaceholders(ref userInfo.persona, characterId);
 								WriteUser(connection, null, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
 							}
 
@@ -1159,7 +1148,7 @@ namespace Ginger.Integration
 					// Get existing chats
 					List<_Chat> chats;
 					FetchChatInstances(connection, groupId, out chats);
-					
+
 					// Get existing images
 					List<ImageInstance> imageInstances;
 					FetchImages(connection, configId, out imageInstances);
@@ -1217,9 +1206,6 @@ namespace Ginger.Integration
 							// Create/update custom user
 							if (bAllowUserPersona && bWriteGroup)
 							{
-								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-									BackyardUtil.ConvertToIDPlaceholders(ref userInfo.persona, characterId);
-
 								string userConfigId = null;
 								WriteUser(connection, groupId, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
 							}
@@ -1319,7 +1305,7 @@ namespace Ginger.Integration
 				return Backyard.Error.Unknown;
 			}
 		}
-				
+
 		private static bool PrepareUpdateChatBackgrounds(List<_Chat> chats, IEnumerable<ImageInstance> existingInstances, IEnumerable<ImageOutput> backgrounds, out Dictionary<string, ImageOutput> chatBackgrounds)
 		{
 			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds) == false)
@@ -1381,717 +1367,32 @@ namespace Ginger.Integration
 
 			return bModifiedBackground;
 		}
-		
+
 		public Backyard.Error ImportParty(string groupId, out FaradayCardV4[] cards, out CharacterInstance[] characterInstances, out ImageInstance[] images, out UserData userInfo)
 		{
-			if (ConnectionEstablished == false)
-			{
-				cards = null;
-				characterInstances = null;
-				images = null;
-				userInfo = null;
-				LastError = "Not connected";
-				return Backyard.Error.NotConnected;
-			}
-
-			if (string.IsNullOrEmpty(groupId))
-			{
-				cards = null;
-				characterInstances = null;
-				images = null;
-				userInfo = null;
-				LastError = "Invalid argument";
-				return Backyard.Error.InvalidArgument;
-			}
-			
-			try
-			{
-				using (var connection = CreateSQLiteConnection())
-				{
-					connection.Open();
-
-					ChatStaging staging = new ChatStaging();
-					string hubCharId = null;
-					string hubAuthorUsername = null;
-					string folderId = "";
-					string folderSortPosition = "";
-
-					List<_Character> groupMembers;
-					if (FetchMembersOfGroup(connection, groupId, null, out groupMembers) == false)
-					{
-						cards = null;
-						characterInstances = null;
-						images = null;
-						userInfo = null;
-						return Backyard.Error.NotFound;
-					}
-
-					List<_Character> characters = new List<_Character>();
-					var lsImages = new List<ImageInstance>();
-					Dictionary<string, FaradayCardV1.LoreBookEntry[]> characterLore = new Dictionary<string, FaradayCardV1.LoreBookEntry[]>();
-
-					for (int i = 0; i < groupMembers.Count; ++i)
-					{
-						_Character character;
-						if (FetchCharacter(connection, groupMembers[i].instanceId, out character) && character.isUser == false)
-						{
-							characters.Add(character);
-
-							// Gather lorebook items
-							FaradayCardV1.LoreBookEntry[] entries;
-							FetchLorebook(connection, character.configId, out entries);
-							characterLore.Add(character.instanceId, entries);
-
-							// Gather portrait image files
-							var lsCharacterImages = new List<ImageInstance>();
-							FetchPortraitImages(connection, character.configId, lsCharacterImages);
-							foreach (var image in lsCharacterImages)
-								image.associatedInstanceId = character.instanceId;
-							lsImages.AddRange(lsCharacterImages);
-						}
-					}
-								
-					// Get group info
-					if (FetchGroupInfo(connection, groupId, out _Group groupInfo))
-					{
-						folderId = groupInfo.folderId;
-						folderSortPosition = groupInfo.folderSortPosition;
-						hubCharId = groupInfo.hubCharId;
-						hubAuthorUsername = groupInfo.hubAuthorUsername;
-					}
-
-					// Gather background image files
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
-					{
-						// Get existing chats
-						ImageInstance[] backgrounds;
-						if (FetchChatBackgrounds(connection, groupId, out backgrounds))
-							lsImages.AddRange(backgrounds);
-					}
-
-					cards = new FaradayCardV4[characters.Count];
-					characterInstances = new CharacterInstance[characters.Count];
-
-					for (int i = 0; i < characters.Count; ++i)
-					{
-						var character = characters[i];
-						var card = new FaradayCardV4();
-						cards[i] = card;
-
-						card.data.displayName = character.displayName;
-						card.data.name = character.name;
-						card.data.persona = character.persona;
-						card.data.creationDate = character.creationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
-						card.data.updateDate = character.updateDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
-
-						if (characterLore.TryGetValue(character.instanceId, out card.data.loreItems) == false)
-							card.data.loreItems = new FaradayCardV1.LoreBookEntry[0];
-
-						if (i == 0) // Primary card only
-						{
-							card.data.system = staging.system;
-							card.data.scenario = staging.scenario;
-							card.data.greeting = staging.greeting;
-							card.data.example = staging.example;
-							card.data.grammar = staging.grammar;
-							card.authorNote = staging.authorNote;
-						}
-
-						characterInstances[i] = new CharacterInstance() {
-							instanceId = character.instanceId,
-							configId = character.configId,
-							groupId = groupId,
-							creationDate = character.creationDate,
-							updateDate = character.updateDate,
-							isUser = false,
-
-							displayName = card.data.displayName,
-							name = card.data.name,
-							persona = card.data.persona,
-							
-							hasLorebook = card.data.loreItems.Length > 0,
-							creator = hubAuthorUsername ?? "",
-							folderId = folderId,
-							folderSortPosition = folderSortPosition,
-						};
-					}
-
-					// Convert character references
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-						BackyardUtil.ConvertFromIDPlaceholders(cards);
-
-					// Get user persona and portrait
-					string userId;
-					string userName;
-					string userPersona;
-					ImageInstance userImage;
-					if (FetchUserInfo(connection, groupId, out userId, out userName, out userPersona, out userImage))
-					{
-						if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-							BackyardUtil.ConvertFromIDPlaceholders(ref userPersona);
-
-						userInfo = new UserData() {
-							name = userName?.Trim(),
-							persona = userPersona?.Trim(),
-						};
-						if (userImage != null)
-							lsImages.Add(userImage);
-					}
-					else
-						userInfo = null;
-
-					images = lsImages.ToArray();
-					connection.Close();
-					LastError = null;
-					return Backyard.Error.NoError;
-				}
-			}
-			catch (FileNotFoundException e)
-			{
-				cards = null;
-				characterInstances = null;
-				images = null;
-				userInfo = null;
-				LastError = "File not found";
-				Backyard.Disconnect();
-				return Backyard.Error.NotConnected;
-			}
-			catch (SQLiteException e)
-			{
-				cards = null;
-				characterInstances = null;
-				images = null;
-				userInfo = null;
-				LastError = e.Message;
-				return Backyard.Error.SQLCommandFailed;
-			}
-			catch (Exception e)
-			{
-				cards = null;
-				characterInstances = null;
-				images = null;
-				userInfo = null;
-				LastError = e.Message;
-				Backyard.Disconnect();
-				return Backyard.Error.Unknown;
-			}
+			cards = null;
+			characterInstances = null;
+			images = null;
+			userInfo = null;
+			LastError = "Not supported";
+			return Backyard.Error.UnsupportedFeature;
 		}
 
 		public Backyard.Error CreateNewParty(CreatePartyArguments args, out GroupInstance groupInstance, out CharacterInstance[] characterInstances, out Backyard.Link.Image[] imageLinks)
 		{
-			if (ConnectionEstablished == false)
-			{
-				groupInstance = default(GroupInstance);
-				characterInstances = null;
-				imageLinks = null;
-				return Backyard.Error.NotConnected;
-			}
-
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties) == false)
-			{
-				groupInstance = default(GroupInstance);
-				characterInstances = null;
-				imageLinks = null;
-				return Backyard.Error.UnsupportedFeature;
-			}
-
-			FaradayCardV4[] cards = args.cards;
-			ImageInput[] imageInput = args.imageInput;
-			BackupData.Chat[] chats = args.chats;
-			UserData userInfo = args.userInfo;
-			FolderInstance folder = args.folder;
-
-			if (cards == null || cards.Length == 0)
-			{
-				groupInstance = default(GroupInstance);
-				characterInstances = null;
-				imageLinks = null;
-				return Backyard.Error.InvalidArgument;
-			}
-
-			if (chats != null && chats.ContainsAny(c => c.history != null && c.history.numSpeakers > 2))
-			{
-				groupInstance = default(GroupInstance);
-				characterInstances = null;
-				imageLinks = null;
-				return Backyard.Error.InvalidArgument;
-			}
-
-			FolderInstance parentFolder = folder;
-			if (parentFolder.isEmpty)
-			{
-				// Get root folder
-				parentFolder = _Folders.Values.FirstOrDefault(f => f.isRoot);
-				if (parentFolder.isEmpty)
-				{
-					groupInstance = default(GroupInstance);
-					characterInstances = null;
-					imageLinks = null;
-					return Backyard.Error.Unknown;
-				}
-			}
-
-			bool bAllowUserPersona = userInfo != null;
-			FaradayCardV4 primaryCard = cards[0];
-
-			IDBundle[] idBundle = new IDBundle[cards.Length];
-			for (int i = 0; i < cards.Length; ++i)
-				idBundle[i].characterId = Cuid.NewCuid();
-			var characterIds = idBundle.Select(id => id.characterId).ToArray();
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-				BackyardUtil.ConvertToIDPlaceholders(cards, characterIds);
-
-			// Prepare image information
-			List<ImageOutput> images = new List<ImageOutput>();
-			List<ImageOutput> backgrounds = new List<ImageOutput>();
-			ImageOutput userPortrait = default(ImageOutput);
-			Dictionary<string, ImageOutput> backgroundUrlByName = new Dictionary<string, ImageOutput>();
-
-			ImageOutput[] imageOutput;
-			if (PrepareImages(imageInput, out imageOutput, out imageLinks))
-			{
-				images = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Icon || i.imageType == AssetFile.AssetType.Expression).ToList();
-
-				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
-				{
-					backgrounds = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Background)
-						.ToList();
-					for (int i = 0; i < imageInput.Length && i < imageOutput.Length; ++i)
-					{
-						if (imageOutput[i].imageType == AssetFile.AssetType.Background)
-							backgroundUrlByName.TryAdd(imageInput[i].asset.name, imageOutput[i]);
-					}
-
-					if (chats == null || chats.Length == 0)
-						backgrounds = backgrounds.Take(1).ToList();
-				}
-				else
-					backgrounds.Clear();
-
-				// User portrait
-				if (bAllowUserPersona)
-				{
-					int idxUserPortrait = Array.FindIndex(imageInput, i => i.asset != null && i.asset.assetType == AssetFile.AssetType.UserIcon);
-					if (idxUserPortrait != -1)
-						userPortrait = imageOutput[idxUserPortrait];
-				}
-			}
-
-			try
-			{
-				using (var connection = CreateSQLiteConnection())
-				{
-					connection.Open();
-
-					var staging = new ChatStaging() {
-						system = primaryCard.data.system ?? "",
-						scenario = primaryCard.data.scenario ?? "",
-						greeting = primaryCard.data.greeting ?? "",
-						example = primaryCard.data.example ?? "",
-						grammar = primaryCard.data.grammar ?? "",
-						authorNote = primaryCard.authorNote ?? "",
-					};
-
-					var lsInstances = new List<CharacterInstance>();
-					string userId = null;
-					string userConfigId = null;
-					DateTime now = DateTime.Now;
-					long createdAt = now.ToUnixTimeMilliseconds();
-					string[] chatIds = null;
-
-					ChatParameters chatParameters = AppSettings.BackyardSettings.UserSettings;
-					string folderSortPosition = null;
-
-					// Fetch default user
-					if (FetchDefaultUser(connection, out userId) == false)
-					{
-						groupInstance = default(GroupInstance);
-						characterInstances = null;
-						imageLinks = null;
-						return Backyard.Error.SQLCommandFailed; // Requires default user
-					}
-
-					// Fetch folder sort position
-					folderSortPosition = GetFolderSortPosition(connection, ref parentFolder.instanceId);
-
-					// Write to database
-					using (var transaction = connection.BeginTransaction())
-					{
-						try
-						{
-							int updates = 0;
-							int expectedUpdates = 0;
-
-							// Write characters
-							for (int i = 0; i < cards.Length; ++i)
-							{
-								CharacterInstance characterInstance;
-								WriteCharacter(connection, cards[i], null, idBundle[i].characterId, createdAt, out characterInstance, ref updates, ref expectedUpdates);
-								lsInstances.Add(characterInstance);
-
-								string configId = characterInstance.configId;
-
-								// Write lorebook
-								if (cards[i].data.loreItems != null && cards[i].data.loreItems.Length > 0)
-									WriteLorebook(connection, configId, cards[i].data.loreItems, ref updates, ref expectedUpdates);
-
-								// Images
-								var characterImages = images.Where(img => img.actorIndex == i || (img.actorIndex < 0 && i == 0)).ToList();
-								WriteImages(connection, configId, characterImages, ref updates, ref expectedUpdates);
-							}
-							
-							// Create custom user (default user as base)
-							if (bAllowUserPersona)
-							{
-								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames)) //! @party
-									BackyardUtil.ConvertToIDPlaceholders(ref userInfo.persona, characterIds);
-								WriteUser(connection, null, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
-							}
-
-							// Write group
-							WriteGroup(connection, primaryCard.data.displayName, IDBundle.FromCharacters(idBundle.Select(i => i.characterId).ToArray(), null, userId), parentFolder.instanceId, folderSortPosition, primaryCard.data.isNSFW, createdAt, out groupInstance, ref updates, ref expectedUpdates);
-							string groupId = groupInstance.instanceId;
-
-							IDBundle ids = new IDBundle() {
-								characterId = null,
-								configId = null,
-								userId = userId,
-								groupId = groupId,
-							};
-
-							if (chats == null || chats.Length == 0)
-							{
-								string chatId;
-								WriteNewChat(connection, staging, chatParameters, ids, out chatId, ref updates, ref expectedUpdates);
-
-								// Add background images
-								if (backgrounds.Count > 0)
-									WriteChatBackground(connection, chatId, backgrounds[0], ref updates, ref expectedUpdates);
-							}
-							else // One or more chats
-							{
-								// Write chats
-								WriteChats(connection, chats, staging, ids, out chatIds, ref updates, ref expectedUpdates);
-
-								// Add background images
-								if (backgroundUrlByName.Count > 0)
-									WriteChatBackgrounds(connection, chats, chatIds, backgroundUrlByName, ref updates, ref expectedUpdates);
-							}
-
-							if (updates != expectedUpdates)
-							{
-								transaction.Rollback();
-								groupInstance = default(GroupInstance);
-								characterInstances = null;
-								imageLinks = null;
-								return Backyard.Error.SQLCommandFailed;
-							}
-
-							// Write images to disk
-							foreach (var image in images
-								.Union(backgrounds)
-								.Union(new ImageOutput[] { userPortrait })
-								.Where(i => i.isDefined
-									&& i.hasAsset
-									&& File.Exists(i.imageUrl) == false))
-							{
-								try
-								{
-									// Ensure images folder exists
-									string imagedir = Path.GetDirectoryName(image.imageUrl);
-									if (Directory.Exists(imagedir) == false)
-										Directory.CreateDirectory(imagedir);
-
-									using (FileStream fs = File.Open(image.imageUrl, FileMode.CreateNew, FileAccess.Write))
-									{
-										fs.Write(image.data.bytes, 0, image.data.bytes.Length);
-									}
-								}
-								catch
-								{
-									// Do nothing
-								}
-							}
-
-							for (int i = 0; i < lsInstances.Count; ++i)
-							{
-								var instance = lsInstances[i];
-								instance.groupId = groupId;
-								instance.folderId = parentFolder.instanceId;
-								instance.folderSortPosition = folderSortPosition;
-							}
-							characterInstances = lsInstances.ToArray();
-
-							transaction.Commit();
-							return Backyard.Error.NoError;
-						}
-						catch (Exception e)
-						{
-							transaction.Rollback();
-
-							groupInstance = default(GroupInstance);
-							characterInstances = null;
-							return Backyard.Error.SQLCommandFailed;
-						}
-					}
-				}
-			}
-			catch (FileNotFoundException e)
-			{
-				groupInstance = default(GroupInstance);
-				characterInstances = null;
-				Backyard.Disconnect();
-				return Backyard.Error.NotConnected;
-			}
-			catch (SQLiteException e)
-			{
-				groupInstance = default(GroupInstance);
-				characterInstances = null;
-				Backyard.Disconnect();
-				return Backyard.Error.SQLCommandFailed;
-			}
-			catch (Exception e)
-			{
-				groupInstance = default(GroupInstance);
-				characterInstances = null;
-				Backyard.Disconnect();
-				return Backyard.Error.Unknown;
-			}
+			groupInstance = default(GroupInstance);
+			characterInstances = null;
+			imageLinks = null;
+			LastError = "Not supported";
+			return Backyard.Error.UnsupportedFeature;
 		}
 
 		public Backyard.Error UpdateParty(Backyard.Link link, FaradayCardV4[] cards, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks)
 		{
-			if (cards == null || cards.Length == 0 || link == null || string.IsNullOrEmpty(link.groupId) || link.actors.Length != cards.Length)
-			{
-				updateDate = default(DateTime);
-				updatedImageLinks = null;
-				return Backyard.Error.NotFound;
-			}
-
-			if (ConnectionEstablished == false)
-			{
-				updateDate = default(DateTime);
-				updatedImageLinks = null;
-				return Backyard.Error.NotConnected;
-			}
-
-			string characterId = link.mainActorId;
-			bool bAllowUserPersona = userInfo != null;
-			FaradayCardV4 primaryCard = cards[0];
-
-			var actors = Current.Characters.Select(c => link.actors.FirstOrDefault(a => a.localId == c.uid)).ToArray();
-			string[] characterIds = new string[actors.Length];
-			for (int i = 0; i < actors.Length; ++i)
-				characterIds[i] = actors[i].remoteId;
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-				BackyardUtil.ConvertToIDPlaceholders(cards, characterIds);
-
-			try
-			{
-				using (var connection = CreateSQLiteConnection())
-				{
-					connection.Open();
-
-					string groupId = link.groupId;
-					string userId = null;
-
-					// Get configIds
-					string[] configIds = new string[link.actors.Length];
-					using (var cmdGetIds = connection.CreateCommand())
-					{
-						StringBuilder sbCommand = new StringBuilder();
-						sbCommand.Append(
-						@"
-							SELECT 
-								id, characterConfigId
-							FROM CharacterConfigVersion
-							WHERE characterConfigId IN (
-						");
-						for (int i = 0; i < link.actors.Length; ++i)
-						{
-							if (i > 0)
-								sbCommand.Append(',');
-							sbCommand.Append(string.Concat("'", link.actors[i].remoteId, "'"));
-						}
-						sbCommand.Append(");");
-
-						cmdGetIds.CommandText = sbCommand.ToString();
-
-						using (var reader = cmdGetIds.ExecuteReader())
-						{
-							int count = 0;
-							while (reader.Read())
-							{
-								string configId = reader.GetString(0);
-								string charId = reader.GetString(1);
-
-								int idxActor = Array.FindIndex(link.actors, a => a.remoteId == charId);
-								if (idxActor != -1)
-								{
-									configIds[idxActor] = configId;
-									++count;
-								}
-							}
-							if (count != configIds.Length)
-							{
-								updateDate = default(DateTime);
-								updatedImageLinks = null;
-								return Backyard.Error.NotFound;
-							}
-						}
-					}
-
-					// Get existing chats
-					List<_Chat> chats;
-					FetchChatInstances(connection, groupId, out chats);
-
-					// Get existing images
-					List<ImageInstance> imageInstances = new List<ImageInstance>();
-					for (int i = 0; i < configIds.Length; ++i)
-					{
-						List<ImageInstance> characterImages;
-						FetchImages(connection, configIds[i], out characterImages);
-						imageInstances.AddRange(characterImages);
-					}
-
-					// Get existing backgrounds
-					ImageInstance[] existingBackgrounds;
-					if (FetchChatBackgrounds(connection, groupId, out existingBackgrounds))
-						imageInstances.AddRange(existingBackgrounds);
-
-					// Get existing user portrait
-					ImageInstance existingUserPortrait = null;
-					string userName, userPersona;
-					if (FetchUserInfo(connection, groupId, out userId, out userName, out userPersona, out existingUserPortrait) && existingUserPortrait != null)
-						imageInstances.Add(existingUserPortrait);
-
-					// Compile list of images to update / insert
-					ImageOutput[] imageOutput;
-					Backyard.Link.Image[] imageLinks;
-					PrepareImageUpdates(imageInstances, link.imageLinks, out imageOutput, out imageLinks);
-
-					List<ImageOutput> images = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Icon || i.imageType == AssetFile.AssetType.Expression).ToList();
-					List<ImageOutput> backgrounds = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Background).ToList();
-					ImageOutput userPortrait = default(ImageOutput);
-					if (bAllowUserPersona)
-						userPortrait = imageOutput.FirstOrDefault(i => i.imageType == AssetFile.AssetType.UserIcon);
-
-					// Write to database
-					using (var transaction = connection.BeginTransaction())
-					{
-						try
-						{
-							int updates = 0;
-							int expectedUpdates = 0;
-
-							var now = DateTime.Now;
-							long updatedAt = now.ToUnixTimeMilliseconds();
-
-							// Create/update custom user
-							if (bAllowUserPersona)
-							{
-								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-									BackyardUtil.ConvertToIDPlaceholders(ref userInfo.persona, characterIds);
-
-								string userConfigId = null;
-								WriteUser(connection, groupId, userInfo, userPortrait, out userId, out userConfigId, out userPortrait, ref updates, ref expectedUpdates);
-							}
-
-							for (int i = 0; i < cards.Length; ++i)
-							{
-								// Update character persona
-								WriteUpdateCharacter(connection, cards[i], configIds[i], cards[i].data.name, updatedAt, ref updates, ref expectedUpdates);
-
-								// Update lorebook
-								WriteLorebook(connection, configIds[i], cards[i].data.loreItems, ref updates, ref expectedUpdates);
-
-								// Update images
-								DeleteImages(connection, configIds[i], ref updates, ref expectedUpdates);
-								var characterImages = images.Where(img => img.actorIndex == i || (img.actorIndex < 0 && i == 0)).ToList();
-								WriteImages(connection, configIds[i], characterImages, ref updates, ref expectedUpdates);
-							}
-
-							// Update group
-							WriteUpdateGroup(connection, primaryCard, groupId, chats, primaryCard.data.displayName, updatedAt, ref updates, ref expectedUpdates);
-
-							// Update background
-							if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
-							{
-								Dictionary<string, ImageOutput> chatBackgrounds;
-								if (PrepareUpdateChatBackgrounds(chats, existingBackgrounds, backgrounds, out chatBackgrounds))
-									WriteUpdateChatBackgrounds(connection, groupId, chatBackgrounds, ref updates, ref expectedUpdates);
-							}
-
-							if (updates != expectedUpdates)
-							{
-								transaction.Rollback();
-								updateDate = default(DateTime);
-								updatedImageLinks = null;
-								return Backyard.Error.SQLCommandFailed;
-							}
-
-							// Write images to disk
-							foreach (var image in images
-								.Union(backgrounds)
-								.Union(new ImageOutput[] { userPortrait })
-								.Where(i => i.isDefined
-									&& i.hasAsset
-									&& File.Exists(i.imageUrl) == false))
-							{
-								try
-								{
-									// Ensure images folder exists
-									string imagedir = Path.GetDirectoryName(image.imageUrl);
-									if (Directory.Exists(imagedir) == false)
-										Directory.CreateDirectory(imagedir);
-
-									using (FileStream fs = File.Open(image.imageUrl, FileMode.CreateNew, FileAccess.Write))
-									{
-										fs.Write(image.data.bytes, 0, image.data.bytes.Length);
-									}
-								}
-								catch
-								{
-									// Do nothing
-								}
-							}
-
-							updateDate = now;
-							updatedImageLinks = imageLinks;
-
-							transaction.Commit();
-							return Backyard.Error.NoError;
-						}
-						catch (Exception e)
-						{
-							transaction.Rollback();
-						}
-					}
-
-					updateDate = default(DateTime);
-					updatedImageLinks = null;
-					return Backyard.Error.Unknown;
-				}
-			}
-			catch (FileNotFoundException e)
-			{
-				updateDate = default(DateTime);
-				updatedImageLinks = null;
-				Backyard.Disconnect();
-				return Backyard.Error.NotConnected;
-			}
-			catch (SQLiteException e)
-			{
-				updateDate = default(DateTime);
-				updatedImageLinks = null;
-				return Backyard.Error.SQLCommandFailed;
-			}
-			catch (Exception e)
-			{
-				updateDate = default(DateTime);
-				updatedImageLinks = null;
-				return Backyard.Error.Unknown;
-			}
+			updateDate = default(DateTime);
+			updatedImageLinks = null;
+			LastError = "Not supported";
+			return Backyard.Error.UnsupportedFeature;
 		}
 
 		public Backyard.Error ConfirmDeleteCharacters(string[] characterIds, out ConfirmDeleteResult result)
@@ -2191,7 +1492,7 @@ namespace Ginger.Integration
 						}
 					}
 
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties)) //! @party
+					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats)) //! @party
 					{
 						result = new ConfirmDeleteResult() {
 							characterIds = characterIds.ToArray(),
@@ -2574,9 +1875,9 @@ namespace Ginger.Integration
 			}
 		}
 
-#endregion // Characters
+		#endregion // Characters
 
-#region Chat
+		#region Chat
 		public Backyard.Error GetChat(string chatId, string groupId, out ChatInstance chatInstance)
 		{
 			if (ConnectionEstablished == false)
@@ -2867,8 +2168,6 @@ namespace Ginger.Integration
 									ttsAutoPlay = ttsAutoPlay,
 									ttsInputFilter = ttsInputFilter,
 								};
-								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-									BackyardUtil.ConvertFromIDPlaceholders(staging);
 
 								chats.Add(new _Chat() {
 									instanceId = chatId,
@@ -3092,8 +2391,8 @@ namespace Ginger.Integration
 
 			var participants = indexById
 				.Select(kvp => new {
-						index = kvp.Value,
-						id = kvp.Key,
+					index = kvp.Value,
+					id = kvp.Key,
 				})
 				.OrderBy(x => x.index)
 				.Select(x => {
@@ -3575,7 +2874,7 @@ namespace Ginger.Integration
 			if (ConnectionEstablished == false)
 				return Backyard.Error.NotConnected;
 
-			if ( string.IsNullOrEmpty(chatId))
+			if (string.IsNullOrEmpty(chatId))
 				return Backyard.Error.InvalidArgument;
 
 			var error = ConfirmChatExists(chatId);
@@ -4487,10 +3786,10 @@ namespace Ginger.Integration
 			}
 		}
 
-#endregion // Chat
+		#endregion // Chat
 
-#region Folder
-		
+		#region Folder
+
 		public Backyard.Error CreateNewFolder(string folderName, out FolderInstance folderInstance)
 		{
 			if (ConnectionEstablished == false)
@@ -4665,9 +3964,9 @@ namespace Ginger.Integration
 			}
 		}
 
-#endregion // Folder
+		#endregion // Folder
 
-#region Utilities
+		#region Utilities
 		private string MakeLoreSortPosition(int index, int maxIndex, int hash)
 		{
 			RandomNoise rng = new RandomNoise(hash, 0);
@@ -4729,14 +4028,14 @@ namespace Ginger.Integration
 			public AssetFile.AssetType imageType;
 			public int actorIndex;
 
-			public string aspectRatio 
-			{ 
+			public string aspectRatio
+			{
 				get
 				{
 					if (width > 0 && height > 0)
 						return string.Format("{0}/{1}", width, height);
 					return "";
-				} 
+				}
 			}
 
 			public bool isDefined { get { return imageType != AssetFile.AssetType.Undefined; } }
@@ -4774,7 +4073,7 @@ namespace Ginger.Integration
 					}
 				}
 			}
-			
+
 			if (portraitUID == null)
 			{
 				if (portraitImage != null)
@@ -4791,7 +4090,7 @@ namespace Ginger.Integration
 					}
 				}
 			}
-			
+
 			if (existingPortrait != null)
 			{
 				// No change
@@ -4858,9 +4157,9 @@ namespace Ginger.Integration
 
 			// Embedded assets
 			foreach (var asset in assets
-				.Where(a => a.isEmbeddedAsset 
+				.Where(a => a.isEmbeddedAsset
 					&& a.data.length > 0
-					&& (a.assetType == AssetFile.AssetType.Icon 
+					&& (a.assetType == AssetFile.AssetType.Icon
 						|| a.assetType == AssetFile.AssetType.Expression
 						|| a.assetType == AssetFile.AssetType.Background
 						|| (a.assetType == AssetFile.AssetType.UserIcon))
@@ -4914,7 +4213,7 @@ namespace Ginger.Integration
 						imageType = asset.assetType,
 						actorIndex = asset.actorIndex,
 					};
-						
+
 					results.Add(output);
 					lsImageLinks.Add(new Backyard.Link.Image() {
 						uid = asset.uid,
@@ -4963,7 +4262,7 @@ namespace Ginger.Integration
 
 			List<ImageOutput> results = new List<ImageOutput>();
 			List<Backyard.Link.Image> lsImageLinks = new List<Backyard.Link.Image>();
-			
+
 			foreach (var input in imageInput)
 			{
 				if (input.asset != null && input.asset.data.isEmpty == false) // Data buffer
@@ -4975,8 +4274,8 @@ namespace Ginger.Integration
 					{
 						imageWidth = 1024;
 						imageHeight = 1024;
-					}	
-					
+					}
+
 					string filename = Utility.CreateRandomFilename(input.fileExt);
 					results.Add(new ImageOutput() {
 						instanceId = Cuid.NewCuid(),
@@ -5081,7 +4380,7 @@ namespace Ginger.Integration
 				}
 			}
 		}
-		
+
 		private static void FetchConfigIds(SQLiteConnection connection, string[] characterIds, out Dictionary<string, string> configIds)
 		{
 			// Get config ids
@@ -5317,7 +4616,7 @@ namespace Ginger.Integration
 			}
 
 		}
-		
+
 		private void FetchFolders(SQLiteConnection connection, out FolderInstance[] folders)
 		{
 			using (var cmdFolderData = connection.CreateCommand())
@@ -5518,7 +4817,7 @@ namespace Ginger.Integration
 		{
 			chats = new List<_Chat>();
 			using (var cmdConfirm = connection.CreateCommand())
-			{ 
+			{
 				cmdConfirm.CommandText =
 				@"
 					SELECT id, createdAt, updatedAt
@@ -5642,7 +4941,7 @@ namespace Ginger.Integration
 						.ToList();
 
 					modified = modifiedCharacterImages.Count + modifiedBackgroundImages.Count;
-					
+
 					var unknownImages = characterImages
 						.Where(i => !foundImages.Contains(i.filename, StringComparer.OrdinalIgnoreCase))
 						.Union(
@@ -5862,7 +5161,7 @@ namespace Ginger.Integration
 				return Backyard.Error.Unknown;
 			}
 		}
-				
+
 		private string GetFolderSortPosition(SQLiteConnection connection, ref string folderId)
 		{
 			if (folderId == null) // Root folder
@@ -5952,7 +5251,7 @@ namespace Ginger.Integration
 		private static void WriteGroup(SQLiteConnection connection, string name, IDBundle ids, string parentFolderId, string folderSortPosition, bool isNSFW, long createdAt, out GroupInstance groupInstance, ref int updates, ref int expectedUpdates)
 		{
 			string groupId = Cuid.NewCuid();
-		
+
 			using (var cmdCreateGroup = new SQLiteCommand(connection))
 			{
 				var sbCommand = new StringBuilder();
@@ -6098,7 +5397,7 @@ namespace Ginger.Integration
 							WHERE B = $userConfigId
 						);
 					");
-																
+
 					sbCommand.AppendLine(
 					$@"
 						DELETE FROM _AppImageToCharacterConfigVersion
@@ -6151,7 +5450,7 @@ namespace Ginger.Integration
 			}
 			return true;
 		}
-		
+
 		private static void WriteImages(SQLiteConnection connection, string configId, List<ImageOutput> images, ref int updates, ref int expectedUpdates)
 		{
 			long createdAt = DateTime.Now.ToUnixTimeMilliseconds();
@@ -6311,8 +5610,6 @@ namespace Ginger.Integration
 							$repeatPenalty, $repeatLastN, $promptTemplate, $pruneExample, $authorNote);
 				");
 
-				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames)) //! @party
-					BackyardUtil.ConvertToIDPlaceholders(staging, characterId);
 
 				cmdChat.Parameters.AddWithValue("$chatId", chatId);
 				cmdChat.Parameters.AddWithValue("$groupId", groupId);
@@ -6381,9 +5678,6 @@ namespace Ginger.Integration
 					cmdChat.Parameters.AddWithValue($"$chatUpdatedAt{i:000}", chats[i].updateDate.ToUnixTimeMilliseconds());
 
 					var staging = chats[i].staging ?? defaultStaging ?? new ChatStaging();
-
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames)) //! @party
-						BackyardUtil.ConvertToIDPlaceholders(staging, ids.characterId);
 
 					var parameters = chats[i].parameters ?? new ChatParameters();
 					cmdChat.Parameters.AddWithValue($"$system{i:000}", staging.system ?? "");
@@ -6597,7 +5891,7 @@ namespace Ginger.Integration
 			}
 			return true;
 		}
-		
+
 		private static void ReplaceCharacterInGroup(SQLiteConnection connection, string groupId, string oldCharacterId, string newCharacterId, ref int updates, ref int expectedUpdates)
 		{
 			using (var cmdReplace = new SQLiteCommand(connection))
@@ -6640,7 +5934,7 @@ namespace Ginger.Integration
 		private static bool FetchDefaultUser(SQLiteConnection connection, out string userId)
 		{
 			using (var cmdUser = connection.CreateCommand())
-			{ 
+			{
 				cmdUser.CommandText =
 				@"
 					SELECT id
@@ -6686,8 +5980,8 @@ namespace Ginger.Integration
 					}
 				}
 			}
-			catch 
-			{ 
+			catch
+			{
 				// Do nothing
 			}
 

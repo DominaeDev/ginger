@@ -771,7 +771,7 @@ namespace Ginger
 
 			var dlg = new LinkSelectCharacterOrGroupDialog();
 			dlg.Options = LinkSelectCharacterOrGroupDialog.Option.Solo;
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties))
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 				dlg.Options |= LinkSelectCharacterOrGroupDialog.Option.Parties;
 			if (dlg.ShowDialog() == DialogResult.OK)
 			{

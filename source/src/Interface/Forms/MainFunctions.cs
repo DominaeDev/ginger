@@ -1694,7 +1694,7 @@ namespace Ginger
 
 			var dlg = new LinkSelectCharacterOrGroupDialog();
 			dlg.Options = LinkSelectCharacterOrGroupDialog.Option.Solo;
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties))
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 				dlg.Options |= LinkSelectCharacterOrGroupDialog.Option.Parties | LinkSelectCharacterOrGroupDialog.Option.Orphans;
 			dlg.ConfirmButton = "Open";
 			dlg.Text = "Open Backyard AI character";
@@ -2057,7 +2057,7 @@ namespace Ginger
 			}
 
 			// Revert party?
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties) && Current.Link.groupId != null)
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats) && Current.Link.groupId != null)
 			{
 				var group = Backyard.Database.GetGroup(Current.Link.groupId);
 				if (group.isDefined)
@@ -2600,7 +2600,7 @@ namespace Ginger
 			// Choose character(s)
 			var dlg = new LinkSelectMultipleCharactersOrGroupsDialog();
 			dlg.Options = LinkSelectMultipleCharactersOrGroupsDialog.Option.Solo;
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties))
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 				dlg.Options |= LinkSelectMultipleCharactersOrGroupsDialog.Option.Parties;
 			dlg.Text = "Select chats to modify";
 			
@@ -3124,7 +3124,7 @@ namespace Ginger
 			var dlg = new LinkSelectMultipleCharactersOrGroupsDialog();
 			dlg.Options = LinkSelectMultipleCharactersOrGroupsDialog.Option.Solo;
 			dlg.Text = "Select characters to delete";
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.Parties))
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 			{
 				dlg.Options |= LinkSelectMultipleCharactersOrGroupsDialog.Option.Orphans | LinkSelectMultipleCharactersOrGroupsDialog.Option.Parties;
 				dlg.Text = "Select characters or groups to delete";
@@ -3313,9 +3313,7 @@ namespace Ginger
 				return Backyard.Error.NotConnected;
 			}
 
-			Generator.Option options = Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked;
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-				options |= Generator.Option.Group;
+			Generator.Option options = Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked | Generator.Option.Group;
 
 			var outputs = Generator.GenerateMany(options);
 			

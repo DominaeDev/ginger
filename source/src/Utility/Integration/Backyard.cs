@@ -754,7 +754,12 @@ namespace Ginger.Integration
 						BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Version_0_29_0;
 					else if (foundTables.Contains("GroupConfig"))
 						BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Version_0_28_0;
-					else // Outdated or unknown
+
+					// Debug override flag (used for testing)
+					if (AppSettings.Debug.EnableGroups)
+						BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Version_0_37_0;
+
+					if (BackyardValidation.DatabaseVersion == BackyardDatabaseVersion.Unknown) // Outdated or unsupported
 					{
 						LastError = "Validation failed";
 						return Error.ValidationFailed;
@@ -829,8 +834,10 @@ namespace Ginger.Integration
 					{
 					case BackyardDatabaseVersion.Version_0_28_0:
 					case BackyardDatabaseVersion.Version_0_29_0:
+						_db = new BackyardDatabase_v28();
+						break;
 					case BackyardDatabaseVersion.Version_0_37_0:
-						_db = new BackyardDatabase_v1();
+						_db = new BackyardDatabase_v37();
 						break;
 					default:
 						_db = null;

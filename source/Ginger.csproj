@@ -469,7 +469,8 @@
     <Compile Include="src\Utility\Extensions\ListExtensions.cs" />
     <Compile Include="src\Utility\Integration\AsyncFileTypeChecker.cs" />
     <Compile Include="src\Utility\Integration\AsyncTaskQueue.cs" />
-    <Compile Include="src\Utility\Integration\BackyardDatabase_v1.cs" />
+    <Compile Include="src\Utility\Integration\BackyardDatabase_v37.cs" />
+    <Compile Include="src\Utility\Integration\BackyardDatabase_v28.cs" />
     <Compile Include="src\Utility\Integration\BackyardValidation.cs" />
     <Compile Include="src\Utility\Integration\BulkImporter.cs" />
     <Compile Include="src\Utility\Integration\BulkExporter.cs" />
@@ -506,6 +507,9 @@
     <Compile Include="src\Utility\Integration\IBackyardDatabase.cs" />
     <Compile Include="src\Utility\Integration\ModelInfo.cs" />
     <Compile Include="src\Utility\Integration\LegacyChatUpdater.cs" />
+    <Compile Include="src\Utility\Integration\Tables\BackyardDatabaseTables_v28.cs" />
+    <Compile Include="src\Utility\Integration\Tables\BackyardDatabaseTables_v37.cs" />
+    <Compile Include="src\Utility\Integration\Tables\BackyardDatabaseTables_v29.cs" />
     <Compile Include="src\Utility\Measurement.cs" />
     <Compile Include="src\Utility\NormalizeChars.cs" />
     <Compile Include="src\Utility\Random\RandomNoise.cs" />

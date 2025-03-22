@@ -245,6 +245,11 @@ namespace Ginger
 			public static bool BackupUserPersona = true;
 		}
 
+		public static class Debug
+		{
+			public static bool EnableGroups = false;
+		}
+
 		public static bool LoadFromIni(string filePath)
 		{
 			// Load
@@ -459,6 +464,12 @@ namespace Ginger
 				}
 			}
 
+			var debugSection = iniData.Sections["Debug"];
+			if (debugSection != null)
+			{
+				ReadBool(ref Debug.EnableGroups, debugSection, "Groups");
+			}
+
 			if (bLegacy)
 			{
 				// Filter indices changed in v1.5.0
@@ -495,10 +506,8 @@ namespace Ginger
 				{
 					// Settings
 					WriteSection(outputFile, "Settings", false);
-					if (Settings.FontFace != null)
-						Write(outputFile, "Font", Settings.FontSerialize);
-					if (Settings.EnableFormLevelBuffering == false)
-						Write(outputFile, "FormBuffering", Settings.EnableFormLevelBuffering);
+					WriteIf(outputFile, "Font", Settings.FontFace != null ? Settings.FontSerialize : null);
+					WriteIf(outputFile, "FormBuffering", Settings.EnableFormLevelBuffering);
 					Write(outputFile, "AutoConvertNames", Settings.AutoConvertNames);
 					Write(outputFile, "UserPlaceholder", Settings.UserPlaceholder);
 					Write(outputFile, "ShowNSFW", Settings.AllowNSFW);
@@ -568,8 +577,7 @@ namespace Ginger
 					// Backyard settings
 					WriteSection(outputFile, "BackyardAI");
 					Write(outputFile, "Location", BackyardLink.Location);
-					if (BackyardLink.LastVersion.isDefined)
-						Write(outputFile, "LastVersion", BackyardLink.LastVersion.ToFullString());
+					WriteIf(outputFile, "LastVersion", BackyardLink.LastVersion.isDefined ? BackyardLink.LastVersion.ToFullString() : null);
 					Write(outputFile, "Enabled", BackyardLink.Enabled);
 					Write(outputFile, "Strict", BackyardLink.Strict);
 					Write(outputFile, "Autosave", BackyardLink.Autosave);
@@ -615,6 +623,10 @@ namespace Ginger
 						foreach (var charID in BackyardSettings.StarredCharacters)
 							Write(outputFile, string.Format("Starred{0:00}", i++), charID);
 					}
+
+					// Debug settings
+					WriteSection(outputFile, "Debug");
+					WriteIf(outputFile, "Groups", Debug.EnableGroups);
 
 				}
 			}
@@ -689,6 +701,12 @@ namespace Ginger
 			w.WriteLine(string.Format("{0} = {1}", name, value ? "Yes" : "No"));
 		}
 
+		private static void WriteIf(StreamWriter w, string name, bool value)
+		{
+			if (value)
+				w.WriteLine(string.Format("{0} = {1}", name, value ? "Yes" : "No"));
+		}
+
 		private static void Write(StreamWriter w, string name, int value)
 		{
 			w.WriteLine(string.Format("{0} = {1}", name, value));
@@ -702,6 +720,12 @@ namespace Ginger
 		private static void Write(StreamWriter w, string name, string value)
 		{
 			w.WriteLine(string.Format("{0} = {1}", name, value ?? ""));
+		}
+
+		private static void WriteIf(StreamWriter w, string name, string value)
+		{
+			if (string.IsNullOrWhiteSpace(value) == false)
+				w.WriteLine(string.Format("{0} = {1}", name, value ?? ""));
 		}
 
 		private static void Write<T>(StreamWriter w, string name, T value) where T : struct, IConvertible
