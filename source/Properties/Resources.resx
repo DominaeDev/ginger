@@ -1716,4 +1716,25 @@ Make sure you have an active internet connection.</value>
 
 Click OK to view it in your web browser.</value>
   </data>
+  <data name="tooltip_link_repair_model_location" xml:space="preserve">
+    <value>Resets the model download location, which may resolve problems launching Backyard AI.</value>
+  </data>
+  <data name="cap_link_repair_models_location" xml:space="preserve">
+    <value>Reset model download location</value>
+  </data>
+  <data name="msg_link_repair_models_location" xml:space="preserve">
+    <value>This will reset the model download location in Backyard AI.
+
+Are you sure you want to continue?</value>
+  </data>
+  <data name="msg_link_repair_models_location_exists" xml:space="preserve">
+    <value>This will reset the model download location in Backyard AI.
+
+The current location is valid. Do you want to continue anyway?</value>
+  </data>
+  <data name="msg_link_repair_models_location_success" xml:space="preserve">
+    <value>Model download location has been reset.
+
+Please relaunch Backyard AI to set a new location.</value>
+  </data>
 </root>

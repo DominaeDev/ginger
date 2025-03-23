@@ -3517,5 +3517,40 @@ namespace Ginger
 				MessageBox.Show(this, Resources.error_link_update_many_characters, Resources.cap_link_reset_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
+
+		private bool ResetBackyardModelsLocation()
+		{
+			if (Backyard.ConnectionEstablished == false)
+			{
+				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			if (string.IsNullOrEmpty(BackyardModelDatabase.ModelDownloadPath) == false
+				&& Directory.Exists(BackyardModelDatabase.ModelDownloadPath))
+			{
+				if (MessageBox.Show(Resources.msg_link_repair_models_location_exists, Resources.cap_link_repair_models_location, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+					return false;
+			}
+			else
+			{
+				// Confirm
+				if (MessageBox.Show(Resources.msg_link_repair_models_location, Resources.cap_link_repair_models_location, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+					return false;
+			}
+
+			var error = Backyard.Database.ResetModelDownloadLocation();
+			if (error == Backyard.Error.NoError)
+			{
+				MessageBox.Show(this, Resources.msg_link_repair_models_location_success, Resources.cap_link_repair_models_location, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else
+			{
+				MessageBox.Show(this, Resources.error_link_general, Resources.cap_link_repair_models_location, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+
+			return true;
+		}
 	}
 }

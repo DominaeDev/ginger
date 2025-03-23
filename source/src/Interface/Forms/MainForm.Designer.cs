@@ -33,6 +33,13 @@ namespace Ginger {
 			System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
 			System.Windows.Forms.ToolStripMenuItem linkMenuItem;
 			System.Windows.Forms.ToolStripMenuItem themeMenuItem;
+			System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+			System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
+			System.Windows.Forms.ToolStripSeparator toolStripMenuItem9;
+			System.Windows.Forms.ToolStripSeparator toolStripMenuItem13;
+			System.Windows.Forms.ToolStripSeparator toolStripMenuItem10;
+			System.Windows.Forms.ToolStripSeparator toolStripMenuItem14;
+			System.Windows.Forms.ToolStripSeparator toolStripMenuItem7;
 			this.enableLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.breakRestoreLinkSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.reestablishLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,7 +91,6 @@ namespace Ginger {
 			this.editMenu = new System.Windows.Forms.ToolStripMenuItem();
 			this.undoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.redoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
 			this.copyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.pasteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.findMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -127,7 +133,6 @@ namespace Ginger {
 			this.checkSpellingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.enableSpellCheckingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
 			this.autoConvertNameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoBreakMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.rearrangeLoreMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -143,11 +148,10 @@ namespace Ginger {
 			this.importLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveNewLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveAsNewPartyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.revertLinkedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripSeparator();
 			this.chatHistoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.editCurrentModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripSeparator();
 			this.bulkOperationsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.bulkEditModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripSeparator();
@@ -158,12 +162,11 @@ namespace Ginger {
 			this.utilitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.createBackupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.restoreBackupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem10 = new System.Windows.Forms.ToolStripSeparator();
 			this.repairBrokenImagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.repairLegacyChatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.purgeUnusedImagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.resetModelsLocationMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.resetModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem14 = new System.Windows.Forms.ToolStripSeparator();
+			this.purgeUnusedImagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.optionsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.enableAutosaveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.alwaysLinkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -181,6 +184,7 @@ namespace Ginger {
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.viewHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.visitGitHubPageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.checkForUpdateMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutGingerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
 			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
@@ -191,8 +195,6 @@ namespace Ginger {
 			this.statusActors = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
-			this.saveAsNewPartyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.checkForUpdateMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -201,6 +203,13 @@ namespace Ginger {
 			toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
 			linkMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			themeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+			toolStripMenuItem11 = new System.Windows.Forms.ToolStripSeparator();
+			toolStripMenuItem9 = new System.Windows.Forms.ToolStripSeparator();
+			toolStripMenuItem13 = new System.Windows.Forms.ToolStripSeparator();
+			toolStripMenuItem10 = new System.Windows.Forms.ToolStripSeparator();
+			toolStripMenuItem14 = new System.Windows.Forms.ToolStripSeparator();
+			toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
 			this.splitContainer.Panel1.SuspendLayout();
 			this.splitContainer.Panel2.SuspendLayout();
@@ -864,7 +873,7 @@ namespace Ginger {
 			this.editMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.undoMenuItem,
             this.redoMenuItem,
-            this.toolStripMenuItem2,
+            toolStripMenuItem2,
             this.copyMenuItem,
             this.pasteMenuItem,
             toolStripMenuItem8,
@@ -895,8 +904,8 @@ namespace Ginger {
 			// 
 			// toolStripMenuItem2
 			// 
-			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(239, 6);
+			toolStripMenuItem2.Name = "toolStripMenuItem2";
+			toolStripMenuItem2.Size = new System.Drawing.Size(239, 6);
 			// 
 			// copyMenuItem
 			// 
@@ -1062,7 +1071,7 @@ namespace Ginger {
             this.outputPreviewToolStripMenuItem,
             this.checkSpellingMenuItem,
             themeMenuItem,
-            this.toolStripMenuItem11,
+            toolStripMenuItem11,
             this.autoConvertNameMenuItem,
             this.autoBreakMenuItem,
             this.rearrangeLoreMenuItem,
@@ -1267,8 +1276,8 @@ namespace Ginger {
 			// 
 			// toolStripMenuItem11
 			// 
-			this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-			this.toolStripMenuItem11.Size = new System.Drawing.Size(192, 6);
+			toolStripMenuItem11.Name = "toolStripMenuItem11";
+			toolStripMenuItem11.Size = new System.Drawing.Size(192, 6);
 			// 
 			// autoConvertNameMenuItem
 			// 
@@ -1371,13 +1380,13 @@ namespace Ginger {
             this.saveNewLinkedMenuItem,
             this.saveAsNewPartyMenuItem,
             this.revertLinkedMenuItem,
-            this.toolStripMenuItem9,
+            toolStripMenuItem9,
             this.chatHistoryMenuItem,
             this.editCurrentModelSettingsMenuItem,
-            this.toolStripMenuItem13,
+            toolStripMenuItem13,
             this.bulkOperationsMenuItem,
             this.utilitiesToolStripMenuItem,
-            this.toolStripMenuItem14,
+            toolStripMenuItem14,
             this.optionsToolStripMenuItem1});
 			this.backyardMenuItem.Name = "backyardMenuItem";
 			this.backyardMenuItem.Size = new System.Drawing.Size(81, 20);
@@ -1407,6 +1416,13 @@ namespace Ginger {
 			this.saveNewLinkedMenuItem.Text = "Save as new";
 			this.saveNewLinkedMenuItem.Click += new System.EventHandler(this.saveNewLinkedMenuItem_Click);
 			// 
+			// saveAsNewPartyMenuItem
+			// 
+			this.saveAsNewPartyMenuItem.Name = "saveAsNewPartyMenuItem";
+			this.saveAsNewPartyMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.saveAsNewPartyMenuItem.Text = "Save as new party";
+			this.saveAsNewPartyMenuItem.Click += new System.EventHandler(this.saveAsNewPartyMenuItem_Click);
+			// 
 			// revertLinkedMenuItem
 			// 
 			this.revertLinkedMenuItem.Name = "revertLinkedMenuItem";
@@ -1416,8 +1432,8 @@ namespace Ginger {
 			// 
 			// toolStripMenuItem9
 			// 
-			this.toolStripMenuItem9.Name = "toolStripMenuItem9";
-			this.toolStripMenuItem9.Size = new System.Drawing.Size(236, 6);
+			toolStripMenuItem9.Name = "toolStripMenuItem9";
+			toolStripMenuItem9.Size = new System.Drawing.Size(236, 6);
 			// 
 			// chatHistoryMenuItem
 			// 
@@ -1437,8 +1453,8 @@ namespace Ginger {
 			// 
 			// toolStripMenuItem13
 			// 
-			this.toolStripMenuItem13.Name = "toolStripMenuItem13";
-			this.toolStripMenuItem13.Size = new System.Drawing.Size(236, 6);
+			toolStripMenuItem13.Name = "toolStripMenuItem13";
+			toolStripMenuItem13.Size = new System.Drawing.Size(236, 6);
 			// 
 			// bulkOperationsMenuItem
 			// 
@@ -1498,11 +1514,13 @@ namespace Ginger {
 			this.utilitiesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.createBackupMenuItem,
             this.restoreBackupMenuItem,
-            this.toolStripMenuItem10,
+            toolStripMenuItem10,
             this.repairBrokenImagesMenuItem,
             this.repairLegacyChatsMenuItem,
-            this.purgeUnusedImagesMenuItem,
-            this.resetModelSettingsMenuItem});
+            this.resetModelsLocationMenuItem,
+            toolStripMenuItem7,
+            this.resetModelSettingsMenuItem,
+            this.purgeUnusedImagesMenuItem});
 			this.utilitiesToolStripMenuItem.Name = "utilitiesToolStripMenuItem";
 			this.utilitiesToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.utilitiesToolStripMenuItem.Text = "Utilities";
@@ -1511,7 +1529,7 @@ namespace Ginger {
 			// 
 			this.createBackupMenuItem.Image = global::Ginger.Properties.Resources.create_backup;
 			this.createBackupMenuItem.Name = "createBackupMenuItem";
-			this.createBackupMenuItem.Size = new System.Drawing.Size(217, 22);
+			this.createBackupMenuItem.Size = new System.Drawing.Size(250, 22);
 			this.createBackupMenuItem.Text = "Create backup...";
 			this.createBackupMenuItem.Click += new System.EventHandler(this.createBackupMenuItem_Click);
 			// 
@@ -1519,51 +1537,59 @@ namespace Ginger {
 			// 
 			this.restoreBackupMenuItem.Image = global::Ginger.Properties.Resources.restore_backup;
 			this.restoreBackupMenuItem.Name = "restoreBackupMenuItem";
-			this.restoreBackupMenuItem.Size = new System.Drawing.Size(217, 22);
+			this.restoreBackupMenuItem.Size = new System.Drawing.Size(250, 22);
 			this.restoreBackupMenuItem.Text = "Restore backup...";
 			this.restoreBackupMenuItem.Click += new System.EventHandler(this.restoreBackupMenuItem_Click);
 			// 
 			// toolStripMenuItem10
 			// 
-			this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-			this.toolStripMenuItem10.Size = new System.Drawing.Size(214, 6);
+			toolStripMenuItem10.Name = "toolStripMenuItem10";
+			toolStripMenuItem10.Size = new System.Drawing.Size(247, 6);
 			// 
 			// repairBrokenImagesMenuItem
 			// 
 			this.repairBrokenImagesMenuItem.Image = global::Ginger.Properties.Resources.repair;
 			this.repairBrokenImagesMenuItem.Name = "repairBrokenImagesMenuItem";
-			this.repairBrokenImagesMenuItem.Size = new System.Drawing.Size(217, 22);
-			this.repairBrokenImagesMenuItem.Text = "Fix broken images...";
+			this.repairBrokenImagesMenuItem.Size = new System.Drawing.Size(250, 22);
+			this.repairBrokenImagesMenuItem.Text = "Repair broken images...";
 			this.repairBrokenImagesMenuItem.Click += new System.EventHandler(this.repairBrokenImagesMenuItem_Click);
 			// 
 			// repairLegacyChatsMenuItem
 			// 
 			this.repairLegacyChatsMenuItem.Image = global::Ginger.Properties.Resources.repair;
 			this.repairLegacyChatsMenuItem.Name = "repairLegacyChatsMenuItem";
-			this.repairLegacyChatsMenuItem.Size = new System.Drawing.Size(217, 22);
-			this.repairLegacyChatsMenuItem.Text = "Fix legacy chats...";
+			this.repairLegacyChatsMenuItem.Size = new System.Drawing.Size(250, 22);
+			this.repairLegacyChatsMenuItem.Text = "Repair legacy chats...";
 			this.repairLegacyChatsMenuItem.Click += new System.EventHandler(this.repairLegacyChatsMenuItem_Click);
 			// 
-			// purgeUnusedImagesMenuItem
+			// resetModelsLocationMenuItem
 			// 
-			this.purgeUnusedImagesMenuItem.Image = global::Ginger.Properties.Resources.clean;
-			this.purgeUnusedImagesMenuItem.Name = "purgeUnusedImagesMenuItem";
-			this.purgeUnusedImagesMenuItem.Size = new System.Drawing.Size(217, 22);
-			this.purgeUnusedImagesMenuItem.Text = "Clean out unused images...";
-			this.purgeUnusedImagesMenuItem.Click += new System.EventHandler(this.purgeUnusedImages_Click);
+			this.resetModelsLocationMenuItem.Image = global::Ginger.Properties.Resources.repair;
+			this.resetModelsLocationMenuItem.Name = "resetModelsLocationMenuItem";
+			this.resetModelsLocationMenuItem.Size = new System.Drawing.Size(250, 22);
+			this.resetModelsLocationMenuItem.Text = "Reset model download location...";
+			this.resetModelsLocationMenuItem.Click += new System.EventHandler(this.resetModelsLocationMenuItem_Click);
 			// 
 			// resetModelSettingsMenuItem
 			// 
 			this.resetModelSettingsMenuItem.Image = global::Ginger.Properties.Resources.reset;
 			this.resetModelSettingsMenuItem.Name = "resetModelSettingsMenuItem";
-			this.resetModelSettingsMenuItem.Size = new System.Drawing.Size(217, 22);
+			this.resetModelSettingsMenuItem.Size = new System.Drawing.Size(250, 22);
 			this.resetModelSettingsMenuItem.Text = "Reset all model settings...";
 			this.resetModelSettingsMenuItem.Click += new System.EventHandler(this.resetModelSettingsMenuItem_Click);
 			// 
+			// purgeUnusedImagesMenuItem
+			// 
+			this.purgeUnusedImagesMenuItem.Image = global::Ginger.Properties.Resources.clean;
+			this.purgeUnusedImagesMenuItem.Name = "purgeUnusedImagesMenuItem";
+			this.purgeUnusedImagesMenuItem.Size = new System.Drawing.Size(250, 22);
+			this.purgeUnusedImagesMenuItem.Text = "Clean out unused images...";
+			this.purgeUnusedImagesMenuItem.Click += new System.EventHandler(this.purgeUnusedImages_Click);
+			// 
 			// toolStripMenuItem14
 			// 
-			this.toolStripMenuItem14.Name = "toolStripMenuItem14";
-			this.toolStripMenuItem14.Size = new System.Drawing.Size(236, 6);
+			toolStripMenuItem14.Name = "toolStripMenuItem14";
+			toolStripMenuItem14.Size = new System.Drawing.Size(236, 6);
 			// 
 			// optionsToolStripMenuItem1
 			// 
@@ -1700,6 +1726,13 @@ namespace Ginger {
 			this.visitGitHubPageMenuItem.Text = "Visit GitHub page";
 			this.visitGitHubPageMenuItem.Click += new System.EventHandler(this.visitGitHubPageMenuItem_Click);
 			// 
+			// checkForUpdateMenuItem
+			// 
+			this.checkForUpdateMenuItem.Name = "checkForUpdateMenuItem";
+			this.checkForUpdateMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.checkForUpdateMenuItem.Text = "Check for update...";
+			this.checkForUpdateMenuItem.Click += new System.EventHandler(this.checkForUpdateMenuItem_Click);
+			// 
 			// aboutGingerToolStripMenuItem
 			// 
 			this.aboutGingerToolStripMenuItem.Name = "aboutGingerToolStripMenuItem";
@@ -1778,19 +1811,10 @@ namespace Ginger {
 			this.statusConnectionIcon.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusConnectionIcon.Size = new System.Drawing.Size(24, 17);
 			// 
-			// saveAsNewPartyMenuItem
+			// toolStripMenuItem7
 			// 
-			this.saveAsNewPartyMenuItem.Name = "saveAsNewPartyMenuItem";
-			this.saveAsNewPartyMenuItem.Size = new System.Drawing.Size(239, 22);
-			this.saveAsNewPartyMenuItem.Text = "Save as new party";
-			this.saveAsNewPartyMenuItem.Click += new System.EventHandler(this.saveAsNewPartyMenuItem_Click);
-			//
-			// checkForUpdateMenuItem
-			// 
-			this.checkForUpdateMenuItem.Name = "checkForUpdateMenuItem";
-			this.checkForUpdateMenuItem.Size = new System.Drawing.Size(180, 22);
-			this.checkForUpdateMenuItem.Text = "Check for update...";
-			this.checkForUpdateMenuItem.Click += new System.EventHandler(this.checkForUpdateMenuItem_Click);
+			toolStripMenuItem7.Name = "toolStripMenuItem7";
+			toolStripMenuItem7.Size = new System.Drawing.Size(247, 6);
 			// 
 			// MainForm
 			// 
@@ -1932,9 +1956,7 @@ namespace Ginger {
 		public RecipeList recipeList;
 		private System.Windows.Forms.ToolStripStatusLabel statusBarMessage;
 		private System.Windows.Forms.ToolStripMenuItem changeLanguageMenuItem;
-		private System.Windows.Forms.ToolStripSeparator changeLanguageSeparator;
 		private System.Windows.Forms.ToolStripMenuItem showRecipeCategoryMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
 		private System.Windows.Forms.ToolStripMenuItem copyMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem pasteMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem tokenBudget5K;
@@ -1945,7 +1967,6 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem breakLinkMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel statusConnectionIcon;
 		private System.Windows.Forms.ToolStripMenuItem rearrangeLoreMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem11;
 		private System.Windows.Forms.ToolStripMenuItem lightThemeMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem darkThemeMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem customVariablesMenuItem;
@@ -1954,16 +1975,13 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem saveLinkedMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem saveNewLinkedMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem revertLinkedMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem9;
 		private System.Windows.Forms.ToolStripMenuItem chatHistoryMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem editCurrentModelSettingsMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem13;
 		private System.Windows.Forms.ToolStripMenuItem bulkOperationsMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem bulkEditModelSettingsMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem15;
 		private System.Windows.Forms.ToolStripMenuItem bulkImportMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem bulkExportMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem14;
 		private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem editExportModelSettingsMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem16;
@@ -1981,7 +1999,6 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem purgeUnusedImagesMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem createBackupMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem restoreBackupMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem10;
 		private System.Windows.Forms.ToolStripStatusLabel statusEmbeddedAssets;
 		private System.Windows.Forms.ToolStripMenuItem repairLegacyChatsMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem writeAuthorNoteMenuItem;
@@ -1996,6 +2013,8 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem saveAsNewPartyMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem resetModelSettingsMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem checkForUpdateMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem resetModelsLocationMenuItem;
+		private System.Windows.Forms.ToolStripSeparator changeLanguageSeparator;
 	}
 }
 

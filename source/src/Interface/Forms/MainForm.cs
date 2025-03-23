@@ -289,6 +289,7 @@ namespace Ginger
 			writeAuthorNoteMenuItem.ToolTipText = Resources.tooltip_link_author_note;
 			writeUserPersonaMenuItem.ToolTipText = Resources.tooltip_link_user_persona;
 			resetModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_reset_model_settings;
+			resetModelsLocationMenuItem.ToolTipText = Resources.tooltip_link_repair_model_location;
 
 			RegisterIdleHandler(recipeList);
 
@@ -3020,6 +3021,11 @@ namespace Ginger
 					MessageBox.Show(Resources.msg_latest_version, Resources.cap_check_update, MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 			});
+		}
+
+		private void resetModelsLocationMenuItem_Click(object sender, EventArgs e)
+		{
+			ResetBackyardModelsLocation();
 		}
 	}
 

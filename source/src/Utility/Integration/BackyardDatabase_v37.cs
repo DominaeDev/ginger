@@ -7121,6 +7121,62 @@ namespace Ginger.Integration
 			}
 		}
 
+		public Backyard.Error ResetModelDownloadLocation()
+		{
+			try
+			{
+				using (var connection = CreateSQLiteConnection())
+				{
+					connection.Open();
+
+					using (var transaction = connection.BeginTransaction())
+					{
+						try
+						{
+							int updates = 0;
+							int expectedUpdates = 0;
+							using (var cmdUpdate = connection.CreateCommand())
+							{
+								cmdUpdate.CommandText = @"UPDATE AppSettings SET modelDownloadLocation = NULL;";
+
+								expectedUpdates += 1;
+								updates += cmdUpdate.ExecuteNonQuery();
+							}
+
+							if (updates != expectedUpdates)
+							{
+								transaction.Rollback();
+								return Backyard.Error.SQLCommandFailed;
+							}
+
+							transaction.Commit();
+							return Backyard.Error.NoError;
+						}
+						catch (Exception e)
+						{
+							transaction.Rollback();
+							return Backyard.Error.SQLCommandFailed;
+						}
+					}
+				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Backyard.Disconnect();
+				return Backyard.Error.NotConnected;
+			}
+			catch (SQLiteException e)
+			{
+				Backyard.Disconnect();
+				return Backyard.Error.SQLCommandFailed;
+			}
+			catch (Exception e)
+			{
+				Backyard.Disconnect();
+				return Backyard.Error.Unknown;
+			}
+		}
+
 		#endregion // Utilities
 
 	}

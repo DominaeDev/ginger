@@ -70,6 +70,7 @@ namespace Ginger.Integration
 	public static class BackyardModelDatabase
 	{
 		private static JsonSchema _backyardModelsSchema;
+		public static string ModelDownloadPath { get; private set; }
 
 		public static IList<BackyardModel> Models { get { return _Models; } }
 		private static List<BackyardModel> _Models = new List<BackyardModel>();
@@ -93,6 +94,8 @@ namespace Ginger.Integration
 
 			_Entries.Clear();
 			_Models.Clear();
+
+			ModelDownloadPath = downloadPath;
 
 			string[] modelFiles;
 			try

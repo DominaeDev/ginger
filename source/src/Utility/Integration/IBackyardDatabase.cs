@@ -71,6 +71,7 @@ namespace Ginger.Integration
 		Backyard.Error RepairChats(string groupId, out int modified);
 		Backyard.Error RepairImages(out int modified, out int skipped);
 		Backyard.Error DeleteOrphanedUsers(out string[] imageUrls);
+		Backyard.Error ResetModelDownloadLocation();
 	}
 
 	public static class BackyardImplExtensions
