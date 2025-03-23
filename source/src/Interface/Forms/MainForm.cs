@@ -11,9 +11,6 @@ using Ginger.Integration;
 
 namespace Ginger
 {
-	using GroupInstance = Backyard.GroupInstance;
-	using CharacterInstance = Backyard.CharacterInstance;
-
 	public partial class MainForm : Form, IThemedControl
 	{
 		public static readonly string AppTitle = "Ginger";
@@ -2599,53 +2596,9 @@ namespace Ginger
 		private void enableLinkMenuItem_Click(object sender, EventArgs e)
 		{
 			if (Backyard.ConnectionEstablished == false)
-			{
-				var error = Backyard.EstablishConnection();
-				if (error == Backyard.Error.ValidationFailed)
-				{
-					MessageBox.Show(Resources.error_link_unsupported, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					AppSettings.BackyardLink.Enabled = false;
-				}
-				else if (error == Backyard.Error.NotConnected)
-				{
-					MessageBox.Show(Resources.error_link_not_found, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					AppSettings.BackyardLink.Enabled = false;
-				}
-				else if (error != Backyard.Error.NoError)
-				{
-					MessageBox.Show(string.Format(Resources.error_link_failed_with_reason, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					AppSettings.BackyardLink.Enabled = false;
-				}
-				else
-				{
-					// Fetch characters
-					if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
-					{
-						// Error
-						MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-						AppSettings.BackyardLink.Enabled = false;
-					}
-					else
-					{
-						if (Current.HasLink)
-							Current.Link.RefreshState();
-
-						MessageBox.Show(Resources.msg_link_connected, Resources.cap_link_connect, MessageBoxButtons.OK, MessageBoxIcon.Information);
-						SetStatusBarMessage(Resources.status_link_connect, Constants.StatusBarMessageInterval);
-						AppSettings.BackyardLink.Enabled = true;
-
-						VersionNumber appVersion;
-						if (Backyard.GetAppVersion(out appVersion))
-							AppSettings.BackyardLink.LastVersion = appVersion;
-					}
-				}
-			}
+				ConnectToBackyard();
 			else
-			{
-				SetStatusBarMessage(Resources.status_link_disconnect, Constants.StatusBarMessageInterval);
-				AppSettings.BackyardLink.Enabled = false;
-				Backyard.Disconnect();
-			}
+				DisconnectFromBackyard();
 			RefreshTitle();
 		}
 
@@ -2656,89 +2609,17 @@ namespace Ginger
 
 		private void saveLinkedMenuItem_Click(object sender, EventArgs e)
 		{
-			Backyard.Error error;
-			if (Current.HasLink == false)
-				return;
-			
-			if (Current.Link.isGroup)
-				error = UpdateGroupInBackyard();
-			else
-				error = UpdateCharacterInBackyard();
-
-			if (error == Backyard.Error.NotConnected)
-			{
-				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-			else if (error == Backyard.Error.NotFound)
-			{
-				MessageBox.Show(Resources.error_link_character_not_found, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Current.BreakLink();
-			}
-			else if (error == Backyard.Error.CancelledByUser || error == Backyard.Error.DismissedByUser)
-			{
-				// User clicked cancel
-				return;
-			}
-			else if (error != Backyard.Error.NoError)
-			{
-				MessageBox.Show(Resources.error_link_update_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-			else
-			{
-				SetStatusBarMessage(Resources.status_link_saved, Constants.StatusBarMessageInterval);
-				//MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
-			}
+			SaveCharacterChangesToBackyard();
 		}
 		
 		private void saveNewLinkedMenuItem_Click(object sender, EventArgs e)
 		{
-			CharacterInstance createdCharacter;
-			Backyard.Link.Image[] images;
-
-			var error = CreateNewCharacterInBackyard(out createdCharacter, out images);
-			if (error == Backyard.Error.NotConnected)
-				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			else if (error != Backyard.Error.NoError)
-				MessageBox.Show(Resources.error_link_save_character_as_new, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			else
-			{
-				if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
-				{
-					Current.LinkWith(createdCharacter, images); //! @multi-link
-					Current.IsLinkDirty = false;
-					SetStatusBarMessage(Resources.status_link_save_and_link_new, Constants.StatusBarMessageInterval);
-					RefreshTitle();
-					MessageBox.Show(Resources.msg_link_save_and_link_new, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
-				}
-				else
-					MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
-			}
+			SaveNewCharacterToBackyard();
 		}
 
 		private void saveAsNewPartyMenuItem_Click(object sender, EventArgs e)
 		{
-			GroupInstance createdGroup;
-			CharacterInstance[] createdCharacters;
-			Backyard.Link.Image[] images;
-
-			var error = CreateNewPartyInBackyard(out createdGroup, out createdCharacters, out images);
-			if (error == Backyard.Error.NotConnected)
-				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			else if (error != Backyard.Error.NoError)
-				MessageBox.Show(Resources.error_link_save_character_as_new, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			else
-			{
-				if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
-				{
-					Current.LinkWith(createdGroup, createdCharacters, images);
-					Current.IsLinkDirty = false;
-					SetStatusBarMessage(Resources.status_link_save_and_link_new, Constants.StatusBarMessageInterval);
-					RefreshTitle();
-					MessageBox.Show(Resources.msg_link_save_and_link_new, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
-				}
-				else
-					MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
-			}
+			SavePartyToBackyard();
 		}
 
 		private void reestablishLinkMenuItem_Click(object sender, EventArgs e)
@@ -2758,20 +2639,7 @@ namespace Ginger
 
 		private void revertLinkedMenuItem_Click(object sender, EventArgs e)
 		{
-			if (MessageBox.Show(Resources.msg_link_revert, Resources.cap_link_revert, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
-				return;
-
-			var error = RevertCharacterFromBackyard();
-			if (error == Backyard.Error.NotConnected)
-				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			else if (error != Backyard.Error.NoError)
-				MessageBox.Show(Resources.error_link_open_character, Resources.cap_link_revert, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			else
-			{
-				Current.IsLinkDirty = false;
-				SetStatusBarMessage(Resources.status_link_reverted, Constants.StatusBarMessageInterval);
-				RefreshTitle();
-			}
+			RevertCharacterFromBackyard();
 		}
 
 		public void rearrangeLoreMenuItem_Click(object sender, EventArgs e)
@@ -2928,8 +2796,7 @@ namespace Ginger
 
 		private void restoreBackupMenuItem_Click(object sender, EventArgs e)
 		{
-			CharacterInstance characterInstance;
-			RestoreBackyardBackup(out characterInstance);
+			RestoreBackyardBackup();
 		}
 
 		private void repairBrokenImagesMenuItem_Click(object sender, EventArgs e)
@@ -3002,25 +2869,7 @@ namespace Ginger
 
 		private void checkForUpdateMenuItem_Click(object sender, EventArgs e)
 		{
-			CheckLatestRelease.ReleaseInfo releaseInfo;
-			CheckLatestRelease.GetLatestRelease((info) => {
-				if (info.success == false)
-				{
-					MessageBox.Show(Resources.error_check_update, Resources.cap_check_update, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
-				else if (info.version > VersionNumber.Application)
-				{
-					if (MessageBox.Show(Resources.msg_update_found, Resources.cap_check_update, MessageBoxButtons.OKCancel, MessageBoxIcon.Information)
-						== DialogResult.OK)
-					{
-						Utility.OpenUrl(info.url);
-					}
-				}
-				else
-				{
-					MessageBox.Show(Resources.msg_latest_version, Resources.cap_check_update, MessageBoxButtons.OK, MessageBoxIcon.Information);
-				}
-			});
+			CheckForApplicationUpdates();
 		}
 
 		private void resetModelsLocationMenuItem_Click(object sender, EventArgs e)

@@ -239,6 +239,9 @@
     <Compile Include="src\Interface\Controls\UserNotes.Designer.cs">
       <DependentUpon>UserNotes.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Interface\Forms\BackyardFunctions.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="src\Interface\Forms\Dialogs\RearrangeActorsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
