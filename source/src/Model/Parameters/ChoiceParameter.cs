@@ -160,7 +160,7 @@ namespace Ginger
 				else if (int.TryParse(value, out actorIndex) && actorIndex >= 0 && actorIndex < Current.Characters.Count)
 				{
 					actorID = string.Format("actor-{0}", actorIndex);
-					actorName = Current.Characters[actorIndex].spokenName;
+					actorName = Current.Characters[actorIndex].name;
 				}
 				else
 					return;

@@ -393,7 +393,7 @@ namespace Ginger
 
 			// Special case "Everyone calls her [Name]"
 			if (feminine 
-				&& (word == Current.Character.namePlaceholder 
+				&& (word == Current.Character.name 
 					|| word == Current.Card.userPlaceholder 
 					|| GetCapitalization(word) == Capitalization.Capitalized))
 				return true;

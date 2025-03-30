@@ -131,7 +131,7 @@ namespace Ginger
 				creationDate = DateTime.UtcNow,
 			};
 			var character = new CharacterData() {
-				spokenName = null,
+				spokenName = null, // Use card name
 			};
 			Characters = new List<CharacterData> { character };
 
@@ -193,7 +193,7 @@ namespace Ginger
 				Card.sources = new List<string>(card.data.source);
 
 			var character = new CharacterData() {
-				spokenName = null,
+				spokenName = null, // Use card name
 			};
 			Characters = new List<CharacterData> { character };
 
@@ -285,7 +285,7 @@ namespace Ginger
 			Card.creationDate = creationDate;
 
 			var character = new CharacterData() {
-				spokenName = null,
+				spokenName = null, // Use card name
 			};
 			Characters = new List<CharacterData> { character };
 
@@ -344,7 +344,7 @@ namespace Ginger
 				Card.sources = new List<string>() { card.metaData.source };
 
 			var character = new CharacterData() {
-				spokenName = null,
+				spokenName = null, // Use card name
 			};
 			Characters = new List<CharacterData> { character };
 
@@ -374,7 +374,7 @@ namespace Ginger
 			};
 
 			var character = new CharacterData() {
-				spokenName = null,
+				spokenName = null, // Use card name
 			};
 			Characters = new List<CharacterData> { character };
 

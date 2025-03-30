@@ -22,7 +22,7 @@ namespace Ginger
 				{
 					items.Add(new ChoiceParameter.Item() {
 						id = string.Format("actor-{0}", i),
-						label = Current.Characters[i].spokenName,
+						label = Current.Characters[i].name,
 						value = i.ToString(),
 					});
 				}

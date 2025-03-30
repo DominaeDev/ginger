@@ -212,7 +212,7 @@ namespace Ginger
 						|| possibleName == "__UUUU__"
 						|| string.Compare(Current.Card.name, possibleName, true) == 0
 						|| possibleName.BeginsWith("<##CHAR")
-						|| Current.Characters.ContainsAny(c => string.Compare(c.spokenName, possibleName, true) == 0) // Known name
+						|| Current.Characters.ContainsAny(c => string.Compare(c.name, possibleName, true) == 0) // Known name
 						|| (possibleName.IndexOfAny(new char[] { ',', '.', ':', ';', '!', '?', '<', '>' }, 0) == -1 // No punctuation
 							&& possibleName.Count(c => char.IsWhiteSpace(c)) < 4)) // 4 words or less
 					{

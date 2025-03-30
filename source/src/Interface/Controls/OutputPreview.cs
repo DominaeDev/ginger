@@ -305,14 +305,14 @@ namespace Ginger
 				string outputPersona = outputs[i].persona.ToOutputPreview();
 				if (string.IsNullOrEmpty(outputPersona) == false)
 				{
-					sbOutput.AppendLine(Header(string.Format("CHARACTER PERSONA ({0})", Current.Characters[i].spokenName.ToUpperInvariant())));
+					sbOutput.AppendLine(Header(string.Format("CHARACTER PERSONA ({0})", Current.Characters[i].name.ToUpperInvariant())));
 					sbOutput.AppendLine();
 					sbOutput.AppendLine(outputPersona);
 					sbOutput.AppendLine();
 				}
 				if (string.IsNullOrEmpty(outputPersonality) == false)
 				{
-					sbOutput.AppendLine(Header(string.Format("PERSONALITY SUMMARY ({0})", Current.Characters[i].spokenName.ToUpperInvariant())));
+					sbOutput.AppendLine(Header(string.Format("PERSONALITY SUMMARY ({0})", Current.Characters[i].name.ToUpperInvariant())));
 					sbOutput.AppendLine();
 					sbOutput.AppendLine(outputPersonality);
 					sbOutput.AppendLine();
@@ -396,7 +396,7 @@ namespace Ginger
 					sbOutput.AppendLine(Header(string.Format("{2}'s LOREBOOK ({0} {1})",
 						lorebook.entries.Count,
 						lorebook.entries.Count == 1 ? "ENTRY" : "ENTRIES",
-						Current.Characters[i].spokenName.ToUpperInvariant())));
+						Current.Characters[i].name.ToUpperInvariant())));
 
 					for (int j = 0; j < lorebook.entries.Count; ++j)
 					{

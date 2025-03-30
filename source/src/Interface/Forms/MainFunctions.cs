@@ -256,7 +256,7 @@ namespace Ginger
 				return;
 
 			string userPlaceholder = (Current.Card.userPlaceholder ?? "").Trim();
-			string characterPlaceholder = (Current.Character.spokenName ?? "").Trim();
+			string characterPlaceholder = (Current.Character.name ?? "").Trim();
 
 			foreach (var character in Current.Characters)
 			{
@@ -604,8 +604,8 @@ namespace Ginger
 			string filename = null;
 			if (string.IsNullOrWhiteSpace(Current.Card.name) == false)
 				filename = Current.Card.name;
-			else if (string.IsNullOrWhiteSpace(Current.Character.spokenName) == false)
-				filename = Current.Character.spokenName;
+			else if (string.IsNullOrWhiteSpace(Current.Character.name) == false)
+				filename = Current.Character.name;
 
 			int filter = AppSettings.User.LastExportCharacterFilter;
 			if (filter < 0 || filter > 9)
@@ -699,8 +699,8 @@ namespace Ginger
 			string filename = null;
 			if (string.IsNullOrWhiteSpace(Current.Card.name) == false)
 				filename = string.Concat(Current.Card.name, " Lorebook");
-			else if (string.IsNullOrWhiteSpace(Current.Character.spokenName) == false)
-				filename = string.Concat(Current.Character.spokenName, " Lorebook");
+			else if (string.IsNullOrWhiteSpace(Current.Character.name) == false)
+				filename = string.Concat(Current.Character.name, " Lorebook");
 
 			if (string.IsNullOrEmpty(filename) == false)
 			{
@@ -761,7 +761,7 @@ namespace Ginger
 			{
 				foreach (var character in Current.Characters)
 				{
-					string characterPlaceholder = (character.namePlaceholder ?? "").Trim();
+					string characterPlaceholder = (character.name ?? "").Trim();
 					foreach (var parameter in character.recipes.SelectMany(r => r.parameters).OfType<TextParameter>())
 					{
 						StringBuilder sb = new StringBuilder(parameter.value);
@@ -791,7 +791,7 @@ namespace Ginger
 			{
 				foreach (var character in Current.Characters)
 				{
-					string characterPlaceholder = (character.namePlaceholder ?? "").Trim();
+					string characterPlaceholder = (character.name ?? "").Trim();
 
 					foreach (var parameter in character.recipes.SelectMany(r => r.parameters).OfType<TextParameter>())
 					{
@@ -1155,7 +1155,7 @@ namespace Ginger
 
 		private bool SaveAs()
 		{
-			string filename = string.Concat(Utility.FirstNonEmpty(Current.Card.name, Current.Character.spokenName, Constants.DefaultCharacterName), ".png");
+			string filename = string.Concat(Utility.FirstNonEmpty(Current.Card.name, Current.Character.name, Constants.DefaultCharacterName), ".png");
 
 			// Save as...
 			saveFileDialog.Filter = "Ginger Character Card|*.png";
@@ -1284,7 +1284,7 @@ namespace Ginger
 			for (int i = 0; i < Current.Characters.Count; ++i)
 			{
 				filenames.Add(Utility.MakeUniqueFilename(outputDirectory, 
-						string.Format("{0} - {1}.png", Current.Card.name, Current.Characters[i].spokenName), 
+						string.Format("{0} - {1}.png", Current.Card.name, Current.Characters[i].name), 
 						used_filenames)
 				);
 			}
@@ -3004,7 +3004,7 @@ namespace Ginger
 				// Replace last (if empty)
 				int lastIndex = Current.Characters.Count - 1;
 				var lastCharacter = Current.Characters[lastIndex];
-				if (lastCharacter.recipes.IsEmpty() && lastCharacter.namePlaceholder == Constants.DefaultCharacterName
+				if (lastCharacter.recipes.IsEmpty() && lastCharacter.name == Constants.DefaultCharacterName
 					&& ((lastIndex > 0 && Current.Card.assets.Count(a => a.actorIndex == lastIndex) == 0)
 						|| (lastIndex == 0 && Current.Card.portraitImage == null && Current.Card.assets.Count(a => a.actorIndex <= 0) == 0)) )
 				{
@@ -3021,7 +3021,7 @@ namespace Ginger
 
 				if (portraitAsset != null)
 				{
-					portraitAsset.name = string.Format("Portrait ({0})", Current.Character.spokenName);
+					portraitAsset.name = string.Format("Portrait ({0})", Current.Character.name);
 					portraitAsset.actorIndex = Current.Characters.Count - 1;
 					if (Current.SelectedCharacter > 0)
 						portraitAsset.RemoveTags(AssetFile.Tag.PortraitOverride);

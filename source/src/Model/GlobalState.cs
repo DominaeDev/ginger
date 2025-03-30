@@ -40,8 +40,8 @@ namespace Ginger
 
 		public static bool IsLoading = false;
 
-		public static string CardName { get { return Utility.FirstNonEmpty(Card.name, MainCharacter.spokenName, Constants.DefaultCharacterName); } }
-		public static string Name { get { return Utility.FirstNonEmpty(Character.spokenName, Card.name, Constants.DefaultCharacterName); } }
+		public static string CardName { get { return Utility.FirstNonEmpty(Card.name, MainCharacter.name, Constants.DefaultCharacterName); } }
+		public static string Name { get { return Utility.FirstNonEmpty(Character.name, Card.name, Constants.DefaultCharacterName); } }
 
 		public static int SelectedCharacter { get; set; }
 
@@ -106,7 +106,7 @@ namespace Ginger
 		{
 			get
 			{
-				return string.Concat(MainCharacter.namePlaceholder, MainCharacter.gender ?? "Gender").GetHashCode();
+				return string.Concat(MainCharacter.name, MainCharacter.gender ?? "Gender").GetHashCode();
 			}
 		}
 
@@ -250,9 +250,7 @@ namespace Ginger
 		public static void NewCharacter()
 		{
 			Reset();
-			Character = new CharacterData() {
-				spokenName = null,
-			};
+			Character = new CharacterData();
 
 			OnLoadCharacter?.Invoke(null, EventArgs.Empty);
 			IsDirty = false;
@@ -351,7 +349,7 @@ namespace Ginger
 		public static void AddCharacter()
 		{
 			var character = new CharacterData() {
-				_spokenName = Constants.DefaultCharacterName,
+				spokenName = Constants.DefaultCharacterName,
 			};
 			Characters.Add(character);
 			SelectedCharacter = Characters.Count - 1;

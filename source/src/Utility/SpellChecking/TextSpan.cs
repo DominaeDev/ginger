@@ -396,7 +396,7 @@ namespace Ginger
 
 			foreach (var character in Current.Characters)
 			{
-				if (Array.IndexOf(character.namePlaceholder.Split(new char[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries), word) != -1)
+				if (Array.IndexOf(character.name.Split(new char[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries), word) != -1)
 					return false;
 			}
 			if (Array.IndexOf(Current.Card.userPlaceholder.Split(new char[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries), word) != -1)

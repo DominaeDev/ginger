@@ -623,7 +623,7 @@
 			this.textBox_creator.Location = new System.Drawing.Point(0, 21);
 			this.textBox_creator.MaxLength = 256;
 			this.textBox_creator.Name = "textBox_creator";
-			this.textBox_creator.Placeholder = "User";
+			this.textBox_creator.Placeholder = "Your name here";
 			this.textBox_creator.Size = new System.Drawing.Size(285, 23);
 			this.textBox_creator.TabIndex = 1;
 			this.textBox_creator.TextChanged += new System.EventHandler(this.TextBox_creator_TextChanged);

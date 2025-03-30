@@ -2469,8 +2469,8 @@ namespace Ginger.Properties {
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__grammar&quot;&gt;
         ///	&lt;Name&gt;Grammar&lt;/Name&gt;
         ///	&lt;Description&gt;
-        ///		Custom grammar definition.
-        ///		(Only supported in Backyard AI)
+        ///		Defines a set of rules that controls how the model should format its output.
+        ///		(Only supported in Backyard AI.)
         ///	&lt;/Description&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
         ///	&lt;Order&gt;103&lt;/Order&gt;
@@ -2481,10 +2481,7 @@ namespace Ginger.Properties {
         ///	&lt;Text id=&quot;grammar&quot; style=&quot;code&quot; raw=&quot;yes&quot;&gt;
         ///			&lt;Label&gt;Grammar&lt;/Label&gt;
         ///			&lt;Default&gt;&lt;![CDATA[root ::= text &quot;\n&quot;
-        ///text ::= [[a-zA-Z0-9,.?!&quot; &apos;:;\n]]+]]&gt;&lt;/Default&gt;
-        ///		&lt;/Text&gt;
-        ///
-        ///	&lt;Grammar&gt;{grammar [rest of string was truncated]&quot;;.
+        ///text ::= [[a-zA-Z0-9,.?!&quot; &apos;:; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string grammar_recipe {
             get {
@@ -2497,7 +2494,7 @@ namespace Ginger.Properties {
         ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
         ///root ::= pattern stop
         ///pattern ::= pa | pb
-        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)
+        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)?
         ///delim ::= (&quot; &quot;|&quot;\n&quot;)
         ///text ::= [[^&lt;#\n*&quot;]]+
         ///dialogue ::= text
@@ -2522,7 +2519,7 @@ namespace Ginger.Properties {
         ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
         ///root ::= pattern stop
         ///pattern ::= pa | pb
-        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)
+        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)?
         ///delim ::= (&quot; &quot;|&quot;\n&quot;)
         ///text ::= [[^&lt;#\n*&quot;()]]+
         ///dialogue ::= text
@@ -2547,7 +2544,7 @@ namespace Ginger.Properties {
         ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
         ///root ::= pattern stop
         ///pattern ::= pa | pb
-        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;|&quot;\n&quot;)
+        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;|&quot;\n&quot;)?
         ///delim ::= &quot; &quot;
         ///text ::= [[^&lt;#\n*&quot;]]+
         ///dialogue ::= text
@@ -2572,7 +2569,7 @@ namespace Ginger.Properties {
         ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
         ///root ::= pattern stop
         ///pattern ::= pa | pb
-        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)
+        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)?
         ///delim ::= (&quot; &quot;|&quot;\n&quot;)
         ///text ::= [[^&lt;#\n*&quot;「」]]+
         ///dialogue ::= &quot;「&quot; text &quot;」&quot;
@@ -2597,7 +2594,7 @@ namespace Ginger.Properties {
         ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
         ///root ::= pattern stop
         ///pattern ::= pa | pb
-        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)
+        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)?
         ///delim ::= (&quot; &quot;|&quot;\n&quot;)
         ///text ::= [[^&lt;#\n*&quot;“”]]+
         ///dialogue ::= &quot;“&quot; text &quot;”&quot;
@@ -2622,7 +2619,7 @@ namespace Ginger.Properties {
         ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
         ///root ::= pattern stop
         ///pattern ::= pa | pb
-        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)
+        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)?
         ///delim ::= (&quot; &quot;|&quot;\n&quot;)
         ///text ::= [[^&lt;#\n*&quot;]]+
         ///dialogue ::= &quot;\&quot;&quot; text &quot;\&quot;&quot;
@@ -2647,7 +2644,7 @@ namespace Ginger.Properties {
         ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
         ///root ::= pattern stop
         ///pattern ::= pa | pb
-        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)
+        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)?
         ///delim ::= (&quot; &quot;|&quot;\n&quot;)
         ///text ::= [[^&lt;#\n*&quot;]]+
         ///dialogue ::= &quot;\&quot;&quot; text &quot;\&quot;&quot;
@@ -2695,19 +2692,19 @@ namespace Ginger.Properties {
         ///	&lt;Title&gt;Greeting (Groups only)&lt;/Title&gt;
         ///	&lt;Description&gt;
         ///		Greeting for group chats.
+        ///		(Used for compatibility with the CCV3 format.)
         ///	&lt;/Description&gt;
         ///	&lt;Color&gt;FloralWhite&lt;/Color&gt;
         ///	&lt;Order&gt;102&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Flags&gt;__group-greeting, __component, __internal, __ccv3&lt;/Flags&gt;
+        ///	&lt;Flags&gt;__group-greeting, __component, __internal, __ccv3, __hidden&lt;/Flags&gt;
         ///	
         ///	&lt;!-- Parameters --&gt;
         ///	&lt;Text id=&quot;greeting&quot; style=&quot;component&quot;&gt;
         ///		&lt;Label&gt;First message&lt;/Label&gt;
         ///	&lt;/Text&gt;
         ///	
-        ///	&lt;Greeting group=&quot;true&quot;&gt;{greeting:local}&lt;/Greeting&gt;
-        ///&lt;/Ginger&gt;.
+        ///	&lt;Greeting group=&quot;true&quot;&gt; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string group_greeting_recipe {
             get {
@@ -2746,8 +2743,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger&gt;
         ///	&lt;!-- Macros --&gt;
-        ///	&lt;Macro id=&quot;characters&quot;&gt;[!semilist:[char];[actors]]&lt;/Macro&gt;
-        ///	&lt;Macro id=&quot;everyone&quot;&gt;[!semilist:[char];[actors];[user]]&lt;/Macro&gt;
+        ///	&lt;Macro id=&quot;everyone&quot;&gt;[!semilist:[characters];[user]]&lt;/Macro&gt;
         ///	&lt;Wrapper id=&quot;abbr&quot;&gt;[noparse]_[parse][nocap]&lt;/Wrapper&gt;
         ///	&lt;Wrapper id=&quot;raw, ignore&quot;&gt;[noparse]_[parse]&lt;/Wrapper&gt;
         ///	&lt;Macro id=&quot;the&quot;&gt;[..the?|the]&lt;/Macro&gt;
@@ -2755,7 +2751,8 @@ namespace Ginger.Properties {
         ///
         ///	&lt;!-- Chat style --&gt;
         ///	&lt;Rule id=&quot;is-faraday, is-backyard&quot;&gt;__faraday or __backyard&lt;/Rule&gt;
-        ///	&lt;Wrapper id=&quot;dialogue, dialog&quot;&gt;[@dialogue-symbol-open]_[@dialog [rest of string was truncated]&quot;;.
+        ///	&lt;Wrapper id=&quot;dialogue, dialog&quot;&gt;[@dialogue-symbol-open]_[@dialogue-symbol-close]&lt;/Wrapper&gt;
+        ///	&lt;Wrapper id=&quot;action, narrate, narra [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string internal_macros {
             get {
@@ -3569,7 +3566,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to A new version of Ginger is available.
         ///
-        ///Click OK to view it in your web browser..
+        ///Click OK to visit the download page in your web browser..
         /// </summary>
         internal static string msg_update_found {
             get {
@@ -3624,17 +3621,15 @@ namespace Ginger.Properties {
         ///	&lt;Name&gt;Personality summary&lt;/Name&gt;
         ///	&lt;Title&gt;Personality summary&lt;/Title&gt;
         ///	&lt;Description&gt;
-        ///		This is equivalent to the &quot;Personality summary&quot; field in SillyTavern.
-        ///		(Used for compatibility)
+        ///		(Only supported in the CCV2 format.)
         ///	&lt;/Description&gt;
         ///	&lt;Order&gt;100&lt;/Order&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
-        ///	&lt;Flags&gt;persona, __personality, __component, __internal&lt;/Flags&gt;
+        ///	&lt;Flags&gt;persona, __personality, __component, __internal, __summary&lt;/Flags&gt;
         ///	
         ///	&lt;Text id=&quot;personality&quot; style=&quot;component&quot;&gt;
         ///		&lt;Label&gt;Personality&lt;/Label&gt;
-        ///		&lt;Default&gt;[char] is [a] {adjectives.commalist} [noun:prefix?,] {noun}.&lt;/Default&gt;
-        ///	&lt;/ [rest of string was truncated]&quot;;.
+        ///		&lt;Default&gt;[summary:adjectives or summary:addendum?[char] is [a] {summary:adjectives.commalist} [summary:noun:prefix?,] [{summary:noun}| [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string personality_recipe {
             get {
@@ -4255,7 +4250,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__system&quot;&gt;
         ///	&lt;Name&gt;Model instructions&lt;/Name&gt;
-        ///	&lt;Order&gt;100&lt;/Order&gt;
+        ///	&lt;Order&gt;9&lt;/Order&gt;
         ///	&lt;Color&gt;#bfd0db&lt;/Color&gt;
         ///	&lt;Multiple&gt;True&lt;/Multiple&gt;
         ///	&lt;Flags&gt;system-prompt, model, __system, __component, __formatting, __internal&lt;/Flags&gt;
@@ -4269,7 +4264,7 @@ namespace Ginger.Properties {
         ///	&lt;Toggle id=&quot;important&quot;&gt;
         ///		&lt;Label&gt;Important&lt;/Label&gt;
         ///		&lt;Default&gt;no&lt;/Default&gt;
-        ///		&lt;Descript [rest of string was truncated]&quot;;.
+        ///		&lt;Descriptio [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string system_recipe {
             get {
@@ -5378,7 +5373,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When saving a new character to Backyard AI, set the portrait as the background image if no other background is assigned..
+        ///   Looks up a localized string similar to Automatically create a background from the portrait image when saving a new character if there is no other background..
         /// </summary>
         internal static string tooltip_link_use_portrait_as_background {
             get {

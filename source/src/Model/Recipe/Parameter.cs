@@ -111,7 +111,7 @@ namespace Ginger
 				string userPlaceholder = (Current.Card.userPlaceholder ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(userPlaceholder) == false)
 					Utility.ReplaceWholeWord(sb, userPlaceholder, "__UUUU__", StringComparison.Ordinal);
-				string characterPlaceholder = (Current.Character.namePlaceholder ?? "").Trim();
+				string characterPlaceholder = (Current.Character.name ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
 					Utility.ReplaceWholeWord(sb, characterPlaceholder, "__CCCC__", StringComparison.Ordinal);
 

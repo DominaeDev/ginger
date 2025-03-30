@@ -214,7 +214,7 @@ namespace Ginger
 
 			// Add new override asset
 			asset = new AssetFile() {
-				name = string.Format("Portrait ({0})", Current.MainCharacter.spokenName),
+				name = string.Format("Portrait ({0})", Current.MainCharacter.name),
 				uriType = AssetFile.UriType.Embedded,
 				assetType = AssetFile.AssetType.Icon,
 				data = AssetData.FromBytes(bytes),
@@ -270,7 +270,7 @@ namespace Ginger
 
 			// Add new asset
 			asset = new AssetFile() {
-				name = string.Format("Portrait ({0})", Current.Characters[actorIndex].spokenName),
+				name = string.Format("Portrait ({0})", Current.Characters[actorIndex].name),
 				uriType = AssetFile.UriType.Embedded,
 				assetType = AssetFile.AssetType.Icon,
 				data = AssetData.FromBytes(bytes),
@@ -301,7 +301,7 @@ namespace Ginger
 
 			// Add new asset
 			var asset = new AssetFile() {
-				name = string.Format("Portrait ({0})", Current.Characters[actorIndex].spokenName),
+				name = string.Format("Portrait ({0})", Current.Characters[actorIndex].name),
 				uriType = AssetFile.UriType.Embedded,
 				assetType = AssetFile.AssetType.Icon,
 				data = AssetData.FromBytes(bytes),

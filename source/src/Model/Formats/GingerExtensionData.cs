@@ -65,7 +65,7 @@ namespace Ginger
 			ext.data = new Data() {
 				id = Current.Card.uuid,
 				name = Current.Card.name ?? "",
-				spokenName = Current.MainCharacter.spokenName ?? "",
+				spokenName = Current.MainCharacter.name ?? "",
 				gender = Current.MainCharacter.gender ?? "",
 				userGender = Current.Card.userGender ?? "",
 				characterVersion = Current.Card.versionString ?? "",

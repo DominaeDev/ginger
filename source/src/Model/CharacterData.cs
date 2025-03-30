@@ -7,25 +7,24 @@ namespace Ginger
 {
 	public class CharacterData
 	{
-		public string spokenName
+		public string name
 		{
 			get
 			{
 				if (string.IsNullOrWhiteSpace(_spokenName) == false)
 					return _spokenName.Trim();
-				else if (isMainCharacter && Current.Card.name != null)
+				else if (isMainCharacter && string.IsNullOrWhiteSpace(Current.Card.name) == false)
 					return Current.Card.name.Trim();
-				return "";
+				return Constants.DefaultCharacterName;
 			}
+		}
+
+		public string spokenName
+		{
+			get { return _spokenName; }
 			set { _spokenName = value; }
 		}
-
-		public string namePlaceholder
-		{
-			get { return string.IsNullOrWhiteSpace(spokenName) ? Constants.DefaultCharacterName : spokenName.Trim(); }
-		}
-
-		public string _spokenName = null;
+		private string _spokenName = null;
 		public string gender = "";
 
 		public List<Recipe> recipes = new List<Recipe>();
@@ -67,28 +66,28 @@ namespace Ginger
 
 			// Name(s)
 			context.SetValue("card", Utility.FirstNonEmpty(Current.Card.name, Current.Name, Constants.DefaultCharacterName));
-			context.SetValue("name", Utility.FirstNonEmpty(this.spokenName, Current.Card.name, Constants.DefaultCharacterName));
+			context.SetValue("name", Utility.FirstNonEmpty(this.name, Current.Card.name, Constants.DefaultCharacterName));
 			context.SetValue("#name", GingerString.InternalUserMarker);
 			context.SetValue("names", 
 				string.Join(Text.Delimiter,
-					Current.Characters.Select(c => c.spokenName)
+					Current.Characters.Select(c => c.name)
 					.Where(s => string.IsNullOrEmpty(s) == false)));
 			context.SetValue("actors",
 				string.Join(Text.Delimiter,
 				Current.Characters
 					.Except(new CharacterData[] { Current.MainCharacter })
-					.Select(c => c.spokenName)
+					.Select(c => c.name)
 					.Where(s => string.IsNullOrEmpty(s) == false)));
 			context.SetValue("others",
 				string.Join(Text.Delimiter,
 				Current.Characters
 					.Except(new CharacterData[] { this })
-					.Select(c => c.spokenName)
+					.Select(c => c.name)
 					.Where(s => string.IsNullOrEmpty(s) == false)));
 			context.SetValue("actor:count", Current.Characters.Count);
 			for (int i = 0; i < Current.Characters.Count; ++i)
 			{
-				context.SetValue($"name:{i + 1}", Current.Characters[i].spokenName);
+				context.SetValue($"name:{i + 1}", Current.Characters[i].name);
 				context.SetValue($"actor:{i + 1}", GingerString.MakeInternalCharacterMarker(i));
 			}
 
@@ -412,8 +411,9 @@ namespace Ginger
 
 		public bool IsEmpty()
 		{
-			if (!recipes.IsEmpty() || namePlaceholder != Constants.DefaultCharacterName)
+			if (!recipes.IsEmpty() || string.IsNullOrEmpty(_spokenName) == false)
 				return false;
+
 			int index = Current.Characters.IndexOf(this);
 			if (index == 0)
 			{
