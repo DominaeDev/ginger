@@ -36,7 +36,7 @@ namespace Ginger
 
 			int position = sbText.Length;
 
-			string characterName = Current.Character.namePlaceholder;
+			string characterName = Current.Character.name;
 			string userName = Current.Card.userPlaceholder;
 			var sbAppend = new StringBuilder();
 			if (sbText.Length > 0)

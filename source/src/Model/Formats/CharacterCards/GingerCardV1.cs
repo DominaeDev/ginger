@@ -431,7 +431,7 @@ namespace Ginger
 			};
 
 			card.characters = Current.Characters.Select(c => new Character() {
-				spokenName = c._spokenName,
+				spokenName = c.spokenName,
 				gender = c.gender,
 				recipes = new List<Recipe>(c.recipes),
 				uid = c.uid ?? Utility.CreateGUID(),

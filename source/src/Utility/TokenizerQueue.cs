@@ -83,7 +83,7 @@ namespace Ginger
 
 			var asyncArgs = new BackgroundWorkerArguments() {
 				prompt = _prompt,
-				characterPlaceholder = Current.Character.namePlaceholder,
+				characterPlaceholder = Current.Character.name,
 				userPlaceholder = Current.Card.userPlaceholder,
 				promptHash = _promptID,
 				format = AppSettings.Settings.PreviewFormat,

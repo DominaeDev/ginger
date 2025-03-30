@@ -281,13 +281,14 @@ namespace Ginger
 					SetStatusBarMessage(Resources.status_link_save_and_link_new, Constants.StatusBarMessageInterval);
 					RefreshTitle();
 					MessageBox.Show(Resources.msg_link_save_and_link_new, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
-					return true;
 				}
 				else
 				{
 					MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
-					return true;
 				}
+
+				_bShouldRefreshSidePanel = true;
+				return true;
 			}
 		}
 
@@ -1636,7 +1637,7 @@ namespace Ginger
 				// Replace last (if empty)
 				int lastIndex = Current.Characters.Count - 1;
 				var lastCharacter = Current.Characters[lastIndex];
-				if (lastCharacter.recipes.IsEmpty() && lastCharacter.namePlaceholder == Constants.DefaultCharacterName
+				if (lastCharacter.recipes.IsEmpty() && string.IsNullOrEmpty(lastCharacter.spokenName)
 					&& ((lastIndex > 0 && Current.Card.assets.Count(a => a.actorIndex == lastIndex) == 0)
 						|| (lastIndex == 0 && Current.Card.portraitImage == null && Current.Card.assets.Count(a => a.actorIndex <= 0) == 0)) )
 				{
@@ -1749,13 +1750,14 @@ namespace Ginger
 					SetStatusBarMessage(Resources.status_link_save_and_link_new, Constants.StatusBarMessageInterval);
 					RefreshTitle();
 					MessageBox.Show(Resources.msg_link_save_and_link_new, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
-					return true;
 				}
 				else
 				{
 					MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
-					return true;
 				}
+				
+				_bShouldRefreshSidePanel = true;
+				return true;
 			}
 		}
 
@@ -1798,7 +1800,7 @@ namespace Ginger
 			}
 
 			for (int i = 0; i < cards.Length && i < Current.Characters.Count; ++i)
-				cards[i].data.name = Utility.FirstNonEmpty(Current.Characters[i].spokenName, Current.Card.name, Constants.DefaultCharacterName);
+				cards[i].data.name = Current.Characters[i].name;
 			cards[0].EnsureSystemPrompt();
 			cards[0].data.isNSFW = cards.ContainsAny(c => c.data.isNSFW);
 
@@ -1878,7 +1880,7 @@ namespace Ginger
 				return Backyard.Error.InvalidArgument; // Error
 
 			for (int i = 0; i < cards.Length && i < Current.Characters.Count; ++i)
-				cards[i].data.name = Utility.FirstNonEmpty(Current.Characters[i].spokenName, Current.Card.name, Constants.DefaultCharacterName);
+				cards[i].data.name = Current.Characters[i].name;
 			cards[0].data.isNSFW = cards.ContainsAny(c => c.data.isNSFW);
 
 			if (hasChanges)

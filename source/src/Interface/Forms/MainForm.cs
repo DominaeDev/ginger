@@ -1355,10 +1355,10 @@ namespace Ginger
 			// Character name
 			string title;
 			if (Current.Characters.Count == 1)
-				title = Utility.FirstNonEmpty(Current.Character.spokenName, Current.Card.name) ?? "";
+				title = Utility.FirstNonEmpty(Current.Character.name, Current.Card.name) ?? "";
 			else
 				title = string.Format("{0} ({1}/{2})",
-					Utility.FirstNonEmpty(Current.Character.spokenName, Current.Card.name, Constants.DefaultCharacterName),
+					Utility.FirstNonEmpty(Current.Character.name, Current.Card.name, Constants.DefaultCharacterName),
 					Current.SelectedCharacter + 1,
 					Current.Characters.Count);			
 
@@ -1687,7 +1687,7 @@ namespace Ginger
 
 			// Primary character
 			var primary = new ToolStripMenuItem() {
-				Text = Current.MainCharacter.namePlaceholder,
+				Text = Current.MainCharacter.name,
 				Checked = Current.SelectedCharacter == 0,
 				ShortcutKeyDisplayString = "Alt+1",
 			};
@@ -1699,7 +1699,7 @@ namespace Ginger
 			// Secondary characters
 			for (int i = 1; i < Current.Characters.Count; ++i)
 			{
-				string subName = Utility.FirstNonEmpty(Current.Characters[i].spokenName, Constants.DefaultCharacterName);
+				string subName = Utility.FirstNonEmpty(Current.Characters[i].name, Constants.DefaultCharacterName);
 
 				var menuItem = new ToolStripMenuItem() {
 					Text = subName,
@@ -1725,7 +1725,7 @@ namespace Ginger
 				items.Add(rearrangeActors);
 
 				items.Add(new ToolStripSeparator());
-				var removeActor = new ToolStripMenuItem(string.Format("Remove {0}", string.IsNullOrEmpty(Current.Character.spokenName) ? "actor" : Current.Character.spokenName));
+				var removeActor = new ToolStripMenuItem(string.Format("Remove {0}", string.IsNullOrEmpty(Current.Character.name) ? "actor" : Current.Character.name));
 				removeActor.Click += RemoveSupportingCharacterMenuItem_Click;
 				items.Add(removeActor);
 			}

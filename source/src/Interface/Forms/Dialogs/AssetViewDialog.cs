@@ -198,7 +198,7 @@ namespace Ginger
 				if (asset.HasTag(AssetFile.Tag.PortraitOverride))
 					iconCell.ToolTipText = Resources.tooltip_asset_override;
 				else if (actorIndex > 0 && actorIndex < Current.Characters.Count)
-					iconCell.ToolTipText = string.Format(Resources.tooltip_asset_actor_portrait, Current.Characters[actorIndex].spokenName);
+					iconCell.ToolTipText = string.Format(Resources.tooltip_asset_actor_portrait, Current.Characters[actorIndex].name);
 			}
 		}
 

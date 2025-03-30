@@ -36,7 +36,7 @@ namespace Ginger
 			{
 				lbActors.Items.Add(new Item() {
 					index = i,
-					label = Current.Characters[i].spokenName,
+					label = Current.Characters[i].name,
 				});
 			}
 

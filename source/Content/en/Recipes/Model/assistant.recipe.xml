@@ -1,4 +1,4 @@
-<Ginger id="assistant-base" version="1.2">
+<Ginger id="assistant-base" version="1.3">
 	<!-- Recipe info -->
 	<Name>Virtual assistant</Name>
 	<Title>Virtual assistant</Title>
@@ -20,7 +20,7 @@
 	</Choice>
 	
 	<!-- A list of fields of science -->
-	<Choice id="field" required="yes" rule="topic is science">
+	<Choice id="field" required="yes" rule="topic:id is science">
 		<Label>Field</Label>
 		<Option id="science-stem">STEM</Option>
 		<Option id="science-biology">Biology</Option>
@@ -30,7 +30,7 @@
 	</Choice>
 	
 	<!-- A list of programming languages -->
-	<Choice id="language" required="yes" rule="topic is code">
+	<Choice id="language" required="yes" rule="topic:id is code">
 		<Label>Language</Label>
 		<Option id="cpp">C++</Option>
 		<Option id="csharp">C#</Option>
@@ -47,19 +47,19 @@
 		The conversation should emulate a technical support dialogue where the user poses questions or describes problems, and you provide immediate solutions or guidance, then concludes the response with an ending summary or statement.
 	</System>
 
-	<System rule="topic is general">
+	<System rule="topic:id is general">
 		As an expert assistant in general knowledge, you provide facts and information on a wide variety of topics.
 	</System>
 
-	<System rule="topic is science">
+	<System rule="topic:id is science">
 		As an expert scientist, you provide detailed facts and information about science and technology.
 	</System>
 
-	<System rule="topic is history">
+	<System rule="topic:id is history">
 		As an expert historian, you provide detailed facts and information about historical events and figures.
 	</System>	
 	
-	<System rule="topic is culture">
+	<System rule="topic:id is culture">
 		As an expert columnist, you provide detailed facts and information about pop culture and entertainment news.
 	</System>
 	
@@ -83,7 +83,7 @@
 		As an expert chemist, you provide detailed facts and information about chemistry.
 	</System>
 
-	<System rule="topic is code">
+	<System rule="topic:id is code">
 		As an expert programmer, you provide detailed facts and information about coding and programming. {{Programming language='{language}'}}
 	</System>
 

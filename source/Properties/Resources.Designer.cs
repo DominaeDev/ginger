@@ -3638,7 +3638,7 @@ namespace Ginger.Properties {
         /// <summary>
         ///   Looks up a localized string similar to A new version of Ginger is available.
         ///
-        ///Click OK to view it in your web browser..
+        ///Click OK to visit the download page in your web browser..
         /// </summary>
         internal static string msg_update_found {
             get {
@@ -5463,7 +5463,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When saving a new character to Backyard AI, set the portrait as the background image if no other background is assigned..
+        ///   Looks up a localized string similar to Automatically create a background from the portrait image when saving a new character if there is no other background..
         /// </summary>
         internal static string tooltip_link_use_portrait_as_background {
             get {

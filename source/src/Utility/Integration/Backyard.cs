@@ -1208,7 +1208,7 @@ namespace Ginger.Integration
 			if (string.IsNullOrEmpty(characterId) == false)
 				characterPlaceholder = $"{{_cfg&:{characterId}:cfg&_}}";
 			else
-				characterPlaceholder = Current.MainCharacter.namePlaceholder;
+				characterPlaceholder = Current.MainCharacter.name;
 			sb.Replace(GingerString.BackyardCharacterMarker, characterPlaceholder, false); // jic
 
 			text = sb.ToString();

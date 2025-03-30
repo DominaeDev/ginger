@@ -176,14 +176,14 @@ namespace Ginger
 		{
 			StringBuilder sb = new StringBuilder(value);
 
-			sb.Replace(CharacterMarker, string.Concat("{", Current.MainCharacter.spokenName, "}"), true);
+			sb.Replace(CharacterMarker, string.Concat("{", Current.MainCharacter.name, "}"), true);
 			sb.Replace(UserMarker, BackyardUserMarker, true);
 			sb.Replace(OriginalMarker, BackyardOriginalMarker, true);
 			sb.Replace(NameMarker, Current.Name, true);
 			sb.Replace(ContinueMarker, "", true);
 			
 			for (int i = 0; i < Current.Characters.Count; ++i)
-				sb.Replace(MakeInternalCharacterMarker(i), string.Concat("{", Current.Characters[i].spokenName, "}"));
+				sb.Replace(MakeInternalCharacterMarker(i), string.Concat("{", Current.Characters[i].name, "}"));
 
 			UnescapeBackslash(sb);
 
@@ -214,7 +214,7 @@ namespace Ginger
 			string text = ToFaraday();
 
 			var names = new HashSet<string>(
-				Current.Characters.Select(c => c.spokenName.ToLowerInvariant()));
+				Current.Characters.Select(c => c.name.ToLowerInvariant()));
 
 			var paragraphs = text.Split(new string[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Where(s => s.Length > 0).ToArray();
 			for (int i = 0; i < paragraphs.Length; ++i)
@@ -288,7 +288,7 @@ namespace Ginger
 
 				for (int i = 0; i < Current.Characters.Count; ++i)
 				{
-					string characterPlaceholder = (Current.Characters[i].namePlaceholder ?? "").Trim();
+					string characterPlaceholder = (Current.Characters[i].name ?? "").Trim();
 					if (string.IsNullOrWhiteSpace(characterPlaceholder) == false)
 						Utility.ReplaceWholeWord(sb, characterPlaceholder, MakeInternalCharacterMarker(i), StringComparison.Ordinal);
 				}
@@ -352,7 +352,7 @@ namespace Ginger
 			sb.Replace(InternalContinueMarker, ContinueMarker);
 
 			sb.Replace(MakeInternalCharacterMarker(0), CharacterMarker);
-			string[] characterNames = Current.Characters.Select(c => c.spokenName).ToArray();
+			string[] characterNames = Current.Characters.Select(c => c.name).ToArray();
 			for (int i = 1; i < characterNames.Length; ++i)
 				sb.Replace(MakeInternalCharacterMarker(i), characterNames[i]);
 
@@ -383,7 +383,7 @@ namespace Ginger
 
 		public string ToBaked()
 		{
-			string[] characterNames = Current.Characters.Select(c => c.namePlaceholder ?? "").ToArray();
+			string[] characterNames = Current.Characters.Select(c => c.name ?? "").ToArray();
 			string userPlaceholder = Current.Card.userPlaceholder;
 
 			return WithNames(ToParameter(), characterNames, userPlaceholder);
@@ -399,7 +399,7 @@ namespace Ginger
 			if (value == null)
 				return new GingerString(value);
 
-			string[] characterNames = Current.Characters.Select(c => c.spokenName).ToArray();
+			string[] characterNames = Current.Characters.Select(c => c.name).ToArray();
 
 			var sb = new StringBuilder(value);
 			sb.Replace(InternalCharacterMarker, MakeInternalCharacterMarker(characterIndex));
@@ -477,7 +477,7 @@ namespace Ginger
 				sb = new StringBuilder(ToGinger());
 				
 				// Resolve placeholders
-				sb.Replace(CharacterMarker, Current.MainCharacter.spokenName, true);
+				sb.Replace(CharacterMarker, Current.MainCharacter.name, true);
 				sb.Replace(UserMarker, Current.Card.userPlaceholder, true);
 				sb.Replace(OriginalMarker, "", true);
 				sb.Replace(ContinueMarker, "", true);
@@ -502,13 +502,13 @@ namespace Ginger
 
 			if (characterIndex >= 0 && characterIndex < Current.Characters.Count)
 			{
-				string characterPlaceholder = Current.Characters[characterIndex].namePlaceholder;
+				string characterPlaceholder = Current.Characters[characterIndex].name;
 				if (string.IsNullOrEmpty(characterPlaceholder) == false)
 					sb.Replace(CharacterMarker, characterPlaceholder, false);
 			}
 			else
 			{
-				string characterPlaceholder = Current.MainCharacter.namePlaceholder;
+				string characterPlaceholder = Current.MainCharacter.name;
 				if (string.IsNullOrEmpty(characterPlaceholder) == false)
 					sb.Replace(CharacterMarker, characterPlaceholder, false);
 			}
@@ -785,7 +785,7 @@ namespace Ginger
 				if (i == selectedCharacter)
 					sb.Replace(MakeInternalCharacterMarker(i), characterPlaceholder ?? CharacterMarker);
 				else
-					sb.Replace(MakeInternalCharacterMarker(i), Current.Characters[i].spokenName);
+					sb.Replace(MakeInternalCharacterMarker(i), Current.Characters[i].name);
 			}
 		}
 

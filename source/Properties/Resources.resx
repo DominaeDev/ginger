@@ -1228,7 +1228,7 @@ Reason: {0}</value>
     <value>..\Resources\Schemas\tavern_characterbook_v3_filter.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="tooltip_link_use_portrait_as_background" xml:space="preserve">
-    <value>When saving a new character to Backyard AI, set the portrait as the background image if no other background is assigned.</value>
+    <value>Automatically create a background from the portrait image when saving a new character if there is no other background.</value>
   </data>
   <data name="status_link_save_file_and_link" xml:space="preserve">
     <value>Saved to file and Backyard AI</value>
@@ -1714,7 +1714,7 @@ Make sure you have an active internet connection.</value>
   <data name="msg_update_found" xml:space="preserve">
     <value>A new version of Ginger is available.
 
-Click OK to view it in your web browser.</value>
+Click OK to visit the download page in your web browser.</value>
   </data>
   <data name="tooltip_link_repair_model_location" xml:space="preserve">
     <value>Resets the model download location, which may resolve problems launching Backyard AI.</value>

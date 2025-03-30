@@ -157,7 +157,7 @@ namespace Ginger
 		{
 			FaradayCardV4 card = new FaradayCardV4();
 			card.data.displayName = Current.CardName;
-			card.data.name = Utility.FirstNonEmpty(Current.MainCharacter.spokenName, Current.Card.name, Constants.DefaultCharacterName);
+			card.data.name = Current.MainCharacter.name;
 			card.data.system = output.system.ToFaraday();
 			card.data.persona = output.persona.ToFaraday();
 			card.data.scenario = output.scenario.ToFaraday();

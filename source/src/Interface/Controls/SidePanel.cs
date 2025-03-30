@@ -118,9 +118,9 @@ namespace Ginger
 			textBox_characterName.Text = Current.Card.name;
 			textBox_characterName.InitUndo();
 			textBox_characterName.Enabled = Current.SelectedCharacter == 0;
-			textBox_characterName.Placeholder = Utility.FirstNonEmpty(Current.Character._spokenName, Constants.DefaultCharacterName);
+			textBox_characterName.Placeholder = Utility.FirstNonEmpty(Current.Character.spokenName, Constants.DefaultCharacterName);
 
-			textBox_characterSpokenName.Text = Current.Character._spokenName;
+			textBox_characterSpokenName.Text = Current.Character.spokenName;
 			textBox_characterSpokenName.Placeholder = Utility.FirstNonEmpty(Current.Card.name, Constants.DefaultCharacterName);
 			textBox_characterSpokenName.InitUndo();
 
@@ -480,7 +480,7 @@ namespace Ginger
 			if (Current.SelectedCharacter != 0 || Current.IsLoading)
 				return;
 
-			string prevPlaceholder = Current.Character.namePlaceholder;
+			string prevPlaceholder = Current.Character.name;
 			if (string.IsNullOrWhiteSpace(prevPlaceholder))
 				prevPlaceholder = GingerString.CharacterMarker;
 			prevPlaceholder = prevPlaceholder.Trim();
@@ -489,7 +489,7 @@ namespace Ginger
 			Current.IsDirty |= bChanged;
 			Current.Card.name = CardName;
 
-			string newPlaceholder = Current.Character.namePlaceholder;
+			string newPlaceholder = Current.Character.name;
 			if (string.IsNullOrWhiteSpace(newPlaceholder))
 				newPlaceholder = GingerString.CharacterMarker;
 			newPlaceholder = newPlaceholder.Trim();
@@ -508,16 +508,16 @@ namespace Ginger
 			if (Current.IsLoading)
 				return;
 
-			string prevPlaceholder = Current.Character.namePlaceholder;
+			string prevPlaceholder = Current.Character.name;
 			if (string.IsNullOrWhiteSpace(prevPlaceholder))
 				prevPlaceholder = GingerString.CharacterMarker;
 			prevPlaceholder = prevPlaceholder.Trim();
 
-			bool bChanged = Current.Character.spokenName != SpokenName;
+			bool bChanged = Current.Character.name != SpokenName;
 			Current.IsDirty |= bChanged;
 			Current.Character.spokenName = SpokenName;
 
-			string newPlaceholder = Current.Character.namePlaceholder;
+			string newPlaceholder = Current.Character.name;
 			if (string.IsNullOrWhiteSpace(newPlaceholder))
 				newPlaceholder = GingerString.CharacterMarker;
 			newPlaceholder = newPlaceholder.Trim();

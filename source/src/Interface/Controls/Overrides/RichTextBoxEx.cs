@@ -752,7 +752,7 @@ namespace Ginger
 				string[] names = new string[Current.Characters.Count + 1];
 				names[0] = Current.Card.userPlaceholder;
 				for (int i = 0; i < Current.Characters.Count; ++i)
-					names[i + 1] = Current.Characters[i].namePlaceholder;
+					names[i + 1] = Current.Characters[i].name;
 				syntaxHighlighter.SetCharacterNames(names, new SyntaxStyle(colorName), 3);
 			}
 
@@ -795,7 +795,7 @@ namespace Ginger
 				string[] names = new string[Current.Characters.Count + 1];
 				names[0] = Current.Card.userPlaceholder;
 				for (int i = 0; i < Current.Characters.Count; ++i)
-					names[i + 1] = Current.Characters[i].namePlaceholder;
+					names[i + 1] = Current.Characters[i].name;
 				syntaxHighlighter.SetCharacterNames(names, new SyntaxStyle(Theme.Current.Name), 3);
 			}
 
@@ -1080,7 +1080,7 @@ namespace Ginger
 
 				// Replace placeholders
 				string user = AppSettings.Settings.AutoConvertNames ? Current.Card.userPlaceholder : GingerString.UserMarker;
-				string character = AppSettings.Settings.AutoConvertNames ? Current.Character.namePlaceholder : GingerString.CharacterMarker;
+				string character = AppSettings.Settings.AutoConvertNames ? Current.Character.name : GingerString.CharacterMarker;
 
 				Utility.ReplaceWholeWord(sb, "<bot>", character, StringComparison.OrdinalIgnoreCase);         // Tavern
 				Utility.ReplaceWholeWord(sb, "<user>", user, StringComparison.OrdinalIgnoreCase);             // Tavern

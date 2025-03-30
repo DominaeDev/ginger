@@ -494,8 +494,8 @@ namespace Ginger
 				tavernBook.name = lorebook.name.Trim();
 			else if (string.IsNullOrWhiteSpace(Current.Card.name) == false)
 				tavernBook.name = Current.Card.name;
-			else if (string.IsNullOrWhiteSpace(Current.Character.spokenName) == false)
-				tavernBook.name = Current.Character.spokenName;
+			else if (string.IsNullOrWhiteSpace(Current.Character.name) == false)
+				tavernBook.name = Current.Character.name;
 			else
 				tavernBook.name = Path.GetFileNameWithoutExtension(filename);
 
@@ -575,8 +575,8 @@ namespace Ginger
 				data.name = lorebook.name.Trim();
 			else if (string.IsNullOrWhiteSpace(Current.Card.name) == false)
 				data.name = Current.Card.name;
-			else if (string.IsNullOrWhiteSpace(Current.Character.spokenName) == false)
-				data.name = Current.Character.spokenName;
+			else if (string.IsNullOrWhiteSpace(Current.Character.name) == false)
+				data.name = Current.Character.name;
 			else
 				data.name = Path.GetFileNameWithoutExtension(filename);
 			data.description = lorebook.description;
@@ -647,8 +647,8 @@ namespace Ginger
 			var agnaiBook = new AgnaisticCard.CharacterBook();
 			if (string.IsNullOrWhiteSpace(Current.Card.name) == false)
 				agnaiBook.name = Current.Card.name;
-			else if (string.IsNullOrWhiteSpace(Current.Character.spokenName) == false)
-				agnaiBook.name = Current.Character.spokenName;
+			else if (string.IsNullOrWhiteSpace(Current.Character.name) == false)
+				agnaiBook.name = Current.Character.name;
 			else
 				agnaiBook.name = Path.GetFileNameWithoutExtension(filename);
 			agnaiBook.description = lorebook.description;
