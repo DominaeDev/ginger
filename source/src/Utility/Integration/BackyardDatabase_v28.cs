@@ -1226,6 +1226,8 @@ namespace Ginger.Integration
 								Dictionary<string, ImageOutput> chatBackgrounds;
 								if (PrepareUpdateChatBackgrounds(chats, existingBackgrounds, backgrounds, out chatBackgrounds))
 									WriteUpdateChatBackgrounds(connection, groupId, chatBackgrounds, ref updates, ref expectedUpdates);
+								else
+									DeleteChatBackgrounds(connection, groupId, ref updates, ref expectedUpdates);
 							}
 
 							// Update images
@@ -6165,6 +6167,11 @@ namespace Ginger.Integration
 			}
 		}
 
+		private static void DeleteChatBackgrounds(SQLiteConnection connection, string groupId, ref int updates, ref int expectedUpdates)
+		{
+			WriteUpdateChatBackgrounds(connection, groupId, null, ref updates, ref expectedUpdates);
+		}
+
 		private static void WriteUpdateChatBackgrounds(SQLiteConnection connection, string groupId, Dictionary<string, ImageOutput> chatBackgrounds, ref int updates, ref int expectedUpdates)
 		{
 			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds) == false)
@@ -6191,30 +6198,33 @@ namespace Ginger.Integration
 			}
 
 			// Add backgrounds
-			using (var cmdUpdateBG = new SQLiteCommand(connection))
+			if (chatBackgrounds != null && chatBackgrounds.Count > 0)
 			{
-				var sbCommand = new StringBuilder();
-				sbCommand.AppendLine(
-				$@"
+				using (var cmdUpdateBG = new SQLiteCommand(connection))
+				{
+					var sbCommand = new StringBuilder();
+					sbCommand.AppendLine(
+					$@"
 					INSERT INTO BackgroundChatImage
 						(id, imageUrl, aspectRatio, chatId)
 					VALUES ");
 
-				int i = 0;
-				foreach (var kvp in chatBackgrounds)
-				{
-					if (i++ > 0)
-						sbCommand.Append(",");
-					sbCommand.AppendLine($@"($backgroundId{i:000}, $imageUrl{i:000}, $aspectRatio{i:000}, $chatId{i:000})");
+					int i = 0;
+					foreach (var kvp in chatBackgrounds)
+					{
+						if (i++ > 0)
+							sbCommand.Append(",");
+						sbCommand.AppendLine($@"($backgroundId{i:000}, $imageUrl{i:000}, $aspectRatio{i:000}, $chatId{i:000})");
 
-					cmdUpdateBG.Parameters.AddWithValue($"$backgroundId{i:000}", Cuid.NewCuid());
-					cmdUpdateBG.Parameters.AddWithValue($"$chatId{i:000}", kvp.Key);
-					cmdUpdateBG.Parameters.AddWithValue($"$imageUrl{i:000}", kvp.Value.imageUrl);
-					cmdUpdateBG.Parameters.AddWithValue($"$aspectRatio{i:000}", kvp.Value.aspectRatio);
-					expectedUpdates += 1;
+						cmdUpdateBG.Parameters.AddWithValue($"$backgroundId{i:000}", Cuid.NewCuid());
+						cmdUpdateBG.Parameters.AddWithValue($"$chatId{i:000}", kvp.Key);
+						cmdUpdateBG.Parameters.AddWithValue($"$imageUrl{i:000}", kvp.Value.imageUrl);
+						cmdUpdateBG.Parameters.AddWithValue($"$aspectRatio{i:000}", kvp.Value.aspectRatio);
+						expectedUpdates += 1;
+					}
+					cmdUpdateBG.CommandText = sbCommand.ToString();
+					updates += cmdUpdateBG.ExecuteNonQuery();
 				}
-				cmdUpdateBG.CommandText = sbCommand.ToString();
-				updates += cmdUpdateBG.ExecuteNonQuery();
 			}
 		}
 
