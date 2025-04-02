@@ -5319,6 +5319,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open a Backyard AI character or party..
+        /// </summary>
+        internal static string tooltip_link_open_party {
+            get {
+                return ResourceManager.GetString("tooltip_link_open_party", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Paste model settings (model, temperature, etc.) from the clipboard..
         /// </summary>
         internal static string tooltip_link_paste_settings {
@@ -5427,7 +5436,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reimport the linked character from Backyard AI.
+        ///   Looks up a localized string similar to Reimport this character from Backyard AI..
         /// </summary>
         internal static string tooltip_link_revert {
             get {
@@ -5436,7 +5445,16 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save changes to the linked Backyard AI character..
+        ///   Looks up a localized string similar to Reimport this character or party from Backyard AI..
+        /// </summary>
+        internal static string tooltip_link_revert_party {
+            get {
+                return ResourceManager.GetString("tooltip_link_revert_party", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save changes to Backyard AI..
         /// </summary>
         internal static string tooltip_link_save {
             get {
@@ -5445,11 +5463,29 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save as a new Backyard AI character..
+        ///   Looks up a localized string similar to Save as a new character..
         /// </summary>
         internal static string tooltip_link_save_as_new {
             get {
                 return ResourceManager.GetString("tooltip_link_save_as_new", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save as a new multi-character..
+        /// </summary>
+        internal static string tooltip_link_save_as_new_multi {
+            get {
+                return ResourceManager.GetString("tooltip_link_save_as_new_multi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save as a new party..
+        /// </summary>
+        internal static string tooltip_link_save_as_new_party {
+            get {
+                return ResourceManager.GetString("tooltip_link_save_as_new_party", resourceCulture);
             }
         }
         

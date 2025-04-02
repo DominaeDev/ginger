@@ -247,6 +247,11 @@ namespace Ginger
 
 		public static class Debug
 		{
+#if DEBUG
+			public static readonly bool isDebugging = true;
+#else
+			public static readonly bool isDebugging = false;
+#endif
 			public static bool EnableGroups = false;
 		}
 
@@ -464,13 +469,12 @@ namespace Ginger
 				}
 			}
 
-#if DEBUG
 			var debugSection = iniData.Sections["Debug"];
 			if (debugSection != null)
 			{
 				ReadBool(ref Debug.EnableGroups, debugSection, "Groups");
 			}
-#endif
+
 			if (bLegacy)
 			{
 				// Filter indices changed in v1.5.0

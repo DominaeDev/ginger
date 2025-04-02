@@ -266,6 +266,7 @@ namespace Ginger
 			importLinkedMenuItem.ToolTipText = Resources.tooltip_link_open;
 			saveLinkedMenuItem.ToolTipText = Resources.tooltip_link_save;
 			saveNewLinkedMenuItem.ToolTipText = Resources.tooltip_link_save_as_new;
+			saveAsNewPartyMenuItem.ToolTipText = Resources.tooltip_link_save_as_new_party;
 			revertLinkedMenuItem.ToolTipText = Resources.tooltip_link_revert;
 			applyToFirstChatMenuItem.ToolTipText = Resources.tooltip_link_apply_to_first;
 			applyToLastChatMenuItem.ToolTipText = Resources.tooltip_link_apply_to_last;
@@ -1583,7 +1584,6 @@ namespace Ginger
 			enableLinkMenuItem.Text = Backyard.ConnectionEstablished ? "Connected to Backyard AI" : "Connect to Backyard AI";
 			enableLinkMenuItem.Checked = Backyard.ConnectionEstablished;
 			backyardMenuItem.Visible = Backyard.ConnectionEstablished;
-
 			importLinkedMenuItem.Enabled = Backyard.ConnectionEstablished;
 			saveLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
 			saveNewLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink == false;
@@ -1611,6 +1611,25 @@ namespace Ginger
 			importAltGreetingsMenuItem.Checked = AppSettings.BackyardLink.ImportAlternateGreetings;
 			writeAuthorNoteMenuItem.Checked = AppSettings.BackyardLink.WriteAuthorNote;
 			writeUserPersonaMenuItem.Checked = AppSettings.BackyardLink.WriteUserPersona;
+
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
+			{
+				importLinkedMenuItem.Text = "Open character or party...";
+				importLinkedMenuItem.ToolTipText = Resources.tooltip_link_open_party;
+				revertLinkedMenuItem.ToolTipText = Resources.tooltip_link_revert_party;
+
+				if (Current.Characters.Count > 1)
+					saveNewLinkedMenuItem.ToolTipText = Resources.tooltip_link_save_as_new_multi;
+				else
+					saveNewLinkedMenuItem.ToolTipText = Resources.tooltip_link_save_as_new;
+			}
+			else
+			{
+				importLinkedMenuItem.Text = "Open character...";
+				importLinkedMenuItem.ToolTipText = Resources.tooltip_link_open;
+				saveNewLinkedMenuItem.ToolTipText = Resources.tooltip_link_save_as_new;
+				revertLinkedMenuItem.ToolTipText = Resources.tooltip_link_revert;
+			}
 
 			Theme.Apply(menuStrip);
 		}

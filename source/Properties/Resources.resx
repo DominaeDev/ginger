@@ -710,7 +710,7 @@ Are you sure you want to overwrite the changes?</value>
     <value>Attempt to restore the link between this file and the character stored in Backyard AI.</value>
   </data>
   <data name="tooltip_link_save_as_new" xml:space="preserve">
-    <value>Save as a new Backyard AI character.</value>
+    <value>Save as a new character.</value>
   </data>
   <data name="tooltip_link_open" xml:space="preserve">
     <value>Open a Backyard AI character.</value>
@@ -744,7 +744,7 @@ Do you want to remove the link from this file?</value>
 (Linking allows changes to be saved back to the same character.)</value>
   </data>
   <data name="tooltip_link_save" xml:space="preserve">
-    <value>Save changes to the linked Backyard AI character.</value>
+    <value>Save changes to Backyard AI.</value>
   </data>
   <data name="tooltip_link_break" xml:space="preserve">
     <value>Break the link between this file and the character stored in Backyard AI.</value>
@@ -779,7 +779,7 @@ Are you sure you want to continue?</value>
     <value>Refreshing recipe list...</value>
   </data>
   <data name="tooltip_link_revert" xml:space="preserve">
-    <value>Reimport the linked character from Backyard AI</value>
+    <value>Reimport this character from Backyard AI.</value>
   </data>
   <data name="tooltip_link_about_linking" xml:space="preserve">
     <value>Linking allows changes made in Ginger to be saved back to Backyard AI.</value>
@@ -1736,5 +1736,17 @@ The current location is valid. Do you want to continue anyway?</value>
     <value>Model download location has been reset.
 
 Please relaunch Backyard AI to set a new location.</value>
+  </data>
+  <data name="tooltip_link_open_party" xml:space="preserve">
+    <value>Open a Backyard AI character or party.</value>
+  </data>
+  <data name="tooltip_link_revert_party" xml:space="preserve">
+    <value>Reimport this character or party from Backyard AI.</value>
+  </data>
+  <data name="tooltip_link_save_as_new_multi" xml:space="preserve">
+    <value>Save as a new multi-character.</value>
+  </data>
+  <data name="tooltip_link_save_as_new_party" xml:space="preserve">
+    <value>Save as a new party.</value>
   </data>
 </root>

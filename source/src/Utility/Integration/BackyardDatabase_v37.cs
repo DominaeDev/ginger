@@ -1235,8 +1235,6 @@ namespace Ginger.Integration
 								Dictionary<string, ImageOutput> chatBackgrounds;
 								if (PrepareUpdateChatBackgrounds(chats, existingBackgrounds, backgrounds, out chatBackgrounds))
 									WriteUpdateChatBackgrounds(connection, groupId, chatBackgrounds, ref updates, ref expectedUpdates);
-								else
-									DeleteChatBackgrounds(connection, groupId, ref updates, ref expectedUpdates);
 							}
 
 							// Update images
@@ -1375,6 +1373,9 @@ namespace Ginger.Integration
 					}
 				}
 			}
+
+			if (existingInstances.Count() > 0 && chatBackgrounds.Count == 0)
+				return true; // No backgrounds, delete existing
 
 			return bModifiedBackground;
 		}
@@ -4919,7 +4920,10 @@ namespace Ginger.Integration
 			if (imageInstances != null)
 			{
 				var unrecognizedImageInstances = imageInstances
-					.Where(i => results.ContainsNoneOf(r => r.instanceId == i.instanceId || string.Compare(r.imageUrl, i.imageUrl, StringComparison.InvariantCultureIgnoreCase) == 0))
+					.Where(i => 
+						i.imageType != AssetFile.AssetType.Background
+						&& results.ContainsNoneOf(r => r.instanceId == i.instanceId || string.Compare(r.imageUrl, i.imageUrl, StringComparison.InvariantCultureIgnoreCase) == 0)
+					)
 					.ToArray();
 
 				results.AddRange(unrecognizedImageInstances.Select(i =>
@@ -6859,11 +6863,6 @@ namespace Ginger.Integration
 					staging = staging,
 				};
 			}
-		}
-
-		private static void DeleteChatBackgrounds(SQLiteConnection connection, string groupId, ref int updates, ref int expectedUpdates)
-		{
-			WriteUpdateChatBackgrounds(connection, groupId, null, ref updates, ref expectedUpdates);
 		}
 
 		private static void WriteUpdateChatBackgrounds(SQLiteConnection connection, string groupId, Dictionary<string, ImageOutput> chatBackgrounds, ref int updates, ref int expectedUpdates)

@@ -756,7 +756,7 @@ namespace Ginger.Integration
 						BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Version_0_28_0;
 
 					// Debug override flag (used for testing)
-					if (AppSettings.Debug.EnableGroups)
+					if (AppSettings.Debug.isDebugging && AppSettings.Debug.EnableGroups)
 						BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Version_0_37_0;
 
 					if (BackyardValidation.DatabaseVersion == BackyardDatabaseVersion.Unknown) // Outdated or unsupported
