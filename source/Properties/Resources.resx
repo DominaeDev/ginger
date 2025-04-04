@@ -716,15 +716,13 @@ Are you sure you want to overwrite the changes?</value>
     <value>Open a Backyard AI character.</value>
   </data>
   <data name="cap_link_reestablish" xml:space="preserve">
-    <value>Restore link to character</value>
+    <value>Restore character link</value>
   </data>
   <data name="error_link_autosave" xml:space="preserve">
     <value>Failed to push updates to Backyard AI. Operation canceled.</value>
   </data>
   <data name="error_link_reestablish" xml:space="preserve">
-    <value>Unable to restore link. Character not found.
-
-Do you want to remove the link from this file?</value>
+    <value>Character link could not be restored. The character no longer exists in Backyard AI.</value>
   </data>
   <data name="status_link_reestablished" xml:space="preserve">
     <value>Character link restored</value>
@@ -1411,9 +1409,6 @@ CAUTION: Depending on your recycle bin settings, the images may get permanently 
   <data name="backyard_models_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Schemas\backyard_models_schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="error_link_character_not_found" xml:space="preserve">
-    <value>Character not found in Backyard AI. To re-establish the link, save the character as new.</value>
-  </data>
   <data name="appicon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons\appicon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -1748,5 +1743,10 @@ Please relaunch Backyard AI to set a new location.</value>
   </data>
   <data name="tooltip_link_save_as_new_party" xml:space="preserve">
     <value>Save as a new party.</value>
+  </data>
+  <data name="error_link_character_not_found" xml:space="preserve">
+    <value>This character no longer exists in Backyard AI. 
+
+Do you want to save it as a new character?</value>
   </data>
 </root>

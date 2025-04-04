@@ -707,7 +707,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Restore link to character.
+        ///   Looks up a localized string similar to Restore character link.
         /// </summary>
         internal static string cap_link_reestablish {
             get {
@@ -1742,7 +1742,9 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Character not found in Backyard AI. To re-establish the link, save the character as new..
+        ///   Looks up a localized string similar to This character no longer exists in Backyard AI. 
+        ///
+        ///Do you want to save it as a new character?.
         /// </summary>
         internal static string error_link_character_not_found {
             get {
@@ -1937,9 +1939,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to restore link. Character not found.
-        ///
-        ///Do you want to remove the link from this file?.
+        ///   Looks up a localized string similar to Character link could not be restored. The character no longer exists in Backyard AI..
         /// </summary>
         internal static string error_link_reestablish {
             get {

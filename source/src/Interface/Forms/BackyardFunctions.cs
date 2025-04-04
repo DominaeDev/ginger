@@ -256,7 +256,7 @@ namespace Ginger
 			return true;
 		}
 
-		private bool SaveNewCharacterToBackyard()
+		private bool SaveCharacterAsNewToBackyard()
 		{
 			CharacterInstance createdCharacter;
 			Backyard.Link.Image[] images;
@@ -368,8 +368,12 @@ namespace Ginger
 			}
 			else if (error == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_character_not_found, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Current.BreakLink();
+				var mr = MessageBox.Show(Resources.error_link_character_not_found, Resources.cap_link_save_character, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+				if (mr == DialogResult.Yes)
+					return SaveCharacterAsNewToBackyard();
+
+				if (mr == DialogResult.No)
+					Current.BreakLink();
 				return false;
 			}
 			else if (error == Backyard.Error.CancelledByUser || error == Backyard.Error.DismissedByUser)
@@ -407,11 +411,6 @@ namespace Ginger
 			// Check if character exists, has newer changes
 			bool hasChanges;
 			var error = Backyard.Database.ConfirmSaveCharacter(Current.Link, out hasChanges);
-			if (error == Backyard.Error.NotFound)
-			{
-				Current.BreakLink();
-				return error;
-			}
 			if (error != Backyard.Error.NoError)
 				return error;
 
@@ -506,7 +505,7 @@ namespace Ginger
 				}
 				else
 				{
-					if (MessageBox.Show(Resources.error_link_reestablish, Resources.cap_link_reestablish, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+					if (MessageBox.Show(Resources.error_link_reestablish, Resources.cap_link_reestablish, MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.OK)
 					{
 						Current.Unlink();
 						RefreshTitle();

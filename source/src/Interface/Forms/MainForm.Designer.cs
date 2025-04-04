@@ -254,7 +254,7 @@ namespace Ginger {
 			// toolStripMenuItem6
 			// 
 			toolStripMenuItem6.Name = "toolStripMenuItem6";
-			toolStripMenuItem6.Size = new System.Drawing.Size(177, 6);
+			toolStripMenuItem6.Size = new System.Drawing.Size(171, 6);
 			// 
 			// linkMenuItem
 			// 
@@ -290,7 +290,7 @@ namespace Ginger {
 			// 
 			this.breakLinkMenuItem.Name = "breakLinkMenuItem";
 			this.breakLinkMenuItem.Size = new System.Drawing.Size(198, 22);
-			this.breakLinkMenuItem.Text = "Unlink character";
+			this.breakLinkMenuItem.Text = "Break character link";
 			this.breakLinkMenuItem.Click += new System.EventHandler(this.breakLinkMenuItem_Click);
 			// 
 			// themeMenuItem
@@ -315,6 +315,41 @@ namespace Ginger {
 			this.darkThemeMenuItem.Size = new System.Drawing.Size(101, 22);
 			this.darkThemeMenuItem.Text = "Dark";
 			this.darkThemeMenuItem.Click += new System.EventHandler(this.darkThemeMenuItem_Click);
+			// 
+			// toolStripMenuItem2
+			// 
+			toolStripMenuItem2.Name = "toolStripMenuItem2";
+			toolStripMenuItem2.Size = new System.Drawing.Size(239, 6);
+			// 
+			// toolStripMenuItem11
+			// 
+			toolStripMenuItem11.Name = "toolStripMenuItem11";
+			toolStripMenuItem11.Size = new System.Drawing.Size(192, 6);
+			// 
+			// toolStripMenuItem9
+			// 
+			toolStripMenuItem9.Name = "toolStripMenuItem9";
+			toolStripMenuItem9.Size = new System.Drawing.Size(236, 6);
+			// 
+			// toolStripMenuItem13
+			// 
+			toolStripMenuItem13.Name = "toolStripMenuItem13";
+			toolStripMenuItem13.Size = new System.Drawing.Size(236, 6);
+			// 
+			// toolStripMenuItem10
+			// 
+			toolStripMenuItem10.Name = "toolStripMenuItem10";
+			toolStripMenuItem10.Size = new System.Drawing.Size(247, 6);
+			// 
+			// toolStripMenuItem14
+			// 
+			toolStripMenuItem14.Name = "toolStripMenuItem14";
+			toolStripMenuItem14.Size = new System.Drawing.Size(236, 6);
+			// 
+			// toolStripMenuItem7
+			// 
+			toolStripMenuItem7.Name = "toolStripMenuItem7";
+			toolStripMenuItem7.Size = new System.Drawing.Size(247, 6);
 			// 
 			// splitContainer
 			// 
@@ -902,11 +937,6 @@ namespace Ginger {
 			this.redoMenuItem.Text = "&Redo";
 			this.redoMenuItem.Click += new System.EventHandler(this.RedoMenuItem_Click);
 			// 
-			// toolStripMenuItem2
-			// 
-			toolStripMenuItem2.Name = "toolStripMenuItem2";
-			toolStripMenuItem2.Size = new System.Drawing.Size(239, 6);
-			// 
 			// copyMenuItem
 			// 
 			this.copyMenuItem.Name = "copyMenuItem";
@@ -1274,11 +1304,6 @@ namespace Ginger {
 			this.toolStripMenuItem4.Name = "toolStripMenuItem4";
 			this.toolStripMenuItem4.Size = new System.Drawing.Size(113, 6);
 			// 
-			// toolStripMenuItem11
-			// 
-			toolStripMenuItem11.Name = "toolStripMenuItem11";
-			toolStripMenuItem11.Size = new System.Drawing.Size(192, 6);
-			// 
 			// autoConvertNameMenuItem
 			// 
 			this.autoConvertNameMenuItem.Checked = true;
@@ -1430,11 +1455,6 @@ namespace Ginger {
 			this.revertLinkedMenuItem.Text = "Revert...";
 			this.revertLinkedMenuItem.Click += new System.EventHandler(this.revertLinkedMenuItem_Click);
 			// 
-			// toolStripMenuItem9
-			// 
-			toolStripMenuItem9.Name = "toolStripMenuItem9";
-			toolStripMenuItem9.Size = new System.Drawing.Size(236, 6);
-			// 
 			// chatHistoryMenuItem
 			// 
 			this.chatHistoryMenuItem.Name = "chatHistoryMenuItem";
@@ -1450,11 +1470,6 @@ namespace Ginger {
 			this.editCurrentModelSettingsMenuItem.Size = new System.Drawing.Size(239, 22);
 			this.editCurrentModelSettingsMenuItem.Text = "Edit model settings...";
 			this.editCurrentModelSettingsMenuItem.Click += new System.EventHandler(this.editCurrentModelSettingsMenuItem_Click);
-			// 
-			// toolStripMenuItem13
-			// 
-			toolStripMenuItem13.Name = "toolStripMenuItem13";
-			toolStripMenuItem13.Size = new System.Drawing.Size(236, 6);
 			// 
 			// bulkOperationsMenuItem
 			// 
@@ -1541,11 +1556,6 @@ namespace Ginger {
 			this.restoreBackupMenuItem.Text = "Restore backup...";
 			this.restoreBackupMenuItem.Click += new System.EventHandler(this.restoreBackupMenuItem_Click);
 			// 
-			// toolStripMenuItem10
-			// 
-			toolStripMenuItem10.Name = "toolStripMenuItem10";
-			toolStripMenuItem10.Size = new System.Drawing.Size(247, 6);
-			// 
 			// repairBrokenImagesMenuItem
 			// 
 			this.repairBrokenImagesMenuItem.Image = global::Ginger.Properties.Resources.repair;
@@ -1585,11 +1595,6 @@ namespace Ginger {
 			this.purgeUnusedImagesMenuItem.Size = new System.Drawing.Size(250, 22);
 			this.purgeUnusedImagesMenuItem.Text = "Clean out unused images...";
 			this.purgeUnusedImagesMenuItem.Click += new System.EventHandler(this.purgeUnusedImages_Click);
-			// 
-			// toolStripMenuItem14
-			// 
-			toolStripMenuItem14.Name = "toolStripMenuItem14";
-			toolStripMenuItem14.Size = new System.Drawing.Size(236, 6);
 			// 
 			// optionsToolStripMenuItem1
 			// 
@@ -1715,28 +1720,28 @@ namespace Ginger {
 			this.viewHelpToolStripMenuItem.Name = "viewHelpToolStripMenuItem";
 			this.viewHelpToolStripMenuItem.ShortcutKeyDisplayString = "F1";
 			this.viewHelpToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-			this.viewHelpToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.viewHelpToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
 			this.viewHelpToolStripMenuItem.Text = "Ginger &Help";
 			this.viewHelpToolStripMenuItem.Click += new System.EventHandler(this.viewHelpToolStripMenuItem_Click);
 			// 
 			// visitGitHubPageMenuItem
 			// 
 			this.visitGitHubPageMenuItem.Name = "visitGitHubPageMenuItem";
-			this.visitGitHubPageMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.visitGitHubPageMenuItem.Size = new System.Drawing.Size(174, 22);
 			this.visitGitHubPageMenuItem.Text = "Visit GitHub page";
 			this.visitGitHubPageMenuItem.Click += new System.EventHandler(this.visitGitHubPageMenuItem_Click);
 			// 
 			// checkForUpdateMenuItem
 			// 
 			this.checkForUpdateMenuItem.Name = "checkForUpdateMenuItem";
-			this.checkForUpdateMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.checkForUpdateMenuItem.Size = new System.Drawing.Size(174, 22);
 			this.checkForUpdateMenuItem.Text = "Check for update...";
 			this.checkForUpdateMenuItem.Click += new System.EventHandler(this.checkForUpdateMenuItem_Click);
 			// 
 			// aboutGingerToolStripMenuItem
 			// 
 			this.aboutGingerToolStripMenuItem.Name = "aboutGingerToolStripMenuItem";
-			this.aboutGingerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.aboutGingerToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
 			this.aboutGingerToolStripMenuItem.Text = "About Ginger";
 			this.aboutGingerToolStripMenuItem.Click += new System.EventHandler(this.aboutGingerToolStripMenuItem_Click);
 			// 
@@ -1810,11 +1815,6 @@ namespace Ginger {
 			this.statusConnectionIcon.Name = "statusConnectionIcon";
 			this.statusConnectionIcon.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusConnectionIcon.Size = new System.Drawing.Size(24, 17);
-			// 
-			// toolStripMenuItem7
-			// 
-			toolStripMenuItem7.Name = "toolStripMenuItem7";
-			toolStripMenuItem7.Size = new System.Drawing.Size(247, 6);
 			// 
 			// MainForm
 			// 

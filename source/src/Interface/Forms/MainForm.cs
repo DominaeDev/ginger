@@ -2633,7 +2633,7 @@ namespace Ginger
 		
 		private void saveNewLinkedMenuItem_Click(object sender, EventArgs e)
 		{
-			SaveNewCharacterToBackyard();
+			SaveCharacterAsNewToBackyard();
 		}
 
 		private void saveAsNewPartyMenuItem_Click(object sender, EventArgs e)
