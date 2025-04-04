@@ -4852,6 +4852,7 @@ namespace Ginger.Integration
 			// Embedded assets
 			foreach (var asset in assets
 				.Where(a => a.isEmbeddedAsset
+					&& a.isMainPortraitOverride == false
 					&& a.data.length > 0
 					&& (a.assetType == AssetFile.AssetType.Icon
 						|| a.assetType == AssetFile.AssetType.Expression
