@@ -773,7 +773,7 @@ namespace Ginger.Integration
 					// Fetch character config id
 					using (var cmdGetTime = connection.CreateCommand())
 					{
-						if (link.isGroup) // Group updated
+						if (link.linkType == Backyard.Link.LinkType.Group) // Group was updated?
 						{
 							cmdGetTime.CommandText =
 							@"
@@ -784,7 +784,7 @@ namespace Ginger.Integration
 							";
 							cmdGetTime.Parameters.AddWithValue("$groupId", link.groupId);
 						}
-						else // Character updated
+						else // Character was updated?
 						{
 							cmdGetTime.CommandText =
 							@"

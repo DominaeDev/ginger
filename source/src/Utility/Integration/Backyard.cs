@@ -484,7 +484,14 @@ namespace Ginger.Integration
 				}
 			}
 
-			public bool isGroup { get { return groupId != null && actors != null && actors.Length > 1; } }
+			public enum LinkType
+			{
+				Solo,			// 1 character w/ group
+				StandAlone,		// 1 character w/o group
+				Group,			// 2+ characters w/ group
+				GroupMember,	// 1 character in group of 2+
+			}
+			public LinkType linkType = LinkType.Solo;
 
 			public struct Image
 			{
@@ -534,6 +541,7 @@ namespace Ginger.Integration
 				isActive = xmlNode.GetAttributeBool("active");
 				updateDate = DateTimeExtensions.FromUnixTime(xmlNode.GetAttributeLong("updated"));
 				isDirty = xmlNode.GetAttributeBool("dirty");
+				linkType = xmlNode.GetAttributeEnum("type", LinkType.Solo);
 
 				_filenameHash = xmlNode.GetValueElement("File");
 
@@ -575,6 +583,7 @@ namespace Ginger.Integration
 				xmlNode.AddAttribute("updated", updateDate.ToUnixTimeMilliseconds());
 				if (isActive)
 					xmlNode.AddAttribute("dirty", isDirty);
+				xmlNode.AddAttribute("type", EnumHelper.ToString(linkType));
 
 				xmlNode.AddValueElement("File", _filenameHash);
 

@@ -83,7 +83,7 @@ namespace Ginger
 			BackyardUtil.GetChatCounts(out _chatCounts);
 
 			if (Groups.ContainsAny(g => g.Count > 2))
-				this.Text = "Select character or group";
+				this.Text = "Select character or party";
 
 			_bIgnoreEvents = false;
 

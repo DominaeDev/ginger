@@ -372,6 +372,15 @@ namespace Ginger
 
 		public static void LinkWith(Backyard.CharacterInstance characterInstance, Backyard.Link.Image[] imageLinks)
 		{
+			Backyard.Link.LinkType linkType = Backyard.Link.LinkType.Solo;
+			if (characterInstance.groupId != null)
+			{
+				if (Backyard.Database.GetGroup(characterInstance.groupId).isParty)
+					linkType = Backyard.Link.LinkType.GroupMember;
+			}
+			else
+				linkType = Backyard.Link.LinkType.StandAlone;
+
 			Link = new Backyard.Link() {
 				groupId = characterInstance.groupId, // May be null
 				actors = new Backyard.Link.Actor[1] {
@@ -382,13 +391,13 @@ namespace Ginger
 				},
 				updateDate = characterInstance.updateDate,
 				imageLinks = imageLinks,
+				linkType = linkType,
 				filename = Current.Filename,
 				isActive = true,
 			};
 			IsFileDirty = true;
 		}
 
-		
 		public static void LinkWith(Backyard.GroupInstance groupInstance, Backyard.CharacterInstance[] characterInstances, Backyard.Link.Image[] imageLinks)
 		{
 			if (groupInstance.isDefined == false || characterInstances == null || characterInstances.Length != Current.Characters.Count)
@@ -406,6 +415,7 @@ namespace Ginger
 				actors = lsActors.ToArray(),
 				updateDate = groupInstance.updateDate,
 				imageLinks = imageLinks,
+				linkType = Backyard.Link.LinkType.Group,
 				filename = Current.Filename,
 				isActive = true,
 			};

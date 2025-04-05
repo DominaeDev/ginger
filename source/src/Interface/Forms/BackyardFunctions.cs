@@ -276,7 +276,7 @@ namespace Ginger
 			{
 				if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
 				{
-					Current.LinkWith(createdCharacter, images); //! @multi-link
+					Current.LinkWith(createdCharacter, images);
 					Current.IsLinkDirty = false;
 					SetStatusBarMessage(Resources.status_link_save_and_link_new, Constants.StatusBarMessageInterval);
 					RefreshTitle();
@@ -356,7 +356,7 @@ namespace Ginger
 			if (Current.HasLink == false)
 				return false;
 			
-			if (Current.Link.isGroup)
+			if (Current.Link.linkType == Backyard.Link.LinkType.Group)
 				error = UpdateGroupInBackyard();
 			else
 				error = UpdateCharacterInBackyard();
@@ -432,7 +432,8 @@ namespace Ginger
 			}
 
 			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
-			card.EnsureSystemPrompt();
+			if (Current.Link.linkType != Backyard.Link.LinkType.StandAlone)
+				card.EnsureSystemPrompt();
 
 			if (hasChanges)
 			{
@@ -506,10 +507,10 @@ namespace Ginger
 				else
 				{
 					if (MessageBox.Show(Resources.error_link_reestablish, Resources.cap_link_reestablish, MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.OK)
-					{
-						Current.Unlink();
-						RefreshTitle();
-					}
+					{ 
+					Current.Unlink();
+					RefreshTitle();
+						}
 				}
 			}
 			return false;
@@ -1547,7 +1548,7 @@ namespace Ginger
 			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 			{
 				dlg.Options |= LinkSelectMultipleCharactersOrGroupsDialog.Option.Orphans | LinkSelectMultipleCharactersOrGroupsDialog.Option.Parties;
-				dlg.Text = "Select characters or groups to delete";
+				dlg.Text = "Select characters or parties to delete";
 			}
 
 			if (dlg.ShowDialog() != DialogResult.OK)
