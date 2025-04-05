@@ -607,44 +607,39 @@ namespace Ginger
 			}
 
 			// Remove nodes with sibling constraint
-			var flattenedNodes = _entries
-				.SelectMany((e, i) => e.Value.Select(ee => new KeyValuePair<BlockID, Entry>(e.Key, ee)));
+			var flattenedNodes = _entries.SelectMany((e, i) => e.Value.Select(ee => new KeyValuePair<BlockID, Entry>(e.Key, ee)));
 
 			foreach (var g in flattenedNodes.GroupBy(kvp => kvp.Key.GetParent()).OrderByDescending(g => g.Key.depth))
 			{
-				BlockID parentKey = g.Key;
-				var siblings = g.Select(x => x)
-					.Where(kvp => kvp.Value.mode == Block.Mode.Sibling)
-					.ToList();
+				var parentKey = g.Key;
+				var childNodes = (IEnumerable<KeyValuePair<BlockID, Entry>>)g;
+				var siblingNodes = childNodes.Where(kvp => kvp.Value.mode == Block.Mode.Sibling);
+				var nonSiblingNodes = childNodes.Where(kvp => kvp.Value.mode != Block.Mode.Sibling);
 
-				int count = siblings.Count;
-				if (count == 0)
+				if (siblingNodes.IsEmpty())
 					continue; // No siblings
 
-				if (siblings.ContainsAny(kvp => kvp.Value.mode != Block.Mode.Sibling))
-					continue; // Has sibling
-
-				var nodes = flattenedNodes
-					.Except(siblings)
-					.Where(kvp => removeKeys.Contains(kvp.Key) == false);
-
-				bool bFoundInnerSibling = false;
-				foreach (var sibling in siblings)
+				// Sibling must be real (have content)
+				bool bFoundInner = false;
+				foreach (var node in nonSiblingNodes)
 				{
-					if (nodes.ContainsAny(kvp => kvp.Key.IsChildOf(parentKey) && kvp.Key.IsChildOf(sibling.Key) == false && kvp.Value.hasInnerBlock == false))
+					if (flattenedNodes.ContainsAny(kvp => removeKeys.Contains(kvp.Key) == false && kvp.Value.hasInnerBlock == false	&& kvp.Key.IsChildOf(node.Key)))
 					{
-						bFoundInnerSibling = true;
+						bFoundInner = true;
 						break;
 					}
 				}
-				if (bFoundInnerSibling)
-					continue; // Has (inner) sibling
+				if (bFoundInner)
+					continue; // Valid sibling
 
-				// Remove (including children)
-				foreach (var s in siblings)
+				// Remove sibling nodes (including children)
+				foreach (var s in siblingNodes)
 				{
-					foreach (var x in flattenedNodes.Select(kvp => kvp.Key).Where(k => k == s.Key || k.IsChildOf(s.Key)))
-						removeKeys.Add(x);
+					removeKeys.AddRange(
+						flattenedNodes
+							.Select(kvp => kvp.Key)
+							.Where(k => k == s.Key || k.IsChildOf(s.Key))
+					);
 				}
 			}
 
