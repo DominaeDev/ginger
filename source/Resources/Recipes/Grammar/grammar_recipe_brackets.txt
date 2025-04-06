@@ -1,15 +1,15 @@
 ﻿<Ginger id="__style_grammar_brackets">
-	<Grammar rule="__support-grammar"><![CDATA[
-root ::= pattern stop
-pattern ::= pa | pb
-stop ::= ("#"|"<")?
-delim ::= (" "|"\n")
-text ::= [[^<#\n*"()]]+
-dialogue ::= text
-action ::= "(" text ")"
-pa ::= action (delim pattern)?
-pb ::= dialogue (delim pattern)?
-]]></Grammar>
+	<Grammar rule="__support-grammar">
+	<![CDATA[
+		root ::= a | b
+		dlg ::= txt
+		act ::= "(" txt ")"
+		txt ::= [[^\n*"“”「」()]]+
+		spc ::= (" "|"\n")
+		end ::= ("#"|"<")?
+		a ::= act (end|(spc b)?)
+		b ::= dlg (end|(spc a)?)
+	]]></Grammar>
 
 	<Name>__style_grammar</Name>
 	<Flags>__nobake, __internal, __hidden, __grammar, __style-grammar</Flags>
