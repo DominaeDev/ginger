@@ -17,8 +17,14 @@ namespace Ginger
 		public event EventHandler BackgroundFromPortrait;
 		public event EventHandler PasteBackgroundImage;
 		public event EventHandler RemoveBackgroundImage;
-		public event EventHandler BlurBackgroundImage;
-		public event EventHandler DarkenBackgroundImage;
+
+		public enum BackgroundEffect
+		{
+			Blur,
+			Darken,
+			Desaturate,
+		}
+		public event EventHandler<BackgroundEffect> BackgroundImageEffect;
 
 		public class EditNameEventArgs : EventArgs
 		{
@@ -1175,12 +1181,17 @@ namespace Ginger
 				}
 				menu.Items.Add(new ToolStripSeparator()); // ----
 				menu.Items.Add(new ToolStripMenuItem("Blur image", null, (s, e) => {
-					BlurBackgroundImage?.Invoke(this, EventArgs.Empty);
+					BackgroundImageEffect?.Invoke(this, BackgroundEffect.Blur);
 				}) {
 					Enabled = bHasBackground && !bHasAnimatedBackground,
 				});
 				menu.Items.Add(new ToolStripMenuItem("Darken image", null, (s, e) => {
-					DarkenBackgroundImage?.Invoke(this, EventArgs.Empty);
+					BackgroundImageEffect?.Invoke(this, BackgroundEffect.Darken);
+				}) {
+					Enabled = bHasBackground && !bHasAnimatedBackground,
+				});
+				menu.Items.Add(new ToolStripMenuItem("Desaturate image", null, (s, e) => {
+					BackgroundImageEffect?.Invoke(this, BackgroundEffect.Desaturate);
 				}) {
 					Enabled = bHasBackground && !bHasAnimatedBackground,
 				});
