@@ -244,8 +244,7 @@ namespace Ginger
 			sidePanel.PasteBackgroundImage += OnPasteBackgroundImage;
 			sidePanel.RemoveBackgroundImage += OnRemoveBackgroundImage;
 			sidePanel.BackgroundFromPortrait += OnBackgroundFromPortrait;
-			sidePanel.BlurBackgroundImage += OnBlurBackgroundImage;
-			sidePanel.DarkenBackgroundImage += OnDarkenBackgroundImage;
+			sidePanel.BackgroundImageEffect += OnBackgroundImageEffect;
 
 			SetToolTip(btnAdd_Model, "Bot instructions");
 			SetToolTip(btnAdd_Character, "Character");
@@ -630,7 +629,7 @@ namespace Ginger
 			SetStatusBarMessage("Cleared background image", Constants.StatusBarMessageInterval);
 		}
 
-		private void OnBlurBackgroundImage(object sender, EventArgs e)
+		private void OnBackgroundImageEffect(object sender, SidePanel.BackgroundEffect effect)
 		{
 			var asset = Current.Card.assets.FirstOrDefault(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
 			if (asset == null)
@@ -640,32 +639,31 @@ namespace Ginger
 			if (Utility.LoadImageFromMemory(asset.data.bytes, out image) == false)
 				return;
 
-			if (Utility.BlurImage(ref image) == false)
-				return;
-
-			AssetFile tmp;
-			if (Current.Card.assets.AddBackground(image, out tmp))
+			string undoName;
+			string statusText;
+			switch (effect)
 			{
-				Current.Card.assets.Remove(asset);
-				NotifyAssetsChanged();
-
-				Undo.Push(Undo.Kind.Parameter, "Blur background image");
-				SetStatusBarMessage("Blurred background image", Constants.StatusBarMessageInterval);
+			case SidePanel.BackgroundEffect.Blur:
+				if (Utility.BlurImage(ref image) == false)
+					return;
+				undoName = "Blur background image";
+				statusText = "Blurred background image";
+				break;
+			case SidePanel.BackgroundEffect.Darken:
+				if (Utility.DarkenImage(ref image) == false)
+					return;
+				undoName = "Darken background image";
+				statusText = "Darkened background image";
+				break;
+			case SidePanel.BackgroundEffect.Desaturate:
+				undoName = "Desaturate background image";
+				statusText = "Desaturated background image";
+				if (Utility.DesaturateImage(ref image) == false)
+					return;
+				break;
+			default:
+				return;
 			}
-		}
-
-		private void OnDarkenBackgroundImage(object sender, EventArgs e)
-		{
-			var asset = Current.Card.assets.FirstOrDefault(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background);
-			if (asset == null)
-				return;
-
-			Image image;
-			if (Utility.LoadImageFromMemory(asset.data.bytes, out image) == false)
-				return;
-
-			if (Utility.DarkenImage(ref image) == false)
-				return;
 
 			AssetFile tmp;
 			if (Current.Card.assets.AddBackground(image, out tmp))
@@ -673,8 +671,8 @@ namespace Ginger
 				Current.Card.assets.Remove(asset);
 				NotifyAssetsChanged();
 
-				Undo.Push(Undo.Kind.Parameter, "Darken background image");
-				SetStatusBarMessage("Darken background image", Constants.StatusBarMessageInterval);
+				Undo.Push(Undo.Kind.Parameter, undoName);
+				SetStatusBarMessage(statusText, Constants.StatusBarMessageInterval);
 			}
 		}
 

@@ -2039,5 +2039,19 @@ namespace Ginger
 				return false;
 			}
 		}
+
+		public static bool DesaturateImage(ref Image image)
+		{
+			try
+			{
+				var desaturate = new DesaturateImage((Bitmap)image);
+				image = desaturate.Process(0.25);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
 	}
 }

@@ -476,6 +476,7 @@
     <Compile Include="src\Model\Recipe\ParameterResolver.cs" />
     <Compile Include="src\Model\Recipe\ParameterState.cs" />
     <Compile Include="src\Utility\HashTable.cs" />
+    <Compile Include="src\Utility\ImageEffects\DesaturateImage.cs" />
     <Compile Include="src\Utility\ImageRef.cs" />
     <Compile Include="src\Utility\Extensions\ListExtensions.cs" />
     <Compile Include="src\Utility\Integration\AsyncFileTypeChecker.cs" />
@@ -532,7 +533,7 @@
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProvider.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleNoneProvider.cs" />
     <Compile Include="src\Utility\ThirdParty\CustomTabControl\TabStyleProviders\TabStyleRoundedProvider.cs" />
-    <Compile Include="src\Utility\DarkenImage.cs" />
+    <Compile Include="src\Utility\ImageEffects\DarkenImage.cs" />
     <Compile Include="src\Utility\ThirdParty\Superfastblur\GaussianBlur.cs" />
     <Compile Include="src\Utility\ThirdParty\PNGNet\Chunks\acTLChunk.cs" />
     <Compile Include="src\Utility\ThirdParty\WebPWrapper\WebPWrapper.cs" />
