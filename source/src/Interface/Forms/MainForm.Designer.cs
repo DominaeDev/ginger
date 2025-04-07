@@ -195,6 +195,7 @@ namespace Ginger {
 			this.statusActors = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
+			this.revertFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -758,6 +759,7 @@ namespace Ginger {
             this.saveToolStripMenuItem,
             this.saveasToolStripMenuItem,
             this.saveIncrementalMenuItem,
+            this.revertFileMenuItem,
             toolStripMenuItem3,
             this.importToolStripMenuItem,
             this.exportToolStripMenuItem,
@@ -1031,9 +1033,9 @@ namespace Ginger {
 			// viewNotesMenuItem
 			// 
 			this.viewNotesMenuItem.Name = "viewNotesMenuItem";
-			this.viewNotesMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+Tab";
+			this.viewNotesMenuItem.ShortcutKeyDisplayString = "Ctrl+Alt+N";
 			this.viewNotesMenuItem.Size = new System.Drawing.Size(264, 22);
-			this.viewNotesMenuItem.Text = "&Notes";
+			this.viewNotesMenuItem.Text = "Draft &notes";
 			this.viewNotesMenuItem.Click += new System.EventHandler(this.ViewNotesMenuItem_Click);
 			// 
 			// embeddedAssetsMenuItem
@@ -1816,6 +1818,13 @@ namespace Ginger {
 			this.statusConnectionIcon.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusConnectionIcon.Size = new System.Drawing.Size(24, 17);
 			// 
+			// revertFileMenuItem
+			// 
+			this.revertFileMenuItem.Name = "revertFileMenuItem";
+			this.revertFileMenuItem.Size = new System.Drawing.Size(227, 22);
+			this.revertFileMenuItem.Text = "Revert...";
+			this.revertFileMenuItem.Click += new System.EventHandler(this.revertFileMenuItem_Click);
+			// 
 			// MainForm
 			// 
 			this.AllowDrop = true;
@@ -2015,6 +2024,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem checkForUpdateMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem resetModelsLocationMenuItem;
 		private System.Windows.Forms.ToolStripSeparator changeLanguageSeparator;
+		private System.Windows.Forms.ToolStripMenuItem revertFileMenuItem;
 	}
 }
 

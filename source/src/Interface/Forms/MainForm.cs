@@ -1501,6 +1501,9 @@ namespace Ginger
 			// Save incremental
 			saveIncrementalMenuItem.Enabled = string.IsNullOrEmpty(Current.Filename) == false;
 
+			// Revert
+			revertFileMenuItem.Enabled = Current.IsFileDirty && string.IsNullOrEmpty(Current.Filename) == false;
+
 			// MRU
 			PopulateMRUMenu(openRecentMenuItem.DropDownItems);
 			openRecentMenuItem.Enabled = openRecentMenuItem.DropDownItems.Count > 0;
@@ -1960,7 +1963,7 @@ namespace Ginger
 				tabControl.SelectedIndex = tabControl.SelectedIndex == 1 ? 0 : 1;
 				return true;
 			}		
-			else if (keyData == (ShortcutKeys.SwitchView | Keys.Shift))
+			else if (keyData == ShortcutKeys.ViewNotes)
 			{
 				tabControl.SelectedIndex = tabControl.SelectedIndex == 2 ? 0 : 2;
 				return true;
@@ -2892,6 +2895,15 @@ namespace Ginger
 		private void resetModelsLocationMenuItem_Click(object sender, EventArgs e)
 		{
 			ResetBackyardModelsLocation();
+		}
+
+		private void revertFileMenuItem_Click(object sender, EventArgs e)
+		{
+			var mr = MessageBox.Show(Resources.msg_revert_changes_confirm, Resources.cap_revert_changes, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+			if (mr != DialogResult.Yes)
+				return;
+
+			OpenFile(Current.Filename);
 		}
 	}
 

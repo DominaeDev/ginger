@@ -123,6 +123,8 @@ namespace Ginger
 			public static bool ShowOutputComponents = false;
 			public static bool ShowBackground = false;
 			public static bool ShowStats = false;
+
+			public static AssetImageCache.ResizeFlag BackgroundPreview = AssetImageCache.ResizeFlag.FitInside;
 		}
 		
 		public static class Paths
@@ -343,6 +345,7 @@ namespace Ginger
 				ReadBool(ref User.ShowOutputComponents, userSection, "ShowOutputComponents");
 				ReadBool(ref User.ShowBackground, userSection, "ShowBackground");
 				ReadBool(ref User.ShowStats, userSection, "ShowStatistics");
+				ReadEnum(ref User.BackgroundPreview, userSection, "BackgroundPreview");
 			}
 
 			var writeSection = iniData.Sections["Write"];
@@ -553,6 +556,7 @@ namespace Ginger
 					Write(outputFile, "ShowOutputComponents", User.ShowOutputComponents);
 					Write(outputFile, "ShowBackground", User.ShowBackground);
 					Write(outputFile, "ShowStatistics", User.ShowStats);
+					Write(outputFile, "BackgroundPreview", User.BackgroundPreview);
 
 
 					// Write

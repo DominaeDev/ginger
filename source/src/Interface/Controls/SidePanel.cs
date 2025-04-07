@@ -236,19 +236,7 @@ namespace Ginger
 			}
 
 			// Background
-			var backgroundAsset = Current.Card.assets.FirstOrDefault(a => a.assetType == AssetFile.AssetType.Background);
-			if (backgroundAsset != null)
-			{
-				Image backgroundImage = AssetImageCache.GetImageForAsset(backgroundAsset, backgroundPreview.Width, backgroundPreview.Height, AssetImageCache.ResizeFlag.FitInside);
-				if (backgroundImage != null)
-				{
-					backgroundPreview.SetImage(ImageRef.FromImage(backgroundImage, false), backgroundAsset != null && backgroundAsset.HasTag(AssetFile.Tag.Animation));
-				}
-				else
-					backgroundPreview.SetImage(null);
-			}
-			else
-				backgroundPreview.SetImage(null);
+			RefreshBackgroundPreview();
 
 			// Output components
 			cbIncludeModelInstructions.Checked = !Current.Card.extraFlags.Contains(CardData.Flag.OmitSystemPrompt);
@@ -275,13 +263,28 @@ namespace Ginger
 				rbUserInPersona.Checked = true;
 				rbUserInScenario.Checked = false;
 			}
-			
+
 			cbPruneScenario.Checked = Current.Card.extraFlags.Contains(CardData.Flag.PruneScenario);
 
 			cbStyleGrammar.Enabled = Current.Card.textStyle > CardData.TextStyle.None && !Current.Card.extraFlags.Contains(CardData.Flag.OmitGrammar);
 			cbStyleGrammar.Checked = Current.Card.useStyleGrammar;
 
 			_bIgnoreEvents = false;
+		}
+
+		public void RefreshBackgroundPreview()
+		{
+			var backgroundAsset = Current.Card.assets.FirstOrDefault(a => a.assetType == AssetFile.AssetType.Background);
+			if (backgroundAsset != null)
+			{
+				Image backgroundImage = AssetImageCache.GetImageForAsset(backgroundAsset, backgroundPreview.Width, backgroundPreview.Height, AppSettings.User.BackgroundPreview);
+				if (backgroundImage != null)
+					backgroundPreview.SetImage(ImageRef.FromImage(backgroundImage, false), backgroundAsset != null && backgroundAsset.HasTag(AssetFile.Tag.Animation));
+				else
+					backgroundPreview.SetImage(null);
+			}
+			else
+				backgroundPreview.SetImage(null);
 		}
 
 		private void RefreshImageAspectRatio()
@@ -1195,6 +1198,30 @@ namespace Ginger
 				}) {
 					Enabled = bHasBackground && !bHasAnimatedBackground,
 				});
+				menu.Items.Add(new ToolStripSeparator()); // ----
+
+				// Preview menu
+				var viewMenu = new ToolStripMenuItem("Preview");
+				viewMenu.DropDownItems.Add(new ToolStripMenuItem("Fit", null, (s, e) => {
+					AppSettings.User.BackgroundPreview = AssetImageCache.ResizeFlag.FitInside;
+					RefreshBackgroundPreview();
+				}) {
+					Checked = AppSettings.User.BackgroundPreview == AssetImageCache.ResizeFlag.FitInside,
+				});
+				viewMenu.DropDownItems.Add(new ToolStripMenuItem("Fill (top)", null, (s, e) => {
+					AppSettings.User.BackgroundPreview = AssetImageCache.ResizeFlag.Portrait;
+					RefreshBackgroundPreview();
+				}) {
+					Checked = AppSettings.User.BackgroundPreview == AssetImageCache.ResizeFlag.Portrait,
+				});
+				viewMenu.DropDownItems.Add(new ToolStripMenuItem("Fill (center)", null, (s, e) => {
+					AppSettings.User.BackgroundPreview = AssetImageCache.ResizeFlag.FitOutside;
+					RefreshBackgroundPreview();
+				}) {
+					Checked = AppSettings.User.BackgroundPreview == AssetImageCache.ResizeFlag.FitOutside,
+				});
+				menu.Items.Add(viewMenu);
+
 				menu.Items.Add(new ToolStripSeparator()); // ----
 				menu.Items.Add(new ToolStripMenuItem("Clear background", null, (s, e) => {
 					RemoveBackgroundImage?.Invoke(this, EventArgs.Empty);

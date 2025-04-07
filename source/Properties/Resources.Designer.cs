@@ -932,6 +932,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Revert file.
+        /// </summary>
+        internal static string cap_revert_changes {
+            get {
+                return ResourceManager.GetString("cap_revert_changes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to save file.
         /// </summary>
         internal static string cap_save_error {
@@ -2530,17 +2539,17 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_bold&quot;&gt;
-        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
-        ///root ::= pattern stop
-        ///pattern ::= pa | pb
-        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)?
-        ///delim ::= (&quot; &quot;|&quot;\n&quot;)
-        ///text ::= [[^&lt;#\n*&quot;]]+
-        ///dialogue ::= text
-        ///action ::= &quot;*&quot;{{2}} text &quot;*&quot;{{2}}
-        ///pa ::= action (delim pattern)?
-        ///pb ::= dialogue (delim pattern)?
-        ///]]&gt;&lt;/Grammar&gt;
+        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;
+        ///	&lt;![CDATA[
+        ///		root ::= a | b
+        ///		dlg ::= txt
+        ///		act ::= &quot;**&quot; txt &quot;**&quot;
+        ///		txt ::= [[^\n*&quot;“”「」]]+
+        ///		spc ::= (&quot; &quot;|&quot;\n&quot;)
+        ///		end ::= (&quot;#&quot;|&quot;&lt;&quot;)?
+        ///		a ::= act (end|(spc b)?)
+        ///		b ::= dlg (end|(spc a)?)
+        ///	]]&gt;&lt;/Grammar&gt;
         ///
         ///	&lt;Name&gt;__style_grammar&lt;/Name&gt;
         ///	&lt;Flags&gt;__nobake, __internal, __hidden, __grammar, __style-grammar&lt;/Flags&gt;
@@ -2555,17 +2564,17 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_brackets&quot;&gt;
-        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
-        ///root ::= pattern stop
-        ///pattern ::= pa | pb
-        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)?
-        ///delim ::= (&quot; &quot;|&quot;\n&quot;)
-        ///text ::= [[^&lt;#\n*&quot;()]]+
-        ///dialogue ::= text
-        ///action ::= &quot;(&quot; text &quot;)&quot;
-        ///pa ::= action (delim pattern)?
-        ///pb ::= dialogue (delim pattern)?
-        ///]]&gt;&lt;/Grammar&gt;
+        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;
+        ///	&lt;![CDATA[
+        ///		root ::= a | b
+        ///		dlg ::= txt
+        ///		act ::= &quot;(&quot; txt &quot;)&quot;
+        ///		txt ::= [[^\n*&quot;“”「」()]]+
+        ///		spc ::= (&quot; &quot;|&quot;\n&quot;)
+        ///		end ::= (&quot;#&quot;|&quot;&lt;&quot;)?
+        ///		a ::= act (end|(spc b)?)
+        ///		b ::= dlg (end|(spc a)?)
+        ///	]]&gt;&lt;/Grammar&gt;
         ///
         ///	&lt;Name&gt;__style_grammar&lt;/Name&gt;
         ///	&lt;Flags&gt;__nobake, __internal, __hidden, __grammar, __style-grammar&lt;/Flags&gt;
@@ -2580,17 +2589,17 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_chat&quot;&gt;
-        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
-        ///root ::= pattern stop
-        ///pattern ::= pa | pb
-        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;|&quot;\n&quot;)?
-        ///delim ::= &quot; &quot;
-        ///text ::= [[^&lt;#\n*&quot;]]+
-        ///dialogue ::= text
-        ///action ::= &quot;*&quot; text &quot;*&quot;
-        ///pa ::= action (delim pattern)?
-        ///pb ::= dialogue (delim pattern)?
-        ///]]&gt;&lt;/Grammar&gt;
+        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;
+        ///	&lt;![CDATA[
+        ///		root ::= a | b
+        ///		dlg ::= txt
+        ///		act ::= &quot;*&quot; txt &quot;*&quot;
+        ///		txt ::= [[^\n*&quot;“”「」]]+
+        ///		spc ::= (&quot; &quot;|&quot;\n&quot;)
+        ///		end ::= (&quot;#&quot;|&quot;&lt;&quot;)?
+        ///		a ::= act (end|(spc b)?)
+        ///		b ::= dlg (end|(spc a)?)
+        ///	]]&gt;&lt;/Grammar&gt;
         ///	
         ///	&lt;Name&gt;__style_grammar&lt;/Name&gt;
         ///	&lt;Flags&gt;__nobake, __internal, __hidden, __grammar, __style-grammar&lt;/Flags&gt;
@@ -2605,17 +2614,17 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_cjk&quot;&gt;
-        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
-        ///root ::= pattern stop
-        ///pattern ::= pa | pb
-        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)?
-        ///delim ::= (&quot; &quot;|&quot;\n&quot;)
-        ///text ::= [[^&lt;#\n*&quot;「」]]+
-        ///dialogue ::= &quot;「&quot; text &quot;」&quot;
-        ///action ::= text
-        ///pa ::= action (delim pattern)?
-        ///pb ::= dialogue (delim pattern)?
-        ///]]&gt;&lt;/Grammar&gt;
+        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;
+        ///	&lt;![CDATA[
+        ///		root ::= a | b
+        ///		dlg ::= &quot;「&quot; text &quot;」&quot;
+        ///		act ::= txt
+        ///		txt ::= [[^\n*&quot;“”「」]]+
+        ///		spc ::= (&quot; &quot;|&quot;\n&quot;)
+        ///		end ::= (&quot;#&quot;|&quot;&lt;&quot;)?
+        ///		a ::= act (end|(spc b)?)
+        ///		b ::= dlg (end|(spc a)?)
+        ///	]]&gt;&lt;/Grammar&gt;
         ///
         ///	&lt;Name&gt;__style_grammar&lt;/Name&gt;
         ///	&lt;Flags&gt;__nobake, __internal, __hidden, __grammar, __style-grammar&lt;/Flags&gt;
@@ -2630,17 +2639,17 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_decorative&quot;&gt;
-        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
-        ///root ::= pattern stop
-        ///pattern ::= pa | pb
-        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)?
-        ///delim ::= (&quot; &quot;|&quot;\n&quot;)
-        ///text ::= [[^&lt;#\n*&quot;“”]]+
-        ///dialogue ::= &quot;“&quot; text &quot;”&quot;
-        ///action ::= text
-        ///pa ::= action (delim pattern)?
-        ///pb ::= dialogue (delim pattern)?
-        ///]]&gt;&lt;/Grammar&gt;
+        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;
+        ///	&lt;![CDATA[
+        ///		root ::= a | b
+        ///		dlg ::= &quot;“&quot; txt &quot;”&quot;
+        ///		act ::= txt
+        ///		txt ::= [[^\n*&quot;“”「」]]+
+        ///		spc ::= (&quot; &quot;|&quot;\n&quot;)
+        ///		end ::= (&quot;#&quot;|&quot;&lt;&quot;)?
+        ///		a ::= act (end|(spc b)?)
+        ///		b ::= dlg (end|(spc a)?)
+        ///	]]&gt;&lt;/Grammar&gt;
         ///
         ///	&lt;Name&gt;__style_grammar&lt;/Name&gt;
         ///	&lt;Flags&gt;__nobake, __internal, __hidden, __grammar, __style-grammar&lt;/Flags&gt;
@@ -2655,17 +2664,17 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_mixed&quot;&gt;
-        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
-        ///root ::= pattern stop
-        ///pattern ::= pa | pb
-        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)?
-        ///delim ::= (&quot; &quot;|&quot;\n&quot;)
-        ///text ::= [[^&lt;#\n*&quot;]]+
-        ///dialogue ::= &quot;\&quot;&quot; text &quot;\&quot;&quot;
-        ///action ::= &quot;*&quot; text &quot;*&quot;
-        ///pa ::= action (delim pattern)?
-        ///pb ::= dialogue (delim pattern)?
-        ///]]&gt;&lt;/Grammar&gt;
+        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;
+        ///	&lt;![CDATA[
+        ///		root ::= a | b
+        ///		dlg ::= &quot;\&quot;&quot; txt &quot;\&quot;&quot;
+        ///		act ::= &quot;*&quot; txt &quot;*&quot;
+        ///		txt ::= [[^\n*&quot;“”「」]]+
+        ///		spc ::= (&quot; &quot;|&quot;\n&quot;)
+        ///		end ::= (&quot;#&quot;|&quot;&lt;&quot;)?
+        ///		a ::= act (end|(spc b)?)
+        ///		b ::= dlg (end|(spc a)?)
+        ///	]]&gt;&lt;/Grammar&gt;
         ///
         ///	&lt;Name&gt;__style_grammar&lt;/Name&gt;
         ///	&lt;Flags&gt;__nobake, __internal, __hidden, __grammar, __style-grammar&lt;/Flags&gt;
@@ -2680,17 +2689,17 @@ namespace Ginger.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;Ginger id=&quot;__style_grammar_novel&quot;&gt;
-        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;&lt;![CDATA[
-        ///root ::= pattern stop
-        ///pattern ::= pa | pb
-        ///stop ::= (&quot;#&quot;|&quot;&lt;&quot;)?
-        ///delim ::= (&quot; &quot;|&quot;\n&quot;)
-        ///text ::= [[^&lt;#\n*&quot;]]+
-        ///dialogue ::= &quot;\&quot;&quot; text &quot;\&quot;&quot;
-        ///action ::= text
-        ///pa ::= action (delim pattern)?
-        ///pb ::= dialogue (delim pattern)?
-        ///]]&gt;&lt;/Grammar&gt;
+        ///	&lt;Grammar rule=&quot;__support-grammar&quot;&gt;
+        ///	&lt;![CDATA[
+        ///		root ::= a | b
+        ///		dlg ::= &quot;\&quot;&quot; txt &quot;\&quot;&quot;
+        ///		act ::= txt
+        ///		txt ::= [[^\n*&quot;“”「」]]+
+        ///		spc ::= (&quot; &quot;|&quot;\n&quot;)
+        ///		end ::= (&quot;#&quot;|&quot;&lt;&quot;)?
+        ///		a ::= act (end|(spc b)?)
+        ///		b ::= dlg (end|(spc a)?)
+        ///	]]&gt;&lt;/Grammar&gt;
         ///
         ///	&lt;Name&gt;__style_grammar&lt;/Name&gt;
         ///	&lt;Flags&gt;__nobake, __internal, __hidden, __grammar, __style-grammar&lt;/Flags&gt;
@@ -3605,6 +3614,17 @@ namespace Ginger.Properties {
         internal static string msg_rescale_portrait {
             get {
                 return ResourceManager.GetString("msg_rescale_portrait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will discard all unsaved changes.
+        ///
+        ///Are you sure you want to continue?.
+        /// </summary>
+        internal static string msg_revert_changes_confirm {
+            get {
+                return ResourceManager.GetString("msg_revert_changes_confirm", resourceCulture);
             }
         }
         

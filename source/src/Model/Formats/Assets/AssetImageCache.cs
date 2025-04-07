@@ -24,8 +24,10 @@ namespace Ginger
 			if (asset == null || asset.data.isEmpty)
 				return null;
 
+			string cacheId = string.Concat(asset.uid, "@", (int)resizeFlag);
+
 			List<Image> images;
-			if (_Images.TryGetValue(asset.uid, out images))
+			if (_Images.TryGetValue(cacheId, out images))
 			{
 				foreach (var i in images)
 				{
@@ -41,9 +43,9 @@ namespace Ginger
 			if (width > 0 && height > 0 && resizeFlag != ResizeFlag.None)
 				ResizeImage(ref image, width, height, resizeFlag);
 
-			if (_Images.ContainsKey(asset.uid) == false)
-				_Images.Add(asset.uid, new List<Image>());
-			_Images[asset.uid].Add(image);
+			if (_Images.ContainsKey(cacheId) == false)
+				_Images.Add(cacheId, new List<Image>());
+			_Images[cacheId].Add(image);
 			return image;
 		}
 

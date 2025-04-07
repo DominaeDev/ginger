@@ -185,7 +185,6 @@ namespace Ginger
 			public static readonly int SplitMenuAfter = 28;
 			public static readonly int RecipesPerSplit = 20;
 		}
-
 	}
 
 	public static class ShortcutKeys
@@ -208,6 +207,7 @@ namespace Ginger
 		public const Keys NextActor = Keys.Alt | Keys.Right;
 		public const Keys PreviousActor = Keys.Alt | Keys.Left;
 		public const Keys SwitchView = Keys.Control | Keys.Tab;
+		public const Keys ViewNotes = Keys.Control | Keys.Alt | Keys.N;
 		public const Keys SaveIncremental = Keys.Control | Keys.Alt | Keys.S;
 		public const Keys LinkedOpen = Keys.Control | Keys.Shift | Keys.O;
 		public const Keys LinkedSave = Keys.Control | Keys.U;
