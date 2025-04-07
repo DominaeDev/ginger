@@ -1393,12 +1393,12 @@ namespace Ginger
 					if (Current.Link.isDirty)
 					{
 						statusConnectionIcon.Image = Theme.Current.LinkActiveDirty;
-						statusConnectionIcon.ToolTipText = "Connected; Linked (Unsaved changes)";
+						statusConnectionIcon.ToolTipText = "Connected; Character linked (with unsaved changes)";
 					}
 					else
 					{
 						statusConnectionIcon.Image = Theme.Current.LinkActive;
-						statusConnectionIcon.ToolTipText = "Connected; Linked";
+						statusConnectionIcon.ToolTipText = "Connected; Character linked and synced";
 					}
 				}
 				else if (Current.HasLink)
@@ -1406,23 +1406,23 @@ namespace Ginger
 					if (Backyard.Database.HasGroup(Current.Link.groupId))
 					{
 						statusConnectionIcon.Image = Theme.Current.LinkInactive;
-						statusConnectionIcon.ToolTipText = "Connected; Link broken";
+						statusConnectionIcon.ToolTipText = "Connected; Character link broken";
 					}
 					else if (Backyard.Database.HasCharacter(Current.Link.mainActorId)) //! @multi-link
 					{
 						statusConnectionIcon.Image = Theme.Current.LinkInactive;
-						statusConnectionIcon.ToolTipText = "Connected; Link inactive";
+						statusConnectionIcon.ToolTipText = "Connected; Character link inactive";
 					}
 					else
 					{
 						statusConnectionIcon.Image = Theme.Current.LinkBroken;
-						statusConnectionIcon.ToolTipText = "Connected; Link broken";
+						statusConnectionIcon.ToolTipText = "Connected; Character link broken";
 					}
 				}
 				else
 				{
 					statusConnectionIcon.Image = Theme.Current.LinkConnected;
-					statusConnectionIcon.ToolTipText = "Connected; Not linked";
+					statusConnectionIcon.ToolTipText = "Connected; No character link";
 				}
 			}
 			else
