@@ -5745,8 +5745,8 @@ namespace Ginger.Integration
 					SELECT
 						A.name, A.persona, C.imageUrl, C.aspectRatio
 					FROM CharacterConfigVersion as A
-					INNER JOIN _AppImageToCharacterConfigVersion AS B ON B.B = A.id
-					INNER JOIN AppImage AS C ON C.id = B.A
+					LEFT JOIN _AppImageToCharacterConfigVersion AS B ON B.B = A.id
+					LEFT JOIN AppImage AS C ON C.id = B.A
 					WHERE characterConfigId = $userId
 				";
 				cmdBaseUser.Parameters.AddWithValue("$userId", templateUserId);

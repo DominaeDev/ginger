@@ -387,13 +387,9 @@ namespace Ginger.Integration
 					FetchPortraitImages(connection, character.configId, lsImages);
 
 					// Gather background image files
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
-					{
-						// Get existing chats
-						ImageInstance[] backgrounds;
-						if (FetchChatBackgrounds(connection, groupId, out backgrounds))
-							lsImages.AddRange(backgrounds);
-					}
+					ImageInstance[] backgrounds;
+					if (FetchChatBackgrounds(connection, groupId, out backgrounds))
+						lsImages.AddRange(backgrounds);
 
 					card = new FaradayCardV4();
 					card.data.displayName = character.displayName;
@@ -892,21 +888,16 @@ namespace Ginger.Integration
 			{
 				images = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Icon || i.imageType == AssetFile.AssetType.Expression).ToList();
 
-				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
+				backgrounds = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Background)
+					.ToList();
+				for (int i = 0; i < imageInput.Length && i < imageOutput.Length; ++i)
 				{
-					backgrounds = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Background)
-						.ToList();
-					for (int i = 0; i < imageInput.Length && i < imageOutput.Length; ++i)
-					{
-						if (imageOutput[i].imageType == AssetFile.AssetType.Background)
-							backgroundUrlByName.TryAdd(imageInput[i].asset.name, imageOutput[i]);
-					}
-
-					if (chats == null || chats.Length == 0)
-						backgrounds = backgrounds.Take(1).ToList();
+					if (imageOutput[i].imageType == AssetFile.AssetType.Background)
+						backgroundUrlByName.TryAdd(imageInput[i].asset.name, imageOutput[i]);
 				}
-				else
-					backgrounds.Clear();
+
+				if (chats == null || chats.Length == 0)
+					backgrounds = backgrounds.Take(1).ToList();
 
 				// User portrait
 				if (bAllowUserPersona)
@@ -1230,12 +1221,9 @@ namespace Ginger.Integration
 								WriteUpdateGroup(connection, card, groupId, chats, "", updatedAt, ref updates, ref expectedUpdates);
 
 							// Update background
-							if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
-							{
-								Dictionary<string, ImageOutput> chatBackgrounds;
-								if (PrepareUpdateChatBackgrounds(chats, existingBackgrounds, backgrounds, out chatBackgrounds))
-									WriteUpdateChatBackgrounds(connection, groupId, chatBackgrounds, ref updates, ref expectedUpdates);
-							}
+							Dictionary<string, ImageOutput> chatBackgrounds;
+							if (PrepareUpdateChatBackgrounds(chats, existingBackgrounds, backgrounds, out chatBackgrounds))
+								WriteUpdateChatBackgrounds(connection, groupId, chatBackgrounds, ref updates, ref expectedUpdates);
 
 							// Update images
 							DeleteImages(connection, configId, ref updates, ref expectedUpdates);
@@ -1317,12 +1305,6 @@ namespace Ginger.Integration
 
 		private static bool PrepareUpdateChatBackgrounds(List<_Chat> chats, IEnumerable<ImageInstance> existingInstances, IEnumerable<ImageOutput> backgrounds, out Dictionary<string, ImageOutput> chatBackgrounds)
 		{
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds) == false)
-			{
-				chatBackgrounds = null;
-				return false;
-			}
-
 			chatBackgrounds = new Dictionary<string, ImageOutput>();
 			var backgroundsByChatId = existingInstances
 				.Where(b => string.IsNullOrEmpty(b.imageUrl) == false)
@@ -1460,13 +1442,9 @@ namespace Ginger.Integration
 					}
 
 					// Gather background image files
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
-					{
-						// Get existing chats
-						ImageInstance[] backgrounds;
-						if (FetchChatBackgrounds(connection, groupId, out backgrounds))
-							lsImages.AddRange(backgrounds);
-					}
+					ImageInstance[] backgrounds;
+					if (FetchChatBackgrounds(connection, groupId, out backgrounds))
+						lsImages.AddRange(backgrounds);
 
 					cards = new FaradayCardV4[characters.Count];
 					characterInstances = new CharacterInstance[characters.Count];
@@ -1584,14 +1562,6 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats) == false)
-			{
-				groupInstance = default(GroupInstance);
-				characterInstances = null;
-				imageLinks = null;
-				return Backyard.Error.UnsupportedFeature;
-			}
-
 			FaradayCardV4[] cards = args.cards;
 			ImageInput[] imageInput = args.imageInput;
 			BackupData.Chat[] chats = args.chats;
@@ -1648,21 +1618,15 @@ namespace Ginger.Integration
 			{
 				images = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Icon || i.imageType == AssetFile.AssetType.Expression).ToList();
 
-				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
+				backgrounds = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Background).ToList();
+				for (int i = 0; i < imageInput.Length && i < imageOutput.Length; ++i)
 				{
-					backgrounds = imageOutput.Where(i => i.imageType == AssetFile.AssetType.Background)
-						.ToList();
-					for (int i = 0; i < imageInput.Length && i < imageOutput.Length; ++i)
-					{
-						if (imageOutput[i].imageType == AssetFile.AssetType.Background)
-							backgroundUrlByName.TryAdd(imageInput[i].asset.name, imageOutput[i]);
-					}
-
-					if (chats == null || chats.Length == 0)
-						backgrounds = backgrounds.Take(1).ToList();
+					if (imageOutput[i].imageType == AssetFile.AssetType.Background)
+						backgroundUrlByName.TryAdd(imageInput[i].asset.name, imageOutput[i]);
 				}
-				else
-					backgrounds.Clear();
+
+				if (chats == null || chats.Length == 0)
+					backgrounds = backgrounds.Take(1).ToList();
 
 				// User portrait
 				if (bAllowUserPersona)
@@ -2008,12 +1972,9 @@ namespace Ginger.Integration
 							WriteUpdateGroup(connection, primaryCard, groupId, chats, primaryCard.data.displayName, updatedAt, ref updates, ref expectedUpdates);
 
 							// Update background
-							if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
-							{
-								Dictionary<string, ImageOutput> chatBackgrounds;
-								if (PrepareUpdateChatBackgrounds(chats, existingBackgrounds, backgrounds, out chatBackgrounds))
-									WriteUpdateChatBackgrounds(connection, groupId, chatBackgrounds, ref updates, ref expectedUpdates);
-							}
+							Dictionary<string, ImageOutput> chatBackgrounds;
+							if (PrepareUpdateChatBackgrounds(chats, existingBackgrounds, backgrounds, out chatBackgrounds))
+								WriteUpdateChatBackgrounds(connection, groupId, chatBackgrounds, ref updates, ref expectedUpdates);
 
 							if (updates != expectedUpdates)
 							{
@@ -2147,65 +2108,46 @@ namespace Ginger.Integration
 
 					List<string> backgroundUrls = new List<string>();
 
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
+					// Find backgrounds (chats)
+					var groupIds = groupMemberships.Keys.ToArray();
+					if (groupIds.Length > 0)
 					{
-						// Find backgrounds (chats)
-						var groupIds = groupMemberships.Keys.ToArray();
-						if (groupIds.Length > 0)
+						using (var cmdBackgrounds = connection.CreateCommand())
 						{
-							using (var cmdBackgrounds = connection.CreateCommand())
+							var sbCommand = new StringBuilder();
+							sbCommand.Append(
+							@"
+							SELECT imageUrl
+							FROM BackgroundChatImage
+							WHERE chatId IN (
+								SELECT id
+								FROM Chat
+								WHERE groupConfigId IN (
+							");
+
+							for (int i = 0; i < groupIds.Length; ++i)
 							{
-								var sbCommand = new StringBuilder();
-								sbCommand.Append(
-								@"
-								SELECT imageUrl
-								FROM BackgroundChatImage
-								WHERE chatId IN (
-									SELECT id
-									FROM Chat
-									WHERE groupConfigId IN (
-								");
+								if (i > 0)
+									sbCommand.Append(", ");
+								sbCommand.AppendFormat("'{0}'", groupIds[i]);
+							}
+							sbCommand.AppendLine("));");
+							cmdBackgrounds.CommandText = sbCommand.ToString();
 
-								for (int i = 0; i < groupIds.Length; ++i)
-								{
-									if (i > 0)
-										sbCommand.Append(", ");
-									sbCommand.AppendFormat("'{0}'", groupIds[i]);
-								}
-								sbCommand.AppendLine("));");
-								cmdBackgrounds.CommandText = sbCommand.ToString();
-
-								using (var reader = cmdBackgrounds.ExecuteReader())
-								{
-									while (reader.Read())
-										backgroundUrls.Add(reader.GetString(0));
-								}
+							using (var reader = cmdBackgrounds.ExecuteReader())
+							{
+								while (reader.Read())
+									backgroundUrls.Add(reader.GetString(0));
 							}
 						}
 					}
 
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats)) //! @party
-					{
-						result = new ConfirmDeleteResult() {
-							characterIds = characterIds.ToArray(),
-							groupIds = groupMemberships.Select(kvp => kvp.Key).ToArray(),
-							imageIds = images.Keys.ToArray(),
-							imageUrls = images.Values.Union(backgroundUrls).Distinct().ToArray(),
-						};
-					}
-					else
-					{
-						result = new ConfirmDeleteResult() {
-							characterIds = groupMemberships
-								.SelectMany(kvp => kvp.Value)
-								.Distinct()
-								.Intersect(characterIds)
-								.ToArray(),
-							groupIds = groupMemberships.Select(kvp => kvp.Key).ToArray(),
-							imageIds = images.Keys.ToArray(),
-							imageUrls = images.Values.Union(backgroundUrls).Distinct().ToArray(),
-						};
-					}
+					result = new ConfirmDeleteResult() {
+						characterIds = characterIds.ToArray(),
+						groupIds = groupMemberships.Select(kvp => kvp.Key).ToArray(),
+						imageIds = images.Keys.ToArray(),
+						imageUrls = images.Values.Union(backgroundUrls).Distinct().ToArray(),
+					};
 
 					return Backyard.Error.NoError;
 				}
@@ -2688,35 +2630,32 @@ namespace Ginger.Integration
 					}
 
 					// Get background image
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
+					using (var cmdBackground = connection.CreateCommand())
 					{
-						using (var cmdBackground = connection.CreateCommand())
+						cmdBackground.CommandText =
+						@"
+							SELECT 
+								id, imageUrl, aspectRatio
+							FROM BackgroundChatImage
+							WHERE chatId = $chatId;
+						";
+						cmdBackground.Parameters.AddWithValue("$chatId", chatId);
+						using (var reader = cmdBackground.ExecuteReader())
 						{
-							cmdBackground.CommandText =
-							@"
-								SELECT 
-									id, imageUrl, aspectRatio
-								FROM BackgroundChatImage
-								WHERE chatId = $chatId;
-							";
-							cmdBackground.Parameters.AddWithValue("$chatId", chatId);
-							using (var reader = cmdBackground.ExecuteReader())
+							if (reader.Read() && chat.staging != null)
 							{
-								if (reader.Read() && chat.staging != null)
-								{
-									string id = reader.GetString(0);
-									string imageUrl = reader.GetString(1);
-									string aspectRatio = reader[2] as string ?? "";
-									int width, height;
-									ImageInstance.ParseAspectRatio(aspectRatio, out width, out height);
+								string id = reader.GetString(0);
+								string imageUrl = reader.GetString(1);
+								string aspectRatio = reader[2] as string ?? "";
+								int width, height;
+								ImageInstance.ParseAspectRatio(aspectRatio, out width, out height);
 
-									chat.staging.background = new ChatBackground() {
-										instanceId = id,
-										imageUrl = imageUrl,
-										width = width,
-										height = height,
-									};
-								}
+								chat.staging.background = new ChatBackground() {
+									instanceId = id,
+									imageUrl = imageUrl,
+									width = width,
+									height = height,
+								};
 							}
 						}
 					}
@@ -2833,19 +2772,16 @@ namespace Ginger.Integration
 								}
 
 								ChatBackground chatBackground = null;
-								if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
+								int idxBackground = Array.FindIndex(backgrounds, b => b.associatedInstanceId == chatId);
+								if (idxBackground != -1)
 								{
-									int idxBackground = Array.FindIndex(backgrounds, b => b.associatedInstanceId == chatId);
-									if (idxBackground != -1)
-									{
-										var bg = backgrounds[idxBackground];
-										chatBackground = new ChatBackground() {
-											instanceId = bg.instanceId,
-											imageUrl = bg.imageUrl,
-											width = bg.width,
-											height = bg.height,
-										};
-									}
+									var bg = backgrounds[idxBackground];
+									chatBackground = new ChatBackground() {
+										instanceId = bg.instanceId,
+										imageUrl = bg.imageUrl,
+										width = bg.width,
+										height = bg.height,
+									};
 								}
 
 								var staging = new ChatStaging() {
@@ -3163,8 +3099,7 @@ namespace Ginger.Integration
 					var defaultParameters = new ChatParameters();
 
 					// Background image
-					bool hasBackground = BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds)
-						&& args.staging != null
+					bool hasBackground = args.staging != null
 						&& args.staging.background != null
 						&& string.IsNullOrEmpty(args.staging.background.imageUrl) == false
 						&& File.Exists(args.staging.background.imageUrl);
@@ -3590,22 +3525,19 @@ namespace Ginger.Integration
 						try
 						{
 							// Delete background (if any)
-							if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
+							using (var cmdDeleteBackground = connection.CreateCommand())
 							{
-								using (var cmdDeleteBackground = connection.CreateCommand())
-								{
-									cmdDeleteBackground.CommandText =
-									@"
-										DELETE FROM BackgroundChatImage
-										WHERE chatId = $chatId;
-									";
+								cmdDeleteBackground.CommandText =
+								@"
+									DELETE FROM BackgroundChatImage
+									WHERE chatId = $chatId;
+								";
 
-									cmdDeleteBackground.Parameters.AddWithValue("$chatId", chatId);
+								cmdDeleteBackground.Parameters.AddWithValue("$chatId", chatId);
 
-									int nDeleted = cmdDeleteBackground.ExecuteNonQuery();
-									expectedUpdates += nDeleted;
-									updates += nDeleted;
-								}
+								int nDeleted = cmdDeleteBackground.ExecuteNonQuery();
+								expectedUpdates += nDeleted;
+								updates += nDeleted;
 							}
 
 							// Delete chat
@@ -4363,9 +4295,6 @@ namespace Ginger.Integration
 		{
 			if (ConnectionEstablished == false)
 				return Backyard.Error.NotConnected;
-
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds) == false)
-				return Backyard.Error.UnsupportedFeature;
 
 			if (chatIds == null)
 				return Backyard.Error.InvalidArgument;
@@ -5262,12 +5191,6 @@ namespace Ginger.Integration
 
 		private bool FetchChatBackgrounds(SQLiteConnection connection, string groupId, out ImageInstance[] backgrounds)
 		{
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds) == false)
-			{
-				backgrounds = new ImageInstance[0];
-				return false;
-			}
-
 			if (string.IsNullOrEmpty(groupId))
 			{
 				backgrounds = new ImageInstance[0];
@@ -5600,30 +5523,27 @@ namespace Ginger.Integration
 
 					// BackgroundChatImage
 					var backgroundImages = new List<_ImageInfo>();
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
+					using (var cmdGetBackgrounds = connection.CreateCommand())
 					{
-						using (var cmdGetBackgrounds = connection.CreateCommand())
+						cmdGetBackgrounds.CommandText =
+						@"
+						SELECT id, imageUrl, chatId FROM BackgroundChatImage
+						WHERE chatId IN (
+							SELECT id
+							FROM Chat)";
+
+						using (var reader = cmdGetBackgrounds.ExecuteReader())
 						{
-							cmdGetBackgrounds.CommandText =
-							@"
-							SELECT id, imageUrl, chatId FROM BackgroundChatImage
-							WHERE chatId IN (
-								SELECT id
-								FROM Chat)";
-
-							using (var reader = cmdGetBackgrounds.ExecuteReader())
+							while (reader.Read())
 							{
-								while (reader.Read())
-								{
-									string id = reader.GetString(0);
-									string imageUrl = reader.GetString(1);
+								string id = reader.GetString(0);
+								string imageUrl = reader.GetString(1);
 
-									backgroundImages.Add(new _ImageInfo() {
-										instanceId = id,
-										filename = Path.GetFileName(imageUrl),
-										imageUrl = imageUrl,
-									});
-								}
+								backgroundImages.Add(new _ImageInfo() {
+									instanceId = id,
+									filename = Path.GetFileName(imageUrl),
+									imageUrl = imageUrl,
+								});
 							}
 						}
 					}
@@ -5694,7 +5614,7 @@ namespace Ginger.Integration
 							}
 
 							// Background images
-							if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds) && modifiedBackgroundImages.Count > 0)
+							if (modifiedBackgroundImages.Count > 0)
 							{
 								using (var cmdUpdateBackgrounds = connection.CreateCommand())
 								{
@@ -5810,27 +5730,24 @@ namespace Ginger.Integration
 					}
 
 					// BackgroundChatImage
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
+					using (var cmdGetBackgrounds = connection.CreateCommand())
 					{
-						using (var cmdGetBackgrounds = connection.CreateCommand())
+						cmdGetBackgrounds.CommandText =
+						@"
+							SELECT id, imageUrl, chatId FROM BackgroundChatImage
+							WHERE chatId IN (
+								SELECT id
+								FROM Chat
+							);
+						";
+
+						using (var reader = cmdGetBackgrounds.ExecuteReader())
 						{
-							cmdGetBackgrounds.CommandText =
-							@"
-								SELECT id, imageUrl, chatId FROM BackgroundChatImage
-								WHERE chatId IN (
-									SELECT id
-									FROM Chat
-								);
-							";
-
-							using (var reader = cmdGetBackgrounds.ExecuteReader())
+							while (reader.Read())
 							{
-								while (reader.Read())
-								{
-									string imageUrl = reader.GetString(1);
+								string imageUrl = reader.GetString(1);
 
-									lsImageUrls.Add(imageUrl);
-								}
+								lsImageUrls.Add(imageUrl);
 							}
 						}
 					}
@@ -6206,9 +6123,6 @@ namespace Ginger.Integration
 
 		private static bool WriteChatBackground(SQLiteConnection connection, string chatId, ImageOutput background, ref int updates, ref int expectedUpdates)
 		{
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds) == false)
-				return false;
-
 			using (var cmdBackground = new SQLiteCommand(connection))
 			{
 				StringBuilder sbCommand = new StringBuilder();
@@ -6236,9 +6150,6 @@ namespace Ginger.Integration
 
 		private static bool WriteChatBackgrounds(SQLiteConnection connection, BackupData.Chat[] chats, string[] chatIds, Dictionary<string, ImageOutput> backgroundUrlByName, ref int updates, ref int expectedUpdates)
 		{
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds) == false)
-				return false;
-
 			using (var cmdBackground = new SQLiteCommand(connection))
 			{
 				StringBuilder sbCommand = new StringBuilder();
@@ -6440,8 +6351,8 @@ namespace Ginger.Integration
 					SELECT
 						A.name, A.persona, C.imageUrl, C.aspectRatio
 					FROM CharacterConfigVersion as A
-					INNER JOIN _AppImageToCharacterConfigVersion AS B ON B.B = A.id
-					INNER JOIN AppImage AS C ON C.id = B.A
+					LEFT JOIN _AppImageToCharacterConfigVersion AS B ON B.B = A.id
+					LEFT JOIN AppImage AS C ON C.id = B.A
 					WHERE characterConfigId = $userId
 				";
 				cmdBaseUser.Parameters.AddWithValue("$userId", templateUserId);
@@ -6868,9 +6779,6 @@ namespace Ginger.Integration
 
 		private static void WriteUpdateChatBackgrounds(SQLiteConnection connection, string groupId, Dictionary<string, ImageOutput> chatBackgrounds, ref int updates, ref int expectedUpdates)
 		{
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds) == false)
-				return;
-
 			// Delete backgrounds
 			using (var cmdDeleteBG = new SQLiteCommand(connection))
 			{
