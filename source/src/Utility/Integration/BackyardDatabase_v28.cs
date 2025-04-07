@@ -1495,28 +1495,16 @@ namespace Ginger.Integration
 						}
 					}
 
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats)) //! @party
-					{
-						result = new ConfirmDeleteResult() {
-							characterIds = characterIds.ToArray(),
-							groupIds = groupMemberships.Select(kvp => kvp.Key).ToArray(),
-							imageIds = images.Keys.ToArray(),
-							imageUrls = images.Values.Union(backgroundUrls).Distinct().ToArray(),
-						};
-					}
-					else
-					{
-						result = new ConfirmDeleteResult() {
-							characterIds = groupMemberships
-								.SelectMany(kvp => kvp.Value)
-								.Distinct()
-								.Intersect(characterIds)
-								.ToArray(),
-							groupIds = groupMemberships.Select(kvp => kvp.Key).ToArray(),
-							imageIds = images.Keys.ToArray(),
-							imageUrls = images.Values.Union(backgroundUrls).Distinct().ToArray(),
-						};
-					}
+					result = new ConfirmDeleteResult() {
+						characterIds = groupMemberships
+							.SelectMany(kvp => kvp.Value)
+							.Distinct()
+							.Intersect(characterIds)
+							.ToArray(),
+						groupIds = groupMemberships.Select(kvp => kvp.Key).ToArray(),
+						imageIds = images.Keys.ToArray(),
+						imageUrls = images.Values.Union(backgroundUrls).Distinct().ToArray(),
+					};
 
 					return Backyard.Error.NoError;
 				}
