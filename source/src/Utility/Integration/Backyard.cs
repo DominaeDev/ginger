@@ -88,7 +88,7 @@ namespace Ginger.Integration
 		public struct GroupInstance
 		{
 			public string instanceId;			// GroupConfig.id
-			public string name;					// GroupConfig.name
+			public string displayName;			// GroupConfig.name
 			public string folderId;				// GroupConfig.folderId
 			public string hubCharId;			// GroupConfig.hubCharId
 			public string hubAuthorUsername;    // GroupConfig.hubAuthorUsername
@@ -156,8 +156,8 @@ namespace Ginger.Integration
 
 			public string GetDisplayName()
 			{
-				if (string.IsNullOrEmpty(this.name) == false)
-					return this.name;
+				if (string.IsNullOrEmpty(this.displayName) == false)
+					return this.displayName;
 
 				var names = GetMemberNames(false);
 				if (names.Length == 0)

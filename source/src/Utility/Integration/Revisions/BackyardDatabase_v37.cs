@@ -5079,7 +5079,7 @@ namespace Ginger.Integration
 
 						lsGroups.Add(new GroupInstance() {
 							instanceId = instanceId,
-							name = name,
+							displayName = name,
 							creationDate = createdAt,
 							updateDate = updatedAt,
 							folderId = folderId,
@@ -5915,7 +5915,7 @@ namespace Ginger.Integration
 					instanceId = groupId,
 					creationDate = DateTime.Now,
 					updateDate = DateTime.Now,
-					name = name ?? "",
+					displayName = name ?? "",
 					folderId = parentFolderId ?? "",
 					folderSortPosition = folderSortPosition ?? "",
 					members = characterIds,

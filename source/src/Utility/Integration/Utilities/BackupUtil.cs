@@ -11,6 +11,7 @@ using System.Text;
 namespace Ginger.Integration
 {
 	using CharacterInstance = Backyard.CharacterInstance;
+	using GroupInstance = Backyard.GroupInstance;
 	using ChatInstance = Backyard.ChatInstance;
 	using ChatParameters = Backyard.ChatParameters;
 	using ChatStaging = Backyard.ChatStaging;
@@ -18,15 +19,17 @@ namespace Ginger.Integration
 
 	public class BackupData
 	{
-		public FaradayCardV4 characterCard;
+		public FaradayCardV4[] characterCards;
 		public List<Image> images;
 		public List<Image> backgrounds;
 		public List<Chat> chats;
 		public UserData userInfo;
 		public Image userPortrait;
+		public string displayName;
 		
 		public class Image
 		{
+			public int characterIndex;
 			public string filename;
 			public byte[] data;
 			public string ext { get { return Utility.GetFileExt(filename); } }
@@ -100,7 +103,8 @@ namespace Ginger.Integration
 
 			// Create backup
 			backupInfo = new BackupData();
-			backupInfo.characterCard = card;
+			backupInfo.characterCards = new FaradayCardV4[] { card };
+			backupInfo.displayName = card.data.displayName;
 			backupInfo.userInfo = userInfo;
 			if (chatInstances != null)
 			{
@@ -138,6 +142,7 @@ namespace Ginger.Integration
 			
 			// Images
 			backupInfo.images = imageUrls.Select(url => new BackupData.Image() { 
+				characterIndex = 0,
 				filename = Path.GetFileName(url),
 				data = Utility.LoadFile(url),
 			}).ToList();
@@ -162,97 +167,240 @@ namespace Ginger.Integration
 			return Backyard.Error.NoError;
 		}
 
+		public static Backyard.Error CreateBackup(GroupInstance groupInstance, out BackupData backupInfo)
+		{
+			if (Backyard.ConnectionEstablished == false)
+			{
+				backupInfo = null;
+				return Backyard.Error.NotConnected;
+			}
+
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats) == false)
+			{
+				backupInfo = null;
+				return Backyard.Error.UnsupportedFeature;
+			}
+
+			FaradayCardV4[] cards = null;
+			ImageInstance[] images;
+			CharacterInstance[] characterInstances;
+			UserData userInfo;
+			var error = Backyard.Database.ImportParty(groupInstance.instanceId, out cards, out characterInstances, out images, out userInfo);
+			if (error != Backyard.Error.NoError)
+			{
+				backupInfo = null;
+				return error;
+			}
+
+			ChatInstance[] chatInstances = null;
+			error = Backyard.Database.GetChats(groupInstance.instanceId, out chatInstances);
+			if (error != Backyard.Error.NoError)
+			{
+				backupInfo = null;
+				return error;
+			}
+
+			var imageUrls = images
+				.Where(i => i.imageType == AssetFile.AssetType.Icon)
+				.Select(i => new {
+					index = Array.FindIndex(characterInstances, c => c.instanceId == i.associatedInstanceId),
+					url = i.imageUrl,
+				}).ToArray();
+			string[] backgroundUrls = images
+				.Where(i => i.imageType == AssetFile.AssetType.Background)
+				.Select(i => i.imageUrl)
+				.ToArray();
+			string userImageUrl = images
+				.Where(i => i.imageType == AssetFile.AssetType.UserIcon)
+				.Select(i => i.imageUrl)
+				.FirstOrDefault();
+
+			if (AppSettings.BackyardLink.BackupUserPersona == false)
+			{
+				// Strip user persona
+				userInfo = null;
+				userImageUrl = null;
+			}
+
+			// Create backup
+			backupInfo = new BackupData();
+			backupInfo.characterCards = cards;
+			backupInfo.displayName = cards[0].data.displayName;
+			backupInfo.userInfo = userInfo;
+			if (chatInstances != null)
+			{
+				backupInfo.chats = chatInstances
+					.Select(c => {
+						string bgName = null;
+						if (c.hasBackground)
+						{
+							int index = Array.FindIndex(backgroundUrls, url => string.Compare(url, c.staging.background.imageUrl, StringComparison.OrdinalIgnoreCase) == 0);
+							if (index != -1)
+								bgName = string.Format("background_{0:00}.{1}", index + 1, Utility.GetFileExt(c.staging.background.imageUrl));
+						}
+
+						List<CharacterInstance> participants = c.participants
+							.Select(id => Backyard.Database.GetCharacter(id))
+							.OrderBy(cc => cc.isCharacter)
+							.ToList();
+
+						return new BackupData.Chat() {
+							name = c.name,
+							participants = participants.Select(cc => cc.name).ToArray(),
+
+							history = c.history,
+							staging = c.staging,
+							parameters = AppSettings.BackyardLink.BackupModelSettings ? c.parameters : null,
+							creationDate = c.creationDate,
+							updateDate = c.updateDate,
+							backgroundName = bgName,
+						};
+					})
+					.ToList();
+			}
+			else
+				backupInfo.chats = new List<BackupData.Chat>();
+			
+			// Images
+			backupInfo.images = imageUrls
+				.Select(i => new BackupData.Image() { 
+					characterIndex = i.index,
+					filename = Path.GetFileName(i.url),
+					data = Utility.LoadFile(i.url),
+				})
+				.ToList();
+
+			// Background images
+			backupInfo.backgrounds = backgroundUrls
+				.Distinct()
+				.Select(url => new BackupData.Image() {
+					filename = Path.GetFileName(url),
+					data = Utility.LoadFile(url),
+				})
+				.ToList();
+
+			// User image
+			if (string.IsNullOrEmpty(userImageUrl) == false && File.Exists(userImageUrl))
+			{
+				string imageName = string.Concat("user.", Utility.GetFileExt(userImageUrl)); // user.png
+				backupInfo.userInfo.image = imageName;
+				backupInfo.userPortrait = new BackupData.Image() {
+					filename = imageName,
+					data = Utility.LoadFile(userImageUrl),
+				};
+			}
+
+			return Backyard.Error.NoError;
+		}
+
+		private class CharData
+		{
+			public string name;
+			public Image portraitImage = null;
+			public byte[] nonPNGImageData = null;
+			public byte[] cardBytes = null;
+			public string nonPNGImageExt = "png";
+		}
+
 		public static FileUtil.Error WriteBackup(string filename, BackupData backup)
 		{
-			byte[] nonPNGImageData = null;
-			string nonPNGImageExt = "png";
-			var intermediateCardFilename = Path.GetTempFileName();
+			var lsCharData = new List<CharData>();
 
-			// Write png file
-			try
+			for (int iChar = 0; iChar < backup.characterCards.Length; ++iChar)
 			{
-				Image portraitImage = null;
-				if (backup.images.Count > 0) // Convert portrait
-				{
-					string ext = Utility.GetFileExt(backup.images[0].filename);
-					if (Utility.IsWebP(backup.images[0].data))
-					{
-						nonPNGImageData = backup.images[0].data;
-						nonPNGImageExt = "webp";
-						Utility.LoadImageFromMemory(backup.images[0].data, out portraitImage);
-					}
-					else if (ext == "png")
-					{
-						Utility.LoadImageFromMemory(backup.images[0].data, out portraitImage);
-					}
-					else
-					{
-						nonPNGImageData = backup.images[0].data;
-						nonPNGImageExt = ext;
-						Utility.LoadImageFromMemory(backup.images[0].data, out portraitImage);
-					}
-				}
-				
-				if (portraitImage == null)
-					portraitImage = DefaultPortrait.Image;
+				var intermediateCardFilename = Path.GetTempFileName();
+				var charData = new CharData();
+				charData.name = Utility.FirstNonEmpty(backup.characterCards[iChar].data.name, Constants.DefaultCharacterName);
 
-				// Write character card (png)
-				using (var stream = new FileStream(intermediateCardFilename, FileMode.OpenOrCreate, FileAccess.Write))
+				// Write png file
+				try
 				{
-					if (portraitImage.RawFormat.Equals(ImageFormat.Png) == false) // Convert to PNG
+					var charImages = backup.images.Where(i => i.characterIndex == iChar).ToList();
+					if (charImages.Count > 0) // Convert portrait
 					{
-						using (Image bmpNewImage = new Bitmap(portraitImage.Width, portraitImage.Height))
+						string ext = Utility.GetFileExt(charImages[0].filename);
+						if (Utility.IsWebP(charImages[0].data))
 						{
-							Graphics gfxNewImage = Graphics.FromImage(bmpNewImage);
-							gfxNewImage.DrawImage(portraitImage, new Rectangle(0, 0, bmpNewImage.Width, bmpNewImage.Height),
-													0, 0,
-													portraitImage.Width, portraitImage.Height,
-													GraphicsUnit.Pixel);
-							gfxNewImage.Dispose();
-							bmpNewImage.Save(stream, ImageFormat.Png);
+							charData.nonPNGImageData = charImages[0].data;
+							charData.nonPNGImageExt = "webp";
+							Utility.LoadImageFromMemory(charImages[0].data, out charData.portraitImage);
+						}
+						else if (ext == "png")
+						{
+							Utility.LoadImageFromMemory(charImages[0].data, out charData.portraitImage);
+						}
+						else
+						{
+							charData.nonPNGImageData = charImages[0].data;
+							charData.nonPNGImageExt = ext;
+							Utility.LoadImageFromMemory(charImages[0].data, out charData.portraitImage);
 						}
 					}
-					else
+
+					if (charData.portraitImage == null)
+						charData.portraitImage = DefaultPortrait.Image;
+
+					// Write character card (png)
+					using (var stream = new FileStream(intermediateCardFilename, FileMode.OpenOrCreate, FileAccess.Write))
 					{
-						portraitImage.Save(stream, ImageFormat.Png);
+						if (charData.portraitImage.RawFormat.Equals(ImageFormat.Png) == false) // Convert to PNG
+						{
+							using (Image bmpNewImage = new Bitmap(charData.portraitImage.Width, charData.portraitImage.Height))
+							{
+								Graphics gfxNewImage = Graphics.FromImage(bmpNewImage);
+								gfxNewImage.DrawImage(charData.portraitImage, new Rectangle(0, 0, bmpNewImage.Width, bmpNewImage.Height),
+									0, 0,
+									charData.portraitImage.Width, charData.portraitImage.Height,
+									GraphicsUnit.Pixel);
+								gfxNewImage.Dispose();
+								bmpNewImage.Save(stream, ImageFormat.Png);
+							}
+						}
+						else
+						{
+							charData.portraitImage.Save(stream, ImageFormat.Png);
+						}
 					}
+
+					// Write json to PNG
+					string faradayJson = backup.characterCards[iChar].ToJson();
+					var faradayBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(faradayJson));
+					if (FileUtil.WriteExifMetaData(intermediateCardFilename, faradayBase64) == false)
+						return FileUtil.Error.FileWriteError; // Error
+
+					// Read in temporary file
+					byte[] data = Utility.LoadFile(intermediateCardFilename);
+					if (data == null)
+						return FileUtil.Error.FileReadError;
+					charData.cardBytes = data;
+
+					// Delete temporary file
+					File.Delete(intermediateCardFilename);
+
+					lsCharData.Add(charData);
 				}
-			}
-			catch (IOException e)
-			{
-				if (e.HResult == Win32.HR_ERROR_DISK_FULL || e.HResult == Win32.HR_ERROR_HANDLE_DISK_FULL)
-					return FileUtil.Error.DiskFullError;
-				return FileUtil.Error.FileWriteError;
-			}
-			catch
-			{
-				File.Delete(intermediateCardFilename);
-				return FileUtil.Error.NoError;
+				catch (IOException e)
+				{
+					if (e.HResult == Win32.HR_ERROR_DISK_FULL || e.HResult == Win32.HR_ERROR_HANDLE_DISK_FULL)
+						return FileUtil.Error.DiskFullError;
+					return FileUtil.Error.FileWriteError;
+				}
+				catch
+				{
+					File.Delete(intermediateCardFilename);
+					return FileUtil.Error.NoError;
+				}
 			}
 
 			try
 			{
-				// Write json to PNG
-				string faradayJson = backup.characterCard.ToJson();
-				var faradayBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(faradayJson));
-				if (FileUtil.WriteExifMetaData(intermediateCardFilename, faradayBase64) == false)
-					return FileUtil.Error.FileWriteError; // Error
-
-				// Read in temporary file
-				byte[] cardBytes = Utility.LoadFile(intermediateCardFilename);
-				if (cardBytes == null)
-					return FileUtil.Error.FileReadError;
-
-				// Delete temporary file
-				File.Delete(intermediateCardFilename);
-
 				// Write chat logs
 				List<KeyValuePair<string, string>> chats = new List<KeyValuePair<string, string>>();
 				foreach (var backupChat in backup.chats.OrderBy(c => c.creationDate))
 				{
 					// Backyard-compatible format
 					{
-						string chatFilename = string.Format("chatLog_{0}_{1}.json", backup.characterCard.data.displayName, backupChat.creationDate.ToUnixTimeSeconds()).Replace(" ", "_");
+						string chatFilename = string.Format("chatLog_{0}_{1}.json", backup.displayName, backupChat.creationDate.ToUnixTimeSeconds()).Replace(" ", "_");
 
 						var chat = BackyardChatBackupV2.FromChat(new BackupData.Chat() {
 							name = backupChat.name,
@@ -270,7 +418,7 @@ namespace Ginger.Integration
 
 					// Ginger format
 					{
-						string chatFilename = string.Format("chatLog_{0}_{1}.log", backup.characterCard.data.displayName, backupChat.creationDate.ToUnixTimeSeconds()).Replace(" ", "_");
+						string chatFilename = string.Format("chatLog_{0}_{1}.log", backup.displayName, backupChat.creationDate.ToUnixTimeSeconds()).Replace(" ", "_");
 
 						var gingerChat = GingerChatV2.FromBackup(new BackupData.Chat() {
 							name = backupChat.name,
@@ -287,52 +435,57 @@ namespace Ginger.Integration
 						if (json != null)
 							chats.Add(new KeyValuePair<string, string>(chatFilename, json));
 					}
-
 				}
 
 				// Create zip archive
 				var intermediateFilename = Path.GetTempFileName();
 				using (ZipArchive zip = ZipFile.Open(intermediateFilename, ZipArchiveMode.Update, Encoding.ASCII))
 				{
-					// Write card json (UTF8)
-					var cardEntry = zip.CreateEntry("card.png", CompressionLevel.NoCompression);
-					using (Stream writer = cardEntry.Open())
-                    {
-						writer.Write(cardBytes, 0, cardBytes.Length);
-                    }
-
-					// Write non-png portrait (situational)
-					if (nonPNGImageData != null && nonPNGImageData.Length > 0)
+					for (int iCard = 0; iCard < lsCharData.Count; ++iCard)
 					{
-						string entryName = string.Format("images/image_00.{0}", nonPNGImageExt);
-						var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
-						using (Stream writer = fileEntry.Open())
+						var charData = lsCharData[iCard];
+
+						// Write card json (UTF8)
+						var cardEntry = zip.CreateEntry(Utility.ValidFilename($"card_{iCard:00}_{charData.name}.png"), CompressionLevel.NoCompression);
+						using (Stream writer = cardEntry.Open())
 						{
-							for (long n = nonPNGImageData.Length; n > 0;)
+							writer.Write(charData.cardBytes, 0, charData.cardBytes.Length);
+						}
+
+						// Write non-png portrait (situational)
+						if (charData.nonPNGImageData != null && charData.nonPNGImageData.Length > 0)
+						{
+							string entryName = $"images/{iCard:00}/image_00.{charData.nonPNGImageExt}";
+							var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
+							using (Stream writer = fileEntry.Open())
 							{
-								int length = (int)Math.Min(n, (long)int.MaxValue);
-								writer.Write(nonPNGImageData, 0, length);
-								n -= (long)length;
+								for (long n = charData.nonPNGImageData.Length; n > 0;)
+								{
+									int length = (int)Math.Min(n, (long)int.MaxValue);
+									writer.Write(charData.nonPNGImageData, 0, length);
+									n -= (long)length;
+								}
 							}
 						}
-					}
 
-					// Write image files
-					for (int i = 1; i < backup.images.Count; ++i)
-					{
-						if (backup.images[i].data == null || backup.images[i].data.Length == 0)
-							continue; // No file data
-
-						string ext = Utility.GetFileExt(backup.images[i].filename);
-						string entryName = string.Format("images/image_{0:00}.{1}", i, ext);
-						var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
-						using (Stream writer = fileEntry.Open())
+						// Write image files
+						var charImages = backup.images.Where(i => i.characterIndex == iCard).ToList();
+						for (int i = 1; i < charImages.Count; ++i)
 						{
-							for (long n = backup.images[i].data.Length; n > 0;)
+							if (charImages[i].data == null || charImages[i].data.Length == 0)
+								continue; // No file data
+
+							string ext = Utility.GetFileExt(charImages[i].filename);
+							string entryName = $"images/{iCard:00}/image_{i:00}.{ext}";
+							var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
+							using (Stream writer = fileEntry.Open())
 							{
-								int length = (int)Math.Min(n, (long)int.MaxValue);
-								writer.Write(backup.images[i].data, 0, length);
-								n -= (long)length;
+								for (long n = charImages[i].data.Length; n > 0;)
+								{
+									int length = (int)Math.Min(n, (long)int.MaxValue);
+									writer.Write(charImages[i].data, 0, length);
+									n -= (long)length;
+								}
 							}
 						}
 					}
@@ -623,7 +776,7 @@ namespace Ginger.Integration
 				}
 
 				backup = new BackupData() {
-					characterCard = characterCard,
+					characterCards = new FaradayCardV4[] { characterCard }, //! @multi-backup
 					chats = chats.Values.ToList(),
 					images = images,
 					backgrounds = backgrounds,

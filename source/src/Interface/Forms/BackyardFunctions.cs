@@ -685,14 +685,19 @@ namespace Ginger
 
 		private bool OpenChatHistory()
 		{
+			if (_editChatDialog != null && !_editChatDialog.IsDisposed)
+				_editChatDialog.Close(); // Close existing
+
 			if (Backyard.ConnectionEstablished == false)
 			{
 				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
-			if (_editChatDialog != null && !_editChatDialog.IsDisposed)
-				_editChatDialog.Close(); // Close existing
+			// Refresh character list
+			var refreshError = Backyard.RefreshCharacters();
+			if (refreshError != Backyard.Error.NoError)
+				return false;
 
 			_editChatDialog = new LinkEditChatDialog();
 			if (Current.HasActiveLink)
@@ -1120,20 +1125,22 @@ namespace Ginger
 			}
 
 			var dlg = new LinkSelectCharacterOrGroupDialog();
-			dlg.Options = LinkSelectCharacterOrGroupDialog.Option.Solo;
 			dlg.Text = Resources.cap_link_create_backup;
+			dlg.Options = LinkSelectCharacterOrGroupDialog.Option.Solo;
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
+				dlg.Options |= LinkSelectCharacterOrGroupDialog.Option.Parties;
 
-			CharacterInstance characterInstance;
+			GroupInstance groupInstance;
 			if (dlg.ShowDialog() == DialogResult.OK)
-				characterInstance = dlg.SelectedCharacter;
+				groupInstance = dlg.SelectedGroup;
 			else
 				return false;
 
-			if (string.IsNullOrEmpty(characterInstance.instanceId))
+			if (string.IsNullOrEmpty(groupInstance.instanceId))
 				return false; // Error
 
 			BackupData backup = null;
-			var error = RunTask(() => BackupUtil.CreateBackup(characterInstance, out backup), "Creating backup...");
+			var error = RunTask(() => BackupUtil.CreateBackup(groupInstance, out backup), "Creating backup...");
 			if (error == Backyard.Error.NotFound)
 			{
 				MessageBox.Show(Resources.error_link_create_backup, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1150,7 +1157,7 @@ namespace Ginger
 				return false;
 			}
 
-			string filename = string.Concat(characterInstance.displayName.Replace(" ", "_"), " - ", DateTime.Now.ToString("yyyy-MM-dd"), ".backup.zip");
+			string filename = string.Concat(groupInstance.displayName.Replace(" ", "_"), " - ", DateTime.Now.ToString("yyyy-MM-dd"), ".backup.zip");
 
 			importFileDialog.Title = Resources.cap_link_create_backup;
 			exportFileDialog.Filter = "Character backup file|*.zip";
@@ -1203,7 +1210,7 @@ namespace Ginger
 			}
 
 			// Confirmation
-			if (MessageBox.Show(string.Format(Resources.msg_link_restore_backup, backup.characterCard.data.displayName, backup.chats.Count), Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No)
+			if (MessageBox.Show(string.Format(Resources.msg_link_restore_backup, backup.displayName, backup.chats.Count), Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No)
 			{
 				return false;
 			}
@@ -1271,7 +1278,7 @@ namespace Ginger
 
 			// Write character
 			var args = new Backyard.CreateCharacterArguments() {
-				card = backup.characterCard,
+				card = backup.characterCards[0], //! @multi-backup
 				imageInput = images.ToArray(),
 				chats = backup.chats.ToArray(),
 				userInfo = backup.userInfo,

@@ -383,7 +383,7 @@ namespace Ginger.Integration
 
 			// Write character to database
 			var args = new Backyard.CreateCharacterArguments() {
-				card = backup.characterCard,
+				card = backup.characterCards[0], //! @multi-backup
 				imageInput = images.ToArray(),
 				chats = backup.chats.ToArray(),
 				userInfo = backup.userInfo,

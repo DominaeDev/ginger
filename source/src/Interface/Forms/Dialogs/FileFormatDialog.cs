@@ -15,7 +15,7 @@ namespace Ginger
 			"PygmalionAI Character JSON (*.json)",
 			"Text generation web ui YAML (*.yaml)",
 			"CharX file (*.charx)",
-			"Character backup (*.zip)",
+			"Character backup file (*.zip)",
 		};
 
 		public FileUtil.FileType FileFormat { get; private set; }

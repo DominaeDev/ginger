@@ -73,7 +73,7 @@ namespace Ginger
 			// Fix for flickering cursor
 			SendMessage(chatInstanceList.Handle, LVM_SETHOTCURSOR, IntPtr.Zero, Cursors.Arrow.Handle);
 
-			_charactersById = Backyard.CharactersWithGroup.ToDictionary(c => c.instanceId, c => c);
+			_charactersById = Backyard.Everyone.ToDictionary(c => c.instanceId, c => c);
 
 			RefreshTitle();
 		}
@@ -104,9 +104,9 @@ namespace Ginger
 			{
 				return "Undefined";
 			}
-			else if (string.IsNullOrEmpty(group.name) == false)
+			else if (string.IsNullOrEmpty(group.displayName) == false)
 			{
-				return group.name;
+				return group.displayName;
 			}
 			else
 			{
@@ -143,8 +143,8 @@ namespace Ginger
 		{
 			if (_groupInstance.isDefined == false)
 				return Constants.DefaultCharacterName;
-			else if (string.IsNullOrEmpty(_groupInstance.name) == false)
-				return _groupInstance.name;
+			else if (string.IsNullOrEmpty(_groupInstance.displayName) == false)
+				return _groupInstance.displayName;
 			else
 			{
 				var characters = _groupInstance.members
@@ -689,9 +689,14 @@ namespace Ginger
 				var speakers = new GingerChatV2.SpeakerList();
 				for (int i = 0; i < chatInstance.participants.Length; ++i)
 				{
+					string name = null;
+					CharacterInstance instance;
+					if (_charactersById.TryGetValue(chatInstance.participants[i], out instance))
+						name = instance.name;
+
 					speakers.Add(new GingerChatV2.Speaker() {
 						id = i.ToString(),
-						name = _charactersById[chatInstance.participants[i]].name,
+						name = name ?? Constants.UnknownCharacter,
 					});
 				}
 
@@ -767,16 +772,14 @@ namespace Ginger
 				return;
 			}
 			
-			_charactersById = Backyard.CharactersWithGroup.ToDictionary(c => c.instanceId, c => c);
+			_charactersById = Backyard.Everyone.ToDictionary(c => c.instanceId, c => c);
 
 			var dlg = new LinkSelectCharacterOrGroupDialog();
 			dlg.Options = LinkSelectCharacterOrGroupDialog.Option.Solo;
 			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 				dlg.Options |= LinkSelectCharacterOrGroupDialog.Option.Parties;
 			if (dlg.ShowDialog() == DialogResult.OK)
-			{
 				_groupInstance = dlg.SelectedGroup;
-			}
 
 			chatView.Items.Clear();
 			PopulateChatList(true);
@@ -1399,7 +1402,7 @@ namespace Ginger
 				return;
 			}
 
-			_charactersById = Backyard.CharactersWithGroup.ToDictionary(c => c.instanceId, c => c);
+			_charactersById = Backyard.Everyone.ToDictionary(c => c.instanceId, c => c);
 
 			PopulateChatList(true);
 		}
