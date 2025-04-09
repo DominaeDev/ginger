@@ -703,7 +703,7 @@ namespace Ginger
 
 			if (idxPreset != -1)
 			{
-				MessageBox.Show("A preset with this name already exists.", "Save preset", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error("A preset with this name already exists.", "Save preset");
 				return;
 			}
 
@@ -727,8 +727,7 @@ namespace Ginger
 			if (index < idxPresets)
 				return;
 
-			var mr = MessageBox.Show("Remove this preset?", Resources.cap_confirm, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-			if (mr != DialogResult.Yes)
+			if (MsgBox.Confirm("Remove this preset?", Resources.cap_confirm) == false)
 				return;
 
 			index -= idxPresets;

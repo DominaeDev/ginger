@@ -90,7 +90,7 @@ namespace Ginger
 		{
 			if (File.Exists(filename) == false)
 			{
-				MessageBox.Show(Resources.error_file_not_found, Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_file_not_found, Resources.cap_load_error);
 				return;
 			}
 
@@ -111,7 +111,7 @@ namespace Ginger
 			}
 			catch
 			{
-				MessageBox.Show(Resources.error_launch_text_editor, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				MsgBox.Error(Resources.error_launch_text_editor, Resources.cap_error);
 			}
 		}
 
@@ -119,7 +119,7 @@ namespace Ginger
 		{
 			if (File.Exists(filename) == false)
 			{
-				MessageBox.Show(Resources.error_file_not_found, Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_file_not_found, Resources.cap_load_error);
 				return;
 			}
 
@@ -138,7 +138,7 @@ namespace Ginger
 			}
 			catch
 			{
-				MessageBox.Show(Resources.error_open_file_in_exporer, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				MsgBox.Error(Resources.error_open_file_in_exporer, Resources.cap_error);
 			}
 		}
 

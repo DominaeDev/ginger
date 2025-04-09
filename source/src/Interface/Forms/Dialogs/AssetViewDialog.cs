@@ -71,9 +71,11 @@ namespace Ginger
 			assetsDataView.EndEdit();
 			if (DialogResult == DialogResult.Cancel && Changed)
 			{
-				var mr = MessageBox.Show(Resources.msg_dismiss_changes, Resources.cap_confirm, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
-				if (mr == DialogResult.No)
+				var mr = MsgBox.AskYesNoCancel(Resources.msg_apply_changes, Resources.cap_confirm);
+				if (mr == DialogResult.Cancel)
 					e.Cancel = true;
+				else if (mr == DialogResult.Yes)
+					DialogResult = DialogResult.OK;
 			}
 		}
 
@@ -491,7 +493,7 @@ namespace Ginger
 			}
 			catch
 			{
-				MessageBox.Show(Resources.error_open_file_in_exporer, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				MsgBox.Error(Resources.error_open_file_in_exporer, Resources.cap_error);
 				return;
 			}
 		}
@@ -547,8 +549,7 @@ namespace Ginger
 			}
 			catch
 			{
-				MessageBox.Show(Resources.error_write_file, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-					return;
+				MsgBox.Error(Resources.error_write_file, Resources.cap_error);
 			}
 		}
 

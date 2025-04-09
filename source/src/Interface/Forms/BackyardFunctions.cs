@@ -24,19 +24,19 @@ namespace Ginger
 			var error = Backyard.EstablishConnection();
 			if (error == Backyard.Error.ValidationFailed)
 			{
-				MessageBox.Show(Resources.error_link_unsupported, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_unsupported, Resources.cap_link_connect);
 				AppSettings.BackyardLink.Enabled = false;
 				return false;
 			}
 			else if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_not_found, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_not_installed, Resources.cap_link_connect);
 				AppSettings.BackyardLink.Enabled = false;
 				return false;
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(string.Format(Resources.error_link_failed_with_reason, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(string.Format(Resources.error_link_failed_with_reason, Backyard.LastError ?? ""), Resources.cap_link_error);
 				AppSettings.BackyardLink.Enabled = false;
 				return false;
 			}
@@ -46,7 +46,7 @@ namespace Ginger
 				if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 				{
 					// Error
-					MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MsgBox.LinkError.RefreshFailed(Resources.cap_link_connect);
 					AppSettings.BackyardLink.Enabled = false;
 					return false;
 				}
@@ -55,7 +55,7 @@ namespace Ginger
 					if (Current.HasLink)
 						Current.Link.RefreshState();
 
-					MessageBox.Show(Resources.msg_link_connected, Resources.cap_link_connect, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MsgBox.Message(Resources.msg_link_connected, Resources.cap_link_connect);
 					SetStatusBarMessage(Resources.status_link_connect, Constants.StatusBarMessageInterval);
 					AppSettings.BackyardLink.Enabled = true;
 
@@ -105,7 +105,7 @@ namespace Ginger
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
-				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.RefreshFailed(Resources.cap_import_character);
 				AppSettings.BackyardLink.Enabled = false;
 			}
 
@@ -134,13 +134,13 @@ namespace Ginger
 			var importError = Backyard.Database.ImportCharacter(characterInstance.instanceId, out faradayData, out images, out userInfo);
 			if (importError == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_open_character, Resources.cap_import_character);
 				ClearStatusBarMessage();
 				return false;
 			}
 			else if (importError != Backyard.Error.NoError || faradayData == null)
 			{
-				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_open_character, Resources.cap_import_character);
 				ClearStatusBarMessage();
 				return false;
 			}
@@ -166,7 +166,8 @@ namespace Ginger
 			Current.IsFileDirty = false;
 			Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
 
-			if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+			if (AppSettings.BackyardLink.AlwaysLinkOnImport 
+				|| MsgBox.Ask(Resources.msg_link_create_link, Resources.cap_link_character))
 			{
 				Current.LinkWith(characterInstance, imageLinks);
 				SetStatusBarMessage(Resources.status_link_create, Constants.StatusBarMessageInterval);
@@ -191,13 +192,13 @@ namespace Ginger
 			var importError = Backyard.Database.ImportParty(groupInstance.instanceId, out faradayData, out characterInstances, out images, out userInfo);
 			if (importError == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_open_character, Resources.cap_import_character);
 				ClearStatusBarMessage();
 				return false;
 			}
 			else if (importError != Backyard.Error.NoError || faradayData == null || faradayData.Length == 0)
 			{
-				MessageBox.Show(Resources.error_link_open_character, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_open_character, Resources.cap_import_character);
 				ClearStatusBarMessage();
 				return false;
 			}
@@ -245,7 +246,8 @@ namespace Ginger
 			Current.IsFileDirty = false;
 			Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
 
-			if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+			if (AppSettings.BackyardLink.AlwaysLinkOnImport 
+				|| MsgBox.Ask(Resources.msg_link_create_link, Resources.cap_link_character))
 			{
 				Current.LinkWith(groupInstance, characterInstances, imageLinks);
 				SetStatusBarMessage(Resources.status_link_create, Constants.StatusBarMessageInterval);
@@ -264,27 +266,28 @@ namespace Ginger
 			var error = CreateNewCharacterInBackyard(out createdCharacter, out images);
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.ConnectionFailed();
 				return false;
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_save_character_as_new, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_save_character_as_new, Resources.cap_link_save_character);
 				return false;
 			}
 			else
 			{
-				if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+				if (AppSettings.BackyardLink.AlwaysLinkOnImport 
+					|| MsgBox.Ask(Resources.msg_link_create_link, Resources.cap_link_character))
 				{
 					Current.LinkWith(createdCharacter, images);
 					Current.IsLinkDirty = false;
 					SetStatusBarMessage(Resources.status_link_save_and_link_new, Constants.StatusBarMessageInterval);
 					RefreshTitle();
-					MessageBox.Show(Resources.msg_link_save_and_link_new, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MsgBox.Message(Resources.msg_link_save_and_link_new, Resources.cap_link_save_character);
 				}
 				else
 				{
-					MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MsgBox.Message(Resources.msg_link_saved, Resources.cap_link_save_character);
 				}
 
 				_bShouldRefreshSidePanel = true;
@@ -363,12 +366,12 @@ namespace Ginger
 
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.ConnectionFailed();
 				return false;
 			}
 			else if (error == Backyard.Error.NotFound)
 			{
-				var mr = MessageBox.Show(Resources.error_link_character_not_found, Resources.cap_link_save_character, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+				var mr = MsgBox.AskYesNoCancel(Resources.error_link_character_not_found, Resources.cap_link_save_character);
 				if (mr == DialogResult.Yes)
 					return SaveCharacterAsNewToBackyard();
 
@@ -383,13 +386,13 @@ namespace Ginger
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_update_character, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_update_character, Resources.cap_link_save_character);
 				return false;
 			}
 			else
 			{
 				SetStatusBarMessage(Resources.status_link_saved, Constants.StatusBarMessageInterval);
-				//MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				//MsgBox.Message(Resources.msg_link_saved, Resources.cap_link_save_character);
 				return true;
 			}
 		}
@@ -404,7 +407,7 @@ namespace Ginger
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
-				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.RefreshFailed(Resources.cap_link_overwrite);
 				AppSettings.BackyardLink.Enabled = false;
 			}
 
@@ -438,7 +441,7 @@ namespace Ginger
 			if (hasChanges)
 			{
 				// Overwrite prompt
-				var mr = MessageBox.Show(Resources.msg_link_confirm_overwrite, Resources.cap_link_overwrite, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+				var mr = MsgBox.ConfirmYesNoCancel(Resources.msg_link_confirm_overwrite, Resources.cap_link_overwrite);
 				if (mr == DialogResult.Cancel)
 					return Backyard.Error.CancelledByUser;
 				else if (mr == DialogResult.No)
@@ -471,7 +474,7 @@ namespace Ginger
 			// Refresh character information
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.ConnectionFailed();
 				return false;
 			}
 
@@ -500,17 +503,15 @@ namespace Ginger
 					Current.Link.RefreshState();
 					RefreshTitle();
 
-					// MessageBox.Show(Resources.msg_link_reestablished, Resources.cap_link_reestablish, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					// MsgBox.Message(Resources.msg_link_reestablished, Resources.cap_link_reestablish);
 					SetStatusBarMessage(Resources.status_link_reestablished, Constants.StatusBarMessageInterval);
 					return true;
 				}
 				else
 				{
-					if (MessageBox.Show(Resources.error_link_reestablish, Resources.cap_link_reestablish, MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.OK)
-					{ 
+					MsgBox.Error(Resources.error_link_reestablish, Resources.cap_link_reestablish);
 					Current.Unlink();
 					RefreshTitle();
-						}
 				}
 			}
 			return false;
@@ -529,20 +530,20 @@ namespace Ginger
 			return false;
 		}
 
-		private bool RevertCharacterFromBackyard()
+		private bool ReimportCharacterFromBackyard()
 		{
-			if (MessageBox.Show(Resources.msg_link_revert, Resources.cap_link_revert, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			if (MsgBox.Confirm(Resources.msg_link_revert, Resources.cap_link_revert) == false)
 				return false;
 
 			var error = _RevertCharacterFromBackyard();
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.ConnectionFailed();
 				return false;
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_open_character, Resources.cap_link_revert, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_open_character, Resources.cap_link_revert);
 				return false;
 			}
 			else
@@ -610,7 +611,7 @@ namespace Ginger
 			
 			RefreshAll();
 
-			Undo.Push(Undo.Kind.RecipeList, "Revert character");
+			Undo.Push(Undo.Kind.RecipeList, "Reimport character");
 			
 			return Backyard.Error.NoError;
 		}
@@ -690,7 +691,7 @@ namespace Ginger
 
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.ConnectionFailed();
 				return false;
 			}
 
@@ -721,7 +722,7 @@ namespace Ginger
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
-				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.RefreshFailed(Resources.cap_overwrite_files);
 				AppSettings.BackyardLink.Enabled = false;
 				return false;
 			}
@@ -784,10 +785,10 @@ namespace Ginger
 				foreach (var character in characterInstances)
 				{
 					filenames.Add(Utility.MakeUniqueFilename(outputDirectory,
-							string.Format("{0}_{1}_{2}.backup.zip",
-								character.displayName.Replace(" ", "_"),
-								character.creationDate.ToFileTimeUtc() / 1000L,
-								now),
+						string.Format("{0}_{1}_{2}.backup.zip",
+							character.displayName.Replace(" ", "_"),
+							character.creationDate.ToFileTimeUtc() / 1000L,
+							now),
 						used_filenames)
 					);
 				}
@@ -808,10 +809,8 @@ namespace Ginger
 
 			// Confirm overwrite?
 			bool bFileExists = filenames.ContainsAny(fn => File.Exists(fn));
-			if (bFileExists && MessageBox.Show(Resources.msg_link_export_overwrite_files, Resources.cap_overwrite_files, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
-			{
+			if (bFileExists && MsgBox.Confirm(Resources.msg_link_export_overwrite_files, Resources.cap_overwrite_files) == false)
 				return false;
-			}
 
 			var exporter = new BulkExporter();
 
@@ -854,28 +853,28 @@ namespace Ginger
 				int skipped = filenames.Count - succeeded;
 				if (skipped > 0)
 				{
-					MessageBox.Show(this, string.Format(Resources.msg_link_export_some_characters, NumCharacters(succeeded), skipped), Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MsgBox.Message(string.Format(Resources.msg_link_export_some_characters, NumCharacters(succeeded), skipped), Resources.cap_link_export_many_characters);
 				}
 				else
 				{
-					MessageBox.Show(this, string.Format(Resources.msg_link_export_many_characters, NumCharacters(succeeded)), Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MsgBox.Message(string.Format(Resources.msg_link_export_many_characters, NumCharacters(succeeded)), Resources.cap_link_export_many_characters);
 				}
 			}
 			else if (result.error == BulkExporter.Error.Cancelled)
 			{
-				MessageBox.Show(this, Resources.error_canceled, Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Canceled(Resources.cap_link_export_many_characters);
 			}
 			else if (result.error == BulkExporter.Error.FileError)
 			{
-				MessageBox.Show(this, Resources.error_write_file, Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_write_file, Resources.cap_link_export_many_characters);
 			}
 			else if (result.error == BulkExporter.Error.DiskFullError)
 			{
-				MessageBox.Show(this, Resources.error_disk_full, Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_disk_full, Resources.cap_link_export_many_characters);
 			}
 			else
 			{
-				MessageBox.Show(this, Resources.error_link_export_many_characters, Resources.cap_link_export_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_export_many_characters, Resources.cap_link_export_many_characters);
 			}
 		}
 
@@ -884,7 +883,7 @@ namespace Ginger
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
-				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.RefreshFailed(Resources.cap_link_import_many_characters);
 				AppSettings.BackyardLink.Enabled = false;
 				return false;
 			}
@@ -931,7 +930,7 @@ namespace Ginger
 			progressDlg.onCancel += (s, e) => {
 				checker.Cancel();
 				progressDlg.Close();
-				MessageBox.Show(Resources.error_canceled, Resources.cap_link_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Canceled(Resources.cap_link_import_many_characters);
 			};
 			checker.onProgress += (value) => {
 				progressDlg.Percentage = value;
@@ -947,7 +946,7 @@ namespace Ginger
 				}
 				else if (result.error == AsyncFileTypeChecker.Error.Cancelled)
 				{
-					MessageBox.Show(Resources.error_canceled, Resources.cap_link_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MsgBox.LinkError.Canceled(Resources.cap_link_import_many_characters);
 				}
 			};
 
@@ -962,12 +961,12 @@ namespace Ginger
 		{
 			if (filenames.Length == 0)
 			{
-				MessageBox.Show(Resources.error_link_import_many_unsupported, Resources.cap_link_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_import_many_unsupported, Resources.cap_link_import_many_characters);
 				return false;
 			}
 
 			// Confirm
-			if (MessageBox.Show(string.Format(Resources.msg_link_confirm_import_many, NumCharacters(filenames.Length)), Resources.cap_link_import_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+			if (MsgBox.Confirm(string.Format(Resources.msg_link_confirm_import_many, NumCharacters(filenames.Length)), Resources.cap_link_import_many_characters) == false)
 				return false;
 
 			// Create Ginger import folder
@@ -1022,15 +1021,15 @@ namespace Ginger
 		{
 			if (result.error == BulkImporter.Error.NoError)
 			{
-				MessageBox.Show(this, string.Format(result.skipped == 0 ? Resources.msg_link_import_many_characters : Resources.msg_link_import_some_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_link_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MsgBox.Message(string.Format(result.skipped == 0 ? Resources.msg_link_import_many_characters : Resources.msg_link_import_some_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_link_import_many_characters);
 			}
 			else if (result.error == BulkImporter.Error.Cancelled)
 			{
-				MessageBox.Show(this, Resources.error_canceled, Resources.cap_link_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Canceled(Resources.cap_link_import_many_characters);
 			}
 			else
 			{
-				MessageBox.Show(this, Resources.error_link_import_many_characters, Resources.cap_link_import_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_import_many_characters, Resources.cap_link_import_many_characters);
 			}
 		}
 
@@ -1039,7 +1038,7 @@ namespace Ginger
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
-				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.RefreshFailed(Resources.cap_link_update_many_characters);
 				AppSettings.BackyardLink.Enabled = false;
 				return false;
 			}
@@ -1062,7 +1061,7 @@ namespace Ginger
 				return false;
 
 			// Confirm
-			if (MessageBox.Show(string.Format(Resources.msg_link_confirm_update_many, NumGroups(groupInstances.Length)), Resources.cap_link_update_many_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+			if (MsgBox.Confirm(string.Format(Resources.msg_link_confirm_update_many, NumGroups(groupInstances.Length)), Resources.cap_link_update_many_characters) == false)
 				return false;
 
 			var updater = new BulkUpdateModelSettings();
@@ -1102,15 +1101,15 @@ namespace Ginger
 		{
 			if (result.error == BulkUpdateModelSettings.Error.NoError)
 			{
-				MessageBox.Show(this, string.Format(result.skipped == 0 ? Resources.msg_link_update_many_characters : Resources.msg_link_update_some_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_link_update_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MsgBox.Message(string.Format(result.skipped == 0 ? Resources.msg_link_update_many_characters : Resources.msg_link_update_some_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_link_update_many_characters);
 			}
 			else if (result.error == BulkUpdateModelSettings.Error.Cancelled)
 			{
-				MessageBox.Show(this, Resources.error_canceled, Resources.cap_link_update_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Canceled(Resources.cap_link_update_many_characters);
 			}
 			else
 			{
-				MessageBox.Show(this, Resources.error_link_update_many_characters, Resources.cap_link_update_many_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_update_many_characters, Resources.cap_link_update_many_characters);
 			}
 		}
 
@@ -1119,7 +1118,7 @@ namespace Ginger
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
-				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.RefreshFailed(Resources.cap_link_create_backup);
 				AppSettings.BackyardLink.Enabled = false;
 				return false;
 			}
@@ -1143,17 +1142,12 @@ namespace Ginger
 			var error = RunTask(() => BackupUtil.CreateBackup(groupInstance, out backup), "Creating backup...");
 			if (error == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_create_backup, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return false;
-			}
-			else if (error == Backyard.Error.NotConnected)
-			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_create_backup, Resources.cap_link_create_backup);
 				return false;
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Error(error, Resources.cap_link_create_backup);
 				return false;
 			}
 
@@ -1174,11 +1168,11 @@ namespace Ginger
 
 			if (BackupUtil.WriteBackup(exportFileDialog.FileName, backup) != FileUtil.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_write_file, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_write_file, Resources.cap_link_create_backup);
 				return false;
 			}
 
-			MessageBox.Show(Resources.msg_link_create_backup, Resources.cap_link_create_backup, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MsgBox.Message(Resources.msg_link_create_backup, Resources.cap_link_create_backup);
 			return true;
 		}
 
@@ -1186,7 +1180,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_restore_backup);
 				return false;
 			}
 
@@ -1205,26 +1199,25 @@ namespace Ginger
 			FileUtil.Error readError = BackupUtil.ReadBackup(importFileDialog.FileName, out backup);
 			if (readError != FileUtil.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_restore_backup_invalid, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_restore_backup_invalid, Resources.cap_link_restore_backup);
 				return false;
 			}
 
 			if (backup.characterCards.Length > 1 && BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats) == false)
 			{
-				MessageBox.Show(Resources.error_link_restore_backup_unsupported, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_restore_backup_unsupported, Resources.cap_link_restore_backup);
 				return false;
 			}
 
 			// Confirmation
-			if (MessageBox.Show(string.Format(Resources.msg_link_restore_backup, backup.displayName, backup.chats.Count), Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No)
-			{
+			if (MsgBox.Confirm(string.Format(Resources.msg_link_restore_backup, backup.displayName, backup.chats.Count), Resources.cap_link_restore_backup) == false)
 				return false;
-			}
 
 			// Import model settings?
-			if (backup.hasModelSettings && MessageBox.Show(Resources.msg_link_restore_backup_settings, Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No)
+			if (backup.hasModelSettings 
+				&& MsgBox.Ask(Resources.msg_link_restore_backup_settings, Resources.cap_link_restore_backup) == false)
 			{
-				// Use default model settings
+				// Reset model parameters
 				foreach (var chat in backup.chats)
 					chat.parameters = AppSettings.BackyardSettings.UserSettings;
 			}
@@ -1297,11 +1290,11 @@ namespace Ginger
 			Backyard.Error error = RunTask(() => Backyard.Database.CreateNewParty(args, out groupInstance, out returnedCharacters, out imageLinks), "Restoring backup...");
 			if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Error(error, Resources.cap_link_restore_backup);
 				return false;
 			}
 						
-			MessageBox.Show(Resources.msg_link_restore_backup_success, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MsgBox.Message(Resources.msg_link_restore_backup_success, Resources.cap_link_restore_backup);
 			return true;
 		}
 
@@ -1309,12 +1302,11 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_repair_images);
 				return;
 			}
 
-			var mr = MessageBox.Show(Resources.msg_link_repair_images, Resources.cap_link_repair_images, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
-			if (mr != DialogResult.Yes)
+			if (MsgBox.Confirm(Resources.msg_link_repair_images, Resources.cap_link_repair_images) == false)
 				return;
 
 			int modified = 0;
@@ -1322,32 +1314,32 @@ namespace Ginger
 			var error = RunTask(() => Backyard.Database.RepairImages(out modified, out skipped), "Repairing broken images...");
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_repair_images);
 				return;
 			}
 			if (error == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_images_folder_not_found, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_images_folder_not_found, Resources.cap_link_repair_images);
 				return;
 			}
 			if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_repair_images, Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_repair_images, Resources.cap_link_repair_images);
 				return;
 			}
 
 			// Success
 			if (skipped > 0)
 			{
-				MessageBox.Show(string.Format(Resources.msg_link_repaired_images_skipped, modified, skipped), Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MsgBox.Message(string.Format(Resources.msg_link_repaired_images_skipped, modified, skipped), Resources.cap_link_repair_images);
 			}
 			else if (modified > 0)
 			{
-				MessageBox.Show(string.Format(Resources.msg_link_repaired_images, modified), Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MsgBox.Message(string.Format(Resources.msg_link_repaired_images, modified), Resources.cap_link_repair_images);
 			}
 			else
 			{
-				MessageBox.Show(string.Format(Resources.msg_link_no_images_repaired, modified), Resources.cap_link_repair_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MsgBox.Message(string.Format(Resources.msg_link_no_images_repaired, modified), Resources.cap_link_repair_images);
 			}
 		}
 
@@ -1355,14 +1347,14 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_purge_images);
 				return;
 			}
 
 			var imagesFolder = Path.Combine(AppSettings.BackyardLink.Location, "images");
 			if (Directory.Exists(imagesFolder) == false)
 			{
-				MessageBox.Show(Resources.error_link_images_folder_not_found, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_images_folder_not_found, Resources.cap_link_purge_images);
 				return;
 			}
 
@@ -1372,17 +1364,17 @@ namespace Ginger
 
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_purge_images);
 				return;
 			}
 			if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_repair_images, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_repair_images, Resources.cap_link_purge_images);
 				return;
 			}
 			if (imageUrls == null || imageUrls.Length == 0)
 			{
-				MessageBox.Show(Resources.msg_link_purge_images_not_found, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MsgBox.Message(Resources.msg_link_purge_images_not_found, Resources.cap_link_purge_images);
 				return;
 			}
 
@@ -1402,16 +1394,14 @@ namespace Ginger
 
 			if (unknownImages.Count > 0)
 			{
-				var mr = MessageBox.Show(string.Format(Resources.msg_link_purge_images_confirm, unknownImages.Count), Resources.cap_link_purge_images, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,  MessageBoxDefaultButton.Button2);
-				
-				if (mr == DialogResult.Yes)
+				if (MsgBox.Confirm(string.Format(Resources.msg_link_purge_images_confirm, unknownImages.Count), Resources.cap_link_purge_images))
 				{
 					Win32.SendToRecycleBin(unknownImages, Win32.FileOperationFlags.FOF_WANTNUKEWARNING | Win32.FileOperationFlags.FOF_NOCONFIRMATION);
 				}
 			}
 			else
 			{
-				MessageBox.Show(Resources.msg_link_purge_images_not_found, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MsgBox.Message(Resources.msg_link_purge_images_not_found, Resources.cap_link_purge_images);
 			}
 		}
 
@@ -1420,7 +1410,7 @@ namespace Ginger
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
-				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_edit_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.RefreshFailed(Resources.cap_link_edit_model_settings);
 				AppSettings.BackyardLink.Enabled = false;
 				return false;
 			}
@@ -1433,7 +1423,7 @@ namespace Ginger
 
 			if (groupInstance.isDefined == false)
 			{
-				MessageBox.Show(string.Format(Resources.error_link_character_not_found, Backyard.LastError ?? ""), Resources.cap_link_edit_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_chat_not_found, Resources.cap_link_edit_model_settings);
 				Current.BreakLink();
 				return false;
 			}
@@ -1441,13 +1431,13 @@ namespace Ginger
 			ChatInstance[] chats = null;
 			if (RunTask(() => Backyard.Database.GetChats(groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_edit_model_settings);
 				return false;
 			}
 
 			if (chats == null || chats.Length == 0)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_edit_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_chat_not_found, Resources.cap_link_edit_model_settings);
 				return false;
 			}
 
@@ -1462,12 +1452,12 @@ namespace Ginger
 			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chatIds, dlg.Parameters, null), "Updating model settings...");
 			if (error == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_edit_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_chat_not_found, Resources.cap_link_edit_model_settings);
 				return false;;
 			}
 			if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_edit_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Error(error, Resources.cap_link_edit_model_settings);
 				return false;
 			}
 
@@ -1480,7 +1470,7 @@ namespace Ginger
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
-				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_bulk_repair_chats, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.RefreshFailed(Resources.cap_link_bulk_repair_chats);
 				AppSettings.BackyardLink.Enabled = false;
 				return false;
 			}
@@ -1488,7 +1478,7 @@ namespace Ginger
 			var groups = Backyard.Groups.ToArray();
 
 			// Confirm
-			if (MessageBox.Show(Resources.msg_link_bulk_repair_chats_confirm, Resources.cap_link_bulk_repair_chats, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+			if (MsgBox.Confirm(Resources.msg_link_bulk_repair_chats_confirm, Resources.cap_link_bulk_repair_chats) == false)
 				return false;
 
 			var updater = new LegacyChatUpdater();
@@ -1528,21 +1518,21 @@ namespace Ginger
 			{
 				if (result.numCharacters > 0)
 				{
-					MessageBox.Show(this, string.Format(Resources.msg_link_bulk_repair_chats, result.numChats, result.numCharacters), Resources.cap_link_bulk_repair_chats, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MsgBox.Message(string.Format(Resources.msg_link_bulk_repair_chats, result.numChats, result.numCharacters), Resources.cap_link_bulk_repair_chats);
 				}
 				else
 				{
-					MessageBox.Show(this, Resources.msg_link_bulk_repair_chats_none, Resources.cap_link_bulk_repair_chats, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MsgBox.Message(Resources.msg_link_bulk_repair_chats_none, Resources.cap_link_bulk_repair_chats);
 				}
 				
 			}
 			else if (result.error == LegacyChatUpdater.Error.Cancelled)
 			{
-				MessageBox.Show(this, Resources.error_canceled, Resources.cap_link_bulk_repair_chats, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Canceled(Resources.cap_link_bulk_repair_chats);
 			}
 			else
 			{
-				MessageBox.Show(this, Resources.error_link_bulk_repair_chats, Resources.cap_link_bulk_repair_chats, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_bulk_repair_chats, Resources.cap_link_bulk_repair_chats);
 			}
 		}
 
@@ -1551,7 +1541,7 @@ namespace Ginger
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
-				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.RefreshFailed(Resources.cap_link_delete_characters);
 				AppSettings.BackyardLink.Enabled = false;
 				return false;
 			}
@@ -1584,18 +1574,21 @@ namespace Ginger
 			Backyard.Error error = Backyard.Database.ConfirmDeleteCharacters(characterIds, out result);
 			if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_delete_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Error(error, Resources.cap_link_delete_characters);
 				return false;
 			}
 
 			// Confirm delete
-			if (MessageBox.Show(string.Format(result.characterIds.Length != result.groupIds.Length ? Resources.msg_link_delete_characters_and_group_chats_confirm : Resources.msg_link_delete_characters_confirm, NumCharacters(result.characterIds.Length)), Resources.cap_link_delete_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			string confirmMessage = result.characterIds.Length != result.groupIds.Length ?
+				string.Format(Resources.msg_link_delete_characters_and_group_chats_confirm, NumCharacters(result.characterIds.Length)) :
+				string.Format(Resources.msg_link_delete_characters_confirm, NumCharacters(result.characterIds.Length));
+			if (MsgBox.Confirm(confirmMessage, Resources.cap_link_delete_characters) == false)
 				return false;
 
 			error = RunTask(() => Backyard.Database.DeleteCharacters(result.characterIds, result.groupIds, result.imageIds), "Deleting characters...");
 			if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_delete_characters, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Error(error, Resources.cap_link_delete_characters);
 				return false;
 			}
 
@@ -1617,7 +1610,7 @@ namespace Ginger
 			{ 
 			}
 
-			MessageBox.Show(this, string.Format(Resources.msg_link_deleted_characters, NumCharacters(result.characterIds.Length)), Resources.cap_link_delete_characters, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MsgBox.Message(string.Format(Resources.msg_link_deleted_characters, NumCharacters(result.characterIds.Length)), Resources.cap_link_delete_characters);
 			
 			return true;
 		}
@@ -1748,27 +1741,28 @@ namespace Ginger
 			var error = CreateNewPartyInBackyard(out createdGroup, out createdCharacters, out images);
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_failed, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.ConnectionFailed();
 				return false;
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_save_character_as_new, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_save_character_as_new, Resources.cap_link_save_character);
 				return false;
 			}
 			else
 			{
-				if (AppSettings.BackyardLink.AlwaysLinkOnImport || MessageBox.Show(Resources.msg_link_create_link, Resources.cap_link_character, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+				if (AppSettings.BackyardLink.AlwaysLinkOnImport 
+					|| MsgBox.Ask(Resources.msg_link_create_link, Resources.cap_link_character))
 				{
 					Current.LinkWith(createdGroup, createdCharacters, images);
 					Current.IsLinkDirty = false;
 					SetStatusBarMessage(Resources.status_link_save_and_link_new, Constants.StatusBarMessageInterval);
 					RefreshTitle();
-					MessageBox.Show(Resources.msg_link_save_and_link_new, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MsgBox.Message(Resources.msg_link_save_and_link_new, Resources.cap_link_save_character);
 				}
 				else
 				{
-					MessageBox.Show(Resources.msg_link_saved, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MsgBox.Message(Resources.msg_link_saved, Resources.cap_link_save_character);
 				}
 				
 				_bShouldRefreshSidePanel = true;
@@ -1854,7 +1848,7 @@ namespace Ginger
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
 			{
-				MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.RefreshFailed(Resources.msg_link_confirm_overwrite);
 				AppSettings.BackyardLink.Enabled = false;
 			}
 
@@ -1901,7 +1895,7 @@ namespace Ginger
 			if (hasChanges)
 			{
 				// Overwrite prompt
-				var mr = MessageBox.Show(Resources.msg_link_confirm_overwrite, Resources.cap_link_overwrite, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+				var mr = MsgBox.ConfirmYesNoCancel(Resources.msg_link_confirm_overwrite, Resources.cap_link_overwrite);
 				if (mr == DialogResult.Cancel)
 					return Backyard.Error.CancelledByUser;
 				else if (mr == DialogResult.No)
@@ -1930,7 +1924,7 @@ namespace Ginger
 			// Refresh character list
             if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
             {
-                MessageBox.Show(string.Format(Resources.error_link_read_characters, Backyard.LastError ?? ""), Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MsgBox.LinkError.RefreshFailed(Resources.cap_link_reset_model_settings);
                 AppSettings.BackyardLink.Enabled = false;
                 return false;
             }
@@ -1939,7 +1933,7 @@ namespace Ginger
 			var groups = Backyard.Groups.ToArray();
 
 			// Confirm
-			if (MessageBox.Show(Resources.msg_link_reset_model_settings, Resources.cap_link_reset_model_settings, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			if (MsgBox.Confirm(Resources.msg_link_reset_model_settings, Resources.cap_link_reset_model_settings) == false)
 				return false;
 
 			var updater = new BulkUpdateModelSettings();
@@ -1979,15 +1973,15 @@ namespace Ginger
 		{
 			if (result.error == BulkUpdateModelSettings.Error.NoError)
 			{
-				MessageBox.Show(this, string.Format(result.skipped == 0 ? Resources.msg_link_update_many_characters : Resources.msg_link_update_some_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_link_reset_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MsgBox.Message(string.Format(result.skipped == 0 ? Resources.msg_link_update_many_characters : Resources.msg_link_update_some_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_link_reset_model_settings);
 			}
 			else if (result.error == BulkUpdateModelSettings.Error.Cancelled)
 			{
-				MessageBox.Show(this, Resources.error_canceled, Resources.cap_link_reset_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Canceled(Resources.cap_link_reset_model_settings);
 			}
 			else
 			{
-				MessageBox.Show(this, Resources.error_link_update_many_characters, Resources.cap_link_reset_model_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_update_many_characters, Resources.cap_link_reset_model_settings);
 			}
 		}
 
@@ -1995,31 +1989,31 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_purge_images, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_purge_images);
 				return false;
 			}
 
 			if (string.IsNullOrEmpty(BackyardModelDatabase.ModelDownloadPath) == false
 				&& Directory.Exists(BackyardModelDatabase.ModelDownloadPath))
 			{
-				if (MessageBox.Show(Resources.msg_link_repair_models_location_exists, Resources.cap_link_repair_models_location, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+				if (MsgBox.Confirm(Resources.msg_link_repair_models_location_exists, Resources.cap_link_repair_models_location) == false)
 					return false;
 			}
 			else
 			{
 				// Confirm
-				if (MessageBox.Show(Resources.msg_link_repair_models_location, Resources.cap_link_repair_models_location, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+				if (MsgBox.Confirm(Resources.msg_link_repair_models_location, Resources.cap_link_repair_models_location) == false)
 					return false;
 			}
 
 			var error = Backyard.Database.ResetModelDownloadLocation();
 			if (error == Backyard.Error.NoError)
 			{
-				MessageBox.Show(this, Resources.msg_link_repair_models_location_success, Resources.cap_link_repair_models_location, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MsgBox.Message(Resources.msg_link_repair_models_location_success, Resources.cap_link_repair_models_location);
 			}
 			else
 			{
-				MessageBox.Show(this, Resources.error_link_general, Resources.cap_link_repair_models_location, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Error(error, Resources.cap_link_repair_models_location);
 			}
 
 

@@ -271,7 +271,7 @@ namespace Ginger
 
 			if (outputByChannel.Count == 0 && greetings.Count == 0 && group_greetings.Count == 0)
 			{
-				MessageBox.Show(Resources.error_empty_snippet, Resources.cap_save_snippet_error, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				MsgBox.Error(Resources.error_empty_snippet, Resources.cap_save_snippet_error);
 				return; // All text was erased by user
 			}
 
@@ -279,11 +279,9 @@ namespace Ginger
 				return;
 
 			FileName = Utility.ContentPath("Snippets", filename + ".snippet");
-			if (File.Exists(FileName))
-			{
-				if (MessageBox.Show(Resources.msg_overwrite_snippet, Resources.cap_overwrite_snippet, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
-					return;
-			}
+			if (File.Exists(FileName)
+				&& MsgBox.Confirm(Resources.msg_overwrite_snippet, Resources.cap_overwrite_snippet) == false)
+				return;
 
 			Output = new Generator.OutputWithNodes() {
 				system = GingerString.FromString(outputByChannel.GetOrDefault(Recipe.Component.System)),

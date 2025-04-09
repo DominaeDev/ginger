@@ -635,7 +635,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Linking error.
+        ///   Looks up a localized string similar to Backyard AI error.
         /// </summary>
         internal static string cap_link_error {
             get {
@@ -1912,9 +1912,9 @@ namespace Ginger.Properties {
         ///
         ///Installation not found..
         /// </summary>
-        internal static string error_link_not_found {
+        internal static string error_link_not_installed {
             get {
-                return ResourceManager.GetString("error_link_not_found", resourceCulture);
+                return ResourceManager.GetString("error_link_not_installed", resourceCulture);
             }
         }
         
@@ -1937,9 +1937,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to read character information.
-        ///
-        ///Reason: {0}.
+        ///   Looks up a localized string similar to Failed to read character information..
         /// </summary>
         internal static string error_link_read_characters {
             get {
@@ -2011,9 +2009,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to connect to Backyard AI. Unsupported version.
-        ///
-        ///Please check the Ginger GitHub for updates..
+        ///   Looks up a localized string similar to Failed to connect to Backyard AI. Unsupported version..
         /// </summary>
         internal static string error_link_unsupported {
             get {
@@ -2963,6 +2959,15 @@ namespace Ginger.Properties {
             get {
                 object obj = ResourceManager.GetObject("model", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Apply changes?.
+        /// </summary>
+        internal static string msg_apply_changes {
+            get {
+                return ResourceManager.GetString("msg_apply_changes", resourceCulture);
             }
         }
         

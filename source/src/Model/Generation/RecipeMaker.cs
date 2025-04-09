@@ -278,7 +278,7 @@ namespace Ginger
 			}
 			catch
 			{
-				MessageBox.Show(Resources.error_save_snippet, Resources.cap_save_snippet, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_save_snippet, Resources.cap_save_snippet);
 			}
 		}
 

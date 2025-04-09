@@ -59,9 +59,11 @@ namespace Ginger
 			dataGridView.EndEdit();
 			if (DialogResult == DialogResult.Cancel && Changed)
 			{
-				var mr = MessageBox.Show(Resources.msg_dismiss_changes, Resources.cap_confirm, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
-				if (mr == DialogResult.No)
+				var mr = MsgBox.AskYesNoCancel(Resources.msg_apply_changes, Resources.cap_confirm);
+				if (mr == DialogResult.Cancel)
 					e.Cancel = true;
+				else if (mr == DialogResult.Yes)
+					DialogResult = DialogResult.OK;
 			}
 		}
 

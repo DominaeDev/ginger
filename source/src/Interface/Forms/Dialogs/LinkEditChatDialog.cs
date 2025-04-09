@@ -211,7 +211,7 @@ namespace Ginger
 			if (Backyard.ConnectionEstablished == false
 				|| (_groupInstance.isDefined && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError))
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_error);
 				Close();
 				return;
 			}
@@ -344,7 +344,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_error);
 				Close();
 				return;
 			}
@@ -430,7 +430,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_create_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_create_chat);
 				Close();
 				return;
 			}
@@ -462,13 +462,13 @@ namespace Ginger
 			var error = RunTask(() => Backyard.Database.CreateNewChat(args, _groupInstance.instanceId, out chatInstance), "Creating chat...");
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_create_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_create_chat);
 				Close();
 				return;
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_create_chat, Resources.cap_link_create_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_create_chat, Resources.cap_link_create_chat);
 				return;
 			}
 			else
@@ -485,7 +485,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_import_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_import_chat);
 				Close();
 				return;
 			}
@@ -506,14 +506,14 @@ namespace Ginger
 			ChatHistory chatHistory = FileUtil.ImportChat(importFileDialog.FileName);
 			if (chatHistory == null)
 			{
-				MessageBox.Show(Resources.error_unrecognized_chat_format, Resources.cap_import_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_unrecognized_chat_format, Resources.cap_import_chat);
 				return;
 			}
 
 			int numSpeakers = chatHistory.numSpeakers;
 			if (numSpeakers > _groupInstance.Count)
 			{
-				if (MessageBox.Show(Resources.msg_link_chat_too_many_speakers, Resources.cap_import_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+				if (MsgBox.Ask(Resources.msg_link_chat_too_many_speakers, Resources.cap_import_chat) == false)
 					return;
 
 				// Remove other characters' messages
@@ -547,13 +547,13 @@ namespace Ginger
 			var error = RunTask(() => Backyard.Database.CreateNewChat(args, _groupInstance.instanceId, out chatInstance), "Importing chat...");
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_import_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_import_chat);
 				Close();
 				return;
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_import_chat, Resources.cap_import_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_import_chat, Resources.cap_import_chat);
 				return;
 			}
 			else
@@ -605,7 +605,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_export_error);
 				Close();
 				return;
 			}
@@ -728,7 +728,7 @@ namespace Ginger
 					return; // Success
 				}
 			}
-			MessageBox.Show(Resources.error_write_json, Resources.cap_export_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			MsgBox.Error(Resources.error_write_json, Resources.cap_export_error);
 		}
 
 		private void SelectChat(int index, bool bBeginEdit = false)
@@ -767,7 +767,7 @@ namespace Ginger
 			if (RunTask(() => Backyard.RefreshCharacters()) != Backyard.Error.NoError)
 			{
 				this.Cursor = Cursors.Default;
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_error);
 				Close();
 				return;
 			}
@@ -846,13 +846,13 @@ namespace Ginger
 			}
 			else if (error == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_rename_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_chat_not_found, Resources.cap_link_rename_chat);
 				e.CancelEdit = true;
 				RefreshChats();
 			}
 			else
 			{
-				MessageBox.Show(Resources.error_link_rename_chat, Resources.cap_link_rename_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_rename_chat, Resources.cap_link_rename_chat);
 				e.CancelEdit = true;
 			}
 		}
@@ -861,7 +861,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_delete_chat);
 				Close();
 				return;
 			}
@@ -877,12 +877,12 @@ namespace Ginger
 			int chatCounts;
 			if (Backyard.Database.ConfirmDeleteChat(chatInstance.instanceId, _groupInstance.instanceId, out chatCounts) != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_delete_chat);
 				return;
 			}
 
 			// Confirm
-			if (MessageBox.Show(string.Format(Resources.msg_link_delete_confirm, chatInstance.name), Resources.cap_link_delete_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			if (MsgBox.Confirm(string.Format(Resources.msg_link_delete_confirm, chatInstance.name), Resources.cap_link_delete_chat) == false)
 				return;
 
 			Backyard.Error error;
@@ -911,12 +911,12 @@ namespace Ginger
 
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_delete_chat);
 				Close();
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_delete_chat, Resources.cap_link_delete_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_delete_chat, Resources.cap_link_delete_chat);
 			}
 			else
 			{
@@ -981,7 +981,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_duplicate_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_duplicate_chat);
 				Close();
 				return;
 			}
@@ -1007,12 +1007,12 @@ namespace Ginger
 
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_duplicate_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_duplicate_chat);
 				Close();
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_duplicate_chat, Resources.cap_link_duplicate_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_duplicate_chat, Resources.cap_link_duplicate_chat);
 			}
 			else
 			{
@@ -1030,7 +1030,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_purge_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_purge_chat);
 				Close();
 				return;
 			}
@@ -1038,19 +1038,18 @@ namespace Ginger
 			if (_groupInstance.isDefined == false)
 				return; // Error
 
-			var mr = MessageBox.Show(string.Format(Resources.msg_link_purge_chat, GetGroupTitle(_groupInstance)), Resources.cap_link_purge_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button2);
-			if (mr != DialogResult.Yes)
+			if (MsgBox.Confirm(string.Format(Resources.msg_link_purge_chat, GetGroupTitle(_groupInstance)), Resources.cap_link_purge_chat) == false)
 				return;
 
 			var error = RunTask(() => Backyard.Database.DeleteAllChats(_groupInstance.instanceId), "Deleting chat history...");
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_purge_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_purge_chat);
 				Close();
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_purge_chat, Resources.cap_link_purge_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_purge_chat, Resources.cap_link_purge_chat);
 			}
 			else
 			{
@@ -1124,7 +1123,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_branch_chat);
 				Close();
 				return;
 			}
@@ -1143,7 +1142,7 @@ namespace Ginger
 			int messageIndex = Array.FindIndex(chatHistory.messages, m => m.instanceId == messageId);
 			if (messageIndex == -1)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_branch_chat);
 				return;
 			}
 			Array.Resize(ref chatHistory.messages, messageIndex + 1);
@@ -1159,12 +1158,12 @@ namespace Ginger
 
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_branch_chat);
 				Close();
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_branch_chat, Resources.cap_link_branch_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_branch_chat, Resources.cap_link_branch_chat);
 			}
 			else
 			{
@@ -1177,7 +1176,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_restart_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_restart_chat);
 				Close();
 				return;
 			}
@@ -1186,7 +1185,7 @@ namespace Ginger
 				return; // Error
 
 			// Confirm
-			if (MessageBox.Show(string.Format(Resources.msg_link_restart_confirm, chatInstance.name), Resources.cap_link_restart_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			if (MsgBox.Confirm(string.Format(Resources.msg_link_restart_confirm, chatInstance.name), Resources.cap_link_restart_chat) == false)
 				return;
 
 			// Fetch latest version of this chat
@@ -1198,7 +1197,7 @@ namespace Ginger
 			int messageIndex = Array.FindIndex(latestChat.history.messages, m => m.instanceId == messageId);
 			if (messageIndex == -1)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_restart_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_restart_chat);
 				return;
 			}
 
@@ -1209,12 +1208,12 @@ namespace Ginger
 			var error = RunTask(() => Backyard.Database.UpdateChat(chatInstance.instanceId, latestChat, _groupInstance.instanceId), "Updating chat...");
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_restart_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_restart_chat);
 				Close();
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_restart_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_restart_chat);
 			}
 			else
 			{
@@ -1227,7 +1226,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_scrub_chat);
 				Close();
 				return;
 			}
@@ -1236,7 +1235,7 @@ namespace Ginger
 				return; // Error
 
 			// Confirm
-			if (MessageBox.Show(string.Format(Resources.msg_link_scrub_confirm, chatInstance.name), Resources.cap_link_scrub_chat, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			if (MsgBox.Confirm(string.Format(Resources.msg_link_scrub_confirm, chatInstance.name), Resources.cap_link_scrub_chat) == false)
 				return;
 
 			// Fetch latest version of this chat
@@ -1248,7 +1247,7 @@ namespace Ginger
 			int messageIndex = Array.FindIndex(latestChat.history.messages, m => m.instanceId == messageId);
 			if (messageIndex == -1)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_scrub_chat);
 				return;
 			}
 			Array.Resize(ref latestChat.history.messages, messageIndex);
@@ -1256,12 +1255,12 @@ namespace Ginger
 			var error = RunTask(() => Backyard.Database.UpdateChat(chatInstance.instanceId, latestChat, _groupInstance.instanceId), "Scrubbing chat...");
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_scrub_chat);
 				Close();
 			}
 			else if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_scrub_chat, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_scrub_chat);
 			}
 			else
 			{
@@ -1397,7 +1396,7 @@ namespace Ginger
 			// Refresh character list
 			if (RunTask(() => Backyard.RefreshCharacters()) != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_error);
 				Close();
 				return;
 			}
@@ -1417,7 +1416,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_copy_staging, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_copy_staging);
 				Close();
 				return;
 			}
@@ -1429,7 +1428,7 @@ namespace Ginger
 
 			if (latestChat.staging == null)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_copy_staging, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_copy_staging);
 				return;
 			}
 
@@ -1442,7 +1441,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_paste_staging, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_paste_staging);
 				return;
 			}
 
@@ -1460,13 +1459,13 @@ namespace Ginger
 			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chatInstance.instanceId, null, staging), "Updating chat...");
 			if (error == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_paste_staging, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_chat_not_found, Resources.cap_link_paste_staging);
 				RefreshChats();
 				return;
 			}
 			if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_paste_staging, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_paste_staging);
 				return;
 			}
 
@@ -1478,7 +1477,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_edit_chat_settings);
 				return;
 			}
 
@@ -1491,13 +1490,13 @@ namespace Ginger
 			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chatInstance.instanceId, dlg.Parameters, null), "Updating model settings...");
 			if (error == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_chat_not_found, Resources.cap_link_edit_chat_settings);
 				RefreshChats();
 				return;
 			}
 			if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_edit_chat_settings);
 				return;
 			}
 
@@ -1509,22 +1508,21 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_edit_chat_settings);
 				return;
 			}
 
 			ChatInstance[] chats = null;
 			if (_groupInstance.isDefined && RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_edit_chat_settings);
 				Close();
 				return;
 			}
 
 			if (chats == null || chats.Length == 0)
 			{
-				MessageBox.Show("No chats.", Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Close();
+				MsgBox.Error("No chats.", Resources.cap_link_edit_chat_settings);
 				return;
 			}
 
@@ -1539,13 +1537,13 @@ namespace Ginger
 			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chatIds, dlg.Parameters, null), "Updating model settings...");
 			if (error == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_chat_not_found, Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_chat_not_found, Resources.cap_link_edit_chat_settings);
 				RefreshChats();
 				return;
 			}
 			if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_edit_chat_settings);
 				return;
 			}
 
@@ -1576,19 +1574,19 @@ namespace Ginger
 
 			if (error == Backyard.Error.NotConnected)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, errorCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(errorCaption);
 				Close();
 				return false;
 			}
 			else if (error == Backyard.Error.NotFound)
 			{
-				MessageBox.Show(Resources.error_link_chat_not_found, errorCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_chat_not_found, errorCaption);
 				RefreshChats();
 				return false;
 			}
 			else if (error == Backyard.Error.Unknown)
 			{
-				MessageBox.Show(Resources.error_link_general, errorCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, errorCaption);
 				return false;
 			}
 
@@ -1727,7 +1725,7 @@ namespace Ginger
 
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_update_chat_background);
 				Close();
 				return;
 			}
@@ -1735,15 +1733,14 @@ namespace Ginger
 			ChatInstance[] chats = null;
 			if (RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_update_chat_background);
 				Close();
 				return;
 			}
 
 			if (chats == null || chats.Length == 0)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Close();
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_update_chat_background);
 				return;
 			}
 
@@ -1757,7 +1754,7 @@ namespace Ginger
 
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_update_chat_background);
 				Close();
 				return;
 			}
@@ -1765,15 +1762,13 @@ namespace Ginger
 			ChatInstance[] chats = null;
 			if (RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Close();
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_update_chat_background);
 				return;
 			}
 
 			if (chats == null || chats.Length == 0)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Close();
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_update_chat_background);
 				return;
 			}
 
@@ -1787,7 +1782,7 @@ namespace Ginger
 
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_update_chat_background);
 				Close();
 				return;
 			}
@@ -1795,14 +1790,14 @@ namespace Ginger
 			ChatInstance[] chats = null;
 			if (RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_update_chat_background);
 				Close();
 				return;
 			}
 
 			if (chats == null || chats.Length == 0)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_update_chat_background);
 				Close();
 				return;
 			}
@@ -1816,7 +1811,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_update_chat_background);
 				Close();
 				return;
 			}
@@ -1836,7 +1831,7 @@ namespace Ginger
 			int width, height;
 			if (imageData == null || Utility.GetImageDimensions(imageData, out width, out height) == false)
 			{
-				MessageBox.Show(Resources.error_load_image, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_load_image, Resources.cap_link_update_chat_background);
 				return;
 			}
 
@@ -1850,7 +1845,7 @@ namespace Ginger
 			}
 			catch
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_update_chat_background);
 				return;
 			}
 
@@ -1858,7 +1853,7 @@ namespace Ginger
 			var error = RunTask(() => Backyard.Database.UpdateChatBackground(chatIds, destFilename, width, height), "Updating chats...");
 			if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_update_chat_background);
 				return;
 			}
 
@@ -1870,7 +1865,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_update_chat_background);
 				Close();
 				return;
 			}
@@ -1887,7 +1882,7 @@ namespace Ginger
 			var error = Backyard.Database.GetImageUrls(character.configId, out imageUrls);
 			if (error != Backyard.Error.NoError || imageUrls.Length == 0)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_update_chat_background);
 				Close();
 				return;
 			}
@@ -1897,7 +1892,7 @@ namespace Ginger
 			int width, height;
 			if (imageData == null || Utility.GetImageDimensions(imageData, out width, out height) == false)
 			{
-				MessageBox.Show(Resources.error_load_image, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_load_image, Resources.cap_link_update_chat_background);
 				return;
 			}
 
@@ -1911,7 +1906,7 @@ namespace Ginger
 			}
 			catch
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_update_chat_background);
 				return;
 			}
 
@@ -1919,7 +1914,7 @@ namespace Ginger
 			error = RunTask(() => Backyard.Database.UpdateChatBackground(chatIds, destFilename, width, height), "Updating chats...");
 			if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_update_chat_background);
 				return;
 			}
 
@@ -1931,7 +1926,7 @@ namespace Ginger
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.LinkError.Disconnected(Resources.cap_link_update_chat_background);
 				Close();
 				return;
 			}
@@ -1940,7 +1935,7 @@ namespace Ginger
 			var error = RunTask(() => Backyard.Database.UpdateChatBackground(chatIds, null, 0, 0), "Updating chats...");
 			if (error != Backyard.Error.NoError)
 			{
-				MessageBox.Show(Resources.error_link_general, Resources.cap_link_update_chat_background, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_link_general, Resources.cap_link_update_chat_background);
 				return;
 			}
 
@@ -1998,15 +1993,14 @@ namespace Ginger
 				if (Backyard.ConnectionEstablished == false
 					|| RunTask(() => Backyard.Database.GetChats(_groupInstance.instanceId, out chats)) != Backyard.Error.NoError)
 				{
-					MessageBox.Show(Resources.error_link_disconnected, Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MsgBox.LinkError.Disconnected(Resources.cap_link_edit_chat_settings);
 					Close();
 					return;
 				}
 
 				if (chats == null || chats.Length == 0)
 				{
-					MessageBox.Show("No chats.", Resources.cap_link_edit_chat_settings, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					Close();
+					MsgBox.Error("No chats.", Resources.cap_link_edit_chat_settings);
 					return;
 				}
 
@@ -2016,7 +2010,7 @@ namespace Ginger
 			if (_chatSearchables.Length == 0)
 			{
 				// Nothing to search
-				MessageBox.Show(Resources.msg_no_match, Resources.cap_find, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MsgBox.Message(Resources.msg_no_match, Resources.cap_find);
 				return;
 			}
 
@@ -2060,7 +2054,7 @@ namespace Ginger
 				}
 			}
 
-			MessageBox.Show(Resources.msg_no_match, Resources.cap_find, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MsgBox.Message(Resources.msg_no_match, Resources.cap_find);
 		}
 
 		private void HideFindDialog()

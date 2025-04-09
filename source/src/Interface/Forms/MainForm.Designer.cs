@@ -79,6 +79,7 @@ namespace Ginger {
 			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveIncrementalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.revertFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importCharacterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importLorebookMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -195,7 +196,6 @@ namespace Ginger {
 			this.statusActors = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusEmbeddedAssets = new System.Windows.Forms.ToolStripStatusLabel();
 			this.statusConnectionIcon = new System.Windows.Forms.ToolStripStatusLabel();
-			this.revertFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripMenuItem8 = new System.Windows.Forms.ToolStripSeparator();
@@ -330,12 +330,12 @@ namespace Ginger {
 			// toolStripMenuItem9
 			// 
 			toolStripMenuItem9.Name = "toolStripMenuItem9";
-			toolStripMenuItem9.Size = new System.Drawing.Size(236, 6);
+			toolStripMenuItem9.Size = new System.Drawing.Size(247, 6);
 			// 
 			// toolStripMenuItem13
 			// 
 			toolStripMenuItem13.Name = "toolStripMenuItem13";
-			toolStripMenuItem13.Size = new System.Drawing.Size(236, 6);
+			toolStripMenuItem13.Size = new System.Drawing.Size(247, 6);
 			// 
 			// toolStripMenuItem10
 			// 
@@ -345,7 +345,7 @@ namespace Ginger {
 			// toolStripMenuItem14
 			// 
 			toolStripMenuItem14.Name = "toolStripMenuItem14";
-			toolStripMenuItem14.Size = new System.Drawing.Size(236, 6);
+			toolStripMenuItem14.Size = new System.Drawing.Size(247, 6);
 			// 
 			// toolStripMenuItem7
 			// 
@@ -838,6 +838,13 @@ namespace Ginger {
 			this.saveIncrementalMenuItem.Size = new System.Drawing.Size(227, 22);
 			this.saveIncrementalMenuItem.Text = "Save &incremental";
 			this.saveIncrementalMenuItem.Click += new System.EventHandler(this.SaveIncrementalMenuItem_Click);
+			// 
+			// revertFileMenuItem
+			// 
+			this.revertFileMenuItem.Name = "revertFileMenuItem";
+			this.revertFileMenuItem.Size = new System.Drawing.Size(227, 22);
+			this.revertFileMenuItem.Text = "Revert...";
+			this.revertFileMenuItem.Click += new System.EventHandler(this.revertFileMenuItem_Click);
 			// 
 			// importToolStripMenuItem
 			// 
@@ -1423,7 +1430,7 @@ namespace Ginger {
 			// 
 			this.importLinkedMenuItem.Name = "importLinkedMenuItem";
 			this.importLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+O";
-			this.importLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.importLinkedMenuItem.Size = new System.Drawing.Size(250, 22);
 			this.importLinkedMenuItem.Text = "Open character...";
 			this.importLinkedMenuItem.Click += new System.EventHandler(this.importLinkedMenuItem_Click);
 			// 
@@ -1431,7 +1438,7 @@ namespace Ginger {
 			// 
 			this.saveLinkedMenuItem.Name = "saveLinkedMenuItem";
 			this.saveLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+U";
-			this.saveLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.saveLinkedMenuItem.Size = new System.Drawing.Size(250, 22);
 			this.saveLinkedMenuItem.Text = "Save changes";
 			this.saveLinkedMenuItem.Click += new System.EventHandler(this.saveLinkedMenuItem_Click);
 			// 
@@ -1439,29 +1446,29 @@ namespace Ginger {
 			// 
 			this.saveNewLinkedMenuItem.Name = "saveNewLinkedMenuItem";
 			this.saveNewLinkedMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+U";
-			this.saveNewLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.saveNewLinkedMenuItem.Size = new System.Drawing.Size(250, 22);
 			this.saveNewLinkedMenuItem.Text = "Save as new";
 			this.saveNewLinkedMenuItem.Click += new System.EventHandler(this.saveNewLinkedMenuItem_Click);
 			// 
 			// saveAsNewPartyMenuItem
 			// 
 			this.saveAsNewPartyMenuItem.Name = "saveAsNewPartyMenuItem";
-			this.saveAsNewPartyMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.saveAsNewPartyMenuItem.Size = new System.Drawing.Size(250, 22);
 			this.saveAsNewPartyMenuItem.Text = "Save as new party";
 			this.saveAsNewPartyMenuItem.Click += new System.EventHandler(this.saveAsNewPartyMenuItem_Click);
 			// 
 			// revertLinkedMenuItem
 			// 
 			this.revertLinkedMenuItem.Name = "revertLinkedMenuItem";
-			this.revertLinkedMenuItem.Size = new System.Drawing.Size(239, 22);
-			this.revertLinkedMenuItem.Text = "Revert...";
+			this.revertLinkedMenuItem.Size = new System.Drawing.Size(250, 22);
+			this.revertLinkedMenuItem.Text = "Reimport...";
 			this.revertLinkedMenuItem.Click += new System.EventHandler(this.revertLinkedMenuItem_Click);
 			// 
 			// chatHistoryMenuItem
 			// 
 			this.chatHistoryMenuItem.Name = "chatHistoryMenuItem";
 			this.chatHistoryMenuItem.ShortcutKeyDisplayString = "Ctrl+H";
-			this.chatHistoryMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.chatHistoryMenuItem.Size = new System.Drawing.Size(250, 22);
 			this.chatHistoryMenuItem.Text = "View chat history...";
 			this.chatHistoryMenuItem.Click += new System.EventHandler(this.chatHistoryMenuItem_Click);
 			// 
@@ -1469,8 +1476,8 @@ namespace Ginger {
 			// 
 			this.editCurrentModelSettingsMenuItem.Name = "editCurrentModelSettingsMenuItem";
 			this.editCurrentModelSettingsMenuItem.ShortcutKeyDisplayString = "Ctrl+M";
-			this.editCurrentModelSettingsMenuItem.Size = new System.Drawing.Size(239, 22);
-			this.editCurrentModelSettingsMenuItem.Text = "Edit model settings...";
+			this.editCurrentModelSettingsMenuItem.Size = new System.Drawing.Size(250, 22);
+			this.editCurrentModelSettingsMenuItem.Text = "Change model settings...";
 			this.editCurrentModelSettingsMenuItem.Click += new System.EventHandler(this.editCurrentModelSettingsMenuItem_Click);
 			// 
 			// bulkOperationsMenuItem
@@ -1483,46 +1490,46 @@ namespace Ginger {
             this.toolStripMenuItem12,
             this.deleteCharactersMenuItem});
 			this.bulkOperationsMenuItem.Name = "bulkOperationsMenuItem";
-			this.bulkOperationsMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.bulkOperationsMenuItem.Size = new System.Drawing.Size(250, 22);
 			this.bulkOperationsMenuItem.Text = "Bulk operations";
 			// 
 			// bulkEditModelSettingsMenuItem
 			// 
 			this.bulkEditModelSettingsMenuItem.Name = "bulkEditModelSettingsMenuItem";
 			this.bulkEditModelSettingsMenuItem.ShortcutKeyDisplayString = "Ctrl+Alt+M";
-			this.bulkEditModelSettingsMenuItem.Size = new System.Drawing.Size(282, 22);
-			this.bulkEditModelSettingsMenuItem.Text = "Mass edit model settings...";
+			this.bulkEditModelSettingsMenuItem.Size = new System.Drawing.Size(320, 22);
+			this.bulkEditModelSettingsMenuItem.Text = "Change multiple model settings...";
 			this.bulkEditModelSettingsMenuItem.Click += new System.EventHandler(this.bulkChangeModelSettingsMenuItem_Click);
 			// 
 			// toolStripMenuItem15
 			// 
 			this.toolStripMenuItem15.Name = "toolStripMenuItem15";
-			this.toolStripMenuItem15.Size = new System.Drawing.Size(279, 6);
+			this.toolStripMenuItem15.Size = new System.Drawing.Size(317, 6);
 			// 
 			// bulkImportMenuItem
 			// 
 			this.bulkImportMenuItem.Name = "bulkImportMenuItem";
-			this.bulkImportMenuItem.Size = new System.Drawing.Size(282, 22);
+			this.bulkImportMenuItem.Size = new System.Drawing.Size(320, 22);
 			this.bulkImportMenuItem.Text = "Import characters...";
 			this.bulkImportMenuItem.Click += new System.EventHandler(this.bulkImportMenuItem_Click);
 			// 
 			// bulkExportMenuItem
 			// 
 			this.bulkExportMenuItem.Name = "bulkExportMenuItem";
-			this.bulkExportMenuItem.Size = new System.Drawing.Size(282, 22);
+			this.bulkExportMenuItem.Size = new System.Drawing.Size(320, 22);
 			this.bulkExportMenuItem.Text = "Export characters...";
 			this.bulkExportMenuItem.Click += new System.EventHandler(this.bulkExportMenuItem_Click);
 			// 
 			// toolStripMenuItem12
 			// 
 			this.toolStripMenuItem12.Name = "toolStripMenuItem12";
-			this.toolStripMenuItem12.Size = new System.Drawing.Size(279, 6);
+			this.toolStripMenuItem12.Size = new System.Drawing.Size(317, 6);
 			// 
 			// deleteCharactersMenuItem
 			// 
 			this.deleteCharactersMenuItem.Image = global::Ginger.Properties.Resources.delete_character;
 			this.deleteCharactersMenuItem.Name = "deleteCharactersMenuItem";
-			this.deleteCharactersMenuItem.Size = new System.Drawing.Size(282, 22);
+			this.deleteCharactersMenuItem.Size = new System.Drawing.Size(320, 22);
 			this.deleteCharactersMenuItem.Text = "Delete characters...";
 			this.deleteCharactersMenuItem.Click += new System.EventHandler(this.deleteCharactersMenuItem_Click);
 			// 
@@ -1539,7 +1546,7 @@ namespace Ginger {
             this.resetModelSettingsMenuItem,
             this.purgeUnusedImagesMenuItem});
 			this.utilitiesToolStripMenuItem.Name = "utilitiesToolStripMenuItem";
-			this.utilitiesToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.utilitiesToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
 			this.utilitiesToolStripMenuItem.Text = "Utilities";
 			// 
 			// createBackupMenuItem
@@ -1612,7 +1619,7 @@ namespace Ginger {
             this.toolStripMenuItem16,
             this.editExportModelSettingsMenuItem});
 			this.optionsToolStripMenuItem1.Name = "optionsToolStripMenuItem1";
-			this.optionsToolStripMenuItem1.Size = new System.Drawing.Size(239, 22);
+			this.optionsToolStripMenuItem1.Size = new System.Drawing.Size(250, 22);
 			this.optionsToolStripMenuItem1.Text = "Options";
 			// 
 			// enableAutosaveMenuItem
@@ -1817,13 +1824,6 @@ namespace Ginger {
 			this.statusConnectionIcon.Name = "statusConnectionIcon";
 			this.statusConnectionIcon.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
 			this.statusConnectionIcon.Size = new System.Drawing.Size(24, 17);
-			// 
-			// revertFileMenuItem
-			// 
-			this.revertFileMenuItem.Name = "revertFileMenuItem";
-			this.revertFileMenuItem.Size = new System.Drawing.Size(227, 22);
-			this.revertFileMenuItem.Text = "Revert...";
-			this.revertFileMenuItem.Click += new System.EventHandler(this.revertFileMenuItem_Click);
 			// 
 			// MainForm
 			// 

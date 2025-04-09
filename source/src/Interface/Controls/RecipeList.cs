@@ -531,7 +531,7 @@ namespace Ginger
 			var recipe = panel.recipe;
 
 			if (BakeSingle(recipe) == false)
-				MessageBox.Show(Resources.error_bake_no_result, Resources.cap_bake_no_result, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MsgBox.Message(Resources.error_bake_no_result, Resources.cap_bake_no_result);
 		}
 
 		private bool BakeSingle(Recipe recipe)
@@ -718,7 +718,7 @@ namespace Ginger
 			}
 
 			if (failedCounter > 0)
-				MessageBox.Show(string.Format(Resources.error_pasted, failedCounter), Resources.cap_pasted, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				MsgBox.Warning(string.Format(Resources.error_pasted, failedCounter), Resources.cap_pasted);
 			Invalidate(false);
 		}
 

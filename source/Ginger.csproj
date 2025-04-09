@@ -290,6 +290,7 @@
     <Compile Include="src\Interface\Forms\Dialogs\VariablesDialog.Designer.cs">
       <DependentUpon>VariablesDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Interface\MsgBox.cs" />
     <Compile Include="src\Interface\Parameters\ActorChoiceParameterPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>

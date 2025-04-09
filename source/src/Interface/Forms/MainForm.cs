@@ -342,7 +342,7 @@ namespace Ginger
 			{
 				if (FileMutex.CanAcquire(_shouldLoadFilename) == false)
 				{
-					MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(_shouldLoadFilename)), Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MsgBox.Error(string.Format(Resources.error_already_open, Path.GetFileName(_shouldLoadFilename)), Resources.cap_load_error);
 					return;
 				}
 
@@ -395,19 +395,19 @@ namespace Ginger
 					{
 					case Lorebook.LoadError.NoError:
 						if (nErrors > 0)
-							MessageBox.Show(string.Format(Resources.msg_import_lorebook_with_errors, nErrors), Resources.cap_import_lorebook, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+							MsgBox.Warning(string.Format(Resources.msg_import_lorebook_with_errors, nErrors), Resources.cap_import_lorebook);
 						break;
 					case Lorebook.LoadError.UnknownFormat:
-						MessageBox.Show(Resources.error_unrecognized_lorebook_format, Resources.cap_import_lorebook, MessageBoxButtons.OK, MessageBoxIcon.Error);
+						MsgBox.Error(Resources.error_unrecognized_lorebook_format, Resources.cap_import_lorebook);
 						return;
 					case Lorebook.LoadError.NoData:
-						MessageBox.Show(Resources.error_no_lorebook, Resources.cap_import_lorebook, MessageBoxButtons.OK, MessageBoxIcon.Error);
+						MsgBox.Error(Resources.error_no_lorebook, Resources.cap_import_lorebook);
 						return;
 					case Lorebook.LoadError.FileError:
-						MessageBox.Show(Resources.error_load_lorebook, Resources.cap_import_lorebook, MessageBoxButtons.OK, MessageBoxIcon.Error);
+						MsgBox.Error(Resources.error_load_lorebook, Resources.cap_import_lorebook);
 						return;
 					case Lorebook.LoadError.InvalidJson:
-						MessageBox.Show(Resources.error_invalid_json_file, Resources.cap_import_lorebook, MessageBoxButtons.OK, MessageBoxIcon.Error);
+						MsgBox.Error(Resources.error_invalid_json_file, Resources.cap_import_lorebook);
 						return;
 					}
 				}
@@ -439,7 +439,7 @@ namespace Ginger
 				}
 				else
 				{
-					MessageBox.Show(Resources.error_unrecognized_lorebook_format, Resources.cap_import_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MsgBox.Error(Resources.error_unrecognized_lorebook_format, Resources.cap_import_error);
 				}
 				return;
 			}
@@ -450,7 +450,7 @@ namespace Ginger
 
 			if (FileMutex.CanAcquire(openFileDialog.FileName) == false)
 			{
-				MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(openFileDialog.FileName)), Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(string.Format(Resources.error_already_open, Path.GetFileName(openFileDialog.FileName)), Resources.cap_load_error);
 				return;
 			}
 
@@ -485,7 +485,7 @@ namespace Ginger
 				}
 				else
 				{
-					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+					MsgBox.Error(Resources.error_load_image, Resources.cap_open_image);
 					return;
 				}
 
@@ -500,7 +500,7 @@ namespace Ginger
 				AssetFile tmp;
 				if (Current.Card.assets.LoadActorPortraitFromFile(Current.SelectedCharacter, filename, out tmp) == false)
 				{
-					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+					MsgBox.Error(Resources.error_load_image, Resources.cap_open_image);
 					return;
 				}
 				NotifyAssetsChanged();
@@ -536,7 +536,7 @@ namespace Ginger
 				AssetFile tmp;
 				if (Current.Card.assets.SetActorPortrait(Current.SelectedCharacter, image) == null)
 				{
-					MessageBox.Show(Resources.error_load_image, Resources.cap_open_image, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+					MsgBox.Error(Resources.error_load_image, Resources.cap_open_image);
 					return;
 				}
 				NotifyAssetsChanged();
@@ -739,7 +739,7 @@ namespace Ginger
 				int newWidth = Math.Max((int)Math.Round(srcWidth * scale), 1);
 				int newHeight = Math.Max((int)Math.Round(srcHeight * scale), 1);
 
-				if (MessageBox.Show(string.Format(Resources.msg_rescale_portrait, image.Width, image.Height, newWidth, newHeight), Resources.cap_change_portrait, MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+				if (MsgBox.Ask(string.Format(Resources.msg_rescale_portrait, image.Width, image.Height, newWidth, newHeight), Resources.cap_change_portrait))
 				{
 					var bmpNewImage = new Bitmap(newWidth, newHeight);
 					using (Graphics gfxNewImage = Graphics.FromImage(bmpNewImage))
@@ -1050,7 +1050,7 @@ namespace Ginger
 
 			if (bIncludes && recipeTemplate.includes > 0 && Current.Character.recipes.Count >= 2)
 			{
-				var mr = MessageBox.Show(string.Format(recipeTemplate.includes == 1 ? Resources.msg_include_recipe : Resources.msg_include_recipes, recipeTemplate.includes), Resources.cap_add_recipe, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+				var mr = MsgBox.AskYesNoCancel(string.Format(recipeTemplate.includes == 1 ? Resources.msg_include_recipe : Resources.msg_include_recipes, recipeTemplate.includes), Resources.cap_add_recipe);
 				if (mr == DialogResult.No)
 					bIncludes = false;
 				else if (mr == DialogResult.Cancel)
@@ -1154,7 +1154,7 @@ namespace Ginger
 				return;
 
 			if (BakeAll() == false)
-				MessageBox.Show(Resources.error_bake_no_result, Resources.cap_bake_no_result, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MsgBox.Error(Resources.error_bake_no_result, Resources.cap_bake_no_result);
 		}
 
 		private void BtnBakeActor_Click(object sender, EventArgs e)
@@ -1163,7 +1163,7 @@ namespace Ginger
 				return;
 
 			if (BakeActor() == false)
-				MessageBox.Show(Resources.error_bake_no_result, Resources.cap_bake_no_result, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MsgBox.Error(Resources.error_bake_no_result, Resources.cap_bake_no_result);
 		}
 
 		private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1203,7 +1203,7 @@ namespace Ginger
 
 			if (FileMutex.CanAcquire(openFileDialog.FileName) == false)
 			{
-				MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(openFileDialog.FileName)), Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(string.Format(Resources.error_already_open, Path.GetFileName(openFileDialog.FileName)), Resources.cap_load_error);
 				return;
 			}
 
@@ -1214,7 +1214,7 @@ namespace Ginger
 		{
 			if (File.Exists(filename) == false)
 			{
-				MessageBox.Show(Resources.error_file_not_found, Resources.cap_open_character_card, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_file_not_found, Resources.cap_open_character_card);
 				return false;
 			}
 
@@ -1225,7 +1225,7 @@ namespace Ginger
 			{
 				if (ImportCharacter(filename) == false)
 				{
-					MessageBox.Show(Resources.error_open_character_card, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MsgBox.Error(Resources.error_open_character_card, Resources.cap_import_character);
 					ClearStatusBarMessage();
 					return false;
 				}
@@ -1236,28 +1236,28 @@ namespace Ginger
 				var loadError = FileUtil.ImportCharacterFromPNG(filename, out errors);
 				if (loadError == FileUtil.Error.NoDataFound)
 				{
-					MessageBox.Show(Resources.error_no_data, Resources.cap_open_character_card, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MsgBox.Error(Resources.error_no_data, Resources.cap_open_character_card);
 					ClearStatusBarMessage();
 					return false;
 				}
 				else if (loadError == FileUtil.Error.FileReadError || loadError == FileUtil.Error.FileNotFound || loadError == FileUtil.Error.InvalidData)
 				{
-					MessageBox.Show(Resources.error_open_character_card, Resources.cap_open_character_card, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MsgBox.Error(Resources.error_open_character_card, Resources.cap_open_character_card);
 					ClearStatusBarMessage();
 					return false;
 				}
 				else if (loadError == FileUtil.Error.FallbackError)
 				{
-					MessageBox.Show(Resources.error_fallback, Resources.cap_open_character_card, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					MsgBox.Error(Resources.error_fallback, Resources.cap_open_character_card);
 				}
 				else if (errors > 0)
 				{
-					MessageBox.Show(string.Format(Resources.msg_load_with_errors, errors), Resources.cap_open_character_card, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					MsgBox.Warning(string.Format(Resources.msg_load_with_errors, errors), Resources.cap_open_character_card);
 				}
 
 				if (FileMutex.Acquire(filename) == false)
 				{
-					MessageBox.Show(string.Format(Resources.error_already_open, Path.GetFileName(filename)), Resources.cap_open_character_card, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MsgBox.Error(string.Format(Resources.error_already_open, Path.GetFileName(filename)), Resources.cap_open_character_card);
 					ClearStatusBarMessage();
 					return false;
 				}
@@ -1268,7 +1268,7 @@ namespace Ginger
 			}
 			else
 			{
-				MessageBox.Show(string.Format(Resources.error_open_wrong_file_type, Path.GetFileName(filename)), Resources.cap_open_character_card, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(string.Format(Resources.error_open_wrong_file_type, Path.GetFileName(filename)), Resources.cap_open_character_card);
 				ClearStatusBarMessage();
 				return false;
 			}
@@ -1315,7 +1315,8 @@ namespace Ginger
 				return localRecipe != null && r.uid != localRecipe.uid && r.version >= localRecipe.version;
 			});
 
-			if (ModifierKeys == Keys.Shift || (hasOutdatedRecipes && MessageBox.Show(Resources.msg_reload_recipes, Resources.cap_reload_recipes, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes))
+			if (ModifierKeys == Keys.Shift 
+				|| (hasOutdatedRecipes && MsgBox.Ask(Resources.msg_reload_recipes, Resources.cap_reload_recipes)))
 			{
 				Current.ReloadRecipes(true);
 				RefreshAll();
@@ -1667,7 +1668,7 @@ namespace Ginger
 
 			if (File.Exists(filename) == false)
 			{
-				MessageBox.Show(Resources.error_file_not_found, Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MsgBox.Error(Resources.error_file_not_found, Resources.cap_load_error);
 				MRUList.RemoveFromMRU(filename);
 				return;
 			}
@@ -2008,7 +2009,7 @@ namespace Ginger
 				if (Backyard.ConnectionEstablished)
 					importLinkedMenuItem_Click(this, EventArgs.Empty);
 				else
-					MessageBox.Show(Resources.error_link_not_connected, Resources.cap_import_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MsgBox.Error(Resources.error_link_not_connected, Resources.cap_import_character);
 				return true;
 			}
 			else if (keyData == ShortcutKeys.LinkedSave && Backyard.ConnectionEstablished && Current.HasActiveLink)
@@ -2022,7 +2023,7 @@ namespace Ginger
 				if (Backyard.ConnectionEstablished)
 					saveNewLinkedMenuItem_Click(this, EventArgs.Empty);
 				else
-					MessageBox.Show(Resources.error_link_not_connected, Resources.cap_link_save_character, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MsgBox.Error(Resources.error_link_not_connected, Resources.cap_link_save_character);
 				return true;
 			}
 			else if (keyData == ShortcutKeys.LinkedChatHistory && Backyard.ConnectionEstablished)
@@ -2104,7 +2105,7 @@ namespace Ginger
 		{
 			if (Current.Characters.Count >= Constants.MaxActorCount)
 			{
-				MessageBox.Show(Resources.error_max_characters, Resources.cap_save_snippet, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				MsgBox.Error(Resources.error_max_characters, Resources.cap_save_snippet);
 				return;
 			}
 
@@ -2119,7 +2120,7 @@ namespace Ginger
 		{
 			if (Current.Characters.Count >= Constants.MaxActorCount)
 			{
-				MessageBox.Show(Resources.error_max_characters, Resources.cap_save_snippet, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				MsgBox.Error(Resources.error_max_characters, Resources.cap_save_snippet);
 				return;
 			}
 
@@ -2262,9 +2263,9 @@ namespace Ginger
 						RefreshSpellChecking();
 					}
 					if (replacements == 1)
-						MessageBox.Show(string.Format(Resources.msg_replace_single, replacements), Resources.cap_swap_pronouns, MessageBoxButtons.OK, MessageBoxIcon.Information);
+						MsgBox.Message(string.Format(Resources.msg_replace_single, replacements), Resources.cap_swap_pronouns);
 					else
-						MessageBox.Show(string.Format(Resources.msg_replace_plural, replacements), Resources.cap_swap_pronouns, MessageBoxButtons.OK, MessageBoxIcon.Information);
+						MsgBox.Message(string.Format(Resources.msg_replace_plural, replacements), Resources.cap_swap_pronouns);
 				}
 			}
 		}
@@ -2296,9 +2297,9 @@ namespace Ginger
 					}
 
 					if (replacements == 1)
-						MessageBox.Show(string.Format(Resources.msg_replace_single, replacements), Resources.cap_replace, MessageBoxButtons.OK, MessageBoxIcon.Information);
+						MsgBox.Message(string.Format(Resources.msg_replace_single, replacements), Resources.cap_replace);
 					else
-						MessageBox.Show(string.Format(Resources.msg_replace_plural, replacements), Resources.cap_replace, MessageBoxButtons.OK, MessageBoxIcon.Information);
+						MsgBox.Message(string.Format(Resources.msg_replace_plural, replacements), Resources.cap_replace);
 				}
 			}
 		}
@@ -2311,8 +2312,7 @@ namespace Ginger
 
 			if (bEnabled == false && Current.AllRecipes.IsEmpty() == false)
 			{
-				var mr = MessageBox.Show("Replace names with placeholders?", Resources.cap_confirm, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
-				if (mr == DialogResult.Yes)
+				if (MsgBox.Ask("Replace names with placeholders?", Resources.cap_confirm))
 					ConvertCharacterNameMarkers(bEnabled);
 			}
 			else
@@ -2349,7 +2349,7 @@ namespace Ginger
 				var argument = Utility.AppPath("Docs\\index.html");
 				if (File.Exists(argument) == false) // Can't find docs
 				{
-					MessageBox.Show(Resources.error_file_not_found, Resources.cap_load_error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MsgBox.Error(Resources.error_file_not_found, Resources.cap_load_error);
 					return;
 				}
 
@@ -2367,7 +2367,7 @@ namespace Ginger
 			}
 			catch
 			{
-				MessageBox.Show(Resources.error_help, Resources.cap_error, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+				MsgBox.Error(Resources.error_help, Resources.cap_error);
 			}
 		}
 
@@ -2383,7 +2383,7 @@ namespace Ginger
 		{
 			if (showNSFWRecipesMenuItem.Checked 
 				&& AppSettings.Settings.ConfirmNSFW
-				&& MessageBox.Show(Resources.msg_confirm_nsfw, Resources.cap_confirm, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) != DialogResult.Yes)
+				&& MsgBox.Ask(Resources.msg_confirm_nsfw, Resources.cap_confirm) == false)
 			{
 				showNSFWRecipesMenuItem.Checked = false;
 				return;
@@ -2659,7 +2659,7 @@ namespace Ginger
 
 		private void revertLinkedMenuItem_Click(object sender, EventArgs e)
 		{
-			RevertCharacterFromBackyard();
+			ReimportCharacterFromBackyard();
 		}
 
 		public void rearrangeLoreMenuItem_Click(object sender, EventArgs e)
@@ -2899,11 +2899,8 @@ namespace Ginger
 
 		private void revertFileMenuItem_Click(object sender, EventArgs e)
 		{
-			var mr = MessageBox.Show(Resources.msg_revert_changes_confirm, Resources.cap_revert_changes, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
-			if (mr != DialogResult.Yes)
-				return;
-
-			OpenFile(Current.Filename);
+			if (MsgBox.Confirm(Resources.msg_revert_changes_confirm, Resources.cap_revert_changes))
+				OpenFile(Current.Filename);
 		}
 	}
 

@@ -182,9 +182,11 @@ namespace Ginger
 		{
 			if (DialogResult == DialogResult.Cancel && _bChanged)
 			{
-				var mr = MessageBox.Show(Resources.msg_dismiss_changes, Resources.cap_confirm, MessageBoxButtons.YesNo, MessageBoxIcon.None, MessageBoxDefaultButton.Button2);
-				if (mr == DialogResult.No)
+				var mr = MsgBox.AskYesNoCancel(Resources.msg_apply_changes, Resources.cap_confirm);
+				if (mr == DialogResult.Cancel)
 					e.Cancel = true;
+				else if (mr == DialogResult.Yes)
+					DialogResult = DialogResult.OK;
 			}
 		}
 
@@ -359,11 +361,11 @@ namespace Ginger
 					}
 					if (replacements == 1)
 					{
-						MessageBox.Show(string.Format(Resources.msg_replace_single, replacements), Resources.cap_swap_pronouns, MessageBoxButtons.OK, MessageBoxIcon.Information);
+						MsgBox.Message(string.Format(Resources.msg_replace_single, replacements), Resources.cap_swap_pronouns);
 					}
 					else
 					{
-						MessageBox.Show(string.Format(Resources.msg_replace_plural, replacements), Resources.cap_swap_pronouns, MessageBoxButtons.OK, MessageBoxIcon.Information);
+						MsgBox.Message(string.Format(Resources.msg_replace_plural, replacements), Resources.cap_swap_pronouns);
 					}
 				}
 			}
@@ -389,9 +391,9 @@ namespace Ginger
 						textBox.SelectionStart = selection;
 					}
 					if (replacements == 1)
-						MessageBox.Show(string.Format(Resources.msg_replace_single, replacements), Resources.cap_replace, MessageBoxButtons.OK, MessageBoxIcon.Information);
+						MsgBox.Message(string.Format(Resources.msg_replace_single, replacements), Resources.cap_replace);
 					else
-						MessageBox.Show(string.Format(Resources.msg_replace_plural, replacements), Resources.cap_replace, MessageBoxButtons.OK, MessageBoxIcon.Information);
+						MsgBox.Message(string.Format(Resources.msg_replace_plural, replacements), Resources.cap_replace);
 				}
 			}
 		}
@@ -452,7 +454,7 @@ namespace Ginger
 			}
 			else
 			{
-				MessageBox.Show(Resources.msg_no_match, Resources.cap_find, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MsgBox.Message(Resources.msg_no_match, Resources.cap_find);
 			}
 		}
 
