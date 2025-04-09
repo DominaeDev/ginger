@@ -1576,14 +1576,6 @@ namespace Ginger.Integration
 				return Backyard.Error.InvalidArgument;
 			}
 
-			if (chats != null && chats.ContainsAny(c => c.history != null && c.history.numSpeakers > 2))
-			{
-				groupInstance = default(GroupInstance);
-				characterInstances = null;
-				imageLinks = null;
-				return Backyard.Error.InvalidArgument;
-			}
-
 			FolderInstance parentFolder = folder;
 			if (parentFolder.isEmpty)
 			{
@@ -1601,10 +1593,10 @@ namespace Ginger.Integration
 			bool bAllowUserPersona = userInfo != null;
 			FaradayCardV4 primaryCard = cards[0];
 
-			IDBundle[] idBundle = new IDBundle[cards.Length];
+			IDBundle[] idBundles = new IDBundle[cards.Length];
 			for (int i = 0; i < cards.Length; ++i)
-				idBundle[i].characterId = Cuid.NewCuid();
-			var characterIds = idBundle.Select(id => id.characterId).ToArray();
+				idBundles[i].characterId = Cuid.NewCuid();
+			var characterIds = idBundles.Select(id => id.characterId).ToArray();
 			BackyardUtil.ConvertToIDPlaceholders(cards, characterIds);
 
 			// Prepare image information
@@ -1686,7 +1678,7 @@ namespace Ginger.Integration
 							for (int i = 0; i < cards.Length; ++i)
 							{
 								CharacterInstance characterInstance;
-								WriteCharacter(connection, cards[i], null, idBundle[i].characterId, createdAt, out characterInstance, ref updates, ref expectedUpdates);
+								WriteCharacter(connection, cards[i], null, idBundles[i].characterId, createdAt, out characterInstance, ref updates, ref expectedUpdates);
 								lsInstances.Add(characterInstance);
 
 								string configId = characterInstance.configId;
@@ -1708,12 +1700,11 @@ namespace Ginger.Integration
 							}
 
 							// Write group
-							WriteGroup(connection, primaryCard.data.displayName, IDBundle.FromCharacters(idBundle.Select(i => i.characterId).ToArray(), null, userId), parentFolder.instanceId, folderSortPosition, primaryCard.data.isNSFW, createdAt, out groupInstance, ref updates, ref expectedUpdates);
+							WriteGroup(connection, primaryCard.data.displayName, IDBundle.FromCharacters(idBundles.Select(i => i.characterId).ToArray(), null, userId), parentFolder.instanceId, folderSortPosition, primaryCard.data.isNSFW, createdAt, out groupInstance, ref updates, ref expectedUpdates);
 							string groupId = groupInstance.instanceId;
 
 							IDBundle ids = new IDBundle() {
-								characterId = null,
-								configId = null,
+								characterIds = characterIds,
 								userId = userId,
 								groupId = groupId,
 							};
@@ -6191,9 +6182,6 @@ namespace Ginger.Integration
 			string defaultModel;
 			FetchDefaultModel(connection, out defaultModel);
 
-			string characterId = ids.characterId;
-			string groupId = ids.groupId;
-
 			using (var cmdChat = new SQLiteCommand(connection))
 			{
 				var sbCommand = new StringBuilder();
@@ -6219,10 +6207,10 @@ namespace Ginger.Integration
 							$repeatPenalty, $repeatLastN, $promptTemplate, $pruneExample, $authorNote);
 				");
 
-				BackyardUtil.ConvertToIDPlaceholders(staging, characterId);
+				BackyardUtil.ConvertToIDPlaceholders(staging, ids.characterIds);
 
 				cmdChat.Parameters.AddWithValue("$chatId", chatId);
-				cmdChat.Parameters.AddWithValue("$groupId", groupId);
+				cmdChat.Parameters.AddWithValue("$groupId", ids.groupId);
 				cmdChat.Parameters.AddWithValue("$system", staging.system ?? "");
 				cmdChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
 				cmdChat.Parameters.AddWithValue("$example", staging.example ?? "");
@@ -6289,7 +6277,7 @@ namespace Ginger.Integration
 
 					var staging = chats[i].staging ?? defaultStaging ?? new ChatStaging();
 
-					BackyardUtil.ConvertToIDPlaceholders(staging, ids.characterId);
+					BackyardUtil.ConvertToIDPlaceholders(staging, ids.characterIds);
 
 					var parameters = chats[i].parameters ?? new ChatParameters();
 					cmdChat.Parameters.AddWithValue($"$system{i:000}", staging.system ?? "");
@@ -6321,8 +6309,9 @@ namespace Ginger.Integration
 			}
 
 			// Write chat messages
+			var characters = ids.userAndCharacters;
 			for (int i = 0; i < chats.Length; ++i)
-				WriteChatMessages(connection, chatIds[i], chats[i].history, ids.userAndCharacters, ref expectedUpdates, ref updates);
+				WriteChatMessages(connection, chatIds[i], chats[i].history, characters, ref expectedUpdates, ref updates);
 		}
 
 		private static bool CreateUserCharacter(SQLiteConnection connection, UserData userInfo, ImageOutput portrait, string templateUserId, out string newUserId, out string newUserConfigId, out ImageOutput newPortrait, ref int updates, ref int expectedUpdates)

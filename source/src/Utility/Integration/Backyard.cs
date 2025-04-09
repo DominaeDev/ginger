@@ -1205,6 +1205,20 @@ namespace Ginger.Integration
 				ConvertToIDPlaceholders(ref staging.authorNote, characterId);
 		}
 
+		public static void ConvertToIDPlaceholders(Backyard.ChatStaging staging, string[] characterIds)
+		{
+			if (string.IsNullOrEmpty(staging.system) == false)
+				ConvertToIDPlaceholders(ref staging.system, characterIds);
+			if (string.IsNullOrEmpty(staging.scenario) == false)
+				ConvertToIDPlaceholders(ref staging.scenario, characterIds);
+			if (string.IsNullOrEmpty(staging.greeting) == false)
+				ConvertToIDPlaceholders(ref staging.greeting, characterIds);
+			if (string.IsNullOrEmpty(staging.example) == false)
+				ConvertToIDPlaceholders(ref staging.example, characterIds);
+			if (string.IsNullOrEmpty(staging.authorNote) == false)
+				ConvertToIDPlaceholders(ref staging.authorNote, characterIds);
+		}
+
 		public static void ConvertToIDPlaceholders(ref string text, string characterId)
 		{
 			if (string.IsNullOrEmpty(text))

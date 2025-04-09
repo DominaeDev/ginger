@@ -8,6 +8,7 @@ using System.Linq;
 
 namespace Ginger.Integration
 {
+	using GroupInstance = Backyard.GroupInstance;
 	using CharacterInstance = Backyard.CharacterInstance;
 	using FolderInstance = Backyard.FolderInstance;
 
@@ -136,21 +137,27 @@ namespace Ginger.Integration
 		{
 			WorkerArguments args = (WorkerArguments)e.Argument;
 			WorkerResult results = new WorkerResult();
-			results.instances = new CharacterInstance[args.filenames.Length];
+			results.instances = new CharacterInstance[0];
+
+			List<CharacterInstance> characterInstances = new List<CharacterInstance>();
 
 			for (int i = 0; i < args.filenames.Length; ++i)
 			{
-				CharacterInstance importedCharacter;
+				CharacterInstance[] importedCharacters;
 				WorkerError error;
 				if (Utility.GetFileExt(args.filenames[i]) == "zip")
-					error = ImportBackup(args.filenames[i], args.parentFolder, out importedCharacter);
+					error = ImportBackup(args.filenames[i], args.parentFolder, out importedCharacters);
 				else
+				{
+					CharacterInstance importedCharacter;
 					error = ImportCharacter(args.filenames[i], args.parentFolder, out importedCharacter);
+					importedCharacters = new CharacterInstance[1] { importedCharacter };
+				}
 
 				switch (error)
 				{
 				case WorkerError.NoError:
-					results.instances[i] = importedCharacter;
+					characterInstances.AddRange(importedCharacters);
 					results.succeeded += 1;
 					break;
 				case WorkerError.Skipped:
@@ -173,6 +180,7 @@ namespace Ginger.Integration
 				}
 			}
 
+			results.instances = characterInstances.ToArray();
 			e.Result = results;
 		}
 
@@ -325,19 +333,19 @@ namespace Ginger.Integration
 			}
 		}
 
-		private WorkerError ImportBackup(string filename, FolderInstance parentFolder, out CharacterInstance characterInstance)
+		private WorkerError ImportBackup(string filename, FolderInstance parentFolder, out CharacterInstance[] characterInstances)
 		{
 			if (Backyard.ConnectionEstablished == false)
 			{
-				characterInstance = default(CharacterInstance);
+				characterInstances = null;
 				return WorkerError.DatabaseError;
 			}
 
 			BackupData backup;
 			var readError = BackupUtil.ReadBackup(filename, out backup);
-			if (readError != FileUtil.Error.NoError)
+			if (readError != FileUtil.Error.NoError || backup.characterCards == null || backup.characterCards.Length == 0)
 			{
-				characterInstance = default(CharacterInstance);
+				characterInstances = null;
 				return WorkerError.Skipped;
 			}
 
@@ -347,6 +355,7 @@ namespace Ginger.Integration
 				.Select(i => new Backyard.ImageInput {
 					asset = new AssetFile() {
 						name = i.filename,
+						actorIndex = i.characterIndex,
 						data = AssetData.FromBytes(i.data),
 						ext = i.ext,
 						assetType = AssetFile.AssetType.Icon,
@@ -377,21 +386,51 @@ namespace Ginger.Integration
 					fileExt = backup.userPortrait.ext,
 				});
 			}
+
 			// Use default model settings
 			foreach (var chat in backup.chats)
 				chat.parameters = AppSettings.BackyardSettings.UserSettings;
 
-			// Write character to database
-			var args = new Backyard.CreateCharacterArguments() {
-				card = backup.characterCards[0], //! @multi-backup
-				imageInput = images.ToArray(),
-				chats = backup.chats.ToArray(),
-				userInfo = backup.userInfo,
-				folder = parentFolder,
-			};
-			Backyard.Link.Image[] imageLinks; // Ignored
-			Backyard.Error error = Backyard.Database.CreateNewCharacter(args, out characterInstance, out imageLinks);
+			Backyard.Error error;
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
+			{
+				// Write group to database
+				var args = new Backyard.CreatePartyArguments() {
+					cards = backup.characterCards.ToArray(),
+					imageInput = images.ToArray(),
+					chats = backup.chats.ToArray(),
+					userInfo = backup.userInfo,
+					folder = parentFolder,
+				};
+				Backyard.Link.Image[] imageLinks; // Ignored
+				GroupInstance groupInstance; // Ignored
 
+				error = Backyard.Database.CreateNewParty(args, out groupInstance, out characterInstances, out imageLinks);
+			}
+			else
+			{
+				if (backup.characterCards.Length > 1) // Multi-character backup?
+				{
+					characterInstances = null;
+					return WorkerError.Skipped; // Unsupported
+				}
+
+				// Write character to database
+				var args = new Backyard.CreateCharacterArguments() {
+					card = backup.characterCards[0],
+					imageInput = images.ToArray(),
+					chats = backup.chats.ToArray(),
+					userInfo = backup.userInfo,
+					folder = parentFolder,
+				};
+
+				Backyard.Link.Image[] imageLinks; // Ignored
+				characterInstances = new CharacterInstance[1];
+				error = Backyard.Database.CreateNewCharacter(args, out characterInstances[0], out imageLinks);
+			}
+
+			if (error == Backyard.Error.UnsupportedFeature)
+				return WorkerError.Skipped;
 			if (error != Backyard.Error.NoError)
 				return WorkerError.DatabaseError;
 			return WorkerError.NoError;

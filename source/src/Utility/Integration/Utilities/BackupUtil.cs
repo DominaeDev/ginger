@@ -568,7 +568,7 @@ namespace Ginger.Integration
 
 		public static FileUtil.Error ReadBackup(string filename, out BackupData backup)
 		{
-			FaradayCardV4 characterCard = null;
+			List<FaradayCardV4> lsCharacterCards = new List<FaradayCardV4>();
 			List<BackupData.Image> images = new List<BackupData.Image>();
 			List<BackupData.Image> backgrounds = new List<BackupData.Image>();
 			List<BackupData.Image> userImages = new List<BackupData.Image>();
@@ -592,7 +592,7 @@ namespace Ginger.Integration
 							string entryExt = Utility.GetFileExt(entry.FullName);
 							
 							// Read character png
-							if (entryPath == "" && entryExt == "png" && characterCard == null)
+							if (entryPath == "" && entryExt == "png")
 							{
 								long dataSize = entry.Length;
 								if (dataSize > 0)
@@ -604,10 +604,13 @@ namespace Ginger.Integration
 									FileUtil.EmbeddedData data;
 									if (FileUtil.ExtractJsonFromPNG(buffer, out data) == FileUtil.Error.NoError && data.faradayJson != null)
 									{
-										characterCard = FaradayCardV4.FromJson(data.faradayJson);
+										var characterCard = FaradayCardV4.FromJson(data.faradayJson);
 										if (characterCard != null)
 										{
+											lsCharacterCards.Add(characterCard);
+
 											images.Add(new BackupData.Image() {
+												characterIndex = lsCharacterCards.Count - 1,
 												filename = entryFullName,
 												data = buffer,
 											});
@@ -617,7 +620,7 @@ namespace Ginger.Integration
 								}
 							}
 
-							// Read chat log
+							// Read chat log (Backyard json)
 							if ((entryPath == "chats" || entryPath == "logs") && entryExt == "json")
 							{
 								long dataSize = entry.Length;
@@ -656,7 +659,7 @@ namespace Ginger.Integration
 								continue;
 							}
 
-							// Read chat log
+							// Read chat log (Ginger log)
 							if ((entryPath == "chats" || entryPath == "logs") && entryExt == "log")
 							{
 								long dataSize = entry.Length;
@@ -686,8 +689,24 @@ namespace Ginger.Integration
 							}
 
 							// Images
-							if (entryPath == "images" && Utility.IsSupportedImageFileExt(entryExt))
+							if (entryPath.BeginsWith("images") && Utility.IsSupportedImageFileExt(entryExt))
 							{
+								int characterIndex = 0;
+
+								if (entryPath.Length >= 7)
+								{
+									string imagePath = entryPath.Substring(7);
+
+									if (imagePath.Length > 0)
+									{
+										int pos_slash = imagePath.IndexOf('/');
+										if (pos_slash != -1)
+											int.TryParse(imagePath.Substring(0, pos_slash), out characterIndex);
+										else
+											int.TryParse(imagePath, out characterIndex);
+									}
+								}
+
 								long dataSize = entry.Length;
 								if (dataSize > 0)
 								{
@@ -695,6 +714,7 @@ namespace Ginger.Integration
 									byte[] buffer = new byte[dataSize];
 									dataStream.Read(buffer, 0, (int)dataSize);
 									images.Add(new BackupData.Image() {
+										characterIndex = characterIndex,
 										filename = entryFullName,
 										data = buffer,
 									});
@@ -769,14 +789,15 @@ namespace Ginger.Integration
 					images.Insert(0, image);
 				}
 
-				if (characterCard == null)
+				if (lsCharacterCards.IsEmpty())
 				{
 					backup = default(BackupData);
 					return FileUtil.Error.NoDataFound;
 				}
 
 				backup = new BackupData() {
-					characterCards = new FaradayCardV4[] { characterCard }, //! @multi-backup
+					characterCards = lsCharacterCards.ToArray(),
+					displayName = lsCharacterCards[0].data.displayName,
 					chats = chats.Values.ToList(),
 					images = images,
 					backgrounds = backgrounds,

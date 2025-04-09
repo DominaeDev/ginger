@@ -1993,6 +1993,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot restore party backup. Please update Backyard AI..
+        /// </summary>
+        internal static string error_link_restore_backup_unsupported {
+            get {
+                return ResourceManager.GetString("error_link_restore_backup_unsupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to save character to Backyard AI. Operation canceled..
         /// </summary>
         internal static string error_link_save_character_as_new {
@@ -3234,7 +3243,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully exported {0}. (Skipped {1}.).
+        ///   Looks up a localized string similar to Successfully exported {0}. (Skipped {1}).
         /// </summary>
         internal static string msg_link_export_some_characters {
             get {
@@ -3252,7 +3261,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully imported {0}. (Skipped {1}.).
+        ///   Looks up a localized string similar to Successfully imported {0}. (Skipped {1}).
         /// </summary>
         internal static string msg_link_import_some_characters {
             get {
@@ -3504,7 +3513,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully updated {0}. (Skipped {1}.).
+        ///   Looks up a localized string similar to Successfully updated {0}. (Skipped {1}).
         /// </summary>
         internal static string msg_link_update_some_characters {
             get {

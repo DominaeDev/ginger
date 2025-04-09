@@ -1262,7 +1262,7 @@ Reason: {0}</value>
     <value>One or more files already exist. Do you want to replace them?</value>
   </data>
   <data name="msg_link_export_some_characters" xml:space="preserve">
-    <value>Successfully exported {0}. (Skipped {1}.)</value>
+    <value>Successfully exported {0}. (Skipped {1})</value>
   </data>
   <data name="cap_export_folder" xml:space="preserve">
     <value>Choose export folder</value>
@@ -1288,7 +1288,7 @@ Reason: {0}</value>
 Are you sure you want to continue?</value>
   </data>
   <data name="msg_link_import_some_characters" xml:space="preserve">
-    <value>Successfully imported {0}. (Skipped {1}.)</value>
+    <value>Successfully imported {0}. (Skipped {1})</value>
   </data>
   <data name="error_link_import_many_unsupported" xml:space="preserve">
     <value>No supported file types found.</value>
@@ -1339,7 +1339,7 @@ Are you sure you want to continue?</value>
     <value>Successfully updated {0}.</value>
   </data>
   <data name="msg_link_update_some_characters" xml:space="preserve">
-    <value>Successfully updated {0}. (Skipped {1}.)</value>
+    <value>Successfully updated {0}. (Skipped {1})</value>
   </data>
   <data name="status_link_update_model_settings" xml:space="preserve">
     <value>Model settings updated</value>
@@ -1756,5 +1756,8 @@ Do you want to save it as a new character?</value>
     <value>This will discard all unsaved changes.
 
 Are you sure you want to continue?</value>
+  </data>
+  <data name="error_link_restore_backup_unsupported" xml:space="preserve">
+    <value>Cannot restore party backup. Please update Backyard AI.</value>
   </data>
 </root>

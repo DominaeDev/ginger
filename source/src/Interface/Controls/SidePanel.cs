@@ -1201,7 +1201,7 @@ namespace Ginger
 				menu.Items.Add(new ToolStripSeparator()); // ----
 
 				// Preview menu
-				var viewMenu = new ToolStripMenuItem("Preview");
+				var viewMenu = new ToolStripMenuItem("Preview size");
 				viewMenu.DropDownItems.Add(new ToolStripMenuItem("Fit", null, (s, e) => {
 					AppSettings.User.BackgroundPreview = AssetImageCache.ResizeFlag.FitInside;
 					RefreshBackgroundPreview();

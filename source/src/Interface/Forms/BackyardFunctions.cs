@@ -531,7 +531,7 @@ namespace Ginger
 
 		private bool RevertCharacterFromBackyard()
 		{
-			if (MessageBox.Show(Resources.msg_link_revert, Resources.cap_link_revert, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			if (MessageBox.Show(Resources.msg_link_revert, Resources.cap_link_revert, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 				return false;
 
 			var error = _RevertCharacterFromBackyard();
@@ -568,7 +568,7 @@ namespace Ginger
 
 			// Get character instance
 			CharacterInstance characterInstance;
-			if (Backyard.Database.GetCharacter(Current.Link.mainActorId, out characterInstance) == false) //! @multi-link
+			if (Backyard.Database.GetCharacter(Current.Link.mainActorId, out characterInstance) == false)
 			{
 				Current.BreakLink();
 				return Backyard.Error.NotFound;
@@ -808,7 +808,7 @@ namespace Ginger
 
 			// Confirm overwrite?
 			bool bFileExists = filenames.ContainsAny(fn => File.Exists(fn));
-			if (bFileExists && MessageBox.Show(Resources.msg_link_export_overwrite_files, Resources.cap_overwrite_files, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			if (bFileExists && MessageBox.Show(Resources.msg_link_export_overwrite_files, Resources.cap_overwrite_files, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 			{
 				return false;
 			}
@@ -1209,6 +1209,12 @@ namespace Ginger
 				return false;
 			}
 
+			if (backup.characterCards.Length > 1 && BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats) == false)
+			{
+				MessageBox.Show(Resources.error_link_restore_backup_unsupported, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
 			// Confirmation
 			if (MessageBox.Show(string.Format(Resources.msg_link_restore_backup, backup.displayName, backup.chats.Count), Resources.cap_link_restore_backup, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No)
 			{
@@ -1228,6 +1234,7 @@ namespace Ginger
 				.Select(i => new Backyard.ImageInput {
 					asset = new AssetFile() {
 						name = i.filename,
+						actorIndex = i.characterIndex,
 						data = AssetData.FromBytes(i.data),
 						ext = i.ext,
 						assetType = AssetFile.AssetType.Icon,
@@ -1277,16 +1284,17 @@ namespace Ginger
 				backupFolder = default(FolderInstance);
 
 			// Write character
-			var args = new Backyard.CreateCharacterArguments() {
-				card = backup.characterCards[0], //! @multi-backup
+			var args = new Backyard.CreatePartyArguments() {
+				cards = backup.characterCards.ToArray(),
 				imageInput = images.ToArray(),
 				chats = backup.chats.ToArray(),
 				userInfo = backup.userInfo,
 				folder = backupFolder,
 			};
 			Backyard.Link.Image[] imageLinks; // Ignored
-			CharacterInstance returnedCharacter = default(CharacterInstance);
-			Backyard.Error error = RunTask(() => Backyard.Database.CreateNewCharacter(args, out returnedCharacter, out imageLinks), "Restoring backup...");
+			GroupInstance groupInstance;
+			CharacterInstance[] returnedCharacters;
+			Backyard.Error error = RunTask(() => Backyard.Database.CreateNewParty(args, out groupInstance, out returnedCharacters, out imageLinks), "Restoring backup...");
 			if (error != Backyard.Error.NoError)
 			{
 				MessageBox.Show(Resources.error_link_general, Resources.cap_link_restore_backup, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1394,7 +1402,7 @@ namespace Ginger
 
 			if (unknownImages.Count > 0)
 			{
-				var mr = MessageBox.Show(string.Format(Resources.msg_link_purge_images_confirm, unknownImages.Count), Resources.cap_link_purge_images, MessageBoxButtons.YesNo, MessageBoxIcon.Stop,  MessageBoxDefaultButton.Button2);
+				var mr = MessageBox.Show(string.Format(Resources.msg_link_purge_images_confirm, unknownImages.Count), Resources.cap_link_purge_images, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,  MessageBoxDefaultButton.Button2);
 				
 				if (mr == DialogResult.Yes)
 				{
@@ -1581,7 +1589,7 @@ namespace Ginger
 			}
 
 			// Confirm delete
-			if (MessageBox.Show(string.Format(result.characterIds.Length != result.groupIds.Length ? Resources.msg_link_delete_characters_and_group_chats_confirm : Resources.msg_link_delete_characters_confirm, NumCharacters(result.characterIds.Length)), Resources.cap_link_delete_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			if (MessageBox.Show(string.Format(result.characterIds.Length != result.groupIds.Length ? Resources.msg_link_delete_characters_and_group_chats_confirm : Resources.msg_link_delete_characters_confirm, NumCharacters(result.characterIds.Length)), Resources.cap_link_delete_characters, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 				return false;
 
 			error = RunTask(() => Backyard.Database.DeleteCharacters(result.characterIds, result.groupIds, result.imageIds), "Deleting characters...");
@@ -1931,7 +1939,7 @@ namespace Ginger
 			var groups = Backyard.Groups.ToArray();
 
 			// Confirm
-			if (MessageBox.Show(Resources.msg_link_reset_model_settings, Resources.cap_link_reset_model_settings, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+			if (MessageBox.Show(Resources.msg_link_reset_model_settings, Resources.cap_link_reset_model_settings, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 				return false;
 
 			var updater = new BulkUpdateModelSettings();
@@ -1994,7 +2002,7 @@ namespace Ginger
 			if (string.IsNullOrEmpty(BackyardModelDatabase.ModelDownloadPath) == false
 				&& Directory.Exists(BackyardModelDatabase.ModelDownloadPath))
 			{
-				if (MessageBox.Show(Resources.msg_link_repair_models_location_exists, Resources.cap_link_repair_models_location, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+				if (MessageBox.Show(Resources.msg_link_repair_models_location_exists, Resources.cap_link_repair_models_location, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
 					return false;
 			}
 			else
