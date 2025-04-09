@@ -676,6 +676,10 @@ namespace Ginger
 		{
 			var sb = new StringBuilder(text);
 			sb.Replace("\t", Text.Tab);
+			sb.Replace("\r\n", Text.Break);
+			sb.Replace("\n", Text.Break);
+			sb.Replace(" ", Text.Space);
+
 			sb.Insert(0, "<!np+>");
 			sb.Insert(sb.Length, "<!np->");
 			return sb.ToString();

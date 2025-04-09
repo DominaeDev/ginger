@@ -74,12 +74,7 @@ namespace Ginger
 
 			string sValue;
 			if (isRaw)
-			{
-				if (mode == Mode.Code)
-					sValue = GingerString.FromCode(value); // Keep tabs
-				else
-					sValue = Text.DontProcess(value.Trim());
-			}
+				sValue = GingerString.FromCode(value);
 			else
 				sValue = GingerString.FromParameter(GingerString.EvaluateParameter(value.Trim(), state.evalContext, state.evalConfig)).ToString();
 

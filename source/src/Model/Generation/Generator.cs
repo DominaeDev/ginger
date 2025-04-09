@@ -929,7 +929,7 @@ namespace Ginger
 					else if (channel == Recipe.Component.Example || channel == Recipe.Component.Greeting || channel == Recipe.Component.Greeting_Group)
 						text = Utility.Unindent(Text.Process(text, Text.EvalOption.ExampleFormatting));
 					else if (template.isRaw)
-						text = Text.DontProcess(text);
+						text = GingerString.FromCode(text);
 					else
 						text = Text.Process(text, evalOptions);
 

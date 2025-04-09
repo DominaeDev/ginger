@@ -388,7 +388,7 @@ namespace Ginger
 
 			if (recipe.isComponent) // Components
 			{
-				optionsMenu.DropDownItems.Add(new ToolStripMenuItem("Format text", null, (s, e) => {
+				optionsMenu.DropDownItems.Add(new ToolStripMenuItem("Enable formatting", null, (s, e) => {
 					CommitChange();
 					OnToggleRaw?.Invoke(this, EventArgs.Empty);
 				}) {

@@ -393,7 +393,9 @@ namespace Ginger
 					var textParameter = parameter as TextParameter;
 					if (!string.IsNullOrEmpty(textParameter.value))
 					{
-						cdata = textParameter.mode == TextParameter.Mode.Code || textParameter.isRaw;
+						cdata = textParameter.mode == TextParameter.Mode.Code
+							|| textParameter.mode == TextParameter.Mode.Component
+							|| textParameter.isRaw;
 						value = textParameter.isRaw == false ? Parameter.ToClipboard(textParameter.value) : textParameter.value;
 					}
 				}
