@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Timers;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 
 namespace Ginger.Integration
 {
 	using CharacterInstance = Backyard.CharacterInstance;
+	using GroupInstance = Backyard.GroupInstance;
 	using ImageInstance = Backyard.ImageInstance;
 	
 	public class BulkExporter
@@ -22,6 +21,7 @@ namespace Ginger.Integration
 		private struct WorkerArguments
 		{
 			public CharacterInstance[] instances;
+			public GroupInstance[] groupInstances;
 			public string[] target_filenames;
 			public FileUtil.FileType fileType;
 		}
@@ -50,6 +50,7 @@ namespace Ginger.Integration
 		}
 
 		public Queue<KeyValuePair<CharacterInstance, string>> _queue = new Queue<KeyValuePair<CharacterInstance, string>>(); // char, dest filename
+		public Queue<KeyValuePair<GroupInstance, string>> _groupQueue = new Queue<KeyValuePair<GroupInstance, string>>(); // char, dest filename
 		public Result _result;
 
 		private bool isBusy { get { return _bgWorker != null && _bgWorker.IsBusy; } }
@@ -82,6 +83,11 @@ namespace Ginger.Integration
 			_queue.Enqueue(new KeyValuePair<CharacterInstance, string>(characterInstance, filename));
 		}
 
+		public void Enqueue(GroupInstance groupInstance, string filename)
+		{
+			_groupQueue.Enqueue(new KeyValuePair<GroupInstance, string>(groupInstance, filename));
+		}
+
 		public bool Start(FileUtil.FileType fileType)
 		{
 			if (fileType == FileUtil.FileType.Unknown)
@@ -92,7 +98,7 @@ namespace Ginger.Integration
 			_timer.SynchronizingObject = MainForm.instance;
 			_timer.Start();
 
-			_totalCount = _queue.Count;
+			_totalCount = _queue.Count + _groupQueue.Count;
 			_completed = 0;
 			_result = default(Result);
 			return true;
@@ -107,17 +113,29 @@ namespace Ginger.Integration
 				return;
 			}
 
-			var instances = new List<CharacterInstance>(BatchSize);
+			var characters = new List<CharacterInstance>(BatchSize);
 			var filenames = new List<string>(BatchSize);
-			for (int i = 0; i < BatchSize && _queue.Count > 0; ++i)
+			for (int i = 0; i < BatchSize && _queue.Count > 0; ++i) // Characters
 			{
 				var kvp = _queue.Dequeue();
-				instances.Add(kvp.Key);
+				characters.Add(kvp.Key);
 				filenames.Add(kvp.Value);
 			}
 
+			var groups = new List<GroupInstance>(BatchSize);
+			if (characters.Count == 0) // Groups
+			{
+				for (int i = 0; i < BatchSize && _groupQueue.Count > 0; ++i)
+				{
+					var kvp = _groupQueue.Dequeue();
+					groups.Add(kvp.Key);
+					filenames.Add(kvp.Value);
+				}
+			}
+
 			var workerArgs = new WorkerArguments() {
-				instances = instances.ToArray(),
+				instances = characters.ToArray(),
+				groupInstances = groups.ToArray(),
 				target_filenames = filenames.ToArray(),
 				fileType = _fileType,
 			};
@@ -134,9 +152,10 @@ namespace Ginger.Integration
 		{
 			WorkerArguments args = (WorkerArguments)e.Argument;
 			WorkerResult results = new WorkerResult();
-			results.temp_filenames = new string[args.instances.Length];
+			results.temp_filenames = new string[args.instances.Length + args.groupInstances.Length];
 			results.dest_filenames = args.target_filenames;
 
+			// Characters
 			for (int i = 0; i < args.instances.Length; ++i)
 			{
 				string intermediateFilename;
@@ -163,6 +182,40 @@ namespace Ginger.Integration
 					e.Result = results;
 					e.Cancel = true;
 					_queue.Clear();
+					_groupQueue.Clear();
+					_timer.Stop();
+					return;
+				}
+			}
+
+			// Groups
+			for (int i = 0; i < args.groupInstances.Length; ++i)
+			{
+				string intermediateFilename;
+				Error error;
+				if (args.fileType.Contains(FileUtil.FileType.Backup))
+					error = ExportPartyBackup(args.groupInstances[i], out intermediateFilename);
+				else
+					error = ExportParty(args.groupInstances[i], args.fileType, out intermediateFilename);
+
+				if (error == Error.NoError)
+				{
+					results.temp_filenames[args.instances.Length + i] = intermediateFilename;
+				}
+				else
+				{
+					results.dest_filenames[args.instances.Length + i] = null;
+					results.error = error;
+					e.Result = results;
+					return;
+				}
+
+				if (((BackgroundWorker)sender).CancellationPending)
+				{
+					e.Result = results;
+					e.Cancel = true;
+					_queue.Clear();
+					_groupQueue.Clear();
 					_timer.Stop();
 					return;
 				}
@@ -272,7 +325,7 @@ namespace Ginger.Integration
 				onComplete?.Invoke(_result);
 				return;
 			}
-			else if (_completed >= _totalCount || _queue.IsEmpty())
+			else if (_completed >= _totalCount || (_queue.IsEmpty() && _groupQueue.IsEmpty()))
 			{
 				onComplete?.Invoke(_result);
 				return;
@@ -286,6 +339,7 @@ namespace Ginger.Integration
 		{
 			_timer.Stop();
 			_queue.Clear();
+			_groupQueue.Clear();
 			if (_bgWorker != null)
 				_bgWorker.CancelAsync();
 		}
@@ -361,6 +415,128 @@ namespace Ginger.Integration
 
 			BackupData backupData;
 			var importError = BackupUtil.CreateBackup(characterInstance, out backupData);
+			if (importError != Backyard.Error.NoError)
+			{
+				filename = default(string);
+				return Error.DatabaseError;
+			}
+
+			try
+			{
+				string intermediateFilename = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+				var writeError = BackupUtil.WriteBackup(intermediateFilename, backupData);
+
+				// Write to disk
+				if (writeError == FileUtil.Error.NoError)
+				{
+					filename = intermediateFilename;
+					return Error.NoError;
+				}
+				else if (writeError == FileUtil.Error.DiskFullError)
+				{
+					filename = default(string);
+					return Error.DiskFullError;
+				}
+				else
+				{
+					filename = default(string);
+					return Error.FileError;
+				}
+			}
+			catch (IOException e)
+			{
+				filename = default(string);
+				if (e.HResult == Win32.HR_ERROR_DISK_FULL || e.HResult == Win32.HR_ERROR_HANDLE_DISK_FULL)
+					return Error.DiskFullError;
+				return Error.FileError;
+			}
+			catch (Exception e)
+			{
+				filename = default(string);
+				return Error.UnknownError;
+			}
+		}
+
+		private Error ExportParty(GroupInstance groupInstance, FileUtil.FileType fileType, out string filename)
+		{
+			if (Backyard.ConnectionEstablished == false)
+			{
+				filename = default(string);
+				return Error.DatabaseError;
+			}
+
+			// Read character from Backyard
+			FaradayCardV4[] faradayCards;
+			ImageInstance[] images;
+			CharacterInstance[] characterInstances;
+			UserData tmp;
+			var importError = Backyard.Database.ImportParty(groupInstance.instanceId, out faradayCards, out characterInstances, out images, out tmp);
+			if (importError != Backyard.Error.NoError)
+			{
+				filename = default(string);
+				return Error.DatabaseError;
+			}
+
+			// Convert
+			var stash = Current.Stash();
+			Current.Instance = new GingerCharacter();
+			Current.ReadFaradayCards(faradayCards, null, null);
+
+			Backyard.Link.Image[] imageLinks;
+			int[] actorIndices = new int[images.Length];
+			for (int i = 0; i < images.Length; ++i)
+			{
+				string instanceId = images[i].associatedInstanceId;
+				actorIndices[i] = Array.FindIndex(characterInstances, c => c.instanceId == instanceId);
+			}
+
+			// Load images/backgrounds
+			Backyard.Link.Image[] unused;
+			Current.ImportImages(images, actorIndices, out unused);
+
+			try
+			{
+				// Write to disk
+				string intermediateFilename = Path.GetTempFileName();
+				if (FileUtil.Export(intermediateFilename, fileType))
+				{
+					filename = intermediateFilename;
+					return Error.NoError;
+				}
+				else
+				{
+					filename = default(string);
+					return Error.FileError;
+				}
+			}
+			catch (IOException e)
+			{
+				filename = default(string);
+				if (e.HResult == Win32.HR_ERROR_DISK_FULL || e.HResult == Win32.HR_ERROR_HANDLE_DISK_FULL)
+					return Error.DiskFullError;
+				return Error.FileError;
+			}
+			catch (Exception e)
+			{
+				filename = default(string);
+				return Error.UnknownError;
+			}
+			finally
+			{
+				Current.Restore(stash);
+			}
+		}
+
+		private Error ExportPartyBackup(GroupInstance groupInstance, out string filename)
+		{
+			if (Backyard.ConnectionEstablished == false)
+			{
+				filename = default(string);
+				return Error.DatabaseError;
+			}
+
+			BackupData backupData;
+			var importError = BackupUtil.CreateBackup(groupInstance, out backupData);
 			if (importError != Backyard.Error.NoError)
 			{
 				filename = default(string);

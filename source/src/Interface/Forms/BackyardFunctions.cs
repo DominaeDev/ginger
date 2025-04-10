@@ -717,7 +717,7 @@ namespace Ginger
 			return true;
 		}
 
-		public bool ExportManyFromBackyard()
+		public bool ExportManyCharactersFromBackyard()
 		{
 			// Refresh character list
 			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
@@ -731,6 +731,9 @@ namespace Ginger
 			var dlg = new LinkSelectMultipleCharactersOrGroupsDialog();
 			dlg.Options = LinkSelectMultipleCharactersOrGroupsDialog.Option.Solo;
 			dlg.Text = "Select characters to export";
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
+				dlg.Options |= LinkSelectMultipleCharactersOrGroupsDialog.Option.Orphans;
+
 			if (dlg.ShowDialog() != DialogResult.OK || dlg.SelectedCharacters.Length == 0)
 				return false;
 
@@ -834,7 +837,7 @@ namespace Ginger
 				_bCanIdle = true;
 			};
 
-			for (int i = 0; i < filenames.Count; ++i)
+			for (int i = 0; i < characterInstances.Length && i < filenames.Count; ++i)
 				exporter.Enqueue(characterInstances[i], filenames[i]);
 
 			_bCanRegenerate = false;
@@ -842,6 +845,132 @@ namespace Ginger
 			exporter.Start(formatDialog.FileFormat);
 			progressDlg.ShowDialog(this);
 
+			return true;
+		}
+		
+		public bool ExportManyPartiesFromBackyard()
+		{
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats) == false)
+				return false; // Error
+
+			// Refresh character list
+			if (Backyard.RefreshCharacters() != Backyard.Error.NoError)
+			{
+				MsgBox.LinkError.RefreshFailed(Resources.cap_overwrite_files);
+				AppSettings.BackyardLink.Enabled = false;
+				return false;
+			}
+
+			// Choose character(s)
+			var dlg = new LinkSelectMultipleCharactersOrGroupsDialog();
+			dlg.Options = LinkSelectMultipleCharactersOrGroupsDialog.Option.Parties;
+			dlg.Text = "Select parties to export";
+
+			if (dlg.ShowDialog() != DialogResult.OK || dlg.SelectedGroups.Length == 0)
+				return false;
+
+			GroupInstance[] groupInstances = dlg.SelectedGroups;
+
+			// Export format
+			var formatDialog = new FileFormatDialog();
+			formatDialog.GroupFormats = true;
+			if (formatDialog.ShowDialog() != DialogResult.OK)
+				return false;
+
+			string ext;
+			if (formatDialog.FileFormat.Contains(FileUtil.FileType.Png))
+				ext = "png";
+			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.Backup))
+				ext = "zip";
+			else
+				return false; // Error
+
+			var folderDialog = new WinAPICodePack.CommonOpenFileDialog();
+			folderDialog.Title = Resources.cap_export_folder;
+			folderDialog.IsFolderPicker = true;
+			folderDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			folderDialog.EnsurePathExists = true;
+			folderDialog.AllowNonFileSystemItems = false;
+			folderDialog.EnsureFileExists = true;
+			folderDialog.EnsureReadOnly = false;
+			folderDialog.EnsureValidNames = true;
+			folderDialog.Multiselect = false;
+			folderDialog.AddToMostRecentlyUsedList = false;
+			folderDialog.ShowPlacesList = true;
+
+			if (folderDialog.ShowDialog() != WinAPICodePack.CommonFileDialogResult.Ok)
+				return false;
+
+			var outputDirectory = folderDialog.FileName;
+			if (Directory.Exists(outputDirectory) == false)
+				return false;
+
+			AppSettings.Paths.LastImportExportPath = outputDirectory;
+		
+			var filenames = new List<string>(groupInstances.Length);
+			HashSet<string> used_filenames = new HashSet<string>();
+			if (formatDialog.FileFormat.Contains(FileUtil.FileType.Backup))
+			{
+				string now = DateTime.Now.ToString("yyyy-MM-dd");
+				foreach (var group in groupInstances)
+				{
+					filenames.Add(Utility.MakeUniqueFilename(outputDirectory,
+						string.Format("{0}_{1}_{2}.backup.zip",
+							group.displayName.Replace(" ", "_"),
+							group.creationDate.ToFileTimeUtc() / 1000L,
+							now),
+						used_filenames)
+					);
+				}
+			}
+			else
+			{
+				foreach (var group in groupInstances)
+				{
+					filenames.Add(Utility.MakeUniqueFilename(outputDirectory,
+						string.Format("{0}_{1}.{2}",
+							group.displayName,
+							group.creationDate.ToFileTimeUtc() / 1000L,
+							ext),
+						used_filenames)
+					);
+				}
+			}
+
+			// Confirm overwrite?
+			bool bFileExists = filenames.ContainsAny(fn => File.Exists(fn));
+			if (bFileExists && MsgBox.Confirm(Resources.msg_link_export_overwrite_files, Resources.cap_overwrite_files) == false)
+				return false;
+
+			var exporter = new BulkExporter();
+
+			var progressDlg = new ProgressBarDialog();
+			progressDlg.Message = "Exporting...";
+
+			progressDlg.onCancel += (s, e) => {
+				exporter.Cancel();
+				progressDlg.Close();
+			};
+			exporter.onProgress += (value) => {
+				progressDlg.Percentage = value;
+			};
+			exporter.onComplete += (result) => {
+				progressDlg.Percentage = 100;
+				progressDlg.TopMost = false;
+				progressDlg.Close();
+
+				CompleteExport(result, filenames);
+				_bCanRegenerate = true;
+				_bCanIdle = true;
+			};
+
+			for (int i = 0; i < groupInstances.Length && i < filenames.Count; ++i)
+				exporter.Enqueue(groupInstances[i], filenames[i]);
+
+			_bCanRegenerate = false;
+			_bCanIdle = false;
+			exporter.Start(formatDialog.FileFormat);
+			progressDlg.ShowDialog(this);
 			return true;
 		}
 

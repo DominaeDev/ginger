@@ -287,11 +287,12 @@ namespace Ginger
 			BackyardSettings.Presets.Clear();
 			BackyardSettings.ModelPromptTemplates.Clear();
 
-			bool bLegacy = false;
+			string sLastVersion = "";
 
 			var settingsSection = iniData.Sections["Settings"];
 			if (settingsSection != null)
 			{
+				ReadString(ref sLastVersion, settingsSection, "LastVersion");
 				ReadBool(ref Settings.AutoConvertNames, settingsSection, "AutoConvertNames");
 				ReadString(ref Settings.UserPlaceholder, settingsSection, "UserPlaceholder");
 				ReadBool(ref Settings.AllowNSFW, settingsSection, "ShowNSFW");
@@ -389,7 +390,6 @@ namespace Ginger
 				if (linkSection != null) // Legacy
 				{
 					ReadBackyardSettings(linkSection);
-					bLegacy = true;
 				}
 			}
 
@@ -400,7 +400,6 @@ namespace Ginger
 			else if (backyardSection != null && backyardSection.ContainsKey("Model")) // Prior to v1.5.0 
 			{
 				BackyardSettings.UserSettings = ReadModelSettings(backyardSection);
-				bLegacy = true;
 			}
 
 			// Model setting presets
@@ -478,9 +477,11 @@ namespace Ginger
 				ReadBool(ref Debug.EnableGroups, debugSection, "Groups");
 			}
 
-			if (bLegacy)
+			VersionNumber lastVersion = VersionNumber.Parse(sLastVersion);
+
+			if (!lastVersion.isDefined || lastVersion < new VersionNumber(1, 6, 0))
 			{
-				// Filter indices changed in v1.5.0
+				User.LastImportCharacterFilter = 0;
 				User.LastExportCharacterFilter = 0;
 			}
 		}
@@ -514,6 +515,7 @@ namespace Ginger
 				{
 					// Settings
 					WriteSection(outputFile, "Settings", false);
+					Write(outputFile, "LastVersion", VersionNumber.Application.ToFullString());
 					WriteIf(outputFile, "Font", Settings.FontFace != null ? Settings.FontSerialize : null);
 					WriteIf(outputFile, "FormBuffering", Settings.EnableFormLevelBuffering);
 					Write(outputFile, "AutoConvertNames", Settings.AutoConvertNames);

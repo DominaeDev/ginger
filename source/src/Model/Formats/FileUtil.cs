@@ -1522,7 +1522,11 @@ namespace Ginger
 			var output = Generator.Generate(Generator.Option.Export | options);
 			var gingerExt = GingerExtensionData.FromOutput(Generator.Generate(Generator.Option.Snippet | options));
 
-			if (fileType.Contains(FileType.TavernV2 | FileType.Json)) // Tavern V2 (json)
+			if (fileType.Contains(FileType.Ginger)) // Multi-format (png)
+			{
+				return Export(filename, (Image)Current.Card.portraitImage ?? DefaultPortrait.Image, Format.All);
+			}
+			else if (fileType.Contains(FileType.TavernV2 | FileType.Json)) // Tavern V2 (json)
 			{
 				var card = TavernCardV2.FromOutput(output);
 				card.data.extensions.ginger = gingerExt;

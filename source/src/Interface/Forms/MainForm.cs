@@ -272,7 +272,7 @@ namespace Ginger
 			applyToAllChatsMenuItem.ToolTipText = Resources.tooltip_link_apply_to_all;
 			alwaysLinkMenuItem.ToolTipText = Resources.tooltip_link_always_create;
 			usePortraitAsBackgroundMenuItem.ToolTipText = Resources.tooltip_link_use_portrait_as_background;
-			bulkExportMenuItem.ToolTipText = Resources.tooltip_link_export_many;
+			bulkExportCharactersMenuItem.ToolTipText = Resources.tooltip_link_export_many;
 			bulkImportMenuItem.ToolTipText = Resources.tooltip_link_import_many;
 			bulkEditModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_many;
 			editExportModelSettingsMenuItem.ToolTipText = Resources.tooltip_link_model_settings_default;
@@ -1624,13 +1624,18 @@ namespace Ginger
 					saveNewLinkedMenuItem.ToolTipText = Resources.tooltip_link_save_as_new_multi;
 				else
 					saveNewLinkedMenuItem.ToolTipText = Resources.tooltip_link_save_as_new;
+
+				bulkImportMenuItem.Text = "Import characters and parties...";
+				bulkExportPartiesMenuItem.Visible = true;
 			}
 			else
 			{
 				importLinkedMenuItem.Text = "Open character...";
+				bulkImportMenuItem.Text = "Import characters...";
 				importLinkedMenuItem.ToolTipText = Resources.tooltip_link_open;
 				saveNewLinkedMenuItem.ToolTipText = Resources.tooltip_link_save_as_new;
 				revertLinkedMenuItem.ToolTipText = Resources.tooltip_link_revert;
+				bulkExportPartiesMenuItem.Visible = false;
 			}
 
 			Theme.Apply(menuStrip);
@@ -2784,7 +2789,12 @@ namespace Ginger
 
 		private void bulkExportMenuItem_Click(object sender, EventArgs e)
 		{
-			ExportManyFromBackyard();
+			ExportManyCharactersFromBackyard();
+		}
+
+		private void bulkExportPartiesMenuItem_Click(object sender, EventArgs e)
+		{
+			ExportManyPartiesFromBackyard();
 		}
 
 		private void bulkImportMenuItem_Click(object sender, EventArgs e)

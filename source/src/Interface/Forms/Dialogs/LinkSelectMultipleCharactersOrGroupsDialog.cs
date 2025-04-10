@@ -56,22 +56,23 @@ namespace Ginger
 		{
 			this.Characters = Backyard.Database.Characters.ToArray();
 			this.Orphans = this.Characters.Where(c => c.groupId == null).ToArray();
-
 			this.Folders = Backyard.Database.Folders.ToArray();
+
+			IEnumerable<GroupInstance> includedGroups =  Enumerable.Empty<GroupInstance>();
 			if (Options.Contains(Option.Parties))
 			{
-				this.Groups = Backyard.Database.Groups.ToArray();
+				includedGroups = includedGroups.Union(
+					Backyard.Database.Groups
+						.Where(g => g.GetGroupType() == GroupInstance.GroupType.Party));
 			}
-			else if (Options.Contains(Option.Solo))
+			if (Options.Contains(Option.Solo))
 			{
-				this.Groups = Backyard.Database.Groups
-					.Where(g => g.GetGroupType() == GroupInstance.GroupType.Solo)
-					.ToArray();
+				includedGroups = includedGroups.Union(
+					Backyard.Database.Groups
+						.Where(g => g.GetGroupType() == GroupInstance.GroupType.Solo));
 			}
-			else
-			{
-				this.Groups = new GroupInstance[0];
-			}
+
+			this.Groups = includedGroups.ToArray();
 
 			_charactersById = Characters.ToDictionary(c => c.instanceId, c => c);
 

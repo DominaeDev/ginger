@@ -5,33 +5,49 @@ namespace Ginger
 {
 	public partial class FileFormatDialog : FormEx
 	{
-		private string[] Filters = new string[] {
+		private string[] _Filters = new string[] {
+			"Ginger Multi-Format Card (*.png)",
 			"Character Card V2 PNG (*.png)",
 			"Character Card V3 PNG (*.png)",
 			"Backyard AI PNG (*.png)",
+			"CharX Card (*.charx)",
 			"Character Card V2 JSON (*.json)",
 			"Character Card V3 JSON (*.json)",
 			"Agnai Character JSON (*.json)",
 			"PygmalionAI Character JSON (*.json)",
-			"Text generation web ui YAML (*.yaml)",
-			"CharX file (*.charx)",
-			"Character backup file (*.zip)",
+			"Text Generation Web UI YAML (*.yaml)",
+			"Character Backup Archive (*.zip)",
 		};
 
-		public FileUtil.FileType FileFormat { get; private set; }
-
-		private FileUtil.FileType[] FileTypes = new FileUtil.FileType[] {
+		private FileUtil.FileType[] _FileTypes = new FileUtil.FileType[] {
+			FileUtil.FileType.Ginger | FileUtil.FileType.Png | FileUtil.FileType.Character,
 			FileUtil.FileType.TavernV2 | FileUtil.FileType.Png | FileUtil.FileType.Character,
 			FileUtil.FileType.TavernV3 | FileUtil.FileType.Png | FileUtil.FileType.Character,
 			FileUtil.FileType.Faraday | FileUtil.FileType.Png | FileUtil.FileType.Character,
+			FileUtil.FileType.TavernV3 | FileUtil.FileType.CharX | FileUtil.FileType.Character,
 			FileUtil.FileType.TavernV2 | FileUtil.FileType.Json | FileUtil.FileType.Character,
 			FileUtil.FileType.TavernV3 | FileUtil.FileType.Json | FileUtil.FileType.Character,
 			FileUtil.FileType.Agnaistic | FileUtil.FileType.Json | FileUtil.FileType.Character,
 			FileUtil.FileType.Pygmalion | FileUtil.FileType.Json | FileUtil.FileType.Character,
 			FileUtil.FileType.TextGenWebUI | FileUtil.FileType.Yaml | FileUtil.FileType.Character,
-			FileUtil.FileType.TavernV3 | FileUtil.FileType.CharX | FileUtil.FileType.Character,
 			FileUtil.FileType.Ginger | FileUtil.FileType.Backup | FileUtil.FileType.Character,
 		};
+
+		private string[] _Group_Filters = new string[] {
+			"Ginger Multi-Format Card (*.png)",
+			"Character Backup Archive (*.zip)",
+		};
+
+		private FileUtil.FileType[] _Group_FileTypes = new FileUtil.FileType[] {
+			FileUtil.FileType.Ginger | FileUtil.FileType.Png | FileUtil.FileType.Character,
+			FileUtil.FileType.Ginger | FileUtil.FileType.Backup | FileUtil.FileType.Character,
+		};
+
+		private string[] Filters { get { return GroupFormats ? _Group_Filters : _Filters; } }
+		private FileUtil.FileType[] FileTypes { get { return GroupFormats ? _Group_FileTypes: _FileTypes; } }
+
+		public bool GroupFormats { get; set; }
+		public FileUtil.FileType FileFormat { get; private set; }
 
 		public FileFormatDialog()
 		{
@@ -46,10 +62,17 @@ namespace Ginger
 			comboBox.Items.Clear();
 			comboBox.Items.AddRange(Filters);
 
-			if (AppSettings.User.LastExportCharacterFilter > 0 && AppSettings.User.LastExportCharacterFilter <= comboBox.Items.Count)
-				comboBox.SelectedIndex = AppSettings.User.LastExportCharacterFilter - 1;
+			if (GroupFormats == false)
+			{
+				if (AppSettings.User.LastExportCharacterFilter > 0 && AppSettings.User.LastExportCharacterFilter <= comboBox.Items.Count)
+					comboBox.SelectedIndex = AppSettings.User.LastExportCharacterFilter - 1;
+				else
+					comboBox.SelectedIndex = 0;
+			}
 			else
+			{
 				comboBox.SelectedIndex = 0;
+			}
 			comboBox.EndUpdate();
 		}
 

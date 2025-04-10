@@ -157,7 +157,8 @@ namespace Ginger {
 			this.bulkEditModelSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripSeparator();
 			this.bulkImportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.bulkExportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.bulkExportCharactersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.bulkExportPartiesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripSeparator();
 			this.deleteCharactersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.utilitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1486,7 +1487,8 @@ namespace Ginger {
             this.bulkEditModelSettingsMenuItem,
             this.toolStripMenuItem15,
             this.bulkImportMenuItem,
-            this.bulkExportMenuItem,
+            this.bulkExportCharactersMenuItem,
+            this.bulkExportPartiesMenuItem,
             this.toolStripMenuItem12,
             this.deleteCharactersMenuItem});
 			this.bulkOperationsMenuItem.Name = "bulkOperationsMenuItem";
@@ -1497,39 +1499,46 @@ namespace Ginger {
 			// 
 			this.bulkEditModelSettingsMenuItem.Name = "bulkEditModelSettingsMenuItem";
 			this.bulkEditModelSettingsMenuItem.ShortcutKeyDisplayString = "Ctrl+Alt+M";
-			this.bulkEditModelSettingsMenuItem.Size = new System.Drawing.Size(320, 22);
-			this.bulkEditModelSettingsMenuItem.Text = "Change multiple model settings...";
+			this.bulkEditModelSettingsMenuItem.Size = new System.Drawing.Size(304, 22);
+			this.bulkEditModelSettingsMenuItem.Text = "Batch change model settings...";
 			this.bulkEditModelSettingsMenuItem.Click += new System.EventHandler(this.bulkChangeModelSettingsMenuItem_Click);
 			// 
 			// toolStripMenuItem15
 			// 
 			this.toolStripMenuItem15.Name = "toolStripMenuItem15";
-			this.toolStripMenuItem15.Size = new System.Drawing.Size(317, 6);
+			this.toolStripMenuItem15.Size = new System.Drawing.Size(301, 6);
 			// 
 			// bulkImportMenuItem
 			// 
 			this.bulkImportMenuItem.Name = "bulkImportMenuItem";
-			this.bulkImportMenuItem.Size = new System.Drawing.Size(320, 22);
+			this.bulkImportMenuItem.Size = new System.Drawing.Size(304, 22);
 			this.bulkImportMenuItem.Text = "Import characters...";
 			this.bulkImportMenuItem.Click += new System.EventHandler(this.bulkImportMenuItem_Click);
 			// 
-			// bulkExportMenuItem
+			// bulkExportCharactersMenuItem
 			// 
-			this.bulkExportMenuItem.Name = "bulkExportMenuItem";
-			this.bulkExportMenuItem.Size = new System.Drawing.Size(320, 22);
-			this.bulkExportMenuItem.Text = "Export characters...";
-			this.bulkExportMenuItem.Click += new System.EventHandler(this.bulkExportMenuItem_Click);
+			this.bulkExportCharactersMenuItem.Name = "bulkExportCharactersMenuItem";
+			this.bulkExportCharactersMenuItem.Size = new System.Drawing.Size(304, 22);
+			this.bulkExportCharactersMenuItem.Text = "Export characters...";
+			this.bulkExportCharactersMenuItem.Click += new System.EventHandler(this.bulkExportMenuItem_Click);
+			// 
+			// bulkExportPartiesMenuItem
+			// 
+			this.bulkExportPartiesMenuItem.Name = "bulkExportPartiesMenuItem";
+			this.bulkExportPartiesMenuItem.Size = new System.Drawing.Size(304, 22);
+			this.bulkExportPartiesMenuItem.Text = "Export parties...";
+			this.bulkExportPartiesMenuItem.Click += new System.EventHandler(this.bulkExportPartiesMenuItem_Click);
 			// 
 			// toolStripMenuItem12
 			// 
 			this.toolStripMenuItem12.Name = "toolStripMenuItem12";
-			this.toolStripMenuItem12.Size = new System.Drawing.Size(317, 6);
+			this.toolStripMenuItem12.Size = new System.Drawing.Size(301, 6);
 			// 
 			// deleteCharactersMenuItem
 			// 
 			this.deleteCharactersMenuItem.Image = global::Ginger.Properties.Resources.delete_character;
 			this.deleteCharactersMenuItem.Name = "deleteCharactersMenuItem";
-			this.deleteCharactersMenuItem.Size = new System.Drawing.Size(320, 22);
+			this.deleteCharactersMenuItem.Size = new System.Drawing.Size(304, 22);
 			this.deleteCharactersMenuItem.Text = "Delete characters...";
 			this.deleteCharactersMenuItem.Click += new System.EventHandler(this.deleteCharactersMenuItem_Click);
 			// 
@@ -1990,7 +1999,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem bulkEditModelSettingsMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem15;
 		private System.Windows.Forms.ToolStripMenuItem bulkImportMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem bulkExportMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem bulkExportCharactersMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem editExportModelSettingsMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem16;
@@ -2025,6 +2034,7 @@ namespace Ginger {
 		private System.Windows.Forms.ToolStripMenuItem resetModelsLocationMenuItem;
 		private System.Windows.Forms.ToolStripSeparator changeLanguageSeparator;
 		private System.Windows.Forms.ToolStripMenuItem revertFileMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem bulkExportPartiesMenuItem;
 	}
 }
 
