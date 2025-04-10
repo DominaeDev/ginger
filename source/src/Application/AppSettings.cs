@@ -627,7 +627,7 @@ namespace Ginger
 					}
 
 					// Starred characters
-					if (BackyardSettings.ModelPromptTemplates.Count > 0)
+					if (BackyardSettings.StarredCharacters.Count > 0)
 					{
 						WriteSection(outputFile, "BackyardAI.Starred");
 						int i = 0;
@@ -635,10 +635,11 @@ namespace Ginger
 							Write(outputFile, string.Format("Starred{0:00}", i++), charID);
 					}
 
+#if DEBUG
 					// Debug settings
 					WriteSection(outputFile, "Debug");
 					WriteIf(outputFile, "Groups", Debug.EnableGroups);
-
+#endif
 				}
 			}
 			catch

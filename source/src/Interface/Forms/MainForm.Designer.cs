@@ -1500,7 +1500,7 @@ namespace Ginger {
 			this.bulkEditModelSettingsMenuItem.Name = "bulkEditModelSettingsMenuItem";
 			this.bulkEditModelSettingsMenuItem.ShortcutKeyDisplayString = "Ctrl+Alt+M";
 			this.bulkEditModelSettingsMenuItem.Size = new System.Drawing.Size(304, 22);
-			this.bulkEditModelSettingsMenuItem.Text = "Batch change model settings...";
+			this.bulkEditModelSettingsMenuItem.Text = "Bulk change model settings...";
 			this.bulkEditModelSettingsMenuItem.Click += new System.EventHandler(this.bulkChangeModelSettingsMenuItem_Click);
 			// 
 			// toolStripMenuItem15
