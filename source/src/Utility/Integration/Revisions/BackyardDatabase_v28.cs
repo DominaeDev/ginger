@@ -1906,7 +1906,7 @@ namespace Ginger.Integration
 								modelInstructions, context, greetingDialogue, customDialogue, grammar,
 								model, temperature, topP, minP, minPEnabled, topK, 
 								repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, 
-								authorNote, ttsAutoplay, ttsInputFilter
+								authorNote
 							FROM Chat
 							WHERE id = $chatId;
 						";
@@ -1944,8 +1944,6 @@ namespace Ginger.Integration
 							string promptTemplate = reader[16] as string;
 							bool pruneExampleChat = reader.GetBoolean(17);
 							string authorNote = reader.GetString(18);
-							bool ttsAutoPlay = reader.GetBoolean(19);
-							string ttsInputFilter = reader.GetString(20);
 
 							if (string.IsNullOrWhiteSpace(name))
 							{
@@ -1968,8 +1966,6 @@ namespace Ginger.Integration
 									grammar = grammar,
 									authorNote = authorNote,
 									pruneExampleChat = pruneExampleChat,
-									ttsAutoPlay = ttsAutoPlay,
-									ttsInputFilter = ttsInputFilter,
 								},
 								parameters = new ChatParameters() {
 									model = model,
@@ -2084,7 +2080,7 @@ namespace Ginger.Integration
 								modelInstructions, context, greetingDialogue, customDialogue, grammar,
 								model, temperature, topP, minP, minPEnabled, topK, 
 								repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, 
-								authorNote, ttsAutoplay, ttsInputFilter
+								authorNote
 							FROM Chat
 							WHERE groupConfigId = $groupId
 							ORDER BY createdAt;
@@ -2120,8 +2116,6 @@ namespace Ginger.Integration
 								string promptTemplate = reader[17] as string;
 								bool pruneExampleChat = reader.GetBoolean(18);
 								string authorNote = reader.GetString(19);
-								bool ttsAutoPlay = reader.GetBoolean(20);
-								string ttsInputFilter = reader.GetString(21);
 
 								if (string.IsNullOrWhiteSpace(name))
 								{
@@ -2156,8 +2150,6 @@ namespace Ginger.Integration
 									authorNote = authorNote,
 									background = chatBackground,
 									pruneExampleChat = pruneExampleChat,
-									ttsAutoPlay = ttsAutoPlay,
-									ttsInputFilter = ttsInputFilter,
 								};
 
 								chats.Add(new _Chat() {
@@ -2477,7 +2469,7 @@ namespace Ginger.Integration
 						@"
 							SELECT 
 								modelInstructions, context, greetingDialogue, customDialogue, grammar, 
-								authorNote, canDeleteCustomDialogue, ttsAutoplay, ttsInputFilter,
+								authorNote, canDeleteCustomDialogue,
 								model, temperature, topP, minP, minPEnabled, topK, 
 								repeatPenalty, repeatLastN, promptTemplate
 							FROM Chat
@@ -2498,17 +2490,15 @@ namespace Ginger.Integration
 								defaultStaging.grammar = reader[4] as string ?? "";
 								defaultStaging.authorNote = reader.GetString(5);
 								defaultStaging.pruneExampleChat = reader.GetBoolean(6);
-								defaultStaging.ttsAutoPlay = reader.GetBoolean(7);
-								defaultStaging.ttsInputFilter = reader.GetString(8);
-								defaultParameters.model = reader.GetString(9);
-								defaultParameters.temperature = reader.GetDecimal(10);
-								defaultParameters.topP = reader.GetDecimal(11);
-								defaultParameters.minP = reader.GetDecimal(12);
-								defaultParameters.minPEnabled = reader.GetBoolean(13);
-								defaultParameters.topK = reader.GetInt32(14);
-								defaultParameters.repeatPenalty = reader.GetDecimal(15);
-								defaultParameters.repeatLastN = reader.GetInt32(16);
-								defaultParameters.promptTemplate = reader[17] as string;
+								defaultParameters.model = reader.GetString(7);
+								defaultParameters.temperature = reader.GetDecimal(8);
+								defaultParameters.topP = reader.GetDecimal(9);
+								defaultParameters.minP = reader.GetDecimal(10);
+								defaultParameters.minPEnabled = reader.GetBoolean(11);
+								defaultParameters.topK = reader.GetInt32(12);
+								defaultParameters.repeatPenalty = reader.GetDecimal(13);
+								defaultParameters.repeatLastN = reader.GetInt32(14);
+								defaultParameters.promptTemplate = reader[15] as string;
 							}
 						}
 					}
@@ -2552,7 +2542,7 @@ namespace Ginger.Integration
 											$system, $greeting, $grammar, 
 											$groupId, 
 											$model, $temperature, $topP, $minP, $minPEnabled, $topK, $repeatPenalty, $repeatLastN, $promptTemplate,
-											$chatName, $authorNote, $ttsAutoPlay, $ttsInputFilter);
+											$chatName, $authorNote, 0, 'default');
 								");
 
 								cmdCreateChat.CommandText = sbCommand.ToString();
@@ -2567,8 +2557,6 @@ namespace Ginger.Integration
 								cmdCreateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$authorNote", staging.authorNote ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
-								cmdCreateChat.Parameters.AddWithValue("$ttsAutoPlay", staging.ttsAutoPlay);
-								cmdCreateChat.Parameters.AddWithValue("$ttsInputFilter", staging.ttsInputFilter ?? "default");
 								cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? defaultModel ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 								cmdCreateChat.Parameters.AddWithValue("$topP", parameters.topP);
@@ -3595,8 +3583,6 @@ namespace Ginger.Integration
 									cmdUpdateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
 									// staging.authorNote
-									// staging.ttsAutoPlay
-									// staging.ttsInputFilter
 								}
 								if (parameters != null)
 								{
@@ -5664,7 +5650,7 @@ namespace Ginger.Integration
 								$system{i:000}, $scenario{i:000}, $greeting{i:000}, $example{i:000}, $grammar{i:000}, 
 								$model{i:000}, $temperature{i:000}, $topP{i:000}, $minP{i:000}, $minPEnabled{i:000}, $topK{i:000}, 
 								$repeatPenalty{i:000}, $repeatLastN{i:000}, $promptTemplate{i:000}, $pruneExample{i:000},
-								$authorNote{i:000}, $ttsAutoPlay{i:000}, $ttsInputFilter{i:000});
+								$authorNote{i:000}, 0, 'default');
 					");
 					cmdChat.Parameters.AddWithValue($"$chatId{i:000}", chatIds[i]);
 					cmdChat.Parameters.AddWithValue($"$chatName{i:000}", chats[i].name ?? "");
@@ -5681,8 +5667,6 @@ namespace Ginger.Integration
 					cmdChat.Parameters.AddWithValue($"$grammar{i:000}", staging.grammar ?? "");
 					cmdChat.Parameters.AddWithValue($"$authorNote{i:000}", staging.authorNote ?? "");
 					cmdChat.Parameters.AddWithValue($"$pruneExample{i:000}", staging.pruneExampleChat);
-					cmdChat.Parameters.AddWithValue($"$ttsAutoPlay{i:000}", staging.ttsAutoPlay);
-					cmdChat.Parameters.AddWithValue($"$ttsInputFilter{i:000}", staging.ttsInputFilter);
 					cmdChat.Parameters.AddWithValue($"$model{i:000}", parameters.model ?? defaultModel ?? "");
 					cmdChat.Parameters.AddWithValue($"$temperature{i:000}", parameters.temperature);
 					cmdChat.Parameters.AddWithValue($"$topP{i:000}", parameters.topP);
@@ -6112,13 +6096,13 @@ namespace Ginger.Integration
 						(id, createdAt, updatedAt, context, customDialogue, canDeleteCustomDialogue, 
 							modelInstructions, greetingDialogue, grammar, groupConfigId, 
 							model, temperature, topP, minP, minPEnabled, topK, repeatPenalty, repeatLastN, promptTemplate,
-							name, authorNote, ttsAutoPlay, ttsInputFilter)
+							name, authorNote)
 					VALUES 
 						($chatId, $timestamp, $timestamp, $scenario, $example, $pruneExample, 
 							$system, $greeting, $grammar, 
 							$groupId, 
 							$model, $temperature, $topP, $minP, $minPEnabled, $topK, $repeatPenalty, $repeatLastN, $promptTemplate,
-							$chatName, $authorNote, $ttsAutoPlay, $ttsInputFilter);
+							$chatName, $authorNote, 0, 'default');
 				");
 
 				cmdCreateChat.CommandText = sbCommand.ToString();
@@ -6133,8 +6117,6 @@ namespace Ginger.Integration
 				cmdCreateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$authorNote", staging.authorNote ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
-				cmdCreateChat.Parameters.AddWithValue("$ttsAutoPlay", staging.ttsAutoPlay);
-				cmdCreateChat.Parameters.AddWithValue("$ttsInputFilter", staging.ttsInputFilter ?? "default");
 				cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? defaultModel ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 				cmdCreateChat.Parameters.AddWithValue("$topP", parameters.topP);

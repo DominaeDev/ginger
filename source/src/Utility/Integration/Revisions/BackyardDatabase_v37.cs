@@ -47,6 +47,7 @@ namespace Ginger.Integration
 			public string displayName;
 			public bool isUser;
 			public string persona;
+			public bool hasLorebook;
 			public DateTime creationDate;
 			public DateTime updateDate;
 		}
@@ -54,7 +55,6 @@ namespace Ginger.Integration
 		private struct _Group
 		{
 			public string instanceId;
-			public ChatStaging staging;
 			public string folderId;
 			public string folderSortPosition;
 			public string hubCharId;
@@ -244,56 +244,35 @@ namespace Ginger.Integration
 					_Folders = folders.ToDictionary(f => f.instanceId);
 
 					// Fetch character configs
-					using (var cmdCharacter = connection.CreateCommand())
+					List<_Character> characters;
+					FetchCharacters(connection, out characters);
+
+					// Get group info
+					foreach (var c in characters)
 					{
-						cmdCharacter.CommandText =
-						@"
-							SELECT 
-								A.id, B.id, B.displayName, B.name, A.createdAt, B.updatedAt, B.persona, A.isUserControlled,
-								( SELECT COUNT(*) FROM _AppCharacterLorebookItemToCharacterConfigVersion WHERE ""B"" = B.id )
-							FROM CharacterConfig as A
-							INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id;
-						";
-						using (var reader = cmdCharacter.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								string instanceId = reader.GetString(0);
-								string configId = reader.GetString(1);
-								string displayName = reader.GetString(2);
-								string name = reader.GetString(3);
-								DateTime createdAt = reader.GetTimestamp(4);
-								DateTime updatedAt = reader.GetTimestamp(5);
-								string persona = reader.GetString(6);
-								bool isUser = reader.GetBoolean(7);
-								int numLoreEntries = reader.GetInt32(8);
+						GroupInstance groupInstance = this.GetGroupForCharacter(c.instanceId);
+						string groupId = groupInstance.instanceId;
+						string folderId = groupInstance.folderId;
+						string folderSortPosition = groupInstance.folderSortPosition;
+						string hubCharId = groupInstance.hubCharId;
+						string hubAuthorUsername = groupInstance.hubAuthorUsername;
 
-								// Get group info
-								GroupInstance groupInstance = this.GetGroupForCharacter(instanceId);
-								string groupId = groupInstance.instanceId;
-								string folderId = groupInstance.folderId;
-								string folderSortPosition = groupInstance.folderSortPosition;
-								string hubCharId = groupInstance.hubCharId;
-								string hubAuthorUsername = groupInstance.hubAuthorUsername;
-
-								_Characters.TryAdd(instanceId,
-									new CharacterInstance() {
-										instanceId = instanceId,
-										configId = configId,
-										groupId = groupId,
-										displayName = displayName,
-										name = name,
-										creationDate = createdAt,
-										updateDate = updatedAt,
-										isUser = isUser,
-										persona = persona,
-										hasLorebook = numLoreEntries > 0,
-										creator = hubAuthorUsername ?? "",
-										folderId = folderId ?? "",
-										folderSortPosition = folderSortPosition ?? "",
-									});
-							}
-						}
+						_Characters.TryAdd(c.instanceId,
+							new CharacterInstance() {
+								instanceId = c.instanceId,
+								configId = c.configId,
+								name = c.name,
+								creationDate = c.creationDate,
+								updateDate = c.updateDate,
+								isUser = c.isUser,
+								persona = c.persona,
+								hasLorebook = c.hasLorebook,
+								displayName = c.displayName,
+								groupId = groupId,
+								creator = hubAuthorUsername ?? "",
+								folderId = folderId ?? "",
+								folderSortPosition = folderSortPosition ?? "",
+							});
 					}
 
 					connection.Close();
@@ -371,11 +350,15 @@ namespace Ginger.Integration
 					if (groupIds.Length > 0)
 						groupId = groupIds[0];
 
-					if (groupId != null && FetchGroupInfo(connection, groupId, out _Group groupInfo))
+					if (groupId != null)
 					{
-						staging = groupInfo.staging;
-						hubCharId = groupInfo.hubCharId;
-						hubAuthorUsername = groupInfo.hubAuthorUsername;
+						if (FetchGroupInfo(connection, groupId, out _Group groupInfo))
+						{
+							hubCharId = groupInfo.hubCharId;
+							hubAuthorUsername = groupInfo.hubAuthorUsername;
+						}
+
+						FetchChatStaging(connection, groupId, out staging);
 					}
 
 					// Gather lorebook items
@@ -545,10 +528,9 @@ namespace Ginger.Integration
 
 		private static bool FetchGroupInfo(SQLiteConnection connection, string groupId, out _Group groupInfo)
 		{
-			ChatStaging staging = null;
 			string folderId = "";
 			string folderSortPosition = "";
-			string hubCharId = null;
+			string hubGroupConfigId = null;
 			string hubAuthorUsername = null;
 			DateTime createdAt = default(DateTime);
 			DateTime updatedAt = default(DateTime);
@@ -559,7 +541,7 @@ namespace Ginger.Integration
 				sbCommand.AppendLine(
 				@"
 					SELECT 
-						hubCharId, hubAuthorUsername, folderId, folderSortPosition, createdAt, updatedAt
+						hubGroupConfigId, hubAuthorUsername, folderId, folderSortPosition, createdAt, updatedAt
 					FROM GroupConfig
 					WHERE id = $groupId;
 				");
@@ -574,45 +556,12 @@ namespace Ginger.Integration
 						return false;
 					}
 
-					hubCharId = reader[0] as string;
+					hubGroupConfigId = reader[0] as string;
 					hubAuthorUsername = reader[1] as string;
 					folderId = reader[2] as string;
 					folderSortPosition = reader[3] as string;
 					createdAt = reader.GetTimestamp(4);
 					updatedAt = reader.GetTimestamp(5);
-				}
-			}
-
-			using (var cmdChatData = connection.CreateCommand())
-			{
-				var sbCommand = new StringBuilder();
-				sbCommand.AppendLine(
-				@"
-					SELECT 
-						context, customDialogue, modelInstructions, greetingDialogue, grammar, authorNote
-					FROM Chat
-					WHERE groupConfigId = $groupId
-				");
-
-				if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.First)
-					sbCommand.AppendLine("ORDER BY createdAt ASC");
-				else
-					sbCommand.AppendLine("ORDER BY createdAt DESC");
-				cmdChatData.CommandText = sbCommand.ToString();
-				cmdChatData.Parameters.AddWithValue("$groupId", groupId);
-
-				using (var reader = cmdChatData.ExecuteReader())
-				{
-					staging = new ChatStaging();
-					if (reader.Read())
-					{
-						staging.scenario = reader.GetString(0);
-						staging.example = reader.GetString(1);
-						staging.system = reader.GetString(2);
-						staging.greeting = reader.GetString(3);
-						staging.grammar = reader[4] as string;
-						staging.authorNote = reader.GetString(5);
-					}
 				}
 			}
 
@@ -622,11 +571,138 @@ namespace Ginger.Integration
 				updateDate = updatedAt,
 				folderId = folderId,
 				folderSortPosition = folderSortPosition,
-				hubCharId = hubCharId,
+				hubCharId = hubGroupConfigId,
 				hubAuthorUsername = hubAuthorUsername,
-				staging = staging,
 			};
 			return true;
+		}
+
+		private struct _ExampleChat
+		{
+			public string characterId;
+			public string text;
+			public string sortOrder;
+			public bool isUser;
+		}
+
+		private static void FetchChatStaging(SQLiteConnection connection, string groupId, out ChatStaging staging)
+		{
+			string chatId = null;
+			using (var cmdGroupConfig = connection.CreateCommand())
+			{
+				var sbCommand = new StringBuilder();
+				sbCommand.AppendLine(
+				@"
+					SELECT 
+						id, context, modelInstructions, grammar, authorNote
+					FROM Chat
+					WHERE groupConfigId = $groupId
+				");
+
+				if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.First)
+					sbCommand.AppendLine("ORDER BY createdAt ASC");
+				else
+					sbCommand.AppendLine("ORDER BY createdAt DESC");
+
+				cmdGroupConfig.CommandText = sbCommand.ToString();
+				cmdGroupConfig.Parameters.AddWithValue("$groupId", groupId);
+
+				using (var reader = cmdGroupConfig.ExecuteReader())
+				{
+					staging = new ChatStaging();
+					if (reader.Read())
+					{
+						chatId = reader.GetString(0);
+						staging.scenario = reader.GetString(1);
+						staging.system = reader.GetString(2);
+						staging.grammar = reader[3] as string;
+						staging.authorNote = reader[4] as string;
+					}
+				}
+			}
+
+			if (chatId != null)
+			{
+				// Greeting
+				using (var cmdGreeting = connection.CreateCommand())
+				{
+					var sbCommand = new StringBuilder();
+					sbCommand.AppendLine(
+					@"
+						SELECT 
+							characterConfigId, text
+						FROM GreetingMessage
+						WHERE chatId = $chatId
+					");
+
+					if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.First)
+						sbCommand.AppendLine("ORDER BY createdAt ASC");
+					else
+						sbCommand.AppendLine("ORDER BY createdAt DESC");
+
+					cmdGreeting.CommandText = sbCommand.ToString();
+					cmdGreeting.Parameters.AddWithValue("$chatId", chatId);
+
+					using (var reader = cmdGreeting.ExecuteReader())
+					{
+						if (reader.Read())
+						{
+							staging.greetingCharacterId = reader.GetString(0);
+							staging.greeting = reader[1] as string ?? "";
+
+							if (staging.greeting.Length > 0)
+								staging.greeting = string.Concat(BackyardUtil.CreateIDPlaceholder(staging.greetingCharacterId), ": ", staging.greeting);
+						}
+					}
+				}
+
+				// Example chat
+				using (var cmdExample = connection.CreateCommand())
+				{
+					var sbCommand = new StringBuilder();
+					sbCommand.AppendLine(
+					@"
+						SELECT 
+							A.characterConfigId, A.text, A.position, 
+							(SELECT isUserControlled FROM CharacterConfig AS B WHERE B.id = A.characterConfigId)
+						FROM ExampleMessage as A
+						WHERE chatId = $chatId
+					");
+
+					cmdExample.CommandText = sbCommand.ToString();
+					cmdExample.Parameters.AddWithValue("$chatId", chatId);
+
+					List<_ExampleChat> lsExampleMessages = new List<_ExampleChat>();
+					using (var reader = cmdExample.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							string characterId = reader.GetString(0);
+							string text = reader.GetString(1);
+							string position = reader.GetString(2);
+							bool isUser = reader.GetBoolean(3);
+
+							lsExampleMessages.Add(new _ExampleChat() {
+								characterId = characterId,
+								text = text,
+								sortOrder = position,
+								isUser = isUser,
+							});
+						}
+					}
+
+					StringBuilder sbExample = new StringBuilder();
+					foreach (var message in lsExampleMessages.OrderBy(m => m.sortOrder))
+					{
+						sbExample.NewParagraph();
+						sbExample.Append(BackyardUtil.CreateIDPlaceholder(message.characterId));
+						sbExample.Append(": ");
+						sbExample.Append(message.text);
+					}
+
+					staging.example = sbExample.ToString();
+				}
+			}
 		}
 
 		private static bool FetchCharacter(SQLiteConnection connection, string characterId, out _Character character)
@@ -1125,8 +1201,8 @@ namespace Ginger.Integration
 						cmdGetGroup.CommandText =
 						@"
 							SELECT 
-								A.B, ( SELECT COUNT(*) FROM _CharacterConfigToGroupConfig WHERE ""B"" = A.B )
-							FROM _CharacterConfigToGroupConfig AS A
+								A.groupConfigId, ( SELECT COUNT(*) FROM GroupConfigCharacterLink WHERE ""characterConfigId"" = A.characterConfigId )
+							FROM GroupConfigCharacterLink AS A
 							WHERE A.A = $charId
 						";
 						cmdGetGroup.Parameters.AddWithValue("$charId", characterId);
@@ -1434,12 +1510,14 @@ namespace Ginger.Integration
 					// Get group info
 					if (FetchGroupInfo(connection, groupId, out _Group groupInfo))
 					{
-						staging = groupInfo.staging;
 						folderId = groupInfo.folderId;
 						folderSortPosition = groupInfo.folderSortPosition;
 						hubCharId = groupInfo.hubCharId;
 						hubAuthorUsername = groupInfo.hubAuthorUsername;
 					}
+
+					// Get chat staging
+					FetchChatStaging(connection, groupId, out staging);
 
 					// Gather background image files
 					ImageInstance[] backgrounds;
@@ -2351,7 +2429,7 @@ namespace Ginger.Integration
 							WHERE A.isUserControlled = 1
 								AND A.isTemplateChar = 0
 								AND NOT EXISTS (
-									SELECT 1 from _CharacterConfigToGroupConfig C WHERE C.A = A.id
+									SELECT 1 from GroupConfigCharacterLink C WHERE C.characterConfigId = A.id
 								);";
 
 						using (var reader = cmdUsers.ExecuteReader())
@@ -2540,7 +2618,7 @@ namespace Ginger.Integration
 								modelInstructions, context, greetingDialogue, customDialogue, grammar,
 								model, temperature, topP, minP, minPEnabled, topK, 
 								repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, 
-								authorNote, ttsAutoplay, ttsInputFilter
+								authorNote
 							FROM Chat
 							WHERE id = $chatId;
 						";
@@ -2578,8 +2656,6 @@ namespace Ginger.Integration
 							string promptTemplate = reader[16] as string;
 							bool pruneExampleChat = reader.GetBoolean(17);
 							string authorNote = reader.GetString(18);
-							bool ttsAutoPlay = reader.GetBoolean(19);
-							string ttsInputFilter = reader.GetString(20);
 
 							if (string.IsNullOrWhiteSpace(name))
 							{
@@ -2602,8 +2678,6 @@ namespace Ginger.Integration
 									grammar = grammar,
 									authorNote = authorNote,
 									pruneExampleChat = pruneExampleChat,
-									ttsAutoPlay = ttsAutoPlay,
-									ttsInputFilter = ttsInputFilter,
 								},
 								parameters = new ChatParameters() {
 									model = model,
@@ -2715,7 +2789,7 @@ namespace Ginger.Integration
 								modelInstructions, context, greetingDialogue, customDialogue, grammar,
 								model, temperature, topP, minP, minPEnabled, topK, 
 								repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, 
-								authorNote, ttsAutoplay, ttsInputFilter
+								authorNote
 							FROM Chat
 							WHERE groupConfigId = $groupId
 							ORDER BY createdAt;
@@ -2751,8 +2825,6 @@ namespace Ginger.Integration
 								string promptTemplate = reader[17] as string;
 								bool pruneExampleChat = reader.GetBoolean(18);
 								string authorNote = reader.GetString(19);
-								bool ttsAutoPlay = reader.GetBoolean(20);
-								string ttsInputFilter = reader.GetString(21);
 
 								if (string.IsNullOrWhiteSpace(name))
 								{
@@ -2784,8 +2856,6 @@ namespace Ginger.Integration
 									authorNote = authorNote,
 									background = chatBackground,
 									pruneExampleChat = pruneExampleChat,
-									ttsAutoPlay = ttsAutoPlay,
-									ttsInputFilter = ttsInputFilter,
 								};
 								
 								BackyardUtil.ConvertFromIDPlaceholders(staging);
@@ -3106,7 +3176,7 @@ namespace Ginger.Integration
 						@"
 							SELECT 
 								modelInstructions, context, greetingDialogue, customDialogue, grammar, 
-								authorNote, canDeleteCustomDialogue, ttsAutoplay, ttsInputFilter,
+								authorNote, canDeleteCustomDialogue,
 								model, temperature, topP, minP, minPEnabled, topK, 
 								repeatPenalty, repeatLastN, promptTemplate
 							FROM Chat
@@ -3127,17 +3197,15 @@ namespace Ginger.Integration
 								defaultStaging.grammar = reader[4] as string ?? "";
 								defaultStaging.authorNote = reader.GetString(5);
 								defaultStaging.pruneExampleChat = reader.GetBoolean(6);
-								defaultStaging.ttsAutoPlay = reader.GetBoolean(7);
-								defaultStaging.ttsInputFilter = reader.GetString(8);
-								defaultParameters.model = reader.GetString(9);
-								defaultParameters.temperature = reader.GetDecimal(10);
-								defaultParameters.topP = reader.GetDecimal(11);
-								defaultParameters.minP = reader.GetDecimal(12);
-								defaultParameters.minPEnabled = reader.GetBoolean(13);
-								defaultParameters.topK = reader.GetInt32(14);
-								defaultParameters.repeatPenalty = reader.GetDecimal(15);
-								defaultParameters.repeatLastN = reader.GetInt32(16);
-								defaultParameters.promptTemplate = reader[17] as string;
+								defaultParameters.model = reader.GetString(7);
+								defaultParameters.temperature = reader.GetDecimal(8);
+								defaultParameters.topP = reader.GetDecimal(9);
+								defaultParameters.minP = reader.GetDecimal(10);
+								defaultParameters.minPEnabled = reader.GetBoolean(11);
+								defaultParameters.topK = reader.GetInt32(12);
+								defaultParameters.repeatPenalty = reader.GetDecimal(13);
+								defaultParameters.repeatLastN = reader.GetInt32(14);
+								defaultParameters.promptTemplate = reader[15] as string;
 							}
 						}
 					}
@@ -3181,7 +3249,7 @@ namespace Ginger.Integration
 											$system, $greeting, $grammar, 
 											$groupId, 
 											$model, $temperature, $topP, $minP, $minPEnabled, $topK, $repeatPenalty, $repeatLastN, $promptTemplate,
-											$chatName, $authorNote, $ttsAutoPlay, $ttsInputFilter);
+											$chatName, $authorNote, 0, 'default');
 								");
 
 								cmdCreateChat.CommandText = sbCommand.ToString();
@@ -3196,8 +3264,6 @@ namespace Ginger.Integration
 								cmdCreateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$authorNote", staging.authorNote ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
-								cmdCreateChat.Parameters.AddWithValue("$ttsAutoPlay", staging.ttsAutoPlay);
-								cmdCreateChat.Parameters.AddWithValue("$ttsInputFilter", staging.ttsInputFilter ?? "default");
 								cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? defaultModel ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 								cmdCreateChat.Parameters.AddWithValue("$topP", parameters.topP);
@@ -4180,7 +4246,8 @@ namespace Ginger.Integration
 										modelInstructions = $system,
 										grammar = $grammar,
 										greetingDialogue = $greeting,
-										canDeleteCustomDialogue = $pruneExample");
+										canDeleteCustomDialogue = $pruneExample,
+										authorNote = $authorNote");
 								}
 								if (parameters != null)
 								{
@@ -4220,9 +4287,7 @@ namespace Ginger.Integration
 									cmdUpdateChat.Parameters.AddWithValue("$example", staging.example ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
-									// staging.authorNote
-									// staging.ttsAutoPlay
-									// staging.ttsInputFilter
+									cmdUpdateChat.Parameters.AddWithValue("$authorNote", staging.authorNote);
 								}
 								if (parameters != null)
 								{
@@ -4965,7 +5030,8 @@ namespace Ginger.Integration
 				cmdCharacters.CommandText =
 				@"
 					SELECT 
-						A.id, A.isUserControlled, B.id, B.createdAt, B.updatedAt, B.displayName, B.name, B.persona 
+						A.id, A.isUserControlled, B.id, B.createdAt, B.updatedAt, B.displayName, B.name, B.persona,
+						( SELECT COUNT(*) FROM _AppCharacterLorebookItemToCharacterConfigVersion WHERE ""B"" = B.id )
 					FROM CharacterConfig AS A
 					INNER JOIN CharacterConfigVersion AS B ON B.characterConfigId = A.id;
 				";
@@ -4983,6 +5049,7 @@ namespace Ginger.Integration
 						string displayName = reader.GetString(5);
 						string name = reader.GetString(6);
 						string persona = reader.GetString(7);
+						int numLoreEntries = reader.GetInt32(8);
 
 						characters.Add(new _Character() {
 							instanceId = instanceId,
@@ -4993,6 +5060,7 @@ namespace Ginger.Integration
 							updateDate = updatedAt,
 							persona = persona,
 							isUser = isUser,
+							hasLorebook = numLoreEntries > 0,
 						});
 					}
 				}
@@ -5047,7 +5115,7 @@ namespace Ginger.Integration
 				cmdGroupData.CommandText =
 				@"
 					SELECT 
-						id, createdAt, updatedAt, name, folderId, folderSortPosition, hubCharId, hubAuthorUsername
+						id, createdAt, updatedAt, name, folderId, folderSortPosition, hubGroupConfigId, hubAuthorUsername
 					FROM GroupConfig
 				";
 
@@ -5093,8 +5161,8 @@ namespace Ginger.Integration
 				cmdGroup.CommandText =
 				@"
 					SELECT 
-						A, B
-					FROM _CharacterConfigToGroupConfig
+						characterConfigId, groupConfigId, assignedAt, position, isActive
+					FROM GroupConfigCharacterLink
 				";
 
 				using (var reader = cmdGroup.ExecuteReader())
@@ -5120,11 +5188,11 @@ namespace Ginger.Integration
 				cmdGroupMembers.CommandText =
 				@"
 					SELECT 
-						A.A, C.name, B.isUserControlled
-					FROM _CharacterConfigToGroupConfig AS A
-					INNER JOIN CharacterConfig AS B ON B.id = A.A
+						A.characterConfigId, C.name, B.isUserControlled
+					FROM GroupConfigCharacterLink AS A
+					INNER JOIN CharacterConfig AS B ON B.id = A.characterConfigId
 					INNER JOIN CharacterConfigVersion AS C ON C.characterConfigId = B.id
-					WHERE A.B = $groupId;
+					WHERE A.groupConfigId = $groupId;
 				";
 
 				cmdGroupMembers.Parameters.AddWithValue("$groupId", groupId);
@@ -6268,7 +6336,7 @@ namespace Ginger.Integration
 								$system{i:000}, $scenario{i:000}, $greeting{i:000}, $example{i:000}, $grammar{i:000}, 
 								$model{i:000}, $temperature{i:000}, $topP{i:000}, $minP{i:000}, $minPEnabled{i:000}, $topK{i:000}, 
 								$repeatPenalty{i:000}, $repeatLastN{i:000}, $promptTemplate{i:000}, $pruneExample{i:000},
-								$authorNote{i:000}, $ttsAutoPlay{i:000}, $ttsInputFilter{i:000});
+								$authorNote{i:000}, 0, 'default');
 					");
 					cmdChat.Parameters.AddWithValue($"$chatId{i:000}", chatIds[i]);
 					cmdChat.Parameters.AddWithValue($"$chatName{i:000}", chats[i].name ?? "");
@@ -6287,8 +6355,6 @@ namespace Ginger.Integration
 					cmdChat.Parameters.AddWithValue($"$grammar{i:000}", staging.grammar ?? "");
 					cmdChat.Parameters.AddWithValue($"$authorNote{i:000}", staging.authorNote ?? "");
 					cmdChat.Parameters.AddWithValue($"$pruneExample{i:000}", staging.pruneExampleChat);
-					cmdChat.Parameters.AddWithValue($"$ttsAutoPlay{i:000}", staging.ttsAutoPlay);
-					cmdChat.Parameters.AddWithValue($"$ttsInputFilter{i:000}", staging.ttsInputFilter);
 					cmdChat.Parameters.AddWithValue($"$model{i:000}", parameters.model ?? defaultModel ?? "");
 					cmdChat.Parameters.AddWithValue($"$temperature{i:000}", parameters.temperature);
 					cmdChat.Parameters.AddWithValue($"$topP{i:000}", parameters.topP);
@@ -6600,10 +6666,10 @@ namespace Ginger.Integration
 				@"
 					SELECT 
 						B.id, C.id, C.name, C.persona
-					FROM _CharacterConfigToGroupConfig AS A
-					INNER JOIN CharacterConfig AS B ON B.id = A.A
+					FROM GroupConfigCharacterLink AS A
+					INNER JOIN CharacterConfig AS B ON B.id = A.characterConfigId
 					INNER JOIN CharacterConfigVersion AS C ON C.characterConfigId = B.id
-					WHERE A.B = $groupId AND B.isUserControlled = 1;
+					WHERE A.groupConfigId = $groupId AND B.isUserControlled = 1;
 				";
 				cmdGetUser.Parameters.AddWithValue("$groupId", groupId);
 
@@ -6725,7 +6791,7 @@ namespace Ginger.Integration
 							$system, $greeting, $grammar, 
 							$groupId, 
 							$model, $temperature, $topP, $minP, $minPEnabled, $topK, $repeatPenalty, $repeatLastN, $promptTemplate,
-							$chatName, $authorNote, $ttsAutoPlay, $ttsInputFilter);
+							$chatName, $authorNote, 0, 'default');
 				");
 
 				cmdCreateChat.CommandText = sbCommand.ToString();
@@ -6740,8 +6806,6 @@ namespace Ginger.Integration
 				cmdCreateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$authorNote", staging.authorNote ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
-				cmdCreateChat.Parameters.AddWithValue("$ttsAutoPlay", staging.ttsAutoPlay);
-				cmdCreateChat.Parameters.AddWithValue("$ttsInputFilter", staging.ttsInputFilter ?? "default");
 				cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? defaultModel ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 				cmdCreateChat.Parameters.AddWithValue("$topP", parameters.topP);

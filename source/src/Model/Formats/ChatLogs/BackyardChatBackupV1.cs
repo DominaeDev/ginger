@@ -73,12 +73,6 @@ namespace Ginger
 
 			[JsonProperty("pruneExampleChat")]
 			public bool pruneExampleChat = true;
-
-			[JsonProperty("ttsAutoPlay")]
-			public bool ttsAutoPlay = false;
-
-			[JsonProperty("ttsInputFilter", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
-			public string ttsInputFilter = null;
 		}
 
 		public class Parameters
@@ -178,8 +172,6 @@ namespace Ginger
 					grammar = chat.staging.grammar ?? "",
 					authorNote = chat.staging.authorNote ?? "",
 					pruneExampleChat = chat.staging.pruneExampleChat,
-					ttsAutoPlay = chat.staging.ttsAutoPlay,
-					ttsInputFilter = chat.staging.ttsInputFilter ?? "default",
 				};
 			}
 			if (chat.parameters != null)
@@ -254,8 +246,6 @@ namespace Ginger
 					grammar = this.staging.grammar ?? "",
 					pruneExampleChat = this.staging.pruneExampleChat,
 					authorNote = this.staging.authorNote ?? "",
-					ttsAutoPlay = this.staging.ttsAutoPlay,
-					ttsInputFilter = this.staging.ttsInputFilter ?? "default",
 				};
 			}
 

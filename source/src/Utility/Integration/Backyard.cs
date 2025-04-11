@@ -253,13 +253,12 @@ namespace Ginger.Integration
 
 			public string system = "";					// Chat.modelInstructions
 			public string scenario = "";				// Chat.context
-			public string greeting = "";				// Chat.greetingDialogue
+			public string greeting = "";                // Chat.greetingDialogue
+			public string greetingCharacterId = null;	
 			public string example = "";					// Chat.customDialogue
 			public string grammar = "";					// Chat.grammar
 			public string authorNote = "";				// Chat.authorNote
 			public bool pruneExampleChat = true;		// Chat.canDeleteCustomDialogue
-			public bool ttsAutoPlay = false;			// Chat.ttsAutoPlay
-			public string ttsInputFilter = "default";	// Chat.ttsInputFilter
 			public ChatBackground background = null;
 		}
 
@@ -759,14 +758,12 @@ namespace Ginger.Integration
 					}
 
 					// Detect database version
-					if (foundTables.Contains("BackgroundChatImage"))
+					if (foundTables.Contains("GroupConfigCharacterLink"))
+						BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Version_0_37_0;
+					else if (foundTables.Contains("BackgroundChatImage"))
 						BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Version_0_29_0;
 					else if (foundTables.Contains("GroupConfig"))
 						BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Version_0_28_0;
-
-					// Debug override flag (used for testing)
-					if (AppSettings.Debug.isDebugging && AppSettings.Debug.EnableGroups)
-						BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Version_0_37_0;
 
 					if (BackyardValidation.DatabaseVersion == BackyardDatabaseVersion.Unknown) // Outdated or unsupported
 					{
@@ -1181,6 +1178,11 @@ namespace Ginger.Integration
 			foreach (var kvp in replacements)
 				__ToID(ref text, kvp.Key, kvp.Value);
 			__ToID(ref text, GingerString.BackyardCharacterMarker, replacements[0].Value); // jic			
+		}
+
+		public static string CreateIDPlaceholder(string characterId)
+		{
+			return $"{{_cfg&:{characterId}:cfg&_}}";
 		}
 
 		private static void __ToID(ref string text, string src, string dest)

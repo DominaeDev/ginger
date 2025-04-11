@@ -232,8 +232,6 @@ namespace Ginger
 					grammar = backup.staging.grammar ?? "",
 					authorNote = backup.staging.authorNote ?? "",
 					pruneExampleChat = backup.staging.pruneExampleChat,
-					ttsAutoPlay = backup.staging.ttsAutoPlay,
-					ttsInputFilter = backup.staging.ttsInputFilter ?? "default",
 				};
 			}
 			if (backup.parameters != null)
@@ -326,8 +324,6 @@ namespace Ginger
 					grammar = this.staging.grammar ?? "",
 					pruneExampleChat = this.staging.pruneExampleChat,
 					authorNote = this.staging.authorNote ?? "",
-					ttsAutoPlay = this.staging.ttsAutoPlay,
-					ttsInputFilter = this.staging.ttsInputFilter ?? "default",
 				};
 			}
 
