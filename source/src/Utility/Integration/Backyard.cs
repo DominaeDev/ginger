@@ -1336,5 +1336,61 @@ namespace Ginger.Integration
 
 			counts = new Dictionary<string, Backyard.ChatCount>(); // Empty
 		}
+
+		public static string CreateSortingString(int hash)
+		{
+			return CreateSequentialSortingString(0, 1, hash);
+		}
+
+		public static string CreateSequentialSortingString(int index, int length, int hash)
+		{
+			RandomNoise rng = new RandomNoise(hash, 0);
+			const string key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+			char[] p = new char[6];
+			for (int i = 0; i < p.Length; ++i)
+				p[i] = key[rng.Int(52)];
+			string prefix = new string(p);
+
+			const int @base = 26;
+			int maxIndex = length - 1;
+			int digits = (int)Math.Ceiling(Math.Log((maxIndex * 2) + 1, @base)); // Allocate as many digits as we need
+			char[] n = new char[digits];
+			for (int i = 0; i < digits; ++i)
+				n[i] = key[0];
+
+			int quotient = (index * 2) + 1; // Required for reordering to work
+			for (int i = 0; quotient != 0 && i < digits; ++i)
+			{
+				n[digits - i - 1] = key[Math.Abs(quotient % @base)];
+				quotient /= @base;
+			}
+
+			return string.Concat(prefix, ".", new string(n));
+		}
+
+		public enum SortPosition { Before, After };
+		public static string CreateRelativeSortingString(SortPosition sortPos, string sortOrder)
+		{
+			RandomNoise rng = new RandomNoise();
+			const string key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+			char[] p = new char[6];
+			for (int i = 0; i < p.Length; ++i)
+				p[i] = key[rng.Int(52)];
+			string prefix = new string(p);
+
+			if (string.IsNullOrEmpty(sortOrder) == false)
+			{
+				if (sortPos == SortPosition.Before)
+				{
+					// Decrement last character
+					sortOrder = string.Concat(sortOrder.Substring(0, sortOrder.Length - 1), (char)(sortOrder[sortOrder.Length - 1] - 1));
+				}
+				return string.Concat(sortOrder, ",", prefix, ".B");
+			}
+			else
+			{
+				return string.Concat(prefix, ".B");
+			}
+		}
 	}
 }

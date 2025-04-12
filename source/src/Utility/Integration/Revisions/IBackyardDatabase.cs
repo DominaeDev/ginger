@@ -49,7 +49,6 @@ namespace Ginger.Integration
 		Backyard.Error UpdateParty(Backyard.Link link, FaradayCard[] cards, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks);
 
 		// Chat
-		Backyard.Error GetChat(string chatId, string groupId, out ChatInstance chatInstance);
 		Backyard.Error GetChats(string groupId, out ChatInstance[] chatInstances);
 		Backyard.Error GetChatCounts(out Dictionary<string, Backyard.ChatCount> counts);
 		Backyard.Error CreateNewChat(CreateChatArguments args, string groupId, out ChatInstance chatInstance);
