@@ -1427,7 +1427,7 @@ CAUTION: Depending on your recycle bin settings, the images may get permanently 
     <value>Character link restored.</value>
   </data>
   <data name="msg_link_repaired_images" xml:space="preserve">
-    <value>{0} broken images found and repaired.</value>
+    <value>Found and repaired {0} broken images.</value>
   </data>
   <data name="cap_link_bulk_repair_chats" xml:space="preserve">
     <value>Repair legacy chats</value>

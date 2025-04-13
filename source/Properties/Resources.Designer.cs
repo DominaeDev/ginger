@@ -3388,7 +3388,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} broken images found and repaired..
+        ///   Looks up a localized string similar to Found and repaired {0} broken images..
         /// </summary>
         internal static string msg_link_repaired_images {
             get {

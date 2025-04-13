@@ -62,7 +62,7 @@ namespace Ginger.Integration
 /**/	Backyard.Error DeleteAllChats(string groupId);
 
 		// Folders
-		Backyard.Error CreateNewFolder(string folderName, out FolderInstance folderInstance);
+/**/		Backyard.Error CreateNewFolder(string folderName, out FolderInstance folderInstance);
 
 		// Utility
 		Backyard.Error GetAllImageUrls(out string[] imageUrls);

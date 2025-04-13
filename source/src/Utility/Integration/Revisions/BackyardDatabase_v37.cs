@@ -6218,37 +6218,61 @@ namespace Ginger.Integration
 
 				for (int i = 0; i < chats.Length; ++i)
 				{
+					var staging = chats[i].staging ?? defaultStaging ?? new ChatStaging();
+					staging.greeting = chats[i].history.greeting;
+					BackyardUtil.ConvertToIDPlaceholders(staging, ids.characterIds);
+
+					var parameters = chats[i].parameters ?? new ChatParameters();
+
 					sbCommand.AppendLine(
 					$@"
 						INSERT INTO Chat
 							(id, name, createdAt, updatedAt, 
 								groupConfigId,
-								modelInstructions, context, greetingDialogue, customDialogue, grammar,
+								modelInstructions, context, grammar,
 								model, temperature, topP, minP, minPEnabled, topK, 
 								repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, 
-								authorNote, ttsAutoPlay, ttsInputFilter)
+								authorNote)
 						VALUES 
 							($chatId{i:000}, $chatName{i:000}, $chatCreatedAt{i:000}, $chatUpdatedAt{i:000}, 
 								$groupId, 
-								$system{i:000}, $scenario{i:000}, $greeting{i:000}, $example{i:000}, $grammar{i:000}, 
+								$system{i:000}, $scenario{i:000}, $grammar{i:000}, 
 								$model{i:000}, $temperature{i:000}, $topP{i:000}, $minP{i:000}, $minPEnabled{i:000}, $topK{i:000}, 
 								$repeatPenalty{i:000}, $repeatLastN{i:000}, $promptTemplate{i:000}, $pruneExample{i:000},
-								$authorNote{i:000}, 0, 'default');
-					");	//! @compat
+								$authorNote{i:000});
+					");	
+					
+					// Write greeting
+					if (string.IsNullOrWhiteSpace(staging.greeting) == false && chats[i].participants.IsEmpty() == false)
+					{
+						sbCommand.AppendLine(
+						@"
+							INSERT INTO GreetingMessage
+								(id, chatId, createdAt, updatedAt, 
+								characterConfigId, text, position)
+							VALUES 
+								($greetingId, $chatId, $timestamp, $timestamp, 
+								$greetingCharacterId, $greeting, $greetingPosition);
+						");//! @compat: characterConfigId
+
+						cmdChat.Parameters.AddWithValue("$greetingId", Cuid.NewCuid());
+						cmdChat.Parameters.AddWithValue("$greeting", staging.greeting);
+						cmdChat.Parameters.AddWithValue("$greetingCharacterId", chats[i].participants[0]);
+						cmdChat.Parameters.AddWithValue("$greetingPosition", BackyardUtil.CreateSortingString(i));
+						expectedUpdates += 1;
+					}
+
+					//! @compat: Example chat
+
 					cmdChat.Parameters.AddWithValue($"$chatId{i:000}", chatIds[i]);
 					cmdChat.Parameters.AddWithValue($"$chatName{i:000}", chats[i].name ?? "");
 					cmdChat.Parameters.AddWithValue($"$chatCreatedAt{i:000}", chats[i].creationDate.ToUnixTimeMilliseconds());
 					cmdChat.Parameters.AddWithValue($"$chatUpdatedAt{i:000}", chats[i].updateDate.ToUnixTimeMilliseconds());
 
-					var staging = chats[i].staging ?? defaultStaging ?? new ChatStaging();
-
-					BackyardUtil.ConvertToIDPlaceholders(staging, ids.characterIds);
-
-					var parameters = chats[i].parameters ?? new ChatParameters();
 					cmdChat.Parameters.AddWithValue($"$system{i:000}", staging.system ?? "");
 					cmdChat.Parameters.AddWithValue($"$scenario{i:000}", staging.scenario ?? "");
-					cmdChat.Parameters.AddWithValue($"$example{i:000}", staging.example ?? "");
-					cmdChat.Parameters.AddWithValue($"$greeting{i:000}", staging.greeting ?? "");
+//					cmdChat.Parameters.AddWithValue($"$example{i:000}", staging.example ?? "");
+//					cmdChat.Parameters.AddWithValue($"$greeting{i:000}", staging.greeting ?? "");
 					cmdChat.Parameters.AddWithValue($"$grammar{i:000}", staging.grammar ?? "");
 					cmdChat.Parameters.AddWithValue($"$authorNote{i:000}", staging.authorNote ?? "");
 					cmdChat.Parameters.AddWithValue($"$pruneExample{i:000}", staging.pruneExampleChat);
