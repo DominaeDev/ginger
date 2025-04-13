@@ -2421,13 +2421,20 @@ namespace Ginger.Integration
 								// Delete characters
 								sbCommand.AppendLine(
 								$@"
+									DELETE FROM CharacterConfigVersion
+									WHERE id IN {SqlList(configIds)};
+								");
+
+								// Delete characters
+								sbCommand.AppendLine(
+								$@"
 									DELETE FROM CharacterConfig
 									WHERE id IN {SqlList(characterIds)};
 								");
 								
 								cmdDelete.CommandText = sbCommand.ToString();
 
-								expectedUpdates += characterIds.Count;
+								expectedUpdates += characterIds.Count * 2;
 								updates += cmdDelete.ExecuteNonQuery();
 							}
 
@@ -5447,10 +5454,11 @@ namespace Ginger.Integration
 					{
 						cmdGetBackgrounds.CommandText =
 						@"
-						SELECT id, imageUrl, chatId FROM BackgroundChatImage
-						WHERE chatId IN (
-							SELECT id
-							FROM Chat)";
+							SELECT 
+								id, imageUrl, chatId 
+							FROM BackgroundChatImage
+							WHERE chatId IN (SELECT id FROM Chat);
+						";
 
 						using (var reader = cmdGetBackgrounds.ExecuteReader())
 						{
