@@ -58,22 +58,22 @@ namespace Ginger
 
 		public static class LinkError
 		{
-			public static void ConnectionFailed(string caption = null)
+			public static void ConnectionFailed(string caption, IWin32Window owner = null)
 			{
-				MsgBox.Error(WithReason(Resources.error_link_failed), caption ?? Resources.cap_link_error);
+				MsgBox.Error(WithReason(Resources.error_link_failed), caption ?? Resources.cap_link_error, owner);
 			}
 
-			public static void Disconnected(string caption = null)
+			public static void Disconnected(string caption, IWin32Window owner = null)
 			{
-				MsgBox.Error(WithReason(Resources.error_link_disconnected), caption ?? Resources.cap_link_error);
+				MsgBox.Error(WithReason(Resources.error_link_disconnected), caption ?? Resources.cap_link_error, owner);
 			}
 
-			public static void RefreshFailed(string caption = null)
+			public static void RefreshFailed(string caption, IWin32Window owner = null)
 			{
-				MsgBox.Error(WithReason(Resources.error_link_read_characters), caption ?? Resources.cap_link_error);
+				MsgBox.Error(WithReason(Resources.error_link_read_characters), caption ?? Resources.cap_link_error, owner);
 			}
 
-			public static void Error(Backyard.Error error, string caption = null)
+			public static void Error(Backyard.Error error, string caption, IWin32Window owner)
 			{
 				string errorMsg;
 
@@ -103,12 +103,12 @@ namespace Ginger
 					break;
 				}
 
-				MsgBox.Error(WithReason(errorMsg), caption ?? Resources.cap_link_error);
+				MsgBox.Error(WithReason(errorMsg), caption ?? Resources.cap_link_error, owner);
 			}
 
-			public static void Canceled(string caption = null)
+			public static void Canceled(string caption = null, IWin32Window owner = null)
 			{
-				MsgBox.Error(Resources.error_canceled, caption ?? Resources.cap_link_error);
+				MsgBox.Error(Resources.error_canceled, caption ?? Resources.cap_link_error, owner);
 			}
 
 			private static string WithReason(string message)

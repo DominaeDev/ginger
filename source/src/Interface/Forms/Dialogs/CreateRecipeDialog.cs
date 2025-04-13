@@ -203,7 +203,7 @@ namespace Ginger
 			FileName = Utility.ContentPath("Recipes\\User", string.Concat(filename.ToLowerInvariant(), ".recipe.xml"));
 
 			if (File.Exists(FileName) 
-				&& MsgBox.Confirm(Resources.msg_overwrite_recipe, Resources.cap_overwrite_recipe) == false)
+				&& MsgBox.Confirm(Resources.msg_overwrite_recipe, Resources.cap_overwrite_recipe, this) == false)
 				return;
 
 			Category = Categories[comboBox_Category.SelectedIndex];

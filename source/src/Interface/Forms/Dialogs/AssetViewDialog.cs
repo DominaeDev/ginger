@@ -71,7 +71,7 @@ namespace Ginger
 			assetsDataView.EndEdit();
 			if (DialogResult == DialogResult.Cancel && Changed)
 			{
-				var mr = MsgBox.AskYesNoCancel(Resources.msg_apply_changes, Resources.cap_confirm);
+				var mr = MsgBox.AskYesNoCancel(Resources.msg_apply_changes, Resources.cap_confirm, this);
 				if (mr == DialogResult.Cancel)
 					e.Cancel = true;
 				else if (mr == DialogResult.Yes)
@@ -493,7 +493,7 @@ namespace Ginger
 			}
 			catch
 			{
-				MsgBox.Error(Resources.error_open_file_in_exporer, Resources.cap_error);
+				MsgBox.Error(Resources.error_open_file_in_exporer, Resources.cap_error, this);
 				return;
 			}
 		}
@@ -549,7 +549,7 @@ namespace Ginger
 			}
 			catch
 			{
-				MsgBox.Error(Resources.error_write_file, Resources.cap_error);
+				MsgBox.Error(Resources.error_write_file, Resources.cap_error, this);
 			}
 		}
 

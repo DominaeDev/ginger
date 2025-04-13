@@ -182,7 +182,7 @@ namespace Ginger
 		{
 			if (DialogResult == DialogResult.Cancel && _bChanged)
 			{
-				var mr = MsgBox.AskYesNoCancel(Resources.msg_apply_changes, Resources.cap_confirm);
+				var mr = MsgBox.AskYesNoCancel(Resources.msg_apply_changes, Resources.cap_confirm, this);
 				if (mr == DialogResult.Cancel)
 					e.Cancel = true;
 				else if (mr == DialogResult.Yes)
@@ -361,11 +361,11 @@ namespace Ginger
 					}
 					if (replacements == 1)
 					{
-						MsgBox.Message(string.Format(Resources.msg_replace_single, replacements), Resources.cap_swap_pronouns);
+						MsgBox.Message(string.Format(Resources.msg_replace_single, replacements), Resources.cap_swap_pronouns, this);
 					}
 					else
 					{
-						MsgBox.Message(string.Format(Resources.msg_replace_plural, replacements), Resources.cap_swap_pronouns);
+						MsgBox.Message(string.Format(Resources.msg_replace_plural, replacements), Resources.cap_swap_pronouns, this);
 					}
 				}
 			}
@@ -391,9 +391,9 @@ namespace Ginger
 						textBox.SelectionStart = selection;
 					}
 					if (replacements == 1)
-						MsgBox.Message(string.Format(Resources.msg_replace_single, replacements), Resources.cap_replace);
+						MsgBox.Message(string.Format(Resources.msg_replace_single, replacements), Resources.cap_replace, this);
 					else
-						MsgBox.Message(string.Format(Resources.msg_replace_plural, replacements), Resources.cap_replace);
+						MsgBox.Message(string.Format(Resources.msg_replace_plural, replacements), Resources.cap_replace, this);
 				}
 			}
 		}
@@ -454,7 +454,7 @@ namespace Ginger
 			}
 			else
 			{
-				MsgBox.Message(Resources.msg_no_match, Resources.cap_find);
+				MsgBox.Message(Resources.msg_no_match, Resources.cap_find, this);
 			}
 		}
 
