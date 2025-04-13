@@ -36,30 +36,30 @@ namespace Ginger.Integration
 		string LastError { get; }
 
 		// Characters
-		Backyard.Error ImportCharacter(string characterId, out FaradayCard card, out ImageInstance[] images, out UserData userInfo);
-		Backyard.Error CreateNewCharacter(CreateCharacterArguments args, out CharacterInstance characterInstance, out Backyard.Link.Image[] imageLinks);
-		Backyard.Error UpdateCharacter(Backyard.Link link, FaradayCard card, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks);
-		Backyard.Error ConfirmSaveCharacter(Backyard.Link link, out bool newerChangesFound);
-		Backyard.Error ConfirmDeleteCharacters(string[] characterIds, out ConfirmDeleteResult result);
-		Backyard.Error DeleteCharacters(string[] characterIds, string[] groupIds, string[] imageIds);
+/**/	Backyard.Error ImportCharacter(string characterId, out FaradayCard card, out ImageInstance[] images, out UserData userInfo);
+/**/	Backyard.Error CreateNewCharacter(CreateCharacterArguments args, out CharacterInstance characterInstance, out Backyard.Link.Image[] imageLinks);
+/**/	Backyard.Error UpdateCharacter(Backyard.Link link, FaradayCard card, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks);
+/**/	Backyard.Error ConfirmSaveCharacter(Backyard.Link link, out bool newerChangesFound);
+/**/	Backyard.Error ConfirmDeleteCharacters(string[] characterIds, out ConfirmDeleteResult result);
+/**/	Backyard.Error DeleteCharacters(string[] characterIds, string[] groupIds, string[] imageIds);
 
 		// Party
-		Backyard.Error ImportParty(string groupId, out FaradayCard[] cards, out CharacterInstance[] characterInstances, out ImageInstance[] images, out UserData userInfo);
-		Backyard.Error CreateNewParty(CreatePartyArguments args, out GroupInstance groupInstance, out CharacterInstance[] characterInstances, out Backyard.Link.Image[] imageLinks);
-		Backyard.Error UpdateParty(Backyard.Link link, FaradayCard[] cards, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks);
+/**/	Backyard.Error ImportParty(string groupId, out FaradayCard[] cards, out CharacterInstance[] characterInstances, out ImageInstance[] images, out UserData userInfo);
+/**/	Backyard.Error CreateNewParty(CreatePartyArguments args, out GroupInstance groupInstance, out CharacterInstance[] characterInstances, out Backyard.Link.Image[] imageLinks);
+/**/	Backyard.Error UpdateParty(Backyard.Link link, FaradayCard[] cards, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks);
 
 		// Chat
-		Backyard.Error GetChats(string groupId, out ChatInstance[] chatInstances);
-		Backyard.Error GetChatCounts(out Dictionary<string, Backyard.ChatCount> counts);
-		Backyard.Error CreateNewChat(CreateChatArguments args, string groupId, out ChatInstance chatInstance);
-		Backyard.Error RenameChat(string chatId, string newName);
-		Backyard.Error ConfirmDeleteChat(string chatId, string groupId, out int chatCount);
-		Backyard.Error ConfirmChatExists(string chatId);
-		Backyard.Error UpdateChat(string chatId, ChatInstance chatInstance, string groupId);
-		Backyard.Error UpdateChatParameters(string[] chatIds, ChatParameters parameters, ChatStaging staging);
-		Backyard.Error UpdateChatBackground(string[] chatIds, string imageUrl, int width, int height);
-		Backyard.Error DeleteChat(string chatId);
-		Backyard.Error DeleteAllChats(string groupId);
+/**/	Backyard.Error GetChats(string groupId, out ChatInstance[] chatInstances);
+/**/	Backyard.Error GetChatCounts(out Dictionary<string, Backyard.ChatCount> counts);
+/**/	Backyard.Error CreateNewChat(CreateChatArguments args, string groupId, out ChatInstance chatInstance);
+/**/	Backyard.Error RenameChat(string chatId, string newName);
+/**/	Backyard.Error ConfirmDeleteChat(string chatId, string groupId, out int chatCount);
+/**/	Backyard.Error ConfirmChatExists(string chatId);
+/**/	Backyard.Error UpdateChat(string chatId, ChatInstance chatInstance, string groupId);
+/**/	Backyard.Error UpdateChatParameters(ChatInstance[] chatIds, ChatStaging staging, ChatParameters parameters);
+/**/	Backyard.Error UpdateChatBackground(string[] chatIds, string imageUrl, int width, int height);
+/**/	Backyard.Error DeleteChat(string chatId);
+/**/	Backyard.Error DeleteAllChats(string groupId);
 
 		// Folders
 		Backyard.Error CreateNewFolder(string folderName, out FolderInstance folderInstance);
@@ -69,8 +69,8 @@ namespace Ginger.Integration
 		Backyard.Error GetImageUrls(string characterConfigId, out string[] imageUrls);
 		Backyard.Error RepairChats(string groupId, out int modified);
 		Backyard.Error RepairImages(out int modified, out int skipped);
-		Backyard.Error DeleteOrphanedUsers(out string[] imageUrls);
-		Backyard.Error ResetModelDownloadLocation();
+/**/	Backyard.Error DeleteOrphanedUsers(out string[] imageUrls);
+/**/	Backyard.Error ResetModelDownloadLocation();
 	}
 
 	public static class BackyardImplExtensions
@@ -140,9 +140,9 @@ namespace Ginger.Integration
 			return chat != default(ChatInstance);
 		}
 
-		public static Backyard.Error UpdateChatParameters(this IBackyardDatabase impl, string chatId, ChatParameters parameters, ChatStaging staging)
+		public static Backyard.Error UpdateChatParameters(this IBackyardDatabase impl, ChatInstance chat, ChatStaging staging, ChatParameters parameters)
 		{
-			return impl.UpdateChatParameters(new string[] { chatId }, parameters, staging);
+			return impl.UpdateChatParameters(new ChatInstance[] { chat }, staging, parameters);
 		}
 
 	}

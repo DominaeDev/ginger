@@ -419,7 +419,7 @@ namespace Ginger.Integration
 			public DateTime creationDate;       // Chat.createdAt
 			public DateTime updateDate;         // Chat.updatedAt
 
-			public string[] participants = null;
+			public string[] participants = null; // IDs
 			public ChatHistory history = new ChatHistory();
 			public ChatStaging staging = null;
 			public ChatParameters parameters = null;
@@ -1335,6 +1335,11 @@ namespace Ginger.Integration
 				return;
 
 			counts = new Dictionary<string, Backyard.ChatCount>(); // Empty
+		}
+
+		public static string CreateSortingString(object obj)
+		{
+			return CreateSequentialSortingString(0, 1, obj.GetHashCode());
 		}
 
 		public static string CreateSortingString(int hash)

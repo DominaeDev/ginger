@@ -1576,9 +1576,7 @@ namespace Ginger
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return false;
 
-			string[] chatIds = chats.Select(c => c.instanceId).ToArray();
-
-			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chatIds, dlg.Parameters, null), "Updating model settings...");
+			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chats, null, dlg.Parameters), "Updating model settings...");
 			if (error == Backyard.Error.NotFound)
 			{
 				MsgBox.Error(Resources.error_link_chat_not_found, Resources.cap_link_edit_model_settings, this);

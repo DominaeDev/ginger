@@ -3326,7 +3326,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error UpdateChatParameters(string[] chatIds, ChatParameters parameters, ChatStaging staging)
+		public Backyard.Error UpdateChatParameters(ChatInstance[] chatIds, ChatStaging staging, ChatParameters parameters)
 		{
 			if (ConnectionEstablished == false)
 				return Backyard.Error.NotConnected;

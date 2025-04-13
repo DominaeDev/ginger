@@ -51,5 +51,10 @@ namespace Ginger
 			}
 			return count;
 		}
+
+		public static bool IsEmpty<T>(this T[] array)
+		{
+			return array == null || array.Length == 0;
+		}
 	}
 }
