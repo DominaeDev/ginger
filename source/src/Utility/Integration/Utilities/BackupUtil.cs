@@ -60,7 +60,7 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			FaradayCardV4 card = null;
+			BackyardLinkCard card = null;
 			ImageInstance[] images;
 			ChatInstance[] chatInstances = null;
 			UserData userInfo;
@@ -103,7 +103,7 @@ namespace Ginger.Integration
 
 			// Create backup
 			backupInfo = new BackupData();
-			backupInfo.characterCards = new FaradayCardV4[] { card };
+			backupInfo.characterCards = new FaradayCardV4[] { card.ToFaradayCard() };
 			backupInfo.displayName = card.data.displayName;
 			backupInfo.userInfo = userInfo;
 			if (chatInstances != null)
@@ -181,7 +181,7 @@ namespace Ginger.Integration
 				return Backyard.Error.UnsupportedFeature;
 			}
 
-			FaradayCardV4[] cards = null;
+			BackyardLinkCard[] cards = null;
 			ImageInstance[] images;
 			CharacterInstance[] characterInstances;
 			UserData userInfo;
@@ -224,7 +224,7 @@ namespace Ginger.Integration
 
 			// Create backup
 			backupInfo = new BackupData();
-			backupInfo.characterCards = cards;
+			backupInfo.characterCards = cards.Select(c => c.ToFaradayCard()).ToArray();
 			backupInfo.displayName = cards[0].data.displayName;
 			backupInfo.userInfo = userInfo;
 			if (chatInstances != null)
@@ -813,7 +813,7 @@ namespace Ginger.Integration
 			}
 		}
 		
-		public static BackupData.Chat[] SplitAltGreetings(FaradayCardV4 card, Generator.Output output, Backyard.ImageInput[] images)
+		public static BackupData.Chat[] SplitAltGreetings(BackyardLinkCard card, Generator.Output output, Backyard.ImageInput[] images)
 		{
 			var lsChats = new List<BackupData.Chat>();
 

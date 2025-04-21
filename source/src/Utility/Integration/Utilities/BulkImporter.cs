@@ -302,7 +302,7 @@ namespace Ginger.Integration
 
 				// Write character to Backyard
 				var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
-				FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+				BackyardLinkCard card = BackyardLinkCard.FromOutput(output);
 				card.EnsureSystemPrompt();
 
 				Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
@@ -396,7 +396,7 @@ namespace Ginger.Integration
 			{
 				// Write group to database
 				var args = new Backyard.CreatePartyArguments() {
-					cards = backup.characterCards.ToArray(),
+					cards = backup.characterCards.Select(c => BackyardLinkCard.FromFaradayCard(c)).ToArray(),
 					imageInput = images.ToArray(),
 					chats = backup.chats.ToArray(),
 					userInfo = backup.userInfo,
@@ -417,7 +417,7 @@ namespace Ginger.Integration
 
 				// Write character to database
 				var args = new Backyard.CreateCharacterArguments() {
-					card = backup.characterCards[0],
+					card = BackyardLinkCard.FromFaradayCard(backup.characterCards[0]),
 					imageInput = images.ToArray(),
 					chats = backup.chats.ToArray(),
 					userInfo = backup.userInfo,

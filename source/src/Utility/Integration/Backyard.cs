@@ -9,7 +9,7 @@ using System.Globalization;
 
 namespace Ginger.Integration
 {
-	using FaradayCard = FaradayCardV4;
+	using FaradayCard = BackyardLinkCard;
 
 	public static class Backyard
 	{

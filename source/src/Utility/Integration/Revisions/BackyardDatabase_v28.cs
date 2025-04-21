@@ -21,6 +21,8 @@ namespace Ginger.Integration
 	using ImageInput = Backyard.ImageInput;
 	using ImageInstance = Backyard.ImageInstance;
 	using ConfirmDeleteResult = Backyard.ConfirmDeleteResult;
+	
+	using FaradayCard = BackyardLinkCard;
 
 	public class BackyardDatabase_v28 : IBackyardDatabase
 	{
@@ -324,7 +326,7 @@ namespace Ginger.Integration
 		#endregion // Enumerate characters and groups
 
 		#region Characters
-		public Backyard.Error ImportCharacter(string characterId, out FaradayCardV4 card, out ImageInstance[] images, out UserData userInfo)
+		public Backyard.Error ImportCharacter(string characterId, out FaradayCard card, out ImageInstance[] images, out UserData userInfo)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -379,7 +381,7 @@ namespace Ginger.Integration
 					}
 
 					// Gather lorebook items
-					FaradayCardV1.LoreBookEntry[] entries;
+					FaradayCard.LoreBookEntry[] entries;
 					FetchLorebook(connection, character.configId, out entries);
 
 					// Gather portrait image files
@@ -395,7 +397,7 @@ namespace Ginger.Integration
 							lsImages.AddRange(backgrounds);
 					}
 
-					card = new FaradayCardV4();
+					card = new FaradayCard();
 					card.data.displayName = character.displayName;
 					card.data.name = character.name;
 					card.data.persona = character.persona;
@@ -501,7 +503,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void FetchLorebook(SQLiteConnection connection, string configId, out FaradayCardV1.LoreBookEntry[] entries)
+		private static void FetchLorebook(SQLiteConnection connection, string configId, out FaradayCard.LoreBookEntry[] entries)
 		{
 			using (var cmdLoreItems = connection.CreateCommand())
 			{
@@ -519,7 +521,7 @@ namespace Ginger.Integration
 				";
 				cmdLoreItems.Parameters.AddWithValue("$configId", configId);
 
-				var lsEntries = new List<KeyValuePair<string, FaradayCardV1.LoreBookEntry>>();
+				var lsEntries = new List<KeyValuePair<string, FaradayCard.LoreBookEntry>>();
 				using (var reader = cmdLoreItems.ExecuteReader())
 				{
 					while (reader.Read())
@@ -528,7 +530,7 @@ namespace Ginger.Integration
 						string value = reader.GetString(1);
 						string order = reader.GetString(2);
 
-						lsEntries.Add(new KeyValuePair<string, FaradayCardV1.LoreBookEntry>(order, new FaradayCardV1.LoreBookEntry() {
+						lsEntries.Add(new KeyValuePair<string, FaradayCard.LoreBookEntry>(order, new FaradayCard.LoreBookEntry() {
 							key = key,
 							value = value,
 						}));
@@ -839,7 +841,7 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			FaradayCardV4 card = args.card;
+			FaradayCard card = args.card;
 			ImageInput[] imageInput = args.imageInput;
 			BackupData.Chat[] chats = args.chats;
 			UserData userInfo = args.userInfo;
@@ -1068,7 +1070,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error UpdateCharacter(Backyard.Link link, FaradayCardV4 card, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks)
+		public Backyard.Error UpdateCharacter(Backyard.Link link, FaradayCard card, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks)
 		{
 			if (card == null || link == null || string.IsNullOrEmpty(link.mainActorId))
 			{
@@ -1371,7 +1373,7 @@ namespace Ginger.Integration
 			return bModifiedBackground;
 		}
 
-		public Backyard.Error ImportParty(string groupId, out FaradayCardV4[] cards, out CharacterInstance[] characterInstances, out ImageInstance[] images, out UserData userInfo)
+		public Backyard.Error ImportParty(string groupId, out FaradayCard[] cards, out CharacterInstance[] characterInstances, out ImageInstance[] images, out UserData userInfo)
 		{
 			cards = null;
 			characterInstances = null;
@@ -1390,7 +1392,7 @@ namespace Ginger.Integration
 			return Backyard.Error.UnsupportedFeature;
 		}
 
-		public Backyard.Error UpdateParty(Backyard.Link link, FaradayCardV4[] cards, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks)
+		public Backyard.Error UpdateParty(Backyard.Link link, FaradayCard[] cards, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks)
 		{
 			updateDate = default(DateTime);
 			updatedImageLinks = null;
@@ -2276,7 +2278,7 @@ namespace Ginger.Integration
 					connection.Open();
 
 					var defaultStaging = new ChatStaging() {
-						system = FaradayCardV4.OriginalModelInstructionsByFormat[0],
+						system = FaradayCard.OriginalModelInstructionsByFormat[0],
 					};
 					var defaultParameters = new ChatParameters();
 
@@ -3405,7 +3407,7 @@ namespace Ginger.Integration
 								cmdUpdateChat.Parameters.AddWithValue("$timestamp", updatedAt);
 								if (staging != null)
 								{
-									cmdUpdateChat.Parameters.AddWithValue("$system", Utility.FirstNonEmpty(staging.system, FaradayCardV4.OriginalModelInstructionsByFormat[0]));
+									cmdUpdateChat.Parameters.AddWithValue("$system", Utility.FirstNonEmpty(staging.system, FaradayCard.OriginalModelInstructionsByFormat[0]));
 									cmdUpdateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$example", staging.example ?? "");
@@ -4462,7 +4464,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private void WriteLorebook(SQLiteConnection connection, string configId, FaradayCardV1.LoreBookEntry[] loreItems, ref int updates, ref int expectedUpdates)
+		private void WriteLorebook(SQLiteConnection connection, string configId, FaradayCard.LoreBookEntry[] loreItems, ref int updates, ref int expectedUpdates)
 		{
 			int hash = configId.GetHashCode();
 			long updatedAt = DateTime.Now.ToUnixTimeMilliseconds();
@@ -5006,7 +5008,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void WriteCharacter(SQLiteConnection connection, FaradayCardV4 card, string displayName, string characterId, long createdAt, out CharacterInstance characterInstance, ref int updates, ref int expectedUpdates)
+		private static void WriteCharacter(SQLiteConnection connection, FaradayCard card, string displayName, string characterId, long createdAt, out CharacterInstance characterInstance, ref int updates, ref int expectedUpdates)
 		{
 			string instanceId = characterId ?? Cuid.NewCuid();
 			string configId = Cuid.NewCuid();
@@ -6026,7 +6028,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void WriteUpdateGroup(SQLiteConnection connection, FaradayCardV4 card, string groupId, List<_Chat> chats, string groupName, long updatedAt, ref int updates, ref int expectedUpdates)
+		private static void WriteUpdateGroup(SQLiteConnection connection, FaradayCard card, string groupId, List<_Chat> chats, string groupName, long updatedAt, ref int updates, ref int expectedUpdates)
 		{
 			// Update GroupConfig
 			using (var cmdUpdateGroup = new SQLiteCommand(connection))
@@ -6138,7 +6140,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void WriteUpdateCharacter(SQLiteConnection connection, FaradayCardV4 card, string configId, string displayName, long updatedAt, ref int updates, ref int expectedUpdates)
+		private static void WriteUpdateCharacter(SQLiteConnection connection, FaradayCard card, string configId, string displayName, long updatedAt, ref int updates, ref int expectedUpdates)
 		{
 			using (var cmdUpdate = new SQLiteCommand(connection))
 			{

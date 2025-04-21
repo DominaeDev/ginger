@@ -18,7 +18,7 @@ namespace Ginger.Integration
 	using ImageInstance = Backyard.ImageInstance;
 	using ConfirmDeleteResult = Backyard.ConfirmDeleteResult;
 
-	using FaradayCard = FaradayCardV4;
+	using FaradayCard = BackyardLinkCard;
 
 	public interface IBackyardDatabase
 	{

@@ -196,6 +196,7 @@
 				"createdAt", 					"DATETIME",
 				"updatedAt", 					"DATETIME",
 				"hasCharFieldsMigrated", 		"BOOLEAN",
+				"hasRegenSwipesMigrated", 		"BOOLEAN",
 			},
 
 			// Ignored tables

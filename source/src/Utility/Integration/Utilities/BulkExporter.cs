@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Timers;
 using System.IO;
+using System.Linq;
 
 namespace Ginger.Integration
 {
@@ -353,7 +354,7 @@ namespace Ginger.Integration
 			}
 
 			// Read character from Backyard
-			FaradayCardV4 faradayCard;
+			BackyardLinkCard faradayCard;
 			ImageInstance[] images;
 			UserData tmp;
 			var importError = Backyard.Database.ImportCharacter(characterInstance.instanceId, out faradayCard, out images, out tmp);
@@ -366,7 +367,7 @@ namespace Ginger.Integration
 			// Convert
 			var stash = Current.Stash();
 			Current.Instance = new GingerCharacter();
-			Current.Instance.ReadFaradayCard(faradayCard, null);
+			Current.Instance.ReadFaradayCard(faradayCard.ToFaradayCard(), null);
 
 			// Load images/backgrounds
 			Backyard.Link.Image[] unused;
@@ -466,7 +467,7 @@ namespace Ginger.Integration
 			}
 
 			// Read character from Backyard
-			FaradayCardV4[] faradayCards;
+			BackyardLinkCard[] faradayCards;
 			ImageInstance[] images;
 			CharacterInstance[] characterInstances;
 			UserData tmp;
@@ -480,7 +481,7 @@ namespace Ginger.Integration
 			// Convert
 			var stash = Current.Stash();
 			Current.Instance = new GingerCharacter();
-			Current.ReadFaradayCards(faradayCards, null, null);
+			Current.ReadFaradayCards(faradayCards.Select(c => c.ToFaradayCard()).ToArray(), null, null);
 
 			Backyard.Link.Image[] imageLinks;
 			int[] actorIndices = new int[images.Length];

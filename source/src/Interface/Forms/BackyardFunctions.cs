@@ -127,7 +127,7 @@ namespace Ginger
 			SetStatusBarMessage(Resources.status_open_character);
 
 			// Import...
-			FaradayCardV4 faradayData;
+			BackyardLinkCard faradayData;
 			ImageInstance[] images;
 			UserData userInfo;
 			CharacterInstance characterInstance = dlg.SelectedCharacter;
@@ -152,7 +152,7 @@ namespace Ginger
 			}
 
 			// Success
-			Current.ReadFaradayCard(faradayData, null, userInfo);
+			Current.ReadFaradayCard(faradayData.ToFaradayCard(), null, userInfo);
 
 			Backyard.Link.Image[] imageLinks;
 			Current.ImportImages(images, null, out imageLinks);
@@ -185,7 +185,7 @@ namespace Ginger
 
 			SetStatusBarMessage(Resources.status_open_character);
 
-			FaradayCardV4[] faradayData;
+			BackyardLinkCard[] faradayData;
 			CharacterInstance[] characterInstances;
 			ImageInstance[] images;
 			UserData userInfo;
@@ -210,7 +210,7 @@ namespace Ginger
 			}
 
 			// Success
-			Current.ReadFaradayCards(faradayData, null, userInfo);
+			Current.ReadFaradayCards(faradayData.Select(c => c.ToFaradayCard()).ToArray(), null, userInfo);
 
 			Backyard.Link.Image[] imageLinks;
 			int[] actorIndices = new int[images.Length];
@@ -321,7 +321,7 @@ namespace Ginger
 				}
 			}
 
-			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+			BackyardLinkCard card = BackyardLinkCard.FromOutput(output);
 			card.EnsureSystemPrompt();
 
 			Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
@@ -434,7 +434,7 @@ namespace Ginger
 				}
 			}
 
-			FaradayCardV4 card = FaradayCardV4.FromOutput(output);
+			BackyardLinkCard card = BackyardLinkCard.FromOutput(output);
 			if (Current.Link.linkType != Backyard.Link.LinkType.StandAlone)
 				card.EnsureSystemPrompt();
 
@@ -586,7 +586,7 @@ namespace Ginger
 			SetStatusBarMessage(Resources.status_revert_character);
 
 			// Import data
-			FaradayCardV4 faradayData;
+			BackyardLinkCard faradayData;
 			ImageInstance[] images;
 			UserData userInfo;
 			var importError = Backyard.Database.ImportCharacter(characterInstance.instanceId, out faradayData, out images, out userInfo);
@@ -600,7 +600,7 @@ namespace Ginger
 			}
 
 			// Success
-			Current.ReadFaradayCard(faradayData, null, userInfo);
+			Current.ReadFaradayCard(faradayData.ToFaradayCard(), null, userInfo);
 
 			Backyard.Link.Image[] imageLinks;
 			Current.ImportImages(images, null, out imageLinks);
@@ -620,7 +620,7 @@ namespace Ginger
 		{
 			SetStatusBarMessage(Resources.status_revert_character);
 
-			FaradayCardV4[] faradayData;
+			BackyardLinkCard[] faradayData;
 			CharacterInstance[] characterInstances;
 			ImageInstance[] images;
 			UserData userInfo;
@@ -643,7 +643,7 @@ namespace Ginger
 			}
 
 			// Success
-			Current.ReadFaradayCards(faradayData, null, userInfo);
+			Current.ReadFaradayCards(faradayData.Select(c => c.ToFaradayCard()).ToArray(), null, userInfo);
 
 			Backyard.Link.Image[] imageLinks;
 			int[] actorIndices = new int[images.Length];
@@ -1407,7 +1407,7 @@ namespace Ginger
 
 			// Write character
 			var args = new Backyard.CreatePartyArguments() {
-				cards = backup.characterCards.ToArray(),
+				cards = backup.characterCards.Select(c => BackyardLinkCard.FromFaradayCard(c)).ToArray(),
 				imageInput = images.ToArray(),
 				chats = backup.chats.ToArray(),
 				userInfo = backup.userInfo,
@@ -1926,7 +1926,7 @@ namespace Ginger
 				}
 			}
 
-			FaradayCardV4[] cards = outputs.Select(o => FaradayCardV4.FromOutput(o)).ToArray();
+			BackyardLinkCard[] cards = outputs.Select(o => BackyardLinkCard.FromOutput(o)).ToArray();
 			if (cards == null || cards.Length == 0)
 			{
 				createdGroup = default(GroupInstance);
@@ -2011,7 +2011,7 @@ namespace Ginger
 				}
 			}
 
-			FaradayCardV4[] cards = outputs.Select(o => FaradayCardV4.FromOutput(o)).ToArray();
+			BackyardLinkCard[] cards = outputs.Select(o => BackyardLinkCard.FromOutput(o)).ToArray();
 			if (cards == null || cards.Length == 0)
 				return Backyard.Error.InvalidArgument; // Error
 
