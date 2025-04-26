@@ -467,6 +467,7 @@ namespace Ginger
 		{
 			bool hasQuotes;
 			bool hasAsterisks;
+			bool hasDoubleAsterisks;
 			bool isDecorative;
 			bool isJapanese;
 
@@ -479,6 +480,7 @@ namespace Ginger
 				isDecorative = greeting.IndexOfAny(new char[] { '\u201C', '\u201D', '\u201E', '\u201F' }) != -1;
 				isJapanese = greeting.IndexOfAny(new char[] { '\u300C', '\u300D' }) != -1;
 				hasAsterisks = greeting.IndexOf('*') != -1;
+				hasDoubleAsterisks = greeting.IndexOf("**") != -1;
 			}
 			else if (string.IsNullOrWhiteSpace(example) == false)
 			{
@@ -486,6 +488,7 @@ namespace Ginger
 				isDecorative = example.IndexOfAny(new char[] { '\u201C', '\u201D', '\u201E', '\u201F' }) != -1;
 				isJapanese = example.IndexOfAny(new char[] { '\u300C', '\u300D' }) != -1;
 				hasAsterisks = example.IndexOf('*') != -1;
+				hasDoubleAsterisks = example.IndexOf("**") != -1;
 			}
 			else
 				return CardData.TextStyle.None;
@@ -498,6 +501,8 @@ namespace Ginger
 				return CardData.TextStyle.Decorative;
 			else if (isJapanese)
 				return CardData.TextStyle.None;
+			else if (hasDoubleAsterisks)
+				return CardData.TextStyle.Bold;
 			else if (hasAsterisks)
 				return CardData.TextStyle.Chat;
 			return CardData.TextStyle.None;

@@ -827,7 +827,7 @@ namespace Ginger
 			{
 				new KeyValuePair<string, string>(staging.system, Resources.system_recipe),
 				new KeyValuePair<string, string>(staging.scenario, Resources.scenario_recipe),
-				new KeyValuePair<string, string>(staging.greeting, Resources.greeting_recipe),
+				new KeyValuePair<string, string>(staging.greeting.text, Resources.greeting_recipe),
 				new KeyValuePair<string, string>(staging.example, Resources.example_recipe),
 				new KeyValuePair<string, string>(staging.grammar, Resources.grammar_recipe),
 			};

@@ -17,6 +17,7 @@ namespace Ginger.Integration
 	using ImageInput = Backyard.ImageInput;
 	using ImageInstance = Backyard.ImageInstance;
 	using ConfirmDeleteResult = Backyard.ConfirmDeleteResult;
+	using CharacterMessage = Backyard.CharacterMessage;
 
 	using FaradayCard = BackyardLinkCard;
 

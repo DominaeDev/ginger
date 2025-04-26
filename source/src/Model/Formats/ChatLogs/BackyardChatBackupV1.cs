@@ -11,6 +11,7 @@ namespace Ginger
 	using ChatInstance = Backyard.ChatInstance;
 	using ChatParameters = Backyard.ChatParameters;
 	using ChatStaging = Backyard.ChatStaging;
+	using CharacterMessage = Backyard.CharacterMessage;
 
 	public class BackyardChatBackupV1
 	{
@@ -167,7 +168,7 @@ namespace Ginger
 				backup.staging = new Staging() { 
 					system = chat.staging.system ?? "",
 					scenario = chat.staging.scenario ?? "",
-					greeting = chat.staging.greeting ?? "",
+					greeting = chat.staging.greeting.text ?? "",
 					example = chat.staging.example ?? "",
 					grammar = chat.staging.grammar ?? "",
 					authorNote = chat.staging.authorNote ?? "",
@@ -241,7 +242,7 @@ namespace Ginger
 				staging = new ChatStaging() {
 					system = this.staging.system ?? "",
 					scenario = this.staging.scenario ?? "",
-					greeting = this.staging.greeting ?? "",
+					greeting = CharacterMessage.FromString(this.staging.greeting ?? ""),
 					example = this.staging.example ?? "",
 					grammar = this.staging.grammar ?? "",
 					pruneExampleChat = this.staging.pruneExampleChat,

@@ -665,7 +665,7 @@ namespace Ginger
 			return outputs;
 		}
 
-		private class PartialOutput
+		public class PartialOutput
 		{
 			public BlockBuilder blockBuilder;
 			public GingerString[] greetings;
@@ -1108,7 +1108,7 @@ namespace Ginger
 
 		}
 
-		private static PartialOutput.ExampleChatMessage[] SplitChatMessage(string text)
+		public static PartialOutput.ExampleChatMessage[] SplitChatMessage(string text)
 		{
 			var messages = new List<PartialOutput.ExampleChatMessage>();
 

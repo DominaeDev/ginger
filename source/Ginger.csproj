@@ -449,7 +449,7 @@
     <Compile Include="src\Model\CardData.cs" />
     <Compile Include="src\Model\Formats\Assets\AssetCollection.cs" />
     <Compile Include="src\Model\Formats\Assets\AssetImageCache.cs" />
-    <Compile Include="src\Model\Formats\CharacterCards\BackyardLinkCard.cs" />
+    <Compile Include="src\Utility\Integration\BackyardLinkCard.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\BackyardChatBackupV1.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\GingerChatV2.cs" />
     <Compile Include="src\Model\Formats\UserData.cs" />

@@ -1096,8 +1096,7 @@ namespace Ginger
 
 			if (bShouldAutosave)
 			{
-				// Save changes to Backyard
-				autosaveError = UpdateCharacterInBackyard();
+				autosaveError = SaveChangesToBackyard();
 
 				if (autosaveError == Backyard.Error.CancelledByUser)
 					return false; // User clicked 'cancel'

@@ -17,6 +17,7 @@ namespace Ginger
 	using GroupInstance = Backyard.GroupInstance;
 	using ChatInstance = Backyard.ChatInstance;
 	using ChatStaging = Backyard.ChatStaging;
+	using CharacterMessage = Backyard.CharacterMessage;
 
 	public partial class LinkEditChatDialog : FormEx
 	{

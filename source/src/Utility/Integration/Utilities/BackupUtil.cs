@@ -16,6 +16,7 @@ namespace Ginger.Integration
 	using ChatParameters = Backyard.ChatParameters;
 	using ChatStaging = Backyard.ChatStaging;
 	using ImageInstance = Backyard.ImageInstance;
+	using CharacterMessage = Backyard.CharacterMessage;
 
 	public class BackupData
 	{
@@ -861,7 +862,7 @@ namespace Ginger.Integration
 					staging = new ChatStaging() {
 						system = card.data.system,
 						scenario = card.data.scenario,
-						greeting = altGreeting,
+						greeting = CharacterMessage.FromString(altGreeting),
 						example = card.data.example,
 						grammar = card.data.grammar,
 					},

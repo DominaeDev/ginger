@@ -21,6 +21,7 @@ namespace Ginger.Integration
 	using ImageInput = Backyard.ImageInput;
 	using ImageInstance = Backyard.ImageInstance;
 	using ConfirmDeleteResult = Backyard.ConfirmDeleteResult;
+	using CharacterMessage = Backyard.CharacterMessage;
 
 	using FaradayCard = BackyardLinkCard;
 
@@ -352,8 +353,11 @@ namespace Ginger.Integration
 					if (groupIds.Length > 0)
 						groupId = groupIds[0];
 
+					// Get group user
+					string userId;
 					if (groupId != null)
 					{
+
 						if (FetchGroupInfo(connection, groupId, out _Group groupInfo))
 						{
 							hubCharId = groupInfo.hubCharId;
@@ -363,11 +367,15 @@ namespace Ginger.Integration
 						string chatId;
 						ChatParameters tmp;
 						if (GetPrimaryChatForGroup(connection, groupId, out chatId))
+						{
 							FetchChatStaging(connection, chatId, out staging, out tmp);
+							FetchUserInGroup(connection, groupId, out userId);
+							PrepareGreetingAndExampleChat(ref staging.greeting, ref staging.exampleMessages, userId, new string[] { characterId });
+						}
 					}
 
 					// Gather lorebook items
-					BackyardLinkCard.LoreBookEntry[] entries;
+					FaradayCard.LoreBookEntry[] entries;
 					FetchLorebook(connection, character.configId, out entries);
 
 					// Gather portrait image files
@@ -399,23 +407,26 @@ namespace Ginger.Integration
 					BackyardUtil.ConvertFromIDPlaceholders(card);
 
 					// Get user persona and portrait
-					string userId;
-					string userName;
-					string userPersona;
-					ImageInstance userImage;
-					if (FetchUserInfo(connection, groupId, out userId, out userName, out userPersona, out userImage))
+					userInfo = null;
+					if (groupId != null)
 					{
-						BackyardUtil.ConvertFromIDPlaceholders(ref userPersona);
+						string userName;
+						string userPersona;
+						ImageInstance userImage;
+						if (FetchUserInfo(connection, groupId, out userId, out userName, out userPersona, out userImage))
+						{
+							BackyardUtil.ConvertFromIDPlaceholders(ref userPersona);
 
-						userInfo = new UserData() {
-							name = userName?.Trim(),
-							persona = userPersona?.Trim(),
-						};
-						if (userImage != null)
-							lsImages.Add(userImage);
+							userInfo = new UserData() {
+								name = userName?.Trim(),
+								persona = userPersona?.Trim(),
+							};
+							if (userImage != null)
+								lsImages.Add(userImage);
+						}
+
+						PrepareGreetingAndExampleChat(ref staging.greeting, ref staging.exampleMessages, userId, new string[] { characterId });
 					}
-					else
-						userInfo = null;
 
 					images = lsImages.ToArray();
 					connection.Close();
@@ -490,7 +501,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void FetchLorebook(SQLiteConnection connection, string configId, out BackyardLinkCard.LoreBookEntry[] entries)
+		private static void FetchLorebook(SQLiteConnection connection, string configId, out FaradayCard.LoreBookEntry[] entries)
 		{
 			using (var cmdLoreItems = connection.CreateCommand())
 			{
@@ -508,7 +519,7 @@ namespace Ginger.Integration
 				";
 				cmdLoreItems.Parameters.AddWithValue("$configId", configId);
 
-				var lsEntries = new List<KeyValuePair<string, BackyardLinkCard.LoreBookEntry>>();
+				var lsEntries = new List<KeyValuePair<string, FaradayCard.LoreBookEntry>>();
 				using (var reader = cmdLoreItems.ExecuteReader())
 				{
 					while (reader.Read())
@@ -517,7 +528,7 @@ namespace Ginger.Integration
 						string value = reader.GetString(1);
 						string order = reader.GetString(2);
 
-						lsEntries.Add(new KeyValuePair<string, BackyardLinkCard.LoreBookEntry>(order, new BackyardLinkCard.LoreBookEntry() {
+						lsEntries.Add(new KeyValuePair<string, FaradayCard.LoreBookEntry>(order, new FaradayCard.LoreBookEntry() {
 							key = key,
 							value = value,
 						}));
@@ -582,7 +593,7 @@ namespace Ginger.Integration
 			return true;
 		}
 
-		private struct _ExampleChat
+		private struct _ExampleMessageRow
 		{
 			public string characterId;
 			public string text;
@@ -961,7 +972,7 @@ namespace Ginger.Integration
 							var staging = new ChatStaging() {
 								system = card.data.system ?? "",
 								scenario = card.data.scenario ?? "",
-								greeting = card.data.greeting ?? "",
+								greeting = card.data.greeting,
 								example = card.data.example ?? "",
 								grammar = card.data.grammar ?? "",
 								authorNote = card.authorNote ?? "",
@@ -1079,6 +1090,7 @@ namespace Ginger.Integration
 
 			string characterId = link.mainActorId;
 			bool bAllowUserPersona = userInfo != null;
+			BackyardUtil.ConvertToIDPlaceholders(card, characterId);
 
 			try
 			{
@@ -1167,11 +1179,14 @@ namespace Ginger.Integration
 					ImageOutput userPortrait = default(ImageOutput);
 					if (bAllowUserPersona)
 						userPortrait = imageOutput.FirstOrDefault(i => i.imageType == AssetFile.AssetType.UserIcon);
+					
+					// Resolve message speaker ids
+					PrepareGreetingAndExampleChat(ref card.data.greeting, ref card.data.exampleMessages, userId, characterId);
 
 					bool bWriteGroup = groupId != null
 						|| !(string.IsNullOrEmpty(card.data.system)
 							&& string.IsNullOrEmpty(card.data.scenario)
-							&& string.IsNullOrEmpty(card.data.greeting)
+							&& string.IsNullOrEmpty(card.data.greeting.text)
 							&& string.IsNullOrEmpty(card.data.example)
 							&& string.IsNullOrEmpty(card.data.grammar)
 							&& string.IsNullOrEmpty(card.authorNote)
@@ -1214,8 +1229,9 @@ namespace Ginger.Integration
 							// Update group
 							if (groupId != null && bWriteGroup)
 							{
-								WriteUpdateGroup(connection, card, groupId, "", updatedAt, ref updates, ref expectedUpdates);
+								WriteUpdateGroup(connection, groupId, card, "", updatedAt, ref updates, ref expectedUpdates);
 								WriteUpdateGreeting(connection, groupId, card.data.greeting, characterId, updatedAt, ref updates, ref expectedUpdates);
+								WriteUpdateExampleChat(connection, groupId, card.data.exampleMessages, updatedAt, ref updates, ref expectedUpdates);
 							}
 
 							// Update background
@@ -1406,7 +1422,7 @@ namespace Ginger.Integration
 
 					List<_Character> characters = new List<_Character>();
 					var lsImages = new List<ImageInstance>();
-					Dictionary<string, BackyardLinkCard.LoreBookEntry[]> characterLore = new Dictionary<string, BackyardLinkCard.LoreBookEntry[]>();
+					Dictionary<string, FaradayCard.LoreBookEntry[]> characterLore = new Dictionary<string, FaradayCard.LoreBookEntry[]>();
 
 					for (int i = 0; i < groupMembers.Count; ++i)
 					{
@@ -1416,7 +1432,7 @@ namespace Ginger.Integration
 							characters.Add(character);
 
 							// Gather lorebook items
-							BackyardLinkCard.LoreBookEntry[] entries;
+							FaradayCard.LoreBookEntry[] entries;
 							FetchLorebook(connection, character.configId, out entries);
 							characterLore.Add(character.instanceId, entries);
 
@@ -1438,16 +1454,25 @@ namespace Ginger.Integration
 						hubAuthorUsername = groupInfo.hubAuthorUsername;
 					}
 
+					// Get group user
+					string userId;
+					FetchUserInGroup(connection, groupId, out userId);
+
 					// Get chat staging
 					string chatId;
 					ChatParameters tmp;
 					if (GetPrimaryChatForGroup(connection, groupId, out chatId))
+					{
 						FetchChatStaging(connection, chatId, out staging, out tmp);
+						PrepareGreetingAndExampleChat(ref staging.greeting, ref staging.exampleMessages, userId, characters.Select(c => c.instanceId).ToArray());
+					}
 
 					// Gather background image files
 					ImageInstance[] backgrounds;
 					if (FetchChatBackgrounds(connection, groupId, out backgrounds))
 						lsImages.AddRange(backgrounds);
+
+					var exampleMessagesByCharacter = SplitExampleMessagesByCharacter(staging.exampleMessages, groupMembers);
 
 					cards = new FaradayCard[characters.Count];
 					characterInstances = new CharacterInstance[characters.Count];
@@ -1465,16 +1490,22 @@ namespace Ginger.Integration
 						card.data.updateDate = character.updateDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
 
 						if (characterLore.TryGetValue(character.instanceId, out card.data.loreItems) == false)
-							card.data.loreItems = new BackyardLinkCard.LoreBookEntry[0];
+							card.data.loreItems = new FaradayCard.LoreBookEntry[0];
 
 						if (i == 0) // Staging goes into the primary card
 						{
 							card.data.system = staging.system;
 							card.data.scenario = staging.scenario;
 							card.data.greeting = staging.greeting;
-							card.data.example = staging.example;
 							card.data.grammar = staging.grammar;
 							card.authorNote = staging.authorNote;
+						}
+
+						// Example chat (by character)
+						List<CharacterMessage> exampleMessages;
+						if (exampleMessagesByCharacter.TryGetValue(i, out exampleMessages))
+						{
+							card.data.exampleMessages = exampleMessages.ToArray();
 						}
 
 						characterInstances[i] = new CharacterInstance() {
@@ -1500,7 +1531,6 @@ namespace Ginger.Integration
 					BackyardUtil.ConvertFromIDPlaceholders(cards);
 
 					// Get user persona and portrait
-					string userId;
 					string userName;
 					string userPersona;
 					ImageInstance userImage;
@@ -1641,7 +1671,7 @@ namespace Ginger.Integration
 					var staging = new ChatStaging() {
 						system = primaryCard.data.system ?? "",
 						scenario = primaryCard.data.scenario ?? "",
-						greeting = primaryCard.data.greeting ?? "",
+						greeting = primaryCard.data.greeting,
 						example = primaryCard.data.example ?? "",
 						grammar = primaryCard.data.grammar ?? "",
 						authorNote = primaryCard.authorNote ?? "",
@@ -1836,8 +1866,9 @@ namespace Ginger.Integration
 			string[] characterIds = new string[actors.Length];
 			for (int i = 0; i < actors.Length; ++i)
 				characterIds[i] = actors[i].remoteId;
+			
 			BackyardUtil.ConvertToIDPlaceholders(cards, characterIds);
-
+			
 			try
 			{
 				using (var connection = CreateSQLiteConnection())
@@ -1921,6 +1952,9 @@ namespace Ginger.Integration
 					if (bAllowUserPersona)
 						userPortrait = imageOutput.FirstOrDefault(i => i.imageType == AssetFile.AssetType.UserIcon);
 
+					// Resolve message speaker ids
+					PrepareGreetingAndExampleChat(ref primaryCard.data.greeting, ref primaryCard.data.exampleMessages, userId, characterIds);
+					
 					// Write to database
 					using (var transaction = connection.BeginTransaction())
 					{
@@ -1956,8 +1990,9 @@ namespace Ginger.Integration
 							}
 
 							// Update group
-							WriteUpdateGroup(connection, primaryCard, groupId, primaryCard.data.displayName, updatedAt, ref updates, ref expectedUpdates);
+							WriteUpdateGroup(connection, groupId, primaryCard, primaryCard.data.displayName, updatedAt, ref updates, ref expectedUpdates);
 							WriteUpdateGreeting(connection, groupId, primaryCard.data.greeting, characterIds[0], updatedAt, ref updates, ref expectedUpdates);
+							WriteUpdateExampleChat(connection, groupId, primaryCard.data.exampleMessages, updatedAt, ref updates, ref expectedUpdates);
 
 							// Update background
 							Dictionary<string, ImageOutput> chatBackgrounds;
@@ -2034,6 +2069,60 @@ namespace Ginger.Integration
 				updatedImageLinks = null;
 				return Backyard.Error.Unknown;
 			}
+		}
+
+		private void PrepareGreetingAndExampleChat(ref CharacterMessage greeting, ref CharacterMessage[] exampleMessages, string userId, params string[] characterIds)
+		{
+			var ids = Utility.ConcatenateArrays(new string[] { userId }, characterIds);
+
+			Dictionary<string, int> namesToId = new Dictionary<string, int>();
+			namesToId.Add(GingerString.UserMarker, 0);
+			namesToId.Add(GingerString.CharacterMarker, 1);
+			for (int i = 0; i < characterIds.Length; ++i)
+			{
+				namesToId.Add(GingerString.MakeInternalCharacterMarker(i), i + 1);
+				namesToId.Add(BackyardUtil.CreateIDPlaceholder(characterIds[i]), i + 1);
+			}
+
+			// Greeting
+			if (greeting.IsEmpty() == false)
+			{
+				int index;
+				if (string.IsNullOrEmpty(greeting.name) == false)
+				{
+					string name = greeting.name;
+					if (name[0] == '#')
+						name = name.Substring(1);
+					if (namesToId.TryGetValue(name, out index) == false)
+						index = 1;
+				}
+				else
+					index = 1;
+
+				greeting.characterIndex = index;
+				greeting.characterId = ids[index];
+			}
+
+			// Example messages
+			for (int i = 0; i < exampleMessages.Length; ++i)
+			{
+				int index;
+				if (string.IsNullOrEmpty(exampleMessages[i].name) == false)
+				{
+					string name = exampleMessages[i].name;
+					if (name[0] == '#')
+						name = name.Substring(1);
+					if (namesToId.TryGetValue(name, out index) == false)
+						index = 1;
+				}
+				else
+					index = 1;
+
+				exampleMessages[i].characterIndex = index;
+				exampleMessages[i].characterId = ids[index];
+			}
+
+
 		}
 
 		public Backyard.Error ConfirmDeleteCharacters(string[] characterIds, out ConfirmDeleteResult result)
@@ -2530,6 +2619,10 @@ namespace Ginger.Integration
 						"; //! @compat: modelInstructionsType
 						cmdChat.Parameters.AddWithValue("$groupId", groupId);
 
+						//! @compat: greeting
+
+						//! @compat: example chat
+
 						using (var reader = cmdChat.ExecuteReader())
 						{
 							int untitledCounter = 0;
@@ -2611,6 +2704,7 @@ namespace Ginger.Integration
 							}
 						}
 					}
+									
 
 					// Collect messages
 					for (int i = 0; i < chats.Count; ++i)
@@ -2830,12 +2924,12 @@ namespace Ginger.Integration
 				return null; // Error
 
 			// Insert greeting
-			if (string.IsNullOrEmpty(chatInfo.staging.greeting) == false)
+			if (string.IsNullOrEmpty(chatInfo.staging.greeting.text) == false)
 			{
 				string userName = Utility.FirstNonEmpty(groupMembers[0].name, Constants.DefaultUserName);
 				string characterName = Utility.FirstNonEmpty(groupMembers[1].name, Constants.DefaultCharacterName);
 
-				var sb = new StringBuilder(GingerString.FromFaraday(chatInfo.staging.greeting).ToString());
+				var sb = new StringBuilder(GingerString.FromFaraday(chatInfo.staging.greeting.text).ToString());
 				sb.Replace(GingerString.CharacterMarker, characterName, true);
 				sb.Replace(GingerString.UserMarker, userName, true);
 
@@ -2902,7 +2996,10 @@ namespace Ginger.Integration
 					// Read default chat settings (latest)
 					string primaryChatId;
 					if (GetPrimaryChatForGroup(connection, groupId, out primaryChatId))
+					{
 						FetchChatStaging(connection, primaryChatId, out defaultStaging, out defaultParameters);
+						//! @compat: example chats?
+					}
 
 					// Fetch group members
 					List<_Character> groupMembers;
@@ -2922,7 +3019,7 @@ namespace Ginger.Integration
 							var staging = args.staging ?? defaultStaging;
 							var parameters = args.parameters ?? defaultParameters;
 							var chatName = args.history.name ?? "";
-							var greeting = staging.greeting;
+							var greeting = staging.greeting.text;
 							if (args.isImport)
 								greeting = args.history.hasGreeting ? args.history.greeting : "";
 
@@ -3525,16 +3622,16 @@ namespace Ginger.Integration
 										VALUES 
 											($greetingId, $chatId, $timestamp, $timestamp, 
 											$greetingCharacterId, $greeting, $greetingPosition);
-									");//! @compat: characterConfigId
+									");
 
 									cmdChat.Parameters.AddWithValue("$greetingId", Cuid.NewCuid());
 									cmdChat.Parameters.AddWithValue("$greeting", chatInstance.history.greeting ?? "");
-									cmdChat.Parameters.AddWithValue("$greetingCharacterId", chatInstance.participants[0]);
+									cmdChat.Parameters.AddWithValue("$greetingCharacterId", chatInstance.participants[0]); //! @compat
 									cmdChat.Parameters.AddWithValue("$greetingPosition", BackyardUtil.CreateSortingString(chatInstance.instanceId));
 									expectedUpdates += 1;
 								}
 
-								//! @compat: example chat
+								//! @compat: Write example chat
 
 								sbCommand.AppendLine(
 								@"
@@ -3954,7 +4051,7 @@ namespace Ginger.Integration
 								}
 
 								// Write greeting
-								if (string.IsNullOrWhiteSpace(staging.greeting) == false)
+								if (string.IsNullOrWhiteSpace(staging.greeting.text) == false)
 								{
 									using (var cmdGreeting = connection.CreateCommand())
 									{
@@ -4003,7 +4100,7 @@ namespace Ginger.Integration
 										canDeleteCustomDialogue = $pruneExample,
 										authorNote = $authorNote");
 								}
-								//! @compat: Example chat
+								//! @compat: Write example chat
 
 								if (parameters != null)
 								{
@@ -5017,7 +5114,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private void WriteLorebook(SQLiteConnection connection, string configId, BackyardLinkCard.LoreBookEntry[] loreItems, ref int updates, ref int expectedUpdates)
+		private void WriteLorebook(SQLiteConnection connection, string configId, FaradayCard.LoreBookEntry[] loreItems, ref int updates, ref int expectedUpdates)
 		{
 			int hash = configId.GetHashCode();
 			long updatedAt = DateTime.Now.ToUnixTimeMilliseconds();
@@ -5170,7 +5267,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private void FetchChatInstances(SQLiteConnection connection, string groupId, out List<_Chat> chats)
+		private static void FetchChatInstances(SQLiteConnection connection, string groupId, out List<_Chat> chats)
 		{
 			chats = new List<_Chat>();
 			using (var cmdConfirm = connection.CreateCommand())
@@ -5249,68 +5346,117 @@ namespace Ginger.Integration
 				}
 			}
 
-			if (chatId != null)
+			// Greeting
+			FetchChatGreeting(connection, chatId, out staging.greeting);
+
+			// Example chat
+			FetchExampleChat(connection, chatId, ref staging);
+		}
+
+		private static void FetchChatGreeting(SQLiteConnection connection, string chatId, out CharacterMessage greeting)
+		{
+			// Greeting
+			using (var cmdGreeting = connection.CreateCommand())
 			{
-				// Greeting
-				using (var cmdGreeting = connection.CreateCommand())
+				var sbCommand = new StringBuilder();
+				sbCommand.AppendLine(
+				@"
+					SELECT 
+						characterConfigId, text
+					FROM GreetingMessage
+					WHERE chatId = $chatId
+				");
+
+				if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.First)
+					sbCommand.AppendLine("ORDER BY createdAt ASC");
+				else
+					sbCommand.AppendLine("ORDER BY createdAt DESC");
+
+				cmdGreeting.CommandText = sbCommand.ToString();
+				cmdGreeting.Parameters.AddWithValue("$chatId", chatId);
+
+				using (var reader = cmdGreeting.ExecuteReader())
 				{
-					var sbCommand = new StringBuilder();
-					sbCommand.AppendLine(
-					@"
-						SELECT 
-							characterConfigId, text
-						FROM GreetingMessage
-						WHERE chatId = $chatId
-					");
-
-					if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.First)
-						sbCommand.AppendLine("ORDER BY createdAt ASC");
-					else
-						sbCommand.AppendLine("ORDER BY createdAt DESC");
-
-					cmdGreeting.CommandText = sbCommand.ToString();
-					cmdGreeting.Parameters.AddWithValue("$chatId", chatId);
-
-					using (var reader = cmdGreeting.ExecuteReader())
+					if (reader.Read())
 					{
-						if (reader.Read())
-						{
-							staging.greetingCharacterId = reader.GetString(0);
-							staging.greeting = reader[1] as string ?? "";
-
-							if (staging.greeting.Length > 0)
-								staging.greeting = string.Concat(BackyardUtil.CreateIDPlaceholder(staging.greetingCharacterId), ": ", staging.greeting);
-						}
+						var greetingCharacterId = reader[0] as string;
+						var greetingText = reader[1] as string ?? "";
+						
+						greeting = CharacterMessage.FromStringWithID(greetingText, greetingCharacterId);
+						return;
 					}
 				}
+			}
 
-				// Example chat
-				using (var cmdExample = connection.CreateCommand())
+			greeting = default(CharacterMessage);
+		}
+
+		private static void FetchExampleChat(SQLiteConnection connection, string chatId, ref ChatStaging staging)
+		{
+			// Example chat
+			using (var cmdExample = connection.CreateCommand())
+			{
+				var sbCommand = new StringBuilder();
+				sbCommand.AppendLine(
+				@"
+					SELECT 
+						A.characterConfigId, A.text, A.position, 
+						(SELECT isUserControlled FROM CharacterConfig AS B WHERE B.id = A.characterConfigId)
+					FROM ExampleMessage as A
+					WHERE chatId = $chatId
+				");
+
+				cmdExample.CommandText = sbCommand.ToString();
+				cmdExample.Parameters.AddWithValue("$chatId", chatId);
+
+				var messages = new List<_ExampleMessageRow>();
+				using (var reader = cmdExample.ExecuteReader())
 				{
-					var sbCommand = new StringBuilder();
-					sbCommand.AppendLine(
-					@"
-						SELECT 
-							A.characterConfigId, A.text, A.position, 
-							(SELECT isUserControlled FROM CharacterConfig AS B WHERE B.id = A.characterConfigId)
-						FROM ExampleMessage as A
-						WHERE chatId = $chatId
-					");
-
-					cmdExample.CommandText = sbCommand.ToString();
-					cmdExample.Parameters.AddWithValue("$chatId", chatId);
-
-					List<_ExampleChat> lsExampleMessages = new List<_ExampleChat>();
-					using (var reader = cmdExample.ExecuteReader())
+					while (reader.Read())
 					{
-						while (reader.Read())
-						{
-							string characterId = reader.GetString(0);
-							string text = reader.GetString(1);
-							string position = reader.GetString(2);
-							bool isUser = reader.GetBoolean(3);
+						string characterId = reader.GetString(0);
+						string text = reader.GetString(1);
+						string position = reader.GetString(2);
+						bool isUser = reader.GetBoolean(3);
 
-							lsExampleMessages.Add(new _ExampleChat() {
+						// BYAI faulty migration fix:
+						int pos_begin = text.IndexOf("#{_cfg&:", 0);
+						if (pos_begin > 0)
+						{
+							// Initial
+							messages.Add(new _ExampleMessageRow() {
+								characterId = characterId,
+								text = text.Substring(0, pos_begin),
+								sortOrder = position,
+								isUser = false, //?
+							});
+						}
+
+						if (pos_begin != -1)
+						{
+							while (pos_begin != -1)
+							{
+								int pos_end = text.IndexOf(":cfg&_}: ", pos_begin + 8);
+								if (pos_end == -1)
+									break;
+
+								int pos_break = text.IndexOf("\n\n", pos_end + 9);
+								if (pos_break == -1)
+									pos_break = text.Length;
+
+								messages.Add(new _ExampleMessageRow() {
+									characterId = text.Substring(pos_begin + 8, pos_end - pos_begin - 8),
+									text = text.Substring(pos_end + 9, pos_break - pos_end - 9),
+									sortOrder = position,
+									isUser = false, //?
+								});
+
+								pos_begin = text.IndexOf("#{_cfg&:", pos_break);
+							}
+						}
+						else
+						{
+							messages.Add(new _ExampleMessageRow() {
 								characterId = characterId,
 								text = text,
 								sortOrder = position,
@@ -5318,18 +5464,14 @@ namespace Ginger.Integration
 							});
 						}
 					}
-
-					StringBuilder sbExample = new StringBuilder();
-					foreach (var message in lsExampleMessages.OrderBy(m => m.sortOrder))
-					{
-						sbExample.NewParagraph();
-						sbExample.Append(BackyardUtil.CreateIDPlaceholder(message.characterId));
-						sbExample.Append(": ");
-						sbExample.Append(message.text);
-					}
-
-					staging.example = sbExample.ToString();
 				}
+
+				staging.exampleMessages = messages
+					.Where(m => string.IsNullOrWhiteSpace(m.text) == false)
+					.Select(m => {
+						return CharacterMessage.FromStringWithID(m.text, m.characterId);
+					})
+					.ToArray();
 			}
 		}
 
@@ -6162,7 +6304,7 @@ namespace Ginger.Integration
 				expectedUpdates += 1;
 
 				// Write greeting
-				if (string.IsNullOrWhiteSpace(staging.greeting) == false)
+				if (string.IsNullOrWhiteSpace(staging.greeting.text) == false)
 				{
 					sbCommand.AppendLine(
 					@"
@@ -6182,7 +6324,7 @@ namespace Ginger.Integration
 					expectedUpdates += 1;
 				}
 
-				//! @compat: Example chat
+				//! @compat: Write example chat
 
 				BackyardUtil.ConvertToIDPlaceholders(staging, ids.characterIds);
 
@@ -6229,7 +6371,7 @@ namespace Ginger.Integration
 				for (int i = 0; i < chats.Length; ++i)
 				{
 					var staging = chats[i].staging ?? defaultStaging ?? new ChatStaging();
-					staging.greeting = chats[i].history.greeting;
+					staging.greeting.text = chats[i].history.greeting;
 					BackyardUtil.ConvertToIDPlaceholders(staging, ids.characterIds);
 
 					var parameters = chats[i].parameters ?? new ChatParameters();
@@ -6253,7 +6395,7 @@ namespace Ginger.Integration
 					");	
 					
 					// Write greeting
-					if (string.IsNullOrWhiteSpace(staging.greeting) == false && chats[i].participants.IsEmpty() == false)
+					if (string.IsNullOrWhiteSpace(staging.greeting.text) == false && chats[i].participants.IsEmpty() == false)
 					{
 						sbCommand.AppendLine(
 						@"
@@ -6272,7 +6414,7 @@ namespace Ginger.Integration
 						expectedUpdates += 1;
 					}
 
-					//! @compat: Example chat
+					//! @compat: Write example chat
 
 					cmdChat.Parameters.AddWithValue($"$chatId{i:000}", chatIds[i]);
 					cmdChat.Parameters.AddWithValue($"$chatName{i:000}", chats[i].name ?? "");
@@ -6673,6 +6815,35 @@ namespace Ginger.Integration
 			return true;
 		}
 
+		private bool FetchUserInGroup(SQLiteConnection connection, string groupId, out string userId)
+		{
+			// Get user
+			using (var cmdGetUser = connection.CreateCommand())
+			{
+				cmdGetUser.CommandText =
+				@"
+					SELECT 
+						B.id
+					FROM GroupConfigCharacterLink AS A
+					INNER JOIN CharacterConfig AS B ON B.id = A.characterConfigId
+					WHERE A.groupConfigId = $groupId AND B.isUserControlled = 1;
+				";
+				cmdGetUser.Parameters.AddWithValue("$groupId", groupId);
+
+				using (var reader = cmdGetUser.ExecuteReader())
+				{
+					if (reader.Read() == false)
+					{
+						userId = null;
+						return false;
+					}
+
+					userId = reader.GetString(0);
+				}
+			}
+			return true;
+		}
+
 		private bool CreateSoloGroup(SQLiteConnection connection, string characterId, long createdAt, out string groupId, out _Chat chat, ref int updates, ref int expectedUpdates)
 		{
 			// Fetch folder sort position (and root folder)
@@ -6740,7 +6911,7 @@ namespace Ginger.Integration
 				cmdCreateChat.Parameters.AddWithValue("$system", staging.system ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$example", staging.example ?? "");
-				cmdCreateChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");	//! @compat
+				cmdCreateChat.Parameters.AddWithValue("$greeting", staging.greeting.text ?? "");	//! @compat
 				cmdCreateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$authorNote", staging.authorNote ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
@@ -6821,12 +6992,12 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void WriteUpdateGroup(SQLiteConnection connection, FaradayCard card, string groupId, string groupName, long updatedAt, ref int updates, ref int expectedUpdates)
+		private static void WriteUpdateGroup(SQLiteConnection connection, string groupId, FaradayCard card, string groupName, long updatedAt, ref int updates, ref int expectedUpdates)
 		{
 			var staging = new ChatStaging() {
 				system = card.data.system ?? "",
 				scenario = card.data.scenario ?? "",
-				greeting = card.data.greeting ?? "",
+				greeting = card.data.greeting,
 				example = card.data.example ?? "",
 				grammar = card.data.grammar ?? "",
 				authorNote = card.authorNote ?? "",
@@ -6916,7 +7087,7 @@ namespace Ginger.Integration
 				cmdChat.Parameters.AddWithValue("$system", staging.system ?? "");
 				cmdChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
 				cmdChat.Parameters.AddWithValue("$example", staging.example ?? "");
-				cmdChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
+				cmdChat.Parameters.AddWithValue("$greeting", staging.greeting.text ?? "");
 				cmdChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 				cmdChat.Parameters.AddWithValue("$authorNote", card.authorNote ?? "");
 				cmdChat.Parameters.AddWithValue("$timestamp", updatedAt);
@@ -6927,7 +7098,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void WriteUpdateGreeting(SQLiteConnection connection, string groupId, string greeting, string greetingCharacterId, long updatedAt, ref int updates, ref int expectedUpdates)
+		private static void WriteUpdateGreeting(SQLiteConnection connection, string groupId, CharacterMessage greeting, string characterId, long updatedAt, ref int updates, ref int expectedUpdates)
 		{
 			// Update chat data
 			using (var cmdGreeting = new SQLiteCommand(connection))
@@ -6936,7 +7107,7 @@ namespace Ginger.Integration
 				if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.All)
 				{
 					// Update greeting(s)
-					if (string.IsNullOrWhiteSpace(greeting) == false && greetingCharacterId != null)
+					if (greeting.IsEmpty() == false)
 					{
 						sbCommand.AppendLine(
 						@"
@@ -6949,7 +7120,7 @@ namespace Ginger.Integration
 							WHERE chatId IN chats;
 						");
 					}
-					else
+					else // No greeting: Delete
 					{
 						sbCommand.AppendLine(
 						@"
@@ -6965,7 +7136,7 @@ namespace Ginger.Integration
 					GetPrimaryChatForGroup(connection, groupId, out chatId);
 
 					// Update greeting
-					if (string.IsNullOrWhiteSpace(greeting) == false && greetingCharacterId != null)
+					if (greeting.IsEmpty() == false)
 					{
 						sbCommand.AppendLine(
 						@"
@@ -6977,7 +7148,7 @@ namespace Ginger.Integration
 							WHERE chatId = $chatId;
 						");
 					}
-					else
+					else  // No greeting: Delete
 					{
 						sbCommand.AppendLine(
 						@"
@@ -6991,12 +7162,143 @@ namespace Ginger.Integration
 
 				cmdGreeting.CommandText = sbCommand.ToString();
 				cmdGreeting.Parameters.AddWithValue("$groupId", groupId);
-				cmdGreeting.Parameters.AddWithValue("$greeting", greeting);
-				cmdGreeting.Parameters.AddWithValue("$greetingCharacterId", greetingCharacterId);
+				cmdGreeting.Parameters.AddWithValue("$greeting", greeting.text);
+				cmdGreeting.Parameters.AddWithValue("$greetingCharacterId", greeting.characterId ?? characterId);
 				cmdGreeting.Parameters.AddWithValue("$timestamp", updatedAt);
 
 				int nUpdated = cmdGreeting.ExecuteNonQuery();
 				expectedUpdates += nUpdated;
+				updates += nUpdated;
+			}
+		}
+
+		private static void WriteUpdateExampleChat(SQLiteConnection connection, string groupId, CharacterMessage[] exampleMessages, long updatedAt, ref int updates, ref int expectedUpdates)
+		{
+			List<_Chat> chats = new List<_Chat>();
+			FetchChatInstances(connection, groupId, out chats);
+			if (chats.Count == 0)
+				return; // No chats to update
+
+			string primaryChatId;
+			if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.First)
+				primaryChatId = chats.OrderBy(c => c.creationDate).Select(c => c.instanceId).FirstOrDefault();
+			else
+				primaryChatId = chats.OrderByDescending(c => c.creationDate).Select(c => c.instanceId).FirstOrDefault();
+			
+			// Delete existing example chat
+			using (var cmdDelete = new SQLiteCommand(connection))
+			{
+				var sbCommand = new StringBuilder();
+				if (AppSettings.BackyardLink.ApplyChatSettings == AppSettings.BackyardLink.ActiveChatSetting.All)
+				{
+					sbCommand.AppendLine(
+					@"
+						WITH chats AS (SELECT id FROM Chat WHERE groupConfigId = $groupId)
+						DELETE FROM ExampleMessage
+						WHERE chatId IN chats;
+					");
+
+					cmdDelete.Parameters.AddWithValue("$groupId", groupId);
+				}
+				else
+				{
+					
+					sbCommand.AppendLine(
+					@"
+						DELETE FROM ExampleMessage
+						WHERE chatId = $chatId;
+					");
+
+					cmdDelete.Parameters.AddWithValue("$chatId", primaryChatId);
+				}
+
+				cmdDelete.CommandText = sbCommand.ToString();
+
+				int nDeleted = cmdDelete.ExecuteNonQuery();
+				expectedUpdates += nDeleted;
+				updates += nDeleted;
+			}
+
+			if (exampleMessages.IsEmpty())
+				return; // Nothing to write
+
+			// Write example chat
+			using (var cmdExample = new SQLiteCommand(connection))
+			{
+				var sbCommand = new StringBuilder();
+				int param = 0;
+				for (int idxChat = 0; idxChat < chats.Count; ++idxChat)
+				{
+					if (AppSettings.BackyardLink.ApplyChatSettings != AppSettings.BackyardLink.ActiveChatSetting.All
+						&& chats[idxChat].instanceId != primaryChatId)
+						continue; // Skip
+
+					int hash = chats[idxChat].instanceId.GetHashCode();
+
+					for (int idxMsg = 0; idxMsg < exampleMessages.Length; ++idxMsg)
+					{
+						if (exampleMessages[idxMsg].IsEmpty() || exampleMessages[idxMsg].characterId == null)
+							continue;
+	
+						sbCommand.AppendLine(
+						$@"
+							INSERT INTO ExampleMessage
+								(id, chatId, createdAt, updatedAt, characterConfigId, text, position)
+							VALUES 
+								($exampleId{param:000}, $chatId{idxChat:000}, $timestamp, $timestamp, $characterId{param:000}, $text{param:000}, $position{param:000});
+						");
+
+						cmdExample.Parameters.AddWithValue($"$exampleId{param:000}", Cuid.NewCuid());
+						cmdExample.Parameters.AddWithValue($"$text{param:000}", exampleMessages[idxMsg].text ?? "");
+						cmdExample.Parameters.AddWithValue($"$characterId{param:000}", exampleMessages[idxMsg].characterId);
+						cmdExample.Parameters.AddWithValue($"$position{param:000}", BackyardUtil.CreateSequentialSortingString(idxMsg, exampleMessages.Length, hash));
+						expectedUpdates += 1;
+						param++;
+					}
+					cmdExample.Parameters.AddWithValue($"$chatId{idxChat:000}", chats[idxChat].instanceId);
+				}
+
+				cmdExample.Parameters.AddWithValue("$timestamp", updatedAt);
+				cmdExample.CommandText = sbCommand.ToString();
+
+				int nUpdated = cmdExample.ExecuteNonQuery();
+				updates += nUpdated;
+			}
+		}
+
+		private static void WriteExampleChat(SQLiteConnection connection, string chatId, CharacterMessage[] exampleMessages, long updatedAt, ref int updates, ref int expectedUpdates)
+		{
+			// Write example chat
+			using (var cmdExample = new SQLiteCommand(connection))
+			{
+				var sbCommand = new StringBuilder();
+				int hash = chatId.GetHashCode();
+
+				for (int i = 0; i < exampleMessages.Length; ++i)
+				{
+					if (exampleMessages[i].IsEmpty() || exampleMessages[i].characterId == null)
+						continue;
+	
+					sbCommand.AppendLine(
+					$@"
+						INSERT INTO ExampleMessage
+							(id, chatId, createdAt, updatedAt, characterConfigId, text, position)
+						VALUES 
+							($exampleId{i:000}, $chatId, $timestamp, $timestamp, $characterId{i:000}, $text{i:000}, $position{i:000});
+					");
+
+					cmdExample.Parameters.AddWithValue($"$exampleId{i:000}", Cuid.NewCuid());
+					cmdExample.Parameters.AddWithValue($"$text{i:000}", exampleMessages[i].text ?? "");
+					cmdExample.Parameters.AddWithValue($"$characterId{i:000}", exampleMessages[i].characterId);
+					cmdExample.Parameters.AddWithValue($"$position{i:000}", BackyardUtil.CreateSequentialSortingString(i, exampleMessages.Length, hash));
+					expectedUpdates += 1;
+				}
+				cmdExample.Parameters.AddWithValue("$chatId", chatId);
+				cmdExample.Parameters.AddWithValue("$timestamp", updatedAt);
+
+				cmdExample.CommandText = sbCommand.ToString();
+
+				int nUpdated = cmdExample.ExecuteNonQuery();
 				updates += nUpdated;
 			}
 		}
@@ -7172,6 +7474,55 @@ namespace Ginger.Integration
 				return "()";
 			return string.Concat("(", Utility.ListToCommaSeparatedString(ids.Select(id => string.Concat("'", id, "'"))), ")");
 		}
+								
+		private static Dictionary<int, List<CharacterMessage>> SplitExampleMessagesByCharacter(CharacterMessage[] exampleMessages, List<_Character> groupMembers)
+		{
+			if (exampleMessages.IsEmpty())
+				return new Dictionary<int, List<CharacterMessage>>();
+
+			// Assign character ids
+			var result = new Dictionary<int, List<CharacterMessage>>();
+			for (int i = 0; i < exampleMessages.Length; ++i)
+			{
+				if (exampleMessages[i].characterIndex == -1)
+				{
+					int index = groupMembers.FindIndex(c => c.instanceId == exampleMessages[i].characterId);
+					if (index == -1)
+						index = 1; // Primary character
+					exampleMessages[i].characterIndex = index;
+				}
+			}
+
+			var userMessages = new List<CharacterMessage>();
+			int lastCharacterIndex = 0;
+			for (int i = 0; i < exampleMessages.Length; ++i)
+			{
+				if (exampleMessages[i].characterIndex == 0) // User
+				{
+					userMessages.Add(exampleMessages[i]);
+					continue;
+				}
+
+				var characterIndex = Math.Max(exampleMessages[i].characterIndex - 1, 0);
+				lastCharacterIndex = characterIndex;
+				if (result.ContainsKey(characterIndex) == false)
+					result.Add(characterIndex, new List<CharacterMessage>());
+
+				if (userMessages.Count > 0)
+				{
+					result[characterIndex].AddRange(userMessages);
+					userMessages.Clear();
+				}
+				result[characterIndex].Add(exampleMessages[i]);
+			}
+			
+			// Leftovers
+			if (userMessages.Count > 0)
+				result[lastCharacterIndex].AddRange(userMessages);
+
+			return result;
+		}
+
 
 		#endregion // Utilities
 

@@ -27,6 +27,7 @@ namespace Ginger.Integration
 			ChatBackgrounds,
 			PartyChats,
 			PartyNames,
+			ItemizedExampleChat,
 		}
 
 		public static bool CheckFeature(Feature feature)
@@ -40,6 +41,7 @@ namespace Ginger.Integration
 				return DatabaseVersion >= BackyardDatabaseVersion.Version_0_29_0;
 			case Feature.PartyChats:
 			case Feature.PartyNames:
+			case Feature.ItemizedExampleChat:
 				return DatabaseVersion >= BackyardDatabaseVersion.Version_0_37_0;
 			}
 			return false;

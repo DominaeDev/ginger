@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Text;
 using System.Linq;
+using System.Collections.Generic;
 
-namespace Ginger
+namespace Ginger.Integration
 {
+	using CharacterMessage = Backyard.CharacterMessage;
+
 	public class BackyardLinkCard
 	{
 		public Data data = new Data();
@@ -41,9 +44,43 @@ namespace Ginger
 			public string persona;
 			public string scenario;
 			public string system;
-			public string example;
-			public string greeting;
 			public string grammar;
+			public CharacterMessage greeting;
+			public CharacterMessage[] exampleMessages;
+
+			public string example
+			{
+				get 
+				{
+					if (exampleMessages.IsEmpty())
+						return null;
+
+					StringBuilder sb = new StringBuilder();
+					int lastIndex = -1;
+					foreach (var message in exampleMessages)
+					{
+						if (message.characterIndex == 0 // User
+							|| (lastIndex != -1 && lastIndex != message.characterIndex)) // New character
+						{
+							sb.NewParagraph();
+						}
+						else
+						{
+							sb.NewLine();
+							if (message.characterIndex == 0)
+								lastIndex = -1;
+							else
+								lastIndex = message.characterIndex;
+						}
+						sb.AppendLine(message.ToString());
+					}
+					return sb.ToString();
+				}
+				set
+				{
+					exampleMessages = BackyardUtil.MessagesFromString(value);
+				}
+			}
 
 			public string creationDate;
 			public string updateDate;
@@ -72,8 +109,8 @@ namespace Ginger
 			card.data.system = output.system.ToFaraday();
 			card.data.persona = output.persona.ToFaraday();
 			card.data.scenario = output.scenario.ToFaraday();
-			card.data.greeting = output.greeting.ToFaradayGreeting();
-			card.data.example = output.example.ToFaradayChat();
+			card.data.greeting = CharacterMessage.FromString(output.greeting.ToFaradayGreeting());
+			card.data.example = output.example.ToString();
 			card.data.grammar = output.grammar.ToString();
 			card.data.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToString("yyyy-MM-ddTHH:mm:ss.fffK");
 
@@ -149,7 +186,7 @@ namespace Ginger
 					system = data.system,
 					persona = data.persona,
 					scenario = data.scenario,
-					greeting = data.greeting,
+					greeting = data.greeting.text,
 					example = data.example,
 					grammar = data.grammar,
 					isNSFW = data.isNSFW,
@@ -178,13 +215,13 @@ namespace Ginger
 		public static BackyardLinkCard FromFaradayCard(FaradayCardV4 cardV4)
 		{
 			var card = new BackyardLinkCard() {
-				data = new BackyardLinkCard.Data() {
+				data = new Data() {
 					name = cardV4.data.name,
 					displayName = cardV4.data.displayName,
 					system = cardV4.data.system,
 					persona = cardV4.data.persona,
 					scenario = cardV4.data.scenario,
-					greeting = cardV4.data.greeting,
+					greeting = CharacterMessage.FromString(cardV4.data.greeting),
 					example = cardV4.data.example,
 					grammar = cardV4.data.grammar,
 					isNSFW = cardV4.data.isNSFW,

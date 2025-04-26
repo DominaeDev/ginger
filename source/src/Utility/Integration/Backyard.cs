@@ -244,6 +244,67 @@ namespace Ginger.Integration
 		}
 
 		[Serializable]
+		public struct CharacterMessage
+		{
+			public int characterIndex;
+			public string characterId;
+			public string name;
+			public string text;
+
+			public static CharacterMessage FromString(string text)
+			{
+				return new CharacterMessage() {
+					characterIndex = -1,
+					text = text,
+				};
+			}
+
+			public static CharacterMessage FromStringWithID(string text, string characterId)
+			{
+				string name = BackyardUtil.CreateIDPlaceholder(characterId);
+				BackyardUtil.ConvertFromIDPlaceholders(ref name);
+
+				return new CharacterMessage() {
+					characterIndex = -1,
+					characterId = characterId,
+					name = name,
+					text = text,
+				};
+			}
+
+			public static CharacterMessage FromString(string text, string characterId, string characterName, int characterIndex)
+			{
+				return new CharacterMessage() {
+					characterIndex = characterIndex,
+					characterId = characterId,
+					name = characterName,
+					text = text,
+				};
+			}
+
+			public override string ToString()
+			{
+				if (string.IsNullOrEmpty(text))
+					return "";
+				else if (string.IsNullOrEmpty(name) == false)
+					return string.Concat(name, ": ", text.Trim());
+				else if (string.IsNullOrEmpty(characterId) == false)
+				{
+					string name = characterId;
+					BackyardUtil.ConvertFromIDPlaceholders(ref name);
+					return string.Concat(name, ": ", text.Trim());
+				}
+				else
+					return text.Trim();
+			}
+
+			public bool IsEmpty()
+			{
+				return string.IsNullOrEmpty(text);
+			}
+		}
+
+		[Serializable]
 		public class ChatStaging
 		{
 			public ChatStaging()
@@ -253,13 +314,46 @@ namespace Ginger.Integration
 
 			public string system = "";					// Chat.modelInstructions
 			public string scenario = "";				// Chat.context
-			public string greeting = "";                // Chat.greetingDialogue
-			public string greetingCharacterId = null;	
-			public string example = "";					// Chat.customDialogue
+			public CharacterMessage greeting = default;	// Chat.greetingDialogue
+			public CharacterMessage[] exampleMessages = null;
 			public string grammar = "";					// Chat.grammar
 			public string authorNote = "";				// Chat.authorNote
 			public bool pruneExampleChat = true;		// Chat.canDeleteCustomDialogue
 			public ChatBackground background = null;
+
+			public string example
+			{
+				get 
+				{
+					if (exampleMessages.IsEmpty())
+						return null;
+
+					StringBuilder sb = new StringBuilder();
+					int lastIndex = -1;
+					foreach (var message in exampleMessages)
+					{
+						if (message.characterIndex == 0 // User
+							|| (lastIndex != -1 && lastIndex != message.characterIndex)) // New character
+						{
+							sb.NewParagraph();
+						}
+						else
+						{
+							sb.NewLine();
+							if (message.characterIndex == 0)
+								lastIndex = -1;
+							else
+								lastIndex = message.characterIndex;
+						}
+						sb.AppendLine(message.ToString());
+					}
+					return sb.ToString();
+				}
+				set
+				{
+					exampleMessages = BackyardUtil.MessagesFromString(value);
+				}
+			}
 		}
 
 		[Serializable]
@@ -425,7 +519,7 @@ namespace Ginger.Integration
 			public ChatParameters parameters = null;
 
 			public string name { get { return history.name; } }
-			public bool hasGreeting { get { return staging != null && string.IsNullOrEmpty(staging.greeting) == false; } }
+			public bool hasGreeting { get { return staging != null && staging.greeting.IsEmpty() == false; } }
 			public bool hasBackground { get { return staging != null && staging.background != null && string.IsNullOrEmpty(staging.background.imageUrl) == false; } }
 
 			public static string DefaultName = "Untitled chat";
@@ -1152,17 +1246,25 @@ namespace Ginger.Integration
 				__ToID(ref card.data.system, src, dest);
 				__ToID(ref card.data.scenario, src, dest);
 				__ToID(ref card.data.persona, src, dest);
-				__ToID(ref card.data.greeting, src, dest);
-				__ToID(ref card.data.example, src, dest);
+				__ToID(ref card.data.greeting.text, src, dest);
 				__ToID(ref card.userPersona, src, dest);
 				__ToID(ref card.authorNote, src, dest);
 				
+				if (card.data.exampleMessages != null)
+				{
+					for (int i = 0; i < card.data.exampleMessages.Length; ++i)
+					{
+						__ToID(ref card.data.exampleMessages[i].name, src, dest);
+						__ToID(ref card.data.exampleMessages[i].text, src, dest);
+					}
+				}
+
 				if (card.data.loreItems != null)
 				{
 					for (int idxLore = 0; idxLore < card.data.loreItems.Length; ++idxLore)
 						__ToID(ref card.data.loreItems[idxLore].value, src, dest);
 				}
-			}
+			}	
 		}
 
 		public static void ConvertToIDPlaceholders(ref string text, string[] characterIds)
@@ -1199,12 +1301,18 @@ namespace Ginger.Integration
 				ConvertToIDPlaceholders(ref staging.system, characterId);
 			if (string.IsNullOrEmpty(staging.scenario) == false)
 				ConvertToIDPlaceholders(ref staging.scenario, characterId);
-			if (string.IsNullOrEmpty(staging.greeting) == false)
-				ConvertToIDPlaceholders(ref staging.greeting, characterId);
-			if (string.IsNullOrEmpty(staging.example) == false)
-				ConvertToIDPlaceholders(ref staging.example, characterId);
+			if (string.IsNullOrEmpty(staging.greeting.text) == false)
+				ConvertToIDPlaceholders(ref staging.greeting.text, characterId);
 			if (string.IsNullOrEmpty(staging.authorNote) == false)
 				ConvertToIDPlaceholders(ref staging.authorNote, characterId);
+			if (staging.exampleMessages != null)
+			{
+				for (int i = 0; i < staging.exampleMessages.Length; ++i)
+				{
+					ConvertToIDPlaceholders(ref staging.exampleMessages[i].name, characterId);
+					ConvertToIDPlaceholders(ref staging.exampleMessages[i].text, characterId);
+				}
+			}
 		}
 
 		public static void ConvertToIDPlaceholders(Backyard.ChatStaging staging, string[] characterIds)
@@ -1213,12 +1321,18 @@ namespace Ginger.Integration
 				ConvertToIDPlaceholders(ref staging.system, characterIds);
 			if (string.IsNullOrEmpty(staging.scenario) == false)
 				ConvertToIDPlaceholders(ref staging.scenario, characterIds);
-			if (string.IsNullOrEmpty(staging.greeting) == false)
-				ConvertToIDPlaceholders(ref staging.greeting, characterIds);
-			if (string.IsNullOrEmpty(staging.example) == false)
-				ConvertToIDPlaceholders(ref staging.example, characterIds);
+			if (string.IsNullOrEmpty(staging.greeting.text) == false)
+				ConvertToIDPlaceholders(ref staging.greeting.text, characterIds);
 			if (string.IsNullOrEmpty(staging.authorNote) == false)
 				ConvertToIDPlaceholders(ref staging.authorNote, characterIds);
+			if (staging.exampleMessages != null)
+			{
+				for (int i = 0; i < staging.exampleMessages.Length; ++i)
+				{
+					ConvertToIDPlaceholders(ref staging.exampleMessages[i].name, characterIds);
+					ConvertToIDPlaceholders(ref staging.exampleMessages[i].text, characterIds);
+				}
+			}
 		}
 
 		public static void ConvertToIDPlaceholders(ref string text, string characterId)
@@ -1251,9 +1365,16 @@ namespace Ginger.Integration
 			var knownIds = new Dictionary<string, string>();
 			__FromID(ref staging.system, knownIds);
 			__FromID(ref staging.scenario, knownIds);
-			__FromID(ref staging.greeting, knownIds);
-			__FromID(ref staging.example, knownIds);
+			__FromID(ref staging.greeting.text, knownIds);
 			__FromID(ref staging.authorNote, knownIds);
+			if (staging.exampleMessages != null)
+			{
+				for (int i = 0; i < staging.exampleMessages.Length; ++i)
+				{
+					__FromID(ref staging.exampleMessages[i].name, knownIds);
+					__FromID(ref staging.exampleMessages[i].text, knownIds);
+				}
+			}
 		}
 
 		public static void ConvertFromIDPlaceholders(ref string text)
@@ -1267,11 +1388,19 @@ namespace Ginger.Integration
 			__FromID(ref card.data.system, dict);
 			__FromID(ref card.data.scenario, dict);
 			__FromID(ref card.data.persona, dict);
-			__FromID(ref card.data.greeting, dict);
-			__FromID(ref card.data.example, dict);
+			__FromID(ref card.data.greeting.text, dict);
 			__FromID(ref card.userPersona, dict);
 			__FromID(ref card.authorNote, dict);
-				
+			
+			if (card.data.exampleMessages != null)
+			{
+				for (int i = 0; i < card.data.exampleMessages.Length; ++i)
+				{
+					__FromID(ref card.data.exampleMessages[i].name, dict);
+					__FromID(ref card.data.exampleMessages[i].text, dict);
+				}
+			}
+
 			if (card.data.loreItems != null)
 			{
 				for (int idxLore = 0; idxLore < card.data.loreItems.Length; ++idxLore)
@@ -1397,5 +1526,38 @@ namespace Ginger.Integration
 				return string.Concat(prefix, ".B");
 			}
 		}
+
+		public static Backyard.CharacterMessage[] MessagesFromString(string text)
+		{
+			if (string.IsNullOrEmpty(text))
+				return null;
+
+			text = TextStyleConverter.MarkStyles(text, true);
+			var messages = Generator.SplitChatMessage(text);
+
+			List<Backyard.CharacterMessage> lsResult = new List<Backyard.CharacterMessage>();
+			foreach (var message in messages)
+			{
+				if (message.userMessage != null)
+				{
+					lsResult.Add(new Backyard.CharacterMessage() {
+						name = GingerString.UserMarker,
+						text = TextStyleConverter.ApplyStyle(message.userMessage, CardData.TextStyle.Default),
+					});
+				}
+				if (message.message != null)
+				{
+					lsResult.Add(new Backyard.CharacterMessage() {
+						name = message.name,
+						text = TextStyleConverter.ApplyStyle(message.message, CardData.TextStyle.Default),
+					});
+				}
+			}
+
+			if (lsResult.Count > 0)
+				return lsResult.ToArray();
+			return null;
+		}
+
 	}
 }

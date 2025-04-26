@@ -162,7 +162,7 @@ namespace Ginger
 			card.data.persona = output.persona.ToFaraday();
 			card.data.scenario = output.scenario.ToFaraday();
 			card.data.greeting = output.greeting.ToFaradayGreeting();
-			card.data.example = output.example.ToFaradayChat();
+			card.data.example = output.example.ToFaradayChat(true);
 			card.data.grammar = output.grammar.ToString();
 			card.data.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToString("yyyy-MM-ddTHH:mm:ss.fffK");
 

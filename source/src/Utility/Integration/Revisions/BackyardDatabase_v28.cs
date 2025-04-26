@@ -21,6 +21,7 @@ namespace Ginger.Integration
 	using ImageInput = Backyard.ImageInput;
 	using ImageInstance = Backyard.ImageInstance;
 	using ConfirmDeleteResult = Backyard.ConfirmDeleteResult;
+	using CharacterMessage = Backyard.CharacterMessage;
 	
 	using FaradayCard = BackyardLinkCard;
 
@@ -610,7 +611,7 @@ namespace Ginger.Integration
 						staging.scenario = reader.GetString(0);
 						staging.example = reader.GetString(1);
 						staging.system = reader.GetString(2);
-						staging.greeting = reader.GetString(3);
+						staging.greeting.text = reader.GetString(3);
 						staging.grammar = reader[4] as string;
 						staging.authorNote = reader.GetString(5);
 					}
@@ -970,7 +971,7 @@ namespace Ginger.Integration
 							var staging = new ChatStaging() {
 								system = card.data.system ?? "",
 								scenario = card.data.scenario ?? "",
-								greeting = card.data.greeting ?? "",
+								greeting = card.data.greeting,
 								example = card.data.example ?? "",
 								grammar = card.data.grammar ?? "",
 								authorNote = card.authorNote ?? "",
@@ -1180,7 +1181,7 @@ namespace Ginger.Integration
 					bool bWriteGroup = groupId != null
 						|| !(string.IsNullOrEmpty(card.data.system)
 							&& string.IsNullOrEmpty(card.data.scenario)
-							&& string.IsNullOrEmpty(card.data.greeting)
+							&& string.IsNullOrEmpty(card.data.greeting.text)
 							&& string.IsNullOrEmpty(card.data.example)
 							&& string.IsNullOrEmpty(card.data.grammar)
 							&& string.IsNullOrEmpty(card.authorNote)
@@ -1975,7 +1976,7 @@ namespace Ginger.Integration
 								var staging = new ChatStaging() {
 									system = system,
 									scenario = scenario,
-									greeting = greeting,
+									greeting = CharacterMessage.FromString(greeting),
 									example = example,
 									grammar = grammar,
 									authorNote = authorNote,
@@ -2223,12 +2224,12 @@ namespace Ginger.Integration
 				return null; // Error
 
 			// Insert greeting
-			if (string.IsNullOrEmpty(chatInfo.staging.greeting) == false)
+			if (chatInfo.staging.greeting.IsEmpty() == false)
 			{
 				string userName = Utility.FirstNonEmpty(groupMembers[0].name, Constants.DefaultUserName);
 				string characterName = Utility.FirstNonEmpty(groupMembers[1].name, Constants.DefaultCharacterName);
 
-				var sb = new StringBuilder(GingerString.FromFaraday(chatInfo.staging.greeting).ToString());
+				var sb = new StringBuilder(GingerString.FromFaraday(chatInfo.staging.greeting.text).ToString());
 				sb.Replace(GingerString.CharacterMarker, characterName, true);
 				sb.Replace(GingerString.UserMarker, userName, true);
 
@@ -2316,7 +2317,7 @@ namespace Ginger.Integration
 							{
 								defaultStaging.system = reader.GetString(0);
 								defaultStaging.scenario = reader.GetString(1);
-								defaultStaging.greeting = reader.GetString(2);
+								defaultStaging.greeting.text = reader.GetString(2);
 								defaultStaging.example = reader.GetString(3);
 								defaultStaging.grammar = reader[4] as string ?? "";
 								defaultStaging.authorNote = reader.GetString(5);
@@ -2352,7 +2353,7 @@ namespace Ginger.Integration
 							var staging = args.staging ?? defaultStaging;
 							var parameters = args.parameters ?? defaultParameters;
 							var chatName = args.history.name ?? "";
-							var greeting = staging.greeting;
+							var greeting = staging.greeting.text;
 							if (args.isImport)
 								greeting = args.history.hasGreeting ? args.history.greeting : "";
 
@@ -3409,7 +3410,7 @@ namespace Ginger.Integration
 								{
 									cmdUpdateChat.Parameters.AddWithValue("$system", Utility.FirstNonEmpty(staging.system, FaradayCard.OriginalModelInstructionsByFormat[0]));
 									cmdUpdateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
-									cmdUpdateChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$greeting", staging.greeting.text ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$example", staging.example ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
@@ -5427,7 +5428,7 @@ namespace Ginger.Integration
 				cmdChat.Parameters.AddWithValue("$system", staging.system ?? "");
 				cmdChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
 				cmdChat.Parameters.AddWithValue("$example", staging.example ?? "");
-				cmdChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
+				cmdChat.Parameters.AddWithValue("$greeting", staging.greeting.text ?? "");
 				cmdChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 				cmdChat.Parameters.AddWithValue("$authorNote", staging.authorNote ?? "");
 				cmdChat.Parameters.AddWithValue("$model", chatParameters.model ?? defaultModel ?? "");
@@ -5494,7 +5495,7 @@ namespace Ginger.Integration
 					cmdChat.Parameters.AddWithValue($"$system{i:000}", staging.system ?? "");
 					cmdChat.Parameters.AddWithValue($"$scenario{i:000}", staging.scenario ?? "");
 					cmdChat.Parameters.AddWithValue($"$example{i:000}", staging.example ?? "");
-					cmdChat.Parameters.AddWithValue($"$greeting{i:000}", staging.greeting ?? "");
+					cmdChat.Parameters.AddWithValue($"$greeting{i:000}", staging.greeting.text ?? "");
 					cmdChat.Parameters.AddWithValue($"$grammar{i:000}", staging.grammar ?? "");
 					cmdChat.Parameters.AddWithValue($"$authorNote{i:000}", staging.authorNote ?? "");
 					cmdChat.Parameters.AddWithValue($"$pruneExample{i:000}", staging.pruneExampleChat);
@@ -5944,7 +5945,7 @@ namespace Ginger.Integration
 				cmdCreateChat.Parameters.AddWithValue("$system", staging.system ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$example", staging.example ?? "");
-				cmdCreateChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
+				cmdCreateChat.Parameters.AddWithValue("$greeting", staging.greeting.text ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$authorNote", staging.authorNote ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
@@ -6119,7 +6120,7 @@ namespace Ginger.Integration
 				var staging = new ChatStaging() {
 					system = card.data.system ?? "",
 					scenario = card.data.scenario ?? "",
-					greeting = card.data.greeting ?? "",
+					greeting = CharacterMessage.FromString(card.data.greeting.text ?? ""),
 					example = card.data.example ?? "",
 					grammar = card.data.grammar ?? "",
 					authorNote = card.authorNote ?? "",
@@ -6129,7 +6130,7 @@ namespace Ginger.Integration
 				cmdChat.Parameters.AddWithValue("$system", staging.system ?? "");
 				cmdChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
 				cmdChat.Parameters.AddWithValue("$example", staging.example ?? "");
-				cmdChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
+				cmdChat.Parameters.AddWithValue("$greeting", staging.greeting.text ?? "");
 				cmdChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 				cmdChat.Parameters.AddWithValue("$authorNote", card.authorNote ?? "");
 				cmdChat.Parameters.AddWithValue("$timestamp", updatedAt);

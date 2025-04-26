@@ -355,14 +355,10 @@ namespace Ginger
 		
 		private bool SaveCharacterChangesToBackyard()
 		{
-			Backyard.Error error;
 			if (Current.HasLink == false)
 				return false;
-			
-			if (Current.Link.linkType == Backyard.Link.LinkType.Group)
-				error = UpdateGroupInBackyard();
-			else
-				error = UpdateCharacterInBackyard();
+
+			Backyard.Error error = SaveChangesToBackyard();
 
 			if (error == Backyard.Error.NotConnected)
 			{
@@ -1963,6 +1959,16 @@ namespace Ginger
 			// Refresh character information
 			Backyard.RefreshCharacters();
 			return Backyard.Error.NoError;
+		}
+
+		private Backyard.Error SaveChangesToBackyard()
+		{
+			if (Current.HasLink == false)
+				return Backyard.Error.NotFound;
+			if (Current.Link.linkType == Backyard.Link.LinkType.Group)
+				return UpdateGroupInBackyard();
+			else
+				return UpdateCharacterInBackyard();
 		}
 
 		private Backyard.Error UpdateGroupInBackyard()
