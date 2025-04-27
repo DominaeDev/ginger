@@ -950,7 +950,7 @@ namespace Ginger.Integration
 							int expectedUpdates = 0;
 
 							// Write character
-							WriteCharacter(connection, card, null, characterId, createdAt, out characterInstance, ref updates, ref expectedUpdates);
+							WriteCharacter(connection, card, card.data.displayName, characterId, createdAt, out characterInstance, ref updates, ref expectedUpdates);
 							string configId = characterInstance.configId;
 
 							// Create custom user (default user as base)
@@ -994,6 +994,9 @@ namespace Ginger.Integration
 							else // One or more chats
 							{
 								// Write chats
+								foreach (var chat in chats)
+									PrepareGreetingAndExampleChat(ref chat.staging, new string[] { userId, characterId });
+									
 								WriteChats(connection, chats, staging, ids, out chatIds, ref updates, ref expectedUpdates);
 
 								// Add background images
@@ -1220,7 +1223,7 @@ namespace Ginger.Integration
 							}
 
 							// Update character persona
-							WriteUpdateCharacter(connection, card, characterId, configId, null, updatedAt, ref updates, ref expectedUpdates);
+							WriteUpdateCharacter(connection, card, card.data.displayName, characterId, configId, updatedAt, ref updates, ref expectedUpdates);
 
 							// Lorebook
 							WriteLorebook(connection, configId, card.data.loreItems, ref updates, ref expectedUpdates);
@@ -1710,7 +1713,7 @@ namespace Ginger.Integration
 							for (int i = 0; i < cards.Length; ++i)
 							{
 								CharacterInstance characterInstance;
-								WriteCharacter(connection, cards[i], null, idBundles[i].characterId, createdAt, out characterInstance, ref updates, ref expectedUpdates);
+								WriteCharacter(connection, cards[i], cards[i].data.name, idBundles[i].characterId, createdAt, out characterInstance, ref updates, ref expectedUpdates);
 								lsInstances.Add(characterInstance);
 
 								string configId = characterInstance.configId;
@@ -1756,6 +1759,9 @@ namespace Ginger.Integration
 							else // One or more chats
 							{
 								// Write chats
+								foreach (var chat in chats)
+									PrepareGreetingAndExampleChat(ref chat.staging, Utility.PrependArray(userId, characterIds));
+
 								WriteChats(connection, chats, staging, ids, out chatIds, ref updates, ref expectedUpdates);
 
 								// Add background images
@@ -1980,7 +1986,7 @@ namespace Ginger.Integration
 							for (int i = 0; i < cards.Length; ++i)
 							{
 								// Update character persona
-								WriteUpdateCharacter(connection, cards[i], characterIds[i], configIds[i], cards[i].data.name, updatedAt, ref updates, ref expectedUpdates);
+								WriteUpdateCharacter(connection, cards[i], cards[i].data.name, characterIds[i], configIds[i], updatedAt, ref updates, ref expectedUpdates);
 
 								// Update lorebook
 								WriteLorebook(connection, configIds[i], cards[i].data.loreItems, ref updates, ref expectedUpdates);
@@ -2795,7 +2801,7 @@ namespace Ginger.Integration
 						DateTime updatedAt = reader.GetTimestamp(2);
 						DateTime activeAt = reader.GetTimestamp(3);
 						string characterId = reader.GetString(4);
-						string text = reader.GetString(5);
+						string text = reader.GetString(5).Trim();
 
 						messages.Add(new _Message() {
 							messageId = messageId,
@@ -3801,7 +3807,7 @@ namespace Ginger.Integration
 								while (reader.Read())
 								{
 									string messageId = reader.GetString(0);
-									string text = reader.GetString(1);
+									string text = reader.GetString(1).Trim();
 
 									swipes.Add(new _SwipeRepair() {
 										instanceId = messageId,
@@ -5846,7 +5852,7 @@ namespace Ginger.Integration
 
 		}
 
-		private static void WriteGroup(SQLiteConnection connection, string name, IDBundle ids, string parentFolderId, string folderSortPosition, bool isNSFW, long createdAt, out GroupInstance groupInstance, ref int updates, ref int expectedUpdates)
+		private static void WriteGroup(SQLiteConnection connection, string displayName, IDBundle ids, string parentFolderId, string folderSortPosition, bool isNSFW, long createdAt, out GroupInstance groupInstance, ref int updates, ref int expectedUpdates)
 		{
 			string groupId = Cuid.NewCuid();
 
@@ -5889,7 +5895,7 @@ namespace Ginger.Integration
 
 				cmdCreateGroup.CommandText = sbCommand.ToString();
 				cmdCreateGroup.Parameters.AddWithValue("$groupId", groupId);
-				cmdCreateGroup.Parameters.AddWithValue("$groupName", name ?? "");
+				cmdCreateGroup.Parameters.AddWithValue("$groupName", displayName ?? "");
 				cmdCreateGroup.Parameters.AddWithValue("$folderId", parentFolderId ?? "");
 				cmdCreateGroup.Parameters.AddWithValue("$folderSortPosition", folderSortPosition ?? "");
 				cmdCreateGroup.Parameters.AddWithValue("$isNSFW", isNSFW);
@@ -5901,7 +5907,7 @@ namespace Ginger.Integration
 					instanceId = groupId,
 					creationDate = DateTime.Now,
 					updateDate = DateTime.Now,
-					displayName = name ?? "",
+					displayName = displayName ?? "",
 					folderId = parentFolderId ?? "",
 					folderSortPosition = folderSortPosition ?? "",
 					members = characterIds,
@@ -6232,14 +6238,26 @@ namespace Ginger.Integration
 			// Write greeting/example chat
 			WriteGreeting(connection, chatId, staging.greeting, createdAt, ref updates, ref expectedUpdates);
 			WriteExampleChat(connection, chatId, staging.exampleMessages, createdAt, ref updates, ref expectedUpdates);
-
 		}
 
 		private static void WriteChats(SQLiteConnection connection, BackupData.Chat[] chats, ChatStaging defaultStaging, IDBundle ids, out string[] chatIds, ref int updates, ref int expectedUpdates)
 		{
+			if (chats.IsEmpty())
+			{
+				chatIds = new string[0];
+				return;
+			}
+
 			// Fetch default user
 			string defaultModel;
 			FetchDefaultModel(connection, out defaultModel);
+
+			var stagings = new ChatStaging[chats.Length];
+			for (int i = 0; i < chats.Length; ++i)
+			{
+				stagings[i] = chats[i].staging ?? defaultStaging ?? new ChatStaging();
+				BackyardUtil.ConvertToIDPlaceholders(stagings[i], ids.characterIds);
+			}
 
 			using (var cmdChat = new SQLiteCommand(connection))
 			{
@@ -6252,10 +6270,7 @@ namespace Ginger.Integration
 
 				for (int i = 0; i < chats.Length; ++i)
 				{
-					var staging = chats[i].staging ?? defaultStaging ?? new ChatStaging();
-					staging.greeting.text = chats[i].history.greeting;
-					BackyardUtil.ConvertToIDPlaceholders(staging, ids.characterIds);
-
+					var staging = stagings[i];
 					var parameters = chats[i].parameters ?? new ChatParameters();
 					long createdAt = chats[i].creationDate.ToUnixTimeMilliseconds();
 					long updatedAt = chats[i].updateDate.ToUnixTimeMilliseconds();
@@ -6278,18 +6293,12 @@ namespace Ginger.Integration
 								$authorNote{i:000});
 					");
 
-					WriteGreeting(connection, chatIds[i], staging.greeting, createdAt, ref updates, ref expectedUpdates);
-					WriteExampleChat(connection, chatIds[i], staging.exampleMessages, createdAt, ref updates, ref expectedUpdates);
-
 					cmdChat.Parameters.AddWithValue($"$chatId{i:000}", chatIds[i]);
 					cmdChat.Parameters.AddWithValue($"$chatName{i:000}", chats[i].name ?? "");
 					cmdChat.Parameters.AddWithValue($"$chatCreatedAt{i:000}", createdAt);
 					cmdChat.Parameters.AddWithValue($"$chatUpdatedAt{i:000}", updatedAt);
-
 					cmdChat.Parameters.AddWithValue($"$system{i:000}", staging.system ?? "");
 					cmdChat.Parameters.AddWithValue($"$scenario{i:000}", staging.scenario ?? "");
-//					cmdChat.Parameters.AddWithValue($"$example{i:000}", staging.example ?? "");
-//					cmdChat.Parameters.AddWithValue($"$greeting{i:000}", staging.greeting ?? "");
 					cmdChat.Parameters.AddWithValue($"$grammar{i:000}", staging.grammar ?? "");
 					cmdChat.Parameters.AddWithValue($"$authorNote{i:000}", staging.authorNote ?? "");
 					cmdChat.Parameters.AddWithValue($"$pruneExample{i:000}", staging.pruneExampleChat);
@@ -6308,8 +6317,15 @@ namespace Ginger.Integration
 
 				cmdChat.CommandText = sbCommand.ToString();
 				cmdChat.Parameters.AddWithValue("$groupId", ids.groupId);
-
 				updates += cmdChat.ExecuteNonQuery();
+
+				for (int i = 0; i < chatIds.Length; ++i)
+				{
+					long createdAt = DateTime.Now.ToUnixTimeMilliseconds();
+
+					WriteGreeting(connection, chatIds[i], stagings[i].greeting, createdAt, ref updates, ref expectedUpdates);
+					WriteExampleChat(connection, chatIds[i], stagings[i].exampleMessages, createdAt, ref updates, ref expectedUpdates);
+				}
 			}
 
 			// Write chat messages
@@ -6980,12 +6996,11 @@ namespace Ginger.Integration
 				sbCommand.AppendLine(
 				@"
 					INSERT INTO GreetingMessage
-						(id, chatId, createdAt, updatedAt, characterConfigId, text, position)
+						(id, chatId, createdAt, updatedAt, 
+						characterConfigId, text, position)
 					VALUES 
 						($greetingId, $chatId, $timestamp, $timestamp, 
-						$greetingCharacterId,
-						$greeting,
-						$greetingPosition);
+						$greetingCharacterId, $greeting, $greetingPosition);
 				");
 
 				string greetingId = Cuid.NewCuid();
@@ -7254,7 +7269,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void WriteUpdateCharacter(SQLiteConnection connection, FaradayCard card, string characterId, string configId, string displayName, long updatedAt, ref int updates, ref int expectedUpdates)
+		private static void WriteUpdateCharacter(SQLiteConnection connection, FaradayCard card, string displayName, string characterId, string configId, long updatedAt, ref int updates, ref int expectedUpdates)
 		{
 			using (var cmdUpdate = new SQLiteCommand(connection))
 			{
@@ -7283,7 +7298,7 @@ namespace Ginger.Integration
 				cmdUpdate.Parameters.AddWithValue("$charId", characterId);
 				cmdUpdate.Parameters.AddWithValue("$configId", configId);
 				cmdUpdate.Parameters.AddWithValue("$name", card.data.name ?? "");
-				cmdUpdate.Parameters.AddWithValue("$displayName", displayName ?? card.data.displayName ?? "");
+				cmdUpdate.Parameters.AddWithValue("$displayName", card.data.displayName ?? "");
 				cmdUpdate.Parameters.AddWithValue("$persona", card.data.persona ?? "");
 				cmdUpdate.Parameters.AddWithValue("$nsfw", card.data.isNSFW);
 				cmdUpdate.Parameters.AddWithValue("$timestamp", updatedAt);
@@ -7476,18 +7491,23 @@ namespace Ginger.Integration
 		
 		private static void PrepareGreetingAndExampleChat(ref ChatStaging staging, string[] groupMembers)
 		{
+			if (staging == null)
+				return;
 			PrepareGreetingAndExampleChat(ref staging.greeting, ref staging.exampleMessages, groupMembers);
 		}
 
 		private static void PrepareGreetingAndExampleChat(ref CharacterMessage greeting, ref CharacterMessage[] exampleMessages, string[] groupMembers)
 		{
+			if (greeting.IsEmpty() && exampleMessages.IsEmpty())
+				return;
+
 			Dictionary<string, int> namesToId = new Dictionary<string, int>();
 			namesToId.Add(GingerString.UserMarker, 0);
 			namesToId.Add(GingerString.CharacterMarker, 1);
 			for (int i = 1; i < groupMembers.Length; ++i)
 			{
-				namesToId.Add(GingerString.MakeInternalCharacterMarker(i), i);
-				namesToId.Add(BackyardUtil.CreateIDPlaceholder(groupMembers[i]), i);
+				namesToId.TryAdd(GingerString.MakeInternalCharacterMarker(i), i);
+				namesToId.TryAdd(BackyardUtil.CreateIDPlaceholder(groupMembers[i]), i);
 			}
 
 			// Greeting

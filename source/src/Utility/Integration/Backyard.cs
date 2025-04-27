@@ -302,7 +302,7 @@ namespace Ginger.Integration
 					output = string.Concat(name, ": ", text.Trim());
 				else if (string.IsNullOrEmpty(characterId) == false)
 				{
-					string name = characterId;
+					string name = BackyardUtil.CreateIDPlaceholder(characterId);
 					BackyardUtil.ConvertFromIDPlaceholders(ref name);
 					output = string.Concat(name, ": ", text.Trim());
 				}

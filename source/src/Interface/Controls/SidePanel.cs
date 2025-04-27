@@ -124,7 +124,10 @@ namespace Ginger
 			textBox_characterName.Text = Current.Card.name;
 			textBox_characterName.InitUndo();
 			textBox_characterName.Enabled = Current.SelectedCharacter == 0;
-			textBox_characterName.Placeholder = Utility.FirstNonEmpty(Current.Character.spokenName, Constants.DefaultCharacterName);
+			if (Current.Characters.Count == 1)
+				textBox_characterName.Placeholder = Utility.FirstNonEmpty(Current.Character.spokenName, Constants.DefaultCharacterName);
+			else
+				textBox_characterName.Placeholder = Utility.CommaSeparatedList(Current.Characters.Select(c => Utility.FirstNonEmpty(c.name, Constants.DefaultCharacterName)), "and", false);
 
 			textBox_characterSpokenName.Text = Current.Character.spokenName;
 			textBox_characterSpokenName.Placeholder = Utility.FirstNonEmpty(Current.Card.name, Constants.DefaultCharacterName);
@@ -600,7 +603,14 @@ namespace Ginger
 			textBox_characterSpokenName.Text = textBox_characterSpokenName.Text;
 			textBox_characterSpokenName.SelectionStart = cursorPos;
 
-			textBox_characterName.Placeholder = Utility.FirstNonEmpty(SpokenName, Constants.DefaultCharacterName);
+			if (Current.Characters.Count == 1)
+				textBox_characterName.Placeholder = Utility.FirstNonEmpty(SpokenName, Constants.DefaultCharacterName);
+			else
+			{
+				string[] names = Current.Characters.Select(c => Utility.FirstNonEmpty(c.name, Constants.DefaultCharacterName)).ToArray();
+				names[Current.SelectedCharacter] = SpokenName;
+				textBox_characterName.Placeholder = Utility.CommaSeparatedList(names, "and", false);
+			}
 		}
 
 		private void PortraitImage_MouseClick(object sender, MouseEventArgs args)

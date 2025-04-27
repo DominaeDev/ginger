@@ -1936,6 +1936,8 @@ namespace Ginger
 				cards[i].data.name = Current.Characters[i].name;
 			cards[0].EnsureSystemPrompt();
 			cards[0].data.isNSFW = cards.ContainsAny(c => c.data.isNSFW);
+			if (string.IsNullOrEmpty(Current.Card.name))
+				cards[0].data.displayName = Utility.CommaSeparatedList(cards.Select(c => c.data.name), "and", false);
 
 			Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
 			BackupData.Chat[] chats = null;
@@ -2025,6 +2027,8 @@ namespace Ginger
 			for (int i = 0; i < cards.Length && i < Current.Characters.Count; ++i)
 				cards[i].data.name = Current.Characters[i].name;
 			cards[0].data.isNSFW = cards.ContainsAny(c => c.data.isNSFW);
+			if (string.IsNullOrEmpty(Current.Card.name))
+				cards[0].data.displayName = Utility.CommaSeparatedList(cards.Select(c => c.data.name), "and", false);
 
 			if (hasChanges)
 			{
