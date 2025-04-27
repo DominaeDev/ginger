@@ -1153,6 +1153,8 @@ namespace Ginger
 
 						name = lines[row].Substring(8, pos_colon - 8).Trim();
 						lines[row] = lines[row].Substring(pos_colon + 10).TrimStart();
+						if (name.BeginsWith('#'))
+							name = name.Substring(1);
 						firstRow = row;
 					}
 					++row;

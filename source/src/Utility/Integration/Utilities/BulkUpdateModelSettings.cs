@@ -239,7 +239,8 @@ namespace Ginger.Integration
 			if (lsChats.Count == 0)
 				return WorkerError.UnknownError;
 
-			if (Backyard.Database.UpdateChatParameters(lsChats.ToArray(), null, chatParameters) == Backyard.Error.NoError)
+			string[] chatIds = lsChats.Select(c => c.instanceId).ToArray();
+			if (Backyard.Database.UpdateChatParameters(chatIds, null, chatParameters) == Backyard.Error.NoError)
 				return WorkerError.NoError;
 			
 			return WorkerError.UnknownError;

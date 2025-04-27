@@ -3922,15 +3922,13 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error UpdateChatParameters(ChatInstance[] chatInstances, ChatStaging staging, ChatParameters parameters)
+		public Backyard.Error UpdateChatParameters(string[] chatIds, ChatStaging staging, ChatParameters parameters)
 		{
 			if (ConnectionEstablished == false)
 				return Backyard.Error.NotConnected;
 
-			if ((parameters == null && staging == null) || chatInstances.IsEmpty())
+			if ((parameters == null && staging == null) || chatIds.IsEmpty())
 				return Backyard.Error.InvalidArgument;
-
-			var chatIds = chatInstances.Select(c => c.instanceId).ToArray();
 
 			try
 			{
@@ -4050,10 +4048,10 @@ namespace Ginger.Integration
 							if (staging != null)
 							{
 								// Write greeting(s)/example chat(s)
-								for (int i = 0; i < chatInstances.Length; ++i)
+								for (int i = 0; i < chatIds.Length; ++i)
 								{
-									WriteGreeting(connection, chatInstances[i].instanceId, staging.greeting, updatedAt, ref updates, ref expectedUpdates);
-									WriteExampleChat(connection, chatInstances[i].instanceId, staging.exampleMessages, updatedAt, ref updates, ref expectedUpdates);
+									WriteGreeting(connection, chatIds[i], staging.greeting, updatedAt, ref updates, ref expectedUpdates);
+									WriteExampleChat(connection, chatIds[i], staging.exampleMessages, updatedAt, ref updates, ref expectedUpdates);
 								}
 							}
 
@@ -7450,7 +7448,7 @@ namespace Ginger.Integration
 			int lastCharacterIndex = 0;
 			for (int i = 0; i < exampleMessages.Length; ++i)
 			{
-				if (exampleMessages[i].characterIndex == 0) // User
+				if (exampleMessages[i].isUser)
 				{
 					userMessages.Add(exampleMessages[i]);
 					continue;

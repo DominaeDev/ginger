@@ -1457,7 +1457,7 @@ namespace Ginger
 			if (staging != null && BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
 				BackyardUtil.ConvertToIDPlaceholders(staging, (string)null); //! @party
 
-			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chatInstance, staging, null), "Updating chat...");
+			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chatInstance.instanceId, staging, null), "Updating chat...");
 			if (error == Backyard.Error.NotFound)
 			{
 				MsgBox.Error(Resources.error_link_chat_not_found, Resources.cap_link_paste_staging, this);
@@ -1488,7 +1488,7 @@ namespace Ginger
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return;
 
-			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chatInstance, null, dlg.Parameters), "Updating model settings...");
+			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chatInstance.instanceId, null, dlg.Parameters), "Updating model settings...");
 			if (error == Backyard.Error.NotFound)
 			{
 				MsgBox.Error(Resources.error_link_chat_not_found, Resources.cap_link_edit_chat_settings, this);
@@ -1533,7 +1533,8 @@ namespace Ginger
 			if (dlg.ShowDialog() != DialogResult.OK)
 				return;
 
-			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chats, null, dlg.Parameters), "Updating model settings...");
+			string[] chatIds = chats.Select(c => c.instanceId).ToArray();
+			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chatIds, null, dlg.Parameters), "Updating model settings...");
 			if (error == Backyard.Error.NotFound)
 			{
 				MsgBox.Error(Resources.error_link_chat_not_found, Resources.cap_link_edit_chat_settings, this);

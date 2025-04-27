@@ -57,7 +57,7 @@ namespace Ginger.Integration
 		Backyard.Error ConfirmDeleteChat(string chatId, string groupId, out int chatCount);
 		Backyard.Error ConfirmChatExists(string chatId);
 		Backyard.Error UpdateChat(string chatId, ChatInstance chatInstance, string groupId);
-		Backyard.Error UpdateChatParameters(ChatInstance[] chatIds, ChatStaging staging, ChatParameters parameters);
+		Backyard.Error UpdateChatParameters(string[] chatIds, ChatStaging staging, ChatParameters parameters);
 		Backyard.Error UpdateChatBackground(string[] chatIds, string imageUrl, int width, int height);
 		Backyard.Error DeleteChat(string chatId);
 		Backyard.Error DeleteAllChats(string groupId);
@@ -141,9 +141,9 @@ namespace Ginger.Integration
 			return chat != default(ChatInstance);
 		}
 
-		public static Backyard.Error UpdateChatParameters(this IBackyardDatabase impl, ChatInstance chat, ChatStaging staging, ChatParameters parameters)
+		public static Backyard.Error UpdateChatParameters(this IBackyardDatabase impl, string chatId, ChatStaging staging, ChatParameters parameters)
 		{
-			return impl.UpdateChatParameters(new ChatInstance[] { chat }, staging, parameters);
+			return impl.UpdateChatParameters(new string[] { chatId }, staging, parameters);
 		}
 
 	}

@@ -10,6 +10,7 @@ using System.Globalization;
 namespace Ginger.Integration
 {
 	using FaradayCard = BackyardLinkCard;
+	using CharacterMessage = Backyard.CharacterMessage;
 
 	public static class Backyard
 	{
@@ -251,6 +252,16 @@ namespace Ginger.Integration
 			public string name;
 			public string text;
 
+			public bool isUser
+			{
+				get
+				{
+					return characterIndex == 0 
+						|| name == GingerString.UserMarker 
+						|| name == GingerString.InternalUserMarker;
+				}
+			}
+
 			public static CharacterMessage FromString(string text)
 			{
 				return new CharacterMessage() {
@@ -284,18 +295,21 @@ namespace Ginger.Integration
 
 			public override string ToString()
 			{
+				string output;
 				if (string.IsNullOrEmpty(text))
 					return "";
 				else if (string.IsNullOrEmpty(name) == false)
-					return string.Concat(name, ": ", text.Trim());
+					output = string.Concat(name, ": ", text.Trim());
 				else if (string.IsNullOrEmpty(characterId) == false)
 				{
 					string name = characterId;
 					BackyardUtil.ConvertFromIDPlaceholders(ref name);
-					return string.Concat(name, ": ", text.Trim());
+					output = string.Concat(name, ": ", text.Trim());
 				}
 				else
-					return text.Trim();
+					output = text.Trim();
+
+				return GingerString.FromString(output).ToFaradayChat(true);
 			}
 
 			public bool IsEmpty()
@@ -323,36 +337,8 @@ namespace Ginger.Integration
 
 			public string example
 			{
-				get 
-				{
-					if (exampleMessages.IsEmpty())
-						return null;
-
-					StringBuilder sb = new StringBuilder();
-					int lastIndex = -1;
-					foreach (var message in exampleMessages)
-					{
-						if (message.characterIndex == 0 // User
-							|| (lastIndex != -1 && lastIndex != message.characterIndex)) // New character
-						{
-							sb.NewParagraph();
-						}
-						else
-						{
-							sb.NewLine();
-							if (message.characterIndex == 0)
-								lastIndex = -1;
-							else
-								lastIndex = message.characterIndex;
-						}
-						sb.AppendLine(message.ToString());
-					}
-					return sb.ToString();
-				}
-				set
-				{
-					exampleMessages = BackyardUtil.MessagesFromString(value);
-				}
+				get { return BackyardUtil.MessagesToString(exampleMessages); }
+				set { exampleMessages = BackyardUtil.MessagesFromString(value); }
 			}
 		}
 
@@ -1527,7 +1513,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public static Backyard.CharacterMessage[] MessagesFromString(string text)
+		public static CharacterMessage[] MessagesFromString(string text)
 		{
 			if (string.IsNullOrEmpty(text))
 				return null;
@@ -1535,19 +1521,21 @@ namespace Ginger.Integration
 			text = TextStyleConverter.MarkStyles(text, true);
 			var messages = Generator.SplitChatMessage(text);
 
-			List<Backyard.CharacterMessage> lsResult = new List<Backyard.CharacterMessage>();
+			var lsResult = new List<CharacterMessage>();
 			foreach (var message in messages)
 			{
 				if (message.userMessage != null)
 				{
-					lsResult.Add(new Backyard.CharacterMessage() {
+					lsResult.Add(new CharacterMessage() {
+						characterIndex = 0,
 						name = GingerString.UserMarker,
 						text = TextStyleConverter.ApplyStyle(message.userMessage, CardData.TextStyle.Default),
 					});
 				}
 				if (message.message != null)
 				{
-					lsResult.Add(new Backyard.CharacterMessage() {
+					lsResult.Add(new CharacterMessage() {
+						characterIndex = -1,
 						name = message.name,
 						text = TextStyleConverter.ApplyStyle(message.message, CardData.TextStyle.Default),
 					});
@@ -1557,6 +1545,33 @@ namespace Ginger.Integration
 			if (lsResult.Count > 0)
 				return lsResult.ToArray();
 			return null;
+		}
+
+		public static string MessagesToString(CharacterMessage[] exampleMessages)
+		{
+			if (exampleMessages.IsEmpty())
+				return null;
+
+			StringBuilder sb = new StringBuilder();
+			string lastName = null;
+			foreach (var message in exampleMessages)
+			{
+				if (message.isUser
+					|| (lastName != null && lastName != message.name)) // New character
+				{
+					sb.NewParagraph();
+				}
+				else
+				{
+					sb.NewLine();
+					if (message.isUser)
+						lastName = null;
+					else
+						lastName = message.name;
+				}
+				sb.AppendLine(message.ToString());
+			}
+			return sb.ToString();
 		}
 
 	}

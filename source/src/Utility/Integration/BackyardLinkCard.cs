@@ -50,36 +50,8 @@ namespace Ginger.Integration
 
 			public string example
 			{
-				get 
-				{
-					if (exampleMessages.IsEmpty())
-						return null;
-
-					StringBuilder sb = new StringBuilder();
-					int lastIndex = -1;
-					foreach (var message in exampleMessages)
-					{
-						if (message.characterIndex == 0 // User
-							|| (lastIndex != -1 && lastIndex != message.characterIndex)) // New character
-						{
-							sb.NewParagraph();
-						}
-						else
-						{
-							sb.NewLine();
-							if (message.characterIndex == 0)
-								lastIndex = -1;
-							else
-								lastIndex = message.characterIndex;
-						}
-						sb.AppendLine(message.ToString());
-					}
-					return sb.ToString();
-				}
-				set
-				{
-					exampleMessages = BackyardUtil.MessagesFromString(value);
-				}
+				get { return BackyardUtil.MessagesToString(exampleMessages); }
+				set { exampleMessages = BackyardUtil.MessagesFromString(value); }
 			}
 
 			public string creationDate;
