@@ -500,7 +500,7 @@ namespace Ginger
 			Backyard.Link.Image[] userPortraitLinks;
 			ImportImages(userImageUrls, out userPortraitLinks, AssetFile.AssetType.UserIcon);
 
-			imageLinks = Utility.ConcatenateArrays(portraitLinks, backgroundLinks, userPortraitLinks);
+			imageLinks = Utility.ConcatArrays(portraitLinks, backgroundLinks, userPortraitLinks);
 		}
 
 		private static void ImportImages(__ImageWithIndex[] images, out Backyard.Link.Image[] imageLinks, AssetFile.AssetType imageType = AssetFile.AssetType.Icon) // Backyard import

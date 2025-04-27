@@ -149,12 +149,12 @@ namespace Ginger.Integration
 
 			public string[] charactersAndUser
 			{
-				get { return Utility.ConcatenateArrays(characterIds, new string[] { userId }); }
+				get { return Utility.ConcatArrays(characterIds, new string[] { userId }); }
 			}
 
 			public string[] userAndCharacters
 			{
-				get { return Utility.ConcatenateArrays(new string[] { userId }, characterIds); }
+				get { return Utility.ConcatArrays(new string[] { userId }, characterIds); }
 			}
 
 			public string[] characterIds;
@@ -2015,7 +2015,7 @@ namespace Ginger.Integration
 					}
 
 					chatInstances = lsChatInstances
-						.OrderByDescending(c => DateTimeExtensions.Max(c.creationDate, c.updateDate))
+						.OrderByDescending(c => c.creationDate)
 						.ToArray();
 					return Backyard.Error.NoError;
 				}

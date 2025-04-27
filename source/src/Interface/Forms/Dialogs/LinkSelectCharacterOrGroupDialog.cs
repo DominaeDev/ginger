@@ -344,19 +344,22 @@ namespace Ginger
 				.OrderBy(c => c.creationDate)
 				.ToArray();
 
-			if (characters.Length >= 2)
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats) && characters.Length >= 2)
 			{
 				string[] characterNames = characters
 					.Select(c => Utility.FirstNonEmpty(c.name, Constants.DefaultCharacterName))
 					.ToArray();
 
-				sbTooltip.Append("Group chat with ");
+				sbTooltip.Append("(Party) ");
 				sbTooltip.Append(Utility.CommaSeparatedList(characterNames));
 			}
-			else if (characters.Length == 1)
+			else if (characters.Length > 0)
 			{
 				var character = characters[0];
-				sbTooltip.Append("Name: ");
+				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
+					sbTooltip.Append("(Solo) ");
+				else
+					sbTooltip.Append("Name: ");
 				sbTooltip.Append(character.displayName);
 				if (string.Compare(character.name, character.displayName, StringComparison.OrdinalIgnoreCase) != 0)
 				{

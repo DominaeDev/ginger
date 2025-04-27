@@ -1718,7 +1718,7 @@ namespace Ginger
 			// Delete orphaned users
 			string[] imageUrls;
 			Backyard.Database.DeleteOrphanedUsers(out imageUrls);
-			imageUrls = Utility.ConcatenateArrays(imageUrls, result.imageUrls);
+			imageUrls = Utility.ConcatArrays(imageUrls, result.imageUrls);
 
 			// Delete image files
 			try

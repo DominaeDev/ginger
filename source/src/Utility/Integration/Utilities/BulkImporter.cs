@@ -211,7 +211,7 @@ namespace Ginger.Integration
 				Array.Copy(workResult.instances, _result.characters, workResult.instances.Length);
 			}
 			else
-				_result.characters = Utility.ConcatenateArrays(_result.characters, workResult.instances);
+				_result.characters = Utility.ConcatArrays(_result.characters, workResult.instances);
 			_result.succeeded += workResult.succeeded;
 			_result.skipped += workResult.skipped;
 

@@ -3217,10 +3217,10 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to One ore more of the selected characters are participating in group chats.
+        ///   Looks up a localized string similar to One ore more of the selected characters are participating in a party (group chat).
         ///
-        ///Choose &apos;Yes&apos; to delete associated group chats.
-        ///Choose &apos;No&apos; to keep associated group chats.
+        ///Choose &apos;Yes&apos; to delete associated parties.
+        ///Choose &apos;No&apos; to keep associated parties.
         ///Choose &apos;Cancel&apos; to abort..
         /// </summary>
         internal static string msg_link_evict_from_group_confirm {
@@ -4272,7 +4272,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Saved to file and Backyard AI.
+        ///   Looks up a localized string similar to Saved changes to file and Backyard AI.
         /// </summary>
         internal static string status_link_save_file_and_link {
             get {

@@ -289,14 +289,20 @@ namespace Ginger
 				.Select(c => Utility.FirstNonEmpty(c.name, Constants.DefaultCharacterName))
 				.ToArray();
 
-			if (characterNames.Length >= 2)
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 			{
-				groupLabel = string.Concat("(Group chat) ", groupLabel);
-
-				sbTooltip.Append("Group chat with ");
-				sbTooltip.Append(Utility.CommaSeparatedList(characterNames));
+				if (characterNames.Length >= 2)
+				{
+					sbTooltip.Append("(Party) ");
+					sbTooltip.Append(Utility.CommaSeparatedList(characterNames));
+				}
+				else if (characterNames.Length == 1)
+				{
+					sbTooltip.Append("(Solo) ");
+					sbTooltip.Append(characterNames[0]);
+				}
 			}
-			else if (characterNames.Length == 1)
+			else if (characterNames.Length > 0)
 			{
 				sbTooltip.Append("Name: ");
 				sbTooltip.Append(characterNames[0]);

@@ -734,9 +734,9 @@ namespace Ginger
 				else
 					mergedGrammar = GingerString.Empty;
 
-				var mergedGreetings = Utility.ConcatenateArrays(a.greetings, b.greetings);
-				var mergedGreetingsGroup = Utility.ConcatenateArrays(a.group_greetings, b.group_greetings);
-				var mergedExampleChat = Utility.ConcatenateArrays(a.exampleMessages, b.exampleMessages);
+				var mergedGreetings = Utility.ConcatArrays(a.greetings, b.greetings);
+				var mergedGreetingsGroup = Utility.ConcatArrays(a.group_greetings, b.group_greetings);
+				var mergedExampleChat = Utility.ConcatArrays(a.exampleMessages, b.exampleMessages);
 
 				return new PartialOutput() {
 					blockBuilder = mergedBlocks,

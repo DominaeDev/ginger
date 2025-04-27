@@ -1225,7 +1225,7 @@ Installation not found.</value>
     <value>Automatically create a background from the portrait image when saving a new character if there is no other background.</value>
   </data>
   <data name="status_link_save_file_and_link" xml:space="preserve">
-    <value>Saved to file and Backyard AI</value>
+    <value>Saved changes to file and Backyard AI</value>
   </data>
   <data name="msg_link_save_and_link_new" xml:space="preserve">
     <value>Successfully saved and linked character to Backyard AI.</value>
@@ -1461,10 +1461,10 @@ Are you sure you want to continue?</value>
 Are you sure you want to proceed?</value>
   </data>
   <data name="msg_link_evict_from_group_confirm" xml:space="preserve">
-    <value>One ore more of the selected characters are participating in group chats.
+    <value>One ore more of the selected characters are participating in a party (group chat).
 
-Choose 'Yes' to delete associated group chats.
-Choose 'No' to keep associated group chats.
+Choose 'Yes' to delete associated parties.
+Choose 'No' to keep associated parties.
 Choose 'Cancel' to abort.</value>
   </data>
   <data name="msg_link_deleted_characters" xml:space="preserve">
