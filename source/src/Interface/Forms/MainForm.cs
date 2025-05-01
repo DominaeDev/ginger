@@ -1594,7 +1594,6 @@ namespace Ginger
 			saveAsNewPartyMenuItem.Visible = Backyard.ConnectionEstablished 
 				&& BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats);
 
-			breakRestoreLinkSeparator.Visible = Backyard.ConnectionEstablished;
 			breakLinkMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
 			breakLinkMenuItem.Visible = Backyard.ConnectionEstablished && Current.HasStaleLink == false;
 			reestablishLinkMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasStaleLink;

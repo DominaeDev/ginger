@@ -295,7 +295,7 @@ namespace Ginger
 				});
 				return json;
 			}
-			catch
+			catch (Exception e)
 			{
 				return null;
 			}

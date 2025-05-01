@@ -366,7 +366,6 @@ namespace Ginger.Integration
 
 			// Convert
 			var stash = Current.Stash();
-			Current.Instance = new GingerCharacter();
 			Current.Instance.ReadFaradayCard(faradayCard.ToFaradayCard(), null);
 
 			// Load images/backgrounds
@@ -480,7 +479,6 @@ namespace Ginger.Integration
 
 			// Convert
 			var stash = Current.Stash();
-			Current.Instance = new GingerCharacter();
 			Current.ReadFaradayCards(faradayCards.Select(c => c.ToFaradayCard()).ToArray(), null, null);
 
 			Backyard.Link.Image[] imageLinks;

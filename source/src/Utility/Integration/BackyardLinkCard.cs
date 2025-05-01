@@ -153,8 +153,8 @@ namespace Ginger.Integration
 		{
 			var card = new FaradayCardV4() {
 				data = new FaradayCardV4.Data() {
-					name = data.name,
-					displayName = data.displayName,
+					name = data.name ?? Constants.DefaultCharacterName,
+					displayName = data.displayName ?? data.name ?? Constants.DefaultCharacterName,
 					system = data.system,
 					persona = data.persona,
 					scenario = data.scenario,

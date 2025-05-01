@@ -2009,6 +2009,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Some content could not be saved to Backyard AI because it is associated with the party this character belongs to, not the character itself..
+        /// </summary>
+        internal static string error_link_save_group_member {
+            get {
+                return ResourceManager.GetString("error_link_save_group_member", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to connect to Backyard AI. Unsupported version..
         /// </summary>
         internal static string error_link_unsupported {

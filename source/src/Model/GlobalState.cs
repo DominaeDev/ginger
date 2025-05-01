@@ -585,12 +585,9 @@ namespace Ginger
 				isFileDirty = _bFileDirty,
 				selectedCharacter = SelectedCharacter,
 			};
-			Instance = null;
-			Filename = null;
-			SelectedCharacter = 0;
-			Link = null;
-			_bDirty = false;
-			_bFileDirty = false;
+
+			Instance = new GingerCharacter();
+			Reset();
 			return stash;
 		}
 

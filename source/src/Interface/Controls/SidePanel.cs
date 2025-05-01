@@ -148,6 +148,8 @@ namespace Ginger
 			textBox_userPlaceholder.InitUndo();
 			textBox_userPlaceholder.Enabled = AppSettings.Settings.AutoConvertNames;
 
+			textBox_characterName.Enabled = !(Current.HasActiveLink && Current.Link.linkType == Integration.Backyard.Link.LinkType.GroupMember);
+
 			// Creator
 			textBox_creator.Text = Current.Card.creator;
 			textBox_creator.InitUndo();

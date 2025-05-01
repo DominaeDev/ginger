@@ -58,6 +58,7 @@ namespace Ginger.Integration
 		private struct _Group
 		{
 			public string instanceId;
+			public string displayName;
 			public string folderId;
 			public string folderSortPosition;
 			public string hubCharId;
@@ -333,9 +334,8 @@ namespace Ginger.Integration
 					connection.Open();
 
 					ChatStaging staging = new ChatStaging();
+					_Group groupInfo = default;
 					string groupId = null;
-					string hubCharId = null;
-					string hubAuthorUsername = null;
 
 					_Character character;
 					if (FetchCharacter(connection, characterId, out character) == false)
@@ -357,12 +357,7 @@ namespace Ginger.Integration
 					string userId;
 					if (groupId != null)
 					{
-
-						if (FetchGroupInfo(connection, groupId, out _Group groupInfo))
-						{
-							hubCharId = groupInfo.hubCharId;
-							hubAuthorUsername = groupInfo.hubAuthorUsername;
-						}
+						FetchGroupInfo(connection, groupId, out groupInfo);
 
 						string chatId;
 						ChatParameters tmp;
@@ -370,7 +365,6 @@ namespace Ginger.Integration
 						{
 							FetchChatStaging(connection, chatId, out staging, out tmp);
 							FetchUserInGroup(connection, groupId, out userId);
-							//! PrepareGreetingAndExampleChat(ref staging, new string[] { userId, characterId });
 						}
 					}
 
@@ -388,7 +382,7 @@ namespace Ginger.Integration
 						lsImages.AddRange(backgrounds);
 
 					card = new FaradayCard();
-					card.data.displayName = character.displayName;
+					card.data.displayName = Utility.FirstNonEmpty(groupInfo.displayName, character.displayName, Constants.DefaultCharacterName);
 					card.data.name = character.name;
 					card.data.persona = character.persona;
 					card.data.system = staging.system;
@@ -400,8 +394,8 @@ namespace Ginger.Integration
 					card.data.creationDate = character.creationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
 					card.data.updateDate = character.updateDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
 					card.authorNote = staging.authorNote;
-					card.hubCharacterId = hubCharId;
-					card.hubAuthorUsername = hubAuthorUsername;
+					card.hubCharacterId = groupInfo.hubCharId;
+					card.hubAuthorUsername = groupInfo.hubAuthorUsername;
 
 					// Convert character placeholders
 					BackyardUtil.ConvertFromIDPlaceholders(card);
@@ -424,8 +418,6 @@ namespace Ginger.Integration
 							if (userImage != null)
 								lsImages.Add(userImage);
 						}
-						
-					//!	PrepareGreetingAndExampleChat(ref staging.greeting, ref staging.exampleMessages, new string[] { userId, characterId });
 					}
 
 					images = lsImages.ToArray();
@@ -548,6 +540,8 @@ namespace Ginger.Integration
 			string folderSortPosition = "";
 			string hubGroupConfigId = null;
 			string hubAuthorUsername = null;
+			string displayName = null;
+
 			DateTime createdAt = default(DateTime);
 			DateTime updatedAt = default(DateTime);
 
@@ -557,7 +551,7 @@ namespace Ginger.Integration
 				sbCommand.AppendLine(
 				@"
 					SELECT 
-						hubGroupConfigId, hubAuthorUsername, folderId, folderSortPosition, createdAt, updatedAt
+						createdAt, updatedAt, name, folderId, folderSortPosition, hubGroupConfigId, hubAuthorUsername
 					FROM GroupConfig
 					WHERE id = $groupId;
 				");
@@ -572,17 +566,19 @@ namespace Ginger.Integration
 						return false;
 					}
 
-					hubGroupConfigId = reader[0] as string;
-					hubAuthorUsername = reader[1] as string;
-					folderId = reader[2] as string;
-					folderSortPosition = reader[3] as string;
-					createdAt = reader.GetTimestamp(4);
-					updatedAt = reader.GetTimestamp(5);
+					createdAt = reader.GetTimestamp(0);
+					updatedAt = reader.GetTimestamp(1);
+					displayName = reader[2] as string;
+					folderId = reader[3] as string;
+					folderSortPosition = reader[4] as string;
+					hubGroupConfigId = reader[5] as string;
+					hubAuthorUsername = reader[6] as string;
 				}
 			}
 
 			groupInfo = new _Group() {
 				instanceId = groupId,
+				displayName = displayName,
 				creationDate = createdAt,
 				updateDate = updatedAt,
 				folderId = folderId,
@@ -1407,10 +1403,7 @@ namespace Ginger.Integration
 					connection.Open();
 
 					ChatStaging staging = new ChatStaging();
-					string hubCharId = null;
-					string hubAuthorUsername = null;
-					string folderId = "";
-					string folderSortPosition = "";
+					_Group groupInfo = default;
 
 					List<_Character> groupMembers;
 					if (FetchMembersOfGroup(connection, groupId, null, out groupMembers) == false)
@@ -1448,13 +1441,7 @@ namespace Ginger.Integration
 					}
 
 					// Get group info
-					if (FetchGroupInfo(connection, groupId, out _Group groupInfo))
-					{
-						folderId = groupInfo.folderId;
-						folderSortPosition = groupInfo.folderSortPosition;
-						hubCharId = groupInfo.hubCharId;
-						hubAuthorUsername = groupInfo.hubAuthorUsername;
-					}
+					FetchGroupInfo(connection, groupId, out groupInfo);
 
 					// Get group user
 					string userId;
@@ -1464,10 +1451,7 @@ namespace Ginger.Integration
 					string chatId;
 					ChatParameters tmp;
 					if (GetPrimaryChatForGroup(connection, groupId, out chatId))
-					{
 						FetchChatStaging(connection, chatId, out staging, out tmp);
-						//! PrepareGreetingAndExampleChat(ref staging.greeting, ref staging.exampleMessages, Utility.QuickArray<string>(userId, characters.Select(c => c.instanceId)));
-					}
 
 					// Gather background image files
 					ImageInstance[] backgrounds;
@@ -1485,7 +1469,7 @@ namespace Ginger.Integration
 						var card = new FaradayCard();
 						cards[i] = card;
 
-						card.data.displayName = character.displayName;
+						card.data.displayName = i == 0 ? groupInfo.displayName : null;
 						card.data.name = character.name;
 						card.data.persona = character.persona;
 						card.data.creationDate = character.creationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
@@ -1523,14 +1507,21 @@ namespace Ginger.Integration
 							persona = card.data.persona,
 
 							hasLorebook = card.data.loreItems.Length > 0,
-							creator = hubAuthorUsername ?? "",
-							folderId = folderId,
-							folderSortPosition = folderSortPosition,
+							creator = groupInfo.hubAuthorUsername ?? "",
+							folderId = groupInfo.folderId,
+							folderSortPosition = groupInfo.folderSortPosition,
 						};
 					}
 
 					// Convert character placeholders
 					BackyardUtil.ConvertFromIDPlaceholders(cards);
+
+					// Default party name
+					if (string.IsNullOrWhiteSpace(characterInstances[0].displayName))
+					{
+						cards[0].data.displayName = Utility.CommaSeparatedList(cards.Select(c => Utility.FirstNonEmpty(c.data.name, Constants.DefaultCharacterName)), "and", false);
+						characterInstances[0].displayName = cards[0].data.displayName;
+					}
 
 					// Get user persona and portrait
 					string userName;
@@ -2659,7 +2650,6 @@ namespace Ginger.Integration
 						var staging = chats[i].staging;
 						FetchChatGreeting(connection, chats[i].instanceId, ref staging);
 						FetchExampleChat(connection, chats[i].instanceId, ref staging);
-						//! PrepareGreetingAndExampleChat(ref staging.greeting, ref staging.exampleMessages, groupMembers.Select(m => m.instanceId).ToArray());
 
 						var chatInstance = FetchChatMessages(connection, chats[i], characters, groupMembers);
 						if (chatInstance != null)
@@ -2893,6 +2883,8 @@ namespace Ginger.Integration
 					swipes = new string[1] { sb.ToString() },
 				});
 			}
+
+			BackyardUtil.ConvertFromIDPlaceholders(entries);
 
 			var chatInstance = new ChatInstance() {
 				instanceId = chatInfo.instanceId,
@@ -4705,8 +4697,13 @@ namespace Ginger.Integration
 			if (imagesToSave == null || imagesToSave.Length < ImageInstance.MaxImages)
 				return; // Do nothing
 
-			var keepPortraits = imagesToSave.Where(i => i.imageType == AssetFile.AssetType.Icon).Take(ImageInstance.MaxImages);
 			var nonPortraits = imagesToSave.Where(i => i.isDefined && i.imageType != AssetFile.AssetType.Icon);
+
+			 var keepPortraits = imagesToSave
+				.Where(i => i.imageType == AssetFile.AssetType.Icon)
+				.GroupBy(i => i.actorIndex)
+				.SelectMany(g => g.Take(ImageInstance.MaxImages));
+
 			var excludeLinks = new HashSet<string>(
 				imagesToSave
 					.Except(keepPortraits.Union(nonPortraits))
@@ -4817,7 +4814,7 @@ namespace Ginger.Integration
 						string instanceId = reader.GetString(0);
 						DateTime createdAt = reader.GetTimestamp(1);
 						DateTime updatedAt = reader.GetTimestamp(2);
-						string name = reader.GetString(3);
+						string displayName = reader.GetString(3);
 						string folderId = reader.GetString(4);
 						string folderSortPosition = reader.GetString(5);
 						string hubCharId = reader[6] as string;
@@ -4829,7 +4826,7 @@ namespace Ginger.Integration
 
 						lsGroups.Add(new GroupInstance() {
 							instanceId = instanceId,
-							displayName = name,
+							displayName = displayName,
 							creationDate = createdAt,
 							updateDate = updatedAt,
 							folderId = folderId,
@@ -5905,9 +5902,9 @@ namespace Ginger.Integration
 
 				groupInstance = new GroupInstance() {
 					instanceId = groupId,
+					displayName = displayName ?? "",
 					creationDate = DateTime.Now,
 					updateDate = DateTime.Now,
-					displayName = displayName ?? "",
 					folderId = parentFolderId ?? "",
 					folderSortPosition = folderSortPosition ?? "",
 					members = characterIds,
@@ -6775,8 +6772,8 @@ namespace Ginger.Integration
 							model, temperature, topP, minP, minPEnabled, topK, repeatPenalty, repeatLastN, promptTemplate,
 							name, authorNote)
 					VALUES 
-						($chatId, $timestamp, $timestamp, $scenario, $example, $pruneExample, 
-							$system, $greeting, $grammar, $groupId, 
+						($chatId, $timestamp, $timestamp, $scenario, $pruneExample, 
+							$system, $grammar, $groupId, 
 							$model, $temperature, $topP, $minP, $minPEnabled, $topK, $repeatPenalty, $repeatLastN, $promptTemplate,
 							$chatName, $authorNote);
 				");

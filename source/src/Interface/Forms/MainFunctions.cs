@@ -1313,8 +1313,6 @@ namespace Ginger
 					var stash = Current.Stash();
 					try
 					{
-						Current.Instance = new GingerCharacter();
-						Current.Reset();
 						Current.Characters.Clear();
 						Current.Characters.Add(character);
 

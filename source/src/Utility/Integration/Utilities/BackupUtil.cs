@@ -386,10 +386,10 @@ namespace Ginger.Integration
 						return FileUtil.Error.DiskFullError;
 					return FileUtil.Error.FileWriteError;
 				}
-				catch
+				catch (Exception e)
 				{
 					File.Delete(intermediateCardFilename);
-					return FileUtil.Error.NoError;
+					return FileUtil.Error.UnknownError;
 				}
 			}
 
@@ -775,25 +775,36 @@ namespace Ginger.Integration
 						}
 					}
 				}
-
-				// images/portrait.*, images/image_00.* supercedes png.
-				int idxPortrait = images.FindIndex(i => {
-					string fn = Path.GetFileNameWithoutExtension(i.filename).ToLowerInvariant();
-					return fn == "portrait" || fn == "image_00";
-				});
-				if (idxPortrait > 0 && images.Count > 0)
-				{
-					// Move to front (remove existing)
-					var image = images[idxPortrait];
-					images.RemoveAt(idxPortrait);
-					images.RemoveAt(0);
-					images.Insert(0, image);
-				}
-
+				
 				if (lsCharacterCards.IsEmpty())
 				{
 					backup = default(BackupData);
 					return FileUtil.Error.NoDataFound;
+				}
+
+				if (images.Count > 0)
+				{
+					for (int i = 0; i < lsCharacterCards.Count; ++i)
+					{
+						int portraitIndex = images.FindIndex(img => img.characterIndex == i);
+						if (portraitIndex == -1)
+							continue;
+
+						// images/portrait.*, images/image_00.* supercedes png.
+						int idxPortrait = images.FindIndex(img => {
+							string fn = Path.GetFileNameWithoutExtension(img.filename).ToLowerInvariant();
+							return (img.characterIndex == i) && (fn == "portrait" || fn == "image_00");
+						});
+
+						if (idxPortrait > portraitIndex)
+						{
+							// Move to front (remove existing)
+							var image = images[idxPortrait];
+							images.RemoveAt(idxPortrait);
+							images.RemoveAt(portraitIndex);
+							images.Insert(portraitIndex, image);
+						}
+					}
 				}
 
 				backup = new BackupData() {

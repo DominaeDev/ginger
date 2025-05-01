@@ -262,8 +262,6 @@ namespace Ginger.Integration
 			}
 
 			var stash = Current.Stash();
-			Current.Instance = new GingerCharacter();
-			Current.Instance.Reset();
 
 			try
 			{

@@ -316,6 +316,14 @@ namespace Ginger.Integration
 			{
 				return string.IsNullOrEmpty(text);
 			}
+
+			public void Clear()
+			{
+				characterId = null;
+				characterIndex = -1;
+				name = null;
+				text = null;
+			}
 		}
 
 		[Serializable]
@@ -1360,6 +1368,16 @@ namespace Ginger.Integration
 					__FromID(ref staging.exampleMessages[i].name, knownIds);
 					__FromID(ref staging.exampleMessages[i].text, knownIds);
 				}
+			}
+		}
+		
+		public static void ConvertFromIDPlaceholders(List<ChatHistory.Message> entries)
+		{
+			var knownIds = new Dictionary<string, string>();
+			foreach (var entry in entries.Where(e => e.swipes != null))
+			{
+				for (int i = 0; i < entry.swipes.Length; ++i)
+					__FromID(ref entry.swipes[i], knownIds);
 			}
 		}
 

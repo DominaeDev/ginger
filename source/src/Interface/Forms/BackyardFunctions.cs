@@ -161,20 +161,17 @@ namespace Ginger
 
 			FileMutex.Release();
 
-			Current.Filename = null;
-			Current.IsDirty = false;
-			Current.IsFileDirty = false;
-			Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
-
 			if (AppSettings.BackyardLink.AlwaysLinkOnImport 
 				|| MsgBox.Ask(Resources.msg_link_create_link, Resources.cap_link_character, this))
 			{
 				Current.LinkWith(characterInstance, imageLinks);
 				SetStatusBarMessage(Resources.status_link_create, Constants.StatusBarMessageInterval);
-				Current.IsFileDirty = false;
-				Current.IsLinkDirty = false;
-				RefreshTitle();
 			}
+
+			Current.Filename = null;
+			Current.IsDirty = false;
+			Current.IsFileDirty = false;
+			Current.OnLoadCharacter?.Invoke(this, EventArgs.Empty);
 			return true;
 		}
 
@@ -417,7 +414,7 @@ namespace Ginger
 
 			// User persona
 			UserData userInfo = null;
-			if (AppSettings.BackyardLink.WriteUserPersona)
+			if (AppSettings.BackyardLink.WriteUserPersona && Current.Link.linkType != Backyard.Link.LinkType.GroupMember)
 			{
 				string userPersona = output.userPersona.ToFaraday();
 				if (string.IsNullOrEmpty(userPersona) == false)
@@ -431,8 +428,32 @@ namespace Ginger
 			}
 
 			BackyardLinkCard card = BackyardLinkCard.FromOutput(output);
-			if (Current.Link.linkType != Backyard.Link.LinkType.StandAlone)
+			if (Current.Link.linkType == Backyard.Link.LinkType.Solo || Current.Link.linkType == Backyard.Link.LinkType.Group)
 				card.EnsureSystemPrompt();
+
+			bool bWriteGroup = string.IsNullOrWhiteSpace(card.data.system) == false
+					|| string.IsNullOrWhiteSpace(card.data.scenario) == false
+					|| string.IsNullOrWhiteSpace(card.data.grammar) == false
+					|| string.IsNullOrWhiteSpace(card.authorNote) == false
+					|| string.IsNullOrWhiteSpace(card.userPersona) == false
+					|| string.IsNullOrWhiteSpace(card.userPersona) == false
+					|| card.data.greeting.IsEmpty() == false
+					|| card.data.exampleMessages.IsEmpty() == false;
+
+			bool bClearChatParams = bWriteGroup && Current.Link.linkType == Backyard.Link.LinkType.GroupMember;
+			
+			if (bClearChatParams)
+			{
+				// Clear staging
+				card.data.system = null;
+				card.data.scenario = null;
+				card.data.greeting.Clear();
+				card.data.exampleMessages = null;
+				card.data.grammar = null;
+				card.authorNote = null;
+				card.userPersona = null;
+				userInfo = default;
+			}
 
 			if (hasChanges)
 			{
@@ -448,21 +469,23 @@ namespace Ginger
 			Backyard.Link.Image[] imageLinks;
 			error = Backyard.Database.UpdateCharacter(Current.Link, card, userInfo, out updateDate, out imageLinks);
 			if (error != Backyard.Error.NoError)
-			{
 				return error;
-			}
-			else
-			{
-				Current.Link.updateDate = updateDate;
-				Current.Link.imageLinks = imageLinks;
-				Current.IsFileDirty = true;
-				Current.IsLinkDirty = false;
-				RefreshTitle();
 
-				// Refresh character information
-				Backyard.RefreshCharacters();
-				return Backyard.Error.NoError;
-			}
+			if (bClearChatParams)
+				MsgBox.Warning(Resources.error_link_save_group_member, Resources.cap_link_save_character);
+
+			if (bWriteGroup && Current.Link.linkType == Backyard.Link.LinkType.StandAlone)
+				Current.Link.linkType = Backyard.Link.LinkType.Solo; // Promote to solo
+
+			Current.Link.updateDate = updateDate;
+			Current.Link.imageLinks = imageLinks;
+			Current.IsFileDirty = true;
+			Current.IsLinkDirty = false;
+			RefreshTitle();
+
+			// Refresh character information
+			Backyard.RefreshCharacters();
+			return Backyard.Error.NoError;
 		}
 
 		private bool ReestablishLink()
@@ -907,14 +930,14 @@ namespace Ginger
 			HashSet<string> used_filenames = new HashSet<string>();
 			if (formatDialog.FileFormat.Contains(FileUtil.FileType.Backup))
 			{
-				string now = DateTime.Now.ToString("yyyy-MM-dd");
+				string backupDate = DateTime.Now.ToString("yyyy-MM-dd");
 				foreach (var group in groupInstances)
 				{
 					filenames.Add(Utility.MakeUniqueFilename(outputDirectory,
 						string.Format("{0}_{1}_{2}.backup.zip",
-							group.displayName.Replace(" ", "_"),
+							group.GetDisplayName().Replace(" ", "_"),
 							group.creationDate.ToFileTimeUtc() / 1000L,
-							now),
+							backupDate),
 						used_filenames)
 					);
 				}
@@ -925,7 +948,7 @@ namespace Ginger
 				{
 					filenames.Add(Utility.MakeUniqueFilename(outputDirectory,
 						string.Format("{0}_{1}.{2}",
-							group.displayName,
+							group.GetDisplayName().Replace(" ", "_"),
 							group.creationDate.ToFileTimeUtc() / 1000L,
 							ext),
 						used_filenames)
@@ -1748,8 +1771,6 @@ namespace Ginger
 			try
 			{
 				Undo.Suspend();
-				Current.Instance = new GingerCharacter();
-				Current.Reset();
 
 				if (ImportCharacter(filename) == false)
 				{
@@ -1831,8 +1852,6 @@ namespace Ginger
 			try
 			{
 				Undo.Suspend();
-				Current.Instance = new GingerCharacter();
-				Current.Reset();
 				Current.Characters.Clear();
 				Current.Characters.Add(character);
 
