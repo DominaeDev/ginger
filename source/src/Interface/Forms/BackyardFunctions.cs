@@ -1041,7 +1041,7 @@ namespace Ginger
 			{
 				importFileDialog.Title = Resources.cap_import_character;
 				importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml;*.zip|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml|Character backup files|*.zip";
-				importFileDialog.FilterIndex = AppSettings.User.LastImportCharacterFilter;
+				importFileDialog.FilterIndex = AppSettings.User.LastBulkImportCharacterFilter;
 				importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 				importFileDialog.Multiselect = true;
 				importFileDialog.FileName = "";
@@ -1051,7 +1051,7 @@ namespace Ginger
 					return false;
 
 				AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileNames[0]);
-				AppSettings.User.LastImportCharacterFilter = importFileDialog.FilterIndex;
+				AppSettings.User.LastBulkImportCharacterFilter = importFileDialog.FilterIndex;
 			}
 			finally
 			{
@@ -1305,14 +1305,13 @@ namespace Ginger
 			exportFileDialog.Filter = "Character backup file|*.zip";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
-			exportFileDialog.FilterIndex = AppSettings.User.LastExportChatFilter;
+			exportFileDialog.FilterIndex = 0;
 
 			var result = exportFileDialog.ShowDialog();
 			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
 				return false;
 
 			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
-			AppSettings.User.LastExportChatFilter = exportFileDialog.FilterIndex;
 
 			if (BackupUtil.WriteBackup(exportFileDialog.FileName, backup) != FileUtil.Error.NoError)
 			{
@@ -1334,13 +1333,12 @@ namespace Ginger
 
 			importFileDialog.Title = Resources.cap_link_restore_backup;
 			importFileDialog.Filter = "Character backup file|*.zip";
-			importFileDialog.FilterIndex = AppSettings.User.LastImportChatFilter;
+			importFileDialog.FilterIndex = 0;
 			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			var result = importFileDialog.ShowDialog();
 			if (result != DialogResult.OK)
 				return false;
 
-			AppSettings.User.LastImportChatFilter = importFileDialog.FilterIndex;
 			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(importFileDialog.FileName);
 
 			BackupData backup;

@@ -94,10 +94,13 @@ namespace Ginger
 			public static int LastImportCharacterFilter = 0;
 			public static int LastImportLorebookFilter = 0;
 			public static int LastImportChatFilter = 0;
-
 			public static int LastExportCharacterFilter = 0;
 			public static int LastExportLorebookFilter = 0;
 			public static int LastExportChatFilter = 0;
+
+			public static int LastBulkImportCharacterFilter = 0;
+			public static int LastBulkExportCharacterFilter = 0;
+			public static int LastBulkExportGroupFilter = 0;
 
 			public static bool LaunchTextEditor = true;
 
@@ -327,8 +330,11 @@ namespace Ginger
 				ReadInt(ref User.LastImportCharacterFilter, userSection, "LastImportCharacterFilter");
 				ReadInt(ref User.LastImportLorebookFilter, userSection, "LastImportLorebookFilter");
 				ReadInt(ref User.LastImportChatFilter, userSection, "LastImportChatFilter");
+				ReadInt(ref User.LastBulkImportCharacterFilter, userSection, "LastBulkImportCharacterFilter");
 				ReadInt(ref User.LastExportCharacterFilter, userSection, "LastExportCharacterFilter");
 				ReadInt(ref User.LastExportLorebookFilter, userSection, "LastExportLorebookFilter");
+				ReadInt(ref User.LastBulkExportCharacterFilter, userSection, "LastBulkExportCharacterFilter");
+				ReadInt(ref User.LastBulkExportGroupFilter, userSection, "LastBulkExportGroupFilter");
 				ReadInt(ref User.LastExportChatFilter, userSection, "LastExportChatFilter");
 				ReadBool(ref User.LaunchTextEditor, userSection, "LaunchTextEditor");
 				ReadBool(ref User.FindMatchCase, userSection, "FindMatchCase");
@@ -479,7 +485,7 @@ namespace Ginger
 
 			VersionNumber lastVersion = VersionNumber.Parse(sLastVersion);
 
-			if (!lastVersion.isDefined || lastVersion < new VersionNumber(1, 6, 0))
+			if (!lastVersion.isDefined || lastVersion < new VersionNumber(1, 5, 0))
 			{
 				User.LastImportCharacterFilter = 0;
 				User.LastExportCharacterFilter = 0;
@@ -539,9 +545,12 @@ namespace Ginger
 					Write(outputFile, "LastImportCharacterFilter", User.LastImportCharacterFilter);
 					Write(outputFile, "LastImportLorebookFilter", User.LastImportLorebookFilter);
 					Write(outputFile, "LastImportChatFilter", User.LastImportChatFilter);
+					Write(outputFile, "LastBulkImportChatFilter", User.LastBulkImportCharacterFilter);
 					Write(outputFile, "LastExportCharacterFilter", User.LastExportCharacterFilter);
 					Write(outputFile, "LastExportLorebookFilter", User.LastExportLorebookFilter);
 					Write(outputFile, "LastExportChatFilter", User.LastExportChatFilter);
+					Write(outputFile, "LastBulkExportCharacterFilter", User.LastBulkExportCharacterFilter);
+					Write(outputFile, "LastBulkExportGroupFilter", User.LastBulkExportGroupFilter);
 					Write(outputFile, "LaunchTextEditor", User.LaunchTextEditor);
 					Write(outputFile, "FindMatchCase", User.FindMatchCase);
 					Write(outputFile, "FindWholeWords", User.FindWholeWords);

@@ -62,17 +62,12 @@ namespace Ginger
 			comboBox.Items.Clear();
 			comboBox.Items.AddRange(Filters);
 
-			if (GroupFormats == false)
-			{
-				if (AppSettings.User.LastExportCharacterFilter > 0 && AppSettings.User.LastExportCharacterFilter <= comboBox.Items.Count)
-					comboBox.SelectedIndex = AppSettings.User.LastExportCharacterFilter - 1;
-				else
-					comboBox.SelectedIndex = 0;
-			}
+			int filter = GroupFormats ? AppSettings.User.LastBulkExportGroupFilter : AppSettings.User.LastBulkExportCharacterFilter;
+			if (filter > 0 && filter <= comboBox.Items.Count)
+				comboBox.SelectedIndex = filter - 1;
 			else
-			{
 				comboBox.SelectedIndex = 0;
-			}
+
 			comboBox.EndUpdate();
 		}
 
@@ -81,7 +76,11 @@ namespace Ginger
 			if (comboBox.SelectedIndex < 0 || comboBox.SelectedIndex >= FileTypes.Length)
 				return; // Error
 
-			AppSettings.User.LastExportCharacterFilter = comboBox.SelectedIndex + 1;
+			if (GroupFormats)
+				AppSettings.User.LastBulkExportGroupFilter = comboBox.SelectedIndex + 1;
+			else
+				AppSettings.User.LastBulkExportCharacterFilter = comboBox.SelectedIndex + 1;
+
 			FileFormat = FileTypes[comboBox.SelectedIndex];
 			
 			DialogResult = DialogResult.OK;
