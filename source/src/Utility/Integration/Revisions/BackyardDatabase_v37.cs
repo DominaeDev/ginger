@@ -1592,7 +1592,7 @@ namespace Ginger.Integration
 			ImageInput[] imageInput = args.imageInput;
 			BackupData.Chat[] chats = args.chats;
 			UserData userInfo = args.userInfo;
-			FolderInstance folder = args.folder;
+			FolderInstance folder = args.folder; 
 
 			if (cards == null || cards.Length == 0)
 			{
@@ -1616,6 +1616,14 @@ namespace Ginger.Integration
 				}
 			}
 
+			// Prepare cards
+			for (int i = 0; i < cards.Length && i < Current.Characters.Count; ++i)
+				cards[i].data.name = Current.Characters[i].name;
+			cards[0].EnsureSystemPrompt();
+			cards[0].data.isNSFW = cards.ContainsAny(c => c.data.isNSFW);
+			if (string.IsNullOrEmpty(Current.Card.name))
+				cards[0].data.displayName = Utility.CommaSeparatedList(cards.Select(c => c.data.name), "and", false);
+
 			bool bAllowUserPersona = userInfo != null;
 			FaradayCard primaryCard = cards[0];
 
@@ -1624,6 +1632,8 @@ namespace Ginger.Integration
 				idBundles[i].characterId = Cuid.NewCuid();
 			var characterIds = idBundles.Select(id => id.characterId).ToArray();
 			BackyardUtil.ConvertToIDPlaceholders(cards, characterIds);
+
+			IdentifyGreeter(ref primaryCard.data.greeting, cards, characterIds);
 
 			// Prepare image information
 			List<ImageOutput> images = new List<ImageOutput>();
@@ -1857,6 +1867,14 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
+			// Prepare cards
+			for (int i = 0; i < cards.Length && i < Current.Characters.Count; ++i)
+				cards[i].data.name = Current.Characters[i].name;
+			cards[0].EnsureSystemPrompt();
+			cards[0].data.isNSFW = cards.ContainsAny(c => c.data.isNSFW);
+			if (string.IsNullOrEmpty(Current.Card.name))
+				cards[0].data.displayName = Utility.CommaSeparatedList(cards.Select(c => c.data.name), "and", false);
+
 			string characterId = link.mainActorId;
 			bool bAllowUserPersona = userInfo != null;
 			FaradayCard primaryCard = cards[0];
@@ -1865,7 +1883,8 @@ namespace Ginger.Integration
 			string[] characterIds = new string[actors.Length];
 			for (int i = 0; i < actors.Length; ++i)
 				characterIds[i] = actors[i].remoteId;
-			
+
+			IdentifyGreeter(ref primaryCard.data.greeting, cards, characterIds);
 			BackyardUtil.ConvertToIDPlaceholders(cards, characterIds);
 			
 			try
@@ -2868,23 +2887,30 @@ namespace Ginger.Integration
 			// Insert greeting
 			if (string.IsNullOrEmpty(chatInfo.staging.greeting.text) == false)
 			{
+				int speakerIndex = -1;
+				if (string.IsNullOrEmpty(chatInfo.staging.greeting.characterId) == false)
+					speakerIndex = groupMembers.FindIndex(m => m.instanceId == chatInfo.staging.greeting.characterId);
+				else if (string.IsNullOrEmpty(chatInfo.staging.greeting.name) == false)
+					speakerIndex = groupMembers.FindIndex(m => m.name == chatInfo.staging.greeting.name || m.displayName == chatInfo.staging.greeting.name);
+
+				if (speakerIndex < 1)
+					speakerIndex = 1;
+
 				string userName = Utility.FirstNonEmpty(groupMembers[0].name, Constants.DefaultUserName);
-				string characterName = Utility.FirstNonEmpty(groupMembers[1].name, Constants.DefaultCharacterName);
+				string characterName = Utility.FirstNonEmpty(groupMembers[speakerIndex].name, Constants.DefaultCharacterName);
 
 				var sb = new StringBuilder(GingerString.FromFaraday(chatInfo.staging.greeting.text).ToString());
 				sb.Replace(GingerString.CharacterMarker, characterName, true);
 				sb.Replace(GingerString.UserMarker, userName, true);
 
 				entries.Insert(0, new ChatHistory.Message() {
-					speaker = 1,
+					speaker = speakerIndex,
 					creationDate = chatInfo.creationDate,
 					updateDate = chatInfo.updateDate,
 					activeSwipe = 0,
 					swipes = new string[1] { sb.ToString() },
 				});
 			}
-
-//			BackyardUtil.ConvertFromIDPlaceholders(entries); //!
 
 			var chatInstance = new ChatInstance() {
 				instanceId = chatInfo.instanceId,
@@ -2964,9 +2990,20 @@ namespace Ginger.Integration
 							var staging = args.staging ?? defaultStaging;
 							var parameters = args.parameters ?? defaultParameters;
 							var chatName = args.history.name ?? "";
-							var greeting = staging.greeting.text;
+							CharacterMessage greeting = staging.greeting;
 							if (args.isImport)
-								greeting = args.history.hasGreeting ? args.history.greeting : "";
+							{
+								if (args.history.hasGreeting)
+								{
+									int speakerIndex = args.history.messages[0].speaker;
+									if (speakerIndex >= 1 && speakerIndex < groupMembers.Length)
+										greeting = CharacterMessage.FromStringWithID(args.history.greeting, groupMembers[speakerIndex]);
+									else
+										greeting = CharacterMessage.FromString(args.history.greeting);
+								}
+								else
+									greeting = CharacterMessage.FromString("");
+							}
 
 							PrepareGreetingAndExampleChat(ref staging, groupMembers);
 
@@ -2997,8 +3034,6 @@ namespace Ginger.Integration
 								cmdCreateChat.Parameters.AddWithValue("$timestamp", createdAt);
 								cmdCreateChat.Parameters.AddWithValue("$system", staging.system ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
-								cmdCreateChat.Parameters.AddWithValue("$example", staging.example ?? "");
-								cmdCreateChat.Parameters.AddWithValue("$greeting", greeting ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$authorNote", staging.authorNote ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
@@ -4021,7 +4056,6 @@ namespace Ginger.Integration
 								{
 									cmdUpdateChat.Parameters.AddWithValue("$system", Utility.FirstNonEmpty(staging.system, FaradayCard.OriginalModelInstructionsByFormat[0]));
 									cmdUpdateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
-									cmdUpdateChat.Parameters.AddWithValue("$example", staging.example ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
 									cmdUpdateChat.Parameters.AddWithValue("$authorNote", staging.authorNote);
@@ -6962,8 +6996,6 @@ namespace Ginger.Integration
 				cmdChat.CommandText = sbCommand.ToString();
 				cmdChat.Parameters.AddWithValue("$system", staging.system ?? "");
 				cmdChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
-				cmdChat.Parameters.AddWithValue("$example", staging.example ?? "");
-				cmdChat.Parameters.AddWithValue("$greeting", staging.greeting.text ?? "");
 				cmdChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 				cmdChat.Parameters.AddWithValue("$authorNote", card.authorNote ?? "");
 				cmdChat.Parameters.AddWithValue("$timestamp", updatedAt);
@@ -7491,6 +7523,7 @@ namespace Ginger.Integration
 		{
 			if (staging == null)
 				return;
+
 			PrepareGreetingAndExampleChat(ref staging.greeting, ref staging.exampleMessages, groupMembers);
 		}
 
@@ -7509,7 +7542,7 @@ namespace Ginger.Integration
 			}
 
 			// Greeting
-			if (greeting.IsEmpty() == false)
+			if (greeting.IsEmpty() == false && string.IsNullOrEmpty(greeting.characterId))
 			{
 				int index;
 				if (string.IsNullOrEmpty(greeting.name) == false)
@@ -7548,6 +7581,43 @@ namespace Ginger.Integration
 					exampleMessages[i].characterId = groupMembers[index];
 				}
 			}
+		}
+		
+		private void IdentifyGreeter(ref CharacterMessage greeting, FaradayCard[] cards, string[] characterIds)
+		{
+			if (string.IsNullOrEmpty(greeting.text))
+				return;
+
+			var names = cards.Select(c => c.data.name).ToArray();
+			if (names.Length != characterIds.Length)
+				return;
+
+			int pos_colon = greeting.text.IndexOf(':');
+			if (pos_colon == -1)
+				return;
+
+			string name = greeting.text.Substring(0, pos_colon).Trim();
+			if (name == GingerString.BackyardCharacterMarker || name == GingerString.CharacterMarker)
+			{
+				greeting.text = greeting.text.Substring(pos_colon + 1).Trim();
+				greeting.name = names[0];
+				greeting.characterIndex = 1;
+				greeting.characterId = characterIds[0];
+				return;
+			}
+
+			for (int i = 0; i < names.Length; ++i)
+			{
+				if (string.Compare(name, names[i], StringComparison.OrdinalIgnoreCase) == 0)
+				{
+					greeting.name = names[i];
+					greeting.characterIndex = i + 1;
+					greeting.characterId = characterIds[i];
+					greeting.text = greeting.text.Substring(pos_colon + 1).Trim();
+					return;
+				}
+			}
+			return;
 		}
 
 		#endregion // Utilities

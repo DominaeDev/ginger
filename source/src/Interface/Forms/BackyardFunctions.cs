@@ -2041,13 +2041,6 @@ namespace Ginger
 				return Backyard.Error.InvalidArgument; // Error
 			}
 
-			for (int i = 0; i < cards.Length && i < Current.Characters.Count; ++i)
-				cards[i].data.name = Current.Characters[i].name;
-			cards[0].EnsureSystemPrompt();
-			cards[0].data.isNSFW = cards.ContainsAny(c => c.data.isNSFW);
-			if (string.IsNullOrEmpty(Current.Card.name))
-				cards[0].data.displayName = Utility.CommaSeparatedList(cards.Select(c => c.data.name), "and", false);
-
 			Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
 			BackupData.Chat[] chats = null;
 //			if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1) //! @party
@@ -2132,12 +2125,6 @@ namespace Ginger
 			BackyardLinkCard[] cards = outputs.Select(o => BackyardLinkCard.FromOutput(o)).ToArray();
 			if (cards == null || cards.Length == 0)
 				return Backyard.Error.InvalidArgument; // Error
-
-			for (int i = 0; i < cards.Length && i < Current.Characters.Count; ++i)
-				cards[i].data.name = Current.Characters[i].name;
-			cards[0].data.isNSFW = cards.ContainsAny(c => c.data.isNSFW);
-			if (string.IsNullOrEmpty(Current.Card.name))
-				cards[0].data.displayName = Utility.CommaSeparatedList(cards.Select(c => c.data.name), "and", false);
 
 			if (hasChanges)
 			{

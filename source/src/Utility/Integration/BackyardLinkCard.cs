@@ -151,8 +151,10 @@ namespace Ginger.Integration
 
 		public FaradayCardV4 ToFaradayCard()
 		{
-			var card = new FaradayCardV4() {
-				data = new FaradayCardV4.Data() {
+			var card = new FaradayCardV4()
+			{
+				data = new FaradayCardV4.Data() 
+				{
 					name = data.name ?? Constants.DefaultCharacterName,
 					displayName = data.displayName ?? data.name ?? Constants.DefaultCharacterName,
 					system = data.system,
@@ -171,6 +173,12 @@ namespace Ginger.Integration
 				hubCharacterId = this.hubCharacterId, //!
 				userPersona = this.userPersona, //!
 			};
+
+			if (string.IsNullOrEmpty(data.greeting.name) == false)
+			{
+				if (data.greeting.name != card.data.name && data.greeting.name != card.data.displayName)
+					card.data.greeting = string.Concat(data.greeting.name, ": ", card.data.greeting);
+			}
 
 			if (data.loreItems != null)
 			{

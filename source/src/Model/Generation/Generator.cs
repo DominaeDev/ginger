@@ -606,11 +606,21 @@ namespace Ginger
 
 				if (eChannel == Recipe.Component.Greeting)
 				{
-					greetings = outputPerCharacter
-						.Where(o => o.greetings != null)
-						.SelectMany(o => o.greetings)
-						.Where(g => g.IsNullOrEmpty() == false)
-						.ToArray();
+					// Actor greetings: Prepend actor name
+					List<GingerString> lsGreetings = new List<GingerString>();
+					for (int i = 0; i < outputPerCharacter.Count; ++i)
+					{
+						string name = Current.Characters[i].name;
+						foreach (var greeting in outputPerCharacter[i].greetings.Where(g => g.IsNullOrEmpty() == false))
+						{
+							if (i > 0 && string.IsNullOrEmpty(name) == false)
+								lsGreetings.Add(GingerString.FromString(string.Concat(name, ": ", greeting.ToString())));
+							else
+								lsGreetings.Add(greeting);
+						}
+					}
+
+					greetings = lsGreetings.ToArray();
 				}
 				else if (eChannel == Recipe.Component.Greeting_Group)
 				{
