@@ -439,6 +439,7 @@ namespace Ginger.Integration
 				}
 
 				// Create zip archive
+				bool bSoloCharacter = lsCharData.Count == 1;
 				var intermediateFilename = Path.GetTempFileName();
 				using (ZipArchive zip = ZipFile.Open(intermediateFilename, ZipArchiveMode.Update, Encoding.ASCII))
 				{
@@ -447,7 +448,8 @@ namespace Ginger.Integration
 						var charData = lsCharData[iCard];
 
 						// Write card json (UTF8)
-						var cardEntry = zip.CreateEntry(Utility.ValidFilename($"card_{iCard:00}_{charData.name}.png"), CompressionLevel.NoCompression);
+						string cardEntryName = bSoloCharacter ? $"card.png" : $"card_{iCard:00}_{charData.name}.png";
+						var cardEntry = zip.CreateEntry(cardEntryName, CompressionLevel.NoCompression);
 						using (Stream writer = cardEntry.Open())
 						{
 							writer.Write(charData.cardBytes, 0, charData.cardBytes.Length);
@@ -456,7 +458,7 @@ namespace Ginger.Integration
 						// Write non-png portrait (situational)
 						if (charData.nonPNGImageData != null && charData.nonPNGImageData.Length > 0)
 						{
-							string entryName = $"images/{iCard:00}/image_00.{charData.nonPNGImageExt}";
+							string entryName = bSoloCharacter ? $"images/portrait.{charData.nonPNGImageExt}" : $"images/{iCard:00}/portrait.{charData.nonPNGImageExt}";
 							var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
 							using (Stream writer = fileEntry.Open())
 							{
@@ -477,7 +479,7 @@ namespace Ginger.Integration
 								continue; // No file data
 
 							string ext = Utility.GetFileExt(charImages[i].filename);
-							string entryName = $"images/{iCard:00}/image_{i:00}.{ext}";
+							string entryName = bSoloCharacter ? $"images/image_{i:00}.{ext}" : $"images/{iCard:00}/image_{i:00}.{ext}";
 							var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
 							using (Stream writer = fileEntry.Open())
 							{
@@ -527,6 +529,7 @@ namespace Ginger.Integration
 					if (backup.userInfo != null)
 					{
 						// User info
+						if (string.IsNullOrEmpty(backup.userInfo.persona) == false)
 						{
 							string entryName = string.Concat("user/user.json");
 							var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
@@ -824,7 +827,40 @@ namespace Ginger.Integration
 				return FileUtil.Error.FileReadError;
 			}
 		}
-		
+
+		public static bool CheckIfGroup(string filename, out int count)
+		{
+			try
+			{
+				count = 0;
+				using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+				{
+					using (var archive = new ZipArchive(fs, ZipArchiveMode.Read))
+					{
+						foreach (var entry in archive.Entries)
+						{
+							if (entry.Name == "")
+								continue; // Skip folder entries
+
+							string entryPath = Path.GetDirectoryName(entry.FullName).Replace('\\', '/');
+							string entryExt = Utility.GetFileExt(entry.FullName);
+
+							// Read character png
+							if (entryPath == "" && entryExt == "png")
+								count++;
+						}
+					}
+				}
+
+				return count > 1;
+			}
+			catch
+			{
+				count = 0;
+				return false;
+			}
+		}
+
 		public static BackupData.Chat[] SplitAltGreetings(BackyardLinkCard card, Generator.Output output, Backyard.ImageInput[] images)
 		{
 			var lsChats = new List<BackupData.Chat>();

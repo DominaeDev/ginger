@@ -48,16 +48,18 @@ namespace Ginger.Integration
 		public struct Result
 		{
 			public CharacterInstance[] characters;
-			public int skipped;
 			public int succeeded;
+			public int skipped;
+			public int groups;
 			public Error error;
 		}
 
 		private struct WorkerResult
 		{
 			public CharacterInstance[] instances;
-			public int skipped;
 			public int succeeded;
+			public int skipped;
+			public int groups;
 			public WorkerError error;
 		}
 
@@ -154,15 +156,18 @@ namespace Ginger.Integration
 					importedCharacters = new CharacterInstance[1] { importedCharacter };
 				}
 
+				if (importedCharacters.Length > 1)
+					results.groups += 1;
+
 				switch (error)
 				{
 				case WorkerError.NoError:
 					characterInstances.AddRange(importedCharacters);
-					results.succeeded += 1;
+					results.succeeded += importedCharacters.Length;
 					break;
 				case WorkerError.Skipped:
 				case WorkerError.UnknownError:
-					results.skipped += 1;
+					results.skipped += importedCharacters.Length;
 					break;
 				case WorkerError.DatabaseError:
 					results.error = error;
@@ -214,6 +219,7 @@ namespace Ginger.Integration
 				_result.characters = Utility.ConcatArrays(_result.characters, workResult.instances);
 			_result.succeeded += workResult.succeeded;
 			_result.skipped += workResult.skipped;
+			_result.groups += workResult.groups;
 
 			onProgress?.Invoke(100 * _completed / _totalCount);
 

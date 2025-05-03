@@ -3113,13 +3113,24 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will import {0} to Backyard AI.
+        ///   Looks up a localized string similar to This will import {0} into Backyard AI.
         ///
         ///Are you sure you want to continue?.
         /// </summary>
-        internal static string msg_link_confirm_import_many {
+        internal static string msg_link_confirm_import_many_characters {
             get {
-                return ResourceManager.GetString("msg_link_confirm_import_many", resourceCulture);
+                return ResourceManager.GetString("msg_link_confirm_import_many_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will import {0}, including {1}, into Backyard AI.
+        ///
+        ///Are you sure you want to continue?.
+        /// </summary>
+        internal static string msg_link_confirm_import_many_characters_and_groups {
+            get {
+                return ResourceManager.GetString("msg_link_confirm_import_many_characters_and_groups", resourceCulture);
             }
         }
         
@@ -3275,11 +3286,29 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Successfully imported {0}, including {1}..
+        /// </summary>
+        internal static string msg_link_import_many_characters_and_groups {
+            get {
+                return ResourceManager.GetString("msg_link_import_many_characters_and_groups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Successfully imported {0}. (Skipped {1}).
         /// </summary>
         internal static string msg_link_import_some_characters {
             get {
                 return ResourceManager.GetString("msg_link_import_some_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully imported {0}, including {1}. (Skipped {2}).
+        /// </summary>
+        internal static string msg_link_import_some_characters_and_groups {
+            get {
+                return ResourceManager.GetString("msg_link_import_some_characters_and_groups", resourceCulture);
             }
         }
         
@@ -3304,9 +3333,9 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} image(s) found without any character references. Do you want to send them to the recycle bin?
+        ///   Looks up a localized string similar to {0} image files were found that have no association with any character. Do you want to send them to the recycle bin?
         ///
-        ///CAUTION: Depending on your recycle bin settings, the images may get permanently deleted..
+        ///CAUTION: Depending on your system settings, the images may be permanently deleted..
         /// </summary>
         internal static string msg_link_purge_images_confirm {
             get {
@@ -3315,7 +3344,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No unreferenced images found..
+        ///   Looks up a localized string similar to Found no unused image files..
         /// </summary>
         internal static string msg_link_purge_images_not_found {
             get {

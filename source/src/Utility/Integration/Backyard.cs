@@ -1354,23 +1354,61 @@ namespace Ginger.Integration
 				__FromID(cards[i], knownIds);
 		}
 
+		public static void ConvertFromIDPlaceholders(Backyard.ChatInstance[] chats)
+		{
+			var knownIds = new Dictionary<string, string>();
+			foreach (var chat in chats)
+			{
+				var staging = chat.staging;
+				if (staging == null)
+					continue;
+
+				if (chat.history != null && chat.history.messages != null)
+				{
+					foreach (var entry in chat.history.messages.Where(e => e.swipes != null))
+					{
+						for (int i = 0; i < entry.swipes.Length; ++i)
+							__FromID(ref entry.swipes[i], knownIds);
+					}
+				}
+
+				__FromID(ref staging.system, knownIds);
+				__FromID(ref staging.scenario, knownIds);
+				__FromID(ref staging.greeting.text, knownIds);
+				__FromID(ref staging.authorNote, knownIds);
+				
+				if (staging.exampleMessages != null)
+				{
+					for (int i = 0; i < staging.exampleMessages.Length; ++i)
+					{
+						__FromID(ref staging.exampleMessages[i].name, knownIds);
+						__FromID(ref staging.exampleMessages[i].text, knownIds);
+					}
+				}
+			}
+		}
+
 		public static void ConvertFromIDPlaceholders(Backyard.ChatStaging staging)
 		{
 			var knownIds = new Dictionary<string, string>();
+			if (staging == null)
+				return;
+
 			__FromID(ref staging.system, knownIds);
 			__FromID(ref staging.scenario, knownIds);
 			__FromID(ref staging.greeting.text, knownIds);
 			__FromID(ref staging.authorNote, knownIds);
+				
 			if (staging.exampleMessages != null)
 			{
-				for (int i = 0; i < staging.exampleMessages.Length; ++i)
+				for (int j = 0; j < staging.exampleMessages.Length; ++j)
 				{
-					__FromID(ref staging.exampleMessages[i].name, knownIds);
-					__FromID(ref staging.exampleMessages[i].text, knownIds);
+					__FromID(ref staging.exampleMessages[j].name, knownIds);
+					__FromID(ref staging.exampleMessages[j].text, knownIds);
 				}
 			}
 		}
-		
+
 		public static void ConvertFromIDPlaceholders(List<ChatHistory.Message> entries)
 		{
 			var knownIds = new Dictionary<string, string>();

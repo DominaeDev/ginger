@@ -2620,8 +2620,6 @@ namespace Ginger.Integration
 									pruneExampleChat = pruneExampleChat,
 								};
 								
-								BackyardUtil.ConvertFromIDPlaceholders(staging);
-
 								chats.Add(new _Chat() {
 									instanceId = chatId,
 									creationDate = createdAt,
@@ -2659,6 +2657,8 @@ namespace Ginger.Integration
 					chatInstances = lsChatInstances
 						.OrderByDescending(c => c.creationDate)
 						.ToArray();
+
+					BackyardUtil.ConvertFromIDPlaceholders(chatInstances);
 					return Backyard.Error.NoError;
 				}
 			}
@@ -2884,7 +2884,7 @@ namespace Ginger.Integration
 				});
 			}
 
-			BackyardUtil.ConvertFromIDPlaceholders(entries);
+//			BackyardUtil.ConvertFromIDPlaceholders(entries); //!
 
 			var chatInstance = new ChatInstance() {
 				instanceId = chatInfo.instanceId,
@@ -5256,6 +5256,7 @@ namespace Ginger.Integration
 			// Greeting / Example chat
 			FetchChatGreeting(connection, chatId, ref staging);
 			FetchExampleChat(connection, chatId, ref staging);
+			BackyardUtil.ConvertFromIDPlaceholders(staging);
 		}
 
 		private static void FetchChatGreeting(SQLiteConnection connection, string chatId, ref ChatStaging staging)

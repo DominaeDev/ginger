@@ -1278,8 +1278,8 @@ Installation not found.</value>
   <data name="msg_link_import_many_characters" xml:space="preserve">
     <value>Successfully imported {0}.</value>
   </data>
-  <data name="msg_link_confirm_import_many" xml:space="preserve">
-    <value>This will import {0} to Backyard AI.
+  <data name="msg_link_confirm_import_many_characters" xml:space="preserve">
+    <value>This will import {0} into Backyard AI.
 
 Are you sure you want to continue?</value>
   </data>
@@ -1383,12 +1383,12 @@ Are you sure you want to continue?</value>
     <value>Clean Backyard AI image folder</value>
   </data>
   <data name="msg_link_purge_images_confirm" xml:space="preserve">
-    <value>{0} image(s) found without any character references. Do you want to send them to the recycle bin?
+    <value>{0} image files were found that have no association with any character. Do you want to send them to the recycle bin?
 
-CAUTION: Depending on your recycle bin settings, the images may get permanently deleted.</value>
+CAUTION: Depending on your system settings, the images may be permanently deleted.</value>
   </data>
   <data name="msg_link_purge_images_not_found" xml:space="preserve">
-    <value>No unreferenced images found.</value>
+    <value>Found no unused image files.</value>
   </data>
   <data name="tooltip_link_purge_images" xml:space="preserve">
     <value>Find and remove images from the Backyard AI image folder that are not referenced by any character.</value>
@@ -1761,5 +1761,16 @@ Are you sure you want to continue?</value>
   </data>
   <data name="error_link_save_group_member" xml:space="preserve">
     <value>Some content could not be saved to Backyard AI because it is associated with the party this character belongs to, not the character itself.</value>
+  </data>
+  <data name="msg_link_confirm_import_many_characters_and_groups" xml:space="preserve">
+    <value>This will import {0}, including {1}, into Backyard AI.
+
+Are you sure you want to continue?</value>
+  </data>
+  <data name="msg_link_import_many_characters_and_groups" xml:space="preserve">
+    <value>Successfully imported {0}, including {1}.</value>
+  </data>
+  <data name="msg_link_import_some_characters_and_groups" xml:space="preserve">
+    <value>Successfully imported {0}, including {1}. (Skipped {2})</value>
   </data>
 </root>

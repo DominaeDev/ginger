@@ -97,6 +97,11 @@ namespace Ginger
 
 		private string NumGroups(int n)
 		{
+			return n == 1 ? string.Concat(n.ToString(), " party") : string.Concat(n.ToString(), " parties");
+		}
+
+		private string NumChats(int n)
+		{
 			return n == 1 ? string.Concat(n.ToString(), " chat") : string.Concat(n.ToString(), " chats");
 		}
 
@@ -867,6 +872,39 @@ namespace Ginger
 			return true;
 		}
 		
+		private void CompleteExport(BulkExporter.Result result, List<string> filenames)
+		{
+			if (result.error == BulkExporter.Error.NoError)
+			{
+				int succeeded = result.filenames.Count;
+				int skipped = filenames.Count - succeeded;
+				if (skipped > 0)
+				{
+					MsgBox.Message(string.Format(Resources.msg_link_export_some_characters, NumCharacters(succeeded), skipped), Resources.cap_link_export_many_characters, this);
+				}
+				else
+				{
+					MsgBox.Message(string.Format(Resources.msg_link_export_many_characters, NumCharacters(succeeded)), Resources.cap_link_export_many_characters, this);
+				}
+			}
+			else if (result.error == BulkExporter.Error.Cancelled)
+			{
+				MsgBox.LinkError.Canceled(Resources.cap_link_export_many_characters, this);
+			}
+			else if (result.error == BulkExporter.Error.FileError)
+			{
+				MsgBox.Error(Resources.error_write_file, Resources.cap_link_export_many_characters, this);
+			}
+			else if (result.error == BulkExporter.Error.DiskFullError)
+			{
+				MsgBox.Error(Resources.error_disk_full, Resources.cap_link_export_many_characters, this);
+			}
+			else
+			{
+				MsgBox.Error(Resources.error_link_export_many_characters, Resources.cap_link_export_many_characters, this);
+			}
+		}
+
 		public bool ExportManyPartiesFromBackyard()
 		{
 			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats) == false)
@@ -978,7 +1016,7 @@ namespace Ginger
 				progressDlg.TopMost = false;
 				progressDlg.Close();
 
-				CompleteExport(result, filenames);
+				CompleteExportManyParties(result, filenames);
 				_bCanRegenerate = true;
 				_bCanIdle = true;
 			};
@@ -993,7 +1031,7 @@ namespace Ginger
 			return true;
 		}
 
-		private void CompleteExport(BulkExporter.Result result, List<string> filenames)
+		private void CompleteExportManyParties(BulkExporter.Result result, List<string> filenames)
 		{
 			if (result.error == BulkExporter.Error.NoError)
 			{
@@ -1001,11 +1039,11 @@ namespace Ginger
 				int skipped = filenames.Count - succeeded;
 				if (skipped > 0)
 				{
-					MsgBox.Message(string.Format(Resources.msg_link_export_some_characters, NumCharacters(succeeded), skipped), Resources.cap_link_export_many_characters, this);
+					MsgBox.Message(string.Format(Resources.msg_link_export_some_characters, NumGroups(succeeded), skipped), Resources.cap_link_export_many_characters, this);
 				}
 				else
 				{
-					MsgBox.Message(string.Format(Resources.msg_link_export_many_characters, NumCharacters(succeeded)), Resources.cap_link_export_many_characters, this);
+					MsgBox.Message(string.Format(Resources.msg_link_export_many_characters, NumGroups(succeeded)), Resources.cap_link_export_many_characters, this);
 				}
 			}
 			else if (result.error == BulkExporter.Error.Cancelled)
@@ -1060,14 +1098,6 @@ namespace Ginger
 
 			// Identify file types and import (no progress bar)
 			var filenames = importFileDialog.FileNames.ToArray();
-			if (filenames.Length < 10)
-			{ 
-				filenames = filenames
-					.Where(fn => FileUtil.CheckFileType(fn) != FileUtil.FileType.Unknown)
-					.OrderBy(fn => new FileInfo(fn).LastWriteTime)
-					.ToArray();
-				return BeginImport(filenames);
-			}
 
 			// Identify file types (with progress bar)
 			var checker = new AsyncFileTypeChecker();
@@ -1090,7 +1120,7 @@ namespace Ginger
 
 				if (result.error == AsyncFileTypeChecker.Error.NoError)
 				{
-					BeginImport(result.filenames);
+					BeginImport(result.filenames, result.characters, result.groups);
 				}
 				else if (result.error == AsyncFileTypeChecker.Error.Cancelled)
 				{
@@ -1105,7 +1135,7 @@ namespace Ginger
 			return true;
 		}
 
-		private bool BeginImport(string[] filenames)
+		private bool BeginImport(string[] filenames, int characters, int groups)
 		{
 			if (filenames.Length == 0)
 			{
@@ -1114,8 +1144,16 @@ namespace Ginger
 			}
 
 			// Confirm
-			if (MsgBox.Confirm(string.Format(Resources.msg_link_confirm_import_many, NumCharacters(filenames.Length)), Resources.cap_link_import_many_characters, this) == false)
-				return false;
+			if (groups > 0)
+			{
+				if (MsgBox.Confirm(string.Format(Resources.msg_link_confirm_import_many_characters_and_groups, NumCharacters(characters), NumGroups(groups)), Resources.cap_link_import_many_characters, this) == false)
+					return false;
+			}
+			else
+			{
+				if (MsgBox.Confirm(string.Format(Resources.msg_link_confirm_import_many_characters, NumCharacters(characters)), Resources.cap_link_import_many_characters, this) == false)
+					return false;
+			}
 
 			// Create Ginger import folder
 			FolderInstance importFolder;
@@ -1169,7 +1207,20 @@ namespace Ginger
 		{
 			if (result.error == BulkImporter.Error.NoError)
 			{
-				MsgBox.Message(string.Format(result.skipped == 0 ? Resources.msg_link_import_many_characters : Resources.msg_link_import_some_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_link_import_many_characters, this);
+				if (result.groups > 0)
+				{
+					if (result.skipped == 0)
+						MsgBox.Message(string.Format(Resources.msg_link_import_many_characters_and_groups, NumCharacters(result.succeeded), NumGroups(result.groups), result.skipped), Resources.cap_link_import_many_characters, this);
+					else
+						MsgBox.Message(string.Format(Resources.msg_link_import_some_characters_and_groups, NumCharacters(result.succeeded), NumGroups(result.groups), result.skipped), Resources.cap_link_import_many_characters, this);
+				}
+				else
+				{
+					if (result.skipped == 0)
+						MsgBox.Message(string.Format(Resources.msg_link_import_many_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_link_import_many_characters, this);
+					else
+						MsgBox.Message(string.Format(Resources.msg_link_import_some_characters, NumCharacters(result.succeeded), result.skipped), Resources.cap_link_import_many_characters, this);
+				}
 			}
 			else if (result.error == BulkImporter.Error.Cancelled)
 			{
@@ -1209,7 +1260,7 @@ namespace Ginger
 				return false;
 
 			// Confirm
-			if (MsgBox.Confirm(string.Format(Resources.msg_link_confirm_update_many, NumGroups(groupInstances.Length)), Resources.cap_link_update_many_characters, this) == false)
+			if (MsgBox.Confirm(string.Format(Resources.msg_link_confirm_update_many, NumChats(groupInstances.Length)), Resources.cap_link_update_many_characters, this) == false)
 				return false;
 
 			var updater = new BulkUpdateModelSettings();
@@ -1277,13 +1328,53 @@ namespace Ginger
 			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
 				dlg.Options |= LinkSelectCharacterOrGroupDialog.Option.Parties;
 
-			GroupInstance groupInstance;
-			if (dlg.ShowDialog() == DialogResult.OK)
-				groupInstance = dlg.SelectedGroup;
-			else
+			if (dlg.ShowDialog() != DialogResult.OK)
 				return false;
 
-			if (string.IsNullOrEmpty(groupInstance.instanceId))
+			if (dlg.SelectedGroup.isParty)
+				return CreateBackyardGroupBackup(dlg.SelectedGroup);
+
+			BackupData backup = null;
+			CharacterInstance characterInstance = dlg.SelectedCharacter;
+			var error = RunTask(() => BackupUtil.CreateBackup(characterInstance, out backup), "Creating backup...");
+			if (error == Backyard.Error.NotFound)
+			{
+				MsgBox.Error(Resources.error_link_create_backup, Resources.cap_link_create_backup, this);
+				return false;
+			}
+			else if (error != Backyard.Error.NoError)
+			{
+				MsgBox.LinkError.Error(error, Resources.cap_link_create_backup, this);
+				return false;
+			}
+			string characterName = Utility.FirstNonEmpty(characterInstance.displayName, characterInstance.name, Constants.DefaultCharacterName).Replace(" ", "_");
+			string filename = string.Concat(characterName, " - ", DateTime.Now.ToString("yyyy-MM-dd"), ".backup.zip");
+
+			importFileDialog.Title = Resources.cap_link_create_backup;
+			exportFileDialog.Filter = "Character backup file|*.zip";
+			exportFileDialog.FileName = Utility.ValidFilename(filename);
+			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
+			exportFileDialog.FilterIndex = 0;
+
+			var result = exportFileDialog.ShowDialog();
+			if (result != DialogResult.OK || string.IsNullOrWhiteSpace(exportFileDialog.FileName))
+				return false;
+
+			AppSettings.Paths.LastImportExportPath = Path.GetDirectoryName(exportFileDialog.FileName);
+
+			if (BackupUtil.WriteBackup(exportFileDialog.FileName, backup) != FileUtil.Error.NoError)
+			{
+				MsgBox.Error(Resources.error_write_file, Resources.cap_link_create_backup, this);
+				return false;
+			}
+
+			MsgBox.Message(Resources.msg_link_create_backup, Resources.cap_link_create_backup, this);
+			return true;
+		}
+
+		private bool CreateBackyardGroupBackup(GroupInstance groupInstance)
+		{
+			if (groupInstance.isDefined == false)
 				return false; // Error
 
 			BackupData backup = null;
@@ -1299,7 +1390,8 @@ namespace Ginger
 				return false;
 			}
 
-			string filename = string.Concat(groupInstance.displayName.Replace(" ", "_"), " - ", DateTime.Now.ToString("yyyy-MM-dd"), ".backup.zip");
+			string groupName = Utility.FirstNonEmpty(groupInstance.displayName, backup.characterCards.Select(c => c.data.displayName).FirstOrDefault(), Constants.DefaultGroupName).Replace(" ", "_");
+			string filename = string.Concat(groupName, " - ", DateTime.Now.ToString("yyyy-MM-dd"), ".backup.zip");
 
 			importFileDialog.Title = Resources.cap_link_create_backup;
 			exportFileDialog.Filter = "Character backup file|*.zip";
