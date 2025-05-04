@@ -59,7 +59,7 @@ namespace Ginger
 			filterTextBox.KeyDown += FilterTextBox_KeyDown;
 
 			this.Characters = Backyard.Database.Characters.ToArray();
-			this.Orphans = this.Characters.Where(c => c.groupId == null).ToArray();
+			this.Orphans = this.Characters.Where(c => c.groupIds.IsEmpty()).ToArray();
 			this.Folders = Backyard.Database.Folders.ToArray();
 			if (Options.Contains(Option.Parties))
 			{
@@ -166,7 +166,7 @@ namespace Ginger
 					})
 					.Select(c => c.instanceId));
 
-				sortedGroups = sortedGroups.Where(g => filteredCharacters.ContainsAnyIn(g.members));
+				sortedGroups = sortedGroups.Where(g => filteredCharacters.ContainsAnyIn(g.activeMembers));
 				sortedOrphans = sortedOrphans.Where(c => filteredCharacters.Contains(c.instanceId));
 			}
 
@@ -338,7 +338,7 @@ namespace Ginger
 			string groupLabel = group.GetDisplayName();
 			var sbTooltip = new StringBuilder();
 
-			CharacterInstance[] characters = group.members
+			CharacterInstance[] characters = group.activeMembers
 				.Select(id => _charactersById.GetOrDefault(id))
 				.Where(c => c.isCharacter)
 				.OrderBy(c => c.creationDate)
@@ -536,7 +536,7 @@ namespace Ginger
 			if (node != null && node.Tag is GroupInstance)
 			{
 				GroupInstance group = (GroupInstance)node.Tag;
-				CharacterInstance[] characters = group.members
+				CharacterInstance[] characters = group.activeMembers
 					.Select(id => _charactersById.GetOrDefault(id))
 					.Where(c => c.isCharacter)
 					.ToArray();

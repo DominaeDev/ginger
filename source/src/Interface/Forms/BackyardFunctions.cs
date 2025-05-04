@@ -1811,7 +1811,7 @@ namespace Ginger
 			// Combine and filter character ids
 			var characterIds = dlg.SelectedCharacters
 				.Select(c => c.instanceId)
-				.Union(dlg.SelectedGroups.SelectMany(g => g.members))
+				.Union(dlg.SelectedGroups.SelectMany(g => g.allMembers))
 				.Select(id => Backyard.Database.GetCharacter(id))
 				.Where(c => c.isCharacter)
 				.Select(c => c.instanceId)

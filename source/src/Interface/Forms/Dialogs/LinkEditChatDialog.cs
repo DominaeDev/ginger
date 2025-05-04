@@ -111,7 +111,7 @@ namespace Ginger
 			}
 			else
 			{
-				var characters = group.members
+				var characters = group.activeMembers
 					.Select(id => _charactersById.GetOrDefault(id))
 					.OrderBy(c => c.creationDate)
 					.Where(c => c.isUser == false)
@@ -148,7 +148,7 @@ namespace Ginger
 				return _groupInstance.displayName;
 			else
 			{
-				var characters = _groupInstance.members
+				var characters = _groupInstance.activeMembers
 					.Select(id => _charactersById.GetOrDefault(id))
 					.Where(c => c.isUser == false)
 					.Select(c => Utility.FirstNonEmpty(c.name, Constants.DefaultCharacterName))
@@ -453,8 +453,6 @@ namespace Ginger
 			{
 				args.parameters = latestChat.parameters;
 				args.staging = latestChat.staging;
-				if (args.staging != null && BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-					BackyardUtil.ConvertToIDPlaceholders(args.staging, (string)null); //! @party
 			}
 			else
 				args.parameters = AppSettings.BackyardSettings.UserSettings;
@@ -539,8 +537,6 @@ namespace Ginger
 			{
 				args.parameters = latestChat.parameters;
 				args.staging = latestChat.staging;
-				if (args.staging != null && BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-					BackyardUtil.ConvertToIDPlaceholders(args.staging, (string)null); //! @party
 			}
 			else
 				args.parameters = AppSettings.BackyardSettings.UserSettings;
@@ -572,14 +568,14 @@ namespace Ginger
 				return;
 
 			// User
-			var userName = _groupInstance.members
+			var userName = _groupInstance.activeMembers
 				.Select(id => _charactersById.GetOrDefault(id))
 				.Where(c => c.isUser)
 				.FirstOrDefault()
 				.name ?? GingerString.BackyardUserMarker;
 
 			// Character (first)
-			var characterName = _groupInstance.members
+			var characterName = _groupInstance.activeMembers
 				.Select(id => _charactersById.GetOrDefault(id))
 				.Where(c => c.isCharacter)
 				.FirstOrDefault()
@@ -1453,8 +1449,10 @@ namespace Ginger
 				return;
 
 			ChatStaging staging = clip.staging;
-			if (staging != null && BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-				BackyardUtil.ConvertToIDPlaceholders(staging, (string)null); //! @party
+			if (staging == null)
+				return;
+
+			staging.ClearCharacterIds();
 
 			var error = RunTask(() => Backyard.Database.UpdateChatParameters(chatInstance.instanceId, staging, null), "Updating chat...");
 			if (error == Backyard.Error.NotFound)
@@ -1647,7 +1645,7 @@ namespace Ginger
 			}
 
 			// First non-user
-			var character = _groupInstance.members
+			var character = _groupInstance.activeMembers
 				.Select(id => _charactersById.GetOrDefault(id))
 				.Where(c => c.isCharacter)
 				.FirstOrDefault();
@@ -1872,7 +1870,7 @@ namespace Ginger
 			if (_groupInstance.isDefined == false)
 				return;
 
-			var character = _groupInstance.members
+			var character = _groupInstance.activeMembers
 				.Select(id => _charactersById.GetOrDefault(id))
 				.Where(c => c.isCharacter)
 				.FirstOrDefault();

@@ -1560,13 +1560,25 @@ namespace Ginger
 			return text.Replace("&", "&&");
 		}
 
+		public static string FirstNonEmpty(IEnumerable<string> texts)
+		{
+			foreach (var text in texts)
+			{
+				if (string.IsNullOrEmpty(text) == false)
+					return text;
+			}
+			return null;
+		}
+
 		public static string FirstNonEmpty(params string[] texts)
 		{
 			if (texts == null || texts.Length == 0)
 				return null;
 			for (int i = 0; i < texts.Length; ++i)
+			{
 				if (string.IsNullOrEmpty(texts[i]) == false)
 					return texts[i];
+			}
 			return null;
 		}
 

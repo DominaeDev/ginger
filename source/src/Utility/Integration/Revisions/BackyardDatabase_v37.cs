@@ -254,12 +254,10 @@ namespace Ginger.Integration
 					// Get group info
 					foreach (var c in characters)
 					{
-						GroupInstance groupInstance = this.GetGroupForCharacter(c.instanceId);
-						string groupId = groupInstance.instanceId;
-						string folderId = groupInstance.folderId;
-						string folderSortPosition = groupInstance.folderSortPosition;
-						string hubCharId = groupInstance.hubCharId;
-						string hubAuthorUsername = groupInstance.hubAuthorUsername;
+						GroupInstance[] groupInstances = this.GetGroupsForCharacter(c.instanceId);
+						string[] groupIds = groupInstances.Select(g => g.instanceId).ToArray();
+						string hubCharId = Utility.FirstNonEmpty(groupInstances.Select(g => g.hubCharId));
+						string hubAuthorUsername = Utility.FirstNonEmpty(groupInstances.Select(g => g.hubAuthorUsername));
 
 						_Characters.TryAdd(c.instanceId,
 							new CharacterInstance() {
@@ -272,10 +270,8 @@ namespace Ginger.Integration
 								persona = c.persona,
 								hasLorebook = c.hasLorebook,
 								displayName = c.displayName,
-								groupId = groupId,
+								groupIds = groupIds,
 								creator = hubAuthorUsername ?? "",
-								folderId = folderId ?? "",
-								folderSortPosition = folderSortPosition ?? "",
 							});
 					}
 
@@ -349,7 +345,7 @@ namespace Ginger.Integration
 
 					// Get primary group (solo)
 					string[] groupIds;
-					FetchGroupMembershipsForCharacter(connection, character.instanceId, false, out groupIds);
+					FetchActiveGroupMembershipsForCharacter(connection, character.instanceId, false, out groupIds);
 					if (groupIds.Length > 0)
 						groupId = groupIds[0];
 
@@ -962,8 +958,6 @@ namespace Ginger.Integration
 							groupId = groupInstance.instanceId;
 
 							characterInstance.groupId = groupId;
-							characterInstance.folderId = parentFolder.instanceId;
-							characterInstance.folderSortPosition = folderSortPosition;
 
 							var staging = new ChatStaging() {
 								system = card.data.system ?? "",
@@ -1134,7 +1128,7 @@ namespace Ginger.Integration
 						cmdGetGroup.CommandText =
 						@"
 							SELECT 
-								A.groupConfigId, ( SELECT COUNT(*) FROM GroupConfigCharacterLink WHERE ""characterConfigId"" = A.characterConfigId )
+								A.groupConfigId, ( SELECT COUNT(*) FROM GroupConfigCharacterLink WHERE ""characterConfigId"" = A.characterConfigId AND isActive = 1 )
 							FROM GroupConfigCharacterLink AS A
 							WHERE A.characterConfigId = $charId
 						";
@@ -1509,8 +1503,6 @@ namespace Ginger.Integration
 
 							hasLorebook = card.data.loreItems.Length > 0,
 							creator = groupInfo.hubAuthorUsername ?? "",
-							folderId = groupInfo.folderId,
-							folderSortPosition = groupInfo.folderSortPosition,
 						};
 					}
 
@@ -1812,8 +1804,6 @@ namespace Ginger.Integration
 							{
 								var instance = lsInstances[i];
 								instance.groupId = groupId;
-								instance.folderId = parentFolder.instanceId;
-								instance.folderSortPosition = folderSortPosition;
 							}
 							characterInstances = lsInstances.ToArray();
 
@@ -1993,7 +1983,7 @@ namespace Ginger.Integration
 								if (isNewCharacter[i])
 								{
 									CharacterInstance characterInstance;
-									WriteCharacter(connection, cards[i], cards[i].data.displayName, characterIds[i], updatedAt, out characterInstance, ref updates, ref expectedUpdates);
+									WriteCharacter(connection, cards[i], cards[i].data.name, characterIds[i], updatedAt, out characterInstance, ref updates, ref expectedUpdates);
 									characterIds[i] = characterInstance.instanceId;
 									configIds[i] = characterInstance.configId;
 								}
@@ -2130,12 +2120,12 @@ namespace Ginger.Integration
 					FetchConfigIds(connection, characterIds, out configIds);
 
 					// Fetch (all) character-group memberships
-					Dictionary<string, HashSet<string>> groupMemberships;
-					FetchGroupMemberships(connection, out groupMemberships);
+					Dictionary<string, _GroupMembers> groupMemberships;
+					FetchAllGroupMemberships(connection, out groupMemberships);
 
 					// Filter affected groups
 					groupMemberships = groupMemberships
-						.Where(kvp => kvp.Value.ContainsAnyIn(characterIds))
+						.Where(kvp => kvp.Value.allMembers.ContainsAnyIn(characterIds))
 						.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
 					// AppImage
@@ -2414,7 +2404,7 @@ namespace Ginger.Integration
 							WHERE A.isUserControlled = 1
 								AND A.isTemplateChar = 0
 								AND NOT EXISTS (
-									SELECT 1 from GroupConfigCharacterLink C WHERE C.characterConfigId = A.id
+									SELECT 1 from GroupConfigCharacterLink C WHERE C.characterConfigId = A.id AND C.isActive = 1
 								);";
 
 						using (var reader = cmdUsers.ExecuteReader())
@@ -4847,8 +4837,8 @@ namespace Ginger.Integration
 		private void FetchGroups(SQLiteConnection connection, out GroupInstance[] groups)
 		{
 			// Fetch character-group memberships
-			Dictionary<string, HashSet<string>> groupMembers;
-			FetchGroupMemberships(connection, out groupMembers);
+			Dictionary<string, _GroupMembers> groupMemberships;
+			FetchAllGroupMemberships(connection, out groupMemberships);
 
 			// Fetch group configs
 			var lsGroups = new List<GroupInstance>();
@@ -4874,8 +4864,8 @@ namespace Ginger.Integration
 						string hubCharId = reader[6] as string;
 						string hubAuthorUsername = reader[7] as string;
 
-						HashSet<string> members;
-						if (groupMembers.TryGetValue(instanceId, out members) == false)
+						_GroupMembers groupMembers;
+						if (groupMemberships.TryGetValue(instanceId, out groupMembers) == false)
 							continue; // No members?
 
 						lsGroups.Add(new GroupInstance() {
@@ -4887,7 +4877,8 @@ namespace Ginger.Integration
 							folderSortPosition = folderSortPosition,
 							hubCharId = hubCharId,
 							hubAuthorUsername = hubAuthorUsername,
-							members = members.ToArray(),
+							activeMembers = groupMembers.activeMembers.ToArray(),
+							inactiveMembers = groupMembers.inactiveMembers.ToArray(),
 						});
 					}
 				}
@@ -4895,15 +4886,23 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void FetchGroupMemberships(SQLiteConnection connection, out Dictionary<string, HashSet<string>> groupMembers)
+		private class _GroupMembers
 		{
+			public List<string> activeMembers = new List<string>();
+			public List<string> inactiveMembers = new List<string>();
+			public IEnumerable<string> allMembers { get { return activeMembers.Union(inactiveMembers); } }
+		}
+
+		private static void FetchAllGroupMemberships(SQLiteConnection connection, out Dictionary<string, _GroupMembers> membersByGroup)
+		{
+			var activeGroupMembers = new Dictionary<string, HashSet<string>>();
+			var inactiveGroupMembers = new Dictionary<string, HashSet<string>>();
 			using (var cmdGroup = connection.CreateCommand())
 			{
-				groupMembers = new Dictionary<string, HashSet<string>>();
 				cmdGroup.CommandText =
 				@"
 					SELECT 
-						characterConfigId, groupConfigId, assignedAt, position, isActive
+						characterConfigId, groupConfigId, isActive
 					FROM GroupConfigCharacterLink
 				";
 
@@ -4913,13 +4912,28 @@ namespace Ginger.Integration
 					{
 						string characterId = reader.GetString(0);
 						string groupId = reader.GetString(1);
+						bool isActive = reader.GetBoolean(2);
 
-						if (groupMembers.ContainsKey(groupId) == false)
-							groupMembers.Add(groupId, new HashSet<string>());
-
-						groupMembers[groupId].Add(characterId);
+						var list = isActive ? activeGroupMembers : inactiveGroupMembers;
+						if (list.ContainsKey(groupId) == false)
+							list.Add(groupId, new HashSet<string>());
+						list[groupId].Add(characterId);
 					}
 				}
+			}
+
+			membersByGroup = new Dictionary<string, _GroupMembers>();
+			foreach (var kvp in activeGroupMembers)
+			{
+				if (membersByGroup.ContainsKey(kvp.Key) == false)
+					membersByGroup.Add(kvp.Key, new _GroupMembers());
+				membersByGroup[kvp.Key].activeMembers.AddRange(kvp.Value);
+			}
+			foreach (var kvp in inactiveGroupMembers)
+			{
+				if (membersByGroup.ContainsKey(kvp.Key) == false)
+					membersByGroup.Add(kvp.Key, new _GroupMembers());
+				membersByGroup[kvp.Key].inactiveMembers.AddRange(kvp.Value);
 			}
 		}
 
@@ -4934,7 +4948,7 @@ namespace Ginger.Integration
 					FROM GroupConfigCharacterLink AS A
 					INNER JOIN CharacterConfig AS B ON B.id = A.characterConfigId
 					INNER JOIN CharacterConfigVersion AS C ON C.characterConfigId = B.id
-					WHERE A.groupConfigId = $groupId;
+					WHERE A.groupConfigId = $groupId and A.isActive = 1;
 				";
 
 				cmdGroupMembers.Parameters.AddWithValue("$groupId", groupId);
@@ -4977,14 +4991,14 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void FetchGroupMembershipsForCharacter(SQLiteConnection connection, string characterId, bool bAllowParties, out string[] groupIds)
+		private static void FetchActiveGroupMembershipsForCharacter(SQLiteConnection connection, string characterId, bool bAllowParties, out string[] groupIds)
 		{
 			// Fetch (all) character-group memberships
-			Dictionary<string, HashSet<string>> memberships;
-			FetchGroupMemberships(connection, out memberships);
-			var groups = memberships
-				.Where(kvp => (bAllowParties ? kvp.Value.Count >= 2 : kvp.Value.Count == 2) && kvp.Value.Contains(characterId))
-				.OrderBy(kvp => kvp.Value.Count);
+			Dictionary<string, _GroupMembers> groupMemberships;
+			FetchAllGroupMemberships(connection, out groupMemberships);
+			var groups = groupMemberships
+				.Where(kvp => (bAllowParties ? kvp.Value.activeMembers.Count >= 2 : kvp.Value.activeMembers.Count == 2) && kvp.Value.activeMembers.Contains(characterId))
+				.OrderBy(kvp => kvp.Value.activeMembers.Count);
 			groupIds = groups
 				.Select(kvp => kvp.Key)
 				.ToArray();
@@ -5883,7 +5897,7 @@ namespace Ginger.Integration
 				cmdCreate.Parameters.AddWithValue("$charId", instanceId);
 				cmdCreate.Parameters.AddWithValue("$configId", configId);
 				cmdCreate.Parameters.AddWithValue("$name", card.data.name ?? "");
-				cmdCreate.Parameters.AddWithValue("$displayName", displayName ?? card.data.displayName ?? "");
+				cmdCreate.Parameters.AddWithValue("$displayName", displayName ?? card.data.name ?? "");
 				cmdCreate.Parameters.AddWithValue("$persona", card.data.persona ?? "");
 				cmdCreate.Parameters.AddWithValue("$nsfw", card.data.isNSFW);
 				cmdCreate.Parameters.AddWithValue("$timestamp", createdAt);
@@ -5895,7 +5909,6 @@ namespace Ginger.Integration
 			characterInstance = new CharacterInstance() {
 				instanceId = instanceId,
 				configId = configId,
-				groupId = null,
 				name = card.data.name ?? "",
 				displayName = displayName ?? card.data.displayName ?? "",
 				creationDate = DateTimeExtensions.FromUnixTime(createdAt),
@@ -5941,7 +5954,7 @@ namespace Ginger.Integration
 					updateDate = DateTime.Now,
 					folderId = parentFolderId ?? "",
 					folderSortPosition = folderSortPosition ?? "",
-					members = groupMembers,
+					activeMembers = groupMembers,
 				};
 			}
 		}
@@ -7400,7 +7413,7 @@ namespace Ginger.Integration
 					UPDATE CharacterConfigVersion
 					SET 
 						updatedAt = $timestamp,
-						displayName = $displayName,
+						displayName = $name,
 						name = $name,
 						persona = $persona
 					WHERE id = $configId;
@@ -7419,7 +7432,6 @@ namespace Ginger.Integration
 				cmdUpdate.Parameters.AddWithValue("$charId", characterId);
 				cmdUpdate.Parameters.AddWithValue("$configId", configId);
 				cmdUpdate.Parameters.AddWithValue("$name", card.data.name ?? "");
-				cmdUpdate.Parameters.AddWithValue("$displayName", card.data.displayName ?? "");
 				cmdUpdate.Parameters.AddWithValue("$persona", card.data.persona ?? "");
 				cmdUpdate.Parameters.AddWithValue("$nsfw", card.data.isNSFW);
 				cmdUpdate.Parameters.AddWithValue("$timestamp", updatedAt);

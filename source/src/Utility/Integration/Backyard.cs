@@ -64,13 +64,16 @@ namespace Ginger.Integration
 			public string configId;				// CharacterConfigVersion.id
 			public string displayName;			// CharacterConfigVersion.displayName
 			public string name;					// CharacterConfigVersion.name
-			public string groupId;				// GroupConfig.id (Primary group)
-			public string folderId;				// GroupConfig.folderId (Primary group)
-			public string folderSortPosition;	// GroupConfig.folderSortPosition (Primary group)
+			public string[] groupIds;			// GroupConfig.id
 			public string creator;				// GroupConfig.hubAuthorUsername
 			public string persona;				// CharacterConfigVersion.persona
 			public bool hasLorebook;
 
+			public string groupId
+			{
+				get { return groupIds.IsEmpty() ? null : groupIds[0]; }
+				set { groupIds = value != null ? new string[] { value } : null; }
+			}
 			public bool isDefined { get { return instanceId != null; } }
 			public bool isCharacter { get { return isDefined && !isUser; } }
 			
@@ -88,19 +91,29 @@ namespace Ginger.Integration
 
 		public struct GroupInstance
 		{
-			public string instanceId;			// GroupConfig.id
-			public string displayName;			// GroupConfig.name
-			public string folderId;				// GroupConfig.folderId
-			public string hubCharId;			// GroupConfig.hubCharId
+			public string instanceId;           // GroupConfig.id
+			public string displayName;          // GroupConfig.name
+			public string folderId;             // GroupConfig.folderId
+			public string hubCharId;            // GroupConfig.hubCharId
 			public string hubAuthorUsername;    // GroupConfig.hubAuthorUsername
-			public string folderSortPosition;	// GroupConfig.folderSortPosition
-			public DateTime creationDate;		// CharacterConfig.createdAt
-			public DateTime updateDate;			// CharacterConfig.updatedAt
-			public string[] members;			// CharacterConfigVersion.id ...
+			public string folderSortPosition;   // GroupConfig.folderSortPosition
+			public DateTime creationDate;       // CharacterConfig.createdAt
+			public DateTime updateDate;         // CharacterConfig.updatedAt
+			public string[] activeMembers;      // CharacterConfigVersion.id ...
+			public string[] inactiveMembers;    // CharacterConfigVersion.id ...
 
 			public bool isDefined { get { return instanceId != null; } }
 			public bool isParty { get { return isDefined && Count > 2; } }
-			public int Count { get { return members != null ? members.Length : 0; } }
+			public int Count { get { return activeMembers != null ? activeMembers.Length : 0; } }
+			public IEnumerable<string> allMembers
+			{
+				get
+				{
+					return (activeMembers != null ? activeMembers : new string[0])
+						.Union(inactiveMembers != null ? inactiveMembers : new string[0]);
+				}
+			}
+		
 
 			public enum GroupType
 			{
@@ -111,10 +124,10 @@ namespace Ginger.Integration
 
 			public GroupType GetGroupType()
 			{
-				if (members == null || members.Length < 2)
+				if (activeMembers == null || activeMembers.Length < 2)
 					return GroupType.Unknown;
 
-				var memberInfo = members
+				var memberInfo = activeMembers
 					.Select(id => Backyard.Database.GetCharacter(id))
 					.Where(m => string.IsNullOrEmpty(m.instanceId) == false)
 					.ToArray();
@@ -132,12 +145,12 @@ namespace Ginger.Integration
 
 			public string[] GetMemberNames(bool includingUser = false)
 			{
-				if (this.members == null || this.members.Length == 0)
+				if (this.activeMembers == null || this.activeMembers.Length == 0)
 					return new string[0];
 
 				if (includingUser)
 				{
-					return this.members
+					return this.activeMembers
 						.Select(id => Backyard.Database.GetCharacter(id))
 						.OrderBy(c => c.isCharacter)
 						.ThenBy(c => c.creationDate)
@@ -146,7 +159,7 @@ namespace Ginger.Integration
 				}
 				else
 				{
-					return this.members
+					return this.activeMembers
 						.Select(id => Backyard.Database.GetCharacter(id))
 						.Where(c => c.isCharacter)
 						.OrderBy(c => c.creationDate)
@@ -360,6 +373,16 @@ namespace Ginger.Integration
 			{
 				get { return BackyardUtil.MessagesToString(exampleMessages); }
 				set { exampleMessages = BackyardUtil.MessagesFromString(value); }
+			}
+
+			public void ClearCharacterIds()
+			{
+				greeting.characterId = null;
+				if (exampleMessages != null)
+				{
+					for (int i = 0; i < exampleMessages.Length; ++i)
+						exampleMessages[i].characterId = null;
+				}
 			}
 		}
 
@@ -1222,6 +1245,11 @@ namespace Ginger.Integration
 			return sbFormat.ToString();
 		}
 
+		public static string CreateIDPlaceholder(string characterId)
+		{
+			return $"{{_cfg&:{characterId}:cfg&_}}";
+		}
+
 		public static void ConvertToIDPlaceholders(FaradayCard card, string characterId)
 		{
 			ConvertToIDPlaceholders(new FaradayCard[] { card }, new string[] { characterId });
@@ -1230,7 +1258,6 @@ namespace Ginger.Integration
 		public static void ConvertToIDPlaceholders(FaradayCard[] cards, string[] characterIds)
 		{
 			var replacements = new List<KeyValuePair<string, string>>();
-			replacements.Add(new KeyValuePair<string, string>(GingerString.InternalUserMarker, GingerString.BackyardUserMarker));
 
 			for (int i = 0; i < cards.Length && i < characterIds.Length; ++i)
 			{
@@ -1242,6 +1269,7 @@ namespace Ginger.Integration
 					dest = $"{{_cfg&:{characterIds[i]}:cfg&_}}";
 				replacements.Add(new KeyValuePair<string, string>(src, dest));
 			}
+			replacements.Add(new KeyValuePair<string, string>(GingerString.InternalUserMarker, GingerString.BackyardUserMarker));
 
 			for (int i = 0; i < cards.Length; ++i)
 			{
@@ -1279,7 +1307,6 @@ namespace Ginger.Integration
 		public static void ConvertToIDPlaceholders(ref string text, string[] characterIds)
 		{
 			var replacements = new List<KeyValuePair<string, string>>();
-			replacements.Add(new KeyValuePair<string, string>(GingerString.InternalUserMarker, GingerString.BackyardUserMarker));
 
 			for (int i = 0; i < characterIds.Length; ++i)
 			{
@@ -1287,15 +1314,11 @@ namespace Ginger.Integration
 				string dest = $"{{_cfg&:{characterIds[i]}:cfg&_}}";
 				replacements.Add(new KeyValuePair<string, string>(src, dest));
 			}
+			replacements.Add(new KeyValuePair<string, string>(GingerString.InternalUserMarker, GingerString.BackyardUserMarker));
 
 			foreach (var kvp in replacements)
 				__ToID(ref text, kvp.Key, kvp.Value);
 			__ToID(ref text, GingerString.BackyardCharacterMarker, replacements[0].Value); // jic			
-		}
-
-		public static string CreateIDPlaceholder(string characterId)
-		{
-			return $"{{_cfg&:{characterId}:cfg&_}}";
 		}
 
 		private static void __ToID(ref string text, string src, string dest)
@@ -1304,26 +1327,6 @@ namespace Ginger.Integration
 				return;
 
 			text = text.Replace(src, dest);
-		}
-
-		public static void ConvertToIDPlaceholders(Backyard.ChatStaging staging, string characterId)
-		{
-			if (string.IsNullOrEmpty(staging.system) == false)
-				ConvertToIDPlaceholders(ref staging.system, characterId);
-			if (string.IsNullOrEmpty(staging.scenario) == false)
-				ConvertToIDPlaceholders(ref staging.scenario, characterId);
-			if (string.IsNullOrEmpty(staging.greeting.text) == false)
-				ConvertToIDPlaceholders(ref staging.greeting.text, characterId);
-			if (string.IsNullOrEmpty(staging.authorNote) == false)
-				ConvertToIDPlaceholders(ref staging.authorNote, characterId);
-			if (staging.exampleMessages != null)
-			{
-				for (int i = 0; i < staging.exampleMessages.Length; ++i)
-				{
-					ConvertToIDPlaceholders(ref staging.exampleMessages[i].name, characterId);
-					ConvertToIDPlaceholders(ref staging.exampleMessages[i].text, characterId);
-				}
-			}
 		}
 
 		public static void ConvertToIDPlaceholders(Backyard.ChatStaging staging, string[] characterIds)
@@ -1427,16 +1430,6 @@ namespace Ginger.Integration
 					__FromID(ref staging.exampleMessages[j].name, knownIds);
 					__FromID(ref staging.exampleMessages[j].text, knownIds);
 				}
-			}
-		}
-
-		public static void ConvertFromIDPlaceholders(List<ChatHistory.Message> entries)
-		{
-			var knownIds = new Dictionary<string, string>();
-			foreach (var entry in entries.Where(e => e.swipes != null))
-			{
-				for (int i = 0; i < entry.swipes.Length; ++i)
-					__FromID(ref entry.swipes[i], knownIds);
 			}
 		}
 

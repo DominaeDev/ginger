@@ -81,7 +81,7 @@ namespace Ginger.Integration
 			if (string.IsNullOrEmpty(characterId))
 				return false;
 
-			return impl.GetCharacter(characterId, out var _);
+			return impl.GetCharacter(characterId, out var tmp);
 		}
 
 		public static CharacterInstance GetCharacter(this IBackyardDatabase impl, string characterId)
@@ -96,7 +96,7 @@ namespace Ginger.Integration
 		{
 			if (string.IsNullOrEmpty(groupId))
 				return false;
-			return impl.GetGroup(groupId, out var _);
+			return impl.GetGroup(groupId, out var tmp);
 		}
 
 		public static GroupInstance GetGroup(this IBackyardDatabase impl, string groupId)
@@ -118,8 +118,8 @@ namespace Ginger.Integration
 				return new GroupInstance[0];
 
 			return impl.Groups
-				.Where(g => g.members != null && g.members.Contains(characterId))
-				.OrderBy(g => g.members.Length) // Solo group > Party
+				.Where(g => (g.activeMembers != null && g.activeMembers.Contains(characterId)) || (g.inactiveMembers != null && g.inactiveMembers.Contains(characterId)))
+				.OrderBy(g => g.Count) // Solo group < Party
 				.ToArray();
 		}
 

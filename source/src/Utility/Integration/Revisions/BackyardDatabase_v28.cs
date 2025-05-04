@@ -292,8 +292,6 @@ namespace Ginger.Integration
 										persona = persona,
 										hasLorebook = numLoreEntries > 0,
 										creator = hubAuthorUsername ?? "",
-										folderId = folderId ?? "",
-										folderSortPosition = folderSortPosition ?? "",
 									});
 							}
 						}
@@ -965,8 +963,6 @@ namespace Ginger.Integration
 							groupId = groupInstance.instanceId;
 
 							characterInstance.groupId = groupId;
-							characterInstance.folderId = parentFolder.instanceId;
-							characterInstance.folderSortPosition = folderSortPosition;
 
 							var staging = new ChatStaging() {
 								system = card.data.system ?? "",
@@ -4271,7 +4267,7 @@ namespace Ginger.Integration
 							folderSortPosition = folderSortPosition,
 							hubCharId = hubCharId,
 							hubAuthorUsername = hubAuthorUsername,
-							members = members.ToArray(),
+							activeMembers = members.ToArray(),
 						});
 					}
 				}
@@ -5115,7 +5111,7 @@ namespace Ginger.Integration
 					displayName = name ?? "",
 					folderId = parentFolderId ?? "",
 					folderSortPosition = folderSortPosition ?? "",
-					members = characterIds,
+					activeMembers = characterIds,
 				};
 			}
 

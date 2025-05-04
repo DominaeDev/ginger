@@ -55,10 +55,10 @@ namespace Ginger
 		private void OnLoad(object sender, EventArgs e)
 		{
 			this.Characters = Backyard.Database.Characters.ToArray();
-			this.Orphans = this.Characters.Where(c => c.groupId == null).ToArray();
+			this.Orphans = this.Characters.Where(c => c.groupIds.IsEmpty()).ToArray();
 			this.Folders = Backyard.Database.Folders.ToArray();
 
-			IEnumerable<GroupInstance> includedGroups =  Enumerable.Empty<GroupInstance>();
+			IEnumerable<GroupInstance> includedGroups = Enumerable.Empty<GroupInstance>();
 			if (Options.Contains(Option.Parties))
 			{
 				includedGroups = includedGroups.Union(
@@ -279,7 +279,7 @@ namespace Ginger
 			string groupLabel = group.GetDisplayName();
 			var sbTooltip = new StringBuilder();
 
-			CharacterInstance[] characters = group.members
+			CharacterInstance[] characters = group.activeMembers
 				.Select(id => _charactersById.GetOrDefault(id))
 				.OrderBy(c => c.creationDate)
 				.Where(c => c.isCharacter)
@@ -445,7 +445,7 @@ namespace Ginger
 			{
 				if (node.group.isDefined)
 				{
-					CharacterInstance[] members = node.group.members
+					CharacterInstance[] members = node.group.activeMembers
 						.Select(id => _charactersById.GetOrDefault(id))
 						.Where(c => c.isCharacter)
 						.ToArray();
