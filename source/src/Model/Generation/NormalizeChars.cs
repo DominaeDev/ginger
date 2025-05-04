@@ -127,6 +127,9 @@ namespace Ginger
 					}
 				}
 			}
+
+			sb.Replace("\'\"", "\"");
+			sb.Replace("\"\'", "\"");
 		}
 	}
 }

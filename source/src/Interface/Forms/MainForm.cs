@@ -497,8 +497,7 @@ namespace Ginger
 			}
 			else // Actor
 			{
-				AssetFile tmp;
-				if (Current.Card.assets.LoadActorPortraitFromFile(Current.SelectedCharacter, filename, out tmp) == false)
+				if (Current.Card.assets.LoadActorPortraitFromFile(Current.SelectedCharacter, filename, out var _) == false)
 				{
 					MsgBox.Error(Resources.error_load_image, Resources.cap_open_image, this);
 					return;
@@ -580,8 +579,7 @@ namespace Ginger
 				filename = openFileDialog.FileName;
 			}
 
-			AssetFile tmp;
-			if (Current.Card.assets.AddBackground(filename, out tmp))
+			if (Current.Card.assets.AddBackground(filename, out var _))
 			{
 				NotifyAssetsChanged();
 
@@ -602,8 +600,7 @@ namespace Ginger
 				return; // Error
 			}
 
-			AssetFile tmp;
-			if (Current.Card.assets.AddBackground(image, out tmp))
+			if (Current.Card.assets.AddBackground(image, out var _))
 			{
 				NotifyAssetsChanged();
 				
@@ -669,8 +666,7 @@ namespace Ginger
 				return;
 			}
 
-			AssetFile tmp;
-			if (Current.Card.assets.AddBackground(image, out tmp))
+			if (Current.Card.assets.AddBackground(image, out var _))
 			{
 				Current.Card.assets.Remove(asset);
 				NotifyAssetsChanged();
@@ -1590,9 +1586,9 @@ namespace Ginger
 			saveLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
 			saveNewLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink == false;
 			revertLinkedMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
-			saveAsNewPartyMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink == false && Current.Characters.Count > 1;
+			saveAsNewPartyMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink == false && Current.IsGroup;
 			saveAsNewPartyMenuItem.Visible = Backyard.ConnectionEstablished 
-				&& BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats);
+				&& BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat);
 
 			breakLinkMenuItem.Enabled = Backyard.ConnectionEstablished && Current.HasActiveLink;
 			breakLinkMenuItem.Visible = Backyard.ConnectionEstablished && Current.HasStaleLink == false;
@@ -1613,16 +1609,22 @@ namespace Ginger
 			writeAuthorNoteMenuItem.Checked = AppSettings.BackyardLink.WriteAuthorNote;
 			writeUserPersonaMenuItem.Checked = AppSettings.BackyardLink.WriteUserPersona;
 
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat))
 			{
 				importLinkedMenuItem.Text = "Open character or party...";
 				importLinkedMenuItem.ToolTipText = Resources.tooltip_link_open_party;
 				revertLinkedMenuItem.ToolTipText = Resources.tooltip_link_revert_party;
 
-				if (Current.Characters.Count > 1)
+				if (Current.IsGroup)
+				{
+					saveNewLinkedMenuItem.Text = "Save as new multi-character";
 					saveNewLinkedMenuItem.ToolTipText = Resources.tooltip_link_save_as_new_multi;
+				}
 				else
+				{
+					saveNewLinkedMenuItem.Text = "Save as new";
 					saveNewLinkedMenuItem.ToolTipText = Resources.tooltip_link_save_as_new;
+				}
 
 				bulkImportMenuItem.Text = "Import characters and parties...";
 				bulkExportPartiesMenuItem.Visible = true;
@@ -1695,14 +1697,14 @@ namespace Ginger
 
 			// Export actor
 			var exportActorMenuItem = new ToolStripMenuItem("Save actor as...") {
-				Enabled = Current.Characters.Count > 1,
+				Enabled = Current.IsGroup,
 			};
 			exportActorMenuItem.Click += ExportSupportingCharacterMenuItem_Click;
 			items.Add(exportActorMenuItem);
 
 			// Save separately
 			var exportActorsMenuItem = new ToolStripMenuItem("Save all separately...") {
-				Visible = Current.Characters.Count > 1,
+				Visible = Current.IsGroup,
 			};
 			exportActorsMenuItem.Click += saveSeparatelyMenuItem_Click;
 			items.Add(exportActorsMenuItem);
@@ -1742,7 +1744,7 @@ namespace Ginger
 			}
 
 			// Remove actor
-			if (Current.Characters.Count > 1)
+			if (Current.IsGroup)
 			{
 				items.Add(new ToolStripSeparator());
 				var rearrangeActors = new ToolStripMenuItem("Rearrange...");
@@ -1880,10 +1882,10 @@ namespace Ginger
 			outputPreviewFaradayMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday;
 			outputPreviewPlainTextMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.PlainText;
 			outputPreviewFaradayGroupMenuItem.Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty;
-			outputPreviewFaradayGroupMenuItem.Enabled = Current.Characters.Count > 1;
+			outputPreviewFaradayGroupMenuItem.Enabled = Current.IsGroup;
 
 			// Tools
-			bakeActorMenuItem.Visible = Current.Characters.Count > 1;
+			bakeActorMenuItem.Visible = Current.IsGroup;
 
 			// Undo / Redo
 			var undo = Undo.PeekUndo();
@@ -1906,7 +1908,7 @@ namespace Ginger
 			sortRecipesMenuItem.Enabled = bViewingRecipe && bHasRecipes;
 
 			// Actors menu
-			if (Current.Characters.Count > 1)
+			if (Current.IsGroup)
 				additionalCharactersMenuItem.Text = string.Format("&Actors ({0})", Current.Characters.Count);
 			else
 				additionalCharactersMenuItem.Text = "&Actors";
@@ -2643,7 +2645,7 @@ namespace Ginger
 
 		private void saveAsNewPartyMenuItem_Click(object sender, EventArgs e)
 		{
-			SavePartyToBackyard();
+			SavePartyAsNewToBackyard();
 		}
 
 		private void reestablishLinkMenuItem_Click(object sender, EventArgs e)

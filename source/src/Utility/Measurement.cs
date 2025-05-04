@@ -60,9 +60,9 @@ namespace Ginger
 					pos_end_of_second_number = valueString.Length;
 
 				string strSecondNumber = valueString.Substring(pos_second_number, pos_end_of_second_number - pos_second_number);
-				decimal tmp;
-				if (decimal.TryParse(strSecondNumber, NumberStyles.Float, CultureInfo.InvariantCulture, out tmp))
-					secondNumber = tmp;
+				decimal n;
+				if (decimal.TryParse(strSecondNumber, NumberStyles.Float, CultureInfo.InvariantCulture, out n))
+					secondNumber = n;
 
 				firstUnit = valueString.Substring(pos_end_of_first_number, pos_second_number - pos_end_of_first_number).Trim();
 				secondUnit = valueString.Substring(pos_end_of_second_number).Trim();

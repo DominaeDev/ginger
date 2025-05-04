@@ -356,8 +356,7 @@ namespace Ginger.Integration
 			// Read character from Backyard
 			BackyardLinkCard faradayCard;
 			ImageInstance[] images;
-			UserData tmp;
-			var importError = Backyard.Database.ImportCharacter(characterInstance.instanceId, out faradayCard, out images, out tmp);
+			var importError = Backyard.Database.ImportCharacter(characterInstance.instanceId, out faradayCard, out images, out var _);
 			if (importError != Backyard.Error.NoError)
 			{
 				filename = default(string);
@@ -469,8 +468,7 @@ namespace Ginger.Integration
 			BackyardLinkCard[] faradayCards;
 			ImageInstance[] images;
 			CharacterInstance[] characterInstances;
-			UserData tmp;
-			var importError = Backyard.Database.ImportParty(groupInstance.instanceId, out faradayCards, out characterInstances, out images, out tmp);
+			var importError = Backyard.Database.ImportParty(groupInstance.instanceId, out faradayCards, out characterInstances, out images, out var _);
 			if (importError != Backyard.Error.NoError)
 			{
 				filename = default(string);

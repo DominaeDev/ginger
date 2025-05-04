@@ -116,7 +116,7 @@ namespace Ginger
 
 			var dlg = new LinkSelectCharacterOrGroupDialog();
 			dlg.Options = LinkSelectCharacterOrGroupDialog.Option.Solo;
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat))
 				dlg.Options |= LinkSelectCharacterOrGroupDialog.Option.Parties | LinkSelectCharacterOrGroupDialog.Option.Orphans;
 			dlg.ConfirmButton = "Open";
 			dlg.Text = "Open Backyard AI character";
@@ -324,7 +324,7 @@ namespace Ginger
 			}
 
 			BackyardLinkCard card = BackyardLinkCard.FromOutput(output);
-			card.EnsureSystemPrompt();
+			card.EnsureSystemPrompt(false);
 
 			Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
 			BackupData.Chat[] chats = null;
@@ -371,7 +371,12 @@ namespace Ginger
 			{
 				var mr = MsgBox.AskYesNoCancel(Resources.error_link_character_not_found, Resources.cap_link_save_character, this);
 				if (mr == DialogResult.Yes)
-					return SaveCharacterAsNewToBackyard();
+				{
+					if (Current.IsGroup)
+						return SavePartyAsNewToBackyard() == Backyard.Error.NoError;
+					else
+						return SaveCharacterAsNewToBackyard();
+				}
 
 				if (mr == DialogResult.No)
 					Current.BreakLink();
@@ -433,8 +438,9 @@ namespace Ginger
 			}
 
 			BackyardLinkCard card = BackyardLinkCard.FromOutput(output);
+
 			if (Current.Link.linkType == Backyard.Link.LinkType.Solo || Current.Link.linkType == Backyard.Link.LinkType.Group)
-				card.EnsureSystemPrompt();
+				card.EnsureSystemPrompt(false);
 
 			bool bWriteGroup = string.IsNullOrWhiteSpace(card.data.system) == false
 					|| string.IsNullOrWhiteSpace(card.data.scenario) == false
@@ -481,6 +487,8 @@ namespace Ginger
 
 			if (bWriteGroup && Current.Link.linkType == Backyard.Link.LinkType.StandAlone)
 				Current.Link.linkType = Backyard.Link.LinkType.Solo; // Promote to solo
+			else if (Current.Link.linkType == Backyard.Link.LinkType.Group)
+				Current.Link.linkType = Backyard.Link.LinkType.Solo; // Demote to solo
 
 			Current.Link.updateDate = updateDate;
 			Current.Link.imageLinks = imageLinks;
@@ -600,7 +608,7 @@ namespace Ginger
 			}
 
 			// Revert party?
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats) && Current.Link.groupId != null)
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat) && Current.Link.groupId != null)
 			{
 				var group = Backyard.Database.GetGroup(Current.Link.groupId);
 				if (group.isDefined)
@@ -755,7 +763,7 @@ namespace Ginger
 			var dlg = new LinkSelectMultipleCharactersOrGroupsDialog();
 			dlg.Options = LinkSelectMultipleCharactersOrGroupsDialog.Option.Solo;
 			dlg.Text = "Select characters to export";
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat))
 				dlg.Options |= LinkSelectMultipleCharactersOrGroupsDialog.Option.Orphans;
 
 			if (dlg.ShowDialog() != DialogResult.OK || dlg.SelectedCharacters.Length == 0)
@@ -907,7 +915,7 @@ namespace Ginger
 
 		public bool ExportManyPartiesFromBackyard()
 		{
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats) == false)
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat) == false)
 				return false; // Error
 
 			// Refresh character list
@@ -1245,7 +1253,7 @@ namespace Ginger
 			// Choose character(s)
 			var dlg = new LinkSelectMultipleCharactersOrGroupsDialog();
 			dlg.Options = LinkSelectMultipleCharactersOrGroupsDialog.Option.Solo;
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat))
 				dlg.Options |= LinkSelectMultipleCharactersOrGroupsDialog.Option.Parties;
 			dlg.Text = "Select chats to modify";
 			
@@ -1325,7 +1333,7 @@ namespace Ginger
 			var dlg = new LinkSelectCharacterOrGroupDialog();
 			dlg.Text = Resources.cap_link_create_backup;
 			dlg.Options = LinkSelectCharacterOrGroupDialog.Option.Solo;
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat))
 				dlg.Options |= LinkSelectCharacterOrGroupDialog.Option.Parties;
 
 			if (dlg.ShowDialog() != DialogResult.OK)
@@ -1441,7 +1449,7 @@ namespace Ginger
 				return false;
 			}
 
-			if (backup.characterCards.Length > 1 && BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats) == false)
+			if (backup.characterCards.Length > 1 && BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat) == false)
 			{
 				MsgBox.Error(Resources.error_link_restore_backup_unsupported, Resources.cap_link_restore_backup, this);
 				return false;
@@ -1514,9 +1522,13 @@ namespace Ginger
 			else
 				backupFolder = default(FolderInstance);
 
+
+			var cards = backup.characterCards.Select(c => BackyardLinkCard.FromFaradayCard(c)).ToArray();
+			cards[0].EnsureSystemPrompt(cards.Length > 1);
+
 			// Write character
 			var args = new Backyard.CreatePartyArguments() {
-				cards = backup.characterCards.Select(c => BackyardLinkCard.FromFaradayCard(c)).ToArray(),
+				cards = cards,
 				imageInput = images.ToArray(),
 				chats = backup.chats.ToArray(),
 				userInfo = backup.userInfo,
@@ -1787,7 +1799,7 @@ namespace Ginger
 			var dlg = new LinkSelectMultipleCharactersOrGroupsDialog();
 			dlg.Options = LinkSelectMultipleCharactersOrGroupsDialog.Option.Solo;
 			dlg.Text = "Select characters to delete";
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat))
 			{
 				dlg.Options |= LinkSelectMultipleCharactersOrGroupsDialog.Option.Orphans | LinkSelectMultipleCharactersOrGroupsDialog.Option.Parties;
 				dlg.Text = "Select characters or parties to delete";
@@ -1965,7 +1977,7 @@ namespace Ginger
 			}
 		}
 
-		private bool SavePartyToBackyard()
+		private Backyard.Error SavePartyAsNewToBackyard()
 		{
 			GroupInstance createdGroup;
 			CharacterInstance[] createdCharacters;
@@ -1975,12 +1987,12 @@ namespace Ginger
 			if (error == Backyard.Error.NotConnected)
 			{
 				MsgBox.LinkError.ConnectionFailed(Resources.cap_link_save_character, this);
-				return false;
+				return error;
 			}
 			else if (error != Backyard.Error.NoError)
 			{
 				MsgBox.Error(Resources.error_link_save_character_as_new, Resources.cap_link_save_character, this);
-				return false;
+				return error;
 			}
 			else
 			{
@@ -1999,7 +2011,7 @@ namespace Ginger
 				}
 				
 				_bShouldRefreshSidePanel = true;
-				return true;
+				return Backyard.Error.NoError;
 			}
 		}
 
@@ -2045,7 +2057,8 @@ namespace Ginger
 			BackupData.Chat[] chats = null;
 //			if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1) //! @party
 //				chats = Backyard.Database.GatherChats(card, output, imageInput);
-			
+
+			cards[0].EnsureSystemPrompt(true);			
 			var args = new Backyard.CreatePartyArguments() {
 				cards = cards,
 				imageInput = imageInput,
@@ -2061,6 +2074,8 @@ namespace Ginger
 			Current.IsLinkDirty = false;
 			RefreshTitle();
 
+			// Lionk
+
 			// Refresh character information
 			Backyard.RefreshCharacters();
 			return Backyard.Error.NoError;
@@ -2070,8 +2085,17 @@ namespace Ginger
 		{
 			if (Current.HasLink == false)
 				return Backyard.Error.NotFound;
-			if (Current.Link.linkType == Backyard.Link.LinkType.Group)
+			
+			if (Current.IsGroup)
+			{
+				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat) == false)
+					return Backyard.Error.UnsupportedFeature;
+
+				if (Current.Link.linkType == Backyard.Link.LinkType.StandAlone || Current.Link.linkType == Backyard.Link.LinkType.GroupMember)
+					return SavePartyAsNewToBackyard(); // Create new party
+
 				return UpdateGroupInBackyard();
+			}
 			else
 				return UpdateCharacterInBackyard();
 		}
@@ -2101,9 +2125,10 @@ namespace Ginger
 			if (error != Backyard.Error.NoError)
 				return error;
 
-			Generator.Option options = Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked;
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyNames))
-				options |= Generator.Option.Group;
+			Generator.Option options = Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked | Generator.Option.Group;
+
+			if (Current.Link.linkType == Backyard.Link.LinkType.Solo)
+				Current.Link.linkType = Backyard.Link.LinkType.Group; // Promote to group
 
 			var outputs = Generator.GenerateMany(options);
 
@@ -2135,6 +2160,8 @@ namespace Ginger
 				else if (mr == DialogResult.No)
 					return Backyard.Error.DismissedByUser;
 			}
+
+			cards[0].EnsureSystemPrompt(true);
 
 			DateTime updateDate;
 			Backyard.Link.Image[] imageLinks;

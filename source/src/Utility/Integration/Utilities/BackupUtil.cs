@@ -176,7 +176,7 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats) == false)
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat) == false)
 			{
 				backupInfo = null;
 				return Backyard.Error.UnsupportedFeature;

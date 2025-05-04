@@ -873,8 +873,7 @@ namespace Ginger
 
 		public static FileType CheckFileType(string filename)
 		{
-			int tmp;
-			return CheckFileType(filename, out tmp);
+			return CheckFileType(filename, out var _);
 		}
 
 		public static FileType CheckFileType(string filename, out int characterCount)

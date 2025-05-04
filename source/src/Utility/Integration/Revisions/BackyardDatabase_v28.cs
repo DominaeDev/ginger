@@ -2279,7 +2279,7 @@ namespace Ginger.Integration
 					connection.Open();
 
 					var defaultStaging = new ChatStaging() {
-						system = FaradayCard.OriginalModelInstructionsByFormat[0],
+						system = FaradayCardV4.OriginalModelInstructionsByFormat[0],
 					};
 					var defaultParameters = new ChatParameters();
 
@@ -3408,7 +3408,7 @@ namespace Ginger.Integration
 								cmdUpdateChat.Parameters.AddWithValue("$timestamp", updatedAt);
 								if (staging != null)
 								{
-									cmdUpdateChat.Parameters.AddWithValue("$system", Utility.FirstNonEmpty(staging.system, FaradayCard.OriginalModelInstructionsByFormat[0]));
+									cmdUpdateChat.Parameters.AddWithValue("$system", Utility.FirstNonEmpty(staging.system, FaradayCardV4.OriginalModelInstructionsByFormat[0]));
 									cmdUpdateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$greeting", staging.greeting.text ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$example", staging.example ?? "");

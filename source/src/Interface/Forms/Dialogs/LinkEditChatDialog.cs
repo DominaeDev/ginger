@@ -777,7 +777,7 @@ namespace Ginger
 
 			var dlg = new LinkSelectCharacterOrGroupDialog();
 			dlg.Options = LinkSelectCharacterOrGroupDialog.Option.Solo;
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat))
 				dlg.Options |= LinkSelectCharacterOrGroupDialog.Option.Parties;
 			if (dlg.ShowDialog() == DialogResult.OK)
 				_groupInstance = dlg.SelectedGroup;
@@ -870,8 +870,7 @@ namespace Ginger
 			if (chatInstance == null)
 				return;
 
-			ChatInstance tmp;
-			if (ConfirmChatExists(chatInstance.instanceId, out tmp, Resources.cap_link_delete_chat) == false)
+			if (ConfirmChatExists(chatInstance.instanceId, out var _, Resources.cap_link_delete_chat) == false)
 				return;
 
 			// Fetch chat counts

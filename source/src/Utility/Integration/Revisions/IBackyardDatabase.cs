@@ -81,8 +81,7 @@ namespace Ginger.Integration
 			if (string.IsNullOrEmpty(characterId))
 				return false;
 
-			CharacterInstance tmp;
-			return impl.GetCharacter(characterId, out tmp);
+			return impl.GetCharacter(characterId, out var _);
 		}
 
 		public static CharacterInstance GetCharacter(this IBackyardDatabase impl, string characterId)
@@ -97,8 +96,7 @@ namespace Ginger.Integration
 		{
 			if (string.IsNullOrEmpty(groupId))
 				return false;
-			GroupInstance tmp;
-			return impl.GetGroup(groupId, out tmp);
+			return impl.GetGroup(groupId, out var _);
 		}
 
 		public static GroupInstance GetGroup(this IBackyardDatabase impl, string groupId)

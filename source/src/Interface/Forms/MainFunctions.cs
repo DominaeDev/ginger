@@ -113,7 +113,7 @@ namespace Ginger
 				return false;
 
 			// Remove all but the main character
-			if (Current.Characters.Count > 1)
+			if (Current.IsGroup)
 				Current.Characters.RemoveRange(1, Current.Characters.Count - 1);
 
 			Undo.Suspend();
@@ -1700,8 +1700,7 @@ namespace Ginger
 
 			foreach (var varName in foundNames.OrderBy(s => s))
 			{
-				string tmp;
-				if (Current.Card.TryGetVariable(varName, out tmp) == false)
+				if (Current.Card.TryGetVariable(varName, out var _) == false)
 					variables.Add(new CustomVariable(varName));
 			}
 

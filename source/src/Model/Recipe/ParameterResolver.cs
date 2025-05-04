@@ -8,8 +8,7 @@ namespace Ginger
 	{
 		public static ParameterStates ResolveParameters(Recipe[] recipes, Context context)
 		{
-			Context tmp;
-			return ResolveParameters(recipes, context, out tmp);
+			return ResolveParameters(recipes, context, out var _);
 		}
 
 		public static ParameterStates ResolveParameters(Recipe[] recipes, Context context, out Context globalContext)
@@ -147,8 +146,7 @@ namespace Ginger
 
 		public static Context[] GetLocalContexts(Recipe[] recipes, Context outerContext)
 		{
-			Context tmp;
-			return GetLocalContexts(recipes, outerContext, out tmp);
+			return GetLocalContexts(recipes, outerContext, out var _);
 		}
 
 		public static Context[] GetLocalContexts(Recipe[] recipes, Context outerContext, out Context finalContext)

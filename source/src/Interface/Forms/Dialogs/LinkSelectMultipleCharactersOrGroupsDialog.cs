@@ -289,7 +289,7 @@ namespace Ginger
 				.Select(c => Utility.FirstNonEmpty(c.name, Constants.DefaultCharacterName))
 				.ToArray();
 
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat))
 			{
 				if (characterNames.Length >= 2)
 				{

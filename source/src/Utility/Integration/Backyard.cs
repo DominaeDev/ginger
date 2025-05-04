@@ -342,6 +342,19 @@ namespace Ginger.Integration
 			public string authorNote = "";				// Chat.authorNote
 			public bool pruneExampleChat = true;		// Chat.canDeleteCustomDialogue
 			public ChatBackground background = null;
+			public CardData.TextStyle preferredTextStyle = CardData.TextStyle.None;
+
+			public string formatInstructions         // Chat.modelInstructionsType
+			{
+				get
+				{
+					if (string.IsNullOrEmpty(system) == false)
+						return "custom";
+					else if (preferredTextStyle == CardData.TextStyle.Novel)
+						return "story";
+					return "chat";
+				}
+			}
 
 			public string example
 			{
@@ -1217,6 +1230,8 @@ namespace Ginger.Integration
 		public static void ConvertToIDPlaceholders(FaradayCard[] cards, string[] characterIds)
 		{
 			var replacements = new List<KeyValuePair<string, string>>();
+			replacements.Add(new KeyValuePair<string, string>(GingerString.InternalUserMarker, GingerString.BackyardUserMarker));
+
 			for (int i = 0; i < cards.Length && i < characterIds.Length; ++i)
 			{
 				string src = GingerString.MakeInternalCharacterMarker(i);
@@ -1264,6 +1279,8 @@ namespace Ginger.Integration
 		public static void ConvertToIDPlaceholders(ref string text, string[] characterIds)
 		{
 			var replacements = new List<KeyValuePair<string, string>>();
+			replacements.Add(new KeyValuePair<string, string>(GingerString.InternalUserMarker, GingerString.BackyardUserMarker));
+
 			for (int i = 0; i < characterIds.Length; ++i)
 			{
 				string src = GingerString.MakeInternalCharacterMarker(i);
@@ -1342,7 +1359,11 @@ namespace Ginger.Integration
 				characterPlaceholder = $"{{_cfg&:{characterId}:cfg&_}}";
 			else
 				characterPlaceholder = Current.MainCharacter.name;
-			sb.Replace(GingerString.BackyardCharacterMarker, characterPlaceholder, false); // jic
+			
+			sb.Replace(GingerString.InternalUserMarker, "{user}", false);
+			sb.Replace(GingerString.MakeInternalCharacterMarker(0), characterPlaceholder, false);
+			sb.Replace(GingerString.InternalCharacterMarker, characterPlaceholder, false);
+			sb.Replace(GingerString.BackyardCharacterMarker, characterPlaceholder, false);
 
 			text = sb.ToString();
 		}

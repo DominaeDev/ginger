@@ -48,6 +48,8 @@ namespace Ginger
 		public static StringBank Strings = new StringBank();
 		public static string Filename;
 		
+		public static bool IsGroup { get { return Characters.Count > 1; } }
+
 		public static bool IsDirty
 		{
 			get { return _bDirty; }

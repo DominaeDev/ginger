@@ -142,17 +142,17 @@ namespace Ginger
 			// Is actor?
 			if (isMainCharacter == false)
 				context.SetFlag(Constants.Flag.Actor);
-			if (Current.Characters.Count > 1)
+			if (Current.IsGroup)
 			{
 				if (options.Contains(Generator.Option.Group))
 				{
 					context.SetFlag("group-chat");
-					context.SetFlag("__group");
+					context.SetFlag(Constants.Flag.Group);
 				}
 				else
 				{
 					context.SetFlag("multi-character");
-					context.SetFlag("__multi");
+					context.SetFlag(Constants.Flag.MultiCharacter);
 				}
 			}
 

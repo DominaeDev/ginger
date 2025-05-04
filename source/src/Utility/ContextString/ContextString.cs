@@ -1191,9 +1191,7 @@ namespace Ginger
 		private static string ConvertMeasurement(ref string text, string unit)
 		{
 			decimal magnitude;
-			string tmp;
-			Measurement.UnitSystem unitSystem;
-			if (Measurement.Parse(text, NumberParameter.Mode.Unknown, out magnitude, out tmp, out unitSystem))
+			if (Measurement.Parse(text, NumberParameter.Mode.Unknown, out magnitude, out var _, out var unitSystem))
 				text = Measurement.ToString(magnitude, unit);
 			else
 				text = "";

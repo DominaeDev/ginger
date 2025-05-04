@@ -11,24 +11,47 @@ namespace Ginger.Integration
 	{
 		public Data data = new Data();
 
-		public static readonly string[] OriginalModelInstructionsByFormat = new string[8]
+		private static readonly string[][] StandardModelInstructionsByFormat = new string[][]
 		{
-			// None
-			"Text transcript of a never-ending conversation between {user} and {character}. In the transcript, gestures and other non-verbal actions are written between asterisks (for example, *waves hello* or *moves closer*).",
-			// Asterisks
-			"Text transcript of a never-ending conversation between {user} and {character}. In the transcript, gestures and other non-verbal actions are written between asterisks (for example, *waves hello* or *moves closer*).",
-			// Quotes
-			"Text transcript of a never-ending conversation between {user} and {character}.",
-			// Quotes + Asterisks
-			"Text transcript of a never-ending conversation between {user} and {character}. In the transcript, gestures and other non-verbal actions are written between asterisks (for example, *waves hello* or *moves closer*).",
-			// Decorative quotes
-			"Text transcript of a never-ending conversation between {user} and {character}.",
-			// Bold
-			"Text transcript of a never-ending conversation between {user} and {character}. In the transcript, gestures and other non-verbal actions are written between asterisks (for example, **waves hello** or **moves closer**).",
-			// Parentheses
-			"Text transcript of a never-ending conversation between {user} and {character}. In the transcript, gestures and other non-verbal actions are written between parentheses, for example (waves hello) or (moves closer).",
-			// Japanese
-			"Text transcript of a never-ending conversation between {user} and {character}.",
+			// Solo
+			new string[8] {
+				// None
+				"",
+				// Asterisks
+				"",
+				// Quotes
+				"",
+				// Quotes + Asterisks
+				"This is a never-ending story between {user} and {characters}.\nWrite in the third-person, using double quotes for spoken dialogue. For example: {user} said \"Hello!\".\nDescribe any other narration or non-verbal actions between asterisks. For example: *{user} waves hello.*\nAvoid using parentheses or brackets.\nEach reply should be 3-4 sentences, with detailed accounts of movements, appearances, actions, smell, texture, and feelings.\nStay in character to provide the most immersive response that progresses the story.",
+				// Decorative quotes
+				"This is a never-ending story between {user} and {characters}.\nWrite in the third-person, using double quotes for spoken dialogue. For example: {user} said \u201CHello!\u201D.\nAvoid using parentheses or brackets.\nEach reply should be 3-4 sentences, with detailed accounts of movements, appearances, actions, smell, texture, and feelings.\nStay in character to provide the most immersive response that progresses the story.",
+				// Bold
+				"This is a never-ending chat transcript between {user} and {characters}.\nDialogue should be written in plaintext, excluding quotes and double quotes.\nDescribe any other narration or non-verbal actions between double asterisks. For example: **{user} waves hello.**\nAvoid using parentheses or brackets.\nEach reply should be 3-4 sentences. Include detailed accounts of movements, appearances, actions, smell, texture, and feelings.\nStay in character to provide the most immersive response that progresses the dialogue.",
+				// Parentheses
+				"This is a never-ending chat transcript between {user} and {characters}.\nDialogue should be written in plaintext, excluding quotes and double quotes.\nDescribe any other narration or non-verbal actions between parentheses. For example: ({user} waves hello.)\nAvoid using parentheses or brackets.\nEach reply should be 3-4 sentences. Include detailed accounts of movements, appearances, actions, smell, texture, and feelings.\nStay in character to provide the most immersive response that progresses the dialogue.",
+				// Japanese
+				"This is a never-ending story between {user} and {characters}.\nWrite in the third-person, using CJK quotes for spoken dialogue. For example: {user} said \u300CHello!\u300D.\nAvoid using parentheses or brackets.\nEach reply should be 3-4 sentences, with detailed accounts of movements, appearances, actions, smell, texture, and feelings.\nStay in character to provide the most immersive response that progresses the story.",
+			},
+
+			// Group
+			new string[8] {
+				// None
+				"",
+				// Asterisks
+				"",
+				// Quotes
+				"",
+				// Quotes + Asterisks
+				"This is a never-ending story between {user} and {characters}.\nWrite in the third-person, using double quotes for spoken dialogue. For example: {user} said \"Hello!\".\nDescribe any other narration or non-verbal actions between asterisks. For example: *{user} waves hello.*\nAvoid using parentheses or brackets.\nEach reply should be 3-4 sentences, with detailed accounts of movements, appearances, actions, smell, texture, and feelings.\nStay in character to provide the most immersive response that progresses the story.",
+				// Decorative quotes
+				"This is a never-ending story between {user} and {characters}.\nWrite in the third-person, using double quotes for spoken dialogue. For example: {user} said \u201CHello!\u201D.\nAvoid using parentheses or brackets.\nEach reply should be 3-4 sentences, with detailed accounts of movements, appearances, actions, smell, texture, and feelings.\nStay in character to provide the most immersive response that progresses the story.",
+				// Bold
+				"This is a never-ending chat transcript between {user} and {characters}.\nDialogue should be written in plaintext, excluding quotes and double quotes.\nDescribe any other narration or non-verbal actions between double asterisks. For example: **{user} waves hello.**\nAvoid using parentheses or brackets.\nEach reply should be 3-4 sentences. Include detailed accounts of movements, appearances, actions, smell, texture, and feelings.\nStay in character to provide the most immersive response that progresses the dialogue.",
+				// Parentheses
+				"This is a never-ending chat transcript between {user} and {characters}.\nDialogue should be written in plaintext, excluding quotes and double quotes.\nDescribe any other narration or non-verbal actions between parentheses. For example: ({user} waves hello.)\nAvoid using parentheses or brackets.\nEach reply should be 3-4 sentences. Include detailed accounts of movements, appearances, actions, smell, texture, and feelings.\nStay in character to provide the most immersive response that progresses the dialogue.",
+				// Japanese
+				"This is a never-ending story between {user} and {characters}.\nWrite in the third-person, using CJK quotes for spoken dialogue. For example: {user} said \u300CHello!\u300D.\nAvoid using parentheses or brackets.\nEach reply should be 3-4 sentences, with detailed accounts of movements, appearances, actions, smell, texture, and feelings.\nStay in character to provide the most immersive response that progresses the story.",
+			}
 		};
 
 		public class Data
@@ -47,6 +70,7 @@ namespace Ginger.Integration
 			public string grammar;
 			public CharacterMessage greeting;
 			public CharacterMessage[] exampleMessages;
+			public CardData.TextStyle textStyle;
 
 			public string example
 			{
@@ -85,6 +109,7 @@ namespace Ginger.Integration
 			card.data.example = output.example.ToString();
 			card.data.grammar = output.grammar.ToString();
 			card.data.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+			card.data.textStyle = Current.Card.textStyle;
 
 			// Append user persona
 			string userPersona = output.userPersona.ToFaraday();
@@ -119,9 +144,10 @@ namespace Ginger.Integration
 			int pos_original = card.data.system.IndexOf("{original}", 0, StringComparison.OrdinalIgnoreCase);
 			if (pos_original != -1)
 			{
+				bool bGroup = output.context.HasFlag(Constants.Flag.Group) || output.context.HasFlag(Constants.Flag.MultiCharacter);
 				var sbSystem = new StringBuilder(card.data.system);
 				sbSystem.Remove(pos_original, 10);
-				sbSystem.Insert(pos_original, OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)]);
+				sbSystem.Insert(pos_original, GetStandardModelInstructions(card.data.textStyle, bGroup));
 				sbSystem.Replace("{original}", ""); // Remove any remaining
 				card.data.system = sbSystem.ToString();
 			}
@@ -142,11 +168,24 @@ namespace Ginger.Integration
 			return card;
 		}
 
-		public void EnsureSystemPrompt()
+		public static string GetStandardModelInstructions(CardData.TextStyle textStyle, bool bGroup)
 		{
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat) == false)
+				return FaradayCardV4.OriginalModelInstructionsByFormat[EnumHelper.ToInt(textStyle)];
+			return StandardModelInstructionsByFormat[bGroup ? 1 : 0][EnumHelper.ToInt(textStyle)];
+		}
+
+		public void EnsureSystemPrompt(bool bGroup)
+		{
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.DefaultSystemPrompts) && data.textStyle <= CardData.TextStyle.Novel)
+				return; // No prompt necessary
+
 			// Insert default system prompt if empty
 			if (string.IsNullOrWhiteSpace(data.system))
-				data.system = OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)];
+			{
+				var ctx = Current.MainCharacter.GetContext(CharacterData.ContextType.None);
+				data.system = Text.Eval(GetStandardModelInstructions(data.textStyle, bGroup), ctx, Text.EvalOption.None);
+			}
 		}
 
 		public FaradayCardV4 ToFaradayCard()
@@ -179,6 +218,10 @@ namespace Ginger.Integration
 				if (data.greeting.name != card.data.name && data.greeting.name != card.data.displayName)
 					card.data.greeting = string.Concat(data.greeting.name, ": ", card.data.greeting);
 			}
+
+			// Ensure system prompt
+			if (string.IsNullOrEmpty(card.data.system))
+				card.data.system = FaradayCardV4.OriginalModelInstructionsByFormat[EnumHelper.ToInt(data.textStyle)]; // Legacy
 
 			if (data.loreItems != null)
 			{

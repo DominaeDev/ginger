@@ -344,7 +344,7 @@ namespace Ginger
 				.OrderBy(c => c.creationDate)
 				.ToArray();
 
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats) && characters.Length >= 2)
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat) && characters.Length >= 2)
 			{
 				string[] characterNames = characters
 					.Select(c => Utility.FirstNonEmpty(c.name, Constants.DefaultCharacterName))
@@ -356,7 +356,7 @@ namespace Ginger
 			else if (characters.Length > 0)
 			{
 				var character = characters[0];
-				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
+				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat))
 					sbTooltip.Append("(Solo) ");
 				else
 					sbTooltip.Append("Name: ");

@@ -517,7 +517,7 @@
     <Compile Include="src\Utility\Integration\Revisions\Tables\BackyardDatabaseTables_v37.cs" />
     <Compile Include="src\Utility\Integration\Revisions\Tables\BackyardDatabaseTables_v29.cs" />
     <Compile Include="src\Utility\Measurement.cs" />
-    <Compile Include="src\Utility\NormalizeChars.cs" />
+    <Compile Include="src\Model\Generation\NormalizeChars.cs" />
     <Compile Include="src\Utility\Random\RandomNoise.cs" />
     <Compile Include="src\Utility\ReplaceWord.cs" />
     <Compile Include="src\Utility\SpellChecking\ISpellChecked.cs" />
