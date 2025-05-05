@@ -54,8 +54,7 @@ namespace Ginger
 			public GingerString greeting { get { return greetings != null && greetings.Length > 0 ? greetings[0] : default(GingerString); } }
 			public GingerString[] greetings;
 			public GingerString[] group_greetings;
-			public GingerString[] alternativeGreetings
-			{
+			public GingerString[] alternativeGreetings {
 				get
 				{
 					if (greetings == null || greetings.Length < 2)

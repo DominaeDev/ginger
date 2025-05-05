@@ -861,7 +861,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public static BackupData.Chat[] SplitAltGreetings(BackyardLinkCard card, Generator.Output output, Backyard.ImageInput[] images)
+		public static BackupData.Chat[] SplitAltGreetings(BackyardLinkCard card, GingerString[] altGreetings, Backyard.ImageInput[] images)
 		{
 			var lsChats = new List<BackupData.Chat>();
 
@@ -896,7 +896,6 @@ namespace Ginger.Integration
 			});
 
 			// Alternate greetings
-			var altGreetings = output.alternativeGreetings;
 			for (int i = 0; i < altGreetings.Length; ++i)
 			{
 				var altGreeting = altGreetings[i].ToFaradayGreeting();

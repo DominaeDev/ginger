@@ -1405,7 +1405,7 @@ namespace Ginger
 						statusConnectionIcon.Image = Theme.Current.LinkInactive;
 						statusConnectionIcon.ToolTipText = "Connected; Character link broken";
 					}
-					else if (Backyard.Database.HasCharacter(Current.Link.mainActorId)) //! @multi-link
+					else if (Backyard.Database.HasCharacter(Current.Link.mainActorId))
 					{
 						statusConnectionIcon.Image = Theme.Current.LinkInactive;
 						statusConnectionIcon.ToolTipText = "Connected; Character link inactive";

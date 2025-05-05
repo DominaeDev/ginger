@@ -329,7 +329,7 @@ namespace Ginger
 			Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
 			BackupData.Chat[] chats = null;
 			if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1)
-				chats = BackupUtil.SplitAltGreetings(card, output, imageInput);
+				chats = BackupUtil.SplitAltGreetings(card, output.alternativeGreetings, imageInput);
 
 			var args = new Backyard.CreateCharacterArguments() {
 				card = card,
@@ -2052,13 +2052,15 @@ namespace Ginger
 				images = null;
 				return Backyard.Error.InvalidArgument; // Error
 			}
+			
+			cards[0].EnsureSystemPrompt(true);		
 
 			Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
 			BackupData.Chat[] chats = null;
-//			if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1) //! @party
-//				chats = Backyard.Database.GatherChats(card, output, imageInput);
 
-			cards[0].EnsureSystemPrompt(true);			
+			if (AppSettings.BackyardLink.ImportAlternateGreetings && outputs[0].greetings.Length > 1)
+				chats = BackupUtil.SplitAltGreetings(cards[0], outputs[0].alternativeGreetings, imageInput);
+
 			var args = new Backyard.CreatePartyArguments() {
 				cards = cards,
 				imageInput = imageInput,
