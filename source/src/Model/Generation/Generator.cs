@@ -54,8 +54,7 @@ namespace Ginger
 			public GingerString greeting { get { return greetings != null && greetings.Length > 0 ? greetings[0] : default(GingerString); } }
 			public GingerString[] greetings;
 			public GingerString[] group_greetings;
-			public GingerString[] alternativeGreetings
-			{
+			public GingerString[] alternativeGreetings {
 				get
 				{
 					if (greetings == null || greetings.Length < 2)
@@ -606,11 +605,21 @@ namespace Ginger
 
 				if (eChannel == Recipe.Component.Greeting)
 				{
-					greetings = outputPerCharacter
-						.Where(o => o.greetings != null)
-						.SelectMany(o => o.greetings)
-						.Where(g => g.IsNullOrEmpty() == false)
-						.ToArray();
+					// Actor greetings: Prepend actor name
+					List<GingerString> lsGreetings = new List<GingerString>();
+					for (int i = 0; i < outputPerCharacter.Count; ++i)
+					{
+						string name = Current.Characters[i].name;
+						foreach (var greeting in outputPerCharacter[i].greetings.Where(g => g.IsNullOrEmpty() == false))
+						{
+							if (i > 0 && string.IsNullOrEmpty(name) == false)
+								lsGreetings.Add(GingerString.FromString(string.Concat(name, ": ", greeting.ToString())));
+							else
+								lsGreetings.Add(greeting);
+						}
+					}
+
+					greetings = lsGreetings.ToArray();
 				}
 				else if (eChannel == Recipe.Component.Greeting_Group)
 				{
@@ -665,7 +674,7 @@ namespace Ginger
 			return outputs;
 		}
 
-		private class PartialOutput
+		public class PartialOutput
 		{
 			public BlockBuilder blockBuilder;
 			public GingerString[] greetings;
@@ -734,9 +743,9 @@ namespace Ginger
 				else
 					mergedGrammar = GingerString.Empty;
 
-				var mergedGreetings = Utility.ConcatenateArrays(a.greetings, b.greetings);
-				var mergedGreetingsGroup = Utility.ConcatenateArrays(a.group_greetings, b.group_greetings);
-				var mergedExampleChat = Utility.ConcatenateArrays(a.exampleMessages, b.exampleMessages);
+				var mergedGreetings = Utility.ConcatArrays(a.greetings, b.greetings);
+				var mergedGreetingsGroup = Utility.ConcatArrays(a.group_greetings, b.group_greetings);
+				var mergedExampleChat = Utility.ConcatArrays(a.exampleMessages, b.exampleMessages);
 
 				return new PartialOutput() {
 					blockBuilder = mergedBlocks,
@@ -1108,7 +1117,7 @@ namespace Ginger
 
 		}
 
-		private static PartialOutput.ExampleChatMessage[] SplitChatMessage(string text)
+		public static PartialOutput.ExampleChatMessage[] SplitChatMessage(string text)
 		{
 			var messages = new List<PartialOutput.ExampleChatMessage>();
 
@@ -1153,6 +1162,8 @@ namespace Ginger
 
 						name = lines[row].Substring(8, pos_colon - 8).Trim();
 						lines[row] = lines[row].Substring(pos_colon + 10).TrimStart();
+						if (name.BeginsWith('#'))
+							name = name.Substring(1);
 						firstRow = row;
 					}
 					++row;

@@ -524,13 +524,13 @@ namespace Ginger
 			}) {
 				Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.Faraday,
 			});
-			if (Integration.BackyardValidation.CheckFeature(Integration.BackyardValidation.Feature.PartyChats))
+			if (Integration.BackyardValidation.CheckFeature(Integration.BackyardValidation.Feature.GroupChat))
 			{
 				formatMenu.DropDownItems.Add(new ToolStripMenuItem("Backyard AI (Party)", null, (s, e) => {
 					AppSettings.Settings.PreviewFormat = AppSettings.Settings.OutputPreviewFormat.FaradayParty;
 					Regenerate();
 				}) {
-					Enabled = Current.Characters.Count > 1,
+					Enabled = Current.IsGroup,
 					Checked = AppSettings.Settings.PreviewFormat == AppSettings.Settings.OutputPreviewFormat.FaradayParty,
 				});
 			}

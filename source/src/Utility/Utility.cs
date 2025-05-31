@@ -660,7 +660,7 @@ namespace Ginger
 				.ToList();
 		}
 
-		public static T[] ConcatenateArrays<T>(params T[][] arrays)
+		public static T[] ConcatArrays<T>(params T[][] arrays)
 		{
 			if (arrays == null || arrays.Length == 0)
 				return new T[0];
@@ -684,6 +684,19 @@ namespace Ginger
 			}
 			return newArray;
 		}
+		
+		public static T[] PrependArray<T>(T a, T[] b)
+		{
+			if (a == null)
+				return b;
+			if (b == null || b.Length == 0)
+				return new T[] { a };
+
+			var arr = new T[1 + b.Length];
+			arr[0] = a;
+			Array.Copy(b, 0, arr, 1, b.Length);
+			return arr;
+		}
 
 		public static T[] AppendArray<T>(T[] a, params T[] b)
 		{
@@ -698,7 +711,7 @@ namespace Ginger
 			return arr;
 		}
 
-		public static T[] ConcatenateArrays<T>(T[] a, T[] b, int maxLength)
+		public static T[] ConcatArrays<T>(T[] a, T[] b, int maxLength)
 		{
 			if (maxLength == 0)
 				return new T[0];
@@ -1547,13 +1560,25 @@ namespace Ginger
 			return text.Replace("&", "&&");
 		}
 
+		public static string FirstNonEmpty(IEnumerable<string> texts)
+		{
+			foreach (var text in texts)
+			{
+				if (string.IsNullOrEmpty(text) == false)
+					return text;
+			}
+			return null;
+		}
+
 		public static string FirstNonEmpty(params string[] texts)
 		{
 			if (texts == null || texts.Length == 0)
 				return null;
 			for (int i = 0; i < texts.Length; ++i)
+			{
 				if (string.IsNullOrEmpty(texts[i]) == false)
 					return texts[i];
+			}
 			return null;
 		}
 
@@ -1562,7 +1587,7 @@ namespace Ginger
 			if (string.IsNullOrEmpty(filename))
 				return filename;
 
-			char[] invalidChars = new char[] { '/', '\\', ':', '*', '?', '"', ';' };
+			char[] invalidChars = new char[] { '/', '\\', ':', '*', '?', '"', ';', '<', '>', '|' };
 
 			filename = filename.Replace('/', '-');
 
@@ -2053,5 +2078,6 @@ namespace Ginger
 				return false;
 			}
 		}
+
 	}
 }

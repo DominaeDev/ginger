@@ -59,7 +59,7 @@ namespace Ginger
 			filterTextBox.KeyDown += FilterTextBox_KeyDown;
 
 			this.Characters = Backyard.Database.Characters.ToArray();
-			this.Orphans = this.Characters.Where(c => c.groupId == null).ToArray();
+			this.Orphans = this.Characters.Where(c => c.groupIds.IsEmpty()).ToArray();
 			this.Folders = Backyard.Database.Folders.ToArray();
 			if (Options.Contains(Option.Parties))
 			{
@@ -166,7 +166,7 @@ namespace Ginger
 					})
 					.Select(c => c.instanceId));
 
-				sortedGroups = sortedGroups.Where(g => filteredCharacters.ContainsAnyIn(g.members));
+				sortedGroups = sortedGroups.Where(g => filteredCharacters.ContainsAnyIn(g.activeMembers));
 				sortedOrphans = sortedOrphans.Where(c => filteredCharacters.Contains(c.instanceId));
 			}
 
@@ -272,7 +272,7 @@ namespace Ginger
 
 				if (sortedGroups.Count() > 0)
 				{
-					folderNode = new TreeNode(string.Format("Stand-alone characters ({0})", nOrphans), 1, 1);
+					folderNode = new TreeNode(string.Format("Inactive characters ({0})", nOrphans), 1, 1);
 					folderNode.Tag = "Orphans";
 					treeView.Nodes.Insert(starredFolder != null ? 1 : 0, folderNode);
 					if (expandedFolders.Contains(folderNode.Tag))
@@ -338,25 +338,28 @@ namespace Ginger
 			string groupLabel = group.GetDisplayName();
 			var sbTooltip = new StringBuilder();
 
-			CharacterInstance[] characters = group.members
+			CharacterInstance[] characters = group.activeMembers
 				.Select(id => _charactersById.GetOrDefault(id))
 				.Where(c => c.isCharacter)
 				.OrderBy(c => c.creationDate)
 				.ToArray();
 
-			if (characters.Length >= 2)
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat) && characters.Length >= 2)
 			{
 				string[] characterNames = characters
 					.Select(c => Utility.FirstNonEmpty(c.name, Constants.DefaultCharacterName))
 					.ToArray();
 
-				sbTooltip.Append("Group chat with ");
+				sbTooltip.Append("(Party) ");
 				sbTooltip.Append(Utility.CommaSeparatedList(characterNames));
 			}
-			else if (characters.Length == 1)
+			else if (characters.Length > 0)
 			{
 				var character = characters[0];
-				sbTooltip.Append("Name: ");
+				if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat))
+					sbTooltip.Append("(Solo) ");
+				else
+					sbTooltip.Append("Name: ");
 				sbTooltip.Append(character.displayName);
 				if (string.Compare(character.name, character.displayName, StringComparison.OrdinalIgnoreCase) != 0)
 				{
@@ -533,7 +536,7 @@ namespace Ginger
 			if (node != null && node.Tag is GroupInstance)
 			{
 				GroupInstance group = (GroupInstance)node.Tag;
-				CharacterInstance[] characters = group.members
+				CharacterInstance[] characters = group.activeMembers
 					.Select(id => _charactersById.GetOrDefault(id))
 					.Where(c => c.isCharacter)
 					.ToArray();

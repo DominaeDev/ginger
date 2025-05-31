@@ -17,8 +17,9 @@ namespace Ginger.Integration
 	using ImageInput = Backyard.ImageInput;
 	using ImageInstance = Backyard.ImageInstance;
 	using ConfirmDeleteResult = Backyard.ConfirmDeleteResult;
+	using CharacterMessage = Backyard.CharacterMessage;
 
-	using FaradayCard = FaradayCardV4;
+	using FaradayCard = BackyardLinkCard;
 
 	public interface IBackyardDatabase
 	{
@@ -49,7 +50,6 @@ namespace Ginger.Integration
 		Backyard.Error UpdateParty(Backyard.Link link, FaradayCard[] cards, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks);
 
 		// Chat
-		Backyard.Error GetChat(string chatId, string groupId, out ChatInstance chatInstance);
 		Backyard.Error GetChats(string groupId, out ChatInstance[] chatInstances);
 		Backyard.Error GetChatCounts(out Dictionary<string, Backyard.ChatCount> counts);
 		Backyard.Error CreateNewChat(CreateChatArguments args, string groupId, out ChatInstance chatInstance);
@@ -57,7 +57,7 @@ namespace Ginger.Integration
 		Backyard.Error ConfirmDeleteChat(string chatId, string groupId, out int chatCount);
 		Backyard.Error ConfirmChatExists(string chatId);
 		Backyard.Error UpdateChat(string chatId, ChatInstance chatInstance, string groupId);
-		Backyard.Error UpdateChatParameters(string[] chatIds, ChatParameters parameters, ChatStaging staging);
+		Backyard.Error UpdateChatParameters(string[] chatIds, ChatStaging staging, ChatParameters parameters);
 		Backyard.Error UpdateChatBackground(string[] chatIds, string imageUrl, int width, int height);
 		Backyard.Error DeleteChat(string chatId);
 		Backyard.Error DeleteAllChats(string groupId);
@@ -81,8 +81,7 @@ namespace Ginger.Integration
 			if (string.IsNullOrEmpty(characterId))
 				return false;
 
-			CharacterInstance tmp;
-			return impl.GetCharacter(characterId, out tmp);
+			return impl.GetCharacter(characterId, out var tmp);
 		}
 
 		public static CharacterInstance GetCharacter(this IBackyardDatabase impl, string characterId)
@@ -97,8 +96,7 @@ namespace Ginger.Integration
 		{
 			if (string.IsNullOrEmpty(groupId))
 				return false;
-			GroupInstance tmp;
-			return impl.GetGroup(groupId, out tmp);
+			return impl.GetGroup(groupId, out var tmp);
 		}
 
 		public static GroupInstance GetGroup(this IBackyardDatabase impl, string groupId)
@@ -120,8 +118,8 @@ namespace Ginger.Integration
 				return new GroupInstance[0];
 
 			return impl.Groups
-				.Where(g => g.members != null && g.members.Contains(characterId))
-				.OrderBy(g => g.members.Length) // Solo group > Party
+				.Where(g => (g.activeMembers != null && g.activeMembers.Contains(characterId)) || (g.inactiveMembers != null && g.inactiveMembers.Contains(characterId)))
+				.OrderBy(g => g.Count) // Solo group < Party
 				.ToArray();
 		}
 
@@ -141,9 +139,9 @@ namespace Ginger.Integration
 			return chat != default(ChatInstance);
 		}
 
-		public static Backyard.Error UpdateChatParameters(this IBackyardDatabase impl, string chatId, ChatParameters parameters, ChatStaging staging)
+		public static Backyard.Error UpdateChatParameters(this IBackyardDatabase impl, string chatId, ChatStaging staging, ChatParameters parameters)
 		{
-			return impl.UpdateChatParameters(new string[] { chatId }, parameters, staging);
+			return impl.UpdateChatParameters(new string[] { chatId }, staging, parameters);
 		}
 
 	}

@@ -161,7 +161,7 @@ namespace Ginger
 			sb.Replace(CharacterMarker, BackyardCharacterMarker, true);
 			sb.Replace(UserMarker, BackyardUserMarker, true);
 			sb.Replace(OriginalMarker, BackyardOriginalMarker, true);
-			sb.Replace(NameMarker, Current.Name, true);
+			sb.Replace(NameMarker, Current.MainCharacter.name, true);
 			sb.Replace(ContinueMarker, "", true);
 			ConvertNamePlaceholders(sb, BackyardCharacterMarker);
 			UnescapeBackslash(sb);
@@ -209,7 +209,7 @@ namespace Ginger
 			return string.Join("\n", paragraphs);
 		}
 
-		public string ToFaradayChat()
+		public string ToFaradayChat(bool bLegacy)
 		{
 			string text = ToFaraday();
 
@@ -221,24 +221,29 @@ namespace Ginger
 			{
 				// {char}: -> #{char}:
 				string[] lines = paragraphs[i].Split(new char[] { '\n' }, StringSplitOptions.None);
-				for (int line = 0; line < lines.Length; ++line)
+				if (bLegacy)
 				{
-					if (lines[line].BeginsWith("{character}:", false) 
-						|| lines[line].BeginsWith("{user}:", false)
-						|| lines[line].BeginsWith("{character}\uFF1A", false)
-						|| lines[line].BeginsWith("{user}\uFF1A", false))
-						lines[line] = string.Concat("#", lines[line]);
-					else
+
+					for (int line = 0; line < lines.Length; ++line)
 					{
-						int pos_colon = Utility.ScopedIndexOf(lines[line], 0, ':', '\"', '\"');
-						int pos_colon_full_width = Utility.ScopedIndexOf(lines[line], 0, '\uFF1A', '\"', '\"'); // full width colon
-						if (pos_colon_full_width != -1 && (pos_colon == -1 || pos_colon_full_width < pos_colon))
-							pos_colon = pos_colon_full_width;
-						if (pos_colon != -1)
+						if (lines[line].BeginsWith("{character}:", false)
+							|| lines[line].BeginsWith("{user}:", false)
+							|| lines[line].BeginsWith("{character}\uFF1A", false)
+							|| lines[line].BeginsWith("{user}\uFF1A", false))
+							lines[line] = string.Concat("#", lines[line]);
+						else
 						{
-							string name = lines[line].Substring(0, pos_colon).Trim().ToLowerInvariant();
-							if (names.Contains(name))
-								lines[line] = string.Concat("#", lines[line]);
+							int pos_colon = Utility.ScopedIndexOf(lines[line], 0, ':', '\"', '\"');
+							int pos_colon_full_width = Utility.ScopedIndexOf(lines[line], 0, '\uFF1A', '\"', '\"'); // full width colon
+							if (pos_colon_full_width != -1 && (pos_colon == -1 || pos_colon_full_width < pos_colon))
+								pos_colon = pos_colon_full_width;
+
+							if (pos_colon != -1)
+							{
+								string name = lines[line].Substring(0, pos_colon).Trim().ToLowerInvariant();
+								if (names.Contains(name))
+									lines[line] = string.Concat("#", lines[line]);
+							}
 						}
 					}
 				}
@@ -466,7 +471,7 @@ namespace Ginger
 				break;
 			case AppSettings.Settings.OutputPreviewFormat.Faraday:
 				if (channel == Recipe.Component.Example)
-					sb = new StringBuilder(ToFaradayChat());
+					sb = new StringBuilder(ToFaradayChat(false));
 				else
 					sb = new StringBuilder(ToFaraday());
 				break;

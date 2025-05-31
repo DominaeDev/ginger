@@ -23,6 +23,8 @@ namespace Ginger
 		{
 			public Error error;
 			public string[] filenames;
+			public int characters;
+			public int groups;
 		}
 
 		protected override void Progress(int percent)
@@ -33,19 +35,25 @@ namespace Ginger
 		protected override void Completed(AsyncResult result)
 		{
 			var filenames = result.results
-				.OrderBy(e => e.modifiedDate)
-				.Select(e => e.filename)
+				.OrderBy(r => r.modifiedDate)
+				.Select(r => r.filename)
 				.ToArray();
+			int characters = result.results.Sum(r => r.characters);
+			int groups = result.results.Count(r => r.characters > 1);
 
 			if (result.error == AsyncTaskQueue<string, AsyncFileTypeCheckerWorker.WorkerResult>.Error.NoError)
 				onComplete?.Invoke(new Result() {
 					error = Error.NoError,
 					filenames = filenames,
+					characters = characters,
+					groups = groups,
 				});
 			else if (result.error == AsyncTaskQueue<string, AsyncFileTypeCheckerWorker.WorkerResult>.Error.Cancelled)
 				onComplete?.Invoke(new Result() {
 					error = Error.Cancelled,
 					filenames = filenames,
+					characters = characters,
+					groups = groups,
 				});
 			else
 				onComplete?.Invoke(new Result() {
@@ -61,11 +69,14 @@ namespace Ginger
 		{
 			public string filename;
 			public DateTime modifiedDate;
+			public int characters;
 		}
 
 		public override bool Execute(string filename, out WorkerResult result)
 		{
-			if (FileUtil.CheckFileType(filename) != FileUtil.FileType.Unknown)
+			int count;
+			var fileType = FileUtil.CheckFileType(filename, out count);
+			if (fileType != FileUtil.FileType.Unknown)
 			{
 				DateTime modifiedDate;
 				try
@@ -74,6 +85,7 @@ namespace Ginger
 					result = new WorkerResult() {
 						filename = filename,
 						modifiedDate = modifiedDate,
+						characters = count,
 					};
 					return true;
 				}

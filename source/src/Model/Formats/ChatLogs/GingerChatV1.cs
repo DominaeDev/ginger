@@ -13,6 +13,7 @@ namespace Ginger
 	using ChatInstance = Backyard.ChatInstance;
 	using ChatParameters = Backyard.ChatParameters;
 	using ChatStaging = Backyard.ChatStaging;
+	using CharacterMessage = Backyard.CharacterMessage;
 
 	public class GingerChatV1
 	{
@@ -227,13 +228,11 @@ namespace Ginger
 				chat.staging = new Staging() {
 					system = backup.staging.system ?? "",
 					scenario = backup.staging.scenario ?? "",
-					greeting = backup.staging.greeting ?? "",
+					greeting = backup.staging.greeting.text ?? "",
 					example = backup.staging.example ?? "",
 					grammar = backup.staging.grammar ?? "",
 					authorNote = backup.staging.authorNote ?? "",
 					pruneExampleChat = backup.staging.pruneExampleChat,
-					ttsAutoPlay = backup.staging.ttsAutoPlay,
-					ttsInputFilter = backup.staging.ttsInputFilter ?? "default",
 				};
 			}
 			if (backup.parameters != null)
@@ -321,13 +320,11 @@ namespace Ginger
 				chat.staging = new ChatStaging() {
 					system = this.staging.system ?? "",
 					scenario = this.staging.scenario ?? "",
-					greeting = this.staging.greeting ?? "",
+					greeting = CharacterMessage.FromString(this.staging.greeting ?? ""),
 					example = this.staging.example ?? "",
 					grammar = this.staging.grammar ?? "",
 					pruneExampleChat = this.staging.pruneExampleChat,
 					authorNote = this.staging.authorNote ?? "",
-					ttsAutoPlay = this.staging.ttsAutoPlay,
-					ttsInputFilter = this.staging.ttsInputFilter ?? "default",
 				};
 			}
 

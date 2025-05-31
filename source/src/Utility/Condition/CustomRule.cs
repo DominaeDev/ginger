@@ -112,8 +112,8 @@ namespace Ginger
 			// Value exists?
 			if (context.values != null && context.values.ContainsKey(expression))
 			{
-				string tmp;
-				if (context.TryGetValue(expression, out tmp) && string.IsNullOrEmpty(tmp) == false)
+				string value;
+				if (context.TryGetValue(expression, out value) && string.IsNullOrEmpty(value) == false)
 					return true;
 			}
 

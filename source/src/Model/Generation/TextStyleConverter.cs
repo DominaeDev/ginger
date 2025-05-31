@@ -147,7 +147,7 @@ namespace Ginger
 			return ApplyStyle(value, textStyle);
 		}
 
-		public static string MarkStyles(string value)
+		public static string MarkStyles(string value, bool bNamesOnly = false)
 		{
 			if (string.IsNullOrEmpty(value))
 				return value;
@@ -254,9 +254,9 @@ namespace Ginger
 				{
 					var span = spans.spans[i];
 
-					if (span.mode == Spans.Mode.Dialogue)
+					if (span.mode == Spans.Mode.Dialogue && !bNamesOnly)
 						ReplaceEncapsulationMarks(sb, span, "<__DIALOGUE>", "</__DIALOGUE>");
-					else if (span.mode == Spans.Mode.NonVerbal)
+					else if (span.mode == Spans.Mode.NonVerbal && !bNamesOnly)
 						ReplaceEncapsulationMarks(sb, span, "<__ACTION>", "</__ACTION>");
 					else if (span.mode == Spans.Mode.Name)
 					{
@@ -284,11 +284,6 @@ namespace Ginger
 			string[] Action;
 			switch (textStyle)
 			{
-			default:
-			case CardData.TextStyle.None:
-				Dialogue	= new string[] { "", "" };
-				Action		= new string[] { "", "" };
-				break;
 			case CardData.TextStyle.Chat:
 				Dialogue	= new string[] { "", "" };
 				Action		= new string[] { "*", "*" };
@@ -297,6 +292,7 @@ namespace Ginger
 				Dialogue	= new string[] { "\"", "\"" };
 				Action		= new string[] { "", "" };
 				break;
+			default:
 			case CardData.TextStyle.Mixed:
 				Dialogue	= new string[] { "\"", "\"" };
 				Action		= new string[] { "*", "*" };

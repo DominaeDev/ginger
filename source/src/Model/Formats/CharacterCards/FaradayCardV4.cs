@@ -28,7 +28,7 @@ namespace Ginger
 		public Data data;
 
 		public static readonly string[] OriginalModelInstructionsByFormat = new string[8]
-{
+		{
 			// None
 			"Text transcript of a never-ending conversation between {user} and {character}. In the transcript, gestures and other non-verbal actions are written between asterisks (for example, *waves hello* or *moves closer*).",
 			// Asterisks
@@ -162,7 +162,7 @@ namespace Ginger
 			card.data.persona = output.persona.ToFaraday();
 			card.data.scenario = output.scenario.ToFaraday();
 			card.data.greeting = output.greeting.ToFaradayGreeting();
-			card.data.example = output.example.ToFaradayChat();
+			card.data.example = output.example.ToFaradayChat(true);
 			card.data.grammar = output.grammar.ToString();
 			card.data.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToString("yyyy-MM-ddTHH:mm:ss.fffK");
 
@@ -220,13 +220,6 @@ namespace Ginger
 			card.data.isNSFW = Current.IsNSFW && AppSettings.BackyardLink.MarkNSFW;
 
 			return card;
-		}
-
-		public void EnsureSystemPrompt()
-		{
-			// Insert default system prompt if empty
-			if (string.IsNullOrWhiteSpace(data.system))
-				data.system = OriginalModelInstructionsByFormat[EnumHelper.ToInt(Current.Card.textStyle)];
 		}
 
 		public static FaradayCardV4 FromJson(string json)
@@ -295,7 +288,7 @@ namespace Ginger
 				});
 				return json;
 			}
-			catch
+			catch (Exception e)
 			{
 				return null;
 			}

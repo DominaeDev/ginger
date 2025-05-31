@@ -449,6 +449,7 @@
     <Compile Include="src\Model\CardData.cs" />
     <Compile Include="src\Model\Formats\Assets\AssetCollection.cs" />
     <Compile Include="src\Model\Formats\Assets\AssetImageCache.cs" />
+    <Compile Include="src\Utility\Integration\BackyardLinkCard.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\BackyardChatBackupV1.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\GingerChatV2.cs" />
     <Compile Include="src\Model\Formats\UserData.cs" />
@@ -516,7 +517,7 @@
     <Compile Include="src\Utility\Integration\Revisions\Tables\BackyardDatabaseTables_v37.cs" />
     <Compile Include="src\Utility\Integration\Revisions\Tables\BackyardDatabaseTables_v29.cs" />
     <Compile Include="src\Utility\Measurement.cs" />
-    <Compile Include="src\Utility\NormalizeChars.cs" />
+    <Compile Include="src\Model\Generation\NormalizeChars.cs" />
     <Compile Include="src\Utility\Random\RandomNoise.cs" />
     <Compile Include="src\Utility\ReplaceWord.cs" />
     <Compile Include="src\Utility\SpellChecking\ISpellChecked.cs" />

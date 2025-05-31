@@ -48,16 +48,18 @@ namespace Ginger.Integration
 		public struct Result
 		{
 			public CharacterInstance[] characters;
-			public int skipped;
 			public int succeeded;
+			public int skipped;
+			public int groups;
 			public Error error;
 		}
 
 		private struct WorkerResult
 		{
 			public CharacterInstance[] instances;
-			public int skipped;
 			public int succeeded;
+			public int skipped;
+			public int groups;
 			public WorkerError error;
 		}
 
@@ -154,15 +156,18 @@ namespace Ginger.Integration
 					importedCharacters = new CharacterInstance[1] { importedCharacter };
 				}
 
+				if (importedCharacters.Length > 1)
+					results.groups += 1;
+
 				switch (error)
 				{
 				case WorkerError.NoError:
 					characterInstances.AddRange(importedCharacters);
-					results.succeeded += 1;
+					results.succeeded += importedCharacters.Length;
 					break;
 				case WorkerError.Skipped:
 				case WorkerError.UnknownError:
-					results.skipped += 1;
+					results.skipped += importedCharacters.Length;
 					break;
 				case WorkerError.DatabaseError:
 					results.error = error;
@@ -211,9 +216,10 @@ namespace Ginger.Integration
 				Array.Copy(workResult.instances, _result.characters, workResult.instances.Length);
 			}
 			else
-				_result.characters = Utility.ConcatenateArrays(_result.characters, workResult.instances);
+				_result.characters = Utility.ConcatArrays(_result.characters, workResult.instances);
 			_result.succeeded += workResult.succeeded;
 			_result.skipped += workResult.skipped;
+			_result.groups += workResult.groups;
 
 			onProgress?.Invoke(100 * _completed / _totalCount);
 
@@ -262,8 +268,6 @@ namespace Ginger.Integration
 			}
 
 			var stash = Current.Stash();
-			Current.Instance = new GingerCharacter();
-			Current.Instance.Reset();
 
 			try
 			{
@@ -302,14 +306,15 @@ namespace Ginger.Integration
 
 				// Write character to Backyard
 				var output = Generator.Generate(Generator.Option.Export | Generator.Option.Faraday | Generator.Option.Linked);
-				FaradayCardV4 card = FaradayCardV4.FromOutput(output);
-				card.EnsureSystemPrompt();
+				BackyardLinkCard card = BackyardLinkCard.FromOutput(output);
+				
+				card.EnsureSystemPrompt(false);
 
 				Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();
 				BackupData.Chat[] chats = null;
 
 				if (AppSettings.BackyardLink.ImportAlternateGreetings && output.greetings.Length > 1)
-					chats = BackupUtil.SplitAltGreetings(card, output, imageInput);
+					chats = BackupUtil.SplitAltGreetings(card, output.alternativeGreetings, imageInput);
 
 				var args = new Backyard.CreateCharacterArguments() {
 					card = card,
@@ -391,12 +396,15 @@ namespace Ginger.Integration
 			foreach (var chat in backup.chats)
 				chat.parameters = AppSettings.BackyardSettings.UserSettings;
 
+			var cards = backup.characterCards.Select(c => BackyardLinkCard.FromFaradayCard(c)).ToArray();
+			cards[0].EnsureSystemPrompt(cards.Length > 0);
+
 			Backyard.Error error;
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats))
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat))
 			{
 				// Write group to database
 				var args = new Backyard.CreatePartyArguments() {
-					cards = backup.characterCards.ToArray(),
+					cards = cards,
 					imageInput = images.ToArray(),
 					chats = backup.chats.ToArray(),
 					userInfo = backup.userInfo,
@@ -407,9 +415,9 @@ namespace Ginger.Integration
 
 				error = Backyard.Database.CreateNewParty(args, out groupInstance, out characterInstances, out imageLinks);
 			}
-			else
+			else // Legacy
 			{
-				if (backup.characterCards.Length > 1) // Multi-character backup?
+				if (cards.Length > 1) // Multi-character backup?
 				{
 					characterInstances = null;
 					return WorkerError.Skipped; // Unsupported
@@ -417,7 +425,7 @@ namespace Ginger.Integration
 
 				// Write character to database
 				var args = new Backyard.CreateCharacterArguments() {
-					card = backup.characterCards[0],
+					card = cards[0],
 					imageInput = images.ToArray(),
 					chats = backup.chats.ToArray(),
 					userInfo = backup.userInfo,

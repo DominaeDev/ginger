@@ -18,7 +18,7 @@ namespace Ginger.Integration
 		{
 			get
 			{
-				if (count > 0 && messages[0].speaker == 1)
+				if (count > 0 && messages[0].speaker > 0)
 					return messages.Skip(1); // Skip greeting
 				return messages ?? new Message[0];
 			}
@@ -26,7 +26,7 @@ namespace Ginger.Integration
 
 		public int count { get { return messages != null ? messages.Length : 0; } }
 		public bool isEmpty { get { return count == 0; } }
-		public bool hasGreeting { get { return count > 0 && messages[0].speaker == 1; } }
+		public bool hasGreeting { get { return count > 0 && messages[0].speaker > 0; } }
 
 		public DateTime lastMessageTime
 		{

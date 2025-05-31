@@ -2009,6 +2009,15 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Some content could not be saved to Backyard AI because it is associated with the party this character belongs to, not the character itself..
+        /// </summary>
+        internal static string error_link_save_group_member {
+            get {
+                return ResourceManager.GetString("error_link_save_group_member", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to connect to Backyard AI. Unsupported version..
         /// </summary>
         internal static string error_link_unsupported {
@@ -3104,13 +3113,24 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will import {0} to Backyard AI.
+        ///   Looks up a localized string similar to This will import {0} into Backyard AI.
         ///
         ///Are you sure you want to continue?.
         /// </summary>
-        internal static string msg_link_confirm_import_many {
+        internal static string msg_link_confirm_import_many_characters {
             get {
-                return ResourceManager.GetString("msg_link_confirm_import_many", resourceCulture);
+                return ResourceManager.GetString("msg_link_confirm_import_many_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will import {0}, including {1}, into Backyard AI.
+        ///
+        ///Are you sure you want to continue?.
+        /// </summary>
+        internal static string msg_link_confirm_import_many_characters_and_groups {
+            get {
+                return ResourceManager.GetString("msg_link_confirm_import_many_characters_and_groups", resourceCulture);
             }
         }
         
@@ -3217,10 +3237,10 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to One ore more of the selected characters are participating in group chats.
+        ///   Looks up a localized string similar to One ore more of the selected characters are participating in a party (group chat).
         ///
-        ///Choose &apos;Yes&apos; to delete associated group chats.
-        ///Choose &apos;No&apos; to keep associated group chats.
+        ///Choose &apos;Yes&apos; to delete associated parties.
+        ///Choose &apos;No&apos; to keep associated parties.
         ///Choose &apos;Cancel&apos; to abort..
         /// </summary>
         internal static string msg_link_evict_from_group_confirm {
@@ -3266,11 +3286,29 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Successfully imported {0}, including {1}..
+        /// </summary>
+        internal static string msg_link_import_many_characters_and_groups {
+            get {
+                return ResourceManager.GetString("msg_link_import_many_characters_and_groups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Successfully imported {0}. (Skipped {1}).
         /// </summary>
         internal static string msg_link_import_some_characters {
             get {
                 return ResourceManager.GetString("msg_link_import_some_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully imported {0}, including {1}. (Skipped {2}).
+        /// </summary>
+        internal static string msg_link_import_some_characters_and_groups {
+            get {
+                return ResourceManager.GetString("msg_link_import_some_characters_and_groups", resourceCulture);
             }
         }
         
@@ -3295,9 +3333,9 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} image(s) found without any character references. Do you want to send them to the recycle bin?
+        ///   Looks up a localized string similar to {0} image files were found that have no association with any character. Do you want to send them to the recycle bin?
         ///
-        ///CAUTION: Depending on your recycle bin settings, the images may get permanently deleted..
+        ///CAUTION: Depending on your system settings, the images may be permanently deleted..
         /// </summary>
         internal static string msg_link_purge_images_confirm {
             get {
@@ -3306,7 +3344,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No unreferenced images found..
+        ///   Looks up a localized string similar to Found no unused image files..
         /// </summary>
         internal static string msg_link_purge_images_not_found {
             get {
@@ -3388,7 +3426,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} broken images found and repaired..
+        ///   Looks up a localized string similar to Found and repaired {0} broken images..
         /// </summary>
         internal static string msg_link_repaired_images {
             get {
@@ -4272,7 +4310,7 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Saved to file and Backyard AI.
+        ///   Looks up a localized string similar to Saved changes to file and Backyard AI.
         /// </summary>
         internal static string status_link_save_file_and_link {
             get {

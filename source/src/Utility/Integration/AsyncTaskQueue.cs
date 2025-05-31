@@ -185,7 +185,7 @@ namespace Ginger
 				Array.Copy(result.results, _result.results, result.results.Length);
 			}
 			else
-				_result.results = Utility.ConcatenateArrays(_result.results, result.results);
+				_result.results = Utility.ConcatArrays(_result.results, result.results);
 
 			// Report progress
 			_task.Progress(100 * _numChecked / _totalCount);

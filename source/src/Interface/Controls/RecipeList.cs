@@ -531,7 +531,7 @@ namespace Ginger
 			var recipe = panel.recipe;
 
 			if (BakeSingle(recipe) == false)
-				MsgBox.Message(Resources.error_bake_no_result, Resources.cap_bake_no_result);
+				MsgBox.Message(Resources.error_bake_no_result, Resources.cap_bake_no_result, this);
 		}
 
 		private bool BakeSingle(Recipe recipe)
@@ -718,7 +718,7 @@ namespace Ginger
 			}
 
 			if (failedCounter > 0)
-				MsgBox.Warning(string.Format(Resources.error_pasted, failedCounter), Resources.cap_pasted);
+				MsgBox.Warning(string.Format(Resources.error_pasted, failedCounter), Resources.cap_pasted, this);
 			Invalidate(false);
 		}
 
@@ -827,7 +827,7 @@ namespace Ginger
 			{
 				new KeyValuePair<string, string>(staging.system, Resources.system_recipe),
 				new KeyValuePair<string, string>(staging.scenario, Resources.scenario_recipe),
-				new KeyValuePair<string, string>(staging.greeting, Resources.greeting_recipe),
+				new KeyValuePair<string, string>(staging.greeting.text, Resources.greeting_recipe),
 				new KeyValuePair<string, string>(staging.example, Resources.example_recipe),
 				new KeyValuePair<string, string>(staging.grammar, Resources.grammar_recipe),
 			};

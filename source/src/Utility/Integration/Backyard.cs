@@ -9,7 +9,8 @@ using System.Globalization;
 
 namespace Ginger.Integration
 {
-	using FaradayCard = FaradayCardV4;
+	using FaradayCard = BackyardLinkCard;
+	using CharacterMessage = Backyard.CharacterMessage;
 
 	public static class Backyard
 	{
@@ -63,13 +64,16 @@ namespace Ginger.Integration
 			public string configId;				// CharacterConfigVersion.id
 			public string displayName;			// CharacterConfigVersion.displayName
 			public string name;					// CharacterConfigVersion.name
-			public string groupId;				// GroupConfig.id (Primary group)
-			public string folderId;				// GroupConfig.folderId (Primary group)
-			public string folderSortPosition;	// GroupConfig.folderSortPosition (Primary group)
+			public string[] groupIds;			// GroupConfig.id
 			public string creator;				// GroupConfig.hubAuthorUsername
 			public string persona;				// CharacterConfigVersion.persona
 			public bool hasLorebook;
 
+			public string groupId
+			{
+				get { return groupIds.IsEmpty() ? null : groupIds[0]; }
+				set { groupIds = value != null ? new string[] { value } : null; }
+			}
 			public bool isDefined { get { return instanceId != null; } }
 			public bool isCharacter { get { return isDefined && !isUser; } }
 			
@@ -87,19 +91,29 @@ namespace Ginger.Integration
 
 		public struct GroupInstance
 		{
-			public string instanceId;			// GroupConfig.id
-			public string displayName;			// GroupConfig.name
-			public string folderId;				// GroupConfig.folderId
-			public string hubCharId;			// GroupConfig.hubCharId
+			public string instanceId;           // GroupConfig.id
+			public string displayName;          // GroupConfig.name
+			public string folderId;             // GroupConfig.folderId
+			public string hubCharId;            // GroupConfig.hubCharId
 			public string hubAuthorUsername;    // GroupConfig.hubAuthorUsername
-			public string folderSortPosition;	// GroupConfig.folderSortPosition
-			public DateTime creationDate;		// CharacterConfig.createdAt
-			public DateTime updateDate;			// CharacterConfig.updatedAt
-			public string[] members;			// CharacterConfigVersion.id ...
+			public string folderSortPosition;   // GroupConfig.folderSortPosition
+			public DateTime creationDate;       // CharacterConfig.createdAt
+			public DateTime updateDate;         // CharacterConfig.updatedAt
+			public string[] activeMembers;      // CharacterConfigVersion.id ...
+			public string[] inactiveMembers;    // CharacterConfigVersion.id ...
 
 			public bool isDefined { get { return instanceId != null; } }
 			public bool isParty { get { return isDefined && Count > 2; } }
-			public int Count { get { return members != null ? members.Length : 0; } }
+			public int Count { get { return activeMembers != null ? activeMembers.Length : 0; } }
+			public IEnumerable<string> allMembers
+			{
+				get
+				{
+					return (activeMembers != null ? activeMembers : new string[0])
+						.Union(inactiveMembers != null ? inactiveMembers : new string[0]);
+				}
+			}
+		
 
 			public enum GroupType
 			{
@@ -110,10 +124,10 @@ namespace Ginger.Integration
 
 			public GroupType GetGroupType()
 			{
-				if (members == null || members.Length < 2)
+				if (activeMembers == null || activeMembers.Length < 2)
 					return GroupType.Unknown;
 
-				var memberInfo = members
+				var memberInfo = activeMembers
 					.Select(id => Backyard.Database.GetCharacter(id))
 					.Where(m => string.IsNullOrEmpty(m.instanceId) == false)
 					.ToArray();
@@ -131,12 +145,12 @@ namespace Ginger.Integration
 
 			public string[] GetMemberNames(bool includingUser = false)
 			{
-				if (this.members == null || this.members.Length == 0)
+				if (this.activeMembers == null || this.activeMembers.Length == 0)
 					return new string[0];
 
 				if (includingUser)
 				{
-					return this.members
+					return this.activeMembers
 						.Select(id => Backyard.Database.GetCharacter(id))
 						.OrderBy(c => c.isCharacter)
 						.ThenBy(c => c.creationDate)
@@ -145,7 +159,7 @@ namespace Ginger.Integration
 				}
 				else
 				{
-					return this.members
+					return this.activeMembers
 						.Select(id => Backyard.Database.GetCharacter(id))
 						.Where(c => c.isCharacter)
 						.OrderBy(c => c.creationDate)
@@ -244,6 +258,88 @@ namespace Ginger.Integration
 		}
 
 		[Serializable]
+		public struct CharacterMessage
+		{
+			public int characterIndex;
+			public string characterId;
+			public string name;
+			public string text;
+
+			public bool isUser
+			{
+				get
+				{
+					return characterIndex == 0 
+						|| name == GingerString.UserMarker 
+						|| name == GingerString.InternalUserMarker;
+				}
+			}
+
+			public static CharacterMessage FromString(string text)
+			{
+				return new CharacterMessage() {
+					characterIndex = -1,
+					text = text,
+				};
+			}
+
+			public static CharacterMessage FromStringWithID(string text, string characterId)
+			{
+				string name = BackyardUtil.CreateIDPlaceholder(characterId);
+				BackyardUtil.ConvertFromIDPlaceholders(ref name);
+
+				return new CharacterMessage() {
+					characterIndex = -1,
+					characterId = characterId,
+					name = name,
+					text = text,
+				};
+			}
+
+			public static CharacterMessage FromString(string text, string characterId, string characterName, int characterIndex)
+			{
+				return new CharacterMessage() {
+					characterIndex = characterIndex,
+					characterId = characterId,
+					name = characterName,
+					text = text,
+				};
+			}
+
+			public override string ToString()
+			{
+				string output;
+				if (string.IsNullOrEmpty(text))
+					return "";
+				else if (string.IsNullOrEmpty(name) == false)
+					output = string.Concat(name, ": ", text.Trim());
+				else if (string.IsNullOrEmpty(characterId) == false)
+				{
+					string name = BackyardUtil.CreateIDPlaceholder(characterId);
+					BackyardUtil.ConvertFromIDPlaceholders(ref name);
+					output = string.Concat(name, ": ", text.Trim());
+				}
+				else
+					output = text.Trim();
+
+				return GingerString.FromString(output).ToFaradayChat(true);
+			}
+
+			public bool IsEmpty()
+			{
+				return string.IsNullOrEmpty(text);
+			}
+
+			public void Clear()
+			{
+				characterId = null;
+				characterIndex = -1;
+				name = null;
+				text = null;
+			}
+		}
+
+		[Serializable]
 		public class ChatStaging
 		{
 			public ChatStaging()
@@ -253,14 +349,41 @@ namespace Ginger.Integration
 
 			public string system = "";					// Chat.modelInstructions
 			public string scenario = "";				// Chat.context
-			public string greeting = "";				// Chat.greetingDialogue
-			public string example = "";					// Chat.customDialogue
+			public CharacterMessage greeting = default;	// Chat.greetingDialogue
+			public CharacterMessage[] exampleMessages = null;
 			public string grammar = "";					// Chat.grammar
 			public string authorNote = "";				// Chat.authorNote
 			public bool pruneExampleChat = true;		// Chat.canDeleteCustomDialogue
-			public bool ttsAutoPlay = false;			// Chat.ttsAutoPlay
-			public string ttsInputFilter = "default";	// Chat.ttsInputFilter
 			public ChatBackground background = null;
+			public CardData.TextStyle preferredTextStyle = CardData.TextStyle.None;
+
+			public string formatInstructions         // Chat.modelInstructionsType
+			{
+				get
+				{
+					if (string.IsNullOrEmpty(system) == false)
+						return "custom";
+					else if (preferredTextStyle == CardData.TextStyle.Novel)
+						return "story";
+					return "chat";
+				}
+			}
+
+			public string example
+			{
+				get { return BackyardUtil.MessagesToString(exampleMessages); }
+				set { exampleMessages = BackyardUtil.MessagesFromString(value); }
+			}
+
+			public void ClearCharacterIds()
+			{
+				greeting.characterId = null;
+				if (exampleMessages != null)
+				{
+					for (int i = 0; i < exampleMessages.Length; ++i)
+						exampleMessages[i].characterId = null;
+				}
+			}
 		}
 
 		[Serializable]
@@ -420,13 +543,13 @@ namespace Ginger.Integration
 			public DateTime creationDate;       // Chat.createdAt
 			public DateTime updateDate;         // Chat.updatedAt
 
-			public string[] participants = null;
+			public string[] participants = null; // IDs
 			public ChatHistory history = new ChatHistory();
 			public ChatStaging staging = null;
 			public ChatParameters parameters = null;
 
 			public string name { get { return history.name; } }
-			public bool hasGreeting { get { return staging != null && string.IsNullOrEmpty(staging.greeting) == false; } }
+			public bool hasGreeting { get { return staging != null && staging.greeting.IsEmpty() == false; } }
 			public bool hasBackground { get { return staging != null && staging.background != null && string.IsNullOrEmpty(staging.background.imageUrl) == false; } }
 
 			public static string DefaultName = "Untitled chat";
@@ -759,14 +882,12 @@ namespace Ginger.Integration
 					}
 
 					// Detect database version
-					if (foundTables.Contains("BackgroundChatImage"))
+					if (foundTables.Contains("GroupConfigCharacterLink"))
+						BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Version_0_37_0;
+					else if (foundTables.Contains("BackgroundChatImage"))
 						BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Version_0_29_0;
 					else if (foundTables.Contains("GroupConfig"))
 						BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Version_0_28_0;
-
-					// Debug override flag (used for testing)
-					if (AppSettings.Debug.isDebugging && AppSettings.Debug.EnableGroups)
-						BackyardValidation.DatabaseVersion = BackyardDatabaseVersion.Version_0_37_0;
 
 					if (BackyardValidation.DatabaseVersion == BackyardDatabaseVersion.Unknown) // Outdated or unsupported
 					{
@@ -1124,6 +1245,11 @@ namespace Ginger.Integration
 			return sbFormat.ToString();
 		}
 
+		public static string CreateIDPlaceholder(string characterId)
+		{
+			return $"{{_cfg&:{characterId}:cfg&_}}";
+		}
+
 		public static void ConvertToIDPlaceholders(FaradayCard card, string characterId)
 		{
 			ConvertToIDPlaceholders(new FaradayCard[] { card }, new string[] { characterId });
@@ -1132,6 +1258,7 @@ namespace Ginger.Integration
 		public static void ConvertToIDPlaceholders(FaradayCard[] cards, string[] characterIds)
 		{
 			var replacements = new List<KeyValuePair<string, string>>();
+
 			for (int i = 0; i < cards.Length && i < characterIds.Length; ++i)
 			{
 				string src = GingerString.MakeInternalCharacterMarker(i);
@@ -1142,6 +1269,7 @@ namespace Ginger.Integration
 					dest = $"{{_cfg&:{characterIds[i]}:cfg&_}}";
 				replacements.Add(new KeyValuePair<string, string>(src, dest));
 			}
+			replacements.Add(new KeyValuePair<string, string>(GingerString.InternalUserMarker, GingerString.BackyardUserMarker));
 
 			for (int i = 0; i < cards.Length; ++i)
 			{
@@ -1155,28 +1283,38 @@ namespace Ginger.Integration
 				__ToID(ref card.data.system, src, dest);
 				__ToID(ref card.data.scenario, src, dest);
 				__ToID(ref card.data.persona, src, dest);
-				__ToID(ref card.data.greeting, src, dest);
-				__ToID(ref card.data.example, src, dest);
+				__ToID(ref card.data.greeting.text, src, dest);
 				__ToID(ref card.userPersona, src, dest);
 				__ToID(ref card.authorNote, src, dest);
 				
+				if (card.data.exampleMessages != null)
+				{
+					for (int i = 0; i < card.data.exampleMessages.Length; ++i)
+					{
+						__ToID(ref card.data.exampleMessages[i].name, src, dest);
+						__ToID(ref card.data.exampleMessages[i].text, src, dest);
+					}
+				}
+
 				if (card.data.loreItems != null)
 				{
 					for (int idxLore = 0; idxLore < card.data.loreItems.Length; ++idxLore)
 						__ToID(ref card.data.loreItems[idxLore].value, src, dest);
 				}
-			}
+			}	
 		}
 
 		public static void ConvertToIDPlaceholders(ref string text, string[] characterIds)
 		{
 			var replacements = new List<KeyValuePair<string, string>>();
+
 			for (int i = 0; i < characterIds.Length; ++i)
 			{
 				string src = GingerString.MakeInternalCharacterMarker(i);
 				string dest = $"{{_cfg&:{characterIds[i]}:cfg&_}}";
 				replacements.Add(new KeyValuePair<string, string>(src, dest));
 			}
+			replacements.Add(new KeyValuePair<string, string>(GingerString.InternalUserMarker, GingerString.BackyardUserMarker));
 
 			foreach (var kvp in replacements)
 				__ToID(ref text, kvp.Key, kvp.Value);
@@ -1191,32 +1329,24 @@ namespace Ginger.Integration
 			text = text.Replace(src, dest);
 		}
 
-		public static void ConvertToIDPlaceholders(Backyard.ChatStaging staging, string characterId)
-		{
-			if (string.IsNullOrEmpty(staging.system) == false)
-				ConvertToIDPlaceholders(ref staging.system, characterId);
-			if (string.IsNullOrEmpty(staging.scenario) == false)
-				ConvertToIDPlaceholders(ref staging.scenario, characterId);
-			if (string.IsNullOrEmpty(staging.greeting) == false)
-				ConvertToIDPlaceholders(ref staging.greeting, characterId);
-			if (string.IsNullOrEmpty(staging.example) == false)
-				ConvertToIDPlaceholders(ref staging.example, characterId);
-			if (string.IsNullOrEmpty(staging.authorNote) == false)
-				ConvertToIDPlaceholders(ref staging.authorNote, characterId);
-		}
-
 		public static void ConvertToIDPlaceholders(Backyard.ChatStaging staging, string[] characterIds)
 		{
 			if (string.IsNullOrEmpty(staging.system) == false)
 				ConvertToIDPlaceholders(ref staging.system, characterIds);
 			if (string.IsNullOrEmpty(staging.scenario) == false)
 				ConvertToIDPlaceholders(ref staging.scenario, characterIds);
-			if (string.IsNullOrEmpty(staging.greeting) == false)
-				ConvertToIDPlaceholders(ref staging.greeting, characterIds);
-			if (string.IsNullOrEmpty(staging.example) == false)
-				ConvertToIDPlaceholders(ref staging.example, characterIds);
+			if (string.IsNullOrEmpty(staging.greeting.text) == false)
+				ConvertToIDPlaceholders(ref staging.greeting.text, characterIds);
 			if (string.IsNullOrEmpty(staging.authorNote) == false)
 				ConvertToIDPlaceholders(ref staging.authorNote, characterIds);
+			if (staging.exampleMessages != null)
+			{
+				for (int i = 0; i < staging.exampleMessages.Length; ++i)
+				{
+					ConvertToIDPlaceholders(ref staging.exampleMessages[i].name, characterIds);
+					ConvertToIDPlaceholders(ref staging.exampleMessages[i].text, characterIds);
+				}
+			}
 		}
 
 		public static void ConvertToIDPlaceholders(ref string text, string characterId)
@@ -1232,7 +1362,11 @@ namespace Ginger.Integration
 				characterPlaceholder = $"{{_cfg&:{characterId}:cfg&_}}";
 			else
 				characterPlaceholder = Current.MainCharacter.name;
-			sb.Replace(GingerString.BackyardCharacterMarker, characterPlaceholder, false); // jic
+			
+			sb.Replace(GingerString.InternalUserMarker, "{user}", false);
+			sb.Replace(GingerString.MakeInternalCharacterMarker(0), characterPlaceholder, false);
+			sb.Replace(GingerString.InternalCharacterMarker, characterPlaceholder, false);
+			sb.Replace(GingerString.BackyardCharacterMarker, characterPlaceholder, false);
 
 			text = sb.ToString();
 		}
@@ -1244,14 +1378,59 @@ namespace Ginger.Integration
 				__FromID(cards[i], knownIds);
 		}
 
+		public static void ConvertFromIDPlaceholders(Backyard.ChatInstance[] chats)
+		{
+			var knownIds = new Dictionary<string, string>();
+			foreach (var chat in chats)
+			{
+				var staging = chat.staging;
+				if (staging == null)
+					continue;
+
+				if (chat.history != null && chat.history.messages != null)
+				{
+					foreach (var entry in chat.history.messages.Where(e => e.swipes != null))
+					{
+						for (int i = 0; i < entry.swipes.Length; ++i)
+							__FromID(ref entry.swipes[i], knownIds);
+					}
+				}
+
+				__FromID(ref staging.system, knownIds);
+				__FromID(ref staging.scenario, knownIds);
+				__FromID(ref staging.greeting.text, knownIds);
+				__FromID(ref staging.authorNote, knownIds);
+				
+				if (staging.exampleMessages != null)
+				{
+					for (int i = 0; i < staging.exampleMessages.Length; ++i)
+					{
+						__FromID(ref staging.exampleMessages[i].name, knownIds);
+						__FromID(ref staging.exampleMessages[i].text, knownIds);
+					}
+				}
+			}
+		}
+
 		public static void ConvertFromIDPlaceholders(Backyard.ChatStaging staging)
 		{
 			var knownIds = new Dictionary<string, string>();
+			if (staging == null)
+				return;
+
 			__FromID(ref staging.system, knownIds);
 			__FromID(ref staging.scenario, knownIds);
-			__FromID(ref staging.greeting, knownIds);
-			__FromID(ref staging.example, knownIds);
+			__FromID(ref staging.greeting.text, knownIds);
 			__FromID(ref staging.authorNote, knownIds);
+				
+			if (staging.exampleMessages != null)
+			{
+				for (int j = 0; j < staging.exampleMessages.Length; ++j)
+				{
+					__FromID(ref staging.exampleMessages[j].name, knownIds);
+					__FromID(ref staging.exampleMessages[j].text, knownIds);
+				}
+			}
 		}
 
 		public static void ConvertFromIDPlaceholders(ref string text)
@@ -1265,11 +1444,19 @@ namespace Ginger.Integration
 			__FromID(ref card.data.system, dict);
 			__FromID(ref card.data.scenario, dict);
 			__FromID(ref card.data.persona, dict);
-			__FromID(ref card.data.greeting, dict);
-			__FromID(ref card.data.example, dict);
+			__FromID(ref card.data.greeting.text, dict);
 			__FromID(ref card.userPersona, dict);
 			__FromID(ref card.authorNote, dict);
-				
+			
+			if (card.data.exampleMessages != null)
+			{
+				for (int i = 0; i < card.data.exampleMessages.Length; ++i)
+				{
+					__FromID(ref card.data.exampleMessages[i].name, dict);
+					__FromID(ref card.data.exampleMessages[i].text, dict);
+				}
+			}
+
 			if (card.data.loreItems != null)
 			{
 				for (int idxLore = 0; idxLore < card.data.loreItems.Length; ++idxLore)
@@ -1334,5 +1521,128 @@ namespace Ginger.Integration
 
 			counts = new Dictionary<string, Backyard.ChatCount>(); // Empty
 		}
+
+		public static string CreateSortingString(object obj)
+		{
+			return CreateSequentialSortingString(0, 1, obj.GetHashCode());
+		}
+
+		public static string CreateSortingString(int hash)
+		{
+			return CreateSequentialSortingString(0, 1, hash);
+		}
+
+		public static string CreateSequentialSortingString(int index, int length, int hash)
+		{
+			RandomNoise rng = new RandomNoise(hash, 0);
+			const string key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+			char[] p = new char[6];
+			for (int i = 0; i < p.Length; ++i)
+				p[i] = key[rng.Int(52)];
+			string prefix = new string(p);
+
+			const int @base = 26;
+			int maxIndex = length - 1;
+			int digits = (int)Math.Ceiling(Math.Log((maxIndex * 2) + 1, @base)); // Allocate as many digits as we need
+			char[] n = new char[digits];
+			for (int i = 0; i < digits; ++i)
+				n[i] = key[0];
+
+			int quotient = (index * 2) + 1; // Required for reordering to work
+			for (int i = 0; quotient != 0 && i < digits; ++i)
+			{
+				n[digits - i - 1] = key[Math.Abs(quotient % @base)];
+				quotient /= @base;
+			}
+
+			return string.Concat(prefix, ".", new string(n));
+		}
+
+		public enum SortPosition { Before, After };
+		public static string CreateRelativeSortingString(SortPosition sortPos, string sortOrder)
+		{
+			RandomNoise rng = new RandomNoise();
+			const string key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+			char[] p = new char[6];
+			for (int i = 0; i < p.Length; ++i)
+				p[i] = key[rng.Int(52)];
+			string prefix = new string(p);
+
+			if (string.IsNullOrEmpty(sortOrder) == false)
+			{
+				if (sortPos == SortPosition.Before)
+				{
+					// Decrement last character
+					sortOrder = string.Concat(sortOrder.Substring(0, sortOrder.Length - 1), (char)(sortOrder[sortOrder.Length - 1] - 1));
+				}
+				return string.Concat(sortOrder, ",", prefix, ".B");
+			}
+			else
+			{
+				return string.Concat(prefix, ".B");
+			}
+		}
+
+		public static CharacterMessage[] MessagesFromString(string text)
+		{
+			if (string.IsNullOrEmpty(text))
+				return null;
+
+			text = TextStyleConverter.MarkStyles(text, true);
+			var messages = Generator.SplitChatMessage(text);
+
+			var lsResult = new List<CharacterMessage>();
+			foreach (var message in messages)
+			{
+				if (message.userMessage != null)
+				{
+					lsResult.Add(new CharacterMessage() {
+						characterIndex = 0,
+						name = GingerString.UserMarker,
+						text = TextStyleConverter.ApplyStyle(message.userMessage, CardData.TextStyle.Default),
+					});
+				}
+				if (message.message != null)
+				{
+					lsResult.Add(new CharacterMessage() {
+						characterIndex = -1,
+						name = message.name,
+						text = TextStyleConverter.ApplyStyle(message.message, CardData.TextStyle.Default),
+					});
+				}
+			}
+
+			if (lsResult.Count > 0)
+				return lsResult.ToArray();
+			return null;
+		}
+
+		public static string MessagesToString(CharacterMessage[] exampleMessages)
+		{
+			if (exampleMessages.IsEmpty())
+				return null;
+
+			StringBuilder sb = new StringBuilder();
+			string lastName = null;
+			foreach (var message in exampleMessages)
+			{
+				if (message.isUser
+					|| (lastName != null && lastName != message.name)) // New character
+				{
+					sb.NewParagraph();
+				}
+				else
+				{
+					sb.NewLine();
+					if (message.isUser)
+						lastName = null;
+					else
+						lastName = message.name;
+				}
+				sb.AppendLine(message.ToString());
+			}
+			return sb.ToString();
+		}
+
 	}
 }

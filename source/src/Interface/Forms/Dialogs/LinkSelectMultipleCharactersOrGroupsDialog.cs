@@ -55,10 +55,10 @@ namespace Ginger
 		private void OnLoad(object sender, EventArgs e)
 		{
 			this.Characters = Backyard.Database.Characters.ToArray();
-			this.Orphans = this.Characters.Where(c => c.groupId == null).ToArray();
+			this.Orphans = this.Characters.Where(c => c.groupIds.IsEmpty()).ToArray();
 			this.Folders = Backyard.Database.Folders.ToArray();
 
-			IEnumerable<GroupInstance> includedGroups =  Enumerable.Empty<GroupInstance>();
+			IEnumerable<GroupInstance> includedGroups = Enumerable.Empty<GroupInstance>();
 			if (Options.Contains(Option.Parties))
 			{
 				includedGroups = includedGroups.Union(
@@ -228,7 +228,7 @@ namespace Ginger
 
 				if (sortedGroups.Count() > 0)
 				{
-					folderNode = new TreeNode(string.Format("Stand-alone characters ({0})", nOrphans), 1, 1);
+					folderNode = new TreeNode(string.Format("Inactive characters ({0})", nOrphans), 1, 1);
 					folderNode.Tag = "Orphans";
 					treeView.Nodes.Insert(0, folderNode);
 					if (expandedFolders.Contains(folderNode.Tag))
@@ -279,7 +279,7 @@ namespace Ginger
 			string groupLabel = group.GetDisplayName();
 			var sbTooltip = new StringBuilder();
 
-			CharacterInstance[] characters = group.members
+			CharacterInstance[] characters = group.activeMembers
 				.Select(id => _charactersById.GetOrDefault(id))
 				.OrderBy(c => c.creationDate)
 				.Where(c => c.isCharacter)
@@ -289,14 +289,20 @@ namespace Ginger
 				.Select(c => Utility.FirstNonEmpty(c.name, Constants.DefaultCharacterName))
 				.ToArray();
 
-			if (characterNames.Length >= 2)
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat))
 			{
-				groupLabel = string.Concat("(Group chat) ", groupLabel);
-
-				sbTooltip.Append("Group chat with ");
-				sbTooltip.Append(Utility.CommaSeparatedList(characterNames));
+				if (characterNames.Length >= 2)
+				{
+					sbTooltip.Append("(Party) ");
+					sbTooltip.Append(Utility.CommaSeparatedList(characterNames));
+				}
+				else if (characterNames.Length == 1)
+				{
+					sbTooltip.Append("(Solo) ");
+					sbTooltip.Append(characterNames[0]);
+				}
 			}
-			else if (characterNames.Length == 1)
+			else if (characterNames.Length > 0)
 			{
 				sbTooltip.Append("Name: ");
 				sbTooltip.Append(characterNames[0]);
@@ -439,7 +445,7 @@ namespace Ginger
 			{
 				if (node.group.isDefined)
 				{
-					CharacterInstance[] members = node.group.members
+					CharacterInstance[] members = node.group.activeMembers
 						.Select(id => _charactersById.GetOrDefault(id))
 						.Where(c => c.isCharacter)
 						.ToArray();

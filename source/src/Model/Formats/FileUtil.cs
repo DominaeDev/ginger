@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using PNGNet;
 using Ginger.Integration;
+using System.Xml;
 
 namespace Ginger
 {
@@ -859,6 +860,7 @@ namespace Ginger
 
 			Character		= 1 << 10,
 			Lorebook		= 1 << 11,
+			Group			= 1 << 12,
 
 			Ginger			= 1 << 20,
 			Faraday			= 1 << 21,
@@ -871,13 +873,22 @@ namespace Ginger
 
 		public static FileType CheckFileType(string filename)
 		{
+			return CheckFileType(filename, out var _);
+		}
+
+		public static FileType CheckFileType(string filename, out int characterCount)
+		{
 			// Check filename
 			if (File.Exists(filename) == false)
+			{
+				characterCount = 0;
 				return FileType.Unknown;
+			}
 
 			string ext = Path.GetExtension(filename).ToLowerInvariant();
 			if (ext == ".json")
 			{
+				characterCount = 1;
 				string jsonData = Utility.LoadTextFile(filename);
 				if (string.IsNullOrEmpty(jsonData) == false)
 					return DetectJsonFileType(jsonData, FileType.Json);
@@ -885,19 +896,30 @@ namespace Ginger
 
 			if (ext == ".yaml")
 			{
+				characterCount = 1;
 				string yamlData = Utility.LoadTextFile(filename);
 				if (string.IsNullOrEmpty(yamlData) == false)
 					return DetectJsonFileType(yamlData, FileType.Yaml);
 			}
 
 			if (ext == ".charx")
+			{
+				characterCount = 1;
 				return FileType.CharX;
+			}
 
 			if (ext == ".zip")
+			{
+				if (BackupUtil.CheckIfGroup(filename, out characterCount))
+					return FileType.Backup | FileType.Group;
 				return FileType.Backup;
-			
+			}
+
 			if (ext != ".png")
+			{
+				characterCount = 0;
 				return FileType.Unknown;
+			}
 
 			try
 			{
@@ -905,6 +927,7 @@ namespace Ginger
 				ExifData exifData = new ExifData(filename);
 				string jsonData;
 				exifData.GetTagValue(ExifTag.UserComment, out jsonData, StrCoding.IdCode_UsAscii);
+				characterCount = 1;
 				if (jsonData != null && jsonData.BeginsWith('{'))
 					return DetectJsonFileType(jsonData, FileType.Png);
 				if (jsonData != null && jsonData.Length > 0 && jsonData.Length % 4 == 0 && Regex.IsMatch(jsonData, @"^[a-zA-Z0-9\+/]*={0,2}$")) // Base64?
@@ -927,12 +950,17 @@ namespace Ginger
 					PNGImage image = new PNGImage(stream);
 					bool hasGingerData = false;
 					string jsonData = null;
+					characterCount = 1;
 					foreach (var chunk in image.Chunks)
 					{
 						if (chunk is tEXtChunk) // Uncompressed
 						{
 							var textChunk = chunk as tEXtChunk;
-							hasGingerData |= string.Compare(textChunk.Keyword, "ginger", true) == 0;
+							if (string.Compare(textChunk.Keyword, "ginger", true) == 0)
+							{
+								hasGingerData = true;
+								CheckGingerChunkIfGroup(textChunk.Text, out characterCount);
+							}
 							if (string.Compare(textChunk.Keyword, "chara", true) == 0 && string.IsNullOrEmpty(jsonData))
 								jsonData = textChunk.Text;
 							if (string.Compare(textChunk.Keyword, "ccv3", true) == 0)
@@ -941,15 +969,21 @@ namespace Ginger
 						else if (chunk is zTXtChunk) // Compressed
 						{
 							var textChunk = chunk as zTXtChunk;
-							hasGingerData |= string.Compare(textChunk.Keyword, "ginger", true) == 0;
+							if (string.Compare(textChunk.Keyword, "ginger", true) == 0)
+							{
+								hasGingerData = true;
+								CheckGingerChunkIfGroup(textChunk.Text, out characterCount);
+							}
 						}
 					}
-					if (hasGingerData)
-						return FileType.Ginger | FileType.Character | FileType.Png;
 
-					if (jsonData != null && jsonData.BeginsWith('{'))
+					if (hasGingerData)
+						return FileType.Ginger | FileType.Character | FileType.Png | (characterCount > 1 ? FileType.Group : FileType.Unknown);
+
+					if (jsonData != null && jsonData.BeginsWith('{')) // Legacy: Json
 						return DetectJsonFileType(jsonData, FileType.Png);
-					if (jsonData != null && jsonData.Length > 0 && jsonData.Length % 4 == 0 && Regex.IsMatch(jsonData, @"^[a-zA-Z0-9\+/]*={0,2}$")) // Base64?
+
+					if (jsonData != null && jsonData.Length > 0 && jsonData.Length % 4 == 0 && Regex.IsMatch(jsonData, @"^[a-zA-Z0-9\+/]*={0,2}$")) // Base64
 					{
 						byte[] byteArray = Convert.FromBase64String(jsonData);
 						jsonData = new string(Encoding.UTF8.GetChars(byteArray));
@@ -961,7 +995,24 @@ namespace Ginger
 			{
 			}
 
+			characterCount = 0;
 			return FileType.Unknown;
+		}
+
+		private static bool CheckGingerChunkIfGroup(string gingerBase64, out int count)
+		{
+			try
+			{
+				byte[] buffer = Convert.FromBase64String(gingerBase64);
+				var gingerCard = GingerCardV1.FromXml(new string(Encoding.UTF8.GetChars(buffer)));
+				count = gingerCard.characters.Count;
+				return gingerCard.characters.Count > 1;
+			}
+			catch
+			{
+				count = 0;
+				return false;
+			}
 		}
 
 		private static FileType DetectJsonFileType(string jsonData, FileType knownFileType = 0)

@@ -48,6 +48,8 @@ namespace Ginger
 		public static StringBank Strings = new StringBank();
 		public static string Filename;
 		
+		public static bool IsGroup { get { return Characters.Count > 1; } }
+
 		public static bool IsDirty
 		{
 			get { return _bDirty; }
@@ -500,7 +502,7 @@ namespace Ginger
 			Backyard.Link.Image[] userPortraitLinks;
 			ImportImages(userImageUrls, out userPortraitLinks, AssetFile.AssetType.UserIcon);
 
-			imageLinks = Utility.ConcatenateArrays(portraitLinks, backgroundLinks, userPortraitLinks);
+			imageLinks = Utility.ConcatArrays(portraitLinks, backgroundLinks, userPortraitLinks);
 		}
 
 		private static void ImportImages(__ImageWithIndex[] images, out Backyard.Link.Image[] imageLinks, AssetFile.AssetType imageType = AssetFile.AssetType.Icon) // Backyard import
@@ -585,12 +587,9 @@ namespace Ginger
 				isFileDirty = _bFileDirty,
 				selectedCharacter = SelectedCharacter,
 			};
-			Instance = null;
-			Filename = null;
-			SelectedCharacter = 0;
-			Link = null;
-			_bDirty = false;
-			_bFileDirty = false;
+
+			Instance = new GingerCharacter();
+			Reset();
 			return stash;
 		}
 

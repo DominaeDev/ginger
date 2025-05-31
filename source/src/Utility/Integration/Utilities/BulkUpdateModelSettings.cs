@@ -224,7 +224,7 @@ namespace Ginger.Integration
 			if (Backyard.ConnectionEstablished == false)
 				return WorkerError.DatabaseError;
 
-			var chatIds = new List<string>();
+			var lsChats = new List<ChatInstance>();
 			foreach (var group in groups)
 			{
 				ChatInstance[] chats;
@@ -233,13 +233,14 @@ namespace Ginger.Integration
 					return WorkerError.DatabaseError;
 				else if (chats == null || chats.Length == 0)
 					return WorkerError.UnknownError;
-				chatIds.AddRange(chats.Select(c => c.instanceId));
+				lsChats.AddRange(chats);
 			}
 
-			if (chatIds.Count == 0)
+			if (lsChats.Count == 0)
 				return WorkerError.UnknownError;
 
-			if (Backyard.Database.UpdateChatParameters(chatIds.ToArray(), chatParameters, null) == Backyard.Error.NoError)
+			string[] chatIds = lsChats.Select(c => c.instanceId).ToArray();
+			if (Backyard.Database.UpdateChatParameters(chatIds, null, chatParameters) == Backyard.Error.NoError)
 				return WorkerError.NoError;
 			
 			return WorkerError.UnknownError;

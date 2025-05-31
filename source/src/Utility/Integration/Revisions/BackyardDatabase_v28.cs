@@ -21,6 +21,9 @@ namespace Ginger.Integration
 	using ImageInput = Backyard.ImageInput;
 	using ImageInstance = Backyard.ImageInstance;
 	using ConfirmDeleteResult = Backyard.ConfirmDeleteResult;
+	using CharacterMessage = Backyard.CharacterMessage;
+	
+	using FaradayCard = BackyardLinkCard;
 
 	public class BackyardDatabase_v28 : IBackyardDatabase
 	{
@@ -146,12 +149,12 @@ namespace Ginger.Integration
 
 			public string[] charactersAndUser
 			{
-				get { return Utility.ConcatenateArrays(characterIds, new string[] { userId }); }
+				get { return Utility.ConcatArrays(characterIds, new string[] { userId }); }
 			}
 
 			public string[] userAndCharacters
 			{
-				get { return Utility.ConcatenateArrays(new string[] { userId }, characterIds); }
+				get { return Utility.ConcatArrays(new string[] { userId }, characterIds); }
 			}
 
 			public string[] characterIds;
@@ -289,8 +292,6 @@ namespace Ginger.Integration
 										persona = persona,
 										hasLorebook = numLoreEntries > 0,
 										creator = hubAuthorUsername ?? "",
-										folderId = folderId ?? "",
-										folderSortPosition = folderSortPosition ?? "",
 									});
 							}
 						}
@@ -324,7 +325,7 @@ namespace Ginger.Integration
 		#endregion // Enumerate characters and groups
 
 		#region Characters
-		public Backyard.Error ImportCharacter(string characterId, out FaradayCardV4 card, out ImageInstance[] images, out UserData userInfo)
+		public Backyard.Error ImportCharacter(string characterId, out FaradayCard card, out ImageInstance[] images, out UserData userInfo)
 		{
 			if (ConnectionEstablished == false)
 			{
@@ -379,7 +380,7 @@ namespace Ginger.Integration
 					}
 
 					// Gather lorebook items
-					FaradayCardV1.LoreBookEntry[] entries;
+					FaradayCard.LoreBookEntry[] entries;
 					FetchLorebook(connection, character.configId, out entries);
 
 					// Gather portrait image files
@@ -395,7 +396,7 @@ namespace Ginger.Integration
 							lsImages.AddRange(backgrounds);
 					}
 
-					card = new FaradayCardV4();
+					card = new FaradayCard();
 					card.data.displayName = character.displayName;
 					card.data.name = character.name;
 					card.data.persona = character.persona;
@@ -501,7 +502,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void FetchLorebook(SQLiteConnection connection, string configId, out FaradayCardV1.LoreBookEntry[] entries)
+		private static void FetchLorebook(SQLiteConnection connection, string configId, out FaradayCard.LoreBookEntry[] entries)
 		{
 			using (var cmdLoreItems = connection.CreateCommand())
 			{
@@ -519,7 +520,7 @@ namespace Ginger.Integration
 				";
 				cmdLoreItems.Parameters.AddWithValue("$configId", configId);
 
-				var lsEntries = new List<KeyValuePair<string, FaradayCardV1.LoreBookEntry>>();
+				var lsEntries = new List<KeyValuePair<string, FaradayCard.LoreBookEntry>>();
 				using (var reader = cmdLoreItems.ExecuteReader())
 				{
 					while (reader.Read())
@@ -528,7 +529,7 @@ namespace Ginger.Integration
 						string value = reader.GetString(1);
 						string order = reader.GetString(2);
 
-						lsEntries.Add(new KeyValuePair<string, FaradayCardV1.LoreBookEntry>(order, new FaradayCardV1.LoreBookEntry() {
+						lsEntries.Add(new KeyValuePair<string, FaradayCard.LoreBookEntry>(order, new FaradayCard.LoreBookEntry() {
 							key = key,
 							value = value,
 						}));
@@ -608,7 +609,7 @@ namespace Ginger.Integration
 						staging.scenario = reader.GetString(0);
 						staging.example = reader.GetString(1);
 						staging.system = reader.GetString(2);
-						staging.greeting = reader.GetString(3);
+						staging.greeting.text = reader.GetString(3);
 						staging.grammar = reader[4] as string;
 						staging.authorNote = reader.GetString(5);
 					}
@@ -839,7 +840,7 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			FaradayCardV4 card = args.card;
+			FaradayCard card = args.card;
 			ImageInput[] imageInput = args.imageInput;
 			BackupData.Chat[] chats = args.chats;
 			UserData userInfo = args.userInfo;
@@ -962,13 +963,11 @@ namespace Ginger.Integration
 							groupId = groupInstance.instanceId;
 
 							characterInstance.groupId = groupId;
-							characterInstance.folderId = parentFolder.instanceId;
-							characterInstance.folderSortPosition = folderSortPosition;
 
 							var staging = new ChatStaging() {
 								system = card.data.system ?? "",
 								scenario = card.data.scenario ?? "",
-								greeting = card.data.greeting ?? "",
+								greeting = card.data.greeting,
 								example = card.data.example ?? "",
 								grammar = card.data.grammar ?? "",
 								authorNote = card.authorNote ?? "",
@@ -1068,7 +1067,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error UpdateCharacter(Backyard.Link link, FaradayCardV4 card, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks)
+		public Backyard.Error UpdateCharacter(Backyard.Link link, FaradayCard card, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks)
 		{
 			if (card == null || link == null || string.IsNullOrEmpty(link.mainActorId))
 			{
@@ -1178,7 +1177,7 @@ namespace Ginger.Integration
 					bool bWriteGroup = groupId != null
 						|| !(string.IsNullOrEmpty(card.data.system)
 							&& string.IsNullOrEmpty(card.data.scenario)
-							&& string.IsNullOrEmpty(card.data.greeting)
+							&& string.IsNullOrEmpty(card.data.greeting.text)
 							&& string.IsNullOrEmpty(card.data.example)
 							&& string.IsNullOrEmpty(card.data.grammar)
 							&& string.IsNullOrEmpty(card.authorNote)
@@ -1371,7 +1370,7 @@ namespace Ginger.Integration
 			return bModifiedBackground;
 		}
 
-		public Backyard.Error ImportParty(string groupId, out FaradayCardV4[] cards, out CharacterInstance[] characterInstances, out ImageInstance[] images, out UserData userInfo)
+		public Backyard.Error ImportParty(string groupId, out FaradayCard[] cards, out CharacterInstance[] characterInstances, out ImageInstance[] images, out UserData userInfo)
 		{
 			cards = null;
 			characterInstances = null;
@@ -1390,7 +1389,7 @@ namespace Ginger.Integration
 			return Backyard.Error.UnsupportedFeature;
 		}
 
-		public Backyard.Error UpdateParty(Backyard.Link link, FaradayCardV4[] cards, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks)
+		public Backyard.Error UpdateParty(Backyard.Link link, FaradayCard[] cards, UserData userInfo, out DateTime updateDate, out Backyard.Link.Image[] updatedImageLinks)
 		{
 			updateDate = default(DateTime);
 			updatedImageLinks = null;
@@ -1869,181 +1868,6 @@ namespace Ginger.Integration
 		#endregion // Characters
 
 		#region Chat
-		public Backyard.Error GetChat(string chatId, string groupId, out ChatInstance chatInstance)
-		{
-			if (ConnectionEstablished == false)
-			{
-				chatInstance = null;
-				return Backyard.Error.NotConnected;
-			}
-
-			if (string.IsNullOrEmpty(chatId) || string.IsNullOrEmpty(groupId))
-			{
-				chatInstance = null;
-				return Backyard.Error.InvalidArgument;
-			}
-
-			try
-			{
-				using (var connection = CreateSQLiteConnection())
-				{
-					connection.Open();
-
-					List<_Character> characters;
-					FetchCharacters(connection, out characters);
-
-					List<_Character> groupMembers;
-					FetchMembersOfGroup(connection, groupId, null, out groupMembers);
-
-					var lsChatInstances = new List<ChatInstance>();
-					_Chat chat;
-					using (var cmdChat = connection.CreateCommand())
-					{
-						cmdChat.CommandText =
-						@"
-							SELECT 
-								name, createdAt, updatedAt, 
-								modelInstructions, context, greetingDialogue, customDialogue, grammar,
-								model, temperature, topP, minP, minPEnabled, topK, 
-								repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, 
-								authorNote, ttsAutoplay, ttsInputFilter
-							FROM Chat
-							WHERE id = $chatId;
-						";
-						cmdChat.Parameters.AddWithValue("$chatId", chatId);
-
-						using (var reader = cmdChat.ExecuteReader())
-						{
-							int untitledCounter = 0;
-							if (reader.Read() == false)
-							{
-								chatInstance = null;
-								return Backyard.Error.NotFound;
-							}
-
-							string name = reader.GetString(0);
-							DateTime createdAt = reader.GetTimestamp(1);
-							DateTime updatedAt = reader.GetTimestamp(2);
-
-							// Staging
-							string system = reader.GetString(3);
-							string scenario = reader.GetString(4);
-							string greeting = reader.GetString(5);
-							string example = reader.GetString(6);
-							string grammar = reader[7] as string;
-
-							// Parameters
-							string model = reader.GetString(8);
-							decimal temperature = reader.GetDecimal(9);
-							decimal topP = reader.GetDecimal(10);
-							decimal minP = reader.GetDecimal(11);
-							bool minPEnabled = reader.GetBoolean(12);
-							int topK = reader.GetInt32(13);
-							decimal repeatPenalty = reader.GetDecimal(14);
-							int repeatLastN = reader.GetInt32(15);
-							string promptTemplate = reader[16] as string;
-							bool pruneExampleChat = reader.GetBoolean(17);
-							string authorNote = reader.GetString(18);
-							bool ttsAutoPlay = reader.GetBoolean(19);
-							string ttsInputFilter = reader.GetString(20);
-
-							if (string.IsNullOrWhiteSpace(name))
-							{
-								if (++untitledCounter > 1)
-									name = string.Concat(ChatInstance.DefaultName, " #", untitledCounter.ToString());
-								else
-									name = ChatInstance.DefaultName;
-							}
-
-							chat = new _Chat() {
-								instanceId = chatId,
-								creationDate = createdAt,
-								updateDate = updatedAt,
-								name = name,
-								staging = new ChatStaging() {
-									system = system,
-									scenario = scenario,
-									greeting = greeting,
-									example = example,
-									grammar = grammar,
-									authorNote = authorNote,
-									pruneExampleChat = pruneExampleChat,
-									ttsAutoPlay = ttsAutoPlay,
-									ttsInputFilter = ttsInputFilter,
-								},
-								parameters = new ChatParameters() {
-									model = model,
-									temperature = temperature,
-									topP = topP,
-									minP = minP,
-									minPEnabled = minPEnabled,
-									topK = topK,
-									repeatPenalty = repeatPenalty,
-									repeatLastN = repeatLastN,
-									promptTemplate = promptTemplate,
-								}
-							};
-						}
-					}
-
-					// Get background image
-					if (BackyardValidation.CheckFeature(BackyardValidation.Feature.ChatBackgrounds))
-					{
-						using (var cmdBackground = connection.CreateCommand())
-						{
-							cmdBackground.CommandText =
-							@"
-								SELECT 
-									id, imageUrl, aspectRatio
-								FROM BackgroundChatImage
-								WHERE chatId = $chatId;
-							";
-							cmdBackground.Parameters.AddWithValue("$chatId", chatId);
-							using (var reader = cmdBackground.ExecuteReader())
-							{
-								if (reader.Read() && chat.staging != null)
-								{
-									string id = reader.GetString(0);
-									string imageUrl = reader.GetString(1);
-									string aspectRatio = reader[2] as string ?? "";
-									int width, height;
-									ImageInstance.ParseAspectRatio(aspectRatio, out width, out height);
-
-									chat.staging.background = new ChatBackground() {
-										instanceId = id,
-										imageUrl = imageUrl,
-										width = width,
-										height = height,
-									};
-								}
-							}
-						}
-					}
-
-					// Collect messages
-					chatInstance = FetchChatInstance(connection, chat, characters, groupMembers);
-					if (chatInstance == null)
-						return Backyard.Error.NotFound;
-					return Backyard.Error.NoError;
-				}
-			}
-			catch (FileNotFoundException e)
-			{
-				chatInstance = null;
-				return Backyard.Error.NotConnected;
-			}
-			catch (SQLiteException e)
-			{
-				chatInstance = null;
-				return Backyard.Error.SQLCommandFailed;
-			}
-			catch (Exception e)
-			{
-				chatInstance = null;
-				return Backyard.Error.Unknown;
-			}
-		}
-
 		public Backyard.Error GetChats(string groupId, out ChatInstance[] chatInstances)
 		{
 			if (ConnectionEstablished == false)
@@ -2084,7 +1908,7 @@ namespace Ginger.Integration
 								modelInstructions, context, greetingDialogue, customDialogue, grammar,
 								model, temperature, topP, minP, minPEnabled, topK, 
 								repeatPenalty, repeatLastN, promptTemplate, canDeleteCustomDialogue, 
-								authorNote, ttsAutoplay, ttsInputFilter
+								authorNote
 							FROM Chat
 							WHERE groupConfigId = $groupId
 							ORDER BY createdAt;
@@ -2120,8 +1944,6 @@ namespace Ginger.Integration
 								string promptTemplate = reader[17] as string;
 								bool pruneExampleChat = reader.GetBoolean(18);
 								string authorNote = reader.GetString(19);
-								bool ttsAutoPlay = reader.GetBoolean(20);
-								string ttsInputFilter = reader.GetString(21);
 
 								if (string.IsNullOrWhiteSpace(name))
 								{
@@ -2150,14 +1972,12 @@ namespace Ginger.Integration
 								var staging = new ChatStaging() {
 									system = system,
 									scenario = scenario,
-									greeting = greeting,
+									greeting = CharacterMessage.FromString(greeting),
 									example = example,
 									grammar = grammar,
 									authorNote = authorNote,
 									background = chatBackground,
 									pruneExampleChat = pruneExampleChat,
-									ttsAutoPlay = ttsAutoPlay,
-									ttsInputFilter = ttsInputFilter,
 								};
 
 								chats.Add(new _Chat() {
@@ -2191,7 +2011,7 @@ namespace Ginger.Integration
 					}
 
 					chatInstances = lsChatInstances
-						.OrderByDescending(c => DateTimeExtensions.Max(c.creationDate, c.updateDate))
+						.OrderByDescending(c => c.creationDate)
 						.ToArray();
 					return Backyard.Error.NoError;
 				}
@@ -2400,12 +2220,12 @@ namespace Ginger.Integration
 				return null; // Error
 
 			// Insert greeting
-			if (string.IsNullOrEmpty(chatInfo.staging.greeting) == false)
+			if (chatInfo.staging.greeting.IsEmpty() == false)
 			{
 				string userName = Utility.FirstNonEmpty(groupMembers[0].name, Constants.DefaultUserName);
 				string characterName = Utility.FirstNonEmpty(groupMembers[1].name, Constants.DefaultCharacterName);
 
-				var sb = new StringBuilder(GingerString.FromFaraday(chatInfo.staging.greeting).ToString());
+				var sb = new StringBuilder(GingerString.FromFaraday(chatInfo.staging.greeting.text).ToString());
 				sb.Replace(GingerString.CharacterMarker, characterName, true);
 				sb.Replace(GingerString.UserMarker, userName, true);
 
@@ -2477,7 +2297,7 @@ namespace Ginger.Integration
 						@"
 							SELECT 
 								modelInstructions, context, greetingDialogue, customDialogue, grammar, 
-								authorNote, canDeleteCustomDialogue, ttsAutoplay, ttsInputFilter,
+								authorNote, canDeleteCustomDialogue,
 								model, temperature, topP, minP, minPEnabled, topK, 
 								repeatPenalty, repeatLastN, promptTemplate
 							FROM Chat
@@ -2493,22 +2313,20 @@ namespace Ginger.Integration
 							{
 								defaultStaging.system = reader.GetString(0);
 								defaultStaging.scenario = reader.GetString(1);
-								defaultStaging.greeting = reader.GetString(2);
+								defaultStaging.greeting.text = reader.GetString(2);
 								defaultStaging.example = reader.GetString(3);
 								defaultStaging.grammar = reader[4] as string ?? "";
 								defaultStaging.authorNote = reader.GetString(5);
 								defaultStaging.pruneExampleChat = reader.GetBoolean(6);
-								defaultStaging.ttsAutoPlay = reader.GetBoolean(7);
-								defaultStaging.ttsInputFilter = reader.GetString(8);
-								defaultParameters.model = reader.GetString(9);
-								defaultParameters.temperature = reader.GetDecimal(10);
-								defaultParameters.topP = reader.GetDecimal(11);
-								defaultParameters.minP = reader.GetDecimal(12);
-								defaultParameters.minPEnabled = reader.GetBoolean(13);
-								defaultParameters.topK = reader.GetInt32(14);
-								defaultParameters.repeatPenalty = reader.GetDecimal(15);
-								defaultParameters.repeatLastN = reader.GetInt32(16);
-								defaultParameters.promptTemplate = reader[17] as string;
+								defaultParameters.model = reader.GetString(7);
+								defaultParameters.temperature = reader.GetDecimal(8);
+								defaultParameters.topP = reader.GetDecimal(9);
+								defaultParameters.minP = reader.GetDecimal(10);
+								defaultParameters.minPEnabled = reader.GetBoolean(11);
+								defaultParameters.topK = reader.GetInt32(12);
+								defaultParameters.repeatPenalty = reader.GetDecimal(13);
+								defaultParameters.repeatLastN = reader.GetInt32(14);
+								defaultParameters.promptTemplate = reader[15] as string;
 							}
 						}
 					}
@@ -2531,7 +2349,7 @@ namespace Ginger.Integration
 							var staging = args.staging ?? defaultStaging;
 							var parameters = args.parameters ?? defaultParameters;
 							var chatName = args.history.name ?? "";
-							var greeting = staging.greeting;
+							var greeting = staging.greeting.text;
 							if (args.isImport)
 								greeting = args.history.hasGreeting ? args.history.greeting : "";
 
@@ -2552,7 +2370,7 @@ namespace Ginger.Integration
 											$system, $greeting, $grammar, 
 											$groupId, 
 											$model, $temperature, $topP, $minP, $minPEnabled, $topK, $repeatPenalty, $repeatLastN, $promptTemplate,
-											$chatName, $authorNote, $ttsAutoPlay, $ttsInputFilter);
+											$chatName, $authorNote, 0, 'default');
 								");
 
 								cmdCreateChat.CommandText = sbCommand.ToString();
@@ -2567,8 +2385,6 @@ namespace Ginger.Integration
 								cmdCreateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$authorNote", staging.authorNote ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
-								cmdCreateChat.Parameters.AddWithValue("$ttsAutoPlay", staging.ttsAutoPlay);
-								cmdCreateChat.Parameters.AddWithValue("$ttsInputFilter", staging.ttsInputFilter ?? "default");
 								cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? defaultModel ?? "");
 								cmdCreateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 								cmdCreateChat.Parameters.AddWithValue("$topP", parameters.topP);
@@ -3509,7 +3325,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		public Backyard.Error UpdateChatParameters(string[] chatIds, ChatParameters parameters, ChatStaging staging)
+		public Backyard.Error UpdateChatParameters(string[] chatIds, ChatStaging staging, ChatParameters parameters)
 		{
 			if (ConnectionEstablished == false)
 				return Backyard.Error.NotConnected;
@@ -3590,13 +3406,11 @@ namespace Ginger.Integration
 								{
 									cmdUpdateChat.Parameters.AddWithValue("$system", Utility.FirstNonEmpty(staging.system, FaradayCardV4.OriginalModelInstructionsByFormat[0]));
 									cmdUpdateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
-									cmdUpdateChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
+									cmdUpdateChat.Parameters.AddWithValue("$greeting", staging.greeting.text ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$example", staging.example ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 									cmdUpdateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
 									// staging.authorNote
-									// staging.ttsAutoPlay
-									// staging.ttsInputFilter
 								}
 								if (parameters != null)
 								{
@@ -4453,7 +4267,7 @@ namespace Ginger.Integration
 							folderSortPosition = folderSortPosition,
 							hubCharId = hubCharId,
 							hubAuthorUsername = hubAuthorUsername,
-							members = members.ToArray(),
+							activeMembers = members.ToArray(),
 						});
 					}
 				}
@@ -4647,7 +4461,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private void WriteLorebook(SQLiteConnection connection, string configId, FaradayCardV1.LoreBookEntry[] loreItems, ref int updates, ref int expectedUpdates)
+		private void WriteLorebook(SQLiteConnection connection, string configId, FaradayCard.LoreBookEntry[] loreItems, ref int updates, ref int expectedUpdates)
 		{
 			int hash = configId.GetHashCode();
 			long updatedAt = DateTime.Now.ToUnixTimeMilliseconds();
@@ -5191,7 +5005,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void WriteCharacter(SQLiteConnection connection, FaradayCardV4 card, string displayName, string characterId, long createdAt, out CharacterInstance characterInstance, ref int updates, ref int expectedUpdates)
+		private static void WriteCharacter(SQLiteConnection connection, FaradayCard card, string displayName, string characterId, long createdAt, out CharacterInstance characterInstance, ref int updates, ref int expectedUpdates)
 		{
 			string instanceId = characterId ?? Cuid.NewCuid();
 			string configId = Cuid.NewCuid();
@@ -5297,7 +5111,7 @@ namespace Ginger.Integration
 					displayName = name ?? "",
 					folderId = parentFolderId ?? "",
 					folderSortPosition = folderSortPosition ?? "",
-					members = characterIds,
+					activeMembers = characterIds,
 				};
 			}
 
@@ -5610,7 +5424,7 @@ namespace Ginger.Integration
 				cmdChat.Parameters.AddWithValue("$system", staging.system ?? "");
 				cmdChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
 				cmdChat.Parameters.AddWithValue("$example", staging.example ?? "");
-				cmdChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
+				cmdChat.Parameters.AddWithValue("$greeting", staging.greeting.text ?? "");
 				cmdChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 				cmdChat.Parameters.AddWithValue("$authorNote", staging.authorNote ?? "");
 				cmdChat.Parameters.AddWithValue("$model", chatParameters.model ?? defaultModel ?? "");
@@ -5664,7 +5478,7 @@ namespace Ginger.Integration
 								$system{i:000}, $scenario{i:000}, $greeting{i:000}, $example{i:000}, $grammar{i:000}, 
 								$model{i:000}, $temperature{i:000}, $topP{i:000}, $minP{i:000}, $minPEnabled{i:000}, $topK{i:000}, 
 								$repeatPenalty{i:000}, $repeatLastN{i:000}, $promptTemplate{i:000}, $pruneExample{i:000},
-								$authorNote{i:000}, $ttsAutoPlay{i:000}, $ttsInputFilter{i:000});
+								$authorNote{i:000}, 0, 'default');
 					");
 					cmdChat.Parameters.AddWithValue($"$chatId{i:000}", chatIds[i]);
 					cmdChat.Parameters.AddWithValue($"$chatName{i:000}", chats[i].name ?? "");
@@ -5677,12 +5491,10 @@ namespace Ginger.Integration
 					cmdChat.Parameters.AddWithValue($"$system{i:000}", staging.system ?? "");
 					cmdChat.Parameters.AddWithValue($"$scenario{i:000}", staging.scenario ?? "");
 					cmdChat.Parameters.AddWithValue($"$example{i:000}", staging.example ?? "");
-					cmdChat.Parameters.AddWithValue($"$greeting{i:000}", staging.greeting ?? "");
+					cmdChat.Parameters.AddWithValue($"$greeting{i:000}", staging.greeting.text ?? "");
 					cmdChat.Parameters.AddWithValue($"$grammar{i:000}", staging.grammar ?? "");
 					cmdChat.Parameters.AddWithValue($"$authorNote{i:000}", staging.authorNote ?? "");
 					cmdChat.Parameters.AddWithValue($"$pruneExample{i:000}", staging.pruneExampleChat);
-					cmdChat.Parameters.AddWithValue($"$ttsAutoPlay{i:000}", staging.ttsAutoPlay);
-					cmdChat.Parameters.AddWithValue($"$ttsInputFilter{i:000}", staging.ttsInputFilter);
 					cmdChat.Parameters.AddWithValue($"$model{i:000}", parameters.model ?? defaultModel ?? "");
 					cmdChat.Parameters.AddWithValue($"$temperature{i:000}", parameters.temperature);
 					cmdChat.Parameters.AddWithValue($"$topP{i:000}", parameters.topP);
@@ -6112,13 +5924,13 @@ namespace Ginger.Integration
 						(id, createdAt, updatedAt, context, customDialogue, canDeleteCustomDialogue, 
 							modelInstructions, greetingDialogue, grammar, groupConfigId, 
 							model, temperature, topP, minP, minPEnabled, topK, repeatPenalty, repeatLastN, promptTemplate,
-							name, authorNote, ttsAutoPlay, ttsInputFilter)
+							name, authorNote)
 					VALUES 
 						($chatId, $timestamp, $timestamp, $scenario, $example, $pruneExample, 
 							$system, $greeting, $grammar, 
 							$groupId, 
 							$model, $temperature, $topP, $minP, $minPEnabled, $topK, $repeatPenalty, $repeatLastN, $promptTemplate,
-							$chatName, $authorNote, $ttsAutoPlay, $ttsInputFilter);
+							$chatName, $authorNote, 0, 'default');
 				");
 
 				cmdCreateChat.CommandText = sbCommand.ToString();
@@ -6129,12 +5941,10 @@ namespace Ginger.Integration
 				cmdCreateChat.Parameters.AddWithValue("$system", staging.system ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$example", staging.example ?? "");
-				cmdCreateChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
+				cmdCreateChat.Parameters.AddWithValue("$greeting", staging.greeting.text ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$authorNote", staging.authorNote ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$pruneExample", staging.pruneExampleChat);
-				cmdCreateChat.Parameters.AddWithValue("$ttsAutoPlay", staging.ttsAutoPlay);
-				cmdCreateChat.Parameters.AddWithValue("$ttsInputFilter", staging.ttsInputFilter ?? "default");
 				cmdCreateChat.Parameters.AddWithValue("$model", parameters.model ?? defaultModel ?? "");
 				cmdCreateChat.Parameters.AddWithValue("$temperature", parameters.temperature);
 				cmdCreateChat.Parameters.AddWithValue("$topP", parameters.topP);
@@ -6215,7 +6025,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void WriteUpdateGroup(SQLiteConnection connection, FaradayCardV4 card, string groupId, List<_Chat> chats, string groupName, long updatedAt, ref int updates, ref int expectedUpdates)
+		private static void WriteUpdateGroup(SQLiteConnection connection, FaradayCard card, string groupId, List<_Chat> chats, string groupName, long updatedAt, ref int updates, ref int expectedUpdates)
 		{
 			// Update GroupConfig
 			using (var cmdUpdateGroup = new SQLiteCommand(connection))
@@ -6306,7 +6116,7 @@ namespace Ginger.Integration
 				var staging = new ChatStaging() {
 					system = card.data.system ?? "",
 					scenario = card.data.scenario ?? "",
-					greeting = card.data.greeting ?? "",
+					greeting = CharacterMessage.FromString(card.data.greeting.text ?? ""),
 					example = card.data.example ?? "",
 					grammar = card.data.grammar ?? "",
 					authorNote = card.authorNote ?? "",
@@ -6316,7 +6126,7 @@ namespace Ginger.Integration
 				cmdChat.Parameters.AddWithValue("$system", staging.system ?? "");
 				cmdChat.Parameters.AddWithValue("$scenario", staging.scenario ?? "");
 				cmdChat.Parameters.AddWithValue("$example", staging.example ?? "");
-				cmdChat.Parameters.AddWithValue("$greeting", staging.greeting ?? "");
+				cmdChat.Parameters.AddWithValue("$greeting", staging.greeting.text ?? "");
 				cmdChat.Parameters.AddWithValue("$grammar", staging.grammar ?? "");
 				cmdChat.Parameters.AddWithValue("$authorNote", card.authorNote ?? "");
 				cmdChat.Parameters.AddWithValue("$timestamp", updatedAt);
@@ -6327,7 +6137,7 @@ namespace Ginger.Integration
 			}
 		}
 
-		private static void WriteUpdateCharacter(SQLiteConnection connection, FaradayCardV4 card, string configId, string displayName, long updatedAt, ref int updates, ref int expectedUpdates)
+		private static void WriteUpdateCharacter(SQLiteConnection connection, FaradayCard card, string configId, string displayName, long updatedAt, ref int updates, ref int expectedUpdates)
 		{
 			using (var cmdUpdate = new SQLiteCommand(connection))
 			{

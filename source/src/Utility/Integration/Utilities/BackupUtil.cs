@@ -16,6 +16,7 @@ namespace Ginger.Integration
 	using ChatParameters = Backyard.ChatParameters;
 	using ChatStaging = Backyard.ChatStaging;
 	using ImageInstance = Backyard.ImageInstance;
+	using CharacterMessage = Backyard.CharacterMessage;
 
 	public class BackupData
 	{
@@ -60,7 +61,7 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			FaradayCardV4 card = null;
+			BackyardLinkCard card = null;
 			ImageInstance[] images;
 			ChatInstance[] chatInstances = null;
 			UserData userInfo;
@@ -103,7 +104,7 @@ namespace Ginger.Integration
 
 			// Create backup
 			backupInfo = new BackupData();
-			backupInfo.characterCards = new FaradayCardV4[] { card };
+			backupInfo.characterCards = new FaradayCardV4[] { card.ToFaradayCard() };
 			backupInfo.displayName = card.data.displayName;
 			backupInfo.userInfo = userInfo;
 			if (chatInstances != null)
@@ -175,13 +176,13 @@ namespace Ginger.Integration
 				return Backyard.Error.NotConnected;
 			}
 
-			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.PartyChats) == false)
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat) == false)
 			{
 				backupInfo = null;
 				return Backyard.Error.UnsupportedFeature;
 			}
 
-			FaradayCardV4[] cards = null;
+			BackyardLinkCard[] cards = null;
 			ImageInstance[] images;
 			CharacterInstance[] characterInstances;
 			UserData userInfo;
@@ -224,7 +225,7 @@ namespace Ginger.Integration
 
 			// Create backup
 			backupInfo = new BackupData();
-			backupInfo.characterCards = cards;
+			backupInfo.characterCards = cards.Select(c => c.ToFaradayCard()).ToArray();
 			backupInfo.displayName = cards[0].data.displayName;
 			backupInfo.userInfo = userInfo;
 			if (chatInstances != null)
@@ -385,10 +386,10 @@ namespace Ginger.Integration
 						return FileUtil.Error.DiskFullError;
 					return FileUtil.Error.FileWriteError;
 				}
-				catch
+				catch (Exception e)
 				{
 					File.Delete(intermediateCardFilename);
-					return FileUtil.Error.NoError;
+					return FileUtil.Error.UnknownError;
 				}
 			}
 
@@ -438,6 +439,7 @@ namespace Ginger.Integration
 				}
 
 				// Create zip archive
+				bool bSoloCharacter = lsCharData.Count == 1;
 				var intermediateFilename = Path.GetTempFileName();
 				using (ZipArchive zip = ZipFile.Open(intermediateFilename, ZipArchiveMode.Update, Encoding.ASCII))
 				{
@@ -446,7 +448,8 @@ namespace Ginger.Integration
 						var charData = lsCharData[iCard];
 
 						// Write card json (UTF8)
-						var cardEntry = zip.CreateEntry(Utility.ValidFilename($"card_{iCard:00}_{charData.name}.png"), CompressionLevel.NoCompression);
+						string cardEntryName = bSoloCharacter ? $"card.png" : $"card_{iCard:00}_{charData.name}.png";
+						var cardEntry = zip.CreateEntry(cardEntryName, CompressionLevel.NoCompression);
 						using (Stream writer = cardEntry.Open())
 						{
 							writer.Write(charData.cardBytes, 0, charData.cardBytes.Length);
@@ -455,7 +458,7 @@ namespace Ginger.Integration
 						// Write non-png portrait (situational)
 						if (charData.nonPNGImageData != null && charData.nonPNGImageData.Length > 0)
 						{
-							string entryName = $"images/{iCard:00}/image_00.{charData.nonPNGImageExt}";
+							string entryName = bSoloCharacter ? $"images/portrait.{charData.nonPNGImageExt}" : $"images/{iCard:00}/portrait.{charData.nonPNGImageExt}";
 							var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
 							using (Stream writer = fileEntry.Open())
 							{
@@ -476,7 +479,7 @@ namespace Ginger.Integration
 								continue; // No file data
 
 							string ext = Utility.GetFileExt(charImages[i].filename);
-							string entryName = $"images/{iCard:00}/image_{i:00}.{ext}";
+							string entryName = bSoloCharacter ? $"images/image_{i:00}.{ext}" : $"images/{iCard:00}/image_{i:00}.{ext}";
 							var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
 							using (Stream writer = fileEntry.Open())
 							{
@@ -526,6 +529,7 @@ namespace Ginger.Integration
 					if (backup.userInfo != null)
 					{
 						// User info
+						if (string.IsNullOrEmpty(backup.userInfo.persona) == false)
 						{
 							string entryName = string.Concat("user/user.json");
 							var fileEntry = zip.CreateEntry(entryName, CompressionLevel.NoCompression);
@@ -774,25 +778,36 @@ namespace Ginger.Integration
 						}
 					}
 				}
-
-				// images/portrait.*, images/image_00.* supercedes png.
-				int idxPortrait = images.FindIndex(i => {
-					string fn = Path.GetFileNameWithoutExtension(i.filename).ToLowerInvariant();
-					return fn == "portrait" || fn == "image_00";
-				});
-				if (idxPortrait > 0 && images.Count > 0)
-				{
-					// Move to front (remove existing)
-					var image = images[idxPortrait];
-					images.RemoveAt(idxPortrait);
-					images.RemoveAt(0);
-					images.Insert(0, image);
-				}
-
+				
 				if (lsCharacterCards.IsEmpty())
 				{
 					backup = default(BackupData);
 					return FileUtil.Error.NoDataFound;
+				}
+
+				if (images.Count > 0)
+				{
+					for (int i = 0; i < lsCharacterCards.Count; ++i)
+					{
+						int portraitIndex = images.FindIndex(img => img.characterIndex == i);
+						if (portraitIndex == -1)
+							continue;
+
+						// images/portrait.*, images/image_00.* supercedes png.
+						int idxPortrait = images.FindIndex(img => {
+							string fn = Path.GetFileNameWithoutExtension(img.filename).ToLowerInvariant();
+							return (img.characterIndex == i) && (fn == "portrait" || fn == "image_00");
+						});
+
+						if (idxPortrait > portraitIndex)
+						{
+							// Move to front (remove existing)
+							var image = images[idxPortrait];
+							images.RemoveAt(idxPortrait);
+							images.RemoveAt(portraitIndex);
+							images.Insert(portraitIndex, image);
+						}
+					}
 				}
 
 				backup = new BackupData() {
@@ -812,8 +827,41 @@ namespace Ginger.Integration
 				return FileUtil.Error.FileReadError;
 			}
 		}
-		
-		public static BackupData.Chat[] SplitAltGreetings(FaradayCardV4 card, Generator.Output output, Backyard.ImageInput[] images)
+
+		public static bool CheckIfGroup(string filename, out int count)
+		{
+			try
+			{
+				count = 0;
+				using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+				{
+					using (var archive = new ZipArchive(fs, ZipArchiveMode.Read))
+					{
+						foreach (var entry in archive.Entries)
+						{
+							if (entry.Name == "")
+								continue; // Skip folder entries
+
+							string entryPath = Path.GetDirectoryName(entry.FullName).Replace('\\', '/');
+							string entryExt = Utility.GetFileExt(entry.FullName);
+
+							// Read character png
+							if (entryPath == "" && entryExt == "png")
+								count++;
+						}
+					}
+				}
+
+				return count > 1;
+			}
+			catch
+			{
+				count = 0;
+				return false;
+			}
+		}
+
+		public static BackupData.Chat[] SplitAltGreetings(BackyardLinkCard card, GingerString[] altGreetings, Backyard.ImageInput[] images)
 		{
 			var lsChats = new List<BackupData.Chat>();
 
@@ -848,7 +896,6 @@ namespace Ginger.Integration
 			});
 
 			// Alternate greetings
-			var altGreetings = output.alternativeGreetings;
 			for (int i = 0; i < altGreetings.Length; ++i)
 			{
 				var altGreeting = altGreetings[i].ToFaradayGreeting();
@@ -861,7 +908,7 @@ namespace Ginger.Integration
 					staging = new ChatStaging() {
 						system = card.data.system,
 						scenario = card.data.scenario,
-						greeting = altGreeting,
+						greeting = CharacterMessage.FromString(altGreeting),
 						example = card.data.example,
 						grammar = card.data.grammar,
 					},

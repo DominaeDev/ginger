@@ -27,7 +27,7 @@ namespace Ginger
 
 			var lsMessages = new List<Message>(chatInstance.history.count);
 
-			if (names.Length > 2 && chatInstance.history.isEmpty == false) // Group chat
+			if (names.Length > 2 && chatInstance.history.isEmpty == false) // Party
 			{
 				// Insert empty messages from everyone, indicating their intended order
 				for (int i = 0; i < names.Length; ++i)

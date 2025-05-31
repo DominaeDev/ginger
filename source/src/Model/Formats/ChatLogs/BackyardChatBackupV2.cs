@@ -11,6 +11,7 @@ namespace Ginger
 	using ChatInstance = Backyard.ChatInstance;
 	using ChatParameters = Backyard.ChatParameters;
 	using ChatStaging = Backyard.ChatStaging;
+	using CharacterMessage = Backyard.CharacterMessage;
 
 	public class BackyardChatBackupV2
 	{

@@ -11,6 +11,7 @@ namespace Ginger
 	using ChatInstance = Backyard.ChatInstance;
 	using ChatParameters = Backyard.ChatParameters;
 	using ChatStaging = Backyard.ChatStaging;
+	using CharacterMessage = Backyard.CharacterMessage;
 
 	public class BackyardChatBackupV1
 	{
@@ -73,12 +74,6 @@ namespace Ginger
 
 			[JsonProperty("pruneExampleChat")]
 			public bool pruneExampleChat = true;
-
-			[JsonProperty("ttsAutoPlay")]
-			public bool ttsAutoPlay = false;
-
-			[JsonProperty("ttsInputFilter", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
-			public string ttsInputFilter = null;
 		}
 
 		public class Parameters
@@ -173,13 +168,11 @@ namespace Ginger
 				backup.staging = new Staging() { 
 					system = chat.staging.system ?? "",
 					scenario = chat.staging.scenario ?? "",
-					greeting = chat.staging.greeting ?? "",
+					greeting = chat.staging.greeting.text ?? "",
 					example = chat.staging.example ?? "",
 					grammar = chat.staging.grammar ?? "",
 					authorNote = chat.staging.authorNote ?? "",
 					pruneExampleChat = chat.staging.pruneExampleChat,
-					ttsAutoPlay = chat.staging.ttsAutoPlay,
-					ttsInputFilter = chat.staging.ttsInputFilter ?? "default",
 				};
 			}
 			if (chat.parameters != null)
@@ -249,13 +242,11 @@ namespace Ginger
 				staging = new ChatStaging() {
 					system = this.staging.system ?? "",
 					scenario = this.staging.scenario ?? "",
-					greeting = this.staging.greeting ?? "",
+					greeting = CharacterMessage.FromString(this.staging.greeting ?? ""),
 					example = this.staging.example ?? "",
 					grammar = this.staging.grammar ?? "",
 					pruneExampleChat = this.staging.pruneExampleChat,
 					authorNote = this.staging.authorNote ?? "",
-					ttsAutoPlay = this.staging.ttsAutoPlay,
-					ttsInputFilter = this.staging.ttsInputFilter ?? "default",
 				};
 			}
 
