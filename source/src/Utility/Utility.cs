@@ -1587,7 +1587,7 @@ namespace Ginger
 			if (string.IsNullOrEmpty(filename))
 				return filename;
 
-			char[] invalidChars = new char[] { '/', '\\', ':', '*', '?', '"', ';' };
+			char[] invalidChars = new char[] { '/', '\\', ':', '*', '?', '"', ';', '<', '>', '|' };
 
 			filename = filename.Replace('/', '-');
 
