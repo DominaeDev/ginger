@@ -42,6 +42,11 @@ namespace Ginger
 			return str.Length > 0 && str[0] == ch;
 		}
 
+		public static bool EndsWith(this string str, char ch)
+		{
+			return str.Length > 0 && str[str.Length - 1] == ch;
+		}
+
 		public static bool EndsWith(this string str, string match, bool bIgnoreCase)
 		{
 			if (str == null || match == null || str.Length < match.Length || match.Length == 0)

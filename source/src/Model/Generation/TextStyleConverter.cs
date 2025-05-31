@@ -192,6 +192,7 @@ namespace Ginger
 
 				bool hasQuotes = paragraph.IndexOfAny(new char[] { '"', '\u300C' }) != -1;
 				bool hasAsterisks = paragraph.IndexOf('*') != -1;
+				bool hasParentheses = paragraph.IndexOf('(') != -1 && paragraph.Count(c => c == '(')  == paragraph.Count(c => c == ')');
 				bool canFill = true;
 
 				var spans = new Spans();
@@ -224,8 +225,12 @@ namespace Ginger
 					pos_colon = paragraph.IndexOf(':', pos_begin);
 				}
 
-				if (spans.Count > 0 && !hasQuotes && !hasAsterisks) // Found names: Assume dialogue
+				if (!hasQuotes && !hasAsterisks && hasParentheses) // Only parentheses: Assume dialogue
 					hasAsterisks = true;
+				else if (spans.Count > 0 && !hasQuotes && !hasAsterisks) // Found names: Assume dialogue
+					hasAsterisks = true;
+				else if (!hasQuotes && !hasAsterisks && hasParentheses)
+					hasQuotes = false; // Found parentheses
 				else if (!hasQuotes && !hasAsterisks) // Found no names: Assume non-verbal
 					hasQuotes = true;
 				else if (hasQuotes && hasAsterisks)
@@ -242,7 +247,8 @@ namespace Ginger
 				MarkSpan('\u300C', '\u300D', Spans.Mode.Dialogue, paragraph, spans);
 				
 				// Identify non-verbal actions in parentheses
-				MarkSpan('(', ')', Spans.Mode.NonVerbal, paragraph, spans);
+				if (hasParentheses)
+					MarkSpan('(', ')', Spans.Mode.NonVerbal, paragraph, spans);
 
 				if (canFill)
 					spans.FillGaps(hasQuotes ? Spans.Mode.NonVerbal : Spans.Mode.Dialogue, paragraph);
