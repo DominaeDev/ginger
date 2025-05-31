@@ -255,14 +255,16 @@ namespace Ginger
 				spans.Trim(paragraph);
 
 				// Apply style
+				bool bApplyStyle = Current.Card.textStyle != CardData.TextStyle.None;
 				StringBuilder sb = new StringBuilder(paragraph);
+
 				for (int i = spans.spans.Count - 1; i >= 0; --i)
 				{
 					var span = spans.spans[i];
 
-					if (span.mode == Spans.Mode.Dialogue && !bNamesOnly)
+					if (bApplyStyle && span.mode == Spans.Mode.Dialogue && !bNamesOnly)
 						ReplaceEncapsulationMarks(sb, span, "<__DIALOGUE>", "</__DIALOGUE>");
-					else if (span.mode == Spans.Mode.NonVerbal && !bNamesOnly)
+					else if (bApplyStyle && span.mode == Spans.Mode.NonVerbal && !bNamesOnly)
 						ReplaceEncapsulationMarks(sb, span, "<__ACTION>", "</__ACTION>");
 					else if (span.mode == Spans.Mode.Name)
 					{
