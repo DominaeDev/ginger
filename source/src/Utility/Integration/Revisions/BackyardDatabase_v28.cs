@@ -406,8 +406,8 @@ namespace Ginger.Integration
 					card.data.example = staging.example;
 					card.data.grammar = staging.grammar;
 					card.data.loreItems = entries;
-					card.data.creationDate = character.creationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
-					card.data.updateDate = character.updateDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+					card.data.creationDate = character.creationDate.ToISO8601();
+					card.data.updateDate = character.updateDate.ToISO8601();
 					card.authorNote = staging.authorNote;
 					card.hubCharacterId = hubCharId;
 					card.hubAuthorUsername = hubAuthorUsername;

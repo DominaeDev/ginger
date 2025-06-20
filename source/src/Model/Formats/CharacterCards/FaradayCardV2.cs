@@ -31,7 +31,7 @@ namespace Ginger
 			{
 				id = GenerateUniqueID();
 
-				creationDate = updateDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+				creationDate = updateDate = DateTime.UtcNow.ToISO8601();
 				chat = new FaradayCardV1.Chat[0];
 			}
 

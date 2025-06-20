@@ -121,7 +121,7 @@ namespace Ginger
 			return asset;
 		}
 
-		public static void AddPortraitAsset(this AssetCollection assets, FileUtil.FileType fileType) // Exporting
+		public static void AddPortraitAsset(this AssetCollection assets, FileUtil.FileType fileType, bool bAllowCCDefault) // Exporting
 		{
 			if (assets.ContainsAny(a => a.isMainPortraitOverride))
 			{
@@ -135,14 +135,14 @@ namespace Ginger
 			// Remove any existing default icon(s)
 			assets.RemoveAll(a => a.isDefaultAsset && a.assetType == AssetFile.AssetType.Icon);
 
-			if (fileType == FileUtil.FileType.Png && assets.ContainsNoneOf(a => a.assetType == AssetFile.AssetType.Icon && a.isMainAsset))
+			if (bAllowCCDefault && fileType == FileUtil.FileType.Png && assets.ContainsNoneOf(a => a.assetType == AssetFile.AssetType.Icon && a.isMainAsset))
 			{
 				assets.Insert(0, AssetFile.MakeDefault(AssetFile.AssetType.Icon, AssetFile.MainAssetName, "png")); // Add ccdefault
 				return;
 			}
 
 			// Embed current portrait image
-			Image image = Current.Card.portraitImage;
+			Image image = Current.Card.portraitImage ?? DefaultPortrait.Image;
 			if (image == null)
 				return;
 

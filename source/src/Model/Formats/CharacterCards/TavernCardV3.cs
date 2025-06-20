@@ -6,7 +6,6 @@ using Newtonsoft.Json.Schema;
 using Ginger.Properties;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Globalization;
 using System.Text;
 
 namespace Ginger

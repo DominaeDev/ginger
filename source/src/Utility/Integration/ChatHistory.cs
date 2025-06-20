@@ -82,7 +82,7 @@ namespace Ginger.Integration
 
 		public static ChatHistory LegacyFix(ChatHistory chat)
 		{
-			if (chat.isEmpty)
+			if (chat == null || chat.isEmpty)
 				return chat;
 
 			for (int i = 0; i < chat.messages.Length; ++i)

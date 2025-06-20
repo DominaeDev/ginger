@@ -254,7 +254,7 @@ namespace Ginger
 			textStyleNode.AddTextValue(textStyle);
 			xmlNode.AddValueElement("Flags", flags);
 			xmlNode.AddValueElement("TokenCount", string.Format("{0}, {1}, {2}", tokens[0], tokens[1], tokens[2]));
-			xmlNode.AddValueElement("Created", creationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK"));
+			xmlNode.AddValueElement("Created", creationDate.ToISO8601());
 			if (sources != null && sources.Length > 0)
 				xmlNode.AddValueElement("Sources", Utility.ListToCommaSeparatedString(sources.Where(s => !string.IsNullOrWhiteSpace(s))));
 

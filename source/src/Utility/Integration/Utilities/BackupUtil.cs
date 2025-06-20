@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -131,8 +130,8 @@ namespace Ginger.Integration
 							history = c.history,
 							staging = c.staging,
 							parameters = AppSettings.BackyardLink.BackupModelSettings ? c.parameters : null,
-							creationDate = c.creationDate,
-							updateDate = c.updateDate,
+							creationDate = c.creationDate.ToUniversalTime(),
+							updateDate = c.updateDate.ToUniversalTime(),
 							backgroundName = bgName,
 						};
 					})
@@ -292,6 +291,55 @@ namespace Ginger.Integration
 			}
 
 			return Backyard.Error.NoError;
+		}
+
+		public static void CreateBackup(out BackupData backupInfo)
+		{
+			var card = FaradayCardV4.FromOutput(Generator.Generate(Generator.Option.Export | Generator.Option.Faraday));
+
+			// Compile assets
+			var assets = (AssetCollection)Current.Card.assets.Clone();
+			assets.AddPortraitAsset(FileUtil.FileType.Png, false);
+			assets.Validate();
+
+			var images = assets
+				.Where(a => a.isEmbeddedAsset && a.isPortrait)
+				.OrderBy(a => a.actorIndex)
+				.Select(a => new BackupData.Image() {
+					characterIndex = a.actorIndex,
+					filename = string.Format("{0}.{1}", a.name, a.ext),
+					data = a.data.bytes,
+				})
+				.ToList();
+
+			backupInfo = new BackupData() {
+				characterCards = new FaradayCardV4[1] { card },
+				images = images,
+				backgrounds = assets
+					.Where(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background)
+					.Select(a => new BackupData.Image() {
+						characterIndex = a.actorIndex,
+						filename = a.fullUri, 
+						data = a.data.bytes,
+					})
+					.ToList(),
+				chats = new List<BackupData.Chat>() {
+					new BackupData.Chat() {
+						creationDate = DateTime.Now,
+						updateDate = DateTime.Now,
+						parameters = ChatParameters.Default,
+						staging = new ChatStaging() {
+							system = card.data.system ?? "",
+							scenario = card.data.scenario ?? "",
+							greeting = CharacterMessage.FromString(card.data.greeting),
+							example = card.data.example ?? "",
+							grammar = card.data.grammar ?? "",
+							authorNote = card.authorNote ?? "",
+						},
+					}
+				},
+				displayName = card.data.displayName,
+			};
 		}
 
 		private class CharData

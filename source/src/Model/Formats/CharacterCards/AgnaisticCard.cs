@@ -24,7 +24,7 @@ namespace Ginger
 
 		public AgnaisticCard()
 		{
-			creationDate = updateDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+			creationDate = updateDate = DateTime.UtcNow.ToISO8601();
 		}
 
 		[JsonProperty("name", Required = Required.Always)] 
@@ -254,7 +254,7 @@ namespace Ginger
 			card.description = (Current.Card.comment ?? "").ConvertLinebreaks(Linebreak.LF);
 			card.character_version = Current.Card.versionString;
 			card.tags = Current.Card.tags.ToArray();
-			card.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+			card.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToISO8601();
 
 			card.system_prompt = output.system.ToTavern();
 			card.postHistoryInstructions = output.system_post_history.ToTavern();

@@ -72,8 +72,8 @@ namespace Ginger
 				creator = Current.Card.creator ?? "",
 				comment = (Current.Card.comment ?? "").ConvertLinebreaks(Linebreak.LF),
 				tags = Current.Card.tags.ToArray(),
-				creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
-				updateDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
+				creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToISO8601(),
+				updateDate = DateTime.UtcNow.ToISO8601(),
 				detailLevel = EnumHelper.ToInt(Current.Card.detailLevel),
 				textStyle = EnumHelper.ToInt(Current.Card.textStyle),
 				tokens = Current.Card.lastTokenCounts, // ! Last calculated value

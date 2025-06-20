@@ -606,7 +606,7 @@ namespace Ginger
 				filename = Current.Character.name;
 
 			int filter = AppSettings.User.LastExportCharacterFilter;
-			if (filter < 0 || filter > 9)
+			if (filter < 0 || filter > 10)
 				filter = 0; 
 
 			if (string.IsNullOrEmpty(filename) == false)
@@ -619,13 +619,15 @@ namespace Ginger
 					filename = string.Concat(filename, ".yaml");
 				else if (filter == 9) // charx
 					filename = string.Concat(filename, ".charx");
+				else if (filter == 10) // byaf
+					filename = string.Concat(filename, ".byaf");
 				else // json
 					filename = string.Concat(filename, ".json");
 			}
 
 			// Save as...
 			exportFileDialog.Title = Resources.cap_export_character;
-			exportFileDialog.Filter = "Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard AI PNG|*.png|Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Text generation web ui YAML|*.yaml|CharX file|*.charx";
+			exportFileDialog.Filter = "Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard AI PNG|*.png|Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Text generation web ui YAML|*.yaml|CharX file|*.charx|Backyard Archive Format|*.byaf";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			exportFileDialog.FilterIndex = filter;
@@ -666,6 +668,9 @@ namespace Ginger
 				break;
 			case 9: // CharX
 				fileType = FileUtil.FileType.TavernV3 | FileUtil.FileType.CharX;
+				break;
+			case 10: // BYAF
+				fileType = FileUtil.FileType.Faraday| FileUtil.FileType.BackyardArchive;
 				break;
 			default:
 				fileType = FileUtil.FileType.Unknown;

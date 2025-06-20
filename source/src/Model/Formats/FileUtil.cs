@@ -395,8 +395,7 @@ namespace Ginger
 
 					// Compile assets
 					var assets = (AssetCollection)Current.Card.assets.Clone();
-					assets.AddPortraitAsset(FileType.Png);
-
+					assets.AddPortraitAsset(FileType.Png, true);
 					assets.Validate();
 
 					tavernData.data.assets = assets
@@ -857,6 +856,7 @@ namespace Ginger
 			Yaml			= 1 << 3,
 			CharX			= 1 << 4,
 			Backup			= 1 << 5,
+			BackyardArchive	= 1 << 6,
 
 			Character		= 1 << 10,
 			Lorebook		= 1 << 11,
@@ -1593,7 +1593,7 @@ namespace Ginger
 
 				var assets = (AssetCollection)Current.Card.assets.Clone();
 				
-				assets.AddPortraitAsset(FileType.Json);
+				assets.AddPortraitAsset(FileType.Json, true);
 				assets.Validate();
 
 				card.data.assets = assets
@@ -1654,6 +1654,10 @@ namespace Ginger
 					}
 					return true; // Success
 				}
+			}
+			else if (fileType.Contains(FileType.Faraday | FileType.BackyardArchive)) // BYAF
+			{
+				return ExportToBYAF(filename);
 			}
 			return false;
 		}

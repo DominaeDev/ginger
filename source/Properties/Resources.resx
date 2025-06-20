@@ -1773,4 +1773,13 @@ Are you sure you want to continue?</value>
   <data name="msg_link_import_some_characters_and_groups" xml:space="preserve">
     <value>Successfully imported {0}, including {1}. (Skipped {2})</value>
   </data>
+  <data name="backyard_archive_character_v1_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\backyard_archive_character_v1.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="backyard_archive_manifest_v1_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\backyard_archive_manifest_v1.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="backyard_archive_scenario_v1_schema" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Schemas\backyard_archive_scenario_v1.schema.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
 </root>

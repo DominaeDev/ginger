@@ -386,8 +386,8 @@ namespace Ginger.Integration
 					card.data.exampleMessages = staging.exampleMessages;
 					card.data.grammar = staging.grammar;
 					card.data.loreItems = entries;
-					card.data.creationDate = character.creationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
-					card.data.updateDate = character.updateDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+					card.data.creationDate = character.creationDate.ToISO8601();
+					card.data.updateDate = character.updateDate.ToISO8601();
 					card.authorNote = staging.authorNote;
 					card.hubCharacterId = groupInfo.hubCharId;
 					card.hubAuthorUsername = groupInfo.hubAuthorUsername;
@@ -1467,8 +1467,8 @@ namespace Ginger.Integration
 						card.data.displayName = i == 0 ? groupInfo.displayName : null;
 						card.data.name = character.name;
 						card.data.persona = character.persona;
-						card.data.creationDate = character.creationDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
-						card.data.updateDate = character.updateDate.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+						card.data.creationDate = character.creationDate.ToISO8601();
+						card.data.updateDate = character.updateDate.ToISO8601();
 
 						if (characterLore.TryGetValue(character.instanceId, out card.data.loreItems) == false)
 							card.data.loreItems = new FaradayCard.LoreBookEntry[0];

@@ -787,6 +787,8 @@ namespace Ginger
 				ext = "yaml";
 			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.Backup))
 				ext = "zip";
+			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.BackyardArchive))
+				ext = "byaf";
 			else
 				return false; // Error
 
@@ -947,6 +949,8 @@ namespace Ginger
 				ext = "png";
 			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.Backup))
 				ext = "zip";
+			else if (formatDialog.FileFormat.Contains(FileUtil.FileType.BackyardArchive))
+				ext = "byaf";
 			else
 				return false; // Error
 

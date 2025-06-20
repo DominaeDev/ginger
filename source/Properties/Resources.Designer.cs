@@ -301,6 +301,130 @@ namespace Ginger.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;schemaVersion&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;integer&quot;
+        ///		},
+        ///		&quot;loreItems&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;array&quot;,
+        ///			&quot;items&quot;: {
+        ///				&quot;type&quot;: [
+        ///					&quot;object&quot;,
+        ///					&quot;null&quot;
+        ///				],
+        ///				&quot;properties&quot;: {
+        ///					&quot;key&quot;: {
+        ///						&quot;required&quot;: true,
+        ///						&quot;type&quot;: &quot;string&quot;
+        ///					},
+        ///					&quot;value&quot;: {
+        ///						&quot;required&quot;: true,
+        ///						&quot;type&quot;: &quot;string&quot;
+        ///					}
+        ///				}
+        ///			}
+        ///		},
+        ///		&quot;images&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;array&quot;,
+        ///			&quot;items&quot;: {
+        ///				&quot;type&quot;: [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string backyard_archive_character_v1_schema {
+            get {
+                return ResourceManager.GetString("backyard_archive_character_v1_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;schemaVersion&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;integer&quot;
+        ///		},
+        ///		&quot;characters&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;array&quot;,
+        ///			&quot;items&quot;: {
+        ///				&quot;type&quot;: [
+        ///					&quot;string&quot;,
+        ///					&quot;null&quot;
+        ///				]
+        ///			}
+        ///		},
+        ///		&quot;scenarios&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;array&quot;,
+        ///			&quot;items&quot;: {
+        ///				&quot;type&quot;: [
+        ///					&quot;string&quot;,
+        ///					&quot;null&quot;
+        ///				]
+        ///			}
+        ///		},
+        ///		&quot;$schema&quot;: {
+        ///			&quot;type&quot;: [
+        ///				&quot;string&quot;,
+        ///				&quot;null&quot;
+        ///			]
+        ///		},
+        ///		&quot;createdAt&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;:  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string backyard_archive_manifest_v1_schema {
+            get {
+                return ResourceManager.GetString("backyard_archive_manifest_v1_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///	&quot;type&quot;: &quot;object&quot;,
+        ///	&quot;properties&quot;: {
+        ///		&quot;schemaVersion&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;integer&quot;
+        ///		},
+        ///		&quot;narrative&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: &quot;string&quot;
+        ///		},
+        ///		&quot;firstMessages&quot;: {
+        ///			&quot;required&quot;: true,
+        ///			&quot;type&quot;: [
+        ///				&quot;array&quot;,
+        ///				&quot;null&quot;
+        ///			],
+        ///			&quot;items&quot;: {
+        ///				&quot;type&quot;: [
+        ///					&quot;object&quot;,
+        ///					&quot;null&quot;
+        ///				],
+        ///				&quot;properties&quot;: {
+        ///					&quot;characterID&quot;: {
+        ///						&quot;required&quot;: true,
+        ///						&quot;type&quot;: [
+        ///							&quot;string&quot;,
+        ///							&quot;null&quot;
+        ///						]
+        ///					},
+        ///					&quot;text&quot;: {
+        ///						&quot;required&quot;: tru [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string backyard_archive_scenario_v1_schema {
+            get {
+                return ResourceManager.GetString("backyard_archive_scenario_v1_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {&quot;type&quot;:&quot;array&quot;,&quot;items&quot;:{&quot;type&quot;:[&quot;object&quot;,&quot;null&quot;],&quot;properties&quot;:{&quot;displayName&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;promptFormat&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;ctxSize&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;integer&quot;},&quot;files&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;array&quot;,&quot;items&quot;:{&quot;type&quot;:[&quot;object&quot;,&quot;null&quot;],&quot;properties&quot;:{&quot;displayName&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;localFilename&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;fileFormat&quot;:{&quot;required&quot;:true,&quot;type&quot;:&quot;string&quot;},&quot;cloudPlan&quot;:{&quot;required&quot;:true,&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;isDeprecated&quot;:{&quot;r [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string backyard_models_schema {

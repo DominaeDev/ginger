@@ -1,0 +1,92 @@
+{
+	"type": "object",
+	"properties": {
+		"schemaVersion": {
+			"required": true,
+			"type": "integer"
+		},
+		"loreItems": {
+			"required": true,
+			"type": "array",
+			"items": {
+				"type": [
+					"object",
+					"null"
+				],
+				"properties": {
+					"key": {
+						"required": true,
+						"type": "string"
+					},
+					"value": {
+						"required": true,
+						"type": "string"
+					}
+				}
+			}
+		},
+		"images": {
+			"required": true,
+			"type": "array",
+			"items": {
+				"type": [
+					"object",
+					"null"
+				],
+				"properties": {
+					"path": {
+						"required": true,
+						"type": "string"
+					},
+					"label": {
+						"required": true,
+						"type": "string"
+					}
+				}
+			}
+		},
+		"$schema": {
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"id": {
+			"required": true,
+			"type": "string"
+		},
+		"name": {
+			"required": true,
+			"type": "string"
+		},
+		"displayName": {
+			"required": true,
+			"type": "string"
+		},
+		"isNSFW": {
+			"required": true,
+			"type": "boolean"
+		},
+		"persona": {
+			"required": true,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"createdAt": {
+			"required": true,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"updatedAt": {
+			"required": true,
+			"type": [
+				"string",
+				"null"
+			]
+		}
+	}
+}

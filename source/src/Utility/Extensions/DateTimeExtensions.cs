@@ -32,6 +32,11 @@ namespace Ginger
 			return ((DateTimeOffset)dateTime).ToUnixTimeMilliseconds() / 1000L;
 		}
 
+		public static string ToISO8601(this DateTime dateTime)
+		{
+			return dateTime.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+		}
+
 		public static DateTime Max(DateTime a, DateTime b)
 		{
 			return a > b ? a : b;

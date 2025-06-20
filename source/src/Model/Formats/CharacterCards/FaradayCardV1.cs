@@ -30,7 +30,7 @@ namespace Ginger
 			public Data()
 			{
 				id = Cuid.NewCuid();
-				creationDate = updateDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+				creationDate = updateDate = DateTime.UtcNow.ToISO8601();
 				chat = new Chat[0];
 			}
 

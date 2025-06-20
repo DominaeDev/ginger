@@ -122,7 +122,7 @@ namespace Ginger
 
 			AssetCollection assets = (AssetCollection)Current.Card.assets.Clone();
 
-			assets.AddPortraitAsset(FileType.CharX);
+			assets.AddPortraitAsset(FileType.CharX, true);
 			assets.Validate();
 
 			card.data.assets = assets
@@ -187,6 +187,14 @@ namespace Ginger
 			{
 				return false;
 			}
+		}
+				
+		public static bool ExportToBYAF(string filename)
+		{
+			Integration.BackupData backupData;
+			Integration.BackupUtil.CreateBackup(out backupData);
+
+			return BackyardArchiveUtil.WriteArchive(filename, backupData) == Error.NoError;
 		}
 	}
 }

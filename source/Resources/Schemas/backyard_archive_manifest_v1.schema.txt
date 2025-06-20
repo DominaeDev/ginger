@@ -1,0 +1,61 @@
+{
+	"type": "object",
+	"properties": {
+		"schemaVersion": {
+			"required": true,
+			"type": "integer"
+		},
+		"characters": {
+			"required": true,
+			"type": "array",
+			"items": {
+				"type": [
+					"string",
+					"null"
+				]
+			}
+		},
+		"scenarios": {
+			"required": true,
+			"type": "array",
+			"items": {
+				"type": [
+					"string",
+					"null"
+				]
+			}
+		},
+		"$schema": {
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"createdAt": {
+			"required": true,
+			"type": "string"
+		},
+		"author": {
+			"type": [
+				"object",
+				"null"
+			],
+			"properties": {
+				"name": {
+					"required": true,
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"backyardURL": {
+					"required": true,
+					"type": [
+						"string",
+						"null"
+					]
+				}
+			}
+		}
+	}
+}

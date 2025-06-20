@@ -58,7 +58,7 @@ namespace Ginger.Integration
 		{
 			public Data()
 			{
-				creationDate = updateDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+				creationDate = updateDate = DateTime.UtcNow.ToISO8601();
 			}
 
 			public string id;
@@ -108,7 +108,7 @@ namespace Ginger.Integration
 			card.data.greeting = CharacterMessage.FromString(output.greeting.ToFaradayGreeting());
 			card.data.example = output.example.ToString();
 			card.data.grammar = output.grammar.ToString();
-			card.data.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+			card.data.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToISO8601();
 			card.data.textStyle = Current.Card.textStyle;
 
 			// Append user persona

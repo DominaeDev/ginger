@@ -53,7 +53,7 @@ namespace Ginger
 			{
 				id = GenerateUniqueID();
 
-				creationDate = updateDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+				creationDate = updateDate = DateTime.UtcNow.ToISO8601();
 				chat = new FaradayCardV1.Chat[0];
 			}
 
@@ -141,7 +141,7 @@ namespace Ginger
 			card.data.greeting = output.greeting.ToFaradayGreeting();
 			card.data.example = output.example.ToFaradayChat(true);
 			card.data.grammar = output.grammar.ToString();
-			card.data.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+			card.data.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToISO8601();
 
 			// Append user persona
 			string userPersona = output.userPersona.ToFaraday();

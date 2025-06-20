@@ -449,6 +449,10 @@
     <Compile Include="src\Model\CardData.cs" />
     <Compile Include="src\Model\Formats\Assets\AssetCollection.cs" />
     <Compile Include="src\Model\Formats\Assets\AssetImageCache.cs" />
+    <Compile Include="src\Model\Formats\BackyardArchive\BackyardArchiveFileUtil.cs" />
+    <Compile Include="src\Model\Formats\BackyardArchive\ByafCharacterV1.cs" />
+    <Compile Include="src\Model\Formats\BackyardArchive\ByafManifestV1.cs" />
+    <Compile Include="src\Model\Formats\BackyardArchive\ByafScenarioV1.cs" />
     <Compile Include="src\Utility\Integration\BackyardLinkCard.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\BackyardChatBackupV1.cs" />
     <Compile Include="src\Model\Formats\ChatLogs\GingerChatV2.cs" />
@@ -1100,6 +1104,9 @@
     <None Include="Resources\Icons\Dark\dark_write.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Schemas\backyard_archive_scenario_v1.schema.txt" />
+    <None Include="Resources\Schemas\backyard_archive_manifest_v1.schema.txt" />
+    <None Include="Resources\Schemas\backyard_archive_character_v1.schema.txt" />
     <None Include="Resources\Schemas\github_rest_latest_release.schema.txt" />
     <None Include="Resources\Recipes\Grammar\grammar_recipe_novel.txt" />
     <None Include="Resources\Recipes\Grammar\grammar_recipe_mixed.txt" />

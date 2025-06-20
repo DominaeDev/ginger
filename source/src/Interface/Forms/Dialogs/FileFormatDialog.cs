@@ -17,6 +17,7 @@ namespace Ginger
 			"PygmalionAI Character JSON (*.json)",
 			"Text Generation Web UI YAML (*.yaml)",
 			"Character Backup Archive (*.zip)",
+			"Backyard Archive Format (*.byaf)",
 		};
 
 		private FileUtil.FileType[] _FileTypes = new FileUtil.FileType[] {
@@ -31,6 +32,7 @@ namespace Ginger
 			FileUtil.FileType.Pygmalion | FileUtil.FileType.Json | FileUtil.FileType.Character,
 			FileUtil.FileType.TextGenWebUI | FileUtil.FileType.Yaml | FileUtil.FileType.Character,
 			FileUtil.FileType.Ginger | FileUtil.FileType.Backup | FileUtil.FileType.Character,
+			FileUtil.FileType.Faraday | FileUtil.FileType.BackyardArchive | FileUtil.FileType.Character,
 		};
 
 		private string[] _Group_Filters = new string[] {

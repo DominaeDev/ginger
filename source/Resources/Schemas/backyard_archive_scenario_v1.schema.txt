@@ -1,0 +1,146 @@
+{
+	"type": "object",
+	"properties": {
+		"schemaVersion": {
+			"required": true,
+			"type": "integer"
+		},
+		"narrative": {
+			"required": true,
+			"type": "string"
+		},
+		"firstMessages": {
+			"required": true,
+			"type": [
+				"array",
+				"null"
+			],
+			"items": {
+				"type": [
+					"object",
+					"null"
+				],
+				"properties": {
+					"characterID": {
+						"required": true,
+						"type": [
+							"string",
+							"null"
+						]
+					},
+					"text": {
+						"required": true,
+						"type": [
+							"string",
+							"null"
+						]
+					}
+				}
+			}
+		},
+		"exampleMessages": {
+			"required": true,
+			"type": [
+				"array",
+				"null"
+			],
+			"items": {
+				"type": [
+					"object",
+					"null"
+				],
+				"properties": {
+					"characterID": {
+						"required": true,
+						"type": [
+							"string",
+							"null"
+						]
+					},
+					"text": {
+						"required": true,
+						"type": [
+							"string",
+							"null"
+						]
+					}
+				}
+			}
+		},
+		"canDeleteExampleMessages": {
+			"required": true,
+			"type": "boolean"
+		},
+		"minP": {
+			"required": true,
+			"type": "number"
+		},
+		"minPEnabled": {
+			"required": true,
+			"type": "boolean"
+		},
+		"repeatLastN": {
+			"required": true,
+			"type": "integer"
+		},
+		"repeatPenalty": {
+			"required": true,
+			"type": "number"
+		},
+		"temperature": {
+			"required": true,
+			"type": "number"
+		},
+		"topK": {
+			"required": true,
+			"type": "integer"
+		},
+		"topP": {
+			"required": true,
+			"type": "number"
+		},
+		"promptTemplate": {
+			"required": true,
+			"type": "string"
+		},
+		"messages": {
+			"required": true,
+			"type": "array",
+			"items": {
+				"type": "any"
+			}
+		},
+		"$schema": {
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"title": {
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"backgroundImage": {
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"formattingInstructions": {
+			"required": true,
+			"type": "string"
+		},
+		"grammar": {
+			"required": true,
+			"type": "string"
+		},
+		"model": {
+			"type": [
+				"string",
+				"null"
+			]
+		}
+	}
+}
