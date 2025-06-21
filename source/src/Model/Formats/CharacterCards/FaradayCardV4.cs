@@ -131,6 +131,7 @@ namespace Ginger
 		}
 
 		// Transient values, not part of JSON
+		public string creator;
 		public string hubCharacterId;
 		public string hubAuthorUsername;
 		public string authorNote;
@@ -165,6 +166,7 @@ namespace Ginger
 			card.data.example = output.example.ToFaradayChat(true);
 			card.data.grammar = output.grammar.ToString();
 			card.data.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToISO8601();
+			card.creator = Current.Card.creator;
 
 			// Append user persona
 			string userPersona = output.userPersona.ToFaraday();

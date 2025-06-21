@@ -599,11 +599,7 @@ namespace Ginger
 		{
 			ConfirmName();
 
-			string filename = null;
-			if (string.IsNullOrWhiteSpace(Current.Card.name) == false)
-				filename = Current.Card.name;
-			else if (string.IsNullOrWhiteSpace(Current.Character.name) == false)
-				filename = Current.Character.name;
+			string filename = Current.CardName;
 
 			int filter = AppSettings.User.LastExportCharacterFilter;
 			if (filter < 0 || filter > 10)

@@ -85,8 +85,9 @@ namespace Ginger.Integration
 			public LoreBookEntry[] loreItems = new LoreBookEntry[0];
 		}
 
-		public string hubCharacterId;
-		public string hubAuthorUsername;
+		public string creator;
+		public string hubCharacterId;		// Backyard
+		public string hubAuthorUsername;	// Backyard
 		public string authorNote;
 		public string userPersona;
 
@@ -110,6 +111,7 @@ namespace Ginger.Integration
 			card.data.grammar = output.grammar.ToString();
 			card.data.creationDate = (Current.Card.creationDate ?? DateTime.UtcNow).ToISO8601();
 			card.data.textStyle = Current.Card.textStyle;
+			card.creator = Current.Card.creator;
 
 			// Append user persona
 			string userPersona = output.userPersona.ToFaraday();
@@ -207,10 +209,11 @@ namespace Ginger.Integration
 					updateDate = data.creationDate,
 				},
 
-				authorNote = this.authorNote, //!
-				hubAuthorUsername = this.hubAuthorUsername, //!
-				hubCharacterId = this.hubCharacterId, //!
-				userPersona = this.userPersona, //!
+				creator = this.creator,
+				hubAuthorUsername = this.hubAuthorUsername,
+				hubCharacterId = this.hubCharacterId,
+				authorNote = this.authorNote,
+				userPersona = this.userPersona,
 			};
 
 			if (string.IsNullOrEmpty(data.greeting.name) == false)
@@ -252,10 +255,11 @@ namespace Ginger.Integration
 					updateDate = cardV4.data.creationDate,
 				},
 
-				authorNote = cardV4.authorNote, //!
-				hubAuthorUsername = cardV4.hubAuthorUsername, //!
-				hubCharacterId = cardV4.hubCharacterId, //!
-				userPersona = cardV4.userPersona, //!
+				creator = cardV4.creator,
+				hubAuthorUsername = cardV4.hubAuthorUsername,
+				hubCharacterId = cardV4.hubCharacterId,
+				authorNote = cardV4.authorNote,
+				userPersona = cardV4.userPersona,
 			};
 
 			if (cardV4.data.loreItems != null)

@@ -331,21 +331,26 @@ namespace Ginger
 			var scenarios = new List<ScenarioData>();
 
 			// Characters
+			bool bSoloCharacter = backup.characterCards.Length < 2;
 			for (int iChar = 0; iChar < backup.characterCards.Length; ++iChar)
 			{
 				var characterData = new CharacterData();
 				characterData.id = string.Format("character{0}", iChar + 1);
-				characterData.images = backup.images.Where(i => i.characterIndex == iChar || (iChar == 0 && i.characterIndex < 0)).ToArray();
+				characterData.images = backup.images.Where(i => bSoloCharacter || i.characterIndex == iChar || (iChar == 0 && i.characterIndex < 0)).ToArray();
 
-				var byafCharacter = ByafCharacterV1.FromFaradayCard(backup.characterCards[iChar]);
+				var character = ByafCharacterV1.FromFaradayCard(backup.characterCards[iChar]);
+				character.id = characterData.id;
 
-				// Image paths
-				int imageIndex = 0;
-				byafCharacter.images = characterData.images.Select(i => new ByafCharacterV1.Image() {
-					path = string.Format("images/image{0:00}.{1}", imageIndex++, i.ext),
-					label = "",
-				}).ToArray();
-				characterData.jsonData = byafCharacter.ToJson();
+				character.images = new ByafCharacterV1.Image[characterData.images.Length];
+				for (int i = 0; i < characterData.images.Length; ++i)
+				{
+					character.images[i] = new ByafCharacterV1.Image() {
+						path = string.Format(i == 0 ? "images/portrait.{1}" : "images/image{0}.{1}", i, characterData.images[i].ext),
+						label = i == 0 ? character.name : "",
+					};
+				}
+				
+				characterData.jsonData = character.ToJson();
 				characters.Add(characterData);
 			}
 
@@ -356,16 +361,27 @@ namespace Ginger
 				var scenarioData = new ScenarioData();
 				scenarioData.id = string.Format("scenario{0}", scenarioIndex++);
 
-				scenarioData.jsonData = ByafScenarioV1.FromChat(new BackupData.Chat() {
+				var scenario = ByafScenarioV1.FromChat(new BackupData.Chat() {
 					name = backupChat.name,
 					creationDate = backupChat.creationDate,
 					updateDate = backupChat.updateDate,
 					staging = backupChat.staging,
 					parameters = backupChat.parameters,
-					backgroundName = backupChat.backgroundName,
 					history = ChatHistory.LegacyFix(backupChat.history),
-				}).ToJson();
+				});
 
+				if (string.IsNullOrEmpty(backupChat.backgroundName) == false && backup.backgrounds != null)
+				{
+					int bgIndex = backup.backgrounds.FindIndex(b => Path.GetFileNameWithoutExtension(b.filename) == backupChat.backgroundName);
+					if (bgIndex != -1)
+					{
+						var background = backup.backgrounds[bgIndex];
+						scenario.backgroundImage = string.Format("scenarios/backgrounds/{0}.{1}", scenarioData.id, background.ext);
+						scenarioData.backgroundImage = background;
+					}
+				}
+
+				scenarioData.jsonData = scenario.ToJson();
 				scenarios.Add(scenarioData);
 			}
 
@@ -379,6 +395,13 @@ namespace Ginger
 				manifest.author = new ByafManifestV1.Author() {
 					name = backup.characterCards[0].hubAuthorUsername,
 					backyardURL = string.Concat("https://backyard.ai/hub/user/", backup.characterCards[0].hubAuthorUsername),
+				};
+			}
+			else if (string.IsNullOrWhiteSpace(backup.characterCards[0].creator) == false)
+			{
+				manifest.author = new ByafManifestV1.Author() {
+					name = backup.characterCards[0].creator,
+					backyardURL = "https://backyard.ai/hub/",
 				};
 			}
 
@@ -410,7 +433,8 @@ namespace Ginger
 						int imageIndex = 0;
 						foreach (var image in character.images)
 						{
-							var imageEntry = zip.CreateEntry(string.Format("characters/{0}/images/image{1:00}.{2}", character.id, imageIndex++, image.ext), CompressionLevel.NoCompression);
+							string entryPath = string.Format(imageIndex == 0 ? "characters/{0}/images/portrait.{2}" : "characters/{0}/images/image{1}.{2}", character.id, imageIndex++, image.ext);
+							var imageEntry = zip.CreateEntry(entryPath, CompressionLevel.NoCompression);
 							using (Stream writer = imageEntry.Open())
 							{
 								writer.Write(image.data, 0, image.data.Length);
@@ -431,8 +455,8 @@ namespace Ginger
 						// Write background
 						if (scenario.backgroundImage != null)
 						{ 
-							var imageEntry = zip.CreateEntry(string.Format("scenarios/backgrounds/{0}.{1}", scenario.id, scenario.backgroundImage.ext), CompressionLevel.NoCompression);
-							using (Stream writer = imageEntry.Open())
+							var bgEntry = zip.CreateEntry(string.Format("scenarios/backgrounds/{0}.{1}", scenario.id, scenario.backgroundImage.ext), CompressionLevel.NoCompression);
+							using (Stream writer = bgEntry.Open())
 							{
 								writer.Write(scenario.backgroundImage.data, 0, scenario.backgroundImage.data.Length);
 							}

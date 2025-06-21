@@ -19,13 +19,13 @@ namespace Ginger
 			_schema = JsonSchema.Parse(Resources.backyard_archive_manifest_v1_schema);
 		}
 		
-		[JsonProperty("$schema", NullValueHandling = NullValueHandling.Ignore)]
+		[JsonProperty("$schema", NullValueHandling = NullValueHandling.Ignore, Order = -100)]
 		public const string schemaUri = "https://backyard.ai/schemas/byaf-manifest.schema.json";
 
-		[JsonProperty("schemaVersion", Required = Required.Always)]
+		[JsonProperty("schemaVersion", Required = Required.Always, Order = -2)]
 		public int version = 1;
 
-		[JsonProperty("createdAt", Required = Required.Always)]
+		[JsonProperty("createdAt", Required = Required.Always, Order = -1)]
 		public string creationDate { get; set; }
 
 		[JsonProperty("characters", Required = Required.Always)]

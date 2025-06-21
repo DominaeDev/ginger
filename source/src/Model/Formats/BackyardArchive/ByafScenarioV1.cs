@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using System;
+using System.Collections.Generic;
 
 namespace Ginger
 {
@@ -20,67 +21,67 @@ namespace Ginger
 			_schema = JsonSchema.Parse(Resources.backyard_archive_scenario_v1_schema);
 		}
 		
-		[JsonProperty("$schema", NullValueHandling = NullValueHandling.Ignore)]
+		[JsonProperty("$schema", NullValueHandling = NullValueHandling.Ignore, Order = -100)]
 		public const string schemaUri = "https://backyard.ai/schemas/byaf-scenario.schema.json";
 
-		[JsonProperty("schemaVersion", Required = Required.Always)]
+		[JsonProperty("schemaVersion", Required = Required.Always, Order = -1)]
 		public int version = 1;
 
-		[JsonProperty("title", NullValueHandling = NullValueHandling.Ignore)]
+		[JsonProperty("title", NullValueHandling = NullValueHandling.Ignore, Order = 0)]
 		public string title { get; set; }
 
 		// Scenario settings
-		[JsonProperty("backgroundImage", NullValueHandling = NullValueHandling.Ignore)]
-		public string backgroundImage { get; set; }
-
-		[JsonProperty("formattingInstructions", Required = Required.Always)]
-		public string formattingInstructions { get; set; }
-
-		[JsonProperty("narrative", Required = Required.Always)]
+		[JsonProperty("narrative", Required = Required.Always, Order = 10)]
 		public string narrative;
 
-		[JsonProperty("firstMessages")]
+		[JsonProperty("formattingInstructions", Required = Required.Always, Order = 11)]
+		public string formattingInstructions { get; set; }
+
+		[JsonProperty("firstMessages", Order = 12)]
 		public CharacterText[] greetings = new CharacterText[0]; // n = 1
 
-		[JsonProperty("exampleMessages")]
+		[JsonProperty("exampleMessages", Order = 13)]
 		public CharacterText[] exampleMessages = new CharacterText[0];
 
-		[JsonProperty("canDeleteExampleMessages")]
+		[JsonProperty("canDeleteExampleMessages", Order = 14)]
 		public bool pruneExampleChat = true;
 
-		[JsonProperty("grammar", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Include)]
+		[JsonProperty("backgroundImage", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore, Order = 15)]
+		public string backgroundImage { get; set; }
+
+		[JsonProperty("grammar", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Include, Order = 16)]
 		public string grammar { get; set; }
 
 		// Model settings
-		[JsonProperty("model", NullValueHandling = NullValueHandling.Ignore)]
+		[JsonProperty("model", NullValueHandling = NullValueHandling.Ignore, Order = 50)]
 		public string model { get; set; }
 
-		[JsonProperty("minP", Required = Required.Always)]
-		public decimal minP = 0.1m;
-
-		[JsonProperty("minPEnabled", Required = Required.Always)]
-		public bool minPEnabled = true;
-
-		[JsonProperty("repeatLastN", Required = Required.Always)]
-		public int repeatLastN = 256;
-
-		[JsonProperty("repeatPenalty", Required = Required.Always)]
-		public decimal repeatPenalty = 1.05m;
-
-		[JsonProperty("temperature", Required = Required.Always)]
-		public decimal temperature = 1.2m;
-
-		[JsonProperty("topK", Required = Required.Always)]
-		public int topK = 30;
-
-		[JsonProperty("topP", Required = Required.Always)]
-		public decimal topP = 0.9m;
-
-		[JsonProperty("promptTemplate", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Include)]
+		[JsonProperty("promptTemplate", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Include, Order = 51)]
 		public string promptTemplate = null; // (null | "general" | "ChatML" | "Llama3" | "Gemma2" | "CommandR" | "MistralInstruct")
 
+		[JsonProperty("minP", Required = Required.Always, Order = 60)]
+		public decimal minP = 0.1m;
+
+		[JsonProperty("minPEnabled", Required = Required.Always, Order = 61)]
+		public bool minPEnabled = true;
+
+		[JsonProperty("temperature", Required = Required.Always, Order = 62)]
+		public decimal temperature = 1.2m;
+
+		[JsonProperty("topK", Required = Required.Always, Order = 63)]
+		public int topK = 30;
+
+		[JsonProperty("topP", Required = Required.Always, Order = 64)]
+		public decimal topP = 0.9m;
+
+		[JsonProperty("repeatLastN", Required = Required.Always, Order = 65)]
+		public int repeatLastN = 256;
+
+		[JsonProperty("repeatPenalty", Required = Required.Always, Order = 66)]
+		public decimal repeatPenalty = 1.05m;
+
 		// Chat messages
-		[JsonProperty("messages", Required = Required.Always)]
+		[JsonProperty("messages", Required = Required.Always, Order = 100)]
 		public Message[] messages = new Message[0];
 
 		[JsonConverter(typeof(JsonMessageConverter))]
@@ -280,6 +281,7 @@ namespace Ginger
 				pruneExampleChat = chat.staging.pruneExampleChat,
 				promptTemplate = chat.parameters.promptTemplate,
 				grammar = chat.staging.grammar,
+
 				// Parameters
 				model = chat.parameters.model,
 				minP = chat.parameters.minP,
@@ -291,6 +293,27 @@ namespace Ginger
 				topP = chat.parameters.topP,
 			};
 
+			// Greeting
+			if (chat.staging.greeting.IsEmpty() == false)
+			{
+				scenario.greetings = new CharacterText[] {
+					new CharacterText() {
+						characterID = "character1",
+						text = chat.staging.greeting.text,
+					}
+				};
+			}
+
+			// Example messages
+			if (chat.staging.exampleMessages.IsEmpty() == false)
+			{
+				scenario.exampleMessages = new CharacterText[] {
+					new CharacterText() {
+						characterID = "character1",
+						text = chat.staging.example,
+					}
+				};
+			}
 
 			return scenario;
 		}

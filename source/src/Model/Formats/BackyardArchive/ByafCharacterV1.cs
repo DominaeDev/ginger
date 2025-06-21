@@ -19,38 +19,38 @@ namespace Ginger
 			_schema = JsonSchema.Parse(Resources.backyard_archive_character_v1_schema);
 		}
 		
-		[JsonProperty("$schema", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+		[JsonProperty("$schema", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore, Order = -100)]
 		public const string schemaUri = "https://backyard.ai/schemas/byaf-character.schema.json";
 
-		[JsonProperty("schemaVersion", Required = Required.Always)]
+		[JsonProperty("schemaVersion", Required = Required.Always, Order = -1)]
 		public int version = 1;
 
-		[JsonProperty("id", Required = Required.Always)]
+		[JsonProperty("id", Required = Required.Always, Order = 0)]
 		public string id { get; set; }
 
-		[JsonProperty("name", Required = Required.Always)]
+		[JsonProperty("name", Required = Required.Always, Order = 1)]
 		public string name { get; set; }
 
-		[JsonProperty("displayName", Required = Required.Always)]
+		[JsonProperty("displayName", Required = Required.Always, Order = 2)]
 		public string displayName { get; set; }
 
-		[JsonProperty("isNSFW", Required = Required.Always)]
-		public bool isNSFW { get; set; }
-
-		[JsonProperty("persona")]
+		[JsonProperty("persona", Order = 3)]
 		public string persona { get; set; }
 
-		[JsonProperty("createdAt")]
-		public string creationDate { get; set; }
+		[JsonProperty("images", Required = Required.Always, Order = 4)]
+		public Image[] images = new Image[0];
 
-		[JsonProperty("updatedAt")]
-		public string updateDate { get; set; }
-
-		[JsonProperty("loreItems", Required = Required.Always)]
+		[JsonProperty("loreItems", Required = Required.Always, Order = 5)]
 		public LorebookItem[] loreItems = new LorebookItem[0];
 
-		[JsonProperty("images", Required = Required.Always)]
-		public Image[] images = new Image[0];
+		[JsonProperty("isNSFW", Required = Required.Always, Order = 6)]
+		public bool isNSFW { get; set; }
+
+		[JsonProperty("createdAt", Order = 100)]
+		public string creationDate { get; set; }
+
+		[JsonProperty("updatedAt", Order = 101)]
+		public string updateDate { get; set; }
 		
 		public class LorebookItem
 		{

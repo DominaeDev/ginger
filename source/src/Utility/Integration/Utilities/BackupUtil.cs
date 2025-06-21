@@ -312,17 +312,18 @@ namespace Ginger.Integration
 				})
 				.ToList();
 
+			var backgrounds = assets
+				.Where(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background)
+				.Select(a => new BackupData.Image() {
+					filename = string.Format("{0}.{1}", a.name, a.ext),
+					data = a.data.bytes,
+				})
+				.ToList();
+
 			backupInfo = new BackupData() {
 				characterCards = new FaradayCardV4[1] { card },
 				images = images,
-				backgrounds = assets
-					.Where(a => a.isEmbeddedAsset && a.assetType == AssetFile.AssetType.Background)
-					.Select(a => new BackupData.Image() {
-						characterIndex = a.actorIndex,
-						filename = a.fullUri, 
-						data = a.data.bytes,
-					})
-					.ToList(),
+				backgrounds = backgrounds,
 				chats = new List<BackupData.Chat>() {
 					new BackupData.Chat() {
 						creationDate = DateTime.Now,
@@ -336,6 +337,7 @@ namespace Ginger.Integration
 							grammar = card.data.grammar ?? "",
 							authorNote = card.authorNote ?? "",
 						},
+						backgroundName = backgrounds.Count > 0 ? Path.GetFileNameWithoutExtension(backgrounds[0].filename) : null,
 					}
 				},
 				displayName = card.data.displayName,

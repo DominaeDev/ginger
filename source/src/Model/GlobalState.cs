@@ -40,8 +40,16 @@ namespace Ginger
 
 		public static bool IsLoading = false;
 
-		public static string CardName { get { return Utility.FirstNonEmpty(Card.name, MainCharacter.name, Constants.DefaultCharacterName); } }
-		public static string Name { get { return Utility.FirstNonEmpty(Character.name, Card.name, Constants.DefaultCharacterName); } }
+		public static string CardName { 
+			get 
+			{ 
+				if (Characters.Count == 1)
+					return Utility.FirstNonEmpty(Card.name, Character.spokenName, Constants.DefaultCharacterName);
+				else
+					return Utility.FirstNonEmpty(Card.name, Utility.CommaSeparatedList(Characters.Select(c => Utility.FirstNonEmpty(c.spokenName, Constants.DefaultCharacterName)), "and", false), Constants.DefaultCharacterName);
+			}
+		}
+		public static string Name { get { return Utility.FirstNonEmpty(MainCharacter.name, Card.name, Constants.DefaultCharacterName); } }
 
 		public static int SelectedCharacter { get; set; }
 
