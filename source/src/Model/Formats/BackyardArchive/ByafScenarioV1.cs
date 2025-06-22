@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using System;
-using System.Collections.Generic;
 
 namespace Ginger
 {
@@ -163,11 +162,11 @@ namespace Ginger
 
 			public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 			{
-				JObject jObj = JObject.Load(reader);
+				JObject jDoc = JObject.Load(reader);
 
 				bool isAI = false;
 				bool isHuman = false;
-				foreach (JProperty jProp in (JToken)jObj)
+				foreach (JProperty jProp in (JToken)jDoc)
 				{
 					if (jProp.Name.ToString() == "type")
 					{
@@ -182,6 +181,11 @@ namespace Ginger
 							break;
 						}
 					}
+					else if (jProp.Name == "outputs")
+					{
+						isAI = true;
+						break;
+					}
 				}
 
 				if (isHuman)
@@ -190,7 +194,7 @@ namespace Ginger
 					string createdAt = null;
 					string updatedAt = null;
 
-					foreach (JProperty jProp in (JToken)jObj)
+					foreach (JProperty jProp in (JToken)jDoc)
 					{
 						switch (jProp.Name.ToString())
 						{
@@ -199,6 +203,7 @@ namespace Ginger
 						case "updatedAt": updatedAt = jProp.Value.ToString(); break;
 						}
 					}
+
 					if (text != null && createdAt != null && updatedAt != null)
 					{
 						return new Message() {
@@ -216,10 +221,46 @@ namespace Ginger
 				}
 				else if (isAI)
 				{
-					return jObj.ToObject<Message>(); //?
+					JToken jOutputs;
+					if (jDoc.TryGetValue("outputs", out jOutputs) == false)
+						throw new JsonException("Invalid message format");
+
+					string text = null;
+					string createdAt = null;
+					string updatedAt = null;
+					string activeAt = null;
+
+					foreach (JObject jObj in (JArray)jOutputs)
+					{
+						foreach (JProperty jProp in (JToken)jObj)
+						{
+							switch (jProp.Name.ToString())
+							{
+							case "text": text = jProp.Value.ToString(); break;
+							case "createdAt": createdAt = jProp.Value.ToString(); break;
+							case "updatedAt": updatedAt = jProp.Value.ToString(); break;
+							case "activeTimestamp": activeAt = jProp.Value.ToString(); break;
+							}
+						}
+
+						if (text != null && createdAt != null && updatedAt != null && activeAt != null)
+						{
+							return new Message() {
+								type = Message.MsgType.AI,
+								outputs = new Message.Output[] {
+									new Message.Output {
+										text = text,
+										creationDate = createdAt,
+										updateDate = updatedAt,
+										activeDate = activeAt,
+									},
+								},
+							};
+						}
+					}
 				}
 
-				throw new JsonException("Invalid message");
+				throw new JsonException("Invalid message format");
 			}
 
 			public override bool CanWrite
@@ -316,6 +357,42 @@ namespace Ginger
 			}
 
 			return scenario;
+		}
+
+		public BackupData.Chat ToChat()
+		{
+			var chat = new BackupData.Chat() {
+				name = Utility.FirstNonEmpty(title, Backyard.ChatInstance.DefaultName),
+				staging = new Backyard.ChatStaging() {
+					system = formattingInstructions,
+					scenario = narrative,
+					pruneExampleChat = pruneExampleChat,
+					grammar = grammar,
+				},
+				parameters = new Backyard.ChatParameters() {
+					model = model,
+					promptTemplate = promptTemplate,
+					minP = minP,
+					minPEnabled = minPEnabled,
+					temperature = temperature,
+					repeatLastN = repeatLastN,
+					repeatPenalty = repeatPenalty,
+					topK = topK,
+					topP = topP,
+				},
+			};
+
+			if (greetings.IsEmpty() == false)
+			{
+				chat.staging.greeting = Backyard.CharacterMessage.FromString(greetings[0].text);
+			}
+
+			if (exampleMessages.IsEmpty() == false)
+			{
+				chat.staging.example = exampleMessages[0].text;
+			}
+
+			return chat;
 		}
 	}
 }

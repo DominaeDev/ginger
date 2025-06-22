@@ -10,47 +10,6 @@ using Ginger.Integration;
 
 namespace Ginger
 {
-	using CharacterInstance = Backyard.CharacterInstance;
-	using GroupInstance = Backyard.GroupInstance;
-	using ChatInstance = Backyard.ChatInstance;
-	using ChatParameters = Backyard.ChatParameters;
-	using ChatStaging = Backyard.ChatStaging;
-	using ImageInstance = Backyard.ImageInstance;
-	using CharacterMessage = Backyard.CharacterMessage;
-
-	/*public class ArchiveData
-	{
-		public FaradayCardV4[] characterCards;
-		public List<Image> images;
-		public List<Image> backgrounds;
-		public List<Chat> chats;
-		public UserData userInfo;
-		public Image userPortrait;
-		public string displayName;
-		
-		public class Image
-		{
-			public int characterIndex;
-			public string filename;
-			public byte[] data;
-			public string ext { get { return Utility.GetFileExt(filename); } }
-		}
-
-		public class Chat
-		{
-			public string name;
-			public string[] participants;
-			public DateTime creationDate;
-			public DateTime updateDate;
-			public ChatHistory history;
-			public ChatStaging staging = new ChatStaging();
-			public ChatParameters parameters = new ChatParameters();
-			public string backgroundName;
-		}
-
-		public bool hasModelSettings { get { return chats != null && chats.ContainsAny(c => c.parameters != null); } }
-	}*/
-
 	public static class BackyardArchiveUtil
 	{
 		private class CharacterData
@@ -69,13 +28,11 @@ namespace Ginger
 
 		public static FileUtil.Error ReadArchive(string filename, out BackupData backup)
 		{
-			List<FaradayCardV4> lsCharacterCards = new List<FaradayCardV4>();
-			List<BackupData.Image> images = new List<BackupData.Image>();
-			List<BackupData.Image> backgrounds = new List<BackupData.Image>();
-			List<BackupData.Image> userImages = new List<BackupData.Image>();
-			Dictionary<string, BackupData.Chat> chats = new Dictionary<string, BackupData.Chat>();
-			UserData userInfo = null;
-
+			ByafManifestV1 manifest = null;
+			var lsCharacterData = new Dictionary<string, ByafCharacterV1>();
+			var lsScenarioData = new Dictionary<string, ByafScenarioV1>();
+			List<BackupData.Image> lsImageData = new List<BackupData.Image>();
+			
 			try
 			{
 				using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
@@ -87,186 +44,64 @@ namespace Ginger
 							if (entry.Name == "")
 								continue; // Skip folder entries
 
-							string entryPath = Path.GetDirectoryName(entry.FullName).Replace('\\', '/');
-							string entryFullName = Path.GetFileName(entry.FullName);
-							string entryName = Path.GetFileNameWithoutExtension(entry.FullName);
+							string entryFullName = entry.FullName.Replace('\\', '/');
 							string entryExt = Utility.GetFileExt(entry.FullName);
-							
-							// Read character png
-							if (entryPath == "" && entryExt == "png")
+							long dataSize = entry.Length;
+
+							if (entryExt == "json")
 							{
-								long dataSize = entry.Length;
-								if (dataSize > 0)
+								// Read manifest
+								using (var dataStream = entry.Open())
 								{
-									var dataStream = entry.Open();
 									byte[] buffer = new byte[dataSize];
 									dataStream.Read(buffer, 0, (int)dataSize);
+									string json = new string(Encoding.UTF8.GetChars(buffer));
 
-									FileUtil.EmbeddedData data;
-									if (FileUtil.ExtractJsonFromPNG(buffer, out data) == FileUtil.Error.NoError && data.faradayJson != null)
+									if (entryFullName == "manifest.json")
 									{
-										var characterCard = FaradayCardV4.FromJson(data.faradayJson);
-										if (characterCard != null)
+										manifest = ByafManifestV1.FromJson(json);
+										if (manifest == null)
 										{
-											lsCharacterCards.Add(characterCard);
-
-											images.Add(new BackupData.Image() {
-												characterIndex = lsCharacterCards.Count - 1,
-												filename = entryFullName,
-												data = buffer,
-											});
-											continue;
+											backup = default(BackupData);
+											return FileUtil.Error.InvalidJson;
+										}
+									}
+									else
+									{
+										if (ByafCharacterV1.Validate(json))
+										{
+											ByafCharacterV1 character = ByafCharacterV1.FromJson(json);
+											if (character != null)
+												lsCharacterData.Add(entryFullName, character);
+											else
+											{
+												backup = default(BackupData);
+												return FileUtil.Error.InvalidJson;
+											}
+										}
+										else if (ByafScenarioV1.Validate(json))
+										{
+											ByafScenarioV1 scenario = ByafScenarioV1.FromJson(json);
+											if (scenario != null)
+												lsScenarioData.Add(entryFullName, scenario);
+											else
+											{
+												backup = default(BackupData);
+												return FileUtil.Error.InvalidJson;
+											}
 										}
 									}
 								}
 							}
-
-							// Read chat log (Backyard json)
-							if ((entryPath == "chats" || entryPath == "logs") && entryExt == "json")
+							else if (Utility.IsSupportedImageFileExt(entryExt))
 							{
-								long dataSize = entry.Length;
-								if (dataSize > 0)
+								// Read manifest
+								using (var dataStream = entry.Open())
 								{
-									var dataStream = entry.Open();
 									byte[] buffer = new byte[dataSize];
 									dataStream.Read(buffer, 0, (int)dataSize);
-									string chatJson = new string(Encoding.UTF8.GetChars(buffer));
 
-									if (BackyardChatBackupV2.Validate(chatJson))
-									{
-										var chatBackup = BackyardChatBackupV2.FromJson(chatJson);
-										if (chatBackup != null)
-										{
-											var chat = chatBackup.ToChat();
-											if (chat.name == null)
-												chat.name = ChatInstance.DefaultName;
-
-											chats.TryAdd(entryName.ToLowerInvariant(), chat);
-										}
-									}
-									else if (BackyardChatBackupV1.Validate(chatJson))
-									{
-										var chatBackup = BackyardChatBackupV1.FromJson(chatJson);
-										if (chatBackup != null)
-										{
-											var chat = chatBackup.ToChat();
-											if (chat.name == null)
-												chat.name = ChatInstance.DefaultName;
-
-											chats.TryAdd(entryName.ToLowerInvariant(), chat);
-										}
-									}
-								}
-								continue;
-							}
-
-							// Read chat log (Ginger log)
-							if ((entryPath == "chats" || entryPath == "logs") && entryExt == "log")
-							{
-								long dataSize = entry.Length;
-								if (dataSize > 0)
-								{
-									var dataStream = entry.Open();
-									byte[] buffer = new byte[dataSize];
-									dataStream.Read(buffer, 0, (int)dataSize);
-									string chatJson = new string(Encoding.UTF8.GetChars(buffer));
-
-									if (GingerChatV2.Validate(chatJson))
-									{
-										entryName = Path.GetFileNameWithoutExtension(entryName);
-										var chat = GingerChatV2.FromJson(chatJson);
-										if (chat != null)
-											chats.Set(entryName.ToLowerInvariant(), chat.ToBackupChat());
-									}
-									else if (GingerChatV1.Validate(chatJson))
-									{
-										entryName = Path.GetFileNameWithoutExtension(entryName);
-										var chat = GingerChatV1.FromJson(chatJson);
-										if (chat != null)
-											chats.Set(entryName.ToLowerInvariant(), chat.ToBackupChat());
-									}
-								}
-								continue;
-							}
-
-							// Images
-							if (entryPath.BeginsWith("images") && Utility.IsSupportedImageFileExt(entryExt))
-							{
-								int characterIndex = 0;
-
-								if (entryPath.Length >= 7)
-								{
-									string imagePath = entryPath.Substring(7);
-
-									if (imagePath.Length > 0)
-									{
-										int pos_slash = imagePath.IndexOf('/');
-										if (pos_slash != -1)
-											int.TryParse(imagePath.Substring(0, pos_slash), out characterIndex);
-										else
-											int.TryParse(imagePath, out characterIndex);
-									}
-								}
-
-								long dataSize = entry.Length;
-								if (dataSize > 0)
-								{
-									var dataStream = entry.Open();
-									byte[] buffer = new byte[dataSize];
-									dataStream.Read(buffer, 0, (int)dataSize);
-									images.Add(new BackupData.Image() {
-										characterIndex = characterIndex,
-										filename = entryFullName,
-										data = buffer,
-									});
-								}
-								continue;
-							}
-
-							// Backgrounds
-							if (entryPath == "backgrounds" && Utility.IsSupportedImageFileExt(entryExt))
-							{
-								long dataSize = entry.Length;
-								if (dataSize > 0)
-								{
-									var dataStream = entry.Open();
-									byte[] buffer = new byte[dataSize];
-									dataStream.Read(buffer, 0, (int)dataSize);
-									backgrounds.Add(new BackupData.Image() {
-										filename = entryFullName,
-										data = buffer,
-									});
-								}
-								continue;
-							}
-
-							// User info
-							if (entryPath == "user" && entryExt == "json")
-							{
-								long dataSize = entry.Length;
-								if (dataSize > 0)
-								{
-									var dataStream = entry.Open();
-									byte[] buffer = new byte[dataSize];
-									dataStream.Read(buffer, 0, (int)dataSize);
-									string chatJson = new string(Encoding.UTF8.GetChars(buffer));
-
-									if (UserData.Validate(chatJson))
-										userInfo = UserData.FromJson(chatJson);
-								}
-								continue;
-							}
-
-							// User portrait
-							if (entryPath == "user" && Utility.IsSupportedImageFileExt(entryExt))
-							{
-								long dataSize = entry.Length;
-								if (dataSize > 0)
-								{
-									var dataStream = entry.Open();
-									byte[] buffer = new byte[dataSize];
-									dataStream.Read(buffer, 0, (int)dataSize);
-									userImages.Add(new BackupData.Image() {
+									lsImageData.Add(new BackupData.Image() {
 										filename = entryFullName,
 										data = buffer,
 									});
@@ -275,54 +110,87 @@ namespace Ginger
 						}
 					}
 				}
-				
-				if (lsCharacterCards.IsEmpty())
-				{
-					backup = default(BackupData);
-					return FileUtil.Error.NoDataFound;
-				}
-
-				if (images.Count > 0)
-				{
-					for (int i = 0; i < lsCharacterCards.Count; ++i)
-					{
-						int portraitIndex = images.FindIndex(img => img.characterIndex == i);
-						if (portraitIndex == -1)
-							continue;
-
-						// images/portrait.*, images/image_00.* supercedes png.
-						int idxPortrait = images.FindIndex(img => {
-							string fn = Path.GetFileNameWithoutExtension(img.filename).ToLowerInvariant();
-							return (img.characterIndex == i) && (fn == "portrait" || fn == "image_00");
-						});
-
-						if (idxPortrait > portraitIndex)
-						{
-							// Move to front (remove existing)
-							var image = images[idxPortrait];
-							images.RemoveAt(idxPortrait);
-							images.RemoveAt(portraitIndex);
-							images.Insert(portraitIndex, image);
-						}
-					}
-				}
-
-				backup = new BackupData() {
-					characterCards = lsCharacterCards.ToArray(),
-					displayName = lsCharacterCards[0].data.displayName,
-					chats = chats.Values.ToList(),
-					images = images,
-					backgrounds = backgrounds,
-					userInfo = userInfo,
-					userPortrait = userImages.FirstOrDefault(),
-				};
-				return FileUtil.Error.NoError;
 			}
 			catch
 			{
 				backup = default(BackupData);
 				return FileUtil.Error.FileReadError;
 			}
+			
+			if (lsCharacterData.IsEmpty() || lsScenarioData.IsEmpty() || manifest == null || manifest.characters.IsEmpty() || manifest.scenarios.IsEmpty())
+			{
+				backup = default(BackupData);
+				return FileUtil.Error.NoDataFound;
+			}
+
+			var cards = new List<FaradayCardV4>();
+			var chats = new List<BackupData.Chat>();
+			var images = new List<BackupData.Image>();
+			var backgrounds = new List<BackupData.Image>();
+
+			// Read characters
+			for (int i = 0; i < manifest.characters.Length; ++i)
+			{
+				ByafCharacterV1 character;
+				if (lsCharacterData.TryGetValue(manifest.characters[i], out character))
+				{
+					cards.Add(character.ToFaradayCard());
+					string characterPath = Path.GetDirectoryName(manifest.characters[i]);
+					foreach (var imagePath in character.images.Select(img => img.path))
+					{
+						var image = lsImageData.Find(img => img.filename == Path.Combine(characterPath, imagePath).Replace('\\', '/'));
+						if (image != null)
+						{
+							images.Add(new BackupData.Image() {
+								filename = Path.GetFileName(image.filename),
+								characterIndex = i,
+								data = image.data,
+							});
+						}
+					}
+				}
+				else
+				{
+					backup = default(BackupData);
+					return FileUtil.Error.InvalidData;
+				}
+			}
+
+			// Read scenarios
+			for (int i = 0; i < manifest.scenarios.Length; ++i)
+			{
+				ByafScenarioV1 scenario;
+				if (lsScenarioData.TryGetValue(manifest.scenarios[i], out scenario))
+				{
+					chats.Add(scenario.ToChat());
+					if (string.IsNullOrEmpty(scenario.backgroundImage) == false)
+					{
+						var image = lsImageData.Find(img => img.filename == scenario.backgroundImage);
+						if (image != null)
+						{
+							backgrounds.Add(new BackupData.Image() {
+								filename = Path.GetFileName(image.filename),
+								data = image.data,
+							});
+						}
+					}
+				}
+				else
+				{
+					backup = default(BackupData);
+					return FileUtil.Error.InvalidData;
+				}
+			}
+
+			backup = new BackupData() {
+				characterCards = cards.ToArray(),
+				displayName =  cards[0].data.displayName,
+				chats = chats,
+				images = lsImageData,
+				backgrounds = backgrounds,
+				userInfo = null,
+			};
+			return FileUtil.Error.NoError;
 		}
 
 		public static FileUtil.Error WriteArchive(string filename, BackupData backup)

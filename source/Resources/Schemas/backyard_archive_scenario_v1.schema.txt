@@ -1,11 +1,27 @@
 {
 	"type": "object",
 	"properties": {
+		"$schema": {
+			"type": [
+				"string",
+				"null"
+			]
+		},
 		"schemaVersion": {
 			"required": true,
 			"type": "integer"
 		},
+		"title": {
+			"type": [
+				"string",
+				"null"
+			]
+		},
 		"narrative": {
+			"required": true,
+			"type": "string"
+		},
+		"formattingInstructions": {
 			"required": true,
 			"type": "string"
 		},
@@ -71,37 +87,51 @@
 			"required": true,
 			"type": "boolean"
 		},
-		"minP": {
+		"backgroundImage": {
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"grammar": {
 			"required": true,
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"model": {
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"promptTemplate": {
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"minP": {
 			"type": "number"
 		},
 		"minPEnabled": {
-			"required": true,
 			"type": "boolean"
 		},
-		"repeatLastN": {
-			"required": true,
-			"type": "integer"
-		},
-		"repeatPenalty": {
-			"required": true,
-			"type": "number"
-		},
 		"temperature": {
-			"required": true,
 			"type": "number"
 		},
 		"topK": {
-			"required": true,
 			"type": "integer"
 		},
 		"topP": {
-			"required": true,
 			"type": "number"
 		},
-		"promptTemplate": {
-			"required": true,
-			"type": "string"
+		"repeatLastN": {
+			"type": "integer"
+		},
+		"repeatPenalty": {
+			"type": "number"
 		},
 		"messages": {
 			"required": true,
@@ -109,38 +139,6 @@
 			"items": {
 				"type": "any"
 			}
-		},
-		"$schema": {
-			"type": [
-				"string",
-				"null"
-			]
-		},
-		"title": {
-			"type": [
-				"string",
-				"null"
-			]
-		},
-		"backgroundImage": {
-			"type": [
-				"string",
-				"null"
-			]
-		},
-		"formattingInstructions": {
-			"required": true,
-			"type": "string"
-		},
-		"grammar": {
-			"required": true,
-			"type": "string"
-		},
-		"model": {
-			"type": [
-				"string",
-				"null"
-			]
 		}
 	}
 }

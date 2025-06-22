@@ -317,15 +317,15 @@ namespace Ginger
 			toolTip.AutoPopDelay = 3500;
 		}
 
-		private bool ImportCharacterJson()
+		private bool ImportCharacter()
 		{
 			int filter = AppSettings.User.LastImportCharacterFilter;
-			if (filter < 0 || filter > 5)
+			if (filter < 0 || filter > 6)
 				filter = 0;
 
 			// Open file...
 			importFileDialog.Title = Resources.cap_import_character;
-			importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml";
+			importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml;*.byaf|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml|Backyard Archive Format|*.byaf";
 			importFileDialog.FilterIndex = filter;
 			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			importFileDialog.FileName = "";
@@ -354,6 +354,8 @@ namespace Ginger
 				error = FileUtil.ImportCharacterJson(filename, out jsonErrors);
 			else if (ext == ".charx")
 				error = FileUtil.ImportCharacterFromPNG(filename, out jsonErrors, FileUtil.Format.SillyTavernV3);
+			else if (ext == ".byaf")
+				error = FileUtil.ImportCharacterFromBYAF(filename);
 			else if (ext == ".yaml")
 			{
 				error = FileUtil.ImportCharacterJson(filename, out jsonErrors);

@@ -1789,7 +1789,7 @@ namespace Ginger
 
 		private void ImportCharacterMenuItem_Click(object sender, EventArgs e)
 		{
-			if (ImportCharacterJson())
+			if (ImportCharacter())
 			{
 				Current.IsDirty = false;
 				Current.IsFileDirty = false;

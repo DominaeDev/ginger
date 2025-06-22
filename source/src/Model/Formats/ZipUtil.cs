@@ -188,13 +188,5 @@ namespace Ginger
 				return false;
 			}
 		}
-				
-		public static bool ExportToBYAF(string filename)
-		{
-			Integration.BackupData backupData;
-			Integration.BackupUtil.CreateBackup(out backupData);
-
-			return BackyardArchiveUtil.WriteArchive(filename, backupData) == Error.NoError;
-		}
 	}
 }

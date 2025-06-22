@@ -135,5 +135,26 @@ namespace Ginger
 				.ToArray();
 			return character;
 		}
+		
+		public FaradayCardV4 ToFaradayCard()
+		{
+			var character = new FaradayCardV4() {
+				data = new FaradayCardV4.Data() {
+					id = id,
+					name = name,
+					displayName = displayName,
+					creationDate = creationDate,
+					updateDate = updateDate,
+					persona = persona,
+					isNSFW = isNSFW,
+					loreItems = loreItems
+						.Select(i => new FaradayCardV1.LoreBookEntry() {
+							key = i.key,
+							value = i.value,
+						}).ToArray(),
+				},
+			};
+			return character;
+		}
 	}
 }

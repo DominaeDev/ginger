@@ -908,6 +908,12 @@ namespace Ginger
 				return FileType.CharX;
 			}
 
+			if (ext == ".byaf")
+			{
+				characterCount = 1;
+				return FileType.BackyardArchive;
+			}
+
 			if (ext == ".zip")
 			{
 				if (BackupUtil.CheckIfGroup(filename, out characterCount))
@@ -1268,6 +1274,99 @@ namespace Ginger
 				return Error.UnrecognizedFormat;
 
 			return bFallbackWarning ? Error.FallbackError : Error.NoError;
+		}
+				
+		public static Error ImportCharacterFromBYAF(string filename)
+		{
+			if (File.Exists(filename) == false)
+				return Error.FileNotFound;
+
+			// Load character data
+			ImportResult importResult;
+			BackupData backup;
+			var importError = BackyardArchiveUtil.ReadArchive(filename, out backup);
+			if (importError != Error.NoError)
+				return importError;
+
+			if (backup.characterCards.IsNullOrEmpty() == false)
+			{
+				// Assign portrait
+				Image mainPortrait;
+				var portraitImage = backup.images.FirstOrDefault(i => i.characterIndex <= 0);
+				if (portraitImage == null || !Utility.LoadImageFromMemory(portraitImage.data, out mainPortrait))
+					mainPortrait = null;
+
+				// Read staging from primary scenario
+				if (backup.chats.IsNullOrEmpty() == false)
+				{
+					var primaryCard = backup.characterCards[0];
+					var primaryChat = backup.chats.OrderByDescending(c => c.creationDate).First();
+					primaryCard.data.system = primaryChat.staging.system;
+					primaryCard.data.scenario = primaryChat.staging.scenario;
+					primaryCard.data.greeting = primaryChat.staging.greeting.ToString();
+					primaryCard.data.example = primaryChat.staging.example;
+					primaryCard.data.grammar = primaryChat.staging.grammar;
+				}
+
+				// Read character(s)
+				Current.ReadFaradayCards(backup.characterCards, mainPortrait, null);
+
+				// Add portrait(s)
+				IEnumerable<BackupData.Image> images = backup.images;
+				if (portraitImage != null)
+					images = images.Except(new BackupData.Image[] { portraitImage });
+
+				foreach (var image in images)
+				{
+					var asset = new AssetFile() {
+						actorIndex = image.characterIndex,
+						assetType = AssetFile.AssetType.Icon,
+						data = AssetData.FromBytes(image.data),
+						name = Path.GetFileNameWithoutExtension(image.filename),
+						ext = Utility.GetFileExt(image.filename),
+						uriType = AssetFile.UriType.Embedded,
+					};
+
+					if (Utility.IsAnimation(image.data))
+						asset.AddTags(AssetFile.Tag.Animation);
+					Current.Card.assets.Add(asset);
+				}
+
+				// Animated main portrait?
+				if (Utility.IsAnimation(portraitImage.data))
+				{
+					Current.Card.assets.Insert(0, new AssetFile() {
+						actorIndex = 0,
+						assetType = AssetFile.AssetType.Icon,
+						data = AssetData.FromBytes(portraitImage.data),
+						name = Path.GetFileNameWithoutExtension(portraitImage.filename),
+						ext = Utility.GetFileExt(portraitImage.filename),
+						uriType = AssetFile.UriType.Embedded,
+						tags = new HashSet<StringHandle>() { AssetFile.Tag.Animation, AssetFile.Tag.PortraitOverride }
+					});
+				}
+
+				// Background(s)
+				foreach (var backgroundImage in backup.backgrounds)
+				{
+					var asset = new AssetFile() {
+						actorIndex = -1,
+						assetType = AssetFile.AssetType.Background,
+						data = AssetData.FromBytes(backgroundImage.data),
+						name = Path.GetFileNameWithoutExtension(backgroundImage.filename),
+						ext = Utility.GetFileExt(backgroundImage.filename),
+						uriType = AssetFile.UriType.Embedded,
+					};
+
+					if (Utility.IsAnimation(backgroundImage.data))
+						asset.AddTags(AssetFile.Tag.Animation);
+					Current.Card.assets.Add(asset);
+				}
+
+				return Error.NoError;
+			}
+
+			return Error.UnrecognizedFormat;
 		}
 
 		private static Error ExtractAssetsFromPNG(string filename, TavernCardV3 tavernV3Card, out AssetCollection assets)
@@ -1657,7 +1756,9 @@ namespace Ginger
 			}
 			else if (fileType.Contains(FileType.Faraday | FileType.BackyardArchive)) // BYAF
 			{
-				return ExportToBYAF(filename);
+				BackupData backupData;
+				BackupUtil.CreateBackup(out backupData);
+				return BackyardArchiveUtil.WriteArchive(filename, backupData) == Error.NoError;
 			}
 			return false;
 		}
