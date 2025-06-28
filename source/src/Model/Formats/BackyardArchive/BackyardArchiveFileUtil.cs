@@ -165,12 +165,12 @@ namespace Ginger
 					chats.Add(scenario.ToChat());
 					if (string.IsNullOrEmpty(scenario.backgroundImage) == false)
 					{
-						var image = lsImageData.Find(img => img.filename == scenario.backgroundImage);
-						if (image != null)
+						var backgroundImage = lsImageData.Find(img => img.filename == scenario.backgroundImage);
+						if (backgroundImage != null)
 						{
 							backgrounds.Add(new BackupData.Image() {
-								filename = Path.GetFileName(image.filename),
-								data = image.data,
+								filename = Path.GetFileName(backgroundImage.filename),
+								data = backgroundImage.data,
 							});
 						}
 					}
@@ -186,7 +186,7 @@ namespace Ginger
 				characterCards = cards.ToArray(),
 				displayName =  cards[0].data.displayName,
 				chats = chats,
-				images = lsImageData,
+				images = images,
 				backgrounds = backgrounds,
 				userInfo = null,
 			};
@@ -241,10 +241,17 @@ namespace Ginger
 				if (string.IsNullOrEmpty(backupChat.backgroundName) == false && backup.backgrounds != null)
 				{
 					int bgIndex = backup.backgrounds.FindIndex(b => Path.GetFileNameWithoutExtension(b.filename) == backupChat.backgroundName);
-					if (bgIndex != -1)
+                    if (bgIndex == -1 && backupChat.backgroundName.BeginsWith("background_"))
+					{
+						if (int.TryParse(Path.GetFileNameWithoutExtension(backupChat.backgroundName.Substring(11)), out bgIndex))
+							bgIndex--; // 1-based
+						else
+							bgIndex = -1;
+					}
+					if (bgIndex >= 0 && bgIndex < backup.backgrounds.Count)
 					{
 						var background = backup.backgrounds[bgIndex];
-						scenario.backgroundImage = string.Format("scenarios/backgrounds/{0}.{1}", scenarioData.id, background.ext);
+						scenario.backgroundImage = string.Format("scenarios/{0}-background.{1}", scenarioData.id, background.ext);
 						scenarioData.backgroundImage = background;
 					}
 				}
@@ -323,7 +330,7 @@ namespace Ginger
 						// Write background
 						if (scenario.backgroundImage != null)
 						{ 
-							var bgEntry = zip.CreateEntry(string.Format("scenarios/backgrounds/{0}.{1}", scenario.id, scenario.backgroundImage.ext), CompressionLevel.NoCompression);
+							var bgEntry = zip.CreateEntry(string.Format("scenarios/{0}-background.{1}", scenario.id, scenario.backgroundImage.ext), CompressionLevel.NoCompression);
 							using (Stream writer = bgEntry.Open())
 							{
 								writer.Write(scenario.backgroundImage.data, 0, scenario.backgroundImage.data.Length);

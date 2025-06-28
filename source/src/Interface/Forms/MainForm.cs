@@ -2793,14 +2793,14 @@ namespace Ginger
 			ExportManyCharactersFromBackyard();
 		}
 
-		private void bulkExportPartiesMenuItem_Click(object sender, EventArgs e)
-		{
-			ExportManyPartiesFromBackyard();
-		}
-
 		private void bulkImportMenuItem_Click(object sender, EventArgs e)
 		{
 			ImportManyToBackyard();
+		}
+
+		private void bulkExportPartiesMenuItem_Click(object sender, EventArgs e)
+		{
+			ExportManyPartiesFromBackyard();
 		}
 
 		private void bulkChangeModelSettingsMenuItem_Click(object sender, EventArgs e)

@@ -163,6 +163,8 @@ namespace Ginger.Integration
 				Error error;
 				if (args.fileType.Contains(FileUtil.FileType.Backup))
 					error = ExportBackup(args.instances[i], out intermediateFilename);
+				else if (args.fileType.Contains(FileUtil.FileType.BackyardArchive))
+					error = ExportBackyardArchive(args.instances[i], out intermediateFilename);
 				else
 					error = ExportCharacter(args.instances[i], args.fileType, out intermediateFilename);
 
@@ -424,6 +426,58 @@ namespace Ginger.Integration
 			{
 				string intermediateFilename = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 				var writeError = BackupUtil.WriteBackup(intermediateFilename, backupData);
+
+				// Write to disk
+				if (writeError == FileUtil.Error.NoError)
+				{
+					filename = intermediateFilename;
+					return Error.NoError;
+				}
+				else if (writeError == FileUtil.Error.DiskFullError)
+				{
+					filename = default(string);
+					return Error.DiskFullError;
+				}
+				else
+				{
+					filename = default(string);
+					return Error.FileError;
+				}
+			}
+			catch (IOException e)
+			{
+				filename = default(string);
+				if (e.HResult == Win32.HR_ERROR_DISK_FULL || e.HResult == Win32.HR_ERROR_HANDLE_DISK_FULL)
+					return Error.DiskFullError;
+				return Error.FileError;
+			}
+			catch (Exception e)
+			{
+				filename = default(string);
+				return Error.UnknownError;
+			}
+		}
+		
+		private Error ExportBackyardArchive(CharacterInstance characterInstance, out string filename)
+		{
+			if (Backyard.ConnectionEstablished == false)
+			{
+				filename = default(string);
+				return Error.DatabaseError;
+			}
+
+			BackupData backupData;
+			var importError = BackupUtil.CreateBackup(characterInstance, out backupData);
+			if (importError != Backyard.Error.NoError)
+			{
+				filename = default(string);
+				return Error.DatabaseError;
+			}
+
+			try
+			{
+				string intermediateFilename = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+				var writeError = BackyardArchiveUtil.WriteArchive(intermediateFilename, backupData);
 
 				// Write to disk
 				if (writeError == FileUtil.Error.NoError)

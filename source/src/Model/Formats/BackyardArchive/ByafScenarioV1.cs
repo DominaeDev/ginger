@@ -4,6 +4,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Ginger
 {
@@ -94,9 +96,9 @@ namespace Ginger
 			public class Output
 			{
 				public string text;
-				public string creationDate { get; set; }
-				public string updateDate { get; set; }
-				public string activeDate { get; set; }
+				public DateTime creationDate { get; set; }
+				public DateTime updateDate { get; set; }
+				public DateTime activeDate { get; set; }
 			}
 		}
 
@@ -206,14 +208,21 @@ namespace Ginger
 
 					if (text != null && createdAt != null && updatedAt != null)
 					{
+						DateTime creationDate;
+						DateTime updateDate;
+						if (DateTime.TryParse(createdAt, out creationDate) == false)
+							creationDate = DateTime.UtcNow;
+						if (DateTime.TryParse(updatedAt, out updateDate) == false)
+							updateDate = DateTime.UtcNow;
+
 						return new Message() {
 							type = Message.MsgType.Human,
 							outputs = new Message.Output[] {
 								new Message.Output {
 									text = text,
-									creationDate = createdAt,
-									updateDate = updatedAt,
-									activeDate = updatedAt,
+									creationDate = creationDate,
+									updateDate = updateDate,
+									activeDate = updateDate,
 								},
 							},
 						};
@@ -245,14 +254,23 @@ namespace Ginger
 
 						if (text != null && createdAt != null && updatedAt != null && activeAt != null)
 						{
+							DateTime creationDate;
+							DateTime updateDate;
+							DateTime activeDate;
+							if (DateTime.TryParse(createdAt, out creationDate) == false)
+								creationDate = DateTime.UtcNow;
+							if (DateTime.TryParse(updatedAt, out updateDate) == false)
+								updateDate = DateTime.UtcNow;
+							if (DateTime.TryParse(activeAt, out activeDate) == false)
+								activeDate = DateTime.UtcNow;
 							return new Message() {
 								type = Message.MsgType.AI,
 								outputs = new Message.Output[] {
 									new Message.Output {
 										text = text,
-										creationDate = createdAt,
-										updateDate = updatedAt,
-										activeDate = activeAt,
+										creationDate = creationDate,
+										updateDate = updateDate,
+										activeDate = activeDate,
 									},
 								},
 							};
@@ -273,20 +291,20 @@ namespace Ginger
 				Message message = (Message)value;
 				writer.WriteStartObject();
 				writer.WritePropertyName("type");
-				writer.WriteValue(message.type);
+				writer.WriteValue(message.type == Message.MsgType.Human ? "human" : "ai");
 
 				if (message.type == Message.MsgType.Human && message.outputs != null && message.outputs.Length > 0)
 				{
 					writer.WritePropertyName("text");
 					writer.WriteValue(message.outputs[0].text);
 					writer.WritePropertyName("createdAt");
-					writer.WriteValue(message.outputs[0].creationDate);
+					writer.WriteValue(message.outputs[0].creationDate.ToISO8601());
 					writer.WritePropertyName("updatedAt");
-					writer.WriteValue(message.outputs[0].creationDate);
+					writer.WriteValue(message.outputs[0].updateDate.ToISO8601());
 				}
 				else if (message.type == Message.MsgType.AI)
 				{
-					writer.WritePropertyName("output");
+					writer.WritePropertyName("outputs");
 					writer.WriteStartArray();
 					foreach (var o in message.outputs)
 					{
@@ -294,11 +312,11 @@ namespace Ginger
 						writer.WritePropertyName("text");
 						writer.WriteValue(o.text);
 						writer.WritePropertyName("createdAt");
-						writer.WriteValue(o.creationDate);
+						writer.WriteValue(o.creationDate.ToISO8601());
 						writer.WritePropertyName("updatedAt");
-						writer.WriteValue(o.creationDate);
+						writer.WriteValue(o.updateDate.ToISO8601());
 						writer.WritePropertyName("activeTimestamp");
-						writer.WriteValue(o.activeDate);
+						writer.WriteValue(o.activeDate.ToISO8601());
 						writer.WriteEndObject();
 					}
 					writer.WriteEndArray();
@@ -354,6 +372,38 @@ namespace Ginger
 						text = chat.staging.example,
 					}
 				};
+			}
+
+			// Chat messages
+			if (chat.history != null && chat.history.isEmpty == false)
+			{
+				var messages = new List<Message>();
+				foreach (var msg in chat.history.messagesWithoutGreeting)
+				{
+					var message = new Message() {
+						type = msg.speaker == 0 ? Message.MsgType.Human : Message.MsgType.AI,
+						outputs = new Message.Output[msg.swipes.Length],
+					};
+
+					if (msg.swipes.IsNullOrEmpty())
+						continue;
+					
+					TimeSpan extraMS = TimeSpan.Zero;
+					for (int i = 0; i < msg.swipes.Length; ++i)
+					{
+						message.outputs[i] = new Message.Output() {
+							text = msg.swipes[i],
+							creationDate = msg.creationDate + extraMS,
+							updateDate = msg.updateDate + extraMS,
+							activeDate = msg.updateDate + extraMS,
+						};
+						extraMS += TimeSpan.FromMilliseconds(1);
+					}
+
+					message.outputs[msg.activeSwipe].activeDate = msg.updateDate + extraMS;
+					messages.Add(message);
+				}
+				scenario.messages = messages.ToArray();
 			}
 
 			return scenario;
