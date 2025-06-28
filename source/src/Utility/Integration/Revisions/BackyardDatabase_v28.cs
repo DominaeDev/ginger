@@ -5370,7 +5370,6 @@ namespace Ginger.Integration
 							($backgroundId{i:000}, $backgroundImageUrl{i:000}, $backgroundAspectRatio{i:000}, $chatId{i:000});
 					");
 
-					cmdBackground.CommandText = sbCommand.ToString();
 					cmdBackground.Parameters.AddWithValue($"$chatId{i:000}", chatIds[i]);
 					cmdBackground.Parameters.AddWithValue($"$backgroundId{i:000}", Cuid.NewCuid());
 					cmdBackground.Parameters.AddWithValue($"$backgroundImageUrl{i:000}", background.imageUrl);
@@ -5379,7 +5378,11 @@ namespace Ginger.Integration
 					expectedUpdates += 1;
 				}
 
-				updates += cmdBackground.ExecuteNonQuery();
+				if (sbCommand.Length > 0)
+				{
+					cmdBackground.CommandText = sbCommand.ToString();
+					updates += cmdBackground.ExecuteNonQuery();
+				}
 			}
 			return true;
 		}

@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Ginger
@@ -193,36 +194,29 @@ namespace Ginger
 				if (isHuman)
 				{
 					string text = null;
-					string createdAt = null;
-					string updatedAt = null;
+					DateTime createdAt = DateTime.UtcNow;
+					DateTime updatedAt = DateTime.UtcNow;
 
 					foreach (JProperty jProp in (JToken)jDoc)
 					{
 						switch (jProp.Name.ToString())
 						{
 						case "text": text = jProp.Value.ToString(); break;
-						case "createdAt": createdAt = jProp.Value.ToString(); break;
-						case "updatedAt": updatedAt = jProp.Value.ToString(); break;
+						case "createdAt": createdAt = (DateTime?)jProp.Value ?? createdAt; break;
+						case "updatedAt": updatedAt = (DateTime?)jProp.Value ?? updatedAt; break;
 						}
 					}
 
 					if (text != null && createdAt != null && updatedAt != null)
 					{
-						DateTime creationDate;
-						DateTime updateDate;
-						if (DateTime.TryParse(createdAt, out creationDate) == false)
-							creationDate = DateTime.UtcNow;
-						if (DateTime.TryParse(updatedAt, out updateDate) == false)
-							updateDate = DateTime.UtcNow;
-
 						return new Message() {
 							type = Message.MsgType.Human,
 							outputs = new Message.Output[] {
 								new Message.Output {
 									text = text,
-									creationDate = creationDate,
-									updateDate = updateDate,
-									activeDate = updateDate,
+									creationDate = createdAt,
+									updateDate = updatedAt,
+									activeDate = updatedAt,
 								},
 							},
 						};
@@ -234,48 +228,41 @@ namespace Ginger
 					if (jDoc.TryGetValue("outputs", out jOutputs) == false)
 						throw new JsonException("Invalid message format");
 
-					string text = null;
-					string createdAt = null;
-					string updatedAt = null;
-					string activeAt = null;
+					List<Message.Output> lsOutputs = new List<Message.Output>();
 
 					foreach (JObject jObj in (JArray)jOutputs)
 					{
+						string text = null;
+						DateTime createdAt = DateTime.UtcNow;
+						DateTime updatedAt = DateTime.UtcNow;
+						DateTime activeAt = DateTime.UtcNow;
+
 						foreach (JProperty jProp in (JToken)jObj)
 						{
 							switch (jProp.Name.ToString())
 							{
 							case "text": text = jProp.Value.ToString(); break;
-							case "createdAt": createdAt = jProp.Value.ToString(); break;
-							case "updatedAt": updatedAt = jProp.Value.ToString(); break;
-							case "activeTimestamp": activeAt = jProp.Value.ToString(); break;
+							case "createdAt": createdAt = (DateTime?)jProp.Value ?? createdAt; break;
+							case "updatedAt": updatedAt = (DateTime?)jProp.Value ?? updatedAt; break;
+							case "activeTimestamp": activeAt = (DateTime?)jProp.Value ?? activeAt; break;
 							}
 						}
 
 						if (text != null && createdAt != null && updatedAt != null && activeAt != null)
 						{
-							DateTime creationDate;
-							DateTime updateDate;
-							DateTime activeDate;
-							if (DateTime.TryParse(createdAt, out creationDate) == false)
-								creationDate = DateTime.UtcNow;
-							if (DateTime.TryParse(updatedAt, out updateDate) == false)
-								updateDate = DateTime.UtcNow;
-							if (DateTime.TryParse(activeAt, out activeDate) == false)
-								activeDate = DateTime.UtcNow;
-							return new Message() {
-								type = Message.MsgType.AI,
-								outputs = new Message.Output[] {
-									new Message.Output {
-										text = text,
-										creationDate = creationDate,
-										updateDate = updateDate,
-										activeDate = activeDate,
-									},
-								},
-							};
+							lsOutputs.Add(new Message.Output {
+								text = text,
+								creationDate = createdAt,
+								updateDate = updatedAt,
+								activeDate = activeAt,
+							});
 						}
 					}
+
+					return new Message() {
+						type = Message.MsgType.AI,
+						outputs = lsOutputs.ToArray(),
+					};
 				}
 
 				throw new JsonException("Invalid message format");
@@ -330,10 +317,12 @@ namespace Ginger
 			}
 		}
 
-		public static ByafScenarioV1 FromChat(BackupData.Chat chat)
+		public static ByafScenarioV1 FromChat(BackupData.Chat chat, string characterId)
 		{
 			var scenario = new ByafScenarioV1() {
 				title = chat.name,
+				backgroundImage = chat.backgroundName,
+
 				// Staging
 				formattingInstructions = chat.staging.system,
 				narrative = chat.staging.scenario,
@@ -350,6 +339,7 @@ namespace Ginger
 				repeatPenalty = chat.parameters.repeatPenalty,
 				topK = chat.parameters.topK,
 				topP = chat.parameters.topP,
+
 			};
 
 			// Greeting
@@ -357,7 +347,7 @@ namespace Ginger
 			{
 				scenario.greetings = new CharacterText[] {
 					new CharacterText() {
-						characterID = "character1",
+						characterID = characterId,
 						text = chat.staging.greeting.text,
 					}
 				};
@@ -368,7 +358,7 @@ namespace Ginger
 			{
 				scenario.exampleMessages = new CharacterText[] {
 					new CharacterText() {
-						characterID = "character1",
+						characterID = characterId,
 						text = chat.staging.example,
 					}
 				};
@@ -388,19 +378,17 @@ namespace Ginger
 					if (msg.swipes.IsNullOrEmpty())
 						continue;
 					
-					TimeSpan extraMS = TimeSpan.Zero;
 					for (int i = 0; i < msg.swipes.Length; ++i)
 					{
 						message.outputs[i] = new Message.Output() {
 							text = msg.swipes[i],
-							creationDate = msg.creationDate + extraMS,
-							updateDate = msg.updateDate + extraMS,
-							activeDate = msg.updateDate + extraMS,
+							creationDate = msg.creationDate,
+							updateDate = msg.updateDate,
+							activeDate = msg.updateDate,
 						};
-						extraMS += TimeSpan.FromMilliseconds(1);
 					}
 
-					message.outputs[msg.activeSwipe].activeDate = msg.updateDate + extraMS;
+					message.outputs[msg.activeSwipe].activeDate = msg.updateDate + TimeSpan.FromSeconds(1);
 					messages.Add(message);
 				}
 				scenario.messages = messages.ToArray();
@@ -413,6 +401,7 @@ namespace Ginger
 		{
 			var chat = new BackupData.Chat() {
 				name = Utility.FirstNonEmpty(title, Backyard.ChatInstance.DefaultName),
+				backgroundName = Path.GetFileName(backgroundImage),
 				staging = new Backyard.ChatStaging() {
 					system = formattingInstructions,
 					scenario = narrative,
@@ -430,6 +419,8 @@ namespace Ginger
 					topK = topK,
 					topP = topP,
 				},
+				creationDate = DateTime.UtcNow,
+				updateDate = DateTime.UtcNow,
 			};
 
 			if (greetings.IsEmpty() == false)
@@ -440,6 +431,38 @@ namespace Ginger
 			if (exampleMessages.IsEmpty() == false)
 			{
 				chat.staging.example = exampleMessages[0].text;
+			}
+
+			if (messages.IsNullOrEmpty() == false)
+			{
+				var lsMessages = new List<ChatHistory.Message>(messages.Length);
+				for (int i = 0; i < messages.Length; ++i)
+				{
+					var msg = messages[i];
+
+					if (msg.outputs.IsNullOrEmpty())
+						continue;
+
+					var createdAt = msg.outputs.Min(o => o.creationDate);
+					var updatedAt = msg.outputs.Max(o => o.updateDate);
+					int activeSwipe = 0;
+					if (msg.outputs.Length > 1)
+						activeSwipe = Array.IndexOf(msg.outputs, msg.outputs.OrderByDescending(o => o.activeDate).First());
+
+					var message = new ChatHistory.Message() {
+						creationDate = createdAt,
+						updateDate = createdAt,
+						swipes = msg.outputs.Select(o => o.text).ToArray(),
+						speaker = msg.type == Message.MsgType.Human ? 0 : 1,
+						activeSwipe = activeSwipe,
+					};
+					lsMessages.Add(message);
+				}
+
+				var history = new ChatHistory();
+				history.name = chat.name;
+				history.messages = lsMessages.ToArray();
+				chat.history = history;
 			}
 
 			return chat;

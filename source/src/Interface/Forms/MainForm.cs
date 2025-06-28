@@ -1216,8 +1216,8 @@ namespace Ginger
 
 			SetStatusBarMessage(Resources.status_open_character); 
 
-			string ext = Path.GetExtension(filename).ToLowerInvariant();
-			if (ext == ".json" || ext == ".yaml" || ext == ".charx")
+			string ext = Utility.GetFileExt(filename);
+			if (ext == "json" || ext == "yaml" || ext == "charx" || ext == "byaf")
 			{
 				if (ImportCharacter(filename) == false)
 				{
@@ -1226,7 +1226,7 @@ namespace Ginger
 					return false;
 				}
 			}
-			else if (ext == ".png")
+			else if (ext == "png")
 			{
 				int errors;
 				var loadError = FileUtil.ImportCharacterFromPNG(filename, out errors);

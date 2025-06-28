@@ -149,6 +149,8 @@ namespace Ginger.Integration
 				WorkerError error;
 				if (Utility.GetFileExt(args.filenames[i]) == "zip")
 					error = ImportBackup(args.filenames[i], args.parentFolder, out importedCharacters);
+				else if (Utility.GetFileExt(args.filenames[i]) == "byaf")
+					error = ImportBackyardArchive(args.filenames[i], args.parentFolder, out importedCharacters);
 				else
 				{
 					CharacterInstance importedCharacter;
@@ -348,6 +350,112 @@ namespace Ginger.Integration
 
 			BackupData backup;
 			var readError = BackupUtil.ReadBackup(filename, out backup);
+			if (readError != FileUtil.Error.NoError || backup.characterCards == null || backup.characterCards.Length == 0)
+			{
+				characterInstances = null;
+				return WorkerError.Skipped;
+			}
+
+			List<Backyard.ImageInput> images = new List<Backyard.ImageInput>();
+				
+			images.AddRange(backup.images
+				.Select(i => new Backyard.ImageInput {
+					asset = new AssetFile() {
+						name = i.filename,
+						actorIndex = i.characterIndex,
+						data = AssetData.FromBytes(i.data),
+						ext = i.ext,
+						assetType = AssetFile.AssetType.Icon,
+					},
+					fileExt = i.ext,
+				}));
+
+			images.AddRange(backup.backgrounds
+				.Select(i => new Backyard.ImageInput {
+					asset = new AssetFile() {
+						name = i.filename,
+						data = AssetData.FromBytes(i.data),
+						ext = i.ext,
+						assetType = AssetFile.AssetType.Background,
+					},
+					fileExt = i.ext,
+				}));
+
+			if (backup.userPortrait != null && backup.userPortrait.data != null && backup.userPortrait.data.Length > 0)
+			{
+				images.Add(new Backyard.ImageInput {
+					asset = new AssetFile() {
+						name = backup.userPortrait.filename,
+						data = AssetData.FromBytes(backup.userPortrait.data),
+						ext = backup.userPortrait.ext,
+						assetType = AssetFile.AssetType.UserIcon,
+					},
+					fileExt = backup.userPortrait.ext,
+				});
+			}
+
+			// Use default model settings
+			foreach (var chat in backup.chats)
+				chat.parameters = AppSettings.BackyardSettings.UserSettings;
+
+			var cards = backup.characterCards.Select(c => BackyardLinkCard.FromFaradayCard(c)).ToArray();
+			cards[0].EnsureSystemPrompt(cards.Length > 0);
+
+			Backyard.Error error;
+			if (BackyardValidation.CheckFeature(BackyardValidation.Feature.GroupChat))
+			{
+				// Write group to database
+				var args = new Backyard.CreatePartyArguments() {
+					cards = cards,
+					imageInput = images.ToArray(),
+					chats = backup.chats.ToArray(),
+					userInfo = backup.userInfo,
+					folder = parentFolder,
+				};
+				Backyard.Link.Image[] imageLinks; // Ignored
+				GroupInstance groupInstance; // Ignored
+
+				error = Backyard.Database.CreateNewParty(args, out groupInstance, out characterInstances, out imageLinks);
+			}
+			else // Legacy
+			{
+				if (cards.Length > 1) // Multi-character backup?
+				{
+					characterInstances = null;
+					return WorkerError.Skipped; // Unsupported
+				}
+
+				// Write character to database
+				var args = new Backyard.CreateCharacterArguments() {
+					card = cards[0],
+					imageInput = images.ToArray(),
+					chats = backup.chats.ToArray(),
+					userInfo = backup.userInfo,
+					folder = parentFolder,
+				};
+
+				Backyard.Link.Image[] imageLinks; // Ignored
+				characterInstances = new CharacterInstance[1];
+				error = Backyard.Database.CreateNewCharacter(args, out characterInstances[0], out imageLinks);
+			}
+
+			if (error == Backyard.Error.UnsupportedFeature)
+				return WorkerError.Skipped;
+			if (error != Backyard.Error.NoError)
+				return WorkerError.DatabaseError;
+			return WorkerError.NoError;
+		}
+
+		private WorkerError ImportBackyardArchive(string filename, FolderInstance parentFolder, out CharacterInstance[] characterInstances)
+		{
+			if (Backyard.ConnectionEstablished == false)
+			{
+				characterInstances = null;
+				return WorkerError.DatabaseError;
+			}
+
+			BackupData backup;
+			var readError = BackyardArchiveUtil.ReadArchive(filename, out backup);
 			if (readError != FileUtil.Error.NoError || backup.characterCards == null || backup.characterCards.Length == 0)
 			{
 				characterInstances = null;

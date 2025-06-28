@@ -1090,7 +1090,7 @@ namespace Ginger
 			try
 			{
 				importFileDialog.Title = Resources.cap_import_character;
-				importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml;*.zip|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml|Character backup files|*.zip";
+				importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml;*.zip;*.byaf|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml|Character backup files|*.zip|Backyard Archive|*.byaf";
 				importFileDialog.FilterIndex = AppSettings.User.LastBulkImportCharacterFilter;
 				importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 				importFileDialog.Multiselect = true;
@@ -1161,7 +1161,7 @@ namespace Ginger
 				if (MsgBox.Confirm(string.Format(Resources.msg_link_confirm_import_many_characters_and_groups, NumCharacters(characters), NumGroups(groups)), Resources.cap_link_import_many_characters, this) == false)
 					return false;
 			}
-			else
+			else if (characters > 1)
 			{
 				if (MsgBox.Confirm(string.Format(Resources.msg_link_confirm_import_many_characters, NumCharacters(characters)), Resources.cap_link_import_many_characters, this) == false)
 					return false;
@@ -2057,6 +2057,11 @@ namespace Ginger
 				return Backyard.Error.InvalidArgument; // Error
 			}
 			
+			for (int i = 0; i < cards.Length && i < Current.Characters.Count; ++i)
+				cards[i].data.name = Current.Characters[i].name;
+			cards[0].data.isNSFW = cards.ContainsAny(c => c.data.isNSFW);
+			if (string.IsNullOrEmpty(Current.Card.name))
+				cards[0].data.displayName = Utility.CommaSeparatedList(cards.Select(c => c.data.name), "and", false);
 			cards[0].EnsureSystemPrompt(true);		
 
 			Backyard.ImageInput[] imageInput = BackyardUtil.GatherImages();

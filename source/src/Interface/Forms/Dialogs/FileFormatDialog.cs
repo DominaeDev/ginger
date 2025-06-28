@@ -16,8 +16,8 @@ namespace Ginger
 			"Agnai Character JSON (*.json)",
 			"PygmalionAI Character JSON (*.json)",
 			"Text Generation Web UI YAML (*.yaml)",
-			"Character Backup Archive (*.zip)",
-			"Backyard Archive Format (*.byaf)",
+			"Character Backup (*.zip)",
+			"Backyard Archive (*.byaf)",
 		};
 
 		private FileUtil.FileType[] _FileTypes = new FileUtil.FileType[] {

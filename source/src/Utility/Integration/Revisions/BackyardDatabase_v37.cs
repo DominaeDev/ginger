@@ -1610,12 +1610,6 @@ namespace Ginger.Integration
 			}
 
 			// Prepare cards
-			for (int i = 0; i < cards.Length && i < Current.Characters.Count; ++i)
-				cards[i].data.name = Current.Characters[i].name;
-			cards[0].data.isNSFW = cards.ContainsAny(c => c.data.isNSFW);
-			if (string.IsNullOrEmpty(Current.Card.name))
-				cards[0].data.displayName = Utility.CommaSeparatedList(cards.Select(c => c.data.name), "and", false);
-
 			bool bAllowUserPersona = userInfo != null;
 			FaradayCard primaryCard = cards[0];
 
@@ -6283,7 +6277,6 @@ namespace Ginger.Integration
 							($backgroundId{i:000}, $backgroundImageUrl{i:000}, $backgroundAspectRatio{i:000}, $chatId{i:000});
 					");
 
-					cmdBackground.CommandText = sbCommand.ToString();
 					cmdBackground.Parameters.AddWithValue($"$chatId{i:000}", chatIds[i]);
 					cmdBackground.Parameters.AddWithValue($"$backgroundId{i:000}", Cuid.NewCuid());
 					cmdBackground.Parameters.AddWithValue($"$backgroundImageUrl{i:000}", background.imageUrl);
@@ -6292,7 +6285,11 @@ namespace Ginger.Integration
 					expectedUpdates += 1;
 				}
 
-				updates += cmdBackground.ExecuteNonQuery();
+				if (sbCommand.Length > 0)
+				{
+					cmdBackground.CommandText = sbCommand.ToString();
+					updates += cmdBackground.ExecuteNonQuery();
+				}
 			}
 			return true;
 		}

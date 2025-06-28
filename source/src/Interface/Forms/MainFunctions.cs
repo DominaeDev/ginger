@@ -325,7 +325,7 @@ namespace Ginger
 
 			// Open file...
 			importFileDialog.Title = Resources.cap_import_character;
-			importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml;*.byaf|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml|Backyard Archive Format|*.byaf";
+			importFileDialog.Filter = "All supported types|*.png;*.json;*.charx;*.yaml;*.byaf|PNG files|*.png|JSON files|*.json|CHARX files|*.charx|YAML files|*.yaml|Backyard Archive|*.byaf";
 			importFileDialog.FilterIndex = filter;
 			importFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			importFileDialog.FileName = "";
@@ -625,7 +625,7 @@ namespace Ginger
 
 			// Save as...
 			exportFileDialog.Title = Resources.cap_export_character;
-			exportFileDialog.Filter = "Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard AI PNG|*.png|Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Text generation web ui YAML|*.yaml|CharX file|*.charx|Backyard Archive Format|*.byaf";
+			exportFileDialog.Filter = "Character Card V2 PNG|*.png|Character Card V3 PNG|*.png|Backyard AI PNG|*.png|Character Card V2 JSON|*.json|Character Card V3 JSON|*.json|Agnai Character JSON|*.json|PygmalionAI Character JSON|*.json|Text generation web ui YAML|*.yaml|CharX file|*.charx|Backyard Archive|*.byaf";
 			exportFileDialog.FileName = Utility.ValidFilename(filename);
 			exportFileDialog.InitialDirectory = AppSettings.Paths.LastImportExportPath ?? AppSettings.Paths.LastCharacterPath ?? Utility.AppPath("Characters");
 			exportFileDialog.FilterIndex = filter;

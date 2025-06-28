@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -165,7 +162,8 @@ namespace Ginger
 					chats.Add(scenario.ToChat());
 					if (string.IsNullOrEmpty(scenario.backgroundImage) == false)
 					{
-						var backgroundImage = lsImageData.Find(img => img.filename == scenario.backgroundImage);
+						var backgroundImage = lsImageData.Find(img => !img.filename.BeginsWith("characters/") 
+							&& Path.GetFileName(img.filename) == Path.GetFileName(scenario.backgroundImage));
 						if (backgroundImage != null)
 						{
 							backgrounds.Add(new BackupData.Image() {
@@ -236,7 +234,7 @@ namespace Ginger
 					staging = backupChat.staging,
 					parameters = backupChat.parameters,
 					history = ChatHistory.LegacyFix(backupChat.history),
-				});
+				}, "character1");
 
 				if (string.IsNullOrEmpty(backupChat.backgroundName) == false && backup.backgrounds != null)
 				{
