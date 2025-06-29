@@ -35,6 +35,14 @@
 	<String id="father">[not father-alive?late ]father</String>
 	<String id="mother">[not mother-alive?late ]mother</String>
 
+	<String id="parents" rule="father or mother">
+		<String rule="father and mother and not (father-alive or mother-alive)" priority="2">[char's] parents are {father} and {mother}, (both passed away).</String>
+		<String rule="father and mother and not (father-alive and mother-alive)" priority="1">[char's] parents are {father} [father-alive?(alive)|(passed away)], and {mother} [mother-alive?(alive)|(passed away)].</String>
+		<String rule="father and mother">[char's] parents are {father} and {mother}.</String>
+		<String rule="father and not mother">[char's] father's name is {father} [not father-alive?(passed away)].</String>
+		<String rule="mother and not father">[char's] mother's name is {mother} [not mother-alive?(passed away)].</String>
+	</String>
+	
 	<String id="siblings" rule="brothers or sisters">
 		<String rule="not sisters">[char] has [!numeral:{brothers:count}] brother[brothers:count gt 1?s]: {brothers.list}.</String>
 		<String rule="not brothers">[char] has [!numeral:{sisters:count}] sister[brothers:count gt 1?s]: {sisters.list}.</String>
@@ -49,9 +57,19 @@
 	<Node path="persona/attributes/family/sisters" rule="sisters:count eq 1">{sisters} (sister)</Node>
 	<Node path="persona/attributes/family/sisters" rule="sisters:count gt 1">{sisters.list} (sisters)</Node>
 
-	<Node path="scenario/world/family" rule="brothers or sisters or more">
+	<Node path="scenario/world/family" style="line" rule="more-detail or more">
 		[char's] family:  
+		[inner]
+	</Node>
+	
+	<Node path="scenario/world/family/parents" rule="more-detail and (father or mother)">
+		[@parents]
+	</Node>
+	
+	<Node path="scenario/world/family/siblings" rule="more-detail and (brothers or sisters)">
 		[@siblings]
-		[more?{more}.]</Node>
+	</Node>
+		
+	<Node path="scenario/world/family/more" rule="more">{more}.</Node>
 	
 </Ginger>
