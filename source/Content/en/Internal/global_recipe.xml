@@ -96,12 +96,21 @@
 	</Node>
 	
 	<!-- User persona block -->
+	<Node path="user/header" order="0" rule="(multi-character or __user-persona-in-scenario) and not (__write-user or __bake or __snippet)" mode="sibling">
+		# {user}:
+	</Node>
+	
 	<Node path="user/attributes" style="line" order="200">
 		[["{user}":  
 		{inner}  
 		]]
 	</Node>
-
+	
+	<!-- Scenario block -->
+	<Node path="scenario/header" order="0" rule="__single-prompt and not (__bake or __snippet)" mode="sibling">
+		# Scenario:
+	</Node>
+	
 	<!-- Story block -->
 	<Node path="scenario/premise" order="190" rule="not less-detail">
 		PREMISE:  

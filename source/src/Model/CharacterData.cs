@@ -209,6 +209,8 @@ namespace Ginger
 			// Flags
 			if (Current.Card.extraFlags.Contains(CardData.Flag.PruneScenario))
 				context.SetFlag(Constants.Flag.PruneScenario);
+			if (Current.Card.extraFlags.Contains(CardData.Flag.UserPersonaInScenario))
+				context.SetFlag(Constants.Flag.UserPersonaInScenario);
 
 			if (type == ContextType.Full)
 			{

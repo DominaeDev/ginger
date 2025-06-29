@@ -1667,6 +1667,8 @@ namespace Ginger
 				options |= Generator.Option.SillyTavernV2;
 			if (fileType.Contains(FileType.TavernV3))
 				options |= Generator.Option.SillyTavernV3;
+			if (fileType.Contains(FileType.TextGenWebUI))
+				options |= Generator.Option.SinglePrompt;
 
 			// Save as...
 			var output = Generator.Generate(Generator.Option.Export | options);

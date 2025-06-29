@@ -193,6 +193,7 @@ namespace Ginger
 			Faraday = 1 << 21,
 			SillyTavernV2 = 1 << 22,
 			SillyTavernV3 = 1 << 23,
+			SinglePrompt = 1 << 24,
 		}
 
 		public static Output Generate(Option option = Option.Export)
@@ -335,6 +336,8 @@ namespace Ginger
 					context.SetFlag("__ccv2");
 				else if (options.ContainsAny(Option.SillyTavernV3))
 					context.SetFlag("__ccv3");
+				else if (options.ContainsAny(Option.SinglePrompt))
+					context.SetFlag("__single-prompt");
 
 				if (options.Contains(Option.Preview))
 				{
