@@ -219,6 +219,7 @@ namespace Ginger
 					{
 						// Don't format
 						spans.Add(Spans.Mode.Name, pos_line, pos_colon - pos_line + 1);
+						break;
 					}
 
 					pos_begin = pos_colon + 1;
