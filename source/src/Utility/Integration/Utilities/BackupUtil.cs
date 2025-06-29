@@ -141,17 +141,23 @@ namespace Ginger.Integration
 				backupInfo.chats = new List<BackupData.Chat>();
 			
 			// Images
-			backupInfo.images = imageUrls.Select(url => new BackupData.Image() { 
-				characterIndex = 0,
-				filename = Path.GetFileName(url),
-				data = Utility.LoadFile(url),
-			}).ToList();
+			backupInfo.images = imageUrls
+				.Select(url => new BackupData.Image() { 
+					characterIndex = 0,
+					filename = Path.GetFileName(url),
+					data = Utility.LoadFile(url),
+				})
+				.Where(i => i.data != null && i.data.Length > 0)
+				.ToList();
 
 			// Background images
-			backupInfo.backgrounds = backgroundUrls.Select(url => new BackupData.Image() {
-				filename = Path.GetFileName(url),
-				data = Utility.LoadFile(url),
-			}).ToList();
+			backupInfo.backgrounds = backgroundUrls
+				.Select(url => new BackupData.Image() {
+					filename = Path.GetFileName(url),
+					data = Utility.LoadFile(url),
+				})
+				.Where(i => i.data != null && i.data.Length > 0)
+				.ToList();
 
 			// User image
 			if (string.IsNullOrEmpty(userImageUrl) == false && File.Exists(userImageUrl))
@@ -310,6 +316,7 @@ namespace Ginger.Integration
 					filename = string.Format("{0}.{1}", a.name, a.ext),
 					data = a.data.bytes,
 				})
+				.Where(i => i.data != null && i.data.Length > 0)
 				.ToList();
 
 			var backgrounds = assets
@@ -318,6 +325,7 @@ namespace Ginger.Integration
 					filename = string.Format("{0}.{1}", a.name, a.ext),
 					data = a.data.bytes,
 				})
+				.Where(i => i.data != null && i.data.Length > 0)
 				.ToList();
 
 			backupInfo = new BackupData() {

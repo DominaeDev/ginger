@@ -375,7 +375,7 @@ namespace Ginger
 						outputs = new Message.Output[msg.swipes.Length],
 					};
 
-					if (msg.swipes.IsNullOrEmpty())
+					if (msg.swipes.IsEmpty())
 						continue;
 					
 					for (int i = 0; i < msg.swipes.Length; ++i)
@@ -433,14 +433,14 @@ namespace Ginger
 				chat.staging.example = exampleMessages[0].text;
 			}
 
-			if (messages.IsNullOrEmpty() == false)
+			if (messages.IsEmpty() == false)
 			{
 				var lsMessages = new List<ChatHistory.Message>(messages.Length);
 				for (int i = 0; i < messages.Length; ++i)
 				{
 					var msg = messages[i];
 
-					if (msg.outputs.IsNullOrEmpty())
+					if (msg.outputs.IsEmpty())
 						continue;
 
 					var createdAt = msg.outputs.Min(o => o.creationDate);

@@ -1288,7 +1288,7 @@ namespace Ginger
 			if (importError != Error.NoError)
 				return importError;
 
-			if (backup.characterCards.IsNullOrEmpty() == false)
+			if (backup.characterCards.IsEmpty() == false)
 			{
 				// Assign portrait
 				Image mainPortrait;
@@ -1297,7 +1297,7 @@ namespace Ginger
 					mainPortrait = null;
 
 				// Read staging from primary scenario
-				if (backup.chats.IsNullOrEmpty() == false)
+				if (backup.chats.IsEmpty() == false)
 				{
 					var primaryCard = backup.characterCards[0];
 					var primaryChat = backup.chats.OrderByDescending(c => c.creationDate).First();

@@ -2145,7 +2145,7 @@ namespace Ginger.Integration
 						DateTime updatedAt = reader.GetTimestamp(2);
 						DateTime activeAt = reader.GetTimestamp(3);
 						string characterId = reader.GetString(4);
-						string text = reader.GetString(5);
+						string text = reader.GetString(5).Trim();
 
 						messages.Add(new _Message() {
 							messageId = messageId,
@@ -3204,7 +3204,7 @@ namespace Ginger.Integration
 								while (reader.Read())
 								{
 									string messageId = reader.GetString(0);
-									string text = reader.GetString(1);
+									string text = reader.GetString(1).Trim();
 
 									swipes.Add(new _SwipeRepair() {
 										instanceId = messageId,

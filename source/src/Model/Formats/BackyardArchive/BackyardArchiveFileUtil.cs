@@ -96,12 +96,13 @@ namespace Ginger
 								using (var dataStream = entry.Open())
 								{
 									byte[] buffer = new byte[dataSize];
-									dataStream.Read(buffer, 0, (int)dataSize);
-
-									lsImageData.Add(new BackupData.Image() {
-										filename = entryFullName,
-										data = buffer,
-									});
+									if (dataStream.Read(buffer, 0, (int)dataSize) == (int)dataSize)
+									{
+										lsImageData.Add(new BackupData.Image() {
+											filename = entryFullName,
+											data = buffer,
+										});
+									}
 								}
 							}
 						}
@@ -202,7 +203,11 @@ namespace Ginger
 			{
 				var characterData = new CharacterData();
 				characterData.id = string.Format("character{0}", iChar + 1);
-				characterData.images = backup.images.Where(i => bSoloCharacter || i.characterIndex == iChar || (iChar == 0 && i.characterIndex < 0)).ToArray();
+				characterData.images = backup.images
+					.Where(i => 
+						i.data.IsEmpty() == false 
+						&& (bSoloCharacter || i.characterIndex == iChar || (iChar == 0 && i.characterIndex < 0)))
+					.ToArray();
 
 				var character = ByafCharacterV1.FromFaradayCard(backup.characterCards[iChar]);
 				character.id = characterData.id;
@@ -236,7 +241,7 @@ namespace Ginger
 					history = ChatHistory.LegacyFix(backupChat.history),
 				}, "character1");
 
-				if (string.IsNullOrEmpty(backupChat.backgroundName) == false && backup.backgrounds != null)
+				if (string.IsNullOrEmpty(backupChat.backgroundName) == false && backup.backgrounds.Count > 0)
 				{
 					int bgIndex = backup.backgrounds.FindIndex(b => Path.GetFileNameWithoutExtension(b.filename) == backupChat.backgroundName);
                     if (bgIndex == -1 && backupChat.backgroundName.BeginsWith("background_"))
