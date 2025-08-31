@@ -128,6 +128,9 @@ namespace Ginger
 			public static bool ShowStats = false;
 
 			public static AssetImageCache.ResizeFlag BackgroundPreview = AssetImageCache.ResizeFlag.FitInside;
+
+			public static Point WindowLocation = default(Point);
+			public static Point WindowSize = default(Point);
 		}
 		
 		public static class Paths
@@ -353,6 +356,8 @@ namespace Ginger
 				ReadBool(ref User.ShowBackground, userSection, "ShowBackground");
 				ReadBool(ref User.ShowStats, userSection, "ShowStatistics");
 				ReadEnum(ref User.BackgroundPreview, userSection, "BackgroundPreview");
+				ReadPoint(ref User.WindowLocation, userSection, "WindowLocation");
+				ReadPoint(ref User.WindowSize, userSection, "WindowSize");
 			}
 
 			var writeSection = iniData.Sections["Write"];
@@ -568,7 +573,8 @@ namespace Ginger
 					Write(outputFile, "ShowBackground", User.ShowBackground);
 					Write(outputFile, "ShowStatistics", User.ShowStats);
 					Write(outputFile, "BackgroundPreview", User.BackgroundPreview);
-
+					Write(outputFile, "WindowLocation", User.WindowLocation);
+					Write(outputFile, "WindowSize", User.WindowSize);
 
 					// Write
 					WriteSection(outputFile, "Write");

@@ -49,6 +49,14 @@ namespace Ginger
 			instance = this;
 			InitializeComponent();
 
+			if (AppSettings.User.WindowLocation != default(Point) && AppSettings.User.WindowSize != default(Point))
+			{
+				StartPosition = FormStartPosition.Manual;
+				Location = AppSettings.User.WindowLocation;
+				if (AppSettings.User.WindowSize.X >= this.MinimumSize.Width && AppSettings.User.WindowSize.Y >= this.MinimumSize.Height)
+					Size = new Size(AppSettings.User.WindowSize.X, AppSettings.User.WindowSize.Y);
+			}
+
 			Icon = Resources.icon;
 
 			Application.Idle += OnIdle;
@@ -157,6 +165,9 @@ namespace Ginger
 
 		private void OnClosing(object sender, FormClosingEventArgs e)
 		{
+			AppSettings.User.WindowLocation = this.Location;
+			AppSettings.User.WindowSize = new Point(this.Size.Width, this.Size.Height);
+
 			StealFocus();
 			if (ConfirmSaveBeforeExit() == false)
 				e.Cancel = true;

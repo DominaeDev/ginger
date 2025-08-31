@@ -215,11 +215,17 @@ namespace Ginger
 						|| possibleName.BeginsWith("<##CHAR")
 						|| Current.Characters.ContainsAny(c => string.Compare(c.name, possibleName, true) == 0) // Known name
 						|| (possibleName.IndexOfAny(new char[] { ',', '.', ':', ';', '!', '?', '<', '>' }, 0) == -1 // No punctuation
-							&& possibleName.Count(c => char.IsWhiteSpace(c)) < 4)) // 4 words or less
+							&& possibleName.Count(c => char.IsWhiteSpace(c)) < 4)) // Less than 4 words
 					{
 						// Don't format
 						spans.Add(Spans.Mode.Name, pos_line, pos_colon - pos_line + 1);
-						break;
+
+						pos_line = paragraph.IndexOf('\n', pos_colon);
+						if (pos_line == -1)
+							break;
+						pos_begin = pos_line + 1;
+						pos_colon = paragraph.IndexOf(':', pos_begin);
+						continue;
 					}
 
 					pos_begin = pos_colon + 1;

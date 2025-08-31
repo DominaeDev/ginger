@@ -1,4 +1,4 @@
-﻿<Ginger id="chat-bot" version="1.5">
+﻿<Ginger id="chat-bot" version="1.6">
 	<Name>Chat bot</Name>
 	<Title>Chat bot</Title>
 	<Description>
@@ -58,7 +58,7 @@
 		}}
 	</System>
 
-	<Example>
+	<Example detached="true">
 		[user]: "Hi, I'm [user]."
 		[char]: "Hi there!" *smiles*
 	</Example>
