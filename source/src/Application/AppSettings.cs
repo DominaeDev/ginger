@@ -131,6 +131,7 @@ namespace Ginger
 
 			public static Point WindowLocation = default(Point);
 			public static Point WindowSize = default(Point);
+			public static bool WindowMaximized = false;
 		}
 		
 		public static class Paths
@@ -358,6 +359,7 @@ namespace Ginger
 				ReadEnum(ref User.BackgroundPreview, userSection, "BackgroundPreview");
 				ReadPoint(ref User.WindowLocation, userSection, "WindowLocation");
 				ReadPoint(ref User.WindowSize, userSection, "WindowSize");
+				ReadBool(ref User.WindowMaximized, userSection, "WindowMaximized");
 			}
 
 			var writeSection = iniData.Sections["Write"];
@@ -575,6 +577,7 @@ namespace Ginger
 					Write(outputFile, "BackgroundPreview", User.BackgroundPreview);
 					Write(outputFile, "WindowLocation", User.WindowLocation);
 					Write(outputFile, "WindowSize", User.WindowSize);
+					Write(outputFile, "WindowMaximized", User.WindowMaximized);
 
 					// Write
 					WriteSection(outputFile, "Write");

@@ -56,6 +56,8 @@ namespace Ginger
 				if (AppSettings.User.WindowSize.X >= this.MinimumSize.Width && AppSettings.User.WindowSize.Y >= this.MinimumSize.Height)
 					Size = new Size(AppSettings.User.WindowSize.X, AppSettings.User.WindowSize.Y);
 			}
+			if (AppSettings.User.WindowMaximized)
+				WindowState = FormWindowState.Maximized;
 
 			Icon = Resources.icon;
 
@@ -64,6 +66,8 @@ namespace Ginger
 			DragEnter += OnDragEnter;
 			DragDrop += OnDragDrop;
 			FormClosing += OnClosing;
+			LocationChanged += OnResize;
+			SizeChanged += OnResize;
 
 			Current.OnLoadCharacter += (s, e) => {
 				OnLoadedFile();
@@ -103,6 +107,15 @@ namespace Ginger
 			_statusbarTimer.Elapsed += OnStatusBarTimerElapsed;
 			_statusbarTimer.AutoReset = false;
 			_statusbarTimer.SynchronizingObject = this;
+		}
+
+		private void OnResize(object sender, EventArgs e)
+		{
+			if (WindowState != FormWindowState.Maximized)
+			{
+				AppSettings.User.WindowLocation = this.Location;
+				AppSettings.User.WindowSize = new Point(this.Size.Width, this.Size.Height);
+			}
 		}
 
 		public void SetFirstLoad(string filename)
@@ -166,8 +179,7 @@ namespace Ginger
 
 		private void OnClosing(object sender, FormClosingEventArgs e)
 		{
-			AppSettings.User.WindowLocation = this.Location;
-			AppSettings.User.WindowSize = new Point(this.Size.Width, this.Size.Height);
+			AppSettings.User.WindowMaximized = WindowState == FormWindowState.Maximized;
 
 			StealFocus();
 			if (ConfirmSaveBeforeExit() == false)
