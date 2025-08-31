@@ -74,6 +74,7 @@ namespace Ginger
 			recipeList.SaveAsSnippet += OnSaveAsSnippet;
 			recipeList.SaveAsRecipe += OnSaveAsRecipe;
 			recipeList.SaveLorebook += OnSaveLorebook;
+			recipeList.RenameLorebook += OnRenameLorebook;
 
 			// Initialize
 			Current.Reset();

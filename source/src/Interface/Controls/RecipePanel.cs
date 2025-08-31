@@ -28,6 +28,7 @@ namespace Ginger
 		public event EventHandler OnPaste;
 		public event EventHandler OnSaveAsSnippet;
 		public event EventHandler OnSaveAsRecipe;
+		public event EventHandler OnRenameLorebook;
 		public event EventHandler OnSaveLorebook;
 		public event EventHandler OnMakePrimaryGreeting;
 
@@ -468,6 +469,10 @@ namespace Ginger
 				var lorebookParameter = recipe.parameters[0] as LorebookParameter;
 				bool isEmpty = lorebookParameter.value.isEmpty;
 
+				menu.Items.Add(new ToolStripMenuItem("Rename lorebook...", null, (s, e) => {
+					OnRenameLorebook?.Invoke(this, EventArgs.Empty);
+				}));
+
 				menu.Items.Add(new ToolStripMenuItem("Save lorebook...", null, (s, e) => {
 					OnSaveLorebook?.Invoke(this, EventArgs.Empty);
 				}) {
@@ -808,6 +813,16 @@ namespace Ginger
 					else
 						Title = string.Format("{0} (Alternate #{1})", recipe.GetTitle(), index);
 				}
+			}
+			// Lorebooks
+			else if (recipe.isLorebook && recipe.parameters.Count == 1 && recipe.parameters[0] is LorebookParameter)
+			{
+				Title = recipe.GetTitle();
+				var lorebookParameter = recipe.parameters[0] as LorebookParameter;
+				string lorebookName = lorebookParameter.value.name;
+				if (string.IsNullOrWhiteSpace(lorebookName))
+					lorebookName = "Untitled lorebook";
+				Title = string.Concat("[", Title, "] ", lorebookName);
 			}
 			else
 				Title = recipe.GetTitle();

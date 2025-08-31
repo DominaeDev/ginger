@@ -645,7 +645,9 @@ namespace Ginger
 		public static bool ExportAgnaisticLorebook(Lorebook lorebook, string filename)
 		{
 			var agnaiBook = new AgnaisticCard.CharacterBook();
-			if (string.IsNullOrWhiteSpace(Current.Card.name) == false)
+			if (string.IsNullOrWhiteSpace(lorebook.name) == false)
+				agnaiBook.name = lorebook.name.Trim();
+			else if (string.IsNullOrWhiteSpace(Current.Card.name) == false)
 				agnaiBook.name = Current.Card.name;
 			else if (string.IsNullOrWhiteSpace(Current.Character.name) == false)
 				agnaiBook.name = Current.Character.name;

@@ -10,6 +10,7 @@ namespace Ginger
 		{
 			set { label.Text = string.Concat(value, ":"); }
 		}
+		public bool AllowEmpty = false;
 
 		public EnterNameDialog()
 		{
@@ -23,17 +24,14 @@ namespace Ginger
 		{
 			textBox.Text = Value ?? "";
 			textBox.FocusAndSelect(0, textBox.Text.Length);
-			btnOk.Enabled = textBox.Text.Trim().Length > 0;
+			btnOk.Enabled = AllowEmpty || textBox.Text.Trim().Length > 0;
 		}
 
 		private void btnOk_Click(object sender, EventArgs e)
 		{
 			Value = textBox.Text.Trim();
-			if (Value.Length == 0) // Invalid
-			{
-				DialogResult = DialogResult.Cancel;
-				Close();
-			}
+			if (Value.Length == 0 && !AllowEmpty) // Invalid
+				return;
 
 			DialogResult = DialogResult.OK;
 			Close();
@@ -48,7 +46,7 @@ namespace Ginger
 
 		private void textBox_TextChanged(object sender, EventArgs e)
 		{
-			btnOk.Enabled = textBox.Text.Trim().Length > 0;
+			btnOk.Enabled = AllowEmpty || textBox.Text.Trim().Length > 0;
 		}
 	}
 }

@@ -21,6 +21,7 @@ namespace Ginger
 		public event EventHandler SaveAsSnippet;
 		public event EventHandler SaveAsRecipe;
 		public event EventHandler SaveLorebook;
+		public event EventHandler RenameLorebook;
 
 		private bool _bShouldUpdateScrollbars;
 		private bool _bShouldUpdateLayout;
@@ -129,6 +130,7 @@ namespace Ginger
 			panel.OnSaveAsSnippet += OnSaveAsSnippet;
 			panel.OnSaveAsRecipe += OnSaveAsRecipe;
 			panel.OnSaveLorebook += OnSaveLorebook;
+			panel.OnRenameLorebook += OnRenameLorebook;
 			panel.OnMakePrimaryGreeting += OnMakePrimaryGreeting;
 			panel.OnPanelSizeChanged += OnPanelSizeChanged;
 			panel.OnCopy += OnCopy;
@@ -222,6 +224,7 @@ namespace Ginger
 					panel.OnSaveAsSnippet += OnSaveAsSnippet;
 					panel.OnSaveAsRecipe += OnSaveAsRecipe;
 					panel.OnSaveLorebook += OnSaveLorebook;
+					panel.OnRenameLorebook += OnRenameLorebook;
 					panel.OnMakePrimaryGreeting += OnMakePrimaryGreeting;
 					panel.OnPanelSizeChanged += OnPanelSizeChanged;
 					panel.OnCopy += OnCopy;
@@ -605,6 +608,11 @@ namespace Ginger
 		private void OnSaveLorebook(object sender, EventArgs e)
 		{
 			SaveLorebook?.Invoke(sender, e);
+		}
+
+		private void OnRenameLorebook(object sender, EventArgs e)
+		{
+			RenameLorebook?.Invoke(sender, e);
 		}
 
 		private void OnCopy(object sender, EventArgs e)

@@ -698,7 +698,9 @@ namespace Ginger
 			}
 
 			string filename = null;
-			if (string.IsNullOrWhiteSpace(Current.Card.name) == false)
+			if (string.IsNullOrWhiteSpace(lorebook.name) == false)
+				filename = lorebook.name;
+			else if (string.IsNullOrWhiteSpace(Current.Card.name) == false)
 				filename = string.Concat(Current.Card.name, " Lorebook");
 			else if (string.IsNullOrWhiteSpace(Current.Character.name) == false)
 				filename = string.Concat(Current.Character.name, " Lorebook");
@@ -1045,8 +1047,34 @@ namespace Ginger
 
 			var recipe = panel.recipe;
 			var output = Generator.Generate(recipe, Generator.Option.Export);
+			if (output.lorebook != null && recipe.isLorebook && recipe.parameters.Count == 1 && recipe.parameters[0] is LorebookParameter)
+				output.lorebook.name = (recipe.parameters[0] as LorebookParameter).value.name;
+
 			ExportLorebook(output, true);
 			Lorebooks.LoadLorebooks();
+		}
+				
+		private void OnRenameLorebook(object sender, EventArgs e)
+		{
+			var panel = sender as RecipePanel;
+			if (panel == null)
+				return;
+
+			var recipe = panel.recipe;
+			if (recipe.isLorebook && recipe.parameters.Count == 1 && recipe.parameters[0] is LorebookParameter)
+			{
+				var lorebook = (recipe.parameters[0] as LorebookParameter).value;
+				var dlg = new EnterNameDialog();
+				dlg.Text = "Please enter lorebook name";
+				dlg.Label = "Name";
+				dlg.Value = lorebook.name.Trim();
+				dlg.AllowEmpty = true;
+				if (dlg.ShowDialog() == DialogResult.OK)
+				{
+					lorebook.name = dlg.Value;
+					panel.RefreshTitle();
+				}
+			}
 		}
 
 		private bool Save(string filename = null)
