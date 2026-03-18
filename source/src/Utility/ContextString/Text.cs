@@ -643,7 +643,7 @@ namespace Ginger
 		{
 			for (int i = sbOutput.Length - 2; i >= 0; --i)
 			{
-				if (sbOutput[i] != '<' || sbOutput[i + 1] != '!')
+				if (i + 1 < sbOutput.Length && (sbOutput[i] != '<' || sbOutput[i + 1] != '!'))
 					continue;
 
 				int pos_end = sbOutput.IndexOf('>', i + 2);

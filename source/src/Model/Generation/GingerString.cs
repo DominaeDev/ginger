@@ -79,6 +79,9 @@ namespace Ginger
 		{
 			StringBuilder sb = new StringBuilder(FromTavern(value).ToString());
 			sb.Replace("<START>", "__CHAT__", true);
+			sb.Replace("<START_OF_DIALOGUE>", "__CHAT__", true);
+			sb.Replace("<END_OF_DIALOGUE>", "__CHAT__", true);
+			sb.Replace("END_OF_DIALOGUE", "__CHAT__", true);
 			sb.Replace("END_OF_DIALOG", "__CHAT__", true);
 			sb.Replace("\r\n\r\n", "__CHAT__", true);
 
