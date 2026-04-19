@@ -59,6 +59,15 @@ namespace Ginger
 			if (AppSettings.User.WindowMaximized)
 				WindowState = FormWindowState.Maximized;
 
+			// Prevent restoring "invisible" window positions (if already set in settings.ini; auto-resolves)
+			var screens = Screen.AllScreens.Select(s => s.WorkingArea).ToArray();
+			bool isVisible = screens.Any(a => a.Contains(AppSettings.User.WindowLocation));
+			// if window isn't visible at launch, restore it to center
+			if (!isVisible)
+			{
+			    StartPosition = FormStartPosition.CenterScreen;
+			}
+			
 			Icon = Resources.icon;
 
 			Application.Idle += OnIdle;
@@ -109,13 +118,15 @@ namespace Ginger
 			_statusbarTimer.SynchronizingObject = this;
 		}
 
+		// resolve issue #12: bug was caused by window location being saved even if the window was minimised (-32000,-32000 = minimised), this prevents it saving this value  
 		private void OnResize(object sender, EventArgs e)
 		{
-			if (WindowState != FormWindowState.Maximized)
-			{
-				AppSettings.User.WindowLocation = this.Location;
-				AppSettings.User.WindowSize = new Point(this.Size.Width, this.Size.Height);
-			}
+		    if (WindowState == FormWindowState.Normal && 
+		        Location.X > -10000 && Location.Y > -10000)
+		    {
+		        AppSettings.User.WindowLocation = this.Location;
+		        AppSettings.User.WindowSize = new Point(this.Size.Width, this.Size.Height);
+		    }
 		}
 
 		public void SetFirstLoad(string filename)
